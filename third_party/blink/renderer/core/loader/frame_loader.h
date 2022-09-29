@@ -298,13 +298,6 @@ class CORE_EXPORT FrameLoader final {
 
   String ApplyUserAgentOverrideAndLog(const String& user_agent) const;
 
-  Member<LocalFrame> frame_;
-
-  Member<ProgressTracker> progress_tracker_;
-
-  // Document loader for frame loading.
-  Member<DocumentLoader> document_loader_;
-
   // This struct holds information about a navigation, which is being
   // initiated by the client through the browser process, until the navigation
   // is either committed or cancelled.
@@ -312,6 +305,13 @@ class CORE_EXPORT FrameLoader final {
     KURL url;
   };
   std::unique_ptr<ClientNavigationState> client_navigation_;
+
+  Member<LocalFrame> frame_;
+
+  Member<ProgressTracker> progress_tracker_;
+
+  // Document loader for frame loading.
+  Member<DocumentLoader> document_loader_;
 
   // The state is set to kInitialized when Init() completes, and kDetached
   // during teardown in Detach().

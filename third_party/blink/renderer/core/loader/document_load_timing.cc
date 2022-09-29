@@ -41,12 +41,12 @@ DocumentLoadTiming::DocumentLoadTiming(DocumentLoader& document_loader)
     : user_timing_mark_fully_loaded_(absl::nullopt),
       user_timing_mark_fully_visible_(absl::nullopt),
       user_timing_mark_interactive_(absl::nullopt),
-      redirect_count_(0),
-      has_cross_origin_redirect_(false),
-      can_request_from_previous_document_(false),
       clock_(base::DefaultClock::GetInstance()),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      document_loader_(document_loader) {}
+      document_loader_(document_loader),
+      redirect_count_(0),
+      has_cross_origin_redirect_(false),
+      can_request_from_previous_document_(false) {}
 
 void DocumentLoadTiming::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);

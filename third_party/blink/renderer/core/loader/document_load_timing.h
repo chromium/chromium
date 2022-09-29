@@ -152,19 +152,20 @@ class CORE_EXPORT DocumentLoadTiming final {
   base::TimeTicks unload_event_end_;
   base::TimeTicks redirect_start_;
   base::TimeTicks redirect_end_;
-  uint16_t redirect_count_;
   base::TimeTicks fetch_start_;
   base::TimeTicks response_end_;
   base::TimeTicks load_event_start_;
   base::TimeTicks load_event_end_;
   base::TimeTicks activation_start_;
-  bool has_cross_origin_redirect_;
-  bool can_request_from_previous_document_;
 
   const base::Clock* clock_;
   const base::TickClock* tick_clock_;
 
   Member<DocumentLoader> document_loader_;
+
+  uint16_t redirect_count_ = 0;
+  bool has_cross_origin_redirect_ = false;
+  bool can_request_from_previous_document_ = false;
 };
 
 }  // namespace blink

@@ -147,6 +147,10 @@ class CORE_EXPORT MediaQueryExpValue {
 
   Type type_ = Type::kInvalid;
 
+  // Used when the value can't be represented by the union below (e.g. math
+  // functions). Also used for style features in style container queries.
+  Member<const CSSValue> css_value_;
+
   union {
     CSSValueID id_;
     struct {
@@ -158,10 +162,6 @@ class CORE_EXPORT MediaQueryExpValue {
       unsigned denominator;
     } ratio_;
   };
-
-  // Used when the value can't be represented by the above union (e.g. math
-  // functions). Also used for style features in style container queries.
-  Member<const CSSValue> css_value_;
 };
 
 // https://drafts.csswg.org/mediaqueries-4/#mq-syntax

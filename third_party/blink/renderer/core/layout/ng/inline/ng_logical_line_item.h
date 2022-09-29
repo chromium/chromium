@@ -203,8 +203,6 @@ struct NGLogicalLineItem {
 
   void Trace(Visitor*) const;
 
-  Member<const NGLayoutResult> layout_result;
-
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
   const NGInlineItem* inline_item = nullptr;
@@ -213,6 +211,8 @@ struct NGLogicalLineItem {
 
   // Data to create a generated text fragment.
   String text_content;
+
+  Member<const NGLayoutResult> layout_result;
 
   // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.

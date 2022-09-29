@@ -76,10 +76,10 @@ class UpdatedCSSAnimation {
                       StyleRuleKeyframes* style_rule,
                       AnimationTimeline* timeline,
                       const Vector<EAnimPlayState>& play_state_list)
-      : index(index),
+      : specified_timing(specified_timing),
+        index(index),
         animation(animation),
         effect(&effect),
-        specified_timing(specified_timing),
         style_rule(style_rule),
         style_rule_version(this->style_rule->Version()),
         timeline(timeline),
@@ -92,10 +92,10 @@ class UpdatedCSSAnimation {
     visitor->Trace(timeline);
   }
 
+  Timing specified_timing;
   wtf_size_t index;
   Member<Animation> animation;
   Member<const InertEffect> effect;
-  Timing specified_timing;
   Member<StyleRuleKeyframes> style_rule;
   unsigned style_rule_version;
   Member<AnimationTimeline> timeline;

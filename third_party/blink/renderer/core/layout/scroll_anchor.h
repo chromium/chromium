@@ -154,6 +154,10 @@ class CORE_EXPORT ScrollAnchor final {
 
   gfx::Vector2d ComputeAdjustment() const;
 
+  // Previously calculated css selector that uniquely locates the current
+  // anchor_object_. Cleared when the anchor_object_ is cleared.
+  String saved_selector_;
+
   // The scroller to be adjusted by this ScrollAnchor. This is also the scroller
   // that owns us, unless it is the RootFrameViewport in which case we are owned
   // by the layout viewport.
@@ -170,10 +174,6 @@ class CORE_EXPORT ScrollAnchor final {
   // which makes a difference if we're in a block-flipped writing-mode
   // (vertical-rl).
   LayoutPoint saved_relative_offset_;
-
-  // Previously calculated css selector that uniquely locates the current
-  // anchor_object_. Cleared when the anchor_object_ is cleared.
-  String saved_selector_;
 
   // We suppress scroll anchoring after a style change on the anchor node or
   // one of its ancestors, if that change might have caused the node to move.

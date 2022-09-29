@@ -123,8 +123,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
                            TimerFiredFunction function)
         : TimerBase(document->GetTaskRunner(TaskType::kInternalInspector)),
           agent_(agent),
-          function_(function),
-          document_(document) {}
+          document_(document),
+          function_(function) {}
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(document_);
@@ -154,8 +154,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
     }
 
     WeakMember<InspectorAccessibilityAgent> agent_;
-    TimerFiredFunction function_;
     WeakMember<Document> document_;
+    TimerFiredFunction function_;
   };
 
   void CompleteQuery(AXQuery&);
