@@ -93,7 +93,7 @@ class BorealisInstallerView::TitleLabel : public views::Label {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kStatus;
-    node_data->SetName(GetText());
+    node_data->SetNameChecked(GetText());
   }
 };
 
