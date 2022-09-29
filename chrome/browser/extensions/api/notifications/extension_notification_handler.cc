@@ -131,7 +131,7 @@ void ExtensionNotificationHandler::SendEvent(
     return;
 
   auto event = std::make_unique<Event>(histogram_value, event_name,
-                                       std::move(args->GetList()));
+                                       std::move(*args).TakeList());
   event->user_gesture = user_gesture;
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }
