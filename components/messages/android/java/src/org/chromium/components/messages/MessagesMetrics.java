@@ -153,6 +153,8 @@ public class MessagesMetrics {
                 return "DesktopSiteGlobalDefaultOptOut";
             case MessageIdentifier.DESKTOP_SITE_GLOBAL_OPT_IN:
                 return "DesktopSiteGlobalOptIn";
+            case MessageIdentifier.DOWNLOAD_INCOGNITO_WARNING:
+                return "DownloadIncognitoWarning";
             default:
                 return "Unknown";
         }
