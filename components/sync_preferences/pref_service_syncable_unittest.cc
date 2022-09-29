@@ -539,8 +539,7 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
   base::Value managed_value(base::Value::Type::LIST);
   managed_value.Append(kExampleUrl0);
   managed_value.Append(kExampleUrl1);
-  managed_prefs_->SetValue(kListPrefName,
-                           base::Value::ToUniquePtrValue(managed_value.Clone()),
+  managed_prefs_->SetValue(kListPrefName, managed_value.Clone(),
                            WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Set a cloud version.

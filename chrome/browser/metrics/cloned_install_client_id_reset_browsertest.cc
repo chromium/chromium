@@ -52,7 +52,7 @@ class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
     // Set up the initial client id for (before)
     // PRE_TestClonedInstallClientIdReset.
     state->SetValue(metrics::prefs::kMetricsClientID,
-                    std::make_unique<base::Value>(kInitialClientId), 0);
+                    base::Value(kInitialClientId), 0);
 
     return true;
   }

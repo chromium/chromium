@@ -75,8 +75,7 @@ scoped_refptr<PersistentPrefStore> MakePrefStore(ProcessType process_type) {
       if (!large_pref_store->GetValue(pref_name, &pref_value)) {
         // Copy from default prefs, if possible.
         if (default_pref_store->GetValue(pref_name, &pref_value)) {
-          large_pref_store->SetValue(
-              pref_name, std::make_unique<base::Value>(pref_value->Clone()), 0);
+          large_pref_store->SetValue(pref_name, pref_value->Clone(), 0);
         }
       }
       default_pref_store->RemoveValue(pref_name, 0);

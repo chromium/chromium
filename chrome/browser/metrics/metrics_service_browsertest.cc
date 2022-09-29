@@ -322,10 +322,8 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
       base::test::TaskEnvironment task_env;
       auto state = base::MakeRefCounted<JsonPrefStore>(
           user_dir.Append(FILE_PATH_LITERAL("Local State")));
-      state->SetValue(
-          metrics::prefs::kMetricsDefaultOptIn,
-          std::make_unique<base::Value>(metrics::EnableMetricsDefault::OPT_OUT),
-          0);
+      state->SetValue(metrics::prefs::kMetricsDefaultOptIn,
+                      base::Value(metrics::EnableMetricsDefault::OPT_OUT), 0);
     }
 
     // Create the upload dir. Note that ASSERT macros won't fail in SetUp,

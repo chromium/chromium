@@ -42,7 +42,7 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate,
   }
   void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override {
-    pref_store_->SetValue(path_, value.CreateDeepCopy(),
+    pref_store_->SetValue(path_, value.Clone(),
                           WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     if (callback)
       pref_store_->CommitPendingWrite(std::move(callback));

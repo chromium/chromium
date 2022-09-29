@@ -33,7 +33,7 @@ TEST_F(InMemoryPrefStoreTest, SetGetValue) {
   EXPECT_FALSE(store_->GetValue(kTestPref, &value));
   EXPECT_FALSE(store_->GetMutableValue(kTestPref, &mutable_value));
 
-  store_->SetValue(kTestPref, std::make_unique<base::Value>(42),
+  store_->SetValue(kTestPref, base::Value(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
   EXPECT_EQ(base::Value(42), *value);
@@ -63,7 +63,7 @@ TEST_F(InMemoryPrefStoreTest, CallObserver) {
   store_->AddObserver(&observer_);
 
   // Triggers on SetValue.
-  store_->SetValue(kTestPref, std::make_unique<base::Value>(42),
+  store_->SetValue(kTestPref, base::Value(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   observer_.VerifyAndResetChangedKey(kTestPref);
 
@@ -72,7 +72,7 @@ TEST_F(InMemoryPrefStoreTest, CallObserver) {
   observer_.VerifyAndResetChangedKey(kTestPref);
 
   // But not SetValueSilently.
-  store_->SetValueSilently(kTestPref, std::make_unique<base::Value>(42),
+  store_->SetValueSilently(kTestPref, base::Value(42),
                            WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_EQ(0u, observer_.changed_keys.size());
 
@@ -84,7 +84,7 @@ TEST_F(InMemoryPrefStoreTest, CallObserver) {
 
   // Doesn't make call on removed observers.
   store_->RemoveObserver(&observer_);
-  store_->SetValue(kTestPref, std::make_unique<base::Value>(42),
+  store_->SetValue(kTestPref, base::Value(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   store_->RemoveValue(kTestPref, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_EQ(0u, observer_.changed_keys.size());
@@ -117,11 +117,11 @@ TEST_F(InMemoryPrefStoreTest, RemoveValuesByPrefix) {
   const std::string subpref_name2 = "pref.b";
   const std::string other_name = "other";
 
-  store_->SetValue(subpref_name1, std::make_unique<base::Value>(42),
+  store_->SetValue(subpref_name1, base::Value(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  store_->SetValue(subpref_name2, std::make_unique<base::Value>(42),
+  store_->SetValue(subpref_name2, base::Value(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  store_->SetValue(other_name, std::make_unique<base::Value>(42),
+  store_->SetValue(other_name, base::Value(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   store_->RemoveValuesByPrefixSilently(prefix);

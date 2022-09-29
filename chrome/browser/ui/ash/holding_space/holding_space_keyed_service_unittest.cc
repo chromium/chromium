@@ -663,12 +663,11 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
   TestingProfile* const secondary_profile = CreateSecondaryProfile(
       base::BindLambdaForTesting([&](TestingPrefStore* pref_store) {
         pref_store->SetValueSilently(
-            "ash.holding_space.previews_enabled",
-            std::make_unique<base::Value>(kPreviewsEnabled),
+            "ash.holding_space.previews_enabled", base::Value(kPreviewsEnabled),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
         pref_store->SetValueSilently(
             "ash.holding_space.suggestions_expanded",
-            std::make_unique<base::Value>(kSuggestionsExpanded),
+            base::Value(kSuggestionsExpanded),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
 
@@ -1218,7 +1217,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::make_unique<base::Value>(
+            base::Value(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1371,7 +1370,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::make_unique<base::Value>(
+            base::Value(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1530,7 +1529,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::make_unique<base::Value>(
+            base::Value(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1642,7 +1641,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::make_unique<base::Value>(
+            base::Value(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));
@@ -1818,7 +1817,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
         pref_store->SetValueSilently(
             HoldingSpacePersistenceDelegate::kPersistencePath,
-            std::make_unique<base::Value>(
+            base::Value(
                 std::move(persisted_holding_space_items_before_restoration)),
             PersistentPrefStore::DEFAULT_PREF_WRITE_FLAGS);
       }));

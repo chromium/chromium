@@ -90,8 +90,7 @@ TEST(PrefServiceTest, Observers) {
   const char pref_name[] = "homepage";
 
   TestingPrefServiceSimple prefs;
-  prefs.SetUserPref(pref_name,
-                    std::make_unique<base::Value>("http://www.cnn.com"));
+  prefs.SetUserPref(pref_name, base::Value("http://www.cnn.com"));
   prefs.registry()->RegisterStringPref(pref_name, std::string());
 
   const char new_pref_value[] = "http://www.google.com/";
@@ -149,7 +148,7 @@ TEST(PrefServiceTest, GetValueChangedType) {
   prefs.registry()->RegisterIntegerPref(kPrefName, kTestValue);
 
   // Check falling back to a recommended value.
-  prefs.SetUserPref(kPrefName, std::make_unique<base::Value>("not an integer"));
+  prefs.SetUserPref(kPrefName, base::Value("not an integer"));
   const PrefService::Preference* pref = prefs.FindPreference(kPrefName);
   ASSERT_TRUE(pref);
   const base::Value* value = pref->GetValue();
@@ -182,7 +181,7 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   ASSERT_FALSE(value);
 
   // Set a user-set value.
-  prefs.SetUserPref(kPrefName, std::make_unique<base::Value>(kUserValue));
+  prefs.SetUserPref(kPrefName, base::Value(kUserValue));
 
   // Check that GetValue() returns the user-set value.
   value = pref->GetValue();
@@ -196,8 +195,7 @@ TEST(PrefServiceTest, GetValueAndGetRecommendedValue) {
   ASSERT_FALSE(value);
 
   // Set a recommended value.
-  prefs.SetRecommendedPref(kPrefName,
-                           std::make_unique<base::Value>(kRecommendedValue));
+  prefs.SetRecommendedPref(kPrefName, base::Value(kRecommendedValue));
 
   // Check that GetValue() returns the user-set value.
   value = pref->GetValue();
@@ -297,13 +295,13 @@ class WriteFlagChecker : public TestingPrefStore {
   }
 
   void SetValue(const std::string& key,
-                std::unique_ptr<base::Value> value,
+                base::Value value,
                 uint32_t flags) override {
     SetLastWriteFlags(flags);
   }
 
   void SetValueSilently(const std::string& key,
-                        std::unique_ptr<base::Value> value,
+                        base::Value value,
                         uint32_t flags) override {
     SetLastWriteFlags(flags);
   }

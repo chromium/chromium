@@ -535,9 +535,8 @@ base::Value* PrefService::GetMutableUserPref(const std::string& path,
   const base::Value* default_value = nullptr;
   pref_registry_->defaults()->GetValue(path, &default_value);
   DCHECK_EQ(default_value->type(), type);
-  user_pref_store_->SetValueSilently(
-      path, base::Value::ToUniquePtrValue(default_value->Clone()),
-      GetWriteFlags(pref));
+  user_pref_store_->SetValueSilently(path, default_value->Clone(),
+                                     GetWriteFlags(pref));
   user_pref_store_->GetMutableValue(path, &value);
   return value;
 }
@@ -570,9 +569,7 @@ void PrefService::SetUserPrefValue(const std::string& path,
     return;
   }
 
-  user_pref_store_->SetValue(
-      path, base::Value::ToUniquePtrValue(std::move(new_value)),
-      GetWriteFlags(pref));
+  user_pref_store_->SetValue(path, std::move(new_value), GetWriteFlags(pref));
 }
 
 void PrefService::UpdateCommandLinePrefStore(PrefStore* command_line_store) {
@@ -698,8 +695,7 @@ const base::Value* PrefService::GetPreferenceValueChecked(
 void PrefService::SetStandaloneBrowserPref(const std::string& path,
                                            const base::Value& value) {
   standalone_browser_pref_store_->SetValue(
-      path, base::Value::ToUniquePtrValue(value.Clone()),
-      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      path, value.Clone(), WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 }
 
 void PrefService::RemoveStandaloneBrowserPref(const std::string& path) {

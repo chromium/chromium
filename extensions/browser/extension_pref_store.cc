@@ -24,7 +24,7 @@ void ExtensionPrefStore::OnPrefValueChanged(const std::string& key) {
   const base::Value* winner = extension_pref_value_map_->GetEffectivePrefValue(
       key, incognito_pref_store_, nullptr);
   if (winner) {
-    SetValue(key, base::Value::ToUniquePtrValue(winner->Clone()),
+    SetValue(key, winner->Clone(),
              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   } else {
     RemoveValue(key, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);

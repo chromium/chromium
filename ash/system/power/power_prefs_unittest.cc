@@ -480,9 +480,8 @@ TEST_F(PowerPrefsTest, PeakShift) {
 
   managed_pref_store_->SetBoolean(prefs::kPowerPeakShiftEnabled, true);
   managed_pref_store_->SetInteger(prefs::kPowerPeakShiftBatteryThreshold, 50);
-  managed_pref_store_->SetValue(
-      prefs::kPowerPeakShiftDayConfig,
-      std::make_unique<base::Value>(std::move(day_configs)), 0);
+  managed_pref_store_->SetValue(prefs::kPowerPeakShiftDayConfig,
+                                std::move(day_configs), 0);
 
   EXPECT_EQ(chromeos::PowerPolicyController::GetPeakShiftPolicyDebugString(
                 power_manager_client()->policy()),
@@ -522,9 +521,8 @@ TEST_F(PowerPrefsTest, AdvancedBatteryChargeMode) {
 
   managed_pref_store_->SetBoolean(prefs::kAdvancedBatteryChargeModeEnabled,
                                   true);
-  managed_pref_store_->SetValue(
-      prefs::kAdvancedBatteryChargeModeDayConfig,
-      std::make_unique<base::Value>(std::move(day_configs)), 0);
+  managed_pref_store_->SetValue(prefs::kAdvancedBatteryChargeModeDayConfig,
+                                std::move(day_configs), 0);
 
   EXPECT_EQ(chromeos::PowerPolicyController::
                 GetAdvancedBatteryChargeModePolicyDebugString(

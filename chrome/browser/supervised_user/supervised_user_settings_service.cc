@@ -492,9 +492,8 @@ base::Value* SupervisedUserSettingsService::GetOrCreateDictionary(
     const std::string& key) const {
   base::Value* value = nullptr;
   if (!store_->GetMutableValue(key, &value)) {
-    store_->SetValue(
-        key, std::make_unique<base::Value>(base::Value::Type::DICTIONARY),
-        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+    store_->SetValue(key, base::Value(base::Value::Dict()),
+                     WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
     store_->GetMutableValue(key, &value);
   }
   DCHECK(value->is_dict());

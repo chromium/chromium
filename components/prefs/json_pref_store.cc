@@ -222,27 +222,25 @@ bool JsonPrefStore::GetMutableValue(const std::string& key,
 }
 
 void JsonPrefStore::SetValue(const std::string& key,
-                             std::unique_ptr<base::Value> value,
+                             base::Value value,
                              uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(value);
   base::Value* old_value = prefs_->FindPath(key);
-  if (!old_value || *value != *old_value) {
-    prefs_->SetPath(key, std::move(*value));
+  if (!old_value || value != *old_value) {
+    prefs_->SetPath(key, std::move(value));
     ReportValueChanged(key, flags);
   }
 }
 
 void JsonPrefStore::SetValueSilently(const std::string& key,
-                                     std::unique_ptr<base::Value> value,
+                                     base::Value value,
                                      uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(value);
   base::Value* old_value = prefs_->FindPath(key);
-  if (!old_value || *value != *old_value) {
-    prefs_->SetPath(key, std::move(*value));
+  if (!old_value || value != *old_value) {
+    prefs_->SetPath(key, std::move(value));
     ScheduleWrite(flags);
   }
 }

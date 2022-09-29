@@ -219,8 +219,7 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
   base::DictionaryValue pref_value;
   base::Value value("2G");
   pref_value.SetKey("network_id_foo", value.Clone());
-  state->SetValue("net.network_qualities",
-                  base::Value::ToUniquePtrValue(pref_value.Clone()), 0);
+  state->SetValue("net.network_qualities", pref_value.Clone(), 0);
 
   // Wait for the pending commit to finish before creating the network context.
   base::RunLoop loop;

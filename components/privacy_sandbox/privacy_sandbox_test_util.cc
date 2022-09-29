@@ -36,7 +36,7 @@ void SetupTestState(
   // Setup block-third-party-cookies settings.
   testing_pref_service->SetUserPref(
       prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
+      base::Value(static_cast<int>(
           block_third_party_cookies
               ? content_settings::CookieControlsMode::kBlockThirdParty
               : content_settings::CookieControlsMode::kOff)));
@@ -80,13 +80,11 @@ void SetupTestState(
   // Only adjust the Privacy Sandbox preference which should be being consulted
   // based on feature state.
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
-    testing_pref_service->SetUserPref(
-        prefs::kPrivacySandboxApisEnabledV2,
-        std::make_unique<base::Value>(privacy_sandbox_enabled));
+    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
+                                      base::Value(privacy_sandbox_enabled));
   } else {
-    testing_pref_service->SetUserPref(
-        prefs::kPrivacySandboxApisEnabled,
-        std::make_unique<base::Value>(privacy_sandbox_enabled));
+    testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabled,
+                                      base::Value(privacy_sandbox_enabled));
   }
 }
 

@@ -253,8 +253,7 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
   EXPECT_EQ("/usr/local/", actual->GetString());
   base::FilePath some_path(FILE_PATH_LITERAL("/usr/sbin/"));
 
-  pref_store->SetValue(kSomeDirectory,
-                       std::make_unique<Value>(some_path.AsUTF8Unsafe()),
+  pref_store->SetValue(kSomeDirectory, Value(some_path.AsUTF8Unsafe()),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kSomeDirectory, &actual));
   EXPECT_TRUE(actual->is_string());
@@ -265,7 +264,7 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
   EXPECT_TRUE(actual->is_bool());
   EXPECT_TRUE(actual->GetBool());
 
-  pref_store->SetValue(kNewWindowsInTabs, std::make_unique<Value>(false),
+  pref_store->SetValue(kNewWindowsInTabs, Value(false),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kNewWindowsInTabs, &actual));
   EXPECT_TRUE(actual->is_bool());
@@ -274,16 +273,15 @@ void RunBasicJsonPrefStoreTest(JsonPrefStore* pref_store,
   EXPECT_TRUE(pref_store->GetValue(kMaxTabs, &actual));
   ASSERT_TRUE(actual->is_int());
   EXPECT_EQ(20, actual->GetInt());
-  pref_store->SetValue(kMaxTabs, std::make_unique<Value>(10),
+  pref_store->SetValue(kMaxTabs, Value(10),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kMaxTabs, &actual));
   ASSERT_TRUE(actual->is_int());
   EXPECT_EQ(10, actual->GetInt());
 
-  pref_store->SetValue(
-      kLongIntPref,
-      std::make_unique<Value>(base::NumberToString(214748364842LL)),
-      WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  pref_store->SetValue(kLongIntPref,
+                       Value(base::NumberToString(214748364842LL)),
+                       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(pref_store->GetValue(kLongIntPref, &actual));
   EXPECT_TRUE(actual->is_string());
   int64_t value;
@@ -372,9 +370,9 @@ TEST_P(JsonPrefStoreTest, PreserveEmptyValues) {
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_file);
 
   // Set some keys with empty values.
-  pref_store->SetValue("list", std::make_unique<base::ListValue>(),
+  pref_store->SetValue("list", base::Value(base::Value::List()),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  pref_store->SetValue("dict", std::make_unique<base::DictionaryValue>(),
+  pref_store->SetValue("dict", base::Value(base::Value::Dict()),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   // Write to file.
@@ -400,9 +398,9 @@ TEST_P(JsonPrefStoreTest, RemoveClearsEmptyParent) {
 
   auto pref_store = base::MakeRefCounted<JsonPrefStore>(pref_file);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetString("key", "value");
-  pref_store->SetValue("dict", std::move(dict),
+  base::Value::Dict dict;
+  dict.Set("key", "value");
+  pref_store->SetValue("dict", base::Value(std::move(dict)),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   pref_store->RemoveValue("dict.key",
@@ -547,11 +545,11 @@ TEST_P(JsonPrefStoreTest, RemoveValuesByPrefix) {
   const std::string subpref_name2 = "pref.b";
   const std::string other_name = "other";
 
-  pref_store->SetValue(subpref_name1, std::make_unique<base::Value>(42),
+  pref_store->SetValue(subpref_name1, base::Value(42),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  pref_store->SetValue(subpref_name2, std::make_unique<base::Value>(42),
+  pref_store->SetValue(subpref_name2, base::Value(42),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
-  pref_store->SetValue(other_name, std::make_unique<base::Value>(42),
+  pref_store->SetValue(other_name, base::Value(42),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
 
   pref_store->RemoveValuesByPrefixSilently(prefix);
@@ -615,7 +613,7 @@ TEST_P(JsonPrefStoreLossyWriteTest, LossyWriteBasic) {
 
   // Set a normal pref and check that it gets scheduled to be written.
   ASSERT_FALSE(file_writer->HasPendingWrite());
-  pref_store->SetValue("normal", std::make_unique<base::Value>("normal"),
+  pref_store->SetValue("normal", base::Value("normal"),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   ASSERT_TRUE(file_writer->HasPendingWrite());
   file_writer->DoScheduledWrite();
@@ -624,14 +622,14 @@ TEST_P(JsonPrefStoreLossyWriteTest, LossyWriteBasic) {
 
   // Set a lossy pref and check that it is not scheduled to be written.
   // SetValue/RemoveValue.
-  pref_store->SetValue("lossy", std::make_unique<base::Value>("lossy"),
+  pref_store->SetValue("lossy", base::Value("lossy"),
                        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_FALSE(file_writer->HasPendingWrite());
   pref_store->RemoveValue("lossy", WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_FALSE(file_writer->HasPendingWrite());
 
   // SetValueSilently/RemoveValueSilently.
-  pref_store->SetValueSilently("lossy", std::make_unique<base::Value>("lossy"),
+  pref_store->SetValueSilently("lossy", base::Value("lossy"),
                                WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_FALSE(file_writer->HasPendingWrite());
   pref_store->RemoveValueSilently("lossy",
@@ -639,7 +637,7 @@ TEST_P(JsonPrefStoreLossyWriteTest, LossyWriteBasic) {
   ASSERT_FALSE(file_writer->HasPendingWrite());
 
   // ReportValueChanged.
-  pref_store->SetValue("lossy", std::make_unique<base::Value>("lossy"),
+  pref_store->SetValue("lossy", base::Value("lossy"),
                        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_FALSE(file_writer->HasPendingWrite());
   pref_store->ReportValueChanged("lossy",
@@ -660,12 +658,12 @@ TEST_P(JsonPrefStoreLossyWriteTest, LossyWriteMixedLossyFirst) {
 
   // Set a lossy pref and check that it is not scheduled to be written.
   ASSERT_FALSE(file_writer->HasPendingWrite());
-  pref_store->SetValue("lossy", std::make_unique<base::Value>("lossy"),
+  pref_store->SetValue("lossy", base::Value("lossy"),
                        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_FALSE(file_writer->HasPendingWrite());
 
   // Set a normal pref and check that it is scheduled to be written.
-  pref_store->SetValue("normal", std::make_unique<base::Value>("normal"),
+  pref_store->SetValue("normal", base::Value("normal"),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   ASSERT_TRUE(file_writer->HasPendingWrite());
 
@@ -682,12 +680,12 @@ TEST_P(JsonPrefStoreLossyWriteTest, LossyWriteMixedLossySecond) {
 
   // Set a normal pref and check that it is scheduled to be written.
   ASSERT_FALSE(file_writer->HasPendingWrite());
-  pref_store->SetValue("normal", std::make_unique<base::Value>("normal"),
+  pref_store->SetValue("normal", base::Value("normal"),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   ASSERT_TRUE(file_writer->HasPendingWrite());
 
   // Set a lossy pref and check that the write is still scheduled.
-  pref_store->SetValue("lossy", std::make_unique<base::Value>("lossy"),
+  pref_store->SetValue("lossy", base::Value("lossy"),
                        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_TRUE(file_writer->HasPendingWrite());
 
@@ -703,7 +701,7 @@ TEST_P(JsonPrefStoreLossyWriteTest, ScheduleLossyWrite) {
   ImportantFileWriter* file_writer = GetImportantFileWriter(pref_store.get());
 
   // Set a lossy pref and check that it is not scheduled to be written.
-  pref_store->SetValue("lossy", std::make_unique<base::Value>("lossy"),
+  pref_store->SetValue("lossy", base::Value("lossy"),
                        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
   ASSERT_FALSE(file_writer->HasPendingWrite());
 
@@ -890,7 +888,7 @@ TEST_F(JsonPrefStoreCallbackTest, TestSerializeDataCallbacks) {
 
   EXPECT_EQ(NOT_CALLED,
             write_callback_observer_.GetAndResetPostWriteObservationState());
-  pref_store->SetValue("normal", std::make_unique<base::Value>("normal"),
+  pref_store->SetValue("normal", base::Value("normal"),
                        WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   file_writer->DoScheduledWrite();
 

@@ -121,14 +121,14 @@ bool OverlayUserPrefStore::GetMutableValue(const std::string& key,
     return false;
 
   ephemeral_user_pref_store_->SetValue(
-      key, base::Value::ToUniquePtrValue(persistent_value->Clone()),
+      key, persistent_value->Clone(),
       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   ephemeral_user_pref_store_->GetMutableValue(key, result);
   return true;
 }
 
 void OverlayUserPrefStore::SetValue(const std::string& key,
-                                    std::unique_ptr<base::Value> value,
+                                    base::Value value,
                                     uint32_t flags) {
   if (ShallBeStoredInPersistent(key)) {
     persistent_user_pref_store_->SetValue(key, std::move(value), flags);
@@ -143,7 +143,7 @@ void OverlayUserPrefStore::SetValue(const std::string& key,
 }
 
 void OverlayUserPrefStore::SetValueSilently(const std::string& key,
-                                            std::unique_ptr<base::Value> value,
+                                            base::Value value,
                                             uint32_t flags) {
   if (ShallBeStoredInPersistent(key)) {
     persistent_user_pref_store_->SetValueSilently(key, std::move(value), flags);
