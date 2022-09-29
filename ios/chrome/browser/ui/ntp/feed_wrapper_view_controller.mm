@@ -81,7 +81,7 @@
   self.contentCollectionView.backgroundColor =
       IsContentSuggestionsUIModuleRefreshEnabled()
           ? [UIColor clearColor]
-          : ntp_home::kNTPBackgroundColor();
+          : ntp_home::NTPBackgroundColor();
   self.contentCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.contentCollectionView, self.view);
 }

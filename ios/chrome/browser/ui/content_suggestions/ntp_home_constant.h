@@ -54,7 +54,7 @@ extern const CGFloat kIdentityAvatarDimension;
 extern const CGFloat kIdentityAvatarMargin;
 
 // The background color of the NTP.
-UIColor* kNTPBackgroundColor();
+UIColor* NTPBackgroundColor();
 
 }  // namespace ntp_home
 

@@ -1546,7 +1546,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   } else {
     // Add a white bar when there is no tab strip so that the status bar on the
     // NTP is white.
-    _fakeStatusBarView.backgroundColor = ntp_home::kNTPBackgroundColor();
+    _fakeStatusBarView.backgroundColor = ntp_home::NTPBackgroundColor();
     [self.view insertSubview:_fakeStatusBarView atIndex:0];
   }
 }

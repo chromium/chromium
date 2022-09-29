@@ -152,7 +152,7 @@ CGFloat ModuleVerticalSpacing() {
   if (IsContentSuggestionsUIModuleRefreshEnabled()) {
     self.view.backgroundColor = [UIColor clearColor];
   } else {
-    self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
   }
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
 
@@ -221,7 +221,7 @@ CGFloat ModuleVerticalSpacing() {
 
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       self.mostVisitedStackView.backgroundColor =
-          ntp_home::kNTPBackgroundColor();
+          ntp_home::NTPBackgroundColor();
       self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
       self.mostVisitedModuleContainer =
           [[ContentSuggestionsModuleContainer alloc]
@@ -301,7 +301,7 @@ CGFloat ModuleVerticalSpacing() {
     self.shortcutsStackView.spacing = horizontalSpacing;
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
       self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
-      self.shortcutsStackView.backgroundColor = ntp_home::kNTPBackgroundColor();
+      self.shortcutsStackView.backgroundColor = ntp_home::NTPBackgroundColor();
     } else {
       self.shortcutsStackView.alignment = UIStackViewAlignmentTop;
     }

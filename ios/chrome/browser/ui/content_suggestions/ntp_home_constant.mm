@@ -30,7 +30,7 @@ const CGFloat kSuggestionPeekingHeight = 60;
 const CGFloat kIdentityAvatarDimension = 32;
 const CGFloat kIdentityAvatarMargin = 16;
 
-UIColor* kNTPBackgroundColor() {
+UIColor* NTPBackgroundColor() {
   return [UIColor colorNamed:kBackgroundColor];
 }
 

@@ -29,7 +29,7 @@ const CGFloat kIconWidth = 32.0f;
   self = [super initWithFrame:frame];
   if (self) {
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      [self.layer setBorderColor:ntp_home::kNTPBackgroundColor().CGColor];
+      [self.layer setBorderColor:ntp_home::NTPBackgroundColor().CGColor];
     } else {
       [self.layer
           setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
@@ -121,7 +121,7 @@ const CGFloat kIconWidth = 32.0f;
       previousTraitCollection.userInterfaceStyle) {
     // CGColors are static RGB, so the border color needs to be reset.
     if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-      [self.layer setBorderColor:ntp_home::kNTPBackgroundColor().CGColor];
+      [self.layer setBorderColor:ntp_home::NTPBackgroundColor().CGColor];
     } else {
       [self.layer
           setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];

@@ -24,7 +24,7 @@
 }
 
 - (UIColor*)NTPBackgroundColor {
-  return ntp_home::kNTPBackgroundColor();
+  return ntp_home::NTPBackgroundColor();
 }
 
 - (UIColor*)backgroundColor {

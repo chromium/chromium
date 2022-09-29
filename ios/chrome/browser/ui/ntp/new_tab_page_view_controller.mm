@@ -134,7 +134,7 @@
     [self.view addSubview:gradientView];
     AddSameConstraints(self.view, gradientView);
   } else {
-    self.view.backgroundColor = ntp_home::kNTPBackgroundColor();
+    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
   }
 
   [self registerNotifications];
