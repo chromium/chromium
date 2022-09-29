@@ -9,29 +9,32 @@
 
 namespace features {
 
-constexpr base::Feature kHandleMemoryPressureInRenderer{
-    "HandleMemoryPressureInRenderer", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kHandleMemoryPressureInRenderer,
+             "HandleMemoryPressureInRenderer",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of video codecs that cannot be hardware-accelerated.
 // When disabled, software video decoders are still available in case they are
 // needed as a fallback due to a hardware decoder failure. Does not affect
 // WebRTC; see media::kExposeSwDecodersToWebRTC and
 // media::kUseDecoderStreamForWebRTC.
-constexpr base::Feature kEnableSoftwareOnlyVideoCodecs{
-    "SoftwareOnlyVideoCodecs", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableSoftwareOnlyVideoCodecs,
+             "SoftwareOnlyVideoCodecs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables keyboard input handling via the fuchsia.ui.input3.Keyboard interface.
-constexpr base::Feature kKeyboardInput{"KeyboardInput",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kKeyboardInput,
+             "KeyboardInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables use of virtual keyboards via the
 // fuchsia.input.virtualkeyboard.Controller interface.
-constexpr base::Feature kVirtualKeyboard{"VirtualKeyboard",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVirtualKeyboard,
+             "VirtualKeyboard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables origin trials support.
-constexpr base::Feature kOriginTrials{"OriginTrials",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kOriginTrials, "OriginTrials", base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 
