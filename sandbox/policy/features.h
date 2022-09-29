@@ -16,22 +16,21 @@
 namespace sandbox::policy::features {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
-SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandbox;
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceSandbox);
 #endif
 
 #if BUILDFLAG(IS_WIN)
-SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableKtmComponent;
-SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableExtensionPoints;
-SANDBOX_POLICY_EXPORT extern const base::Feature kGpuAppContainer;
-SANDBOX_POLICY_EXPORT extern const base::Feature kGpuLPAC;
-SANDBOX_POLICY_EXPORT extern const base::Feature kRendererAppContainer;
-SANDBOX_POLICY_EXPORT extern const base::Feature kSharedSandboxPolicies;
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxDisableKtmComponent);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxDisableExtensionPoints);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kGpuAppContainer);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kGpuLPAC);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kRendererAppContainer);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kSharedSandboxPolicies);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-SANDBOX_POLICY_EXPORT extern const base::Feature kSpectreVariant2Mitigation;
-SANDBOX_POLICY_EXPORT extern const base::Feature
-    kForceSpectreVariant2Mitigation;
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kSpectreVariant2Mitigation);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kForceSpectreVariant2Mitigation);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns whether the network sandbox is enabled for the current platform
