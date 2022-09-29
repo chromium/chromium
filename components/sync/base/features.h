@@ -41,7 +41,13 @@ inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
 // with the logic on the server. this protects against notes being overwritten
 // by legacy clients not supporting password notes.
 inline constexpr base::Feature kReadWritePasswordNotesBackupField{
-    "ReadWritePasswordNotesBackupField", base::FEATURE_ENABLED_BY_DEFAULT};
+  "ReadWritePasswordNotesBackupField",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Allows custom passphrase users to receive Wallet data for secondary accounts
 // while in transport-only mode.
