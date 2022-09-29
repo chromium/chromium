@@ -648,6 +648,21 @@ TEST_F(DownloadDisplayControllerTest,
                                  /*is_active=*/false));
 }
 
+TEST_F(DownloadDisplayControllerTest, UpdateToolbarButtonState_OnResume) {
+  InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
+                   download::DownloadItem::IN_PROGRESS);
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/true));
+
+  EXPECT_CALL(item(0), IsPaused()).WillRepeatedly(Return(true));
+  controller().OnResume();
+  // is_active state should be updated after OnResume is called.
+  EXPECT_TRUE(VerifyDisplayState(/*shown=*/true, /*detail_shown=*/true,
+                                 /*icon_state=*/DownloadIconState::kProgress,
+                                 /*is_active=*/false));
+}
+
 TEST_F(DownloadDisplayControllerTest, InitialState_OldLastDownload) {
   InitDownloadItem(FILE_PATH_LITERAL("/foo/bar.pdf"),
                    download::DownloadItem::COMPLETE);

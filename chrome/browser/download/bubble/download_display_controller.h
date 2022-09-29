@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 
+#include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/offline_item_model.h"
@@ -33,7 +34,8 @@ class DownloadDisplay;
 // we can remove AllDownloadItemNotifier::Observer.
 class DownloadDisplayController
     : public download::AllDownloadItemNotifier::Observer,
-      public FullscreenObserver {
+      public FullscreenObserver,
+      public base::PowerSuspendObserver {
  public:
   DownloadDisplayController(DownloadDisplay* display,
                             Browser* browser,
@@ -99,6 +101,9 @@ class DownloadDisplayController
 
   // FullScreenObserver
   void OnFullscreenStateChanged() override;
+
+  // PowerSuspendObserver
+  void OnResume() override;
 
   // Returns the DownloadDisplay. Should always return a valid display.
   DownloadDisplay* download_display_for_testing() { return display_; }
