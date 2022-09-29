@@ -20,7 +20,6 @@
 #include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
-#include "components/app_restore/lacros_read_handler.h"
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
@@ -71,16 +70,7 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   }
 
   if (app_restore::IsLacrosWindow(window)) {
-    // If the Lacros `window` is added to the hidden container, observe `window`
-    // to restore and remove it from the hidden container in
-    // OnWindowAddedToRootWindow callback.
-    if (lacros_read_handler_ &&
-        window_id == app_restore::kParentToHiddenContainer) {
-      observed_windows_.AddObservation(window);
-    }
-
-    if (lacros_read_handler_)
-      lacros_read_handler_->OnWindowInitialized(window);
+    DCHECK(window_id > app_restore::kParentToHiddenContainer);
 
     return;
   }
@@ -93,16 +83,6 @@ void FullRestoreReadHandler::OnWindowInitialized(aura::Window* window) {
   app_restore::AppRestoreInfo::GetInstance()->OnWindowInitialized(window);
 }
 
-void FullRestoreReadHandler::OnWindowAddedToRootWindow(aura::Window* window) {
-  // If the Lacros `window` is added to the hidden container, call
-  // OnWindowAddedToRootWindow to restore and remove it from the hidden
-  // container.
-  if (app_restore::IsLacrosWindow(window) && lacros_read_handler_ &&
-      window->GetProperty(app_restore::kParentToHiddenContainerKey)) {
-    lacros_read_handler_->OnWindowAddedToRootWindow(window);
-  }
-}
-
 void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
   DCHECK(observed_windows_.IsObservingSource(window));
   observed_windows_.RemoveObservation(window);
@@ -112,9 +92,6 @@ void FullRestoreReadHandler::OnWindowDestroyed(aura::Window* window) {
       arc_read_handler_->OnWindowDestroyed(window);
     return;
   }
-
-  if (app_restore::IsLacrosWindow(window) && lacros_read_handler_)
-    lacros_read_handler_->OnWindowDestroyed(window);
 
   int32_t restore_window_id =
       window->GetProperty(app_restore::kRestoreWindowIdKey);
@@ -168,27 +145,9 @@ void FullRestoreReadHandler::OnTaskDestroyed(int32_t task_id) {
     arc_read_handler_->OnTaskDestroyed(task_id);
 }
 
-void FullRestoreReadHandler::OnLacrosChromeAppWindowAdded(
-    const std::string& app_id,
-    const std::string& window_id) {
-  if (lacros_read_handler_)
-    lacros_read_handler_->OnAppWindowAdded(app_id, window_id);
-}
-
-void FullRestoreReadHandler::OnLacrosChromeAppWindowRemoved(
-    const std::string& app_id,
-    const std::string& window_id) {
-  if (lacros_read_handler_)
-    lacros_read_handler_->OnAppWindowRemoved(app_id, window_id);
-}
-
 void FullRestoreReadHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
   primary_profile_path_ = profile_path;
-  if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
-    lacros_read_handler_ =
-        std::make_unique<app_restore::LacrosReadHandler>(profile_path);
-  }
 }
 
 void FullRestoreReadHandler::SetActiveProfilePath(
@@ -339,9 +298,8 @@ int32_t FullRestoreReadHandler::GetArcRestoreWindowIdForSessionId(
 
 int32_t FullRestoreReadHandler::GetLacrosRestoreWindowId(
     const std::string& lacros_window_id) const {
-  return IsLacrosRestoreRunning()
-             ? lacros_read_handler_->GetLacrosRestoreWindowId(lacros_window_id)
-             : 0;
+  return full_restore::FullRestoreReadHandler::GetInstance()
+      ->FetchRestoreWindowId(lacros_window_id);
 }
 
 void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
@@ -416,7 +374,7 @@ bool FullRestoreReadHandler::IsArcRestoreRunning() const {
 }
 
 bool FullRestoreReadHandler::IsLacrosRestoreRunning() const {
-  if (!lacros_read_handler_ || active_profile_path_ != primary_profile_path_)
+  if (active_profile_path_ != primary_profile_path_)
     return false;
 
   auto it = profile_path_to_start_time_data_.find(primary_profile_path_);
@@ -451,12 +409,6 @@ void FullRestoreReadHandler::OnGetRestoreData(
         } else {
           window_id_to_app_restore_info_[window_id] =
               std::make_pair(profile_path, app_id);
-          // TODO(crbug.com/1239984): Remove restore data from
-          // `lacros_read_handler_` for ash browser apps.
-          if (lacros_read_handler_ && app_id != app_constants::kChromeAppId &&
-              primary_profile_path_ == profile_path) {
-            lacros_read_handler_->AddRestoreData(app_id, window_id);
-          }
         }
       }
     }

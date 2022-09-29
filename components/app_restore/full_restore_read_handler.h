@@ -26,7 +26,6 @@
 
 namespace app_restore {
 struct AppLaunchInfo;
-class LacrosReadHandler;
 class RestoreData;
 struct WindowInfo;
 }  // namespace app_restore
@@ -73,7 +72,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   void OnWindowInitialized(aura::Window* window) override;
 
   // aura::WindowObserver:
-  void OnWindowAddedToRootWindow(aura::Window* window) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
   // app_restore::ArcReadHandler::Delegate:
@@ -94,18 +92,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
                      int32_t task_id,
                      int32_t session_id) override;
   void OnTaskDestroyed(int32_t task_id) override;
-
-  // Invoked when an Chrome app Lacros window is created. `app_id` is the
-  // AppService id, and `window_id` is the wayland app_id property for the
-  // window.
-  void OnLacrosChromeAppWindowAdded(const std::string& app_id,
-                                    const std::string& window_id);
-
-  // Invoked when an Chrome app Lacros window is removed. `app_id` is the
-  // AppService id, and `window_id` is the wayland app_id property for the
-  // window.
-  void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
-                                      const std::string& window_id);
 
   void SetPrimaryProfilePath(const base::FilePath& profile_path);
 
@@ -238,8 +224,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
       profile_path_to_start_time_data_;
 
   std::unique_ptr<app_restore::ArcReadHandler> arc_read_handler_;
-
-  std::unique_ptr<app_restore::LacrosReadHandler> lacros_read_handler_;
 
   // Records whether we need to check the restore data for the profile path. If
   // the profile path is recorded, we should check the restore data. Otherwise,
