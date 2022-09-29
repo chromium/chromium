@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -95,11 +96,9 @@ TokenServiceFlags ParseServiceFlags(const std::string& id_token) {
   }
 
   token_service_flags.is_child_account =
-      std::find(service_flags.begin(), service_flags.end(),
-                kChildAccountServiceFlag) != service_flags.end();
+      base::Contains(service_flags, kChildAccountServiceFlag);
   token_service_flags.is_under_advanced_protection =
-      std::find(service_flags.begin(), service_flags.end(),
-                kAdvancedProtectionAccountServiceFlag) != service_flags.end();
+      base::Contains(service_flags, kAdvancedProtectionAccountServiceFlag);
   return token_service_flags;
 }
 
