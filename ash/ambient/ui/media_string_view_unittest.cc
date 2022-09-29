@@ -278,8 +278,7 @@ TEST_F(MediaStringViewTest, HasNoMaskLayerWithShortText) {
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(
-      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
+  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 }
 
 TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
@@ -299,8 +298,7 @@ TEST_F(MediaStringViewTest, HasMaskLayerWithLongText) {
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(
-      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
+  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 }
 
 TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
@@ -320,8 +318,7 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(
-      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
+  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 
   // Change to long text.
   metadata.title = u"A super duper long title";
@@ -334,8 +331,7 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
 
   EXPECT_GT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_FALSE(
-      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
+  EXPECT_TRUE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 
   // Change to short text.
   metadata.title = u"title";
@@ -348,8 +344,7 @@ TEST_F(MediaStringViewTest, MaskLayerShouldUpdate) {
 
   EXPECT_LT(GetMediaStringViewTextLabel()->GetPreferredSize().width(),
             kMediaStringMaxWidthDip);
-  EXPECT_TRUE(
-      GetMediaStringViewTextContainer()->layer()->gradient_mask().IsEmpty());
+  EXPECT_FALSE(GetMediaStringViewTextContainer()->layer()->layer_mask_layer());
 }
 
 TEST_F(MediaStringViewTest, ShowWhenMediaIsPlaying) {
