@@ -16,7 +16,7 @@ template <>
 struct EnumTraits<viz::mojom::PlaneConfig,
                   viz::SharedImageFormat::PlaneConfig> {
   static viz::mojom::PlaneConfig ToMojom(
-      viz::SharedImageFormat::PlaneConfig config);
+      viz::SharedImageFormat::PlaneConfig plane_config);
 
   static bool FromMojom(viz::mojom::PlaneConfig input,
                         viz::SharedImageFormat::PlaneConfig* out);
@@ -36,7 +36,7 @@ template <>
 struct EnumTraits<viz::mojom::ChannelFormat,
                   viz::SharedImageFormat::ChannelFormat> {
   static viz::mojom::ChannelFormat ToMojom(
-      viz::SharedImageFormat::ChannelFormat format);
+      viz::SharedImageFormat::ChannelFormat channel_format);
 
   static bool FromMojom(viz::mojom::ChannelFormat input,
                         viz::SharedImageFormat::ChannelFormat* out);
@@ -75,11 +75,13 @@ struct UnionTraits<viz::mojom::SharedImageFormatDataView,
  public:
   static viz::mojom::SharedImageFormatDataView::Tag GetTag(
       const viz::SharedImageFormat& format) {
-    if (!format.is_single_plane())
+    CHECK_NE(format.plane_type(), viz::SharedImageFormat::PlaneType::kUnknown);
+    if (format.is_multi_plane())
       return viz::mojom::SharedImageFormatDataView::Tag::kMultiplanarFormat;
     else
       return viz::mojom::SharedImageFormatDataView::Tag::kResourceFormat;
   }
+
   static viz::ResourceFormat resource_format(
       const viz::SharedImageFormat& format) {
     return format.resource_format();

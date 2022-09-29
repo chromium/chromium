@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -1220,6 +1221,14 @@ TEST_F(StructTraitsTest, SharedImageFormatWithMultiPlane) {
   mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input, output);
 
   EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, SharedImageFormatWithUnknownPlane) {
+  SharedImageFormat input = SharedImageFormat();
+  SharedImageFormat output;
+  EXPECT_CHECK_DEATH(
+      mojo::test::SerializeAndDeserialize<mojom::SharedImageFormat>(input,
+                                                                    output));
 }
 
 TEST_F(StructTraitsTest, YUVDrawQuad) {

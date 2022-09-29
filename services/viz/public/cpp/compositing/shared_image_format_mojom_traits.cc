@@ -9,8 +9,8 @@ namespace mojo {
 // static
 viz::mojom::PlaneConfig
 EnumTraits<viz::mojom::PlaneConfig, viz::SharedImageFormat::PlaneConfig>::
-    ToMojom(viz::SharedImageFormat::PlaneConfig type) {
-  switch (type) {
+    ToMojom(viz::SharedImageFormat::PlaneConfig plane_config) {
+  switch (plane_config) {
     case viz::SharedImageFormat::PlaneConfig::kY_V_U:
       return viz::mojom::PlaneConfig::kY_V_U;
     case viz::SharedImageFormat::PlaneConfig::kY_UV:
@@ -38,8 +38,8 @@ bool EnumTraits<viz::mojom::PlaneConfig, viz::SharedImageFormat::PlaneConfig>::
 // static
 viz::mojom::Subsampling
 EnumTraits<viz::mojom::Subsampling, viz::SharedImageFormat::Subsampling>::
-    ToMojom(viz::SharedImageFormat::Subsampling type) {
-  switch (type) {
+    ToMojom(viz::SharedImageFormat::Subsampling subsampling) {
+  switch (subsampling) {
     case viz::SharedImageFormat::Subsampling::k420:
       return viz::mojom::Subsampling::k420;
   }
@@ -62,8 +62,8 @@ bool EnumTraits<viz::mojom::Subsampling, viz::SharedImageFormat::Subsampling>::
 // static
 viz::mojom::ChannelFormat
 EnumTraits<viz::mojom::ChannelFormat, viz::SharedImageFormat::ChannelFormat>::
-    ToMojom(viz::SharedImageFormat::ChannelFormat type) {
-  switch (type) {
+    ToMojom(viz::SharedImageFormat::ChannelFormat channel_format) {
+  switch (channel_format) {
     case viz::SharedImageFormat::ChannelFormat::k8:
       return viz::mojom::ChannelFormat::k8;
     case viz::SharedImageFormat::ChannelFormat::k10:
@@ -124,12 +124,12 @@ bool UnionTraits<
     case viz::mojom::SharedImageFormatDataView::Tag::kResourceFormat:
       if (!data.ReadResourceFormat(&out->format_.resource_format))
         return false;
-      out->is_single_plane_ = true;
+      out->plane_type_ = viz::SharedImageFormat::PlaneType::kSinglePlane;
       return true;
     case viz::mojom::SharedImageFormatDataView::Tag::kMultiplanarFormat:
       if (!data.ReadMultiplanarFormat(&out->format_.multiplanar_format))
         return false;
-      out->is_single_plane_ = false;
+      out->plane_type_ = viz::SharedImageFormat::PlaneType::kMultiPlane;
       return true;
   }
   return false;
