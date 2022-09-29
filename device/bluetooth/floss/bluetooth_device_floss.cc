@@ -13,12 +13,9 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
 #include "device/bluetooth/floss/bluetooth_adapter_floss.h"
-#include "device/bluetooth/floss/bluetooth_gatt_connection_floss.h"
-#include "device/bluetooth/floss/bluetooth_remote_gatt_service_floss.h"
 #include "device/bluetooth/floss/bluetooth_socket_floss.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
-#include "device/bluetooth/floss/floss_gatt_client.h"
 #include "device/bluetooth/floss/floss_socket_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -59,6 +56,8 @@ void OnRemoveBond(base::OnceClosure callback, DBusResult<bool> ret) {
 
 using AddressType = device::BluetoothDevice::AddressType;
 using VendorIDSource = device::BluetoothDevice::VendorIDSource;
+
+BluetoothDeviceFloss::~BluetoothDeviceFloss() = default;
 
 uint32_t BluetoothDeviceFloss::GetBluetoothClass() const {
   return cod_;
@@ -131,7 +130,9 @@ bool BluetoothDeviceFloss::IsConnected() const {
 }
 
 bool BluetoothDeviceFloss::IsGattConnected() const {
-  return is_gatt_connected_;
+  NOTIMPLEMENTED();
+
+  return false;
 }
 
 bool BluetoothDeviceFloss::IsConnectable() const {
@@ -309,19 +310,19 @@ void BluetoothDeviceFloss::ConnectToServiceInsecurely(
 
 std::unique_ptr<device::BluetoothGattConnection>
 BluetoothDeviceFloss::CreateBluetoothGattConnectionObject() {
-  return std::make_unique<BluetoothGattConnectionFloss>(adapter_,
-                                                        AsFlossDeviceId());
+  NOTIMPLEMENTED();
+
+  return nullptr;
 }
 
 void BluetoothDeviceFloss::SetGattServicesDiscoveryComplete(bool complete) {
   NOTIMPLEMENTED();
-  // This is not necessary for Floss which already knows of discovery complete.
 }
 
 bool BluetoothDeviceFloss::IsGattServicesDiscoveryComplete() const {
-  // Services are only considered resolved if connection was established without
-  // a specific search uuid or was subsequently upgraded to full discovery.
-  return svc_resolved_ && !search_uuid.has_value();
+  NOTIMPLEMENTED();
+
+  return false;
 }
 
 void BluetoothDeviceFloss::Pair(
@@ -391,48 +392,11 @@ void BluetoothDeviceFloss::ResetPairing() {
 
 void BluetoothDeviceFloss::CreateGattConnectionImpl(
     absl::optional<device::BluetoothUUID> service_uuid) {
-  if (num_connecting_calls_++ == 0)
-    adapter()->NotifyDeviceChanged(this);
-
-  // Save the service uuid to trigger service discovery later.
-  search_uuid = service_uuid;
-
-  // Gatt connections establish over LE.
-  FlossDBusManager::Get()->GetGattClient()->Connect(
-      base::BindOnce(&BluetoothDeviceFloss::OnConnectGatt,
-                     weak_ptr_factory_.GetWeakPtr()),
-      address_, FlossDBusClient::BluetoothTransport::kLe);
-}
-
-void BluetoothDeviceFloss::OnConnectGatt(DBusResult<Void> ret) {
-  if (!ret.has_value()) {
-    if (--num_connecting_calls_ == 0)
-      adapter()->NotifyDeviceChanged(this);
-  }
-}
-
-void BluetoothDeviceFloss::UpgradeToFullDiscovery() {
-  if (!search_uuid.has_value()) {
-    LOG(ERROR) << "Attempting to upgrade to full discovery without having "
-                  "searched any uuid.";
-    return;
-  }
-
-  // Clear previous search uuid.
-  search_uuid.reset();
-
-  FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
-      base::DoNothing(), address_);
+  NOTIMPLEMENTED();
 }
 
 void BluetoothDeviceFloss::DisconnectGatt() {
-  if (IsPaired()) {
-    BLUETOOTH_LOG(ERROR) << "Leaking connection to paired device.";
-    return;
-  }
-
-  FlossDBusManager::Get()->GetGattClient()->Disconnect(base::DoNothing(),
-                                                       address_);
+  NOTIMPLEMENTED();
 }
 
 BluetoothDeviceFloss::BluetoothDeviceFloss(
@@ -445,16 +409,7 @@ BluetoothDeviceFloss::BluetoothDeviceFloss(
       name_(device.name),
       ui_task_runner_(ui_task_runner),
       socket_thread_(socket_thread) {
-  FlossDBusManager::Get()->GetGattClient()->AddObserver(this);
-
-  // Enable service specific discovery. This allows gatt connections to
-  // immediately trigger service discovery for specific uuids without
-  // requiring full discovery.
-  supports_service_specific_discovery_ = true;
-}
-
-BluetoothDeviceFloss::~BluetoothDeviceFloss() {
-  FlossDBusManager::Get()->GetGattClient()->RemoveObserver(this);
+  // TODO(abps): Add observers and cache data here.
 }
 
 bool BluetoothDeviceFloss::IsBondedImpl() const {
@@ -577,74 +532,6 @@ void BluetoothDeviceFloss::InitializeDeviceProperties() {
       base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteUuids,
                      weak_ptr_factory_.GetWeakPtr()),
       AsFlossDeviceId());
-}
-
-void BluetoothDeviceFloss::GattClientConnectionState(GattStatus status,
-                                                     int32_t client_id,
-                                                     bool connected,
-                                                     std::string address) {
-  // We only care about connections for this device.
-  if (address != address_)
-    return;
-
-  absl::optional<ConnectErrorCode> err = absl::nullopt;
-
-  if (status == GattStatus::kSuccess) {
-    is_gatt_connected_ = connected;
-  } else {
-    // TODO(b/193686094) - Convert GattStatus to other connect error codes.
-    err = ERROR_UNKNOWN;
-  }
-
-  if (--num_connecting_calls_ == 0)
-    adapter()->NotifyDeviceChanged(this);
-
-  DCHECK(num_connecting_calls_ >= 0);
-
-  // Trigger service discovery.
-  if (search_uuid.has_value()) {
-    FlossDBusManager::Get()->GetGattClient()->DiscoverServiceByUuid(
-        base::DoNothing(), address_, search_uuid.value());
-  } else {
-    FlossDBusManager::Get()->GetGattClient()->DiscoverAllServices(
-        base::DoNothing(), address_);
-  }
-
-  // Complete GATT connection callback.
-  DidConnectGatt(err);
-}
-
-void BluetoothDeviceFloss::GattSearchComplete(
-    std::string address,
-    const std::vector<GattService>& services,
-    GattStatus status) {
-  if (address != address_)
-    return;
-
-  if (status != GattStatus::kSuccess) {
-    LOG(ERROR) << "Failed Gatt service discovery with result: "
-               << static_cast<uint32_t>(status);
-    return;
-  }
-
-  svc_resolved_ = true;
-
-  for (const auto& service : services) {
-    BLUETOOTH_LOG(EVENT) << "Adding new remote GATT service for device: "
-                         << address_;
-
-    std::unique_ptr<BluetoothRemoteGattServiceFloss> remote_service =
-        BluetoothRemoteGattServiceFloss::Create(adapter(), this, service,
-                                                /*primary=*/true);
-
-    BluetoothRemoteGattServiceFloss* remote_service_ptr = remote_service.get();
-
-    gatt_services_[remote_service_ptr->GetIdentifier()] =
-        std::move(remote_service);
-    DCHECK(remote_service_ptr->GetUUID().IsValid());
-  }
-
-  adapter()->NotifyGattServicesDiscovered(this);
 }
 
 }  // namespace floss
