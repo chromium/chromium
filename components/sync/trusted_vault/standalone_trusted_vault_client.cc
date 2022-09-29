@@ -133,15 +133,17 @@ void IdentityManagerObserver::OnAccountsInCookieUpdated(
 void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info,
     const GoogleServiceAuthError& error) {
-  // TODO(crbug.com/1247990): Add Integration test.
-  if (identity_manager_->AreRefreshTokensLoaded() &&
-      error.state() == GoogleServiceAuthError::NONE) {
-    backend_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &StandaloneTrustedVaultBackend::OnAuthErrorResolvedForAccount,
-            backend_, account_info));
+  if (primary_account_.IsEmpty() ||
+      account_info.account_id != primary_account_.account_id) {
+    return;
   }
+
+  const bool has_persistent_auth_error = error.IsPersistentError();
+
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
+                     backend_, primary_account_, has_persistent_auth_error));
 }
 
 void IdentityManagerObserver::OnRefreshTokensLoaded() {
