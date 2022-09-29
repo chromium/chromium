@@ -301,6 +301,10 @@ bool IsDefaultANGLEVulkan() {
 
   const auto& active_gpu = system_info.gpus[system_info.activeGPUIndex];
 
+  // Vulkan 1.1 is required.
+  if (active_gpu.driverApiVersion < VK_VERSION_1_1)
+    return false;
+
   // AMDVLK driver is buggy, so disable Vulkan with AMDVLK for now.
   // crbug.com/1340081
   if (active_gpu.driverId == VK_DRIVER_ID_AMD_OPEN_SOURCE)
