@@ -14,17 +14,62 @@ import("//third_party/wayland/features.gni")
 template("wayland_protocol") {
   assert(defined(invoker.sources), "Need sources for wayland protocol")
 
+  # See the description of these confings below.
+  is_code_marshalling = false
+  is_wayland_protocol_server = false
+  is_wayland_protocol_client = false
+  if (defined(invoker.code_marshalling)) {
+    is_code_marshalling = invoker.code_marshalling
+  }
+  if (defined(invoker.wayland_protocol_server)) {
+    is_wayland_protocol_server = invoker.wayland_protocol_server
+  }
+  if (defined(invoker.wayland_protocol_client)) {
+    is_wayland_protocol_client = invoker.wayland_protocol_client
+  }
+
+  assert((is_code_marshalling &&
+          (!is_wayland_protocol_server && !is_wayland_protocol_client)) ||
+         (is_wayland_protocol_server &&
+          (!is_code_marshalling && !is_wayland_protocol_client)) ||
+         (is_wayland_protocol_client &&
+          (!is_code_marshalling && !is_wayland_protocol_server)) ||
+         (!is_code_marshalling && !is_wayland_protocol_server &&
+          !is_wayland_protocol_client))
+
   # Calculate the output paths.
   protocol_outputs = []
   output_dirs = []
   foreach(protocol, invoker.sources) {
     dir = "$root_gen_dir/" + rebase_path(get_path_info(protocol, "dir"), "//")
     name = get_path_info(protocol, "name")
-    protocol_outputs += [
-      "${dir}/${name}-protocol.c",
-      "${dir}/${name}-client-protocol.h",
-      "${dir}/${name}-server-protocol.h",
-    ]
+
+    if (is_code_marshalling) {
+      # If it's a protocol marshalling code, only public source code will be
+      # generated.
+      protocol_outputs += [ "${dir}/${name}-protocol.c" ]
+    } else if (is_wayland_protocol_server) {
+      # In case of server protocol generation, only server headers are generated.
+      protocol_outputs += [
+        "${dir}/${name}-server-protocol-core.h",
+        "${dir}/${name}-server-protocol.h",
+      ]
+    } else if (is_wayland_protocol_client) {
+      # In case of server protocol generation, only client headers are generated.
+      protocol_outputs += [
+        "${dir}/${name}-client-protocol-core.h",
+        "${dir}/${name}-client-protocol.h",
+      ]
+    } else {
+      # In all the other cases(generation of protocols from
+      # //third_party/wayland-protocols), private source with server and client
+      # headers are generated.
+      protocol_outputs += [
+        "${dir}/${name}-protocol.c",
+        "${dir}/${name}-server-protocol.h",
+        "${dir}/${name}-client-protocol.h",
+      ]
+    }
     output_dirs += [ dir ]
   }
 
@@ -50,6 +95,19 @@ template("wayland_protocol") {
     args += [
       "--root-gen-dir",
       rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    generator_type = "all"
+    if (is_code_marshalling) {
+      generator_type = "protocol-marshalling"
+    } else if (is_wayland_protocol_server) {
+      generator_type = "protocol-server"
+    } else if (is_wayland_protocol_client) {
+      generator_type = "protocol-client"
+    }
+    args += [
+      "--generator-type",
+      generator_type,
     ]
 
     if (use_system_wayland_scanner) {

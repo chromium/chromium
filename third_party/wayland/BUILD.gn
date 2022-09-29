@@ -3,7 +3,15 @@
 # found in the LICENSE file.
 import("//build/config/linux/pkg_config.gni")
 import("//third_party/wayland/features.gni")
+import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
+
+# This should be open to both system and non - system libwayland as wayland_stubs
+# also uses this.
+wayland_protocol("wayland_protocol_c") {
+  sources = [ "src/protocol/wayland.xml" ]
+  code_marshalling = true
+}
 
 if (!use_system_libwayland_client || !use_system_libwayland_server) {
   config("wayland_config") {
@@ -59,21 +67,6 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
       public_configs = [ ":wayland_config" ]
     }
   }
-
-  static_library("wayland_protocol") {
-    sources = [ "protocol/wayland-protocol.c" ]
-
-    deps = [ ":wayland_util" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-
-    if (use_system_libwayland_client) {
-      configs += [ ":wayland_config" ]
-    } else {
-      public_configs = [ ":wayland_config" ]
-    }
-  }
 } else {
   # use_system_libwayland_client && use_system_libwayland_server
   group("wayland_util") {
@@ -94,7 +87,7 @@ if (!use_system_libwayland_server) {
 
     deps = [
       ":wayland_private",
-      ":wayland_protocol",
+      ":wayland_protocol_c",
       ":wayland_util",
     ]
 
@@ -129,7 +122,7 @@ if (!use_system_libwayland_client) {
 
     deps = [
       ":wayland_private",
-      ":wayland_protocol",
+      ":wayland_protocol_c",
       ":wayland_util",
     ]
 
@@ -248,21 +241,14 @@ if (use_system_libwayland_client) {
   source_set("wayland_stubs") {
     public_deps = [ ":wayland_wrappers" ]
     sources = [
-      # Provide data symbols which generate_stubs.py cannot wrap -- only
-      # functions are wrappable.  wayland-protocol.c contains only data and
-      # no code.
-      "protocol/wayland-protocol.c",
-
       # Provide implementations of C variadic functions, which
       # generate_stubs.py cannot generate forwarding-functions for.
       "stubs/libwayland_variadic_support.cc",
     ]
 
-    # This is a hack to hide the symbols annoted with
-    # attribute((visibility("default"))) in wayland-protocol.c since libwayland
-    # currently doesn't provide a way to override this behavior.  This can be
-    # removed once https://gitlab.freedesktop.org/wayland/wayland/-/issues/179
-    # is fixed and we can switch to overriding WL_EXPORT directly.
-    defines = [ "visibility(x)=visibility(\"hidden\"), weak" ]
+    # Provide data symbols which generate_stubs.py cannot wrap -- only
+    # functions are wrappable.  wayland-protocol.c contains only data and
+    # no code.
+    deps = [ ":wayland_protocol_c" ]
   }
 }

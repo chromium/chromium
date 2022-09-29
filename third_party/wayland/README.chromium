@@ -17,6 +17,7 @@ version is 1.21.0.
 Modifications:
 - Added wayland_scanner_wrapper.py to generate protocol code automatically.
 - Added "include/" include_dirs for the wayland_server target
+- Added automatic generation of protocol marshalling code.
 
 To import a new snapshot of wayland:
 - Checkout the latest release tag.
@@ -30,6 +31,5 @@ To import a new snapshot of wayland:
     $ meson build/ && ninja -C build/
     (in wayland/src/build/src directory)
     $ rsync $(git ls-files --others '*wayland-*protocol*.h') ../../../include/protocol/
-    $ rsync $(git ls-files --others '*-protocol.c') ../../../protocol/
 - DO NOT fix formatting in the generated files.
 - Update this README to reflect the new version number.
