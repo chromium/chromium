@@ -33,13 +33,10 @@ a {
 }
 
 .action-container {
+  column-gap: 8px;
   display: flex;
   justify-content: flex-end;
   padding: var(--action-container-padding);
-}
-
-cr-button + cr-button {
-  margin-inline-start: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -61,11 +58,6 @@ cr-button + cr-button {
 .action-container {
   flex-flow: row-reverse;
   justify-content: flex-start;
-}
-
-cr-button + cr-button {
-  margin-inline-end: 8px;
-  margin-inline-start: 0;
 }
 </if>
 

@@ -151,6 +151,7 @@
   }
 
   .in-dialog-design .action-container {
+    column-gap: 12px;
     padding: 0 24px 24px;
   }
 
@@ -159,12 +160,7 @@
   }
 
   .in-dialog-design #skipButton {
-    margin-inline-end: 12px;
     min-width: 76px;
-  }
-
-  .in-dialog-design #deleteProfileButton {
-    margin-inline-end: 12px;
   }
 
   #selectAvatarWrapper {
@@ -198,7 +194,7 @@
     margin: auto 0;
   }
 
-  #selectAvatarCloseButton {
+  #selectAvatarBackButton {
     --cr-icon-button-icon-size: 16px;
     --cr-icon-button-size: 22px;
     margin-inline-end: 20px;
@@ -283,13 +279,12 @@
           $i18n{profileCustomizationDoneLabel}
         </cr-button>
         <template is="dom-if" if="[[shouldShowCancelButton_()]]">
-          <cr-button id="skipButton" class="cancel-button"
-              on-click="onSkipCustomizationClicked_">
+          <cr-button id="skipButton" on-click="onSkipCustomizationClicked_">
             $i18n{profileCustomizationSkipLabel}
           </cr-button>
         </template>
         <template is="dom-if" if="[[isLocalProfileCreation_]]">
-          <cr-button id="deleteProfileButton" class="cancel-button"
+          <cr-button id="deleteProfileButton"
               on-click="onDeleteProfileClicked_">
             $i18n{profileCustomizationDeleteProfileLabel}
           </cr-button>
@@ -301,7 +296,7 @@
   <template is="dom-if" if="[[isLocalProfileCreation_]]">
     <div id="selectAvatarDialog" slot="view">
       <div class="select-avatar-header">
-        <cr-icon-button iron-icon="cr:arrow-back" id="selectAvatarCloseButton"
+        <cr-icon-button iron-icon="cr:arrow-back" id="selectAvatarBackButton"
             aria-label="$i18n{profileCustomizationAvatarSelectionBackButtonLabel}"
             on-click="onSelectAvatarBackClicked_">
         </cr-icon-button>
