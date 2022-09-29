@@ -1687,7 +1687,13 @@ INSTANTIATE_TEST_SUITE_P(
     DictationPumpkinInstallTest,
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
-IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, WaitForInstall) {
+// TODO(crbug.com/1368843): Test is flaky on MSAN builds.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_WaitForInstall DISABLED_WaitForInstall
+#else
+#define MAYBE_WaitForInstall WaitForInstall
+#endif
+IN_PROC_BROWSER_TEST_P(DictationPumpkinInstallTest, MAYBE_WaitForInstall) {
   // Dictation will request a Pumpkin install when it starts up. Wait for
   // the install to succeed.
   WaitForInstallToSucceed();
