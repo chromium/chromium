@@ -80,7 +80,7 @@ void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     accessible_name.push_back(' ');
     accessible_name.append(views::NewBadge::GetNewBadgeAccessibleDescription());
   }
-  node_data->SetName(accessible_name);
+  node_data->SetNameChecked(accessible_name);
 }
 
 gfx::Size NewBadgeLabel::CalculatePreferredSize() const {
