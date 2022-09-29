@@ -126,45 +126,6 @@ using OnDidDocumentDoneCallback =
 using OnDidShowErrorDialog = base::RepeatingCallback<void()>;
 using OnStopCallback = base::RepeatingCallback<void()>;
 
-// Callbacks to run for overrides in `TestPrintJobWorker`.
-struct TestPrintCallbacks {
-  OnUseDefaultSettingsCallback did_use_default_settings_callback;
-  OnGetSettingsWithUICallback did_get_settings_with_ui_callback;
-  OnStopCallback did_stop_callback;
-};
-
-// Overriding callbacks for `TestPrintJobWorkerOop` is broken into the
-// following steps:
-//   1.  Error case processing.  Call `error_check_callback` to reset any
-//       triggers that were primed to cause errors in the testing context.
-//   2.  Run the base class callback for normal handling.  If there was an
-//       access-denied error then this can lead to a retry.  The retry has a
-//       chance to succeed since error triggers were removed.
-//   3.  Exercise the associated test callback (e.g.,
-//       `did_start_printing_callback` when in `OnDidStartPrinting()`) to note
-//       the callback was observed and completed.  This ensures all base class
-//       processing was done before possibly quitting the test run loop.
-struct TestPrintOopCallbacks {
-  ErrorCheckCallback error_check_callback;
-  OnDidUseDefaultSettingsCallback did_use_default_settings_callback;
-#if BUILDFLAG(IS_WIN)
-  OnDidAskUserForSettingsCallback did_ask_user_for_settings_callback;
-#endif
-  OnDidStartPrintingCallback did_start_printing_callback;
-#if BUILDFLAG(IS_WIN)
-  OnDidRenderPrintedPageCallback did_render_printed_page_callback;
-#endif
-  OnDidRenderPrintedDocumentCallback did_render_printed_document_callback;
-  OnDidDocumentDoneCallback did_document_done_callback;
-
-  // The exceptions to the callback steps are `did_show_error_dialog` and
-  // `did_stop_callback`.  For `did_stop_callback` there is no result code
-  // provided to it and thus no need to call `error_check_callback`.  For
-  // `did_show_error_dialog` there is only the need to propagate the
-  // notification that it happened, no other calls will be needed.
-  OnDidShowErrorDialog did_show_error_dialog;
-  OnStopCallback did_stop_callback;
-};
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 namespace {
@@ -2438,8 +2399,15 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 class TestPrintJobWorker : public PrintJobWorker {
  public:
+  // Callbacks to run for overrides.
+  struct PrintCallbacks {
+    OnUseDefaultSettingsCallback did_use_default_settings_callback;
+    OnGetSettingsWithUICallback did_get_settings_with_ui_callback;
+    OnStopCallback did_stop_callback;
+  };
+
   TestPrintJobWorker(content::GlobalRenderFrameHostId rfh_id,
-                     TestPrintCallbacks* callbacks)
+                     PrintCallbacks* callbacks)
       : PrintJobWorker(rfh_id), callbacks_(callbacks) {}
   TestPrintJobWorker(const TestPrintJobWorker&) = delete;
   TestPrintJobWorker& operator=(const TestPrintJobWorker&) = delete;
@@ -2468,14 +2436,46 @@ class TestPrintJobWorker : public PrintJobWorker {
     callbacks_->did_stop_callback.Run();
   }
 
-  raw_ptr<TestPrintCallbacks> callbacks_;
+  raw_ptr<PrintCallbacks> callbacks_;
 };
 
 class TestPrintJobWorkerOop : public PrintJobWorkerOop {
  public:
+  // Callbacks to run for overrides are broken into the following steps:
+  //   1.  Error case processing.  Call `error_check_callback` to reset any
+  //       triggers that were primed to cause errors in the testing context.
+  //   2.  Run the base class callback for normal handling.  If there was an
+  //       access-denied error then this can lead to a retry.  The retry has a
+  //       chance to succeed since error triggers were removed.
+  //   3.  Exercise the associated test callback (e.g.,
+  //       `did_start_printing_callback` when in `OnDidStartPrinting()`) to note
+  //       the callback was observed and completed.  This ensures all base class
+  //       processing was done before possibly quitting the test run loop.
+  struct PrintCallbacks {
+    ErrorCheckCallback error_check_callback;
+    OnDidUseDefaultSettingsCallback did_use_default_settings_callback;
+#if BUILDFLAG(IS_WIN)
+    OnDidAskUserForSettingsCallback did_ask_user_for_settings_callback;
+#endif
+    OnDidStartPrintingCallback did_start_printing_callback;
+#if BUILDFLAG(IS_WIN)
+    OnDidRenderPrintedPageCallback did_render_printed_page_callback;
+#endif
+    OnDidRenderPrintedDocumentCallback did_render_printed_document_callback;
+    OnDidDocumentDoneCallback did_document_done_callback;
+
+    // The exceptions to the callback steps are `did_show_error_dialog` and
+    // `did_stop_callback`.  For `did_stop_callback` there is no result code
+    // provided to it and thus no need to call `error_check_callback`.  For
+    // `did_show_error_dialog` there is only the need to propagate the
+    // notification that it happened, no other calls will be needed.
+    OnDidShowErrorDialog did_show_error_dialog;
+    OnStopCallback did_stop_callback;
+  };
+
   TestPrintJobWorkerOop(content::GlobalRenderFrameHostId rfh_id,
                         bool simulate_spooling_memory_errors,
-                        TestPrintOopCallbacks* callbacks)
+                        PrintCallbacks* callbacks)
       : PrintJobWorkerOop(rfh_id, simulate_spooling_memory_errors),
         callbacks_(callbacks) {}
   TestPrintJobWorkerOop(const TestPrintJobWorkerOop&) = delete;
@@ -2554,7 +2554,7 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
     callbacks_->did_stop_callback.Run();
   }
 
-  raw_ptr<TestPrintOopCallbacks> callbacks_;
+  raw_ptr<PrintCallbacks> callbacks_;
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2580,53 +2580,56 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
       // Safe to use `base::Unretained(this)` since this testing class
       // necessarily must outlive all interactions from the tests which will
       // run through `TestPrintJobWorkerOop`, the user of these callbacks.
-      test_print_oop_callbacks_.error_check_callback = base::BindRepeating(
-          &SystemAccessProcessPrintBrowserTestBase::ErrorCheck,
-          base::Unretained(this));
-      test_print_oop_callbacks_.did_use_default_settings_callback =
+      test_print_job_worker_oop_callbacks_.error_check_callback =
+          base::BindRepeating(
+              &SystemAccessProcessPrintBrowserTestBase::ErrorCheck,
+              base::Unretained(this));
+      test_print_job_worker_oop_callbacks_.did_use_default_settings_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidUseDefaultSettings,
               base::Unretained(this));
 #if BUILDFLAG(IS_WIN)
-      test_print_oop_callbacks_.did_ask_user_for_settings_callback =
+      test_print_job_worker_oop_callbacks_.did_ask_user_for_settings_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidAskUserForSettings,
               base::Unretained(this));
 #endif
-      test_print_oop_callbacks_.did_start_printing_callback =
+      test_print_job_worker_oop_callbacks_.did_start_printing_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidStartPrinting,
               base::Unretained(this));
 #if BUILDFLAG(IS_WIN)
-      test_print_oop_callbacks_.did_render_printed_page_callback =
+      test_print_job_worker_oop_callbacks_.did_render_printed_page_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidRenderPrintedPage,
               base::Unretained(this));
 #endif
-      test_print_oop_callbacks_
+      test_print_job_worker_oop_callbacks_
           .did_render_printed_document_callback = base::BindRepeating(
           &SystemAccessProcessPrintBrowserTestBase::OnDidRenderPrintedDocument,
           base::Unretained(this));
-      test_print_oop_callbacks_.did_document_done_callback =
+      test_print_job_worker_oop_callbacks_.did_document_done_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnDidDocumentDone,
               base::Unretained(this));
-      test_print_oop_callbacks_.did_show_error_dialog = base::BindRepeating(
-          &SystemAccessProcessPrintBrowserTestBase::OnDidShowErrorDialog,
-          base::Unretained(this));
-      test_print_oop_callbacks_.did_stop_callback = base::BindRepeating(
-          &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
-          base::Unretained(this));
+      test_print_job_worker_oop_callbacks_.did_show_error_dialog =
+          base::BindRepeating(
+              &SystemAccessProcessPrintBrowserTestBase::OnDidShowErrorDialog,
+              base::Unretained(this));
+      test_print_job_worker_oop_callbacks_.did_stop_callback =
+          base::BindRepeating(
+              &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
+              base::Unretained(this));
     } else {
-      test_print_callbacks_.did_use_default_settings_callback =
+      test_print_job_worker_callbacks_.did_use_default_settings_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnUseDefaultSettings,
               base::Unretained(this));
-      test_print_callbacks_.did_get_settings_with_ui_callback =
+      test_print_job_worker_callbacks_.did_get_settings_with_ui_callback =
           base::BindRepeating(
               &SystemAccessProcessPrintBrowserTestBase::OnGetSettingsWithUI,
               base::Unretained(this));
-      test_print_callbacks_.did_stop_callback = base::BindRepeating(
+      test_print_job_worker_callbacks_.did_stop_callback = base::BindRepeating(
           &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
           base::Unretained(this));
     }
@@ -2791,9 +2794,11 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
       content::GlobalRenderFrameHostId rfh_id) {
     if (use_service) {
       return std::make_unique<TestPrintJobWorkerOop>(
-          rfh_id, simulate_spooling_memory_errors_, &test_print_oop_callbacks_);
+          rfh_id, simulate_spooling_memory_errors_,
+          &test_print_job_worker_oop_callbacks_);
     }
-    return std::make_unique<TestPrintJobWorker>(rfh_id, &test_print_callbacks_);
+    return std::make_unique<TestPrintJobWorker>(
+        rfh_id, &test_print_job_worker_callbacks_);
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
@@ -2892,8 +2897,8 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
 
   base::test::ScopedFeatureList feature_list_;
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  TestPrintCallbacks test_print_callbacks_;
-  TestPrintOopCallbacks test_print_oop_callbacks_;
+  TestPrintJobWorker::PrintCallbacks test_print_job_worker_callbacks_;
+  TestPrintJobWorkerOop::PrintCallbacks test_print_job_worker_oop_callbacks_;
   CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
   bool did_use_default_settings_ = false;
   bool did_get_settings_with_ui_ = false;
