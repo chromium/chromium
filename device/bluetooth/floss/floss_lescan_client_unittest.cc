@@ -383,7 +383,7 @@ TEST_F(FlossLEScanClientTest, TestStartStopScan) {
                        // Check that there is no error
                        EXPECT_TRUE(ret.has_value());
                      }),
-                     kTestScannerId, ScanSettings{}, std::vector<ScanFilter>());
+                     kTestScannerId, ScanSettings{}, ScanFilter{});
 
   // Method of 1 parameter with no return.
   EXPECT_CALL(*object_proxy_.get(), DoCallMethodWithErrorResponse(

@@ -31,9 +31,11 @@ const char kScannerCallbackInterfaceName[] =
     "org.chromium.bluetooth.ScannerCallback";
 
 // TODO(b/217274013): Update structs to support filtering
-class RSSISettings {};
-
 class ScanSettings {};
+
+class ScanFilterPattern {};
+
+enum ScanFilterCondition {};
 
 class ScanFilter {};
 
@@ -105,7 +107,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
   virtual void StartScan(ResponseCallback<Void> callback,
                          uint8_t scanner_id,
                          const ScanSettings& scan_settings,
-                         const std::vector<ScanFilter>& filters);
+                         const ScanFilter& filter);
   virtual void StopScan(ResponseCallback<Void> callback, uint8_t scanner_id);
 
  protected:

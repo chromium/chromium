@@ -133,9 +133,9 @@ void FlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
 void FlossLEScanClient::StartScan(ResponseCallback<Void> callback,
                                   uint8_t scanner_id,
                                   const ScanSettings& scan_settings,
-                                  const std::vector<ScanFilter>& filters) {
+                                  const ScanFilter& filter) {
   CallLEScanMethod<>(std::move(callback), adapter::kStartScan, scanner_id,
-                     scan_settings, filters);
+                     scan_settings, filter);
 }
 
 void FlossLEScanClient::StopScan(ResponseCallback<Void> callback,
@@ -160,18 +160,6 @@ void FlossLEScanClient::ScanResultReceived(ScanResult scan_result) {
 // TODO(b/217274013): Update these templates when structs in place
 template <>
 void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
-                                     const RSSISettings& data) {
-  dbus::MessageWriter array_writer(nullptr);
-  writer->OpenArray("{si}", &array_writer);
-
-  WriteDictEntry(&array_writer, "low_threshold", static_cast<int32_t>(3));
-  WriteDictEntry(&array_writer, "high_threshold", static_cast<int32_t>(3));
-
-  writer->CloseContainer(&array_writer);
-}
-
-template <>
-void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
                                      const ScanSettings& data) {
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
@@ -179,7 +167,18 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   WriteDictEntry(&array_writer, "interval", static_cast<int32_t>(3));
   WriteDictEntry(&array_writer, "window", static_cast<int32_t>(3));
   WriteDictEntry(&array_writer, "scan_type", static_cast<uint32_t>(1));
-  WriteDictEntry(&array_writer, "rssi_settings", RSSISettings());
+
+  writer->CloseContainer(&array_writer);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const ScanFilterCondition& data) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  // TODO(b/217274013): Update fields here.
+  WriteDictEntry(&array_writer, "patterns", std::vector<uint8_t>());
 
   writer->CloseContainer(&array_writer);
 }
@@ -190,7 +189,13 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
 
-  // TODO(b/217274013): Write fields here.
+  // TODO(b/217274013): Update fields here.
+  WriteDictEntry(&array_writer, "rssi_high_threshold", static_cast<int16_t>(3));
+  WriteDictEntry(&array_writer, "rssi_low_threshold", static_cast<int16_t>(3));
+  WriteDictEntry(&array_writer, "rssi_low_timeout", static_cast<uint16_t>(3));
+  WriteDictEntry(&array_writer, "rssi_sampling_period",
+                 static_cast<uint16_t>(3));
+  WriteDictEntry(&array_writer, "condition", ScanFilterCondition{});
 
   writer->CloseContainer(&array_writer);
 }
@@ -220,14 +225,20 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<RSSISettings>() {
-  static DBusTypeInfo info{"a{sv}", "RSSISettings"};
+const DBusTypeInfo& GetDBusTypeInfo<ScanSettings>() {
+  static DBusTypeInfo info{"a{sv}", "ScanSettings"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<ScanSettings>() {
-  static DBusTypeInfo info{"a{sv}", "ScanSettings"};
+const DBusTypeInfo& GetDBusTypeInfo<ScanFilterPattern>() {
+  static DBusTypeInfo info{"a{sv}", "ScanFilterPattern"};
+  return info;
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo<ScanFilterCondition>() {
+  static DBusTypeInfo info{"a{sv}", "ScanFilterCondition"};
   return info;
 }
 

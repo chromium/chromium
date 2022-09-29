@@ -907,7 +907,7 @@ void BluetoothAdapterFloss::ScannerRegistered(device::BluetoothUUID uuid,
   FlossDBusManager::Get()->GetLEScanClient()->StartScan(
       base::BindOnce(&BluetoothAdapterFloss::OnStartScan,
                      weak_ptr_factory_.GetWeakPtr()),
-      scanner_id, ScanSettings{}, std::vector<ScanFilter>());
+      scanner_id, ScanSettings{}, ScanFilter{});
 
   return;
 }

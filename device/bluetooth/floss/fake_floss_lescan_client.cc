@@ -40,7 +40,7 @@ void FakeFlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
 void FakeFlossLEScanClient::StartScan(ResponseCallback<Void> callback,
                                       uint8_t scanner_id,
                                       const ScanSettings& scan_settings,
-                                      const std::vector<ScanFilter>& filters) {
+                                      const ScanFilter& filters) {
   // TODO (b/217274013): filters are currently being ignored
   scanner_ids_.insert(scanner_id);
 }

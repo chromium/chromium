@@ -565,6 +565,12 @@ void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
   return writer->AppendUint16(data);
 }
 
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const int16_t& data) {
+  return writer->AppendInt16(data);
+}
+
 template void FlossDBusClient::WriteDBusParam<uint32_t>(
     dbus::MessageWriter* writer,
     const absl::optional<uint32_t>& data);
