@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
@@ -27,6 +28,7 @@
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/views_features.h"
 
 namespace views {
 namespace {
@@ -102,7 +104,10 @@ void TouchSelectionMenuViews::ShowMenu(const gfx::Rect& anchor_rect,
   // invokes widget->StackAbove(context). That causes the bubble to stack
   // _immediately_ above |context|; below any already-existing bubbles. That
   // doesn't make sense for a menu, so put it back on top.
-  widget->StackAtTop();
+  if (base::FeatureList::IsEnabled(features::kWidgetLayering))
+    widget->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+  else
+    widget->StackAtTop();
   widget->Show();
 }
 
