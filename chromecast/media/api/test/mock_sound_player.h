@@ -25,6 +25,11 @@ class MockSoundPlayer : public SoundPlayer {
               PlayAtTime,
               (int, int64_t, media::AudioChannel, AudioContentType),
               (override));
+  MOCK_METHOD(
+      void,
+      PlayAudioDataAtTime,
+      (scoped_refptr<AudioData>, int64_t, AudioChannel, AudioContentType),
+      (override));
   MOCK_METHOD(void, Stop, (int), (override));
 };
 

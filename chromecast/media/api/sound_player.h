@@ -49,6 +49,14 @@ class SoundPlayer {
                           media::AudioChannel audio_channel,
                           AudioContentType content_type) = 0;
 
+  // Plays the sound using the provided |audio_data| starting at |timestamp|.
+  // Any sound that is currently playing is stopped immediately.
+  // If |audio_channel| is kLeft or kRight, only that channel is played.
+  virtual void PlayAudioDataAtTime(scoped_refptr<AudioData> audio_data,
+                                   int64_t timestamp,
+                                   AudioChannel audio_channel,
+                                   AudioContentType content_type) = 0;
+
   // Stops playing the sound resource with |resource_id| if it is currently
   // playing.
   virtual void Stop(int resource_id) = 0;
