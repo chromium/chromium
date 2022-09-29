@@ -1385,10 +1385,6 @@
     "label": "//chrome/notification_helper:notification_helper_unittests",
     "type": "windowed_test_launcher",
   },
-  "opus_tests": {
-    "label": "//third_party/opus:opus_tests",
-    "type": "console_test_launcher",
-  },
   "openscreen_unittests": {
     "label": "//chrome/browser/media/router:openscreen_unittests",
     "type": "console_test_launcher",

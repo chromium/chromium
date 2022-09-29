@@ -396,10 +396,6 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "android-opus-arm-rel",
-)
-
-try_.builder(
     name = "android-oreo-arm64-cts-networkservice-dbg",
 )
 

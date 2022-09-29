@@ -1002,7 +1002,6 @@
       'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_webview_google',
       'android-marshmallow-x86-rel-reclient': 'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android-opus-arm-rel': 'android_release_trybot',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
       'android-oreo-arm64-dbg': 'android_debug_trybot_arm64',
       'android-perfetto-rel': 'perfetto_release_trybot_android',

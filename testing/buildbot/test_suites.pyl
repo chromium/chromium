@@ -4251,15 +4251,6 @@
       },
     },
 
-    'opus_tests': {
-      'opus_tests': {
-        'args': [
-          '--shard-timeout=3000'
-        ],
-        'test': 'opus_tests',
-       },
-     },
-
     # TODO(petermcneeley) : Remove once OverlayPrioritization has landed on
     # all ozone platforms.
     'overlay_prioritization_gtests': {
