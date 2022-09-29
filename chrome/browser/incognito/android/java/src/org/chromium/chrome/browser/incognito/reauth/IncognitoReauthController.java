@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import androidx.annotation.NonNull;
+
 /**
  * A public API which can be used by other non re-auth clients to get information about the
  * Incognito re-authentication.
@@ -20,6 +22,24 @@ public interface IncognitoReauthController {
      * @return True if the Incognito re-auth is pending, false otherwise.
      */
     boolean isIncognitoReauthPending();
+
+    /**
+     * A method to add an {@link IncognitoReauthCallback}.
+     *
+     * @param incognitoReauthCallback {@link IncognitoReauthCallback} that the clients can add to be
+     *         notified when the user attempts re-authentication in the Incognito page.
+     */
+    void addIncognitoReauthCallback(
+            @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback);
+
+    /**
+     * A method to remove the {@link IncognitoReauthCallback}.
+     *
+     * @param incognitoReauthCallback {@link IncognitoReauthCallback} that the clients added to be
+     *         notified when the user attempts re-authentication in the Incognito page.
+     */
+    void removeIncognitoReauthCallback(
+            @NonNull IncognitoReauthManager.IncognitoReauthCallback incognitoReauthCallback);
 
     /**
      * TODO(crbug.com/1227656): This method is ill-placed. Find a better design to restrict

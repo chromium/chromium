@@ -13,9 +13,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -81,6 +83,8 @@ public class IncognitoReauthControllerImplTest {
     private PrefService mPrefServiceMock;
     @Mock
     private Runnable mBackPressInReauthFullScreenRunnableMock;
+    @Mock
+    private IncognitoReauthManager.IncognitoReauthCallback mIncognitoReauthCallbackMock;
 
     @Captor
     ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
@@ -329,5 +333,30 @@ public class IncognitoReauthControllerImplTest {
         assertFalse("IncognitoReauthCoordinator should not be created when starting a"
                         + " fresh Incognito session.",
                 mIncognitoReauthController.isReauthPageShowing());
+    }
+
+    @Test
+    @SmallTest
+    public void testAddIncognitoReauthCallback_IsHookedWithMainCallback() {
+        doNothing().when(mIncognitoReauthCallbackMock).onIncognitoReauthSuccess();
+        mIncognitoReauthController.addIncognitoReauthCallback(mIncognitoReauthCallbackMock);
+        mIncognitoReauthController.getIncognitoReauthCallbackForTesting()
+                .onIncognitoReauthSuccess();
+        verify(mIncognitoReauthCallbackMock, times(1)).onIncognitoReauthSuccess();
+    }
+
+    @Test
+    @SmallTest
+    public void testRemoveIncognitoReauthCallback_IsUnHookedWithMainCallback() {
+        doNothing().when(mIncognitoReauthCallbackMock).onIncognitoReauthSuccess();
+        mIncognitoReauthController.addIncognitoReauthCallback(mIncognitoReauthCallbackMock);
+        mIncognitoReauthController.getIncognitoReauthCallbackForTesting()
+                .onIncognitoReauthSuccess();
+        verify(mIncognitoReauthCallbackMock, times(1)).onIncognitoReauthSuccess();
+
+        mIncognitoReauthController.removeIncognitoReauthCallback(mIncognitoReauthCallbackMock);
+        mIncognitoReauthController.getIncognitoReauthCallbackForTesting()
+                .onIncognitoReauthSuccess();
+        verifyNoMoreInteractions(mIncognitoReauthCallbackMock);
     }
 }
