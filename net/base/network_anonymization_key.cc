@@ -4,6 +4,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "base/feature_list.h"
 #include "base/unguessable_token.h"
+#include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
@@ -159,9 +160,108 @@ bool NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() {
       net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
 }
 
+bool NetworkAnonymizationKey::ToValue(base::Value* out_value) const {
+  if (IsEmpty()) {
+    *out_value = base::Value(base::Value::Type::LIST);
+    return true;
+  }
+
+  if (IsTransient())
+    return false;
+
+  absl::optional<std::string> top_frame_value =
+      SerializeSiteWithNonce(*top_frame_site_);
+  if (!top_frame_value)
+    return false;
+  base::Value::List list;
+  list.Append(std::move(top_frame_value).value());
+
+  absl::optional<std::string> frame_value =
+      IsFrameSiteEnabled() ? SerializeSiteWithNonce(*frame_site_)
+                           : absl::nullopt;
+
+  // Append frame site for tripe key scheme or is_cross_site flag for double key
+  // with cross site flag scheme.
+  if (IsFrameSiteEnabled()) {
+    if (!frame_value.has_value()) {
+      return false;
+    }
+    list.Append(std::move(frame_value).value());
+  } else if (IsCrossSiteFlagSchemeEnabled()) {
+    const bool is_cross_site = GetIsCrossSite();
+    list.Append(is_cross_site);
+  }
+
+  *out_value = base::Value(std::move(list));
+  return true;
+}
+
+bool NetworkAnonymizationKey::FromValue(
+    const base::Value& value,
+    NetworkAnonymizationKey* network_anonymization_key) {
+  if (!value.is_list())
+    return false;
+
+  const base::Value::List& list = value.GetList();
+  if (list.empty()) {
+    *network_anonymization_key = NetworkAnonymizationKey();
+    return true;
+  }
+
+  // Check top_level_site is valid for any key scheme
+  if (list.size() < 1 || !list[0].is_string()) {
+    return false;
+  }
+  absl::optional<SchemefulSite> top_frame_site =
+      SchemefulSite::DeserializeWithNonce(list[0].GetString());
+  if (!top_frame_site) {
+    return false;
+  }
+
+  absl::optional<SchemefulSite> frame_site = absl::nullopt;
+  absl::optional<bool> is_cross_site = absl::nullopt;
+
+  // If double key scheme is enabled `list` must be of length 1. list[0] will be
+  // top_frame_site.
+  if (IsDoubleKeySchemeEnabled()) {
+    if (list.size() != 1) {
+      return false;
+    }
+  } else if (IsCrossSiteFlagSchemeEnabled()) {
+    // If double key + is cross site scheme is enabled `list` must be of
+    // length 2. list[0] will be top_frame_site and list[1] will be
+    // is_cross_site.
+    if (list.size() != 2 || !list[1].is_bool()) {
+      return false;
+    }
+    is_cross_site = list[1].GetBool();
+  } else {
+    // If neither alternative scheme is enabled we expect a valid triple keyed
+    // NetworkAnonymizationKey. `list` must be of length 2. list[0] will be
+    // top_frame_site and list[1] will be frame_site.
+    if (list.size() != 2 || !list[1].is_string()) {
+      return false;
+    }
+    frame_site = SchemefulSite::DeserializeWithNonce(list[1].GetString());
+    if (!frame_site) {
+      return false;
+    }
+  }
+
+  *network_anonymization_key =
+      NetworkAnonymizationKey(std::move(top_frame_site.value()),
+                              std::move(frame_site), std::move(is_cross_site));
+  return true;
+}
+
 std::string NetworkAnonymizationKey::GetSiteDebugString(
     const absl::optional<SchemefulSite>& site) const {
   return site ? site->GetDebugString() : "null";
+}
+
+absl::optional<std::string> NetworkAnonymizationKey::SerializeSiteWithNonce(
+    const SchemefulSite& site) {
+  return *(const_cast<SchemefulSite&>(site).SerializeWithNonce());
 }
 
 }  // namespace net

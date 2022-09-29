@@ -15,6 +15,10 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Value;
+}
+
 namespace net {
 
 // NetworkAnonymizationKey will be used to partition shared network state based
@@ -198,9 +202,24 @@ class NET_EXPORT NetworkAnonymizationKey {
   // cross site from the top level site.
   static bool IsCrossSiteFlagSchemeEnabled();
 
+  // Returns a representation of |this| as a base::Value. Returns false on
+  // failure. Succeeds if either IsEmpty() or !IsTransient().
+  [[nodiscard]] bool ToValue(base::Value* out_value) const;
+
+  // Inverse of ToValue(). Writes the result to |network_anonymization_key|.
+  // Returns false on failure. Fails on values that could not have been produced
+  // by ToValue(), like transient origins.
+  [[nodiscard]] static bool FromValue(
+      const base::Value& value,
+      NetworkAnonymizationKey* out_network_anonymization_key);
+
  private:
   std::string GetSiteDebugString(
       const absl::optional<SchemefulSite>& site) const;
+
+  static absl::optional<std::string> SerializeSiteWithNonce(
+      const SchemefulSite& site);
+
   // The origin/etld+1 of the top frame of the page making the request. This
   // will always be populated unless all other fields are also nullopt.
   absl::optional<SchemefulSite> top_frame_site_;
