@@ -8058,6 +8058,24 @@
             ]
         }
     ],
+    "PrefetchUseContentRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefetchUseContentRefactor"
+                    ],
+                    "disable_features": [
+                        "IsolatePrerenders"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadCookies": [
         {
             "platforms": [
@@ -8247,33 +8265,6 @@
                     ],
                     "disable_features": [
                         "HappinessTrackingSurveysForDesktopPrivacyGuide"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrivacyPreservingPrefetchProxy": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Prefetch_2_20220214",
-                    "params": {
-                        "dns_canary_url": "http://dns-tunnel-check.googlezip.net/connect",
-                        "do_no_state_prefetch": "false",
-                        "ineligible_decoy_request_probability": "1",
-                        "lite_mode_only": "false",
-                        "max_srp_prefetches": "5",
-                        "max_subresource_count_per_prerender": "0",
-                        "start_spare_renderer": "true",
-                        "tls_canary_url": "http://tls-tunnel-check.googlezip.net/connect",
-                        "use_speculation_rules": "true"
-                    },
-                    "enable_features": [
-                        "IsolatePrerenders",
-                        "IsolatePrerendersMustProbeOrigin"
                     ]
                 }
             ]
