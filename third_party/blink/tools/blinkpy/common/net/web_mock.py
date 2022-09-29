@@ -39,7 +39,7 @@ class MockWeb(object):
         self.requests = []
         self.responses = responses or []
 
-    def get_binary(self, url, return_none_on_404=False, retries=0):  # pylint: disable=unused-argument
+    def get_binary(self, url, return_none_on_404=False):  # pylint: disable=unused-argument
         self.urls_fetched.append(url)
         if url in self.urls:
             return self.urls[url]

@@ -128,8 +128,7 @@ class RebaselineTest(AbstractRebaseliningCommand):
             _log.debug('Retrieving source %s for target %s.', source_baseline,
                        target_baseline)
             data = self._tool.web.get_binary(source_baseline,
-                                             return_none_on_404=True,
-                                             retries=5)
+                                             return_none_on_404=True)
 
         if not data:
             # We don't just remove the file because the test may create empty
