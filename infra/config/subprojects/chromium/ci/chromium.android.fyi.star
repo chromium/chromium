@@ -59,16 +59,6 @@ ci.builder(
     ),
 )
 
-ci.thin_tester(
-    name = "android-weblayer-11-x86-rel-tests",
-    console_view_entry = consoles.console_view_entry(
-        category = "tester|weblayer",
-        short_name = "11",
-    ),
-    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
-    notifies = ["weblayer-sheriff"],
-)
-
 ci.builder(
     name = "android-weblayer-pie-x86-wpt-fyi-rel",
     console_view_entry = consoles.console_view_entry(
@@ -90,14 +80,6 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "wpt|webview",
         short_name = "p-x86",
-    ),
-)
-
-ci.builder(
-    name = "android-weblayer-with-aosp-webview-x86-fyi-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "builder|weblayer_with_aosp_webview",
-        short_name = "x86",
     ),
 )
 

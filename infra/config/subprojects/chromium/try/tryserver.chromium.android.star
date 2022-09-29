@@ -536,30 +536,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-weblayer-10-x86-rel-tests",
-    mirrors = [
-        "ci/android-weblayer-with-aosp-webview-x86-rel",
-        "ci/android-weblayer-10-x86-rel-tests",
-    ],
-)
-
-try_.builder(
-    name = "android-weblayer-marshmallow-x86-rel-tests",
-    mirrors = [
-        "ci/android-weblayer-with-aosp-webview-x86-rel",
-        "ci/android-weblayer-marshmallow-x86-rel-tests",
-    ],
-)
-
-try_.builder(
-    name = "android-weblayer-pie-x86-rel-tests",
-    mirrors = [
-        "ci/android-weblayer-x86-rel",
-        "ci/android-weblayer-pie-x86-rel-tests",
-    ],
-)
-
-try_.builder(
     name = "android-weblayer-pie-x86-wpt-fyi-rel",
 )
 
