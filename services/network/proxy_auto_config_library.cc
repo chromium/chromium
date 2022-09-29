@@ -10,7 +10,7 @@
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_interfaces.h"
-#include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/udp_client_socket.h"
 

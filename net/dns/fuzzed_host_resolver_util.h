@@ -26,9 +26,8 @@ class NetLog;
 // true or calling SetInsecureDnsClientEnabled on the underlying
 // HostResolverManager.
 //
-// To make behavior most deterministic, does not use the WorkerPool to run its
-// simulated platform host resolver calls, instead runs them on the thread it is
-// created on.
+// To make behavior most deterministic, it is recommended that tests and fuzzers
+// run all system DNS resolution on the current thread.
 //
 // Note that it does not attempt to sort the resulting AddressList when using
 // the mock system resolver path.

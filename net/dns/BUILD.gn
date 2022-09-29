@@ -64,6 +64,8 @@ source_set("dns") {
     "host_resolver_mdns_task.h",
     "host_resolver_proc.cc",
     "host_resolver_proc.h",
+    "host_resolver_system_task.cc",
+    "host_resolver_system_task.h",
     "https_record_rdata.cc",
     "httpssvc_metrics.cc",
     "httpssvc_metrics.h",

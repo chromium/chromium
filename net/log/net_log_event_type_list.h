@@ -183,8 +183,8 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_ATTACH)
 //   }
 EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH)
 
-// The creation/completion of a HostResolverManager::ProcTask to call
-// getaddrinfo. The BEGIN phase contains the following parameters:
+// The creation/completion of a HostResolverSystemTask to call getaddrinfo. The
+// BEGIN phase contains the following parameters:
 //
 //   {
 //     "hostname": <Hostname associated with the request>,
@@ -199,7 +199,7 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_JOB_REQUEST_DETACH)
 //     "net_error": <The net error code integer for the failure>,
 //     "os_error": <The exact error code integer that getaddrinfo() returned>,
 //   }
-EVENT_TYPE(HOST_RESOLVER_MANAGER_PROC_TASK)
+EVENT_TYPE(HOST_RESOLVER_SYSTEM_TASK)
 
 // The creation/completion of a HostResolverManager::DnsTask to manage a
 // DnsTransaction. The BEGIN phase contains the following parameters:

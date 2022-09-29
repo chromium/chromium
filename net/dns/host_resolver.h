@@ -21,6 +21,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -232,9 +233,6 @@ class NET_EXPORT HostResolver {
     // of concurrency.
     static const size_t kDefaultParallelism = 0;
 
-    // Set |max_system_retry_attempts| to this to select a default retry value.
-    static const size_t kDefaultRetryAttempts;
-
     // How many resolve requests will be allowed to run in parallel.
     // |kDefaultParallelism| for the resolver to choose a default value.
     size_t max_concurrent_resolves = kDefaultParallelism;
@@ -242,7 +240,8 @@ class NET_EXPORT HostResolver {
     // The maximum number of times to retry for host resolution if using the
     // system resolver. No effect when the system resolver is not used.
     // |kDefaultRetryAttempts| for the resolver to choose a default value.
-    size_t max_system_retry_attempts = kDefaultRetryAttempts;
+    size_t max_system_retry_attempts =
+        HostResolverSystemTask::Params::kDefaultRetryAttempts;
 
     // Initial setting for whether the insecure portion of the built-in
     // asynchronous DnsClient is enabled or disabled. See HostResolverManager::

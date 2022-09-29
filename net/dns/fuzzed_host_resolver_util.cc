@@ -35,6 +35,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/util.h"
 #include "net/dns/resolve_context.h"
@@ -375,14 +376,13 @@ class FuzzedHostResolverManager : public HostResolverManager {
         socket_factory_(data_provider_),
         net_log_(net_log),
         data_provider_weak_factory_(data_provider) {
-    ProcTaskParams proc_task_params(
+    HostResolverSystemTask::Params system_task_params(
         base::MakeRefCounted<FuzzedHostResolverProc>(
             data_provider_weak_factory_.GetWeakPtr()),
         // Retries are only used when the original request hangs, which this
         // class currently can't simulate.
         0 /* max_retry_attempts */);
-    set_proc_params_for_test(proc_task_params);
-    SetTaskRunnerForTesting(base::SequencedTaskRunnerHandle::Get());
+    set_host_resolver_system_params_for_test(system_task_params);  // IN-TEST
     SetMdnsSocketFactoryForTesting(
         std::make_unique<FuzzedMdnsSocketFactory>(data_provider_));
     std::unique_ptr<DnsClient> dns_client = DnsClient::CreateClientForTesting(

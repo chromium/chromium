@@ -15,6 +15,7 @@
 #include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/log/net_log_with_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
@@ -27,7 +28,6 @@ namespace net {
 
 class HostCache;
 class HostResolverManager;
-struct ProcTaskParams;
 class ResolveContext;
 class URLRequestContext;
 
@@ -81,7 +81,8 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   // Returns the number of entries in the host cache, or 0 if there is no cache.
   size_t CacheSize() const;
 
-  void SetProcParamsForTesting(const ProcTaskParams& proc_params);
+  void SetHostResolverSystemParamsForTest(
+      const HostResolverSystemTask::Params& host_resolver_system_params);
   void SetTickClockForTesting(const base::TickClock* tick_clock);
   ResolveContext* resolve_context_for_testing() {
     return resolve_context_.get();

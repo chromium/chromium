@@ -36,6 +36,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_proc.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -184,8 +185,8 @@ class StaleHostResolverTest : public testing::Test {
     if (context)
       inner_resolver->SetRequestContext(context);
 
-    net::ProcTaskParams proc_params(mock_proc_, 1u);
-    inner_resolver->SetProcParamsForTesting(proc_params);
+    net::HostResolverSystemTask::Params system_params(mock_proc_, 1u);
+    inner_resolver->SetHostResolverSystemParamsForTest(system_params);
     if (dns_client) {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
           std::move(dns_client));

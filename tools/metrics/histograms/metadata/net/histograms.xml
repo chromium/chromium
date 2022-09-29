@@ -835,11 +835,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.DNS.DnsTask.Errors" enum="NetErrorCodes"
     expires_after="M77">
+  <obsolete>
+    Removed in crrev.com/c/1355602.
+  </obsolete>
   <owner>pauljensen@chromium.org</owner>
   <owner>mef@chromium.org</owner>
   <summary>
-    Counts of specific error codes returned by DnsTask if a subsequent ProcTask
-    succeeded.
+    Counts of specific error codes returned by DnsTask if a subsequent
+    HostResolverSystemTask succeeded.
   </summary>
 </histogram>
 
@@ -1223,28 +1226,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.ProcTask.FailureTime" units="ms"
-    expires_after="2023-08-28">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Duration of time taken by ProcTask (the grouping of all individual DNS
-    queries for a single instance of resolving a name using the system resolver)
-    in resolutions that failed.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.ProcTask.SuccessTime" units="ms"
-    expires_after="2023-08-28">
-  <owner>horo@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Duration of time taken by ProcTask (the grouping of all individual DNS
-    queries for a single instance of resolving a name using the system resolver)
-    in resolutions that succeeded.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.Request.TotalTime" units="ms" expires_after="never">
 <!-- expires-never: Core network stack health metric -->
 
@@ -1390,6 +1371,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Duration of time taken by a secure DnsTask in resolutions that failed that
     were issued in SECURE mode.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.SystemTask.FailureTime" units="ms"
+    expires_after="2023-08-28">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Duration of time taken by HostResolverSystemTask (the grouping of all
+    individual DNS queries for a single instance of resolving a name using the
+    system resolver) in resolutions that failed.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.SystemTask.SuccessTime" units="ms"
+    expires_after="2023-08-28">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Duration of time taken by HostResolverSystemTask (the grouping of all
+    individual DNS queries for a single instance of resolving a name using the
+    system resolver) in resolutions that succeeded.
   </summary>
 </histogram>
 

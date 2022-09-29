@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "net/base/address_family.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
@@ -17,7 +16,7 @@ namespace net {
 
 class AddressList;
 
-// Interface for a getaddrinfo()-like procedure. This is used by unit-tests
+// Interface for a getaddrinfo()-like procedure. This is used by tests
 // to control the underlying resolutions in HostResolverManager.
 // HostResolverProcs can be chained together; they fallback to the next
 // procedure in the chain by calling ResolveUsingPrevious(). Unless
@@ -69,6 +68,7 @@ class NET_EXPORT HostResolverProc
 
  private:
   friend class HostResolverManager;
+  friend class HostResolverSystemTask;
   friend class MockHostResolverBase;
   friend class ScopedDefaultHostResolverProc;
 
@@ -94,92 +94,6 @@ class NET_EXPORT HostResolverProc
   bool allow_fallback_to_system_;
   scoped_refptr<HostResolverProc> previous_proc_;
   static HostResolverProc* default_proc_;
-};
-
-// Resolves `host` to an address list, using the system's default host resolver.
-// (i.e. this calls out to getaddrinfo()). If successful returns OK and fills
-// `addrlist` with a list of socket addresses. Otherwise returns a
-// network error code, and fills `os_error` with a more specific error if it
-// was non-NULL.
-// `network` is an optional parameter, when specified (!=
-// handles::kInvalidNetworkHandle) the lookup will be performed specifically for
-// `network`.
-NET_EXPORT_PRIVATE int SystemHostResolverCall(
-    const std::string& host,
-    AddressFamily address_family,
-    HostResolverFlags host_resolver_flags,
-    AddressList* addrlist,
-    int* os_error,
-    handles::NetworkHandle network = handles::kInvalidNetworkHandle);
-
-// Wraps call to SystemHostResolverCall as an instance of HostResolverProc.
-class NET_EXPORT_PRIVATE SystemHostResolverProc : public HostResolverProc {
- public:
-  SystemHostResolverProc();
-
-  SystemHostResolverProc(const SystemHostResolverProc&) = delete;
-  SystemHostResolverProc& operator=(const SystemHostResolverProc&) = delete;
-
-  int Resolve(const std::string& hostname,
-              AddressFamily address_family,
-              HostResolverFlags host_resolver_flags,
-              AddressList* addr_list,
-              int* os_error) override;
-
-  int Resolve(const std::string& hostname,
-              AddressFamily address_family,
-              HostResolverFlags host_resolver_flags,
-              AddressList* addr_list,
-              int* os_error,
-              handles::NetworkHandle network) override;
-
- protected:
-  ~SystemHostResolverProc() override;
-};
-
-// Parameters for customizing HostResolverProc behavior in HostResolvers.
-//
-// |resolver_proc| is used to perform the actual resolves; it must be
-// thread-safe since it may be run from multiple worker threads. If
-// |resolver_proc| is NULL then the default host resolver procedure is
-// used (which is SystemHostResolverProc except if overridden).
-//
-// For each attempt, we could start another attempt if host is not resolved
-// within |unresponsive_delay| time. We keep attempting to resolve the host
-// for |max_retry_attempts|. For every retry attempt, we grow the
-// |unresponsive_delay| by the |retry_factor| amount (that is retry interval
-// is multiplied by the retry factor each time). Once we have retried
-// |max_retry_attempts|, we give up on additional attempts.
-//
-struct NET_EXPORT_PRIVATE ProcTaskParams {
-  // Default delay between calls to the system resolver for the same hostname.
-  // (Can be overridden by field trial.)
-  static constexpr base::TimeDelta kDnsDefaultUnresponsiveDelay =
-      base::Seconds(6);
-
-  // Sets up defaults.
-  ProcTaskParams(scoped_refptr<HostResolverProc> resolver_proc,
-                 size_t max_retry_attempts);
-
-  ProcTaskParams(const ProcTaskParams& other);
-
-  ~ProcTaskParams();
-
-  // The procedure to use for resolving host names. This will be NULL, except
-  // in the case of unit-tests which inject custom host resolving behaviors.
-  scoped_refptr<HostResolverProc> resolver_proc;
-
-  // Maximum number retry attempts to resolve the hostname.
-  // Pass HostResolver::Options::kDefaultRetryAttempts to choose a default
-  // value.
-  size_t max_retry_attempts;
-
-  // This is the limit after which we make another attempt to resolve the host
-  // if the worker thread has not responded yet.
-  base::TimeDelta unresponsive_delay = kDnsDefaultUnresponsiveDelay;
-
-  // Factor to grow |unresponsive_delay| when we re-re-try.
-  uint32_t retry_factor = 2;
 };
 
 }  // namespace net

@@ -30,6 +30,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
@@ -99,7 +100,8 @@ class ContextHostResolverTest : public ::testing::Test,
     EXPECT_TRUE(dns_client_->GetEffectiveConfig());
 
     scoped_refptr<HostResolverProc> proc = CreateCatchAllHostResolverProc();
-    manager_->set_proc_params_for_test(ProcTaskParams(proc, 1u));
+    manager_->set_host_resolver_system_params_for_test(
+        HostResolverSystemTask::Params(proc, 1u));
   }
 
   raw_ptr<MockDnsClient> dns_client_;

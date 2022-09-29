@@ -156,9 +156,10 @@ size_t ContextHostResolver::CacheSize() const {
                                         : 0;
 }
 
-void ContextHostResolver::SetProcParamsForTesting(
-    const ProcTaskParams& proc_params) {
-  manager_->set_proc_params_for_test(proc_params);
+void ContextHostResolver::SetHostResolverSystemParamsForTest(
+    const HostResolverSystemTask::Params& host_resolver_system_params) {
+  manager_->set_host_resolver_system_params_for_test(  // IN-TEST
+      host_resolver_system_params);
 }
 
 void ContextHostResolver::SetTickClockForTesting(

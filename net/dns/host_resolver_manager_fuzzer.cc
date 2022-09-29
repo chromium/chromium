@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
@@ -23,6 +24,7 @@
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/fuzzed_host_resolver_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_proc.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log.h"
@@ -232,6 +234,19 @@ class DnsRequest {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
+class FuzzerEnvironment {
+ public:
+  FuzzerEnvironment() {
+    net::SetSystemDnsResolutionTaskRunnerForTesting(  // IN-TEST
+        base::SequencedTaskRunnerHandle::Get());
+  }
+  ~FuzzerEnvironment() = default;
+};
+
+void EnsureInitFuzzerEnvironment() {
+  static FuzzerEnvironment init_environment;
+}
+
 }  // namespace
 
 // Fuzzer for HostResolverImpl. Fuzzes using both the system resolver and
@@ -244,6 +259,9 @@ class DnsRequest {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   {
     FuzzedDataProvider data_provider(data, size);
+
+    EnsureInitFuzzerEnvironment();
+
     // Including an observer; even though the recorded results aren't currently
     // used, it'll ensure the netlogging code is fuzzed as well.
     net::RecordingNetLogObserver net_log_observer;

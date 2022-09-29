@@ -47,6 +47,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/https_record_rdata.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_results.h"
@@ -1323,9 +1324,7 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
         case Rule::kResolverTypeFailTimeout:
           return ERR_DNS_TIMED_OUT;
         case Rule::kResolverTypeSystem:
-#if BUILDFLAG(IS_WIN)
-          EnsureWinsockInit();
-#endif
+          EnsureSystemHostResolverCallReady();
           return SystemHostResolverCall(effective_host, address_family,
                                         host_resolver_flags, addrlist,
                                         os_error);

@@ -7,6 +7,8 @@
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
@@ -15,6 +17,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/fuzzed_host_resolver_util.h"
+#include "net/dns/host_resolver_system_task.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
@@ -55,8 +58,12 @@ const int kCertVerifyFlags = 0;
 
 // Persistent factory data, statically initialized on the first time
 // LLVMFuzzerTestOneInput is called.
-struct Env {
-  Env() : scheme_host_port(url::kHttpsScheme, kServerHostName, kServerPort) {
+struct FuzzerEnvironment {
+  FuzzerEnvironment()
+      : scheme_host_port(url::kHttpsScheme, kServerHostName, kServerPort) {
+    net::SetSystemDnsResolutionTaskRunnerForTesting(  // IN-TEST
+        base::SequencedTaskRunnerHandle::Get());
+
     quic_context.AdvanceTime(quic::QuicTime::Delta::FromSeconds(1));
     ssl_config_service = std::make_unique<SSLConfigServiceDefaults>();
     crypto_client_stream_factory.set_use_mock_crypter(true);
@@ -66,6 +73,7 @@ struct Env {
     CHECK(verify_details.cert_verify_result.verified_cert);
     verify_details.cert_verify_result.is_issued_by_known_root = true;
   }
+  ~FuzzerEnvironment() = default;
 
   std::unique_ptr<SSLConfigService> ssl_config_service;
   ProofVerifyDetailsChromium verify_details;
@@ -80,8 +88,15 @@ struct Env {
   MockQuicContext quic_context;
 };
 
+FuzzerEnvironment* GetFuzzerEnvironment() {
+  static base::NoDestructor<FuzzerEnvironment> fuzzer_environment;
+  return &*fuzzer_environment;
+}
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider data_provider(data, size);
+
+  FuzzerEnvironment* env = GetFuzzerEnvironment();
 
   std::unique_ptr<ContextHostResolver> host_resolver =
       CreateFuzzedContextHostResolver(HostResolver::ManagerOptions(), nullptr,
@@ -92,7 +107,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Initialize this on each loop since some options mutate this.
   HttpServerProperties http_server_properties;
 
-  static Env* env = new Env();
   QuicParams& params = *env->quic_context.params();
   params.max_server_configs_stored_in_properties =
       data_provider.ConsumeBool() ? 1 : 0;

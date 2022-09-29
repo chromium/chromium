@@ -33,7 +33,6 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
-#include "net/dns/host_resolver_proc.h"
 #include "net/dns/httpssvc_metrics.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
@@ -68,10 +67,11 @@ class NetLog;
 //
 // For each hostname that is requested, HostResolver creates a
 // HostResolverManager::Job. When this job gets dispatched it creates a task
-// (ProcTask for the system resolver or DnsTask for the async resolver) which
-// resolves the hostname. If requests for that same host are made during the
-// job's lifetime, they are attached to the existing job rather than creating a
-// new one. This avoids doing parallel resolves for the same host.
+// (HostResolverSystemTask for the system resolver or DnsTask for the async
+// resolver) which resolves the hostname. If requests for that same host are
+// made during the job's lifetime, they are attached to the existing job rather
+// than creating a new one. This avoids doing parallel resolves for the same
+// host.
 //
 // The way these classes fit together is illustrated by:
 //
@@ -170,9 +170,9 @@ class NET_EXPORT HostResolverManager
   // Enables or disables the built-in asynchronous DnsClient. If enabled, by
   // default (when no |ResolveHostParameters::source| is specified), the
   // DnsClient will be used for resolves and, in case of failure, resolution
-  // will fallback to the system resolver (HostResolverProc from
-  // ProcTaskParams). If the DnsClient is not pre-configured with a valid
-  // DnsConfig, a new config is fetched from NetworkChangeNotifier.
+  // will fallback to the system resolver (in tests, HostResolverProc from
+  // HostResolverSystemTask::Params). If the DnsClient is not pre-configured
+  // with a valid DnsConfig, a new config is fetched from NetworkChangeNotifier.
   //
   // Setting to |true| has no effect if |ENABLE_BUILT_IN_DNS| not defined.
   virtual void SetInsecureDnsClientEnabled(bool enabled,
@@ -198,8 +198,9 @@ class NET_EXPORT HostResolverManager
   void RegisterResolveContext(ResolveContext* context);
   void DeregisterResolveContext(const ResolveContext* context);
 
-  void set_proc_params_for_test(const ProcTaskParams& proc_params) {
-    proc_params_ = proc_params;
+  void set_host_resolver_system_params_for_test(
+      const HostResolverSystemTask::Params& host_resolver_system_params) {
+    host_resolver_system_params_ = host_resolver_system_params;
   }
 
   void InvalidateCachesForTesting() { InvalidateCaches(); }
@@ -263,15 +264,11 @@ class NET_EXPORT HostResolverManager
   // Callback from HaveOnlyLoopbackAddresses probe.
   void SetHaveOnlyLoopbackAddresses(bool result);
 
-  // Sets the task runner used for HostResolverProc tasks.
-  void SetTaskRunnerForTesting(scoped_refptr<base::TaskRunner> task_runner);
-
  private:
   friend class HostResolverManagerTest;
   friend class HostResolverManagerDnsTest;
   class Job;
   struct JobKey;
-  class ProcTask;
   class LoopbackProbeJob;
   class DnsTask;
   class RequestImpl;
@@ -280,7 +277,7 @@ class NET_EXPORT HostResolverManager
 
   // Task types that a Job might run.
   enum class TaskType {
-    PROC,
+    SYSTEM,
     DNS,
     SECURE_DNS,
     MDNS,
@@ -391,7 +388,7 @@ class NET_EXPORT HostResolverManager
   // Helper method to add DnsTasks and related tasks based on the SecureDnsMode
   // and fallback parameters. If |prioritize_local_lookups| is true, then we
   // may push an insecure cache lookup ahead of a secure DnsTask.
-  void PushDnsTasks(bool proc_task_allowed,
+  void PushDnsTasks(bool system_task_allowed,
                     SecureDnsMode secure_dns_mode,
                     bool insecure_tasks_allowed,
                     bool allow_cache,
@@ -453,11 +450,11 @@ class NET_EXPORT HostResolverManager
   void AbortJobsWithoutTargetNetwork(bool in_progress_only);
 
   // Aborts all in progress insecure DnsTasks. In-progress jobs will fall back
-  // to ProcTasks if able and otherwise abort with |error|. Might start new
-  // jobs, if any jobs were taking up two dispatcher slots.
+  // to HostResolverSystemTasks if able and otherwise abort with |error|. Might
+  // start new jobs, if any jobs were taking up two dispatcher slots.
   //
   // If |fallback_only|, insecure DnsTasks will only abort if they can fallback
-  // to ProcTask.
+  // to HostResolverSystemTasks.
   void AbortInsecureDnsTasks(int error, bool fallback_only);
 
   // Attempts to serve each Job in |jobs_| from the HOSTS file if we have
@@ -476,8 +473,8 @@ class NET_EXPORT HostResolverManager
 
   void UpdateJobsForChangedConfig();
 
-  // Called on successful resolve after falling back to ProcTask after a failed
-  // DnsTask resolve.
+  // Called on successful resolve after falling back to HostResolverSystemTask
+  // after a failed DnsTask resolve.
   void OnFallbackResolve(int dns_task_error);
 
   int GetOrCreateMdnsClient(MDnsClient** out_client);
@@ -511,8 +508,8 @@ class NET_EXPORT HostResolverManager
   // Limit on the maximum number of jobs queued in |dispatcher_|.
   size_t max_queued_jobs_ = 0;
 
-  // Parameters for ProcTask.
-  ProcTaskParams proc_params_;
+  // Parameters for HostResolverSystemTask.
+  HostResolverSystemTask::Params host_resolver_system_params_;
 
   raw_ptr<NetLog> net_log_;
 
@@ -533,12 +530,8 @@ class NET_EXPORT HostResolverManager
   // Any resolver flags that should be added to a request by default.
   HostResolverFlags additional_resolver_flags_ = 0;
 
-  // Allow fallback to ProcTask if DnsTask fails.
-  bool allow_fallback_to_proctask_ = true;
-
-  // Task runner used for DNS lookups using the system resolver. Normally a
-  // ThreadPool task runner, but can be overridden for tests.
-  scoped_refptr<base::TaskRunner> proc_task_runner_;
+  // Allow fallback to HostResolverSystemTask if DnsTask fails.
+  bool allow_fallback_to_systemtask_ = true;
 
   // Shared tick clock, overridden for testing.
   raw_ptr<const base::TickClock> tick_clock_;
