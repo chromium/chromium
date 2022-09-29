@@ -90,6 +90,10 @@ bool OsUrlHandlerSystemWebAppDelegate::ShouldReuseExistingWindow() const {
   return false;
 }
 
+bool OsUrlHandlerSystemWebAppDelegate::ShouldRestoreOverrideUrl() const {
+  return true;
+}
+
 bool OsUrlHandlerSystemWebAppDelegate::IsUrlInSystemAppScope(
     const GURL& url) const {
   if (!IsAppEnabled())

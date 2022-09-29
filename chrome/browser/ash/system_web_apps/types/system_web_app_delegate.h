@@ -164,6 +164,11 @@ class SystemWebAppDelegate {
   // Returns whether the specified Tab Context Menu shortcut should be shown.
   virtual bool ShouldShowTabContextMenuShortcut(Profile* profile,
                                                 int command_id) const;
+
+  // Returns whether the override URL specified in AppLaunchParams should be
+  // used when performing a full restore.
+  virtual bool ShouldRestoreOverrideUrl() const;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Control the launch of an SWA. The default takes into account single vs.
   // multiple windows, make sure multiple windows don't open directly above

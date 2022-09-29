@@ -32,6 +32,7 @@ class OsUrlHandlerSystemWebAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
   bool ShouldReuseExistingWindow() const override;
+  bool ShouldRestoreOverrideUrl() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
 
   // Can be called by a test to enforce the app to be enabled.

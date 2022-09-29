@@ -19,6 +19,7 @@ namespace {
 constexpr char kEventFlagKey[] = "event_flag";
 constexpr char kContainerKey[] = "container";
 constexpr char kDispositionKey[] = "disposition";
+constexpr char kOverrideUrlKey[] = "override_url";
 constexpr char kDisplayIdKey[] = "display_id";
 constexpr char kHandlerIdKey[] = "handler_id";
 constexpr char kUrlsKey[] = "urls";
@@ -94,6 +95,12 @@ absl::optional<std::string> GetStringValueFromDict(
     const std::string& key_name) {
   const std::string* value = dict.FindString(key_name);
   return value ? absl::optional<std::string>(*value) : absl::nullopt;
+}
+
+absl::optional<GURL> GetUrlValueFromDict(const base::Value::Dict& dict,
+                                         const std::string& key_name) {
+  const std::string* value = dict.FindString(key_name);
+  return value ? absl::optional<GURL>(*value) : absl::nullopt;
 }
 
 absl::optional<std::u16string> GetU16StringValueFromDict(
@@ -226,6 +233,7 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   event_flag = GetIntValueFromDict(*data_dict, kEventFlagKey);
   container = GetIntValueFromDict(*data_dict, kContainerKey);
   disposition = GetIntValueFromDict(*data_dict, kDispositionKey);
+  override_url = GetUrlValueFromDict(*data_dict, kOverrideUrlKey);
   display_id = GetDisplayIdFromDict(*data_dict);
   handler_id = GetStringValueFromDict(*data_dict, kHandlerIdKey);
   urls = GetUrlsFromDict(*data_dict);
@@ -262,6 +270,7 @@ AppRestoreData::AppRestoreData(std::unique_ptr<AppLaunchInfo> app_launch_info) {
   event_flag = std::move(app_launch_info->event_flag);
   container = std::move(app_launch_info->container);
   disposition = std::move(app_launch_info->disposition);
+  override_url = std::move(app_launch_info->override_url);
   display_id = std::move(app_launch_info->display_id);
   handler_id = std::move(app_launch_info->handler_id);
   urls = std::move(app_launch_info->urls);
@@ -288,6 +297,9 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 
   if (disposition.has_value())
     data->disposition = disposition.value();
+
+  if (override_url.has_value())
+    data->override_url = override_url.value();
 
   if (display_id.has_value())
     data->display_id = display_id.value();
@@ -369,6 +381,9 @@ base::Value AppRestoreData::ConvertToValue() const {
 
   if (disposition.has_value())
     launch_info_dict.SetIntKey(kDispositionKey, disposition.value());
+
+  if (override_url.has_value())
+    launch_info_dict.SetStringKey(kOverrideUrlKey, override_url.value().spec());
 
   if (display_id.has_value()) {
     launch_info_dict.SetStringKey(kDisplayIdKey,

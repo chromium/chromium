@@ -230,6 +230,7 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
         app_id,
         static_cast<apps::LaunchContainer>(it.second->container.value()),
         static_cast<WindowOpenDisposition>(it.second->disposition.value()),
+        it.second->override_url.value_or(GURL()),
         apps::LaunchSource::kFromFullRestore, it.second->display_id.value(),
         it.second->file_paths.has_value() ? it.second->file_paths.value()
                                           : std::vector<base::FilePath>{},

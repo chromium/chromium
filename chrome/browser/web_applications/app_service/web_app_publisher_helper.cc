@@ -1102,8 +1102,9 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
   }
 
   apps::AppLaunchParams params_for_restore(
-      params.app_id, params.container, params.disposition, params.launch_source,
-      params.display_id, params.launch_files, params.intent);
+      params.app_id, params.container, params.disposition, params.override_url,
+      params.launch_source, params.display_id, params.launch_files,
+      params.intent);
 
   // Create the FullRestoreSaveHandler instance before launching the app to
   // observe the browser window.
@@ -1128,6 +1129,19 @@ content::WebContents* WebAppPublisherHelper::LaunchAppWithParams(
               params_for_restore.display_id,
               std::move(params_for_restore.launch_files),
               std::move(params_for_restore.intent));
+
+      // TODO(crbug.com/1368285): Determine whether override URL can be restored
+      // for all SWAs.
+      DCHECK(swa_manager_);
+      auto system_app_type =
+          swa_manager_->GetSystemAppTypeForAppId(params_for_restore.app_id);
+      if (system_app_type.has_value()) {
+        auto* system_app = swa_manager_->GetSystemApp(*system_app_type);
+        DCHECK(system_app);
+        if (system_app->ShouldRestoreOverrideUrl())
+          launch_info->override_url = params_for_restore.override_url;
+      }
+
       full_restore::SaveAppLaunchInfo(profile()->GetPath(),
                                       std::move(launch_info));
     }
