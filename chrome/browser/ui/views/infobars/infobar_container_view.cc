@@ -96,7 +96,8 @@ void InfoBarContainerView::Layout() {
 
 void InfoBarContainerView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
+  node_data->SetNameChecked(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR_CONTAINER));
 }
 
 gfx::Size InfoBarContainerView::CalculatePreferredSize() const {

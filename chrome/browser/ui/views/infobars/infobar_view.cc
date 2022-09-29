@@ -166,7 +166,7 @@ void InfoBarView::Layout() {
 
 void InfoBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kAlertDialog;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR));
+  node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_INFOBAR));
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
                                 "Alt+Shift+A");
 }
