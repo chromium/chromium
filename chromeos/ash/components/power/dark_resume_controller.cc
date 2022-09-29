@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/power/dark_resume_controller.h"
+#include "chromeos/ash/components/power/dark_resume_controller.h"
 
 #include <utility>
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
-namespace ash {
-namespace system {
+namespace ash::system {
 
 namespace {
 
@@ -147,5 +146,4 @@ void DarkResumeController::ClearDarkResumeState() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-}  // namespace system
-}  // namespace ash
+}  // namespace ash::system

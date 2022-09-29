@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/power/dark_resume_controller.h"
+#include "chromeos/ash/components/power/dark_resume_controller.h"
 
 #include <memory>
 #include <utility>
@@ -15,12 +15,11 @@
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace system {
+namespace ash::system {
 
 namespace {
 
-using device::mojom::WakeLockType;
+using ::device::mojom::WakeLockType;
 
 constexpr char kWakeLockDescription[] = "DarkResumeTest";
 
@@ -188,5 +187,4 @@ TEST_F(DarkResumeControllerTest, CheckStateResetAfterSuspendDone) {
   EXPECT_TRUE(dark_resume_controller_->IsDarkResumeStateClearedForTesting());
 }
 
-}  // namespace system
-}  // namespace ash
+}  // namespace ash::system

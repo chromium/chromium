@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
-#define ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
+#define CHROMEOS_ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
@@ -17,8 +17,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
-namespace ash {
-namespace system {
+namespace ash::system {
 
 // This class listens to dark resume events from the power manager and makes
 // decisions on whether to re-suspend the device or keep the device in dark
@@ -43,7 +42,7 @@ namespace system {
 //
 // 5. If the system transitions to a full resume all dark resume related state
 // and timers are cleared as the system wakes up.
-class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POWER) DarkResumeController
     : public chromeos::PowerManagerClient::Observer,
       public device::mojom::WakeLockObserver {
  public:
@@ -133,7 +132,6 @@ class COMPONENT_EXPORT(ASH_POWER) DarkResumeController
   base::WeakPtrFactory<DarkResumeController> weak_ptr_factory_{this};
 };
 
-}  // namespace system
-}  // namespace ash
+}  // namespace ash::system
 
-#endif  // ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_POWER_DARK_RESUME_CONTROLLER_H_
