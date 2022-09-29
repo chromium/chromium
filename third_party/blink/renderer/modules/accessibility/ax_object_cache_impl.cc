@@ -3901,6 +3901,14 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
     serializer.set_timeout(timeout);
 
   tree_source.Freeze();
+
+  if (!tree_source.GetRoot() || tree_source.GetRoot()->IsDetached()) {
+    tree_source.Thaw();
+    // TODO(chrishtr): not clear why this can happen.
+    NOTREACHED();
+    return false;
+  }
+
   if (serializer.SerializeChanges(tree_source.GetRoot(), response)) {
     tree_source.Thaw();
     return true;
