@@ -650,7 +650,7 @@ TEST_P(RealtimePlatformThreadTest, RealtimeAudioConfigMac) {
     feature_list.InitAndDisableFeature(kOptimizedRealtimeThreadingMac);
   }
 
-  PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+  PlatformThread::InitFeaturesPostFieldTrial();
   VerifyRealtimeConfig(std::get<2>(GetParam()));
 }
 

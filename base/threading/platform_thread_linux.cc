@@ -430,7 +430,7 @@ void PlatformThread::SetThreadType(ProcessId process_id,
 #endif  //  !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 
 #if BUILDFLAG(IS_CHROMEOS)
-void PlatformThread::InitThreadPostFieldTrial() {
+void PlatformThread::InitFeaturesPostFieldTrial() {
   DCHECK(FeatureList::GetInstance());
   if (!FeatureList::IsEnabled(kSchedUtilHints)) {
     g_use_sched_util.store(false);

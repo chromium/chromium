@@ -92,6 +92,8 @@ BASE_FEATURE(kOptimizedRealtimeThreadingMac,
 #endif
 );
 
+const Feature kUseThreadQoSMac{"UseThreadQoSMac", FEATURE_DISABLED_BY_DEFAULT};
+
 namespace {
 
 bool IsOptimizedRealtimeThreadingMacEnabled() {
@@ -140,11 +142,13 @@ struct TimeConstraints {
 std::atomic<bool> g_use_optimized_realtime_threading(
     kOptimizedRealtimeThreadingMac.default_state == FEATURE_ENABLED_BY_DEFAULT);
 std::atomic<TimeConstraints> g_time_constraints;
+std::atomic<bool> g_use_thread_qos(kUseThreadQoSMac.default_state ==
+                                   FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
 // static
-void PlatformThread::InitializeOptimizedRealtimeThreadingFeature() {
+void PlatformThread::InitFeaturesPostFieldTrial() {
   // A DCHECK is triggered on FeatureList initialization if the state of a
   // feature has been checked before. To avoid triggering this DCHECK in unit
   // tests that call this before initializing the FeatureList, only check the
@@ -153,6 +157,7 @@ void PlatformThread::InitializeOptimizedRealtimeThreadingFeature() {
     g_time_constraints.store(TimeConstraints::ReadFromFeatureParams());
     g_use_optimized_realtime_threading.store(
         IsOptimizedRealtimeThreadingMacEnabled());
+    g_use_thread_qos.store(FeatureList::IsEnabled(kUseThreadQoSMac));
   }
 }
 
@@ -293,8 +298,9 @@ namespace internal {
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
-  // Changing the priority of the main thread causes performance regressions.
-  // https://crbug.com/601270
+  const bool use_thread_qos = g_use_thread_qos.load(std::memory_order_relaxed);
+  // Changing the priority of the main thread causes performance
+  // regressions. https://crbug.com/601270
   if ([[NSThread currentThread] isMainThread]) {
     DCHECK(thread_type == ThreadType::kDefault ||
            thread_type == ThreadType::kCompositing);
@@ -305,30 +311,45 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   switch (thread_type) {
     case ThreadType::kBackground:
       priority = ThreadPriorityForTest::kBackground;
-      [[NSThread currentThread] setThreadPriority:0];
+      if (use_thread_qos)
+        pthread_set_qos_class_self_np(QOS_CLASS_BACKGROUND, 0);
+      else
+        [[NSThread currentThread] setThreadPriority:0];
       break;
     case ThreadType::kResourceEfficient:
+      if (use_thread_qos) {
+        pthread_set_qos_class_self_np(QOS_CLASS_UTILITY, 0);
+        break;
+      }
+      [[fallthrough]];
     case ThreadType::kDefault:
       // TODO(1329208): Experiment with prioritizing kCompositing on Mac like on
       // other platforms.
       [[fallthrough]];
     case ThreadType::kCompositing:
       priority = ThreadPriorityForTest::kNormal;
-      [[NSThread currentThread] setThreadPriority:0.5];
+      if (use_thread_qos)
+        pthread_set_qos_class_self_np(QOS_CLASS_USER_INITIATED, 0);
+      else
+        [[NSThread currentThread] setThreadPriority:0.5];
       break;
     case ThreadType::kDisplayCritical: {
-      // Apple has suggested that insufficient priority may be the reason for
-      // Metal shader compilation hangs. A priority of 50 is higher than user
-      // input.
-      // https://crbug.com/974219.
       priority = ThreadPriorityForTest::kDisplay;
-      [[NSThread currentThread] setThreadPriority:1.0];
-      sched_param param;
-      int policy;
-      pthread_t thread = pthread_self();
-      if (!pthread_getschedparam(thread, &policy, &param)) {
-        param.sched_priority = 50;
-        pthread_setschedparam(thread, policy, &param);
+      if (use_thread_qos) {
+        pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
+      } else {
+        // Apple has suggested that insufficient priority may be the reason for
+        // Metal shader compilation hangs. A priority of 50 is higher than user
+        // input.
+        // https://crbug.com/974219.
+        [[NSThread currentThread] setThreadPriority:1.0];
+        sched_param param;
+        int policy;
+        pthread_t thread = pthread_self();
+        if (!pthread_getschedparam(thread, &policy, &param)) {
+          param.sched_priority = 50;
+          pthread_setschedparam(thread, policy, &param);
+        }
       }
       break;
     }

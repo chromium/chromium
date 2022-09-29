@@ -23,6 +23,7 @@ extern const BASE_EXPORT FeatureParam<double>
     kOptimizedRealtimeThreadingMacBusy;
 extern const BASE_EXPORT FeatureParam<double>
     kOptimizedRealtimeThreadingMacBusyLimit;
+extern const BASE_EXPORT Feature kUseThreadQoSMac;
 #endif
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcher);

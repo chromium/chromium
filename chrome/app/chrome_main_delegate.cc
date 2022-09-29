@@ -831,7 +831,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Threading features.
-  base::PlatformThread::InitThreadPostFieldTrial();
+  base::PlatformThread::InitFeaturesPostFieldTrial();
 #endif
 
   version_info::Channel channel = chrome::GetChannel();
@@ -905,7 +905,7 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   base::MessagePumpLibevent::InitializeFeatures();
 #elif BUILDFLAG(IS_MAC)
-  base::PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+  base::PlatformThread::InitFeaturesPostFieldTrial();
   base::MessagePumpCFRunLoopBase::InitializeFeatures();
 #endif
 }

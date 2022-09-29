@@ -15,6 +15,7 @@
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
+#include "base/threading/threading_features.h"
 #endif
 
 namespace base {
@@ -82,16 +83,19 @@ void MessagePumpDefault::ScheduleDelayedWork(
 
 #if BUILDFLAG(IS_APPLE)
 void MessagePumpDefault::SetTimerSlack(TimerSlack timer_slack) {
-  thread_latency_qos_policy_data_t policy{};
-  policy.thread_latency_qos_tier = timer_slack == TIMER_SLACK_MAXIMUM
-                                       ? LATENCY_QOS_TIER_3
-                                       : LATENCY_QOS_TIER_UNSPECIFIED;
-  mac::ScopedMachSendRight thread_port(mach_thread_self());
-  kern_return_t kr =
-      thread_policy_set(thread_port.get(), THREAD_LATENCY_QOS_POLICY,
-                        reinterpret_cast<thread_policy_t>(&policy),
-                        THREAD_LATENCY_QOS_POLICY_COUNT);
-  MACH_DVLOG_IF(1, kr != KERN_SUCCESS, kr) << "thread_policy_set";
+  if (!FeatureList::GetInstance() ||
+      !FeatureList::IsEnabled(kUseThreadQoSMac)) {
+    thread_latency_qos_policy_data_t policy{};
+    policy.thread_latency_qos_tier = timer_slack == TIMER_SLACK_MAXIMUM
+                                         ? LATENCY_QOS_TIER_3
+                                         : LATENCY_QOS_TIER_UNSPECIFIED;
+    mac::ScopedMachSendRight thread_port(mach_thread_self());
+    kern_return_t kr =
+        thread_policy_set(thread_port.get(), THREAD_LATENCY_QOS_POLICY,
+                          reinterpret_cast<thread_policy_t>(&policy),
+                          THREAD_LATENCY_QOS_POLICY_COUNT);
+    MACH_DVLOG_IF(1, kr != KERN_SUCCESS, kr) << "thread_policy_set";
+  }
 }
 #endif
 
