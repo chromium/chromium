@@ -89,7 +89,7 @@ using AcceptPeerData = AcceptPeerDataV0;
 struct alignas(8) AddBrokerClientDataV0 {
   ports::NodeName client_name;
 #if !BUILDFLAG(IS_WIN)
-  uint32_t process_handle = 0;
+  uint32_t process_handle;
 #endif
 };
 
@@ -386,7 +386,9 @@ void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
   message->SetHandles(std::move(handles));
   data->client_name = client_name;
 #if !BUILDFLAG(IS_WIN)
-  data->process_handle = process_handle.Handle();
+  // Older clients treat this as a real process handle, but don't actually need
+  // it, so send a valid null handle.
+  data->process_handle = base::kNullProcessHandle;
 #endif
   WriteChannelMessage(std::move(message));
 }
@@ -624,7 +626,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
           break;
         }
         delegate_->OnAddBrokerClient(remote_node_name_, data.client_name,
-                                     data.process_handle);
+                                     base::kNullProcessHandle);
 #endif
         return;
       }
