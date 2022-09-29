@@ -24,8 +24,16 @@
 
 namespace {
 
-// Opacity of navigation bar is scroll view content offset divided by this.
-const CGFloat kNavigationBarOpacityDenominator = 100;
+// Opacity of navigation bar should be 0% at offset keyframe 0 and 100% at
+// keyframe 1.
+const CGFloat kNavigationBarFadeInKeyFrame0 = 70;
+const CGFloat kNavigationBarFadeInKeyFrame1 = 140;
+const CGFloat kNavigationBarFadeInCompactHeightKeyFrame0 = 20;
+const CGFloat kNavigationBarFadeInCompactHeightKeyFrame1 = 50;
+
+// Name of banner at the top of the view.
+NSString* const kIncognitoInterstitialBannerName =
+    @"incognito_interstitial_screen_banner";
 
 // Maximum number of lines for the URL label, before the user unfolds it.
 const int kURLLabelDefaultNumberOfLines = 3;
@@ -37,6 +45,9 @@ const int kURLLabelDefaultNumberOfLines = 3;
 // The navigation bar to display at the top of the view, to contain a "Cancel"
 // button.
 @property(nonatomic, strong) UINavigationBar* navigationBar;
+
+// Vertical offset of internal scroll view, to update navigation bar opacity.
+@property(nonatomic, assign) CGFloat scrollViewContentOffsetY;
 
 // Label to display the URL which is going to be opened.
 @property(nonatomic, strong) UILabel* URLLabel;
@@ -60,7 +71,7 @@ const int kURLLabelDefaultNumberOfLines = 3;
   self.view.accessibilityIdentifier =
       kIncognitoInterstitialAccessibilityIdentifier;
 
-  self.bannerName = @"incognito_interstitial_screen_banner";
+  self.bannerName = kIncognitoInterstitialBannerName;
   self.isTallBanner = NO;
   self.shouldBannerFillTopSpace = YES;
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
@@ -151,7 +162,7 @@ const int kURLLabelDefaultNumberOfLines = 3;
 
   self.navigationBar = [[UINavigationBar alloc] init];
   [self.navigationBar pushNavigationItem:navigationRootItem animated:false];
-  [self updateNavigationBarAppearanceWithOpacity:0.0];
+  [self updateNavigationBarAppearance];
 
   incognitoView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
@@ -200,6 +211,7 @@ const int kURLLabelDefaultNumberOfLines = 3;
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   self.shouldHideBanner = IsCompactHeight(self.traitCollection);
+  [self updateNavigationBarAppearance];
   [super traitCollectionDidChange:previousTraitCollection];
 }
 
@@ -287,18 +299,25 @@ const int kURLLabelDefaultNumberOfLines = 3;
   contentOffset.y = fmax(0, contentOffset.y);
   scrollView.contentOffset = contentOffset;
 
-  [super scrollViewDidScroll:scrollView];
+  self.scrollViewContentOffsetY = scrollView.contentOffset.y;
+  [self updateNavigationBarAppearance];
 
-  CGFloat navigationBarOpacity =
-      scrollView.contentOffset.y / kNavigationBarOpacityDenominator;
-  navigationBarOpacity =
-      base::clamp(navigationBarOpacity, 0.0, 1.0, std::less_equal<>());
-  [self updateNavigationBarAppearanceWithOpacity:navigationBarOpacity];
+  [super scrollViewDidScroll:scrollView];
 }
 
 #pragma mark - Private
 
-- (void)updateNavigationBarAppearanceWithOpacity:(CGFloat)opacity {
+- (void)updateNavigationBarAppearance {
+  CGFloat keyFrame0 = IsCompactHeight(self.traitCollection)
+                          ? kNavigationBarFadeInCompactHeightKeyFrame0
+                          : kNavigationBarFadeInKeyFrame0;
+  CGFloat keyFrame1 = IsCompactHeight(self.traitCollection)
+                          ? kNavigationBarFadeInCompactHeightKeyFrame1
+                          : kNavigationBarFadeInKeyFrame1;
+  CGFloat opacity =
+      (self.scrollViewContentOffsetY - keyFrame0) / (keyFrame1 - keyFrame0);
+  opacity = base::clamp(opacity, 0.0, 1.0, std::less_equal<>());
+
   UIColor* backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   UIColor* shadowColor = [UIColor colorNamed:kSeparatorColor];
