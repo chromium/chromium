@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
 
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_line_resolver.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 
 namespace blink {

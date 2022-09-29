@@ -1130,7 +1130,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 }
 
 NGGridPlacementData NGGridLayoutAlgorithm::PlacementData() const {
-  NGGridPlacementData placement_data(Node().IsParentNGGrid());
+  NGGridPlacementData placement_data(Node().IsParentNGGrid(), Style());
   const auto& constraint_space = ConstraintSpace();
 
   if (const auto* subgridded_columns = constraint_space.SubgriddedColumns()) {

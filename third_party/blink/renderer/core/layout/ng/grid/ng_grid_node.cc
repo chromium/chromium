@@ -123,7 +123,8 @@ GridItems NGGridNode::GridItemsIncludingSubgridded(
 
     const auto subgrid = To<NGGridNode>(current_item.node);
     NGGridPlacementData subgrid_placement_data(
-        /* is_parent_grid_container */ true);
+        /* is_parent_grid_container */ true, subgrid.Style(),
+        CachedPlacementData().line_resolver);
 
     const bool is_parallel_subgrid = IsParallelWritingMode(
         Style().GetWritingMode(), subgrid.Style().GetWritingMode());

@@ -19,6 +19,7 @@ class NGGridNamedLineCollection {
       const String& named_line,
       GridTrackSizingDirection track_direction,
       const NamedGridLinesMap& implicit_grid_line_names,
+      const NamedGridLinesMap& explicit_grid_line_names,
       const ComputedGridTrackList& computed_grid_track_list,
       wtf_size_t last_line,
       wtf_size_t auto_repeat_tracks_count,

@@ -24,8 +24,15 @@ class NGGridLineResolver {
   DISALLOW_NEW();
 
  public:
+  NGGridLineResolver() = default;
+
   explicit NGGridLineResolver(const ComputedStyle& grid_style)
-      : style_(&grid_style) {}
+      : style_(&grid_style), is_subgrid_line_resolver_(false) {}
+
+  // Subgrids need to map named lines from every parent grid. This constructor
+  // should be used exclusively by subgrids to differentiate such scenario.
+  explicit NGGridLineResolver(const ComputedStyle& grid_style,
+                              const NGGridLineResolver& parent_line_resolver);
 
   wtf_size_t ExplicitGridColumnCount(
       wtf_size_t auto_repeat_columns_count,
@@ -46,10 +53,13 @@ class NGGridLineResolver {
       wtf_size_t subgrid_span_size = kNotFound) const;
 
  private:
-  const NamedGridLinesMap& NamedLinesMapForDirection(
+  const NamedGridLinesMap& ImplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
-  const ComputedGridTrackList& ComputedGridTrackListForDirection(
+  const NamedGridLinesMap& ExplicitNamedLinesMap(
+      GridTrackSizingDirection track_direction) const;
+
+  const ComputedGridTrackList& ComputedGridTrackList(
       GridTrackSizingDirection track_direction) const;
 
   GridSpan ResolveGridPositionAgainstOppositePosition(
@@ -110,6 +120,11 @@ class NGGridLineResolver {
       NGGridNamedLineCollection& lines_collection) const;
 
   scoped_refptr<const ComputedStyle> style_;
+
+  bool is_subgrid_line_resolver_ : 1;
+
+  NamedGridLinesMap column_subgrid_merged_grid_line_names_;
+  NamedGridLinesMap row_subgrid_merged_grid_line_names_;
 };
 
 }  // namespace blink

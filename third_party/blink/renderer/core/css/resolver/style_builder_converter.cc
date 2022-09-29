@@ -1074,7 +1074,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
           computed_grid_track_list.named_grid_lines,
           computed_grid_track_list.ordered_named_grid_lines, is_in_repeat,
           is_first_repeat);
-      if (computed_grid_track_list.axis_type == GridAxisType::kSubgriddedAxis)
+      if (computed_grid_track_list.IsSubgriddedAxis())
         ++current_named_grid_line;
     } else {
       DCHECK_EQ(computed_grid_track_list.axis_type,
@@ -1114,8 +1114,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
               *auto_repeat_value, auto_repeat_index,
               computed_grid_track_list.auto_repeat_named_grid_lines,
               computed_grid_track_list.auto_repeat_ordered_named_grid_lines);
-          if (computed_grid_track_list.axis_type ==
-              GridAxisType::kSubgriddedAxis)
+          if (computed_grid_track_list.IsSubgriddedAxis())
             ++auto_repeat_index;
           continue;
         }
@@ -1178,7 +1177,7 @@ void StyleBuilderConverter::ConvertGridTrackList(
   // the syntax.
   DCHECK(!track_sizes.LegacyTrackList().empty() ||
          !auto_repeat_track_sizes.empty() ||
-         (computed_grid_track_list.axis_type == GridAxisType::kSubgriddedAxis));
+         computed_grid_track_list.IsSubgriddedAxis());
 }
 
 void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
