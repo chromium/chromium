@@ -3857,7 +3857,8 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter"
         ],
         "merge": {
           "args": [],
