@@ -5,7 +5,7 @@
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
-import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, Lazy, querySelectorShadow, retryUntilSome} from './utils.js';
+import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, Lazy, querySelectorShadow, retry, retryUntilSome} from './utils.js';
 
 export class LockScreenSettings implements LockScreenSettingsInterface {
   // Relevant elements are stored as lazy values because element identity might
@@ -30,7 +30,18 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     return lockScreen.shadowRoot;
   }
 
-  async authenticate(password: string): Promise<void> {
+  async assertAuthenticated(isAuthenticated: boolean): Promise<void> {
+    const property = () => {
+      const dialogExists = this.passwordDialog() != null;
+      return isAuthenticated === !dialogExists;
+    };
+
+    await assertAsync(property);
+    await assertForDuration(property);
+  }
+
+  async authenticate(password: string, shouldSucceed: boolean = true):
+      Promise<void> {
     const passwordDialog = await retryUntilSome(this.passwordDialog);
     assertTrue(passwordDialog != null);
     assertTrue(passwordDialog.shadowRoot != null);
@@ -52,7 +63,23 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     assertTrue(confirmButton != null);
     confirmButton.click();
 
-    await assertAsync(() => this.passwordDialog() == null);
+    if (shouldSucceed) {
+      await assertAsync(() => this.passwordDialog() == null);
+      return;
+    }
+
+    // Assert that an error message shows up eventually.
+    await retry(() => {
+      assertTrue(passwordInput.shadowRoot != null);
+      const errorDiv = passwordInput.shadowRoot.getElementById('error');
+      assertTrue(errorDiv != null);
+      assertTrue(!!errorDiv.innerText);
+      assertTrue(window.getComputedStyle(errorDiv).visibility === 'visible');
+    });
+  }
+
+  async authenticateIncorrectly(password: string): Promise<void> {
+    await this.authenticate(password, false);
   }
 
   private recoveryToggle(): HTMLElement&{checked: boolean}|null {
