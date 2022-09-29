@@ -104,6 +104,7 @@ fn test() {
             authors: Vec::new(),
             edition: Edition("2021".to_string()),
             description: None,
+            license: "funtimes".to_string(),
         },
         workspace: None,
         dependency_spec: DependencySpec {
@@ -133,6 +134,7 @@ fn test() {
 name = \"chromium\"
 version = \"0.1.0\"
 edition = \"2021\"
+license = \"funtimes\"
 [patch.crates-io.foo_v1]
 path = \"third_party/rust/foo/v1/crate\"
 package = \"foo\"
@@ -149,6 +151,7 @@ version = \"1.2.3\"
 authors = [\"alice@foo.com\", \"bob@foo.com\"]
 edition = \"2021\"
 description = \"A library to foo the bars\"
+license = \"funtimes\"
 "
     ))
     .unwrap();
@@ -161,6 +164,7 @@ description = \"A library to foo the bars\"
             authors: vec!["alice@foo.com".to_string(), "bob@foo.com".to_string()],
             edition: Edition("2021".to_string()),
             description: Some("A library to foo the bars".to_string()),
+            license: "funtimes".to_string(),
         }
     )
 }

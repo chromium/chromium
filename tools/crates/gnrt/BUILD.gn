@@ -19,6 +19,7 @@ rust_static_library("gnrt_lib") {
   sources = [
     "crates.rs",
     "deps.rs",
+    "download.rs",
     "gn.rs",
     "lib.rs",
     "manifest.rs",

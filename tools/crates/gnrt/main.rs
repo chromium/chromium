@@ -17,22 +17,48 @@ use clap::arg;
 
 fn main() -> ExitCode {
     let args = clap::Command::new("gnrt")
-        .about("Generate GN build rules from third_party/rust crates")
-        .arg(
-            arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit immediately")
+        .subcommand(clap::Command::new("gen")
+            .about("Generate GN build rules from third_party/rust crates")
+            .arg(arg!(--"output-cargo-toml" "Output third_party/rust/Cargo.toml then exit \
+                immediately"))
+            .arg(arg!(--"skip-patch" "Don't apply gnrt_build_patch after generating build files. \
+                Useful when updating the patch."))
+            .arg(arg!(--"for-std" "(WIP) Generate build files for Rust std library instead of \
+                third_party/rust"))
         )
-        .arg(arg!(--"skip-patch" "Don't apply gnrt_build_patch after generating build files. Useful when updating the patch."))
-        .arg(arg!(--"for-std" "(WIP) Generate build files for Rust std library instead of third_party/rust"))
+        .subcommand(clap::Command::new("download")
+            .about("Download the crate with the given name and version to third_party/rust.")
+            .arg(arg!([NAME] "Name of the crate to download").required(true))
+            .arg(arg!([VERSION] "Version of the crate to download").required(true))
+            .arg(
+                arg!(--"security-critical" <YESNO> "Whether the crate is considered to be \
+                    security critical."
+                ).possible_values(["yes", "no"]).required(true)
+            )
+        )
         .get_matches();
 
     let paths = paths::ChromiumPaths::new().unwrap();
 
-    if args.is_present("for-std") {
-        // This is not fully implemented. Currently, it will print data helpful
-        // for development then quit.
-        generate_for_std(&args, &paths)
-    } else {
-        generate_for_third_party(&args, &paths)
+    match args.subcommand() {
+        Some(("gen", args)) => {
+            if args.is_present("for-std") {
+                // This is not fully implemented. Currently, it will print data helpful
+                // for development then quit.
+                generate_for_std(&args, &paths)
+            } else {
+                generate_for_third_party(&args, &paths)
+            }
+        }
+        Some(("download", args)) => {
+            let security = args.value_of("security-critical").unwrap() == "yes";
+            let name = args.value_of("NAME").unwrap();
+            use std::str::FromStr;
+            let version = semver::Version::from_str(args.value_of("VERSION").unwrap())
+                .expect("Invalid version specified");
+            download::download(name, version, security, &paths)
+        }
+        _ => unreachable!("Invalid subcommand"),
     }
 }
 

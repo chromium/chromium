@@ -126,6 +126,8 @@ pub struct CargoPackage {
     pub edition: Edition,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub license: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -165,7 +167,7 @@ pub fn generate_fake_cargo_toml<Iter: IntoIterator<Item = PatchSpecification>>(
     third_party_manifest: ThirdPartyManifest,
     patches: Iter,
 ) -> CargoManifest {
-    let ThirdPartyManifest { workspace, mut dependency_spec } = third_party_manifest;
+    let ThirdPartyManifest { workspace, mut dependency_spec, .. } = third_party_manifest;
 
     // Hack: set all `allow_first_party_usage` fields to true so they are
     // suppressed in the Cargo.toml.
@@ -197,6 +199,7 @@ pub fn generate_fake_cargo_toml<Iter: IntoIterator<Item = PatchSpecification>>(
         authors: Vec::new(),
         edition: Edition("2021".to_string()),
         description: None,
+        license: "".to_string(),
     };
 
     CargoManifest {
