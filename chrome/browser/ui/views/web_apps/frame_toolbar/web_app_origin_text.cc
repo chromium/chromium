@@ -106,7 +106,7 @@ void WebAppOriginText::OnLayerAnimationEnded(
 
 void WebAppOriginText::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kApplication;
-  node_data->SetName(label_->GetText());
+  node_data->SetNameChecked(label_->GetText());
 }
 
 BEGIN_METADATA(WebAppOriginText, views::View)
