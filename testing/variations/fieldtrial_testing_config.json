@@ -4692,13 +4692,15 @@
     "GoogleLensDesktopRegionSearchPdf": [
         {
             "platforms": [
+                "chromeos",
+                "chromeos_lacros",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220819",
+                    "name": "Enabled_20220929",
                     "enable_features": [
                         "LensEnableRegionSearchOnPdfViewer"
                     ]
