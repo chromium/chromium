@@ -216,9 +216,19 @@ std::unique_ptr<StoredPage> PrerenderPageHolder::Activate(
 
 PrerenderHost::LoadingOutcome
 PrerenderPageHolder::WaitForLoadCompletionForTesting() {
+  PrerenderHost* prerender_host =
+      web_contents_.GetPrerenderHostRegistry()->FindNonReservedHostById(
+          frame_tree()->root()->frame_tree_node_id());
+  if (!prerender_host) {
+    // The prerender may be cancelled.
+    return PrerenderHost::LoadingOutcome::kPrerenderingCancelled;
+  }
+
   PrerenderHost::LoadingOutcome status =
       PrerenderHost::LoadingOutcome::kLoadingCompleted;
-  if (!frame_tree_->IsLoadingIncludingInnerFrameTrees())
+
+  if (!frame_tree_->IsLoadingIncludingInnerFrameTrees() &&
+      prerender_host->GetInitialNavigationId().has_value())
     return status;
 
   base::RunLoop loop;
