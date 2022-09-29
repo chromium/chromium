@@ -166,6 +166,8 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
 
   void TranslateFullPage(content::WebContents* web_contents) override {}
 
+  void SetSourceTextTruncated(bool is_truncated) override {}
+
   void NotifyTranslated() {
     for (PartialTranslateBubbleModel::Observer& obs : observers_) {
       obs.OnPartialTranslateComplete();

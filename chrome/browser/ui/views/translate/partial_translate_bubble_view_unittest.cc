@@ -84,6 +84,8 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
     full_page_translate_called_ = true;
   }
 
+  void SetSourceTextTruncated(bool is_truncated) override {}
+
   ViewState current_view_state_;
   std::u16string source_name_ = u"English";
   std::u16string target_name_ = u"English";
