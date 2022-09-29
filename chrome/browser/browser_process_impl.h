@@ -250,7 +250,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   // Must be destroyed after |local_state_|.
   // Must be destroyed after |profile_manager_|.
-  std::unique_ptr<policy::ChromeBrowserPolicyConnector>
+  std::unique_ptr<policy::ChromeBrowserPolicyConnector> const
       browser_policy_connector_;
 
   // Must be destroyed before |browser_policy_connector_|.

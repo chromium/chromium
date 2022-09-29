@@ -252,6 +252,7 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
   // ensure the persistent storage of current max SessionId.
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
+  DCHECK(browser_policy_connector_);
   DCHECK(local_state_);
   DCHECK(startup_data);
   // Most work should be done in Init().
@@ -414,11 +415,10 @@ void BrowserProcessImpl::StartTearDown() {
   // Initial cleanup for ChromeBrowserCloudManagement, shutdown components that
   // depend on profile and notification system. For example, ProfileManager
   // observer and KeyServices observer need to be removed before profiles.
-  if (browser_policy_connector_ &&
-      browser_policy_connector_->chrome_browser_cloud_management_controller()) {
-    browser_policy_connector_->chrome_browser_cloud_management_controller()
-        ->ShutDown();
-  }
+  auto* cloud_management_controller =
+      browser_policy_connector_->chrome_browser_cloud_management_controller();
+  if (cloud_management_controller)
+    cloud_management_controller->ShutDown();
 #endif
 
   system_notification_helper_.reset();
@@ -470,8 +470,7 @@ void BrowserProcessImpl::StartTearDown() {
   // down while the IO and FILE threads are still alive. The monitoring
   // framework owned by |browser_policy_connector_| relies on |gcm_driver_|, so
   // this must be shutdown before |gcm_driver_| below.
-  if (browser_policy_connector_)
-    browser_policy_connector_->Shutdown();
+  browser_policy_connector_->Shutdown();
 
   // The |gcm_driver_| must shut down while the IO thread is still alive.
   if (gcm_driver_)
