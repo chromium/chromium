@@ -259,6 +259,10 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRect() const {
       thumb_thickness_scale_factor_);
 }
 
+gfx::Rect ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect() const {
+  return ComputeThumbQuadRect();
+}
+
 void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
     float opacity) {
   DCHECK(is_overlay_scrollbar());
@@ -332,7 +336,7 @@ ScrollbarPart ScrollbarLayerImplBase::IdentifyScrollbarPart(
   if (ForwardButtonRect().Contains(pointer_location))
     return ScrollbarPart::FORWARD_BUTTON;
 
-  if (ComputeThumbQuadRect().Contains(pointer_location))
+  if (ComputeHitTestableThumbQuadRect().Contains(pointer_location))
     return ScrollbarPart::THUMB;
 
   if (BackTrackRect().Contains(pointer_location))

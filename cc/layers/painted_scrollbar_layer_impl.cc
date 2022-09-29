@@ -187,6 +187,25 @@ gfx::Rect PaintedScrollbarLayerImpl::ComputeThumbQuadRect() const {
   return thumb_rect;
 }
 
+gfx::Rect PaintedScrollbarLayerImpl::ComputeHitTestableThumbQuadRect() const {
+  if (!IsFluentScrollbarEnabled())
+    return ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect();
+
+  // Expand the scrollbar thumb's hit testable rect to be able to capture
+  // the thumb across the entire width of the track rect.
+  gfx::Rect thumb_rect = ComputeThumbQuadRect();
+  const gfx::Rect back_track_rect = BackTrackRect();
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
+    thumb_rect.set_y(back_track_rect.y());
+    thumb_rect.set_height(back_track_rect.height());
+    return thumb_rect;
+  } else {
+    thumb_rect.set_x(back_track_rect.x());
+    thumb_rect.set_width(back_track_rect.width());
+    return thumb_rect;
+  }
+}
+
 void PaintedScrollbarLayerImpl::SetJumpOnTrackClick(bool jump_on_track_click) {
   if (jump_on_track_click_ == jump_on_track_click)
     return;

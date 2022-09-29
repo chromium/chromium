@@ -41,6 +41,7 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
                    AppendQuadsData* append_quads_data) override;
   gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::Rect ComputeThumbQuadRect() const override;
+  gfx::Rect ComputeHitTestableThumbQuadRect() const override;
 
   void SetJumpOnTrackClick(bool jump_on_track_click);
   void SetSupportsDragSnapBack(bool supports_drag_snap_back);
