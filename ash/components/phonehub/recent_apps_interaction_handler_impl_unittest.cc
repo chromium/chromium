@@ -482,7 +482,7 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
   handler().NotifyRecentAppAddedOrUpdated(app_metadata5, next_three_hour);
   handler().NotifyRecentAppAddedOrUpdated(app_metadata6, next_four_hour);
 
-  const size_t max_most_recent_apps = 5;
+  const size_t max_most_recent_apps = 6;
   recent_apps_metadata_result = handler().FetchRecentAppMetadataList();
   EXPECT_EQ(max_most_recent_apps, recent_apps_metadata_result.size());
 
@@ -491,6 +491,7 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
   EXPECT_EQ(package_name4, recent_apps_metadata_result[2].package_name);
   EXPECT_EQ(package_name3, recent_apps_metadata_result[3].package_name);
   EXPECT_EQ(package_name2, recent_apps_metadata_result[4].package_name);
+  EXPECT_EQ(package_name1, recent_apps_metadata_result[5].package_name);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest,

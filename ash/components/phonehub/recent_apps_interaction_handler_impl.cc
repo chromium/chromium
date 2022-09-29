@@ -33,7 +33,7 @@ using HostStatusWithDevice =
 using FeatureStatesMap =
     multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap;
 
-const size_t kMaxMostRecentApps = 5;
+const size_t kMaxMostRecentApps = 6;
 const size_t kMaxSavedRecentApps = 10;
 
 // static
