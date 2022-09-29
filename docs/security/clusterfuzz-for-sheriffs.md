@@ -11,7 +11,8 @@ This page has instructions for [Security Sheriffs](sheriff.md) in how best to us
 allows you to upload files to reproduce crashes on various platforms and will
 identify revision ranges when the regression was introduced. If a test case
 requires multiple files, they can be uploaded together in a zip or tar
-archive: the main file needs to contain the words `index`, `crash` or `test`.
+archive: the main file needs to contain the words `run`, `fuzz-` `index.` or
+`crash.`.
 
 Please *do* specify the crbug number when uploading the test case. This will allow
 ClusterFuzz to keep the crbug updated with progress.
