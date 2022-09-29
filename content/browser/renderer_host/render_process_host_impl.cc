@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -3187,6 +3188,15 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   if (IsJitDisabled())
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--jitless");
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kTouchTextEditingRedesign)) {
+    command_line->AppendSwitchASCII(
+        blink::switches::kTouchTextSelectionStrategy,
+        blink::switches::kTouchTextSelectionStrategy_Direction);
+  }
+#endif
 
 #if BUILDFLAG(IS_WIN)
   command_line->AppendSwitchASCII(

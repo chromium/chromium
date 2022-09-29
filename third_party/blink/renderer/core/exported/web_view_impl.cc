@@ -344,13 +344,17 @@ void ApplyCommandLineToSettings(WebSettings* settings) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  WebSettings::SelectionStrategyType selection_strategy;
-  if (command_line.GetSwitchValueASCII(switches::kTouchTextSelectionStrategy) ==
-      switches::kTouchTextSelectionStrategy_Direction)
-    selection_strategy = WebSettings::SelectionStrategyType::kDirection;
-  else
-    selection_strategy = WebSettings::SelectionStrategyType::kCharacter;
-  settings->SetSelectionStrategy(selection_strategy);
+  std::string touch_text_selection_strategy =
+      command_line.GetSwitchValueASCII(switches::kTouchTextSelectionStrategy);
+  if (touch_text_selection_strategy ==
+      switches::kTouchTextSelectionStrategy_Character) {
+    settings->SetSelectionStrategy(
+        WebSettings::SelectionStrategyType::kCharacter);
+  } else if (touch_text_selection_strategy ==
+             switches::kTouchTextSelectionStrategy_Direction) {
+    settings->SetSelectionStrategy(
+        WebSettings::SelectionStrategyType::kDirection);
+  }
 
   WebString network_quiet_timeout = WebString::FromUTF8(
       command_line.GetSwitchValueASCII(switches::kNetworkQuietTimeout));
