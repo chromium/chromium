@@ -11,10 +11,10 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 /**
  * Converts an SkColor object to a string in the form
  * "rgba(<red>, <green>, <blue>, <alpha>)".
- * @param {SkColor} skColor The input color.
- * @return {string} The rgba string.
+ * @param skColor The input color.
+ * @return The rgba string.
  */
-export function skColorToRgba(skColor) {
+export function skColorToRgba(skColor: SkColor): string {
   const a = (skColor.value >> 24) & 0xff;
   const r = (skColor.value >> 16) & 0xff;
   const g = (skColor.value >> 8) & 0xff;
@@ -24,10 +24,10 @@ export function skColorToRgba(skColor) {
 
 /**
  * Converts a string of the form "#rrggbb" to an SkColor object.
- * @param {string} hexColor The color string.
- * @return {!SkColor} The SkColor object,
+ * @param hexColor The color string.
+ * @return The SkColor object,
  */
-export function hexColorToSkColor(hexColor) {
+export function hexColorToSkColor(hexColor: string): SkColor {
   if (!/^#[0-9a-f]{6}$/.test(hexColor)) {
     return {value: 0};
   }

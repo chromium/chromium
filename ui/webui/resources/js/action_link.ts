@@ -36,18 +36,18 @@ class ActionLink extends HTMLAnchorElement {
       this.setAttribute('role', 'link');
     }
 
-    this.addEventListener('keydown', function(e) {
+    this.addEventListener('keydown', (e: KeyboardEvent) => {
       if (!this.disabled && e.key === 'Enter' && !this.href) {
         // Schedule a click asynchronously because other 'keydown' handlers
         // may still run later (e.g. document.addEventListener('keydown')).
         // Specifically options dialogs break when this timeout isn't here.
         // NOTE: this affects the "trusted" state of the ensuing click. I
         // haven't found anything that breaks because of this (yet).
-        window.setTimeout(this.click.bind(this), 0);
+        window.setTimeout(() => this.click(), 0);
       }
     });
 
-    function preventDefault(e) {
+    function preventDefault(e: Event) {
       e.preventDefault();
     }
 
@@ -74,8 +74,7 @@ class ActionLink extends HTMLAnchorElement {
     });
   }
 
-  /** @param {boolean} disabled */
-  set disabled(disabled) {
+  set disabled(disabled: boolean) {
     if (disabled) {
       HTMLAnchorElement.prototype.setAttribute.call(this, 'disabled', '');
     } else {
@@ -84,25 +83,23 @@ class ActionLink extends HTMLAnchorElement {
     this.tabIndex = disabled ? -1 : 0;
   }
 
-  get disabled() {
+  get disabled(): boolean {
     return this.hasAttribute('disabled');
   }
 
-  /** @override */
-  setAttribute(attr, val) {
+  override setAttribute(attr: string, val: string) {
     if (attr.toLowerCase() === 'disabled') {
       this.disabled = true;
     } else {
-      HTMLAnchorElement.prototype.setAttribute.apply(this, arguments);
+      super.setAttribute(attr, val);
     }
   }
 
-  /** @override */
-  removeAttribute(attr) {
+  override removeAttribute(attr: string) {
     if (attr.toLowerCase() === 'disabled') {
       this.disabled = false;
     } else {
-      HTMLAnchorElement.prototype.removeAttribute.apply(this, arguments);
+      super.removeAttribute(attr);
     }
   }
 }

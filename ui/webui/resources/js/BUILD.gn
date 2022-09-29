@@ -40,7 +40,9 @@ preprocess_if_expr("preprocess_src_ts") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
   in_files = [
+    "action_link.ts",
     "assert_ts.ts",
+    "color_utils.ts",
     "custom_element.ts",
     "search_highlight_utils.ts",
   ]
@@ -51,9 +53,7 @@ preprocess_if_expr("preprocess_src") {
   out_folder = "$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
-    "action_link.js",
     "assert.js",
-    "color_utils.js",
     "cr.m.js",
     "cr/event_target.js",
     "cr/ui.js",
@@ -107,15 +107,7 @@ js_type_check("js_resources") {
   }
 
   if (is_chromeos_ash) {
-    deps += [
-      ":action_link",
-      ":util_deprecated",
-    ]
-  }
-}
-
-if (is_chromeos_ash) {
-  js_library("action_link") {
+    deps += [ ":util_deprecated" ]
   }
 }
 

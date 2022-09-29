@@ -173,9 +173,7 @@ copy("copy_checked_in_dts_files") {
 
 # Files for which .d.ts files will be auto-generated with ts_definitions().
 generate_definitions_js_files = [
-  "js/action_link.js",
   "js/assert.js",
-  "js/color_utils.js",
   "js/cr/event_target.js",
   "js/cr.m.js",
   "js/cr/ui.js",
@@ -198,7 +196,9 @@ ts_library("library") {
   extra_deps = []
 
   in_files = cr_elements_files + [
+               "js/action_link.ts",
                "js/assert_ts.ts",
+               "js/color_utils.ts",
                "js/custom_element.ts",
                "js/cr/ui/drag_wrapper.ts",
                "js/cr/ui/focus_grid.ts",
