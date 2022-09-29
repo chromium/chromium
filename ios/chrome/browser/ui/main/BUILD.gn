@@ -98,6 +98,19 @@ source_set("layout_guide_scene_agent") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("layout_guide_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "layout_guide_util.h",
+    "layout_guide_util.mm",
+  ]
+  deps = [
+    ":layout_guide_scene_agent",
+    ":scene_state_header",
+    "//ios/chrome/browser/browser_state",
+  ]
+}
+
 source_set("scene_ui_provider") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "scene_ui_provider.h" ]

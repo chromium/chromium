@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
-#import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -47,9 +47,6 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
 // (thus the returned value must be checked for null).
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 
-// The layout guide center to use to coordinate views.
-@property(nonatomic, readonly) LayoutGuideCenter* layoutGuideCenter;
-
 // The layout guide installed in the base view controller on which to anchor the
 // potential IPH bubble.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
@@ -73,18 +70,6 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
   return self.browser ? self.browser->GetBrowserState() : nullptr;
 }
 
-- (LayoutGuideCenter*)layoutGuideCenter {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  LayoutGuideSceneAgent* layoutGuideSceneAgent =
-      [LayoutGuideSceneAgent agentFromScene:sceneState];
-  if (self.browserState && self.browserState->IsOffTheRecord()) {
-    return layoutGuideSceneAgent.incognitoLayoutGuideCenter;
-  } else {
-    return layoutGuideSceneAgent.layoutGuideCenter;
-  }
-}
-
 - (feature_engagement::Tracker*)featureEngagementTracker {
   ChromeBrowserState* browserState = self.browserState;
   if (!browserState)
@@ -102,8 +87,9 @@ constexpr base::TimeDelta kMenuTipDelay = base::Seconds(1);
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   [sceneState addObserver:self];
 
-  self.layoutGuide =
-      [self.layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  self.layoutGuide = [layoutGuideCenter makeLayoutGuideNamed:kToolsMenuGuide];
   [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 }
 

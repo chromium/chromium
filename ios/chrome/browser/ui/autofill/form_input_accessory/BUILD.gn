@@ -65,7 +65,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/default_promo:utils",
-    "//ios/chrome/browser/ui/main:layout_guide_scene_agent",
+    "//ios/chrome/browser/ui/main:layout_guide_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:util_swift",
