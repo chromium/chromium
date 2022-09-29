@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_K_ANONYMITY_SERVICE_K_ANONYMITY_SERVICE_URLS_H_
 #define CHROME_BROWSER_K_ANONYMITY_SERVICE_K_ANONYMITY_SERVICE_URLS_H_
 
-constexpr char kKAnonymityAuthServer[] =
-    "https://chromekanonymityauth-pa.googleapis.com";
 constexpr char kGenNonUniqueUserIdPath[] = "/v1/generateShortIdentifier";
 constexpr char kFetchKeysPathFmt[] =
     "/v1/%d/fetchKeys?key=%s";  // Put the short ID in the path.

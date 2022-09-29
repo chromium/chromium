@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_metrics.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
@@ -70,9 +71,10 @@ KAnonymityTrustTokenGetter::KAnonymityTrustTokenGetter(
     : identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       trust_token_query_answerer_(answerer) {
-  url::Origin auth_origin = url::Origin::Create(GURL(kKAnonymityAuthServer));
+  auth_origin_ =
+      url::Origin::Create(GURL(features::kKAnonymityServiceAuthServer.Get()));
   isolation_info_ = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, auth_origin, auth_origin,
+      net::IsolationInfo::RequestType::kOther, auth_origin_, auth_origin_,
       net::SiteForCookies());
 }
 
@@ -169,7 +171,7 @@ void KAnonymityTrustTokenGetter::FetchNonUniqueUserId() {
       KAnonymityTrustTokenGetterAction::kFetchNonUniqueClientID);
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
-      GURL(base::StrCat({kKAnonymityAuthServer, kGenNonUniqueUserIdPath}));
+      auth_origin_.GetURL().Resolve(kGenNonUniqueUserIdPath);
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,
       base::StrCat({"Bearer ", access_token_.token}));
@@ -237,10 +239,8 @@ void KAnonymityTrustTokenGetter::FetchTrustTokenKeyCommitment(
   RecordTrustTokenGetterAction(
       KAnonymityTrustTokenGetterAction::kFetchTrustTokenKey);
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(
-      base::StrCat({kKAnonymityAuthServer,
-                    base::StringPrintf(kFetchKeysPathFmt, non_unique_user_id,
-                                       google_apis::GetAPIKey().c_str())}));
+  resource_request->url = auth_origin_.GetURL().Resolve(base::StringPrintf(
+      kFetchKeysPathFmt, non_unique_user_id, google_apis::GetAPIKey().c_str()));
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kOmit;  // No credentials required for
                                                // key fetch.
@@ -402,9 +402,8 @@ void KAnonymityTrustTokenGetter::OnParsedTrustTokenKeyCommitment(
 }
 
 void KAnonymityTrustTokenGetter::CheckTrustTokens() {
-  url::Origin issuer = url::Origin::Create(GURL(kKAnonymityAuthServer));
   trust_token_query_answerer_->HasTrustTokens(
-      issuer,
+      auth_origin_,
       base::BindOnce(&KAnonymityTrustTokenGetter::OnHasTrustTokensComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -429,11 +428,9 @@ void KAnonymityTrustTokenGetter::FetchTrustToken() {
   RecordTrustTokenGetterAction(
       KAnonymityTrustTokenGetterAction::kFetchTrustToken);
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(base::StrCat(
-      {kKAnonymityAuthServer,
-       base::StringPrintf(kIssueTrustTokenPathFmt,
-                          key_and_non_unique_user_id_with_expiration_.key_and_id
-                              .non_unique_user_id)}));
+  resource_request->url = auth_origin_.GetURL().Resolve(base::StringPrintf(
+      kIssueTrustTokenPathFmt, key_and_non_unique_user_id_with_expiration_
+                                   .key_and_id.non_unique_user_id));
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAuthorization,

@@ -32,7 +32,8 @@ KAnonymityServiceClient::KAnonymityServiceClient(Profile* profile)
       enable_ohttp_requests_(base::FeatureList::IsEnabled(
           features::kKAnonymityServiceOHTTPRequests)),
       // Pass the auth server origin as if it is our "top frame".
-      trust_token_answerer_(url::Origin::Create(GURL(kKAnonymityAuthServer)),
+      trust_token_answerer_(url::Origin::Create(GURL(
+                                features::kKAnonymityServiceAuthServer.Get())),
                             profile),
       token_getter_(IdentityManagerFactory::GetForProfile(profile),
                     url_loader_factory_,
@@ -141,4 +142,12 @@ void KAnonymityServiceClient::QuerySets(
   // An empty vector passed to the callback signifies failure.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::vector<bool>()));
+}
+
+base::TimeDelta KAnonymityServiceClient::GetJoinInterval() {
+  return features::kKAnonymityServiceJoinInterval.Get();
+}
+
+base::TimeDelta KAnonymityServiceClient::GetQueryInterval() {
+  return features::kKAnonymityServiceQueryInterval.Get();
 }

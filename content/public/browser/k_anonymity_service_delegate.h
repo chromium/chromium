@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -41,6 +42,14 @@ class CONTENT_EXPORT KAnonymityServiceDelegate {
   virtual void QuerySets(
       std::vector<std::string> ids,
       base::OnceCallback<void(std::vector<bool>)> callback) = 0;
+
+  // The minimum period of time that a user of this interface should wait
+  // between JoinSet calls with the same `id`.
+  virtual base::TimeDelta GetJoinInterval() = 0;
+
+  // The minimum period of time that a user of this interface should wait
+  // between QuerySets calls including the same `id`.
+  virtual base::TimeDelta GetQueryInterval() = 0;
 };
 
 }  // namespace content

@@ -153,6 +153,7 @@ class KAnonymityTrustTokenGetter {
   net::IsolationInfo isolation_info_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
+  url::Origin auth_origin_;
 
   base::WeakPtrFactory<KAnonymityTrustTokenGetter> weak_ptr_factory_{this};
 };

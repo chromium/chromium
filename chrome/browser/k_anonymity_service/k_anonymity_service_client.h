@@ -68,6 +68,9 @@ class KAnonymityServiceClient : public content::KAnonymityServiceDelegate,
   void QuerySets(std::vector<std::string> set_ids,
                  base::OnceCallback<void(std::vector<bool>)> callback) override;
 
+  base::TimeDelta GetJoinInterval() override;
+  base::TimeDelta GetQueryInterval() override;
+
  private:
   struct PendingJoinRequest {
     PendingJoinRequest(std::string set_id,

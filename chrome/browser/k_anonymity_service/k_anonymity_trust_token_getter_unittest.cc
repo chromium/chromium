@@ -8,6 +8,7 @@
 
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_urls.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -30,6 +32,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+const char kAuthServer[] = "https://authserver";
 
 using KeyAndNonUniqueUserId = KAnonymityTrustTokenGetter::KeyAndNonUniqueUserId;
 
@@ -62,7 +66,11 @@ class TestTrustTokenQueryAnswerer
 class KAnonymityTrustTokenGetterTest : public testing::Test {
  protected:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(network::features::kTrustTokens);
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{network::features::kTrustTokens, {}},
+                              {features::kKAnonymityService,
+                               {{"KAnonymityServiceAuthServer", kAuthServer}}}},
+        /*disabled_features=*/{});
     TestingProfile::Builder builder;
     builder.SetSharedURLLoaderFactory(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -75,7 +83,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
     getter_ = std::make_unique<KAnonymityTrustTokenGetter>(
         IdentityManagerFactory::GetForProfile(profile_.get()),
         profile_->GetURLLoaderFactory(), &trust_token_answerer_);
-    url::Origin auth_origin = url::Origin::Create(GURL(kKAnonymityAuthServer));
+    url::Origin auth_origin = url::Origin::Create(GURL(kAuthServer));
     isolation_info_ = net::IsolationInfo::Create(
         net::IsolationInfo::RequestType::kOther, auth_origin, auth_origin,
         net::SiteForCookies());
@@ -119,8 +127,7 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
 
   void RespondWithTrustTokenNonUniqueUserId(int id) {
     std::string request_url =
-        "https://chromekanonymityauth-pa.googleapis.com/v1/"
-        "generateShortIdentifier";
+        base::StrCat({kAuthServer, "/v1/generateShortIdentifier"});
 
     const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     ASSERT_TRUE(pending_request);
@@ -139,9 +146,8 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void RespondWithTrustTokenKeys(int id, base::Time expiration) {
-    std::string request_url = base::StringPrintf(
-        "https://chromekanonymityauth-pa.googleapis.com/v1/%d/fetchKeys?key=",
-        id);
+    std::string request_url =
+        base::StringPrintf("%s/v1/%d/fetchKeys?key=", kAuthServer, id);
 
     const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     ASSERT_TRUE(pending_request);
@@ -173,9 +179,8 @@ class KAnonymityTrustTokenGetterTest : public testing::Test {
   }
 
   void RespondWithTrustTokenIssued(int id) {
-    std::string request_url = base::StringPrintf(
-        "https://chromekanonymityauth-pa.googleapis.com/v1/%d/issueTrustToken",
-        id);
+    std::string request_url =
+        base::StringPrintf("%s/v1/%d/issueTrustToken", kAuthServer, id);
 
     const auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     ASSERT_TRUE(pending_request);
@@ -286,8 +291,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNonUniqueUserIdFetchFailed) {
               })));
   RespondWithOAuthToken(base::Time::Max());
   SimulateFailedResponseForPendingRequest(
-      "https://chromekanonymityauth-pa.googleapis.com/v1/"
-      "generateShortIdentifier");
+      "https://authserver/v1/generateShortIdentifier");
   run_loop.Run();
   CheckHistogramActions(
       hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
@@ -327,7 +331,7 @@ TEST_F(KAnonymityTrustTokenGetterTest,
                 })));
     RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
     SimulateResponseForPendingRequest(
-        "https://chromekanonymityauth-pa.googleapis.com/v1/"
+        "https://authserver/v1/"
         "generateShortIdentifier",
         response);
     run_loop.Run();
@@ -358,8 +362,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetKeyFetchFails) {
               })));
   RespondWithOAuthToken(base::Time::Max());
   RespondWithTrustTokenNonUniqueUserId(2);
-  SimulateFailedResponseForPendingRequest(
-      "https://chromekanonymityauth-pa.googleapis.com/v1/2/fetchKeys");
+  SimulateFailedResponseForPendingRequest("https://authserver/v1/2/fetchKeys");
   run_loop.Run();
   CheckHistogramActions(
       hist, {KAnonymityTrustTokenGetterAction::kTryGetTrustTokenAndKey,
@@ -462,9 +465,8 @@ TEST_F(KAnonymityTrustTokenGetterTest,
                 })));
     RespondWithOAuthToken(base::Time::Now() + base::Seconds(1));
     RespondWithTrustTokenNonUniqueUserId(2);
-    SimulateResponseForPendingRequest(
-        "https://chromekanonymityauth-pa.googleapis.com/v1/2/fetchKeys",
-        response);
+    SimulateResponseForPendingRequest("https://authserver/v1/2/fetchKeys",
+                                      response);
     run_loop.Run();
     task_environment()->FastForwardBy(base::Minutes(1));
   }
@@ -496,7 +498,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetNoToken) {
   RespondWithTrustTokenNonUniqueUserId(2);
   RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
   SimulateFailedResponseForPendingRequest(
-      "https://chromekanonymityauth-pa.googleapis.com/v1/2/issueTrustToken");
+      "https://authserver/v1/2/issueTrustToken");
 
   run_loop.Run();
   CheckHistogramActions(
@@ -609,7 +611,7 @@ TEST_F(KAnonymityTrustTokenGetterTest, TryGetFailureDropsAllRequests) {
   RespondWithTrustTokenNonUniqueUserId(2);
   RespondWithTrustTokenKeys(2, base::Time::Now() + base::Days(1));
   SimulateFailedResponseForPendingRequest(
-      "https://chromekanonymityauth-pa.googleapis.com/v1/2/issueTrustToken");
+      "https://authserver/v1/2/issueTrustToken");
   run_loop.Run();
   EXPECT_EQ(10, callback_count);
   CheckHistogramActions(

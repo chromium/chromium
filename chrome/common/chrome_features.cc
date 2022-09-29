@@ -701,6 +701,41 @@ BASE_FEATURE(kKAnonymityService,
              "KAnonymityService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Origin to use for requests to the k-Anonymity Auth server to get trust
+// tokens.
+constexpr base::FeatureParam<std::string> kKAnonymityServiceAuthServer{
+    &kKAnonymityService, "KAnonymityServiceAuthServer",
+    "https://chromekanonymityauth-pa.googleapis.com/"};
+
+// Origin to use as a relay for OHTTP requests to the k-Anonymity Join server.
+constexpr base::FeatureParam<std::string> kKAnonymityServiceJoinRelayServer{
+    &kKAnonymityService, "KAnonymityServiceJoinRelayServer", ""};
+
+// Origin to use to notify the k-Anonymity Join server of group membership.
+constexpr base::FeatureParam<std::string> kKAnonymityServiceJoinServer{
+    &kKAnonymityService, "KAnonymityServiceJoinServer",
+    "https://chromekanonymity-pa.googleapis.com/"};
+
+// Minimum amount of time allowed between notifying the Join server of
+// membership in a distinct group.
+constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceJoinInterval{
+    &kKAnonymityService, "KAnonymityServiceJoinInterval", base::Days(1)};
+
+// Origin to use as a relay for OHTTP requests to the k-Anonymity Query server.
+constexpr base::FeatureParam<std::string> kKAnonymityServiceQueryRelayServer{
+    &kKAnonymityService, "KAnonymityServiceQueryRelayServer", ""};
+
+// Origin to use to request k-anonymity status from the k-Anonymity Query
+// server.
+constexpr base::FeatureParam<std::string> kKAnonymityServiceQueryServer{
+    &kKAnonymityService, "KAnonymityServiceQueryServer",
+    "https://chromekanonymityquery-pa.googleapis.com/"};
+
+// Minimum amount of time allowed between requesting k-anonymity status from the
+// Query server for a distinct group.
+constexpr base::FeatureParam<base::TimeDelta> kKAnonymityServiceQueryInterval{
+    &kKAnonymityService, "KAnonymityServiceJoinInterval", base::Days(1)};
+
 // When enabled, the k-Anonymity Service will send requests to the Join and
 // Query k-anonymity servers.
 BASE_FEATURE(kKAnonymityServiceOHTTPRequests,

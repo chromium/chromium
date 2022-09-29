@@ -9,11 +9,6 @@
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 
 namespace content {
-namespace {
-
-constexpr base::TimeDelta kUpdateExpiration = base::Hours(24);
-
-}  // namespace
 
 std::string KAnonKeyFor(const url::Origin& owner, const std::string& name) {
   return owner.GetURL().spec() + '\n' + name;
@@ -35,9 +30,10 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
 
   std::vector<std::string> ids_to_query;
   base::Time check_time = base::Time::Now();
+  base::TimeDelta min_wait = k_anonymity_service_->GetQueryInterval();
 
   if (!storage_group.name_kanon ||
-      storage_group.name_kanon->last_updated < check_time - kUpdateExpiration) {
+      storage_group.name_kanon->last_updated < check_time - min_wait) {
     ids_to_query.push_back(KAnonKeyFor(storage_group.interest_group.owner,
                                        storage_group.interest_group.name));
   }
@@ -45,14 +41,14 @@ void InterestGroupKAnonymityManager::QueryKAnonymityForInterestGroup(
   if (storage_group.interest_group.daily_update_url) {
     if (!storage_group.daily_update_url_kanon ||
         storage_group.daily_update_url_kanon->last_updated <
-            check_time - kUpdateExpiration) {
+            check_time - min_wait) {
       ids_to_query.push_back(
           storage_group.interest_group.daily_update_url->spec());
     }
   }
 
   for (const auto& ad : storage_group.ads_kanon) {
-    if (ad.last_updated < check_time - kUpdateExpiration) {
+    if (ad.last_updated < check_time - min_wait) {
       ids_to_query.push_back(ad.key);
     }
   }
@@ -96,6 +92,9 @@ void InterestGroupKAnonymityManager::RegisterInterestGroupAsJoined(
 
 void InterestGroupKAnonymityManager::RegisterAdAsWon(const GURL& render_url) {
   RegisterIDAsJoined(render_url.spec());
+  // TODO(behamilton): Consider proactively starting a query here to improve the
+  // speed that browsers see new ads. We will likely want to rate limit this
+  // somehow though.
 }
 
 void InterestGroupKAnonymityManager::RegisterIDAsJoined(
@@ -116,8 +115,8 @@ void InterestGroupKAnonymityManager::OnGotLastReportedTime(
     return;
 
   // If it has been long enough since we last joined
-  if (base::Time::Now() <
-      last_update_time.value_or(base::Time()) + kUpdateExpiration)
+  if (base::Time::Now() < last_update_time.value_or(base::Time()) +
+                              k_anonymity_service_->GetJoinInterval())
     return;
 
   k_anonymity_service_->JoinSet(
