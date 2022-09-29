@@ -26,11 +26,14 @@ source_set("post_restore_signin") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/signin:signin_util",
+    "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style:promo_style",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ios/public/provider/chrome/browser/signin:signin_resources_api",
     "//ui/base",
   ]
 }
@@ -49,5 +52,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }

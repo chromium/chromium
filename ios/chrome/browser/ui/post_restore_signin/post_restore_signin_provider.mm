@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -88,15 +89,35 @@
 #pragma mark - StandardPromoAlertProvider
 
 - (NSString*)title {
-  return l10n_util::GetNSStringF(
-      IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE,
-      base::SysNSStringToUTF16(self.userGivenName));
+  return l10n_util::GetNSString(IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_TITLE);
 }
 
 - (NSString*)message {
-  return l10n_util::GetNSStringF(
-      IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE,
-      base::SysNSStringToUTF16(self.userEmail));
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE_IPAD,
+        base::SysNSStringToUTF16(self.userEmail));
+  } else {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE_IPHONE,
+        base::SysNSStringToUTF16(self.userEmail));
+  }
+}
+
+- (NSString*)defaultActionButtonText {
+  if (self.userGivenName.length > 0) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION,
+        base::SysNSStringToUTF16(self.userGivenName));
+  } else {
+    return l10n_util::GetNSString(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT);
+  }
+}
+
+- (NSString*)cancelActionButtonText {
+  return l10n_util::GetNSString(
+      IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_CANCEL_ACTION);
 }
 
 #pragma mark - StandardPromoViewProvider

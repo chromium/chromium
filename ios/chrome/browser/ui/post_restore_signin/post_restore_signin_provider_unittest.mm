@@ -12,6 +12,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +38,14 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     accountInfo.given_name = std::string(kFakePreRestoreAccountGivenName);
     accountInfo.full_name = std::string(kFakePreRestoreAccountFullName);
     StorePreRestoreIdentity(accountInfo);
+  }
+
+  void ClearUserName() {
+    AccountInfo accountInfo;
+    accountInfo.email = std::string(kFakePreRestoreAccountEmail);
+    StorePreRestoreIdentity(accountInfo);
+    // Reinstantiate a provider so that it picks up the changes.
+    provider_ = [[PostRestoreSignInProvider alloc] init];
   }
 
   void SetupMockHandler() {
@@ -85,13 +94,35 @@ TEST_F(PostRestoreSignInProviderTest, standardPromoAlertDefaultAction) {
 
 TEST_F(PostRestoreSignInProviderTest, title) {
   EnableFeatureVariationFullscreen();
-  EXPECT_TRUE([[provider_ title] isEqualToString:@"Welcome back, Given"]);
+  EXPECT_TRUE([[provider_ title] isEqualToString:@"Chrome is Signed Out"]);
 }
 
 TEST_F(PostRestoreSignInProviderTest, message) {
   EnableFeatureVariationFullscreen();
-  EXPECT_TRUE([[provider_ message]
-      isEqualToString:@"Sign in again to your account person@example.org"]);
+  NSString* expected;
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    expected = @"You were signed out of your account person@example.org as "
+               @"part of your iPad reset. Tap continue below to sign in.";
+  } else {
+    expected = @"You were signed out of your account person@example.org as "
+               @"part of your iPhone reset. Tap continue below to sign in.";
+  }
+  EXPECT_TRUE([[provider_ message] isEqualToString:expected]);
+}
+
+TEST_F(PostRestoreSignInProviderTest, defaultActionButtonText) {
+  EnableFeatureVariationAlert();
+  EXPECT_TRUE([[provider_ defaultActionButtonText]
+      isEqualToString:@"Continue as Given"]);
+
+  ClearUserName();
+  EXPECT_TRUE(
+      [[provider_ defaultActionButtonText] isEqualToString:@"Continue"]);
+}
+
+TEST_F(PostRestoreSignInProviderTest, cancelActionButtonText) {
+  EnableFeatureVariationAlert();
+  EXPECT_TRUE([[provider_ cancelActionButtonText] isEqualToString:@"Ignore"]);
 }
 
 TEST_F(PostRestoreSignInProviderTest, viewController) {

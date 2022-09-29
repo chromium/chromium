@@ -6,9 +6,13 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/signin/signin_util.h"
+#import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
+#import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #import <Foundation/Foundation.h>
@@ -50,8 +54,11 @@
       _userEmail = base::SysUTF8ToNSString(_accountInfo->email);
       _userGivenName = base::SysUTF8ToNSString(_accountInfo->given_name);
       _userFullName = base::SysUTF8ToNSString(_accountInfo->full_name);
-      if (!_accountInfo->account_image.IsEmpty())
+      if (_accountInfo->account_image.IsEmpty()) {
+        _userAvatar = ios::provider::GetSigninDefaultAvatar();
+      } else {
         _userAvatar = _accountInfo->account_image.ToUIImage();
+      }
     }
   }
 
@@ -63,14 +70,29 @@
 - (void)loadView {
   self.bannerName = @"signin_banner";
 
-  self.titleText = l10n_util::GetNSStringF(
-      IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE,
-      base::SysNSStringToUTF16(self.userGivenName));
-  self.primaryActionString = l10n_util::GetNSStringF(
-      IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION,
-      base::SysNSStringToUTF16(self.userGivenName));
+  if (self.userGivenName.length > 0) {
+    self.titleText = l10n_util::GetNSStringF(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE,
+        base::SysNSStringToUTF16(self.userGivenName));
+    self.primaryActionString = l10n_util::GetNSStringF(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION,
+        base::SysNSStringToUTF16(self.userGivenName));
+  } else {
+    self.titleText = l10n_util::GetNSString(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PROMO_TITLE_SHORT);
+    self.primaryActionString = l10n_util::GetNSString(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_PRIMARY_ACTION_SHORT);
+  }
   self.secondaryActionString = l10n_util::GetNSString(
       IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_SECONDARY_ACTION);
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    self.disclaimerText = l10n_util::GetNSString(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_NOTE_IPAD);
+  } else {
+    self.disclaimerText = l10n_util::GetNSString(
+        IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_NOTE_IPHONE);
+  }
 
   // Set up the identity control to be centered horizontally, and at the to of
   // the specificContentView.
@@ -90,7 +112,10 @@
   if (_userFullName != nil && _userEmail != nil)
     [self.identityControl setIdentityName:_userFullName email:_userEmail];
   if (_userAvatar != nil)
-    [self.identityControl setIdentityAvatar:_userAvatar];
+    [self.identityControl
+        setIdentityAvatar:CircularImageFromImage(
+                              ios::provider::GetSigninDefaultAvatar(),
+                              kAccountProfilePhotoDimension)];
 
   [super loadView];
 }
