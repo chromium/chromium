@@ -157,6 +157,22 @@ class Speedometer2PCScan(Speedometer2):
         '--enable-features=PartitionAllocPCScanRendererOnly')
 
 
+@benchmark.Info(emails=['omerkatz@chromium.org'],
+                component='Blink>JavaScript>GarbageCollection')
+class Speedometer2MinorMC(Speedometer2):
+  """Speedometer2 benchmark with the MinorMC flag.
+
+  Shows the performance of upcoming MinorMC young generation GC in V8.
+  """
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_speedometer2-minormc'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--js-flags="--minor-mc"')
+
+
 @benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')
 class Speedometer2ChromeHealth(Speedometer2):
   """Speedometer2 benchmark, but run for only one iteration.

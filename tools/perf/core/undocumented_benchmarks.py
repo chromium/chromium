@@ -20,6 +20,7 @@ UNDOCUMENTED_BENCHMARKS = {
     'speedometer2',
     'speedometer2-chrome-health',
     'speedometer2-future',
+    'UNSCHEDULED_speedometer2-minormc',
     'speedometer2-pcscan',
     'startup.mobile',
     'system_health.webview_startup',
