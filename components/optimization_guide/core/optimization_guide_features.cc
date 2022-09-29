@@ -511,8 +511,7 @@ bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
 }
 
 bool RemotePageMetadataEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(kRemotePageMetadata,
-                                           "persist_page_metadata", false);
+  return base::FeatureList::IsEnabled(kRemotePageMetadata);
 }
 
 int GetMinimumPageCategoryScoreToPersist() {

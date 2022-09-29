@@ -697,9 +697,7 @@ class PageContentAnnotationsServiceRemoteMetadataBrowserTest
     // enabled.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kOptimizationHints, {}},
-         {features::kRemotePageMetadata,
-          {{"persist_page_metadata", "true"},
-           {"min_page_category_score", "80"}}}},
+         {features::kRemotePageMetadata, {{"min_page_category_score", "80"}}}},
         /*disabled_features=*/{{features::kPageContentAnnotations}});
     set_load_model_on_startup(false);
   }
