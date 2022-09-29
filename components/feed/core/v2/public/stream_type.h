@@ -22,6 +22,7 @@ class StreamType {
   bool operator==(const StreamType& rhs) const { return kind_ == rhs.kind_; }
   bool IsForYou() const { return kind_ == StreamKind::kForYou; }
   bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
+  bool IsChannelFeed() const { return kind_ == StreamKind::kChannel; }
   bool IsValid() const { return kind_ != StreamKind::kUnknown; }
   StreamKind GetType() const { return kind_; }
 
@@ -40,6 +41,7 @@ class StreamType {
 
 constexpr StreamType kForYouStream(StreamKind::kForYou);
 constexpr StreamType kWebFeedStream(StreamKind::kFollowing);
+constexpr StreamType kChannelStream(StreamKind::kChannel);
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const StreamType& stream_type) {

@@ -1120,6 +1120,8 @@ public class FeedStream implements Stream {
                 return StreamType.FOR_YOU;
             case StreamKind.FOLLOWING:
                 return StreamType.WEB_FEED;
+            case StreamKind.CHANNEL:
+                return StreamType.CHANNEL;
             default:
                 return StreamType.UNSPECIFIED;
         }

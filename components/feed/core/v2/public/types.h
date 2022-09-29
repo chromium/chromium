@@ -247,8 +247,10 @@ enum class StreamKind : int {
   kForYou = 1,
   // Following stream.
   kFollowing = 2,
+  // Channel stream.
+  kChannel = 3,
 
-  kMaxValue = kFollowing,
+  kMaxValue = kChannel,
 };
 
 // For testing and debugging only.

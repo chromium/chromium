@@ -14,6 +14,8 @@ std::string StreamType::ToString() const {
       return "ForYou";
     case StreamKind::kFollowing:
       return "WebFeed";
+    case StreamKind::kChannel:
+      return "Channel";
   }
 }
 
@@ -35,6 +37,7 @@ bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
       out_id = RefreshTaskId::kRefreshForYouFeed;
       return true;
     case StreamKind::kFollowing:
+    case StreamKind::kChannel:
       return false;
   }
 }

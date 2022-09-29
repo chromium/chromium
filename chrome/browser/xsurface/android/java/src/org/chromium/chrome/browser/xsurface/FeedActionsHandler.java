@@ -146,12 +146,14 @@ public interface FeedActionsHandler {
      * Types of feeds that can be invalidated. These values must match the privately defined values
      * of InvalidateCacheData.FeedType.
      */
-    @IntDef({FeedIdentifier.UNSPECIFIED, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED})
+    @IntDef({FeedIdentifier.UNSPECIFIED, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED,
+            FeedIdentifier.CHANNEL_FEED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface FeedIdentifier {
         int UNSPECIFIED = 0;
         int MAIN_FEED = 1;
         int FOLLOWING_FEED = 2;
+        int CHANNEL_FEED = 3;
     }
 
     /**

@@ -22,6 +22,7 @@ class Metadata;
 
 constexpr base::StringPiece kForYouStreamId{"i"};
 constexpr base::StringPiece kFollowStreamId{"w"};
+constexpr base::StringPiece kChannelStreamId{"c"};
 
 base::StringPiece StreamId(const feed::StreamType& stream_type);
 feed::StreamType StreamTypeFromId(base::StringPiece id);

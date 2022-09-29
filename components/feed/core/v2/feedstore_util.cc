@@ -4,6 +4,7 @@
 
 #include "components/feed/core/v2/feedstore_util.h"
 
+#include "base/base64.h"
 #include "base/hash/hash.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
@@ -18,8 +19,10 @@ using feed::StreamType;
 base::StringPiece StreamId(const StreamType& stream_type) {
   if (stream_type.IsForYou())
     return kForYouStreamId;
-  DCHECK(stream_type.IsWebFeed());
-  return kFollowStreamId;
+  if (stream_type.IsWebFeed())
+    return kFollowStreamId;
+  DCHECK(stream_type.IsChannelFeed());
+  return kChannelStreamId;
 }
 
 StreamType StreamTypeFromId(base::StringPiece id) {
@@ -27,6 +30,8 @@ StreamType StreamTypeFromId(base::StringPiece id) {
     return feed::kForYouStream;
   if (id == kFollowStreamId)
     return feed::kWebFeedStream;
+  if (id == kChannelStreamId)
+    return feed::kChannelStream;
   return {};
 }
 
