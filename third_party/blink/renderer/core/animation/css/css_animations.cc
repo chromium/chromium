@@ -1948,6 +1948,10 @@ bool IsCSSPropertyHandle(const PropertyHandle& property) {
   return property.IsCSSProperty() || property.IsPresentationAttribute();
 }
 
+bool IsLineHeightPropertyHandle(const PropertyHandle& property) {
+  return property == PropertyHandle(GetCSSPropertyLineHeight());
+}
+
 void AdoptActiveAnimationInterpolations(
     EffectStack* effect_stack,
     CSSAnimationUpdate& update,
@@ -2323,6 +2327,13 @@ bool CSSAnimations::IsAnimatingFontAffectingProperties(
   return element_animations &&
          element_animations->GetEffectStack().AffectsProperties(
              IsFontAffectingPropertyHandle);
+}
+
+bool CSSAnimations::IsAnimatingLineHeightProperty(
+    const ElementAnimations* element_animations) {
+  return element_animations &&
+         element_animations->GetEffectStack().AffectsProperties(
+             IsLineHeightPropertyHandle);
 }
 
 bool CSSAnimations::IsAnimatingRevert(

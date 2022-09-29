@@ -264,8 +264,10 @@ float CSSToLengthConversionData::LineHeight() const {
     return 0;
   // TODO(crbug.com/937104): Needs test coverage for glyph relative unit
   // invalidation.
-  if (style_)
+  if (style_) {
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+    const_cast<ComputedStyle*>(style_)->SetHasLineHeightRelativeUnits();
+  }
   // The line-height is zoom'ed given the zoom factor of its style origin which
   // may be the zoom factor of this element or the parent element.
   // We need to unzoom the line-height's applied zoom before always applying

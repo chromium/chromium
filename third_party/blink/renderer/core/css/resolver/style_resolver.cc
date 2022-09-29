@@ -1951,9 +1951,15 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
   // font-relative units (e.g. em, ex) in the base style must respond to the
   // animation. We cannot use the base computed style optimization in such
   // cases.
-  // TODO(crbug.com/937104): Handle line-height and lh units.
   if (CSSAnimations::IsAnimatingFontAffectingProperties(element_animations)) {
     if (base_data->GetBaseComputedStyle()->HasFontRelativeUnits())
+      return false;
+  }
+
+  // Likewise, When applying an animation or transition for line-height, lh unit
+  // lengths in the base style must respond to the animation.
+  if (CSSAnimations::IsAnimatingLineHeightProperty(element_animations)) {
+    if (base_data->GetBaseComputedStyle()->HasLineHeightRelativeUnits())
       return false;
   }
 

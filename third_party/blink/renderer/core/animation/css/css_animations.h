@@ -72,6 +72,7 @@ class CORE_EXPORT CSSAnimations final {
                                             const CSSBitset*,
                                             KeyframeEffect::Priority);
   static bool IsAnimatingFontAffectingProperties(const ElementAnimations*);
+  static bool IsAnimatingLineHeightProperty(const ElementAnimations*);
   static bool IsAnimatingRevert(const ElementAnimations*);
   static void CalculateTimelineUpdate(CSSAnimationUpdate&,
                                       Element& animating_element,
