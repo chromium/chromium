@@ -299,7 +299,9 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
-  DCHECK(ShouldAttemptMigration(prefs_));
+  // Return early if the user was evicted after scheduling migration.
+  if (!ShouldAttemptMigration(prefs_))
+    return;
 
   if (prefs_->GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange) &&
       !IsPasswordSyncEnabled(sync_service_)) {
