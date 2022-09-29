@@ -1058,6 +1058,10 @@
     'extension': {
       'filepath': 'extension',
     },
+    'face_ml': {
+      'filepath': 'ash/webui/face_ml_app_ui/| ' \
+                  'chrome/browser/ash/web_applications/face_ml_system_web_app_info.*',
+    },
     'feature_policy': {
       'filepath': 'third_party/blink/renderer/platform/feature_policy/|' \
                   'third_party/blink/renderer/bindings/core/v8/origin_trial_features',
@@ -2638,6 +2642,7 @@
                       'petewil+watch@chromium.org'],
     'extension': ['chromium-apps-reviews@chromium.org',
                   'extensions-reviews@chromium.org'],
+    'face_ml': ['eora-dc-eng+crrev-watch@google.com'],
     'feature_policy': ['loonybear@chromium.org',
                        'iclelland+watch@chromium.org',
                        'jmedley+watch@chromium.org'],
