@@ -105,11 +105,7 @@ std::string GetStringFromValue(const std::vector<std::string>& value) {
 
 // Implements `ICurrentState`. Initialized with a snapshot of the current state
 // of the install.
-class CurrentStateImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          ICurrentState,
-          IDispatch> {
+class CurrentStateImpl : public updater::IDispatchImpl<ICurrentState> {
  public:
   CurrentStateImpl() = default;
   CurrentStateImpl(const CurrentStateImpl&) = delete;
@@ -279,32 +275,6 @@ class CurrentStateImpl
 
     *post_install_action = post_install_action_;
     return S_OK;
-  }
-
-  // Overrides for IDispatch.
-  IFACEMETHODIMP GetTypeInfoCount(UINT*) override { return E_NOTIMPL; }
-
-  IFACEMETHODIMP GetTypeInfo(UINT, LCID, ITypeInfo**) override {
-    return E_NOTIMPL;
-  }
-
-  IFACEMETHODIMP GetIDsOfNames(REFIID,
-                               LPOLESTR*,
-                               UINT,
-                               LCID,
-                               DISPID*) override {
-    return E_NOTIMPL;
-  }
-
-  IFACEMETHODIMP Invoke(DISPID,
-                        REFIID,
-                        LCID,
-                        WORD,
-                        DISPPARAMS*,
-                        VARIANT*,
-                        EXCEPINFO*,
-                        UINT*) override {
-    return E_NOTIMPL;
   }
 
  private:
@@ -694,13 +664,8 @@ HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
     UpdaterScope scope,
     const std::wstring& app_id,
     const std::wstring& command_id) {
-  if (HRESULT hr = AppCommandRunner::LoadAppCommand(scope, app_id, command_id,
-                                                    app_command_runner_);
-      FAILED(hr)) {
-    return hr;
-  }
-
-  return InitializeTypeInfo();
+  return AppCommandRunner::LoadAppCommand(scope, app_id, command_id,
+                                          app_command_runner_);
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_status(UINT* status) {
@@ -759,78 +724,6 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
   }
 
   return app_command_runner_.Run(substitutions, process_);
-}
-
-STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfoCount(UINT* type_info_count) {
-  *type_info_count = 1;
-  return S_OK;
-}
-
-STDMETHODIMP LegacyAppCommandWebImpl::GetTypeInfo(UINT type_info_index,
-                                                  LCID locale_id,
-                                                  ITypeInfo** type_info) {
-  if (type_info_index != 0)
-    return E_INVALIDARG;
-
-  return type_info_.CopyTo(type_info);
-}
-
-STDMETHODIMP LegacyAppCommandWebImpl::GetIDsOfNames(
-    REFIID iid,
-    LPOLESTR* names_to_be_mapped,
-    UINT count_of_names_to_be_mapped,
-    LCID locale_id,
-    DISPID* dispatch_ids) {
-  return type_info_->GetIDsOfNames(names_to_be_mapped,
-                                   count_of_names_to_be_mapped, dispatch_ids);
-}
-
-STDMETHODIMP LegacyAppCommandWebImpl::Invoke(DISPID dispatch_id,
-                                             REFIID iid,
-                                             LCID locale_id,
-                                             WORD flags,
-                                             DISPPARAMS* dispatch_parameters,
-                                             VARIANT* result,
-                                             EXCEPINFO* exception_info,
-                                             UINT* arg_error_index) {
-  HRESULT hr = type_info_->Invoke(
-      Microsoft::WRL::ComPtr<IAppCommandWeb>(this).Get(), dispatch_id, flags,
-      dispatch_parameters, result, exception_info, arg_error_index);
-  if (FAILED(hr)) {
-    LOG(ERROR) << __func__ << " type_info_->Invoke failed: " << dispatch_id
-               << ": " << std::hex << hr;
-  }
-
-  return hr;
-}
-
-HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
-  base::FilePath typelib_path;
-  if (!base::PathService::Get(base::DIR_EXE, &typelib_path))
-    return E_UNEXPECTED;
-
-  typelib_path =
-      typelib_path.Append(GetExecutableRelativePath())
-          .Append(GetComTypeLibResourceIndex(__uuidof(IAppCommandWeb)));
-
-  Microsoft::WRL::ComPtr<ITypeLib> type_lib;
-  if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
-      FAILED(hr)) {
-    LOG(ERROR) << __func__ << " ::LoadTypeLib failed: " << typelib_path << ": "
-               << std::hex << hr;
-    return hr;
-  }
-
-  if (HRESULT hr =
-          type_lib->GetTypeInfoOfGuid(__uuidof(IAppCommandWeb), &type_info_);
-      FAILED(hr)) {
-    LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
-               << ": " << std::hex << hr << ": IID_IAppCommand: "
-               << base::win::WStringFromGUID(__uuidof(IAppCommandWeb));
-    return hr;
-  }
-
-  return S_OK;
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
