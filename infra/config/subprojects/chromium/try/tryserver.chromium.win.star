@@ -241,6 +241,9 @@ try_.builder(
 
 try_.builder(
     name = "win-perfetto-rel",
+    mirrors = [
+        "ci/win-perfetto-rel",
+    ],
 )
 
 try_.gpu.optional_tests_builder(

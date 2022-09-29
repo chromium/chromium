@@ -414,6 +414,9 @@ try_.builder(
 
 try_.builder(
     name = "android-perfetto-rel",
+    mirrors = [
+        "ci/android-perfetto-rel",
+    ],
 )
 
 try_.builder(

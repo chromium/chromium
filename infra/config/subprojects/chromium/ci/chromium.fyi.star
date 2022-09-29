@@ -721,6 +721,18 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "android",
     ),
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+    builderless = True,
     schedule = "triggered",
     triggered_by = [],
     os = os.LINUX_DEFAULT,
@@ -745,6 +757,18 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "mac",
     ),
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+    builderless = True,
     schedule = "triggered",
     triggered_by = [],
     os = os.MAC_DEFAULT,
@@ -969,6 +993,18 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "win",
     ),
+    builder_spec = builder_config.builder_spec(
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+    ),
+    builderless = True,
     schedule = "triggered",
     triggered_by = [],
     os = os.WINDOWS_DEFAULT,

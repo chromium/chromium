@@ -85,6 +85,9 @@ try_.builder(
 
 try_.builder(
     name = "mac-perfetto-rel",
+    mirrors = [
+        "ci/mac-perfetto-rel",
+    ],
 )
 
 try_.orchestrator_builder(
