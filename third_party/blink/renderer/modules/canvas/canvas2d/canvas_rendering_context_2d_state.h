@@ -109,9 +109,6 @@ class CanvasRenderingContext2DState final
 
   void SetFontForFilter(const Font& font) { font_for_filter_ = font; }
 
-  // Used to specify whether to include the filter for the globalAlpha effect.
-  enum class GlobalAlphaFilterMode { kInclude, kExclude };
-
   void SetCSSFilter(const CSSValue*);
   void SetUnparsedCSSFilter(const String& filter_string) {
     unparsed_css_filter_ = filter_string;
@@ -124,20 +121,11 @@ class CanvasRenderingContext2DState final
                                CanvasRenderingContext2D*);
   sk_sp<PaintFilter> GetFilterForOffscreenCanvas(gfx::Size canvas_size,
                                                  BaseRenderingContext2D*);
-  // Returns the PaintFilter for the globalAlpha effect.
-  sk_sp<PaintFilter> GetGlobalAlphaAsFilter(gfx::Size canvas_size,
-                                            BaseRenderingContext2D*);
   ALWAYS_INLINE bool IsFilterUnresolved() const {
     return filter_state_ == FilterState::kUnresolved;
   }
   ALWAYS_INLINE bool IsFilterResolved() const {
     return filter_state_ == FilterState::kResolved;
-  }
-  ALWAYS_INLINE bool IsGlobalAlphaFilterUnresolved() const {
-    if (global_alpha_ == 1.0 || global_alpha_filter_) {
-      return false;
-    }
-    return true;
   }
 
   void ClearResolvedFilter();

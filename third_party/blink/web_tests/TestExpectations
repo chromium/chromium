@@ -11,6 +11,10 @@ harness-tests/crash.html [ Crash ]
 harness-tests/timeout.html [ Timeout ]
 fast/harness/sample-fail-mismatch-reftest.html [ Failure ]
 
+# Baselines out of date on branch 5249
+fast/canvas/canvas-drawImage-video-reset.html [ Pass Failure ]
+svg/canvas/canvas-draw-image-globalalpha.html [ Pass Failure ]
+
 # Expected to fail.
 external/wpt/infrastructure/reftest/legacy/reftest_and_fail_0-ref.html [ Failure ]
 external/wpt/infrastructure/reftest/legacy/reftest_cycle_fail_0-ref.html [ Failure ]
