@@ -415,7 +415,7 @@
       'fuchsia-fyi-arm64-emu-arg': 'release_trybot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
-      'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
+      'fuchsia-fyi-x64-rel': 'release_bot_fuchsia_cfv2_script',
       'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
@@ -1152,7 +1152,7 @@
       'cast_shell_linux_dbg': 'cast_debug_bot',
       'chromium_presubmit': 'presubmit',
       'fuchsia-fyi-arm64-rel': 'release_trybot_fuchsia_arm64',
-      'fuchsia-fyi-x64-rel': 'release_trybot_fuchsia',
+      'fuchsia-fyi-x64-rel': 'release_trybot_fuchsia_cfv2_script',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'gpu-fyi-try-linux-amd-rel': 'gpu_fyi_tests_release_trybot',
@@ -3635,6 +3635,10 @@
 
     'release_trybot_fuchsia_cast_receiver': [
       'release_trybot', 'fuchsia', 'cast_receiver_size_optimized',
+    ],
+
+    'release_trybot_fuchsia_cfv2_script': [
+      'release_trybot', 'fuchsia', 'fuchsia_cfv2_script',
     ],
 
     'release_trybot_minimal_symbols_reclient': [
