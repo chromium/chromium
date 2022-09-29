@@ -271,8 +271,6 @@ public class StartSurfaceCoordinator implements StartSurface {
         mCrowButtonDelegate = crowButtonDelegate;
 
         mTabSwitcherCustomViewManagerSupplier = new OneshotSupplierImpl<>();
-        boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
-                || !mIsStartSurfaceEnabled;
         boolean excludeQueryTiles = !mIsStartSurfaceEnabled
                 || !CachedFeatureFlags.isEnabled(ChromeFeatureList.QUERY_TILES_ON_START);
         if (!mIsStartSurfaceEnabled) {
@@ -288,7 +286,7 @@ public class StartSurfaceCoordinator implements StartSurface {
         } else {
             // createSwipeRefreshLayout has to be called before creating any surface.
             createSwipeRefreshLayout();
-            createAndSetStartSurface(excludeMVTiles, excludeQueryTiles);
+            createAndSetStartSurface(excludeQueryTiles);
         }
 
         TabSwitcher.Controller controller =
@@ -304,7 +302,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mTabModelSelector, mPropertyModel,
                 mIsStartSurfaceEnabled ? this::initializeSecondaryTasksSurface : null,
                 mIsStartSurfaceEnabled, mActivity, mBrowserControlsManager,
-                this::isActivityFinishingOrDestroyed, excludeMVTiles, excludeQueryTiles,
+                this::isActivityFinishingOrDestroyed, excludeQueryTiles,
                 startSurfaceOneshotSupplier, hadWarmStart, jankTracker, initializeMVTilesRunnable,
                 mParentTabSupplier, logoContainerView, backPressManager, feedPlaceholderParentView);
 
@@ -673,20 +671,24 @@ public class StartSurfaceCoordinator implements StartSurface {
         return mTasksSurface.isMVTilesInitialized();
     }
 
-    private void createAndSetStartSurface(boolean excludeMVTiles, boolean excludeQueryTiles) {
+    /**
+     * Called only when Start Surface is enabled.
+     */
+    private void createAndSetStartSurface(boolean excludeQueryTiles) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(TasksSurfaceProperties.ALL_KEYS));
         allProperties.addAll(Arrays.asList(StartSurfaceProperties.ALL_KEYS));
         mPropertyModel = new PropertyModel(allProperties);
 
+        assert mIsStartSurfaceEnabled;
+
         int tabSwitcherType =
-                mIsStartSurfaceEnabled ? TabSwitcherType.CAROUSEL : TabSwitcherType.GRID;
-        if (StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()) {
-            tabSwitcherType = TabSwitcherType.SINGLE;
-        }
+                StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue()
+                ? TabSwitcherType.SINGLE
+                : TabSwitcherType.CAROUSEL;
         mTasksSurface = createTasksSurface(mActivity, mScrimCoordinator, mPropertyModel,
-                tabSwitcherType, mParentTabSupplier, !excludeMVTiles, !excludeQueryTiles,
-                mWindowAndroid, mActivityLifecycleDispatcher, mTabModelSelector, mSnackbarManager,
+                tabSwitcherType, mParentTabSupplier, true, !excludeQueryTiles, mWindowAndroid,
+                mActivityLifecycleDispatcher, mTabModelSelector, mSnackbarManager,
                 mDynamicResourceLoaderSupplier, mTabContentManager, mModalDialogManager,
                 mBrowserControlsManager, mTabCreatorManager, mMenuOrKeyboardActionController,
                 mShareDelegateSupplier, mMultiWindowModeStateDispatcher, mContainerView);

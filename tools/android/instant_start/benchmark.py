@@ -62,7 +62,6 @@ def run_apk(variant, dry_run=False, reinstall=False, check_state=False):
         '/start_surface_variation/single'
         '/show_last_active_tab_only/true'
         '/open_ntp_instead_of_start/true'
-        '/exclude_mv_tiles/true'
     ] + extra_cmd)
 
     if reinstall:

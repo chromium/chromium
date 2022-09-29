@@ -116,7 +116,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     private final boolean mIsStartSurfaceEnabled;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
     private final boolean mHadWarmStart;
-    private final boolean mExcludeMVTiles;
     private final boolean mExcludeQueryTiles;
     private final Runnable mInitializeMVTilesRunnable;
     private final Supplier<Tab> mParentTabSupplier;
@@ -195,9 +194,9 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
             boolean isStartSurfaceEnabled, Context context,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            boolean excludeQueryTiles, OneshotSupplier<StartSurface> startSurfaceSupplier,
-            boolean hadWarmStart, JankTracker jankTracker, Runnable initializeMVTilesRunnable,
+            ActivityStateChecker activityStateChecker, boolean excludeQueryTiles,
+            OneshotSupplier<StartSurface> startSurfaceSupplier, boolean hadWarmStart,
+            JankTracker jankTracker, Runnable initializeMVTilesRunnable,
             Supplier<Tab> parentTabSupplier, View logoContainerView,
             BackPressManager backPressManager, ViewGroup feedPlaceholderParentView) {
         mController = controller;
@@ -209,7 +208,6 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mActivityStateChecker = activityStateChecker;
-        mExcludeMVTiles = excludeMVTiles;
         mExcludeQueryTiles = excludeQueryTiles;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mHadWarmStart = hadWarmStart;
@@ -1123,7 +1121,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     private void setMVTilesVisibility(boolean isVisible) {
-        if (mExcludeMVTiles) return;
+        if (mInitializeMVTilesRunnable == null) return;
         if (isVisible && mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
         mPropertyModel.set(MV_TILES_VISIBLE, isVisible);
     }

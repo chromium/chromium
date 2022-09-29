@@ -140,7 +140,6 @@ public class StartSurfaceNoTabsTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "exclude_mv_tiles/true"})
     @DisabledTest(message = "https://crbug.com/1263910")
     public void testShow_SingleAsHomepage_SingleTabSwitcher_NoTabs() {
         // clang-format on
@@ -152,7 +151,7 @@ public class StartSurfaceNoTabsTest {
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
-        onView(withId(R.id.mv_tiles_container)).check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
         onView(withId(R.id.tab_switcher_title)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.carousel_tab_switcher_container))
                 .check(matches(withEffectiveVisibility(GONE)));

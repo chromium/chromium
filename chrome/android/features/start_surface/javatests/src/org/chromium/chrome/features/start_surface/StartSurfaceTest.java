@@ -258,58 +258,10 @@ public class StartSurfaceTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.
-    Add({START_SURFACE_TEST_BASE_PARAMS + "exclude_mv_tiles/true/show_last_active_tab_only/false"
-            + "/open_ntp_instead_of_start/false/tab_count_button_on_start_surface/false"
-            + "/open_start_as_homepage/true"})
-    // clang-format off
-    public void testShow_SingleAsHomepage_NoMVTiles() {
-        // clang-format on
-        if (!mImmediateReturn) {
-            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
-        }
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
-
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-        onViewWaiting(withId(R.id.search_box_text));
-        onView(withId(R.id.mv_tiles_container)).check(matches(withEffectiveVisibility(GONE)));
-        onView(withId(R.id.tab_switcher_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.carousel_tab_switcher_container)).check(matches(isDisplayed()));
-        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
-
-        if (!isInstantReturn()) {
-            // TODO(crbug.com/1076274): fix toolbar to make incognito switch part of the view.
-            onView(withId(R.id.incognito_toggle_tabs))
-                    .check(matches(withEffectiveVisibility(GONE)));
-        }
-
-        StartSurfaceTestUtils.clickMoreTabs(cta);
-        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
-
-        StartSurfaceTestUtils.pressBack(mActivityTestRule);
-        onViewWaiting(withId(R.id.primary_tasks_surface_view));
-
-        if (isInstantReturn()
-                && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                        && Build.VERSION.SDK_INT < Build.VERSION_CODES.O)) {
-            // TODO(crbug.com/1092642): Fix androidx.test.espresso.PerformException issue when
-            // performing a single click on position: 0. See code below.
-            return;
-        }
-
-        StartSurfaceTestUtils.clickFirstTabInCarousel();
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
-            + "exclude_mv_tiles/true/open_ntp_instead_of_start/false/open_start_as_homepage/true"})
+            + "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     // clang-format off
-    public void testShow_SingleAsHomepage_SingleTabNoMVTiles() {
+    public void testShow_SingleAsHomepage_SingleTab() {
         // clang-format on
         Assume.assumeFalse("https://crbug.com/1205642, https://crbug.com/1214303",
                 !mUseInstantStart && mImmediateReturn && VERSION.SDK_INT == VERSION_CODES.M);
@@ -322,7 +274,7 @@ public class StartSurfaceTest {
 
         onViewWaiting(withId(R.id.primary_tasks_surface_view));
         onViewWaiting(withId(R.id.search_box_text));
-        onView(withId(R.id.mv_tiles_container)).check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
         onView(withId(R.id.tab_switcher_title)).check(matches(withEffectiveVisibility(GONE)));
         onView(withId(R.id.carousel_tab_switcher_container)).check(matches(isDisplayed()));
         onView(withId(R.id.single_tab_view)).check(matches(isDisplayed()));

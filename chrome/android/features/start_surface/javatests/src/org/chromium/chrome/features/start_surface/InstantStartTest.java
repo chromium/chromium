@@ -28,7 +28,6 @@ import android.view.View;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.core.AllOf;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -304,46 +303,6 @@ public class InstantStartTest {
 
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        // Disable feed placeholder animation because we can't render it in exactly the same way
-        // for each run.
-        FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH,
-            INSTANT_START_TEST_BASE_PARAMS +
-            "/exclude_mv_tiles/true" +
-            "/hide_switch_when_no_incognito_tabs/true" +
-            "/show_last_active_tab_only/true"})
-    public void renderSingleAsHomepage_SingleTabNoMVTiles()
-        throws IOException {
-        // clang-format on
-
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
-        TabAttributeCache.setTitleForTesting(0, "Google");
-
-        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        StartSurfaceTestUtils.waitForOverviewVisible(cta);
-
-        View surface = cta.findViewById(R.id.primary_tasks_surface_view);
-
-        ViewUtils.onViewWaiting(AllOf.allOf(withId(R.id.single_tab_view), isDisplayed()));
-        ChromeRenderTestRule.sanitize(surface);
-        // TODO(crbug.com/1065314): fix favicon.
-        mRenderTestRule.render(surface, "singlePane_singleTab_noMV4_FeedV2");
-
-        // Initializes native.
-        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
-
-        // TODO(crbug.com/1065314): fix login button animation in post-native rendering and
-        //  make sure post-native single-tab card looks the same.
-    }
-
-    @Test
-    @SmallTest
     @DisableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
     public void testInstantStartWithoutStartSurface() throws IOException {
         StartSurfaceTestUtils.createTabStateFile(new int[] {123});
@@ -471,7 +430,7 @@ public class InstantStartTest {
             // Disable feed placeholder animation because we can't render it in exactly the same
             // way for each run.
             FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH,
-            INSTANT_START_TEST_BASE_PARAMS + "/exclude_mv_tiles/false"})
+            INSTANT_START_TEST_BASE_PARAMS})
     public void testMVTilesWithExploreSitesView() throws InterruptedException, IOException {
         // clang-format on
         FakeMostVisitedSites mostVisitedSites = StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
