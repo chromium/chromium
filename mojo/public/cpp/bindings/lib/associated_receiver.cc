@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
+#include "base/record_replay.h"
 #include "base/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
@@ -21,6 +22,12 @@ void AssociatedReceiverBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
 }
 
 void AssociatedReceiverBase::reset() {
+  // Endpoint clients must be destroyed at deterministic points, so leak the endpoint
+  // if we are reset e.g. during a GC.
+  if (recordreplay::AreEventsDisallowed()) {
+    endpoint_client_.release();
+  }
+
   endpoint_client_.reset();
 }
 
