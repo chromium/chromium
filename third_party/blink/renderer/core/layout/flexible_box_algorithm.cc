@@ -942,13 +942,13 @@ void FlexLayoutAlgorithm::FlipForWrapReverse(
         line_context.cross_axis_offset_ - cross_axis_start_edge;
     LayoutUnit new_offset = cross_axis_content_size - original_offset -
                             line_context.cross_axis_extent_;
+    LayoutUnit delta = new_offset - original_offset;
     if (flex_line_outputs) {
-      line_context.cross_axis_offset_ = new_offset;
-      (*flex_line_outputs)[i].cross_axis_offset = new_offset;
+      line_context.cross_axis_offset_ += delta;
+      (*flex_line_outputs)[i].cross_axis_offset += delta;
     }
-    LayoutUnit wrap_reverse_difference = new_offset - original_offset;
     for (FlexItem& flex_item : line_context.line_items_)
-      flex_item.offset_->cross_axis_offset += wrap_reverse_difference;
+      flex_item.offset_->cross_axis_offset += delta;
   }
 }
 
@@ -1263,7 +1263,8 @@ FlexItem* FlexLayoutAlgorithm::FlexItemAtIndex(wtf_size_t line_index,
     line_index = flex_lines_.size() - line_index - 1;
 
   DCHECK_LT(item_index, flex_lines_[line_index].line_items_.size());
-  if (Style()->ResolvedIsColumnReverseFlexDirection())
+  if (Style()->ResolvedIsColumnReverseFlexDirection() ||
+      Style()->ResolvedIsRowReverseFlexDirection())
     item_index = flex_lines_[line_index].line_items_.size() - item_index - 1;
   return const_cast<FlexItem*>(
       &flex_lines_[line_index].line_items_[item_index]);

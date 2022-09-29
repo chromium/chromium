@@ -346,8 +346,8 @@ class FlexLine {
   LayoutUnit cross_axis_offset_;
   LayoutUnit cross_axis_extent_;
 
-  LayoutUnit max_major_ascent_;
-  LayoutUnit max_minor_ascent_;
+  LayoutUnit max_major_ascent_ = LayoutUnit::Min();
+  LayoutUnit max_minor_ascent_ = LayoutUnit::Min();
 };
 
 // This class implements the CSS Flexbox layout algorithm:

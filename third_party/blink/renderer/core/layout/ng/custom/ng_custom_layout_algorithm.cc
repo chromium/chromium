@@ -87,6 +87,8 @@ const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
   ScriptForbiddenScope::AllowUserAgentScript allow_script;
   CustomLayoutScope scope;
 
+  // TODO(ikilpatrick): Scale inputs/outputs by effective-zoom.
+  const float effective_zoom = Style().EffectiveZoom();
   const AtomicString& name = Style().DisplayLayoutCustomName();
   const Document& document = Node().GetDocument();
   LayoutWorklet* worklet = LayoutWorklet::From(*document.domWindow());
@@ -171,8 +173,8 @@ const NGLayoutResult* NGCustomLayoutAlgorithm::Layout() {
   // TODO(ikilpatrick): Allow setting both the first/last baseline instead of a
   // general baseline.
   if (fragment_result_options->hasBaseline()) {
-    LayoutUnit baseline =
-        LayoutUnit::FromDoubleRound(fragment_result_options->baseline());
+    LayoutUnit baseline = LayoutUnit::FromDoubleRound(
+        effective_zoom * fragment_result_options->baseline());
     container_builder_.SetBaselines(baseline);
   }
 

@@ -49,7 +49,6 @@ css3/blending/svg-blend-exclusion.html
 css3/blending/svg-blend-multiply.html
 css3/filters/backdrop-filter-boundary.html
 css3/filters/composited-layer-bounds-after-sw-blur-animation.html
-css3/flexbox/flexbox-baseline.html
 custom-elements/form-validation-bubble-appearance.html
 editing/caret/caret-color.html
 editing/caret/in-multicol-child.html

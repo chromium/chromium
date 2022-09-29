@@ -45,6 +45,81 @@ namespace blink {
 
 namespace {
 
+class BaselineAccumulator {
+  STACK_ALLOCATED();
+
+ public:
+  explicit BaselineAccumulator(const ComputedStyle& style)
+      : font_baseline_(style.GetFontBaseline()) {}
+
+  void AccumulateItem(const NGBoxFragment& fragment,
+                      const LayoutUnit block_offset,
+                      bool is_first_line,
+                      bool is_last_line) {
+    if (is_first_line) {
+      if (!first_fallback_baseline_) {
+        first_fallback_baseline_ =
+            block_offset + fragment.FirstBaselineOrSynthesize(font_baseline_);
+      }
+    }
+
+    if (is_last_line) {
+      last_fallback_baseline_ =
+          block_offset + fragment.LastBaselineOrSynthesize(font_baseline_);
+    }
+  }
+
+  void AccumulateLine(const NGFlexLine& line,
+                      bool is_first_line,
+                      bool is_last_line) {
+    if (is_first_line) {
+      if (line.major_baseline != LayoutUnit::Min()) {
+        first_major_baseline_ = line.cross_axis_offset + line.major_baseline;
+      }
+      if (line.minor_baseline != LayoutUnit::Min()) {
+        first_minor_baseline_ =
+            line.cross_axis_offset + line.line_cross_size - line.minor_baseline;
+      }
+    }
+
+    if (is_last_line) {
+      if (line.major_baseline != LayoutUnit::Min()) {
+        last_major_baseline_ = line.cross_axis_offset + line.major_baseline;
+      }
+      if (line.minor_baseline != LayoutUnit::Min()) {
+        last_minor_baseline_ =
+            line.cross_axis_offset + line.line_cross_size - line.minor_baseline;
+      }
+    }
+  }
+
+  absl::optional<LayoutUnit> FirstBaseline() const {
+    if (first_major_baseline_)
+      return *first_major_baseline_;
+    if (first_minor_baseline_)
+      return *first_minor_baseline_;
+    return first_fallback_baseline_;
+  }
+  absl::optional<LayoutUnit> LastBaseline() const {
+    if (last_minor_baseline_)
+      return *last_minor_baseline_;
+    if (last_major_baseline_)
+      return *last_major_baseline_;
+    return last_fallback_baseline_;
+  }
+
+ private:
+  FontBaseline font_baseline_;
+
+  absl::optional<LayoutUnit> first_major_baseline_;
+  absl::optional<LayoutUnit> first_minor_baseline_;
+  absl::optional<LayoutUnit> first_fallback_baseline_;
+
+  absl::optional<LayoutUnit> last_major_baseline_;
+  absl::optional<LayoutUnit> last_minor_baseline_;
+  absl::optional<LayoutUnit> last_fallback_baseline_;
+};
+
 bool ContainsNonWhitespace(const LayoutBox* box) {
   const LayoutObject* next = box;
   while ((next = next->NextInPreOrder(box))) {
@@ -1169,6 +1244,8 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
                                    cross_axis_offset);
     flex_line_outputs->back().line_cross_size = line->cross_axis_extent_;
     flex_line_outputs->back().cross_axis_offset = line->cross_axis_offset_;
+    flex_line_outputs->back().major_baseline = line->max_major_ascent_;
+    flex_line_outputs->back().minor_baseline = line->max_minor_ascent_;
   }
 }
 
@@ -1223,7 +1300,9 @@ void NGFlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
   if (Style().ResolvedIsColumnReverseFlexDirection()) {
     algorithm_.LayoutColumnReverse(final_content_main_size,
                                    BorderScrollbarPadding().block_start);
-
+  }
+  if (Style().ResolvedIsColumnReverseFlexDirection() ||
+      Style().ResolvedIsRowReverseFlexDirection()) {
     for (auto& flex_line : *flex_line_outputs)
       flex_line.line_items.Reverse();
   }
@@ -1262,12 +1341,20 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     }
   }
 
-  absl::optional<LayoutUnit> fallback_baseline;
+  BaselineAccumulator baseline_accumulator(Style());
   NGLayoutResult::EStatus status = NGLayoutResult::kSuccess;
-  bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
+
   for (wtf_size_t flex_line_idx = 0; flex_line_idx < flex_line_outputs->size();
        ++flex_line_idx) {
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
+
+    bool is_first_line = flex_line_idx == 0;
+    bool is_last_line = flex_line_idx == flex_line_outputs->size() - 1;
+    if (!InvolvedInBlockFragmentation(container_builder_) && !is_column_) {
+      baseline_accumulator.AccumulateLine(line_output, is_first_line,
+                                          is_last_line);
+    }
+
     for (wtf_size_t flex_item_idx = 0;
          flex_item_idx < line_output.line_items.size(); ++flex_item_idx) {
       NGFlexItem& flex_item = line_output.line_items[flex_item_idx];
@@ -1338,14 +1425,8 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
                              physical_fragment);
       if (!InvolvedInBlockFragmentation(container_builder_)) {
         container_builder_.AddResult(*layout_result, offset);
-
-        // Only propagate baselines from children on the first flex-line.
-        if ((!is_wrap_reverse && flex_line_idx == 0) ||
-            (is_wrap_reverse &&
-             flex_line_idx == flex_line_outputs->size() - 1)) {
-          PropagateBaselineFromChild(flex_item.Style(), fragment,
-                                     offset.block_offset, &fallback_baseline);
-        }
+        baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
+                                            is_first_line, is_last_line);
       } else {
         flex_item.total_remaining_block_size = fragment.BlockSize();
       }
@@ -1358,11 +1439,10 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     }
   }
 
-  // Set the baseline to the fallback, if we didn't find any children with
-  // baseline alignment.
-  if (!InvolvedInBlockFragmentation(container_builder_) &&
-      !container_builder_.FirstBaseline() && fallback_baseline)
-    container_builder_.SetFirstBaseline(*fallback_baseline);
+  if (auto first_baseline = baseline_accumulator.FirstBaseline())
+    container_builder_.SetFirstBaseline(*first_baseline);
+  if (auto last_baseline = baseline_accumulator.LastBaseline())
+    container_builder_.SetLastBaseline(*last_baseline);
 
   // TODO(crbug.com/1131352): Avoid control-specific handling.
   if (Node().IsButton()) {
@@ -1388,10 +1468,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   DCHECK(row_break_between_outputs);
   DCHECK(broke_before_row);
 
-  absl::optional<LayoutUnit> fallback_baseline;
   NGFlexItemIterator item_iterator(*flex_line_outputs, BreakToken(),
                                    is_column_);
-  bool is_wrap_reverse = Style().FlexWrap() == EFlexWrap::kWrapReverse;
 
   Vector<bool> has_inflow_child_break_inside_line(flex_line_outputs->size(),
                                                   false);
@@ -1410,6 +1488,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   if (BreakToken())
     previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
 
+  BaselineAccumulator baseline_accumulator(Style());
   for (auto entry = item_iterator.NextItem(*broke_before_row);
        NGFlexItem* flex_item = entry.flex_item;
        entry = item_iterator.NextItem(*broke_before_row)) {
@@ -1418,6 +1497,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     NGFlexLine& line_output = (*flex_line_outputs)[flex_line_idx];
     const auto* item_break_token = To<NGBlockBreakToken>(entry.token);
     bool last_item_in_line = flex_item_idx == line_output.line_items.size() - 1;
+
+    bool is_first_line = flex_line_idx == 0;
     bool is_last_line = flex_line_idx == flex_line_outputs->size() - 1;
 
     // A child break in a parallel flow doesn't affect whether we should
@@ -1759,13 +1840,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                                  current_column_break_info
                                      ? &current_column_break_info->break_after
                                      : nullptr);
-
-    // Only propagate baselines from children on the first flex-line.
-    if ((!is_wrap_reverse && flex_line_idx == 0) ||
-        (is_wrap_reverse && is_last_line)) {
-      PropagateBaselineFromChild(flex_item->Style(), fragment,
-                                 offset.block_offset, &fallback_baseline);
-    }
+    baseline_accumulator.AccumulateItem(fragment, offset.block_offset,
+                                        is_first_line, is_last_line);
     if (last_item_in_line) {
       if (!has_inflow_child_break_inside_line[flex_line_idx])
         line_output.has_seen_all_children = true;
@@ -1802,10 +1878,10 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
     container_builder_.SetHasSeenAllChildren();
   }
 
-  // Set the baseline to the fallback, if we didn't find any children with
-  // baseline alignment.
-  if (!container_builder_.FirstBaseline() && fallback_baseline)
-    container_builder_.SetFirstBaseline(*fallback_baseline);
+  if (auto first_baseline = baseline_accumulator.FirstBaseline())
+    container_builder_.SetFirstBaseline(*first_baseline);
+  if (auto last_baseline = baseline_accumulator.LastBaseline())
+    container_builder_.SetLastBaseline(*last_baseline);
 
   // Update the |total_intrinsic_block_size_| in case things expanded.
   total_intrinsic_block_size_ =
@@ -1926,36 +2002,6 @@ void NGFlexLayoutAlgorithm::AdjustButtonBaseline(
           WebFeature::kWrongBaselineOfMultiLineButtonWithNonSpace);
     }
   }
-}
-
-void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
-    const ComputedStyle& flex_item_style,
-    const NGBoxFragment& fragment,
-    LayoutUnit block_offset,
-    absl::optional<LayoutUnit>* fallback_baseline) {
-  // Check if we've already found an appropriate baseline.
-  if (container_builder_.FirstBaseline())
-    return;
-
-  const auto baseline_type = Style().GetFontBaseline();
-  const LayoutUnit baseline_offset =
-      block_offset + fragment.FirstBaselineOrSynthesize(baseline_type);
-
-  // We prefer a baseline from a child with baseline alignment, and no
-  // auto-margins in the cross axis (even if we have to synthesize the
-  // baseline).
-  if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item_style) ==
-          ItemPosition::kBaseline &&
-      !is_column_) {
-    container_builder_.SetFirstBaseline(baseline_offset);
-    return;
-  }
-
-  // Set the fallback baseline if it doesn't have a value yet.
-  if (Style().ResolvedIsColumnReverseFlexDirection())
-    *fallback_baseline = baseline_offset;
-  else
-    *fallback_baseline = fallback_baseline->value_or(baseline_offset);
 }
 
 MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeItemContributions(
@@ -2629,7 +2675,8 @@ void NGFlexLayoutAlgorithm::CheckFlexLines(
   if (Style().FlexWrap() == EFlexWrap::kWrapReverse)
     flex_line_outputs.Reverse();
 
-  if (Style().ResolvedIsColumnReverseFlexDirection()) {
+  if (Style().ResolvedIsColumnReverseFlexDirection() ||
+      Style().ResolvedIsRowReverseFlexDirection()) {
     for (auto& flex_line : flex_line_outputs)
       flex_line.line_items.Reverse();
   }

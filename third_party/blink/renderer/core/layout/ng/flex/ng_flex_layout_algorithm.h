@@ -15,7 +15,6 @@ namespace blink {
 
 class NGBlockNode;
 class NGBlockBreakToken;
-class NGBoxFragment;
 struct DevtoolsFlexInfo;
 struct NGFlexItem;
 
@@ -105,13 +104,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
       const HeapVector<Member<LayoutBox>>& oof_children);
 
   void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
-
-  // Propagates the baseline from the given flex-item if needed.
-  void PropagateBaselineFromChild(
-      const ComputedStyle&,
-      const NGBoxFragment&,
-      LayoutUnit block_offset,
-      absl::optional<LayoutUnit>* fallback_baseline);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainer();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
