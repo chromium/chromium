@@ -189,10 +189,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // This is a workaround to an issue of the host app briefly flashing when the tab is resized.
     private boolean mInitFirstHeight;
 
+    private boolean mIsTablet;
+
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             Integer navigationBarColor, Integer navigationBarDividerColor, boolean isFixedHeight,
             OnResizedCallback onResizedCallback, ActivityLifecycleDispatcher lifecycleDispatcher,
-            FullscreenManager fullscreenManager) {
+            FullscreenManager fullscreenManager, boolean isTablet) {
         mWindowAboveNavbar = ChromeFeatureList.sCctResizableWindowAboveNavbar.isEnabled();
         mActivity = activity;
         mDisplayHeight = getDisplayHeight();
@@ -257,6 +259,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             });
         };
         fullscreenManager.addObserver(this);
+        mIsTablet = isTablet;
     }
 
     @Override
@@ -425,6 +428,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         d.setCornerRadii(new float[] {radius, radius, radius, radius, 0, 0, 0, 0});
     }
 
+    private GradientDrawable getDragBarBackground() {
+        View dragBar = mActivity.findViewById(R.id.drag_bar);
+        return (GradientDrawable) dragBar.getBackground();
+    }
+
     @Override
     public void setScrimFraction(float scrimFraction) {
         int scrimColor = mActivity.getResources().getColor(R.color.default_scrim_color);
@@ -437,9 +445,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // the handle view color needs updating to match it. This is a better way than running
         // PCCT's own scrim coordinator since it can apply shape-aware scrim to the handle view
         // that has the rounded corner.
-        View dragBar = mActivity.findViewById(R.id.drag_bar);
-        GradientDrawable drawable = (GradientDrawable) dragBar.getBackground();
-        drawable.setColor(color);
+        getDragBarBackground().setColor(color);
 
         ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handlebar);
         int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
@@ -449,6 +455,20 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         } else {
             handle.clearColorFilter();
         }
+    }
+
+    @Override
+    public void onFindToolbarShown() {
+        if (mIsTablet) return;
+        int findToolbarBackground =
+                mActivity.getResources().getColor(R.color.find_in_page_background_color);
+        getDragBarBackground().setColor(findToolbarBackground);
+    }
+
+    @Override
+    public void onFindToolbarHidden() {
+        if (mIsTablet) return;
+        getDragBarBackground().setColor(mToolbarColor);
     }
 
     private void initializeHeight() {
@@ -1079,6 +1099,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // Pass null for context because we don't depend on the GestureDetector inside as we invoke
         // MotionEvents directly in the tests.
         return new PartialCustomTabHandleStrategy(null, this::isFullHeight, () -> mStatus, this);
+    }
+
+    @VisibleForTesting
+    void setToolbarColorForTesting(int toolbarColor) {
+        mToolbarColor = toolbarColor;
     }
 
     // Reusable class used to control nav bar transitioning, to make the transition instant.

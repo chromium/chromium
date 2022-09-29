@@ -28,6 +28,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Insets;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -108,6 +109,9 @@ public class PartialCustomTabHeightStrategyTest {
     private static final int MULTIWINDOW_HEIGHT = FULL_HEIGHT / 2;
     private static final int STATUS_BAR_HEIGHT = 68;
 
+    private static final int FIND_TOOLBAR_COLOR = 3755;
+    private static final int PCCT_TOOLBAR_COLOR = 12111;
+
     @Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {{true}, {false}});
@@ -167,6 +171,8 @@ public class PartialCustomTabHeightStrategyTest {
     private CommandLine mCommandLine;
     @Mock
     private FullscreenManager mFullscreenManager;
+    @Mock
+    private GradientDrawable mDragBarBackground;
 
     private Context mContext;
     private List<WindowManager.LayoutParams> mAttributeResults;
@@ -252,9 +258,9 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     private PartialCustomTabHeightStrategy createPcctAtHeight(int heightPx, boolean isFixedHeight) {
-        PartialCustomTabHeightStrategy pcct =
-                new PartialCustomTabHeightStrategy(mActivity, heightPx, null, null, isFixedHeight,
-                        mOnResizedCallback, mActivityLifecycleDispatcher, mFullscreenManager);
+        PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(mActivity,
+                heightPx, null, null, isFixedHeight, mOnResizedCallback,
+                mActivityLifecycleDispatcher, mFullscreenManager, false);
         pcct.setWindowAboveNavbarForTesting(mWindowAboveNavbar);
         pcct.setMockViewForTesting(
                 mNavbar, mSpinnerView, mSpinner, mToolbarView, mToolbarCoordinator);
@@ -981,6 +987,22 @@ public class PartialCustomTabHeightStrategyTest {
         // Drag tab slightly but actionDown and actionUp will be performed at the same Y.
         // The tab should remain open.
         assertTabIsAtInitialPos(dragTab(handleStrategy, 1500, 1450, 1500));
+    }
+
+    @Test
+    public void dragBarMatchesFindToolbarInColor() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        strategy.setToolbarColorForTesting(PCCT_TOOLBAR_COLOR);
+        doReturn(FIND_TOOLBAR_COLOR)
+                .when(mResources)
+                .getColor(eq(R.color.find_in_page_background_color));
+        doReturn(mDragBarBackground).when(mDragBar).getBackground();
+
+        strategy.onFindToolbarShown();
+        verify(mDragBarBackground).setColor(FIND_TOOLBAR_COLOR);
+
+        strategy.onFindToolbarHidden();
+        verify(mDragBarBackground).setColor(PCCT_TOOLBAR_COLOR);
     }
 
     private boolean isFullscreen() {

@@ -1359,7 +1359,9 @@ public class RootUiCoordinator
             }
 
             @Override
-            public void onFindToolbarHidden() {}
+            public void onFindToolbarHidden() {
+                RootUiCoordinator.this.onFindToolbarHidden();
+            }
         };
 
         mFindToolbarManager.addObserver(mFindToolbarObserver);
@@ -1375,6 +1377,12 @@ public class RootUiCoordinator
                     OverlayPanel.StateChangeReason.UNKNOWN);
         }
     }
+
+    /**
+     * Called when the find in page toolbar is shown. Sub-classes may override to manage
+     * cross-feature interaction, e.g. hide other features when this feature is shown.
+     */
+    protected void onFindToolbarHidden() {}
 
     /**
      * @return Whether the "update available" badge should be displayed on menu button(s) in the

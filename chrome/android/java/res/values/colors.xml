@@ -51,6 +51,7 @@ found in the LICENSE file.
     <color name="find_in_page_query_incognito_hint_color">@color/white_alpha_70</color>
     <color name="find_in_page_failed_results_status_color">@color/default_red</color>
     <color name="find_in_page_query_default_hint_color">@color/default_text_color_secondary_list</color>
+    <color name="find_in_page_background_color">@color/default_bg_color_baseline</color>
 
     <!-- App Background Colors -->
     <color name="window_background_color">@color/default_bg_color_baseline</color>

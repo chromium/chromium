@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarC
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -254,7 +255,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor(),
                 intentDataProvider.isPartialCustomTabFixedHeight(),
                 CustomTabsConnection.getInstance(), intentDataProvider.getSession(),
-                mActivityLifecycleDispatcher, mFullscreenManager);
+                mActivityLifecycleDispatcher, mFullscreenManager,
+                DeviceFormFactor.isWindowOnTablet(mWindowAndroid));
     }
 
     @Override
@@ -297,6 +299,18 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected boolean canDrawOutsideScreen() {
         return mCustomTabHeightStrategy.canDrawOutsideScreen();
+    }
+
+    @Override
+    protected void onFindToolbarShown() {
+        super.onFindToolbarShown();
+        mCustomTabHeightStrategy.onFindToolbarShown();
+    }
+
+    @Override
+    protected void onFindToolbarHidden() {
+        super.onFindToolbarHidden();
+        mCustomTabHeightStrategy.onFindToolbarHidden();
     }
 
     @Override
