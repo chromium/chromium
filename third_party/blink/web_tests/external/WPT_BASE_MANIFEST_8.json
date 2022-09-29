@@ -331063,7 +331063,7 @@
      []
     ],
     "webidl.idl": [
-     "43748c5ac4c889b73a8e78b8732ae6b235684266",
+     "9993673361aad662b83e96b491ddf6c6864f9100",
      []
     ],
     "webmidi.idl": [
@@ -338857,7 +338857,7 @@
      []
     ],
     "getdisplaymedia.https-expected.txt": [
-     "c47ba50cb142e7bbaaf8459f44ff532845b51b30",
+     "4cdf6f2574d11071332d57eef4113c77b312ee9d",
      []
     ],
     "permissions-policy-audio.https.sub-expected.txt": [
@@ -348419,7 +348419,11 @@
       "0e4f14b96247b4855fbda1df2a719b61b07f4a48",
       []
      ]
-    }
+    },
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
+     []
+    ]
    },
    "webmessaging": {
     "DIR_METADATA": [
@@ -538782,7 +538786,7 @@
      ]
     ],
     "getdisplaymedia.https.html": [
-     "33e70acacbf6a3d88adb7e8626afee1dbfa6abb3",
+     "69b47474be0192f5fa860fec89133b14320f0760",
      [
       null,
       {
@@ -546832,9 +546836,17 @@
       ]
      ],
      "referrer-policy.https.html": [
-      "e3c6e8aeb06c6b4bd9b3c38b5a7982a885886ca3",
+      "6d942fad0ddee198ab5dedbd61c67248de6e5316",
       [
-       null,
+       "speculation-rules/prefetch/referrer-policy.https.html?1-1",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/referrer-policy.https.html?2-2",
+       {}
+      ],
+      [
+       "speculation-rules/prefetch/referrer-policy.https.html?3-last",
        {}
       ]
      ],
@@ -571674,6 +571686,20 @@
       ]
      ]
     },
+    "idlharness-shadowrealm.window.js": [
+     "ab1ca9a0198720d537744cdc8777205317b41f58",
+     [
+      "webidl/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.any.js": [
      "3c662ba8e63f2f585ce1c5674eb1e165e5810313",
      [
@@ -574297,6 +574323,16 @@
      ],
      "h264.https.html": [
       "ed85131c2ccd0857da9a3fa7bd748271c1d07d3a",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "rid-manipulation.html": [
+      "a88506305a1d58944e6e6c2f01b26d8aef882909",
       [
        null,
        {
