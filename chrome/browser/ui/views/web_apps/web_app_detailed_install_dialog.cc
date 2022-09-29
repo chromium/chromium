@@ -316,6 +316,7 @@ void ShowWebAppDetailedInstallDialog(
   auto* delegate_ptr = delegate.get();
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))
+          .SetInternalName("WebAppDetailedInstallDialog")
           .SetIcon(ui::ImageModel::FromImageSkia(icon_image))
           .SetTitle(title)
           .SetSubtitle(base::UTF8ToUTF16(start_url_host))
