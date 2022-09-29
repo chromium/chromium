@@ -240,6 +240,8 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
     EXPECT_TRUE(AreWebAppsEnabled(regular_profile));
   }
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
     auto user_manager = std::make_unique<MockUserManager>();
     EXPECT_CALL(*user_manager, IsLoggedInAsKioskApp())
         .WillOnce(testing::Return(true));
@@ -247,6 +249,8 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kKioskEnableAppService);
     auto user_manager = std::make_unique<MockUserManager>();
     EXPECT_CALL(*user_manager, IsLoggedInAsArcKioskApp())
         .WillOnce(testing::Return(true));
@@ -254,8 +258,6 @@ TEST_F(WebAppUtilsTest, AreWebAppsEnabled) {
     EXPECT_FALSE(AreWebAppsEnabled(regular_profile));
   }
   {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(features::kKioskEnableAppService);
     auto user_manager = std::make_unique<MockUserManager>();
     EXPECT_CALL(*user_manager, IsLoggedInAsKioskApp())
         .WillOnce(testing::Return(true));

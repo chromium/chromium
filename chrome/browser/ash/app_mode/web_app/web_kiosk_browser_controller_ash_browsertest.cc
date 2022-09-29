@@ -6,7 +6,6 @@
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -46,9 +44,7 @@ namespace ash {
 class WebKioskBrowserControllerAshTest : public InProcessBrowserTest,
                                          public BrowserListObserver {
  public:
-  WebKioskBrowserControllerAshTest() {
-    feature_list.InitAndEnableFeature(features::kKioskEnableAppService);
-  }
+  WebKioskBrowserControllerAshTest() = default;
   WebKioskBrowserControllerAshTest(const WebKioskBrowserControllerAshTest&) =
       delete;
   WebKioskBrowserControllerAshTest& operator=(
@@ -100,7 +96,6 @@ class WebKioskBrowserControllerAshTest : public InProcessBrowserTest,
   }
 
  private:
-  base::test::ScopedFeatureList feature_list;
   net::EmbeddedTestServer https_server_;
   apps::AppServiceTest app_service_test_;
 
