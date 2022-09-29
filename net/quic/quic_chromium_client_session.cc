@@ -1070,8 +1070,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
 
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.NumTotalStreams",
                           num_total_streams_);
-  UMA_HISTOGRAM_COUNTS_1M("Net.QuicNumSentClientHellos",
-                          crypto_stream_->num_sent_client_hellos());
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.Pushed", streams_pushed_count_);
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicSession.PushedAndClaimed",
                           streams_pushed_and_claimed_count_);

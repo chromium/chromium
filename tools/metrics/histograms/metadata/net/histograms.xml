@@ -2149,15 +2149,6 @@ chromium-metrics-reviews@google.com.
   <summary>Log success rate of processing trailing headers.</summary>
 </histogram>
 
-<histogram name="Net.QuicClientHelloRejectReasons" enum="QuicRejectReasons"
-    expires_after="2023-05-11">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    The reject reasons for QUIC's CHLO (client hello) message from server
-  </summary>
-</histogram>
-
 <histogram name="Net.QuicConnection.WritePacketStatus" enum="QuicWriteStatus"
     expires_after="2023-05-11">
   <owner>wub@chromium.org</owner>
@@ -2466,13 +2457,6 @@ chromium-metrics-reviews@google.com.
     The time from network disconnection to an alternative network becoming
     default.
   </summary>
-</histogram>
-
-<histogram name="Net.QuicNumSentClientHellos" units="units"
-    expires_after="2023-03-19">
-  <owner>dschinazi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>The number of client hello messages sent.</summary>
 </histogram>
 
 <histogram name="Net.QuicNumServerConfig.UpdateMessagesIgnored"
