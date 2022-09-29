@@ -22,8 +22,6 @@ namespace util {
 
 namespace {
 
-using chromeos::assistant::AssistantQuerySource;
-
 // Supported deep link param keys. These values must be kept in sync with the
 // server. See more details at go/cros-assistant-deeplink.
 constexpr char kActionParamKey[] = "action";

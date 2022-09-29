@@ -61,9 +61,9 @@ std::vector<assistant::AssistantSuggestion> ToAssistantSuggestion(
 }
 
 // Helper function to convert |action::Notification| to |AssistantNotification|.
-chromeos::assistant::AssistantNotification ToAssistantNotification(
+assistant::AssistantNotification ToAssistantNotification(
     const chromeos::assistant::action::Notification& notification) {
-  chromeos::assistant::AssistantNotification assistant_notification;
+  assistant::AssistantNotification assistant_notification;
   assistant_notification.title = notification.title;
   assistant_notification.message = notification.text;
   assistant_notification.action_url = GURL(notification.action_url);
@@ -506,7 +506,7 @@ void ConversationController::OnOpenUrl(const std::string& url,
 // directly since it stores an updated list of all installed Android Apps on the
 // device.
 void ConversationController::OnOpenAndroidApp(
-    const chromeos::assistant::AndroidAppInfo& app_info,
+    const assistant::AndroidAppInfo& app_info,
     const chromeos::assistant::InteractionInfo& interaction) {
   ENSURE_MOJOM_THREAD(&ConversationController::OnOpenAndroidApp, app_info,
                       interaction);
@@ -563,7 +563,7 @@ void ConversationController::OnShowNotification(
 }
 
 void ConversationController::OnInteractionStarted(
-    const chromeos::assistant::AssistantInteractionMetadata& metadata) {
+    const AssistantInteractionMetadata& metadata) {
   stop_interaction_closure_.reset();
 }
 

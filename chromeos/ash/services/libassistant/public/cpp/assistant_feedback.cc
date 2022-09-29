@@ -4,11 +4,9 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_feedback.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AssistantFeedback::AssistantFeedback() = default;
 AssistantFeedback::~AssistantFeedback() = default;
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

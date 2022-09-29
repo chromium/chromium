@@ -18,7 +18,7 @@ namespace ash {
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantSuggestionsModelObserver
     : public base::CheckedObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   // Invoked when the cache of conversation starters has changed.
   virtual void OnConversationStartersChanged(

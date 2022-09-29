@@ -19,8 +19,8 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::assistant::AndroidAppInfo;
-using chromeos::assistant::AppStatus;
+using ::ash::assistant::AndroidAppInfo;
+using ::ash::assistant::AppStatus;
 
 namespace {
 

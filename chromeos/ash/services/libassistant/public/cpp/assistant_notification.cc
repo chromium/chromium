@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AssistantNotification::AssistantNotification() = default;
 
@@ -21,5 +20,5 @@ AssistantNotification::AssistantNotification(AssistantNotification&&) = default;
 
 AssistantNotification& AssistantNotification::operator=(
     AssistantNotification&&) = default;
-}  // namespace assistant
-}  // namespace chromeos
+
+}  // namespace ash::assistant

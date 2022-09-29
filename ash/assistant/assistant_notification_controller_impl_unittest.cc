@@ -23,9 +23,9 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantNotificationPriority;
+using assistant::AssistantNotification;
+using assistant::AssistantNotificationButton;
+using assistant::AssistantNotificationPriority;
 
 using testing::_;
 using testing::Eq;

@@ -13,7 +13,7 @@ class DeviceActionsDelegate {
  public:
   virtual ~DeviceActionsDelegate() = default;
 
-  virtual chromeos::assistant::AppStatus GetAndroidAppStatus(
+  virtual ash::assistant::AppStatus GetAndroidAppStatus(
       const std::string& package_name) = 0;
 };
 

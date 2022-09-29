@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
       public AssistantSuggestionsModelObserver,
       public AssistantUiModelObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   METADATA_HEADER(SuggestionContainerView);
 

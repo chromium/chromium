@@ -37,9 +37,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       public chromeos::assistant::action::AssistantActionObserver,
       public chromeos::assistant::ConversationObserver {
  public:
-  using AssistantNotification = ::chromeos::assistant::AssistantNotification;
-  using AssistantQuerySource = ::chromeos::assistant::AssistantQuerySource;
-  using AssistantFeedback = ::chromeos::assistant::AssistantFeedback;
+  using AssistantNotification = assistant::AssistantNotification;
+  using AssistantQuerySource = assistant::AssistantQuerySource;
+  using AssistantFeedback = assistant::AssistantFeedback;
 
   ConversationController();
   ConversationController(const ConversationController&) = delete;
@@ -91,7 +91,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       override;
   void OnOpenUrl(const std::string& url, bool in_background) override;
   void OnOpenAndroidApp(
-      const chromeos::assistant::AndroidAppInfo& app_info,
+      const assistant::AndroidAppInfo& app_info,
       const chromeos::assistant::InteractionInfo& interaction) override;
   void OnScheduleWait(int id, int time_ms) override;
   void OnShowNotification(
@@ -99,8 +99,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
 
   // chromeos::assistant::ConversationObserver:
   void OnInteractionStarted(
-      const chromeos::assistant::AssistantInteractionMetadata& metadata)
-      override;
+      const assistant::AssistantInteractionMetadata& metadata) override;
   void OnInteractionFinished(
       chromeos::assistant::AssistantInteractionResolution resolution) override;
 

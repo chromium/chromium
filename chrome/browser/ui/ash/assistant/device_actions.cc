@@ -34,8 +34,8 @@
 using ::ash::NetworkHandler;
 using ::ash::NetworkStateHandler;
 using ::ash::NetworkTypePattern;
-using chromeos::assistant::AndroidAppInfo;
-using chromeos::assistant::AppStatus;
+using ::ash::assistant::AndroidAppInfo;
+using ::ash::assistant::AppStatus;
 
 namespace {
 

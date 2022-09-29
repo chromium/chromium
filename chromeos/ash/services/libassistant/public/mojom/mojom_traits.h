@@ -29,14 +29,14 @@ namespace mojo {
 
 template <>
 struct StructTraits<chromeos::libassistant::mojom::AndroidAppInfoDataView,
-                    chromeos::assistant::AndroidAppInfo> {
-  using AndroidAppInfo = chromeos::assistant::AndroidAppInfo;
+                    ash::assistant::AndroidAppInfo> {
+  using AndroidAppInfo = ash::assistant::AndroidAppInfo;
 
   static const std::string& package_name(const AndroidAppInfo& input);
   static int64_t version(const AndroidAppInfo& input);
   static const std::string& localized_app_name(const AndroidAppInfo& input);
   static const std::string& intent(const AndroidAppInfo& input);
-  static chromeos::assistant::AppStatus status(const AndroidAppInfo& input);
+  static ash::assistant::AppStatus status(const AndroidAppInfo& input);
   static const std::string& action(const AndroidAppInfo& input);
 
   static bool Read(chromeos::libassistant::mojom::AndroidAppInfoDataView data,
@@ -45,8 +45,8 @@ struct StructTraits<chromeos::libassistant::mojom::AndroidAppInfoDataView,
 
 template <>
 struct EnumTraits<chromeos::libassistant::mojom::AndroidAppStatus,
-                  chromeos::assistant::AppStatus> {
-  using AppStatus = ::chromeos::assistant::AppStatus;
+                  ash::assistant::AppStatus> {
+  using AppStatus = ::ash::assistant::AppStatus;
   using AndroidAppStatus = ::chromeos::libassistant::mojom::AndroidAppStatus;
 
   static AndroidAppStatus ToMojom(AppStatus input);
@@ -56,8 +56,8 @@ struct EnumTraits<chromeos::libassistant::mojom::AndroidAppStatus,
 template <>
 struct StructTraits<
     chromeos::libassistant::mojom::AssistantNotificationDataView,
-    chromeos::assistant::AssistantNotification> {
-  using AssistantNotification = chromeos::assistant::AssistantNotification;
+    ash::assistant::AssistantNotification> {
+  using AssistantNotification = ash::assistant::AssistantNotification;
 
   static const std::string& title(const AssistantNotification& input);
   static const std::string& message(const AssistantNotification& input);
@@ -72,7 +72,7 @@ struct StructTraits<
       const AssistantNotification& input);
   static const absl::optional<base::Time>& expiry_time(
       const AssistantNotification& input);
-  static const std::vector<chromeos::assistant::AssistantNotificationButton>&
+  static const std::vector<ash::assistant::AssistantNotificationButton>&
   buttons(const AssistantNotification& input);
   static bool from_server(const AssistantNotification& input);
 
@@ -84,9 +84,9 @@ struct StructTraits<
 template <>
 struct StructTraits<
     chromeos::libassistant::mojom::AssistantNotificationButtonDataView,
-    chromeos::assistant::AssistantNotificationButton> {
+    ash::assistant::AssistantNotificationButton> {
   using AssistantNotificationButton =
-      chromeos::assistant::AssistantNotificationButton;
+      ash::assistant::AssistantNotificationButton;
 
   static const std::string& label(const AssistantNotificationButton& input);
   static const GURL& action_url(const AssistantNotificationButton& input);
@@ -100,8 +100,8 @@ struct StructTraits<
 
 template <>
 struct StructTraits<chromeos::libassistant::mojom::AssistantFeedbackDataView,
-                    chromeos::assistant::AssistantFeedback> {
-  using AssistantFeedback = chromeos::assistant::AssistantFeedback;
+                    ash::assistant::AssistantFeedback> {
+  using AssistantFeedback = ash::assistant::AssistantFeedback;
 
   static const std::string& description(const AssistantFeedback& input);
   static bool assistant_debug_info_allowed(const AssistantFeedback& input);
@@ -116,15 +116,13 @@ struct StructTraits<chromeos::libassistant::mojom::AssistantFeedbackDataView,
 template <>
 struct StructTraits<
     chromeos::libassistant::mojom::AssistantInteractionMetadataDataView,
-    chromeos::assistant::AssistantInteractionMetadata> {
-  using NativeType = chromeos::assistant::AssistantInteractionMetadata;
+    ash::assistant::AssistantInteractionMetadata> {
+  using NativeType = ash::assistant::AssistantInteractionMetadata;
   using MojomType =
       chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
 
-  static chromeos::assistant::AssistantInteractionType type(
-      const NativeType& input);
-  static chromeos::assistant::AssistantQuerySource source(
-      const NativeType& input);
+  static ash::assistant::AssistantInteractionType type(const NativeType& input);
+  static ash::assistant::AssistantQuerySource source(const NativeType& input);
   static const std::string& query(const NativeType& input);
 
   static bool Read(MojomType data, NativeType* output);
@@ -143,8 +141,8 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionResolution,
 
 template <>
 struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionType,
-                  chromeos::assistant::AssistantInteractionType> {
-  using NativeType = chromeos::assistant::AssistantInteractionType;
+                  ash::assistant::AssistantInteractionType> {
+  using NativeType = ash::assistant::AssistantInteractionType;
   using MojomType = chromeos::libassistant::mojom::AssistantInteractionType;
 
   static MojomType ToMojom(NativeType input);
@@ -153,8 +151,8 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantInteractionType,
 
 template <>
 struct EnumTraits<chromeos::libassistant::mojom::AssistantQuerySource,
-                  chromeos::assistant::AssistantQuerySource> {
-  using NativeType = chromeos::assistant::AssistantQuerySource;
+                  ash::assistant::AssistantQuerySource> {
+  using NativeType = ash::assistant::AssistantQuerySource;
   using MojomType = chromeos::libassistant::mojom::AssistantQuerySource;
 
   static MojomType ToMojom(NativeType input);
@@ -163,11 +161,11 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantQuerySource,
 
 template <>
 struct StructTraits<chromeos::libassistant::mojom::AssistantSuggestionDataView,
-                    chromeos::assistant::AssistantSuggestion> {
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+                    ash::assistant::AssistantSuggestion> {
+  using AssistantSuggestion = ash::assistant::AssistantSuggestion;
 
   static const base::UnguessableToken& id(const AssistantSuggestion& input);
-  static chromeos::assistant::AssistantSuggestionType type(
+  static ash::assistant::AssistantSuggestionType type(
       const AssistantSuggestion& input);
   static const std::string& text(const AssistantSuggestion& input);
   static const GURL& icon_url(const AssistantSuggestion& input);
@@ -180,8 +178,8 @@ struct StructTraits<chromeos::libassistant::mojom::AssistantSuggestionDataView,
 
 template <>
 struct EnumTraits<chromeos::libassistant::mojom::AssistantSuggestionType,
-                  chromeos::assistant::AssistantSuggestionType> {
-  using AssistantSuggestionType = chromeos::assistant::AssistantSuggestionType;
+                  ash::assistant::AssistantSuggestionType> {
+  using AssistantSuggestionType = ash::assistant::AssistantSuggestionType;
   using MojoSuggestionType =
       chromeos::libassistant::mojom::AssistantSuggestionType;
 
@@ -192,16 +190,15 @@ struct EnumTraits<chromeos::libassistant::mojom::AssistantSuggestionType,
 
 template <>
 struct StructTraits<chromeos::libassistant::mojom::AssistantTimerDataView,
-                    chromeos::assistant::AssistantTimer> {
-  using AssistantTimer = chromeos::assistant::AssistantTimer;
+                    ash::assistant::AssistantTimer> {
+  using AssistantTimer = ash::assistant::AssistantTimer;
 
   static const std::string& id(const AssistantTimer& input);
   static const std::string& label(const AssistantTimer& input);
   static const base::Time& fire_time(const AssistantTimer& input);
   static const base::TimeDelta& original_duration(const AssistantTimer& input);
   static const base::TimeDelta& remaining_time(const AssistantTimer& input);
-  static chromeos::assistant::AssistantTimerState state(
-      const AssistantTimer& input);
+  static ash::assistant::AssistantTimerState state(const AssistantTimer& input);
 
   static bool Read(chromeos::libassistant::mojom::AssistantTimerDataView data,
                    AssistantTimer* output);
@@ -209,8 +206,8 @@ struct StructTraits<chromeos::libassistant::mojom::AssistantTimerDataView,
 
 template <>
 struct EnumTraits<chromeos::libassistant::mojom::AssistantTimerState,
-                  chromeos::assistant::AssistantTimerState> {
-  using AssistantTimerState = ::chromeos::assistant::AssistantTimerState;
+                  ash::assistant::AssistantTimerState> {
+  using AssistantTimerState = ::ash::assistant::AssistantTimerState;
   using MojomAssistantTimerState =
       ::chromeos::libassistant::mojom::AssistantTimerState;
 

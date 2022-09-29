@@ -20,8 +20,6 @@ namespace ash {
 namespace assistant {
 namespace util {
 
-using chromeos::assistant::AssistantQuerySource;
-
 using DeepLinkUtilTest = AshTestBase;
 
 TEST_F(DeepLinkUtilTest, AppendOrReplaceEntryPointParam) {

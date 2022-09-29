@@ -17,11 +17,11 @@
 
 namespace ash {
 
+using assistant::AssistantInteractionMetadata;
 using assistant::AssistantInteractionResolution;
 using assistant::AssistantInteractionSubscriber;
-using chromeos::assistant::AssistantInteractionMetadata;
-using chromeos::assistant::AssistantInteractionType;
-using chromeos::assistant::AssistantSuggestion;
+using assistant::AssistantInteractionType;
+using assistant::AssistantSuggestion;
 
 // Subscriber that will ensure the LibAssistant contract is enforced.
 // More specifically, it will ensure that:
@@ -62,8 +62,7 @@ class LibassistantContractChecker : public AssistantInteractionSubscriber {
   }
 
   void OnSuggestionsResponse(
-      const std::vector<chromeos::assistant::AssistantSuggestion>& response)
-      override {
+      const std::vector<assistant::AssistantSuggestion>& response) override {
     CheckResponse();
   }
 
@@ -73,8 +72,7 @@ class LibassistantContractChecker : public AssistantInteractionSubscriber {
     CheckResponse();
   }
 
-  void OnOpenAppResponse(
-      const chromeos::assistant::AndroidAppInfo& app_info) override {
+  void OnOpenAppResponse(const assistant::AndroidAppInfo& app_info) override {
     CheckResponse();
   }
 
@@ -220,7 +218,7 @@ void TestAssistantService::StartScreenContextInteraction(
 
 void TestAssistantService::StartTextInteraction(
     const std::string& query,
-    chromeos::assistant::AssistantQuerySource source,
+    assistant::AssistantQuerySource source,
     bool allow_tts) {
   StartInteraction(AssistantInteractionType::kText, source, query);
 }
@@ -257,11 +255,11 @@ TestAssistantService::GetPendingNotificationDelegate() {
 }
 
 void TestAssistantService::RetrieveNotification(
-    const chromeos::assistant::AssistantNotification& notification,
+    const assistant::AssistantNotification& notification,
     int action_index) {}
 
 void TestAssistantService::DismissNotification(
-    const chromeos::assistant::AssistantNotification& notification) {}
+    const assistant::AssistantNotification& notification) {}
 
 void TestAssistantService::OnAccessibilityStatusChanged(
     bool spoken_feedback_enabled) {}
@@ -271,7 +269,7 @@ void TestAssistantService::OnColorModeChanged(bool dark_mode_enabled) {
 }
 
 void TestAssistantService::SendAssistantFeedback(
-    const chromeos::assistant::AssistantFeedback& feedback) {}
+    const assistant::AssistantFeedback& feedback) {}
 
 void TestAssistantService::AddTimeToTimer(const std::string& id,
                                           base::TimeDelta duration) {}
@@ -283,8 +281,8 @@ void TestAssistantService::RemoveAlarmOrTimer(const std::string& id) {}
 void TestAssistantService::ResumeTimer(const std::string& id) {}
 
 void TestAssistantService::StartInteraction(
-    chromeos::assistant::AssistantInteractionType type,
-    chromeos::assistant::AssistantQuerySource source,
+    assistant::AssistantInteractionType type,
+    assistant::AssistantQuerySource source,
     const std::string& query) {
   if (running_active_interaction_) {
     StopActiveInteraction(/*cancel_conversation=*/false);
@@ -298,8 +296,8 @@ void TestAssistantService::StartInteraction(
 }
 
 void TestAssistantService::InteractionStarted(
-    chromeos::assistant::AssistantInteractionType type,
-    chromeos::assistant::AssistantQuerySource source,
+    assistant::AssistantInteractionType type,
+    assistant::AssistantQuerySource source,
     const std::string& query) {
   DCHECK(!running_active_interaction_);
   AssistantInteractionMetadata metadata{type, source, query};

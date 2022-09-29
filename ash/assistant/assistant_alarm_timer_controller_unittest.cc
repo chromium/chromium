@@ -33,11 +33,11 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantNotificationPriority;
-using chromeos::assistant::AssistantTimer;
-using chromeos::assistant::AssistantTimerState;
+using assistant::AssistantNotification;
+using assistant::AssistantNotificationButton;
+using assistant::AssistantNotificationPriority;
+using assistant::AssistantTimer;
+using assistant::AssistantTimerState;
 
 // Constants.
 constexpr char kClientId[] = "assistant/timer<timer-id>";

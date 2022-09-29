@@ -39,8 +39,8 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantInteractionMetadata;
-using chromeos::assistant::AssistantInteractionType;
+using assistant::AssistantInteractionMetadata;
+using assistant::AssistantInteractionType;
 
 // The min/max height of the embedded Assistant.
 constexpr int kMaxHeightDip = 440;
@@ -244,8 +244,7 @@ class AssistantInteractionCounter
 
  private:
   // AssistantInteractionSubscriber implementation:
-  void OnInteractionStarted(
-      const chromeos::assistant::AssistantInteractionMetadata&) override {
+  void OnInteractionStarted(const AssistantInteractionMetadata&) override {
     interaction_count_++;
   }
 

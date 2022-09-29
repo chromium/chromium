@@ -55,7 +55,7 @@ interface ConversationController {
 };
 
 // Models an Assistant feedback. This should be kept in sync with
-// |chromeos::assistant::AssistantFeedback|.
+// |ash::assistant::AssistantFeedback|.
 struct AssistantFeedback {
   // User input to be sent with the feedback report.
   string description;

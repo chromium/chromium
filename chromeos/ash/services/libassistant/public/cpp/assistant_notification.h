@@ -12,8 +12,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Models a notification button.
 struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS)
@@ -101,12 +100,6 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantNotification {
   bool from_server = false;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AssistantNotification;
-}
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_

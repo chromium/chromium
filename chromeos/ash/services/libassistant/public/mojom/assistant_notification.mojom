@@ -8,7 +8,7 @@ import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // Models an Assistant notification. This should be kept in sync with
-// |chromeos::assistant::AssistantNotification|. For now we only include
+// |ash::assistant::AssistantNotification|. For now we only include
 // entries that are currently in use.
 struct AssistantNotification {
   // Title of the notification.

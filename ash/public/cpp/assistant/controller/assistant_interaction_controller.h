@@ -36,10 +36,9 @@ class ASH_PUBLIC_EXPORT AssistantInteractionController {
   virtual bool HasHadInteraction() const = 0;
 
   // Start Assistant text interaction.
-  virtual void StartTextInteraction(
-      const std::string& query,
-      bool allow_tts,
-      chromeos::assistant::AssistantQuerySource source) = 0;
+  virtual void StartTextInteraction(const std::string& query,
+                                    bool allow_tts,
+                                    assistant::AssistantQuerySource source) = 0;
 
  protected:
   AssistantInteractionController();

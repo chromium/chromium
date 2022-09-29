@@ -73,7 +73,7 @@ void AssistantInteractionLogger::OnHtmlResponse(const std::string& response,
 }
 
 void AssistantInteractionLogger::OnSuggestionsResponse(
-    const std::vector<chromeos::assistant::AssistantSuggestion>& response) {
+    const std::vector<assistant::AssistantSuggestion>& response) {
   std::stringstream suggestions;
   for (const auto& suggestion : response)
     suggestions << "'" << suggestion.text << "', ";

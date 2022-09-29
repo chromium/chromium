@@ -96,8 +96,7 @@ TEST_F(UiElementContainerViewTest, CustomOverflowIndicator) {
   AssistantInteractionControllerImpl* controller =
       static_cast<AssistantInteractionControllerImpl*>(
           AssistantInteractionController::Get());
-  controller->OnInteractionStarted(
-      chromeos::assistant::AssistantInteractionMetadata());
+  controller->OnInteractionStarted(assistant::AssistantInteractionMetadata());
 
   // Add a single text response and confirm that overflow indicator is not
   // visible.

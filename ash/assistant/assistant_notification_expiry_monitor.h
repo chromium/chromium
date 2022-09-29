@@ -24,7 +24,7 @@ class AssistantNotificationControllerImpl;
 // expiry_time| field).
 class AssistantNotificationExpiryMonitor {
  public:
-  using AssistantNotification = chromeos::assistant::AssistantNotification;
+  using AssistantNotification = assistant::AssistantNotification;
 
   explicit AssistantNotificationExpiryMonitor(
       AssistantNotificationControllerImpl* controller);

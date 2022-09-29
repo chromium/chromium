@@ -20,8 +20,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
  public:
   // chromeos::libassistant::mojom::ConversationObserver:
   void OnInteractionStarted(
-      const chromeos::assistant::AssistantInteractionMetadata& metadata)
-      override {}
+      const AssistantInteractionMetadata& metadata) override {}
   void OnInteractionFinished(
       AssistantInteractionResolution resolution) override {}
   void OnTtsStarted(bool due_to_error) override {}

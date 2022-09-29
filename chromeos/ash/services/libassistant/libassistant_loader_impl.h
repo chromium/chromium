@@ -73,9 +73,4 @@ class COMPONENT_EXPORT(LIBASSISTANT_LOADER) LibassistantLoaderImpl
 
 }  // namespace ash::libassistant
 
-// TODO(https://crbug.com/1164001): remove when the migration is finished.
-namespace chromeos::libassistant {
-using ::ash::libassistant::LibassistantLoaderImpl;
-}
-
 #endif  // /CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_

@@ -29,7 +29,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
       public message_center::MessageCenterObserver,
       public chromeos::libassistant::mojom::NotificationDelegate {
  public:
-  using AssistantNotification = chromeos::assistant::AssistantNotification;
+  using AssistantNotification = assistant::AssistantNotification;
 
   AssistantNotificationControllerImpl();
 

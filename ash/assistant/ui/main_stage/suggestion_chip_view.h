@@ -23,7 +23,7 @@ class AssistantViewDelegate;
 // View representing a suggestion chip.
 class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionChipView : public views::Button {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   METADATA_HEADER(SuggestionChipView);
 

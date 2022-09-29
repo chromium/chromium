@@ -511,7 +511,7 @@ TEST_F(MediaHostTest, ShouldForwardLibassistantOpenAndroidMediaUpdates) {
   input_app_info.version = 111;
   input_app_info.localized_app_name = "the localized name";
   input_app_info.intent = "the intent";
-  input_app_info.status = chromeos::assistant::AppStatus::kUnknown;
+  input_app_info.status = AppStatus::kUnknown;
   input_app_info.action = kPlayAndroidMediaAction;
 
   libassistant_media_delegate().PlayAndroidMedia(std::move(input_app_info));

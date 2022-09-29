@@ -26,7 +26,7 @@ enum class AssistantQueryType {
 // Base class for an Assistant query.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantQuery {
  public:
-  using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
+  using AssistantQuerySource = assistant::AssistantQuerySource;
 
   AssistantQuery(const AssistantQuery&) = delete;
   AssistantQuery& operator=(const AssistantQuery&) = delete;

@@ -22,7 +22,7 @@ class AssistantSuggestionsModelObserver;
 
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantSuggestionsModel {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   AssistantSuggestionsModel();
 

@@ -33,8 +33,7 @@ void IncrementAssistantButtonClickCount(AssistantButtonId button_id);
 
 // Record the input source of each query (e.g. voice, typing).
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-void RecordAssistantQuerySource(
-    chromeos::assistant::AssistantQuerySource source);
+void RecordAssistantQuerySource(AssistantQuerySource source);
 
 }  // namespace util
 }  // namespace assistant

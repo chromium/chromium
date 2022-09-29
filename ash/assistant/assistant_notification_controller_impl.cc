@@ -35,7 +35,7 @@ constexpr char kNotifierId[] = "assistant";
 
 std::unique_ptr<message_center::Notification> CreateSystemNotification(
     const message_center::NotifierId& notifier_id,
-    const chromeos::assistant::AssistantNotification& notification) {
+    const assistant::AssistantNotification& notification) {
   const std::u16string title = base::UTF8ToUTF16(notification.title);
   const std::u16string message = base::UTF8ToUTF16(notification.message);
   const std::u16string display_source =
@@ -56,13 +56,13 @@ std::unique_ptr<message_center::Notification> CreateSystemNotification(
   system_notification->set_pinned(notification.is_pinned);
 
   switch (notification.priority) {
-    case chromeos::assistant::AssistantNotificationPriority::kLow:
+    case assistant::AssistantNotificationPriority::kLow:
       system_notification->set_priority(message_center::LOW_PRIORITY);
       break;
-    case chromeos::assistant::AssistantNotificationPriority::kDefault:
+    case assistant::AssistantNotificationPriority::kDefault:
       system_notification->set_priority(message_center::DEFAULT_PRIORITY);
       break;
-    case chromeos::assistant::AssistantNotificationPriority::kHigh:
+    case assistant::AssistantNotificationPriority::kHigh:
       system_notification->set_priority(message_center::HIGH_PRIORITY);
       break;
   }

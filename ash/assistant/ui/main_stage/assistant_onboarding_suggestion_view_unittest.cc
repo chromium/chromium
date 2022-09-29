@@ -26,7 +26,7 @@ namespace {
 AssistantOnboardingSuggestionView* CreateSuggestionViewAt(
     int index,
     views::Widget* widget) {
-  chromeos::assistant::AssistantSuggestion assistant_suggestion;
+  assistant::AssistantSuggestion assistant_suggestion;
   return widget->GetContentsView()->AddChildView(
       std::make_unique<AssistantOnboardingSuggestionView>(
           /*delegate=*/nullptr, assistant_suggestion, index));

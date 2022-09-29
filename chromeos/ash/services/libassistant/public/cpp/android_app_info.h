@@ -9,8 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Models status of an app.
 enum class AppStatus {
@@ -49,13 +48,12 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AndroidAppInfo {
   std::string action;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AndroidAppInfo;
-using ::chromeos::assistant::AppStatus;
 }  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AndroidAppInfo;
+using ::ash::assistant::AppStatus;
+}  // namespace chromeos::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ANDROID_APP_INFO_H_

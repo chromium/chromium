@@ -56,7 +56,7 @@ class DisplayController
   void SetDeviceAppsEnabled(bool enabled) override;
   void SetRelatedInfoEnabled(bool enabled) override;
   void SetAndroidAppList(
-      const std::vector<::chromeos::assistant::AndroidAppInfo>& apps) override;
+      const std::vector<assistant::AndroidAppInfo>& apps) override;
 
   // AssistantClientObserver implementation:
   void OnAssistantClientCreated(AssistantClient* assistant_client) override;
@@ -64,7 +64,7 @@ class DisplayController
 
   // chromeos::assistant::action::AssistantActionObserver:
   void OnVerifyAndroidApp(
-      const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info,
+      const std::vector<assistant::AndroidAppInfo>& apps_info,
       const chromeos::assistant::InteractionInfo& interaction) override;
 
  private:
@@ -72,8 +72,7 @@ class DisplayController
 
   // Checks if the requested Android App with |package_name| is available on the
   // device.
-  chromeos::assistant::AppStatus GetAndroidAppStatus(
-      const std::string& package_name);
+  assistant::AppStatus GetAndroidAppStatus(const std::string& package_name);
 
   mojo::Receiver<chromeos::libassistant::mojom::DisplayController> receiver_{
       this};

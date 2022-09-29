@@ -31,7 +31,7 @@ class AssistantUiElement;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponse
     : public base::RefCounted<AssistantResponse> {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
   using ProcessingCallback = base::OnceCallback<void(bool)>;
 
   enum class ProcessingState {

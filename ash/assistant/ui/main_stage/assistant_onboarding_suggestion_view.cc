@@ -107,7 +107,7 @@ SkColor GetForegroundColor(int index) {
 
 AssistantOnboardingSuggestionView::AssistantOnboardingSuggestionView(
     AssistantViewDelegate* delegate,
-    const chromeos::assistant::AssistantSuggestion& suggestion,
+    const assistant::AssistantSuggestion& suggestion,
     int index)
     : views::Button(base::BindRepeating(
           &AssistantOnboardingSuggestionView::OnButtonPressed,
@@ -174,7 +174,7 @@ const std::u16string& AssistantOnboardingSuggestionView::GetText() const {
 }
 
 void AssistantOnboardingSuggestionView::InitLayout(
-    const chromeos::assistant::AssistantSuggestion& suggestion) {
+    const assistant::AssistantSuggestion& suggestion) {
   // A11y.
   SetAccessibleName(base::UTF8ToUTF16(suggestion.text));
 

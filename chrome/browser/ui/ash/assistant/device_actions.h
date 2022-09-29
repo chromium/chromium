@@ -39,10 +39,9 @@ class DeviceActions : public ash::AndroidIntentHelper,
   void SetScreenBrightnessLevel(double level, bool gradual) override;
   void SetNightLightEnabled(bool enabled) override;
   void SetSwitchAccessEnabled(bool enabled) override;
-  bool OpenAndroidApp(
-      const chromeos::assistant::AndroidAppInfo& app_info) override;
-  chromeos::assistant::AppStatus GetAndroidAppStatus(
-      const chromeos::assistant::AndroidAppInfo& app_info) override;
+  bool OpenAndroidApp(const ash::assistant::AndroidAppInfo& app_info) override;
+  ash::assistant::AppStatus GetAndroidAppStatus(
+      const ash::assistant::AndroidAppInfo& app_info) override;
   void LaunchAndroidIntent(const std::string& intent) override;
   void AddAndFireAppListEventSubscriber(
       ash::assistant::AppListEventSubscriber* subscriber) override;
@@ -51,7 +50,7 @@ class DeviceActions : public ash::AndroidIntentHelper,
 
   // ash::AndroidIntentHelper overrides:
   absl::optional<std::string> GetAndroidAppLaunchIntent(
-      const chromeos::assistant::AndroidAppInfo& app_info) override;
+      const ash::assistant::AndroidAppInfo& app_info) override;
 
  private:
   // ArcAppListPrefs::Observer overrides.

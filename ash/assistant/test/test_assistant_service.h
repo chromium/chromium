@@ -84,15 +84,14 @@ class TestAssistantService : public assistant::Assistant {
   void SetInteractionResponse(std::unique_ptr<InteractionResponse> response);
 
   // Returns the current interaction.
-  absl::optional<chromeos::assistant::AssistantInteractionMetadata>
-  current_interaction();
+  absl::optional<assistant::AssistantInteractionMetadata> current_interaction();
 
   // Assistant overrides:
   void StartEditReminderInteraction(const std::string& client_id) override;
   void StartScreenContextInteraction(
       const std::vector<uint8_t>& assistant_screenshot) override;
   void StartTextInteraction(const std::string& query,
-                            chromeos::assistant::AssistantQuerySource source,
+                            assistant::AssistantQuerySource source,
                             bool allow_tts) override;
   void StartVoiceInteraction() override;
   void StopActiveInteraction(bool cancel_conversation) override;
@@ -105,14 +104,14 @@ class TestAssistantService : public assistant::Assistant {
   mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() override;
   void RetrieveNotification(
-      const chromeos::assistant::AssistantNotification& notification,
+      const assistant::AssistantNotification& notification,
       int action_index) override;
   void DismissNotification(
-      const chromeos::assistant::AssistantNotification& notification) override;
+      const assistant::AssistantNotification& notification) override;
   void OnAccessibilityStatusChanged(bool spoken_feedback_enabled) override;
   void OnColorModeChanged(bool dark_mode_enabled) override;
   void SendAssistantFeedback(
-      const chromeos::assistant::AssistantFeedback& feedback) override;
+      const assistant::AssistantFeedback& feedback) override;
   void AddTimeToTimer(const std::string& id, base::TimeDelta duration) override;
   void PauseTimer(const std::string& id) override;
   void RemoveAlarmOrTimer(const std::string& id) override;
@@ -121,13 +120,12 @@ class TestAssistantService : public assistant::Assistant {
   absl::optional<bool> dark_mode_enabled() { return dark_mode_enabled_; }
 
  private:
-  void StartInteraction(
-      chromeos::assistant::AssistantInteractionType type,
-      chromeos::assistant::AssistantQuerySource source =
-          chromeos::assistant::AssistantQuerySource::kUnspecified,
-      const std::string& query = std::string());
-  void InteractionStarted(chromeos::assistant::AssistantInteractionType type,
-                          chromeos::assistant::AssistantQuerySource source,
+  void StartInteraction(assistant::AssistantInteractionType type,
+                        assistant::AssistantQuerySource source =
+                            assistant::AssistantQuerySource::kUnspecified,
+                        const std::string& query = std::string());
+  void InteractionStarted(assistant::AssistantInteractionType type,
+                          assistant::AssistantQuerySource source,
                           const std::string& query);
   void SendInteractionResponse();
 

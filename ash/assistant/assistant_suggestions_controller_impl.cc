@@ -29,9 +29,9 @@ namespace ash {
 
 namespace {
 
+using assistant::AssistantSuggestion;
+using assistant::AssistantSuggestionType;
 using assistant::prefs::AssistantOnboardingMode;
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantSuggestionType;
 
 // Conversation starters -------------------------------------------------------
 
@@ -166,7 +166,7 @@ void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
 
   std::vector<AssistantSuggestion> onboarding_suggestions;
 
-  using chromeos::assistant::AssistantBetterOnboardingType;
+  using assistant::AssistantBetterOnboardingType;
   auto AddSuggestion = [&CreateIconResourceLink, &onboarding_suggestions](
                            int message_id, AssistantBetterOnboardingType type) {
     onboarding_suggestions.emplace_back();

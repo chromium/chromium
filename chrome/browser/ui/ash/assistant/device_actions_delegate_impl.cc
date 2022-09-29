@@ -8,7 +8,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 
-using chromeos::assistant::AppStatus;
+using ::ash::assistant::AppStatus;
 
 DeviceActionsDelegateImpl::DeviceActionsDelegateImpl() = default;
 

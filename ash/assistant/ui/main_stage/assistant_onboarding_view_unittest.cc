@@ -48,12 +48,12 @@ namespace ash {
 
 namespace {
 
+using assistant::AssistantInteractionMetadata;
+using assistant::AssistantInteractionType;
+using assistant::AssistantQuerySource;
+using assistant::AssistantSuggestion;
+using assistant::AssistantSuggestionType;
 using chromeos::assistant::Assistant;
-using chromeos::assistant::AssistantInteractionMetadata;
-using chromeos::assistant::AssistantInteractionType;
-using chromeos::assistant::AssistantQuerySource;
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantSuggestionType;
 
 // Helpers ---------------------------------------------------------------------
 

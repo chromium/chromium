@@ -8,7 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/component_export.h"
 
-namespace chromeos::libassistant {
+namespace ash::libassistant {
 
 // Interface to load libassistant library for different versions.
 class COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_LOADER) LibassistantLoader {
@@ -22,11 +22,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_LOADER) LibassistantLoader {
   static void Load(LoadCallback callback);
 };
 
-}  // namespace chromeos::libassistant
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::libassistant {
-using ::chromeos::libassistant::LibassistantLoader;
-}
+}  // namespace ash::libassistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_LIBASSISTANT_LOADER_H_

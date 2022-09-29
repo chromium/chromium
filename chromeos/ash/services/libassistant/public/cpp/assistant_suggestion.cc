@@ -4,14 +4,12 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_suggestion.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AssistantSuggestion::AssistantSuggestion() = default;
-AssistantSuggestion::AssistantSuggestion(
-    base::UnguessableToken id,
-    chromeos::assistant::AssistantSuggestionType type,
-    const std::string& text)
+AssistantSuggestion::AssistantSuggestion(base::UnguessableToken id,
+                                         AssistantSuggestionType type,
+                                         const std::string& text)
     : id(id), type(type), text(text) {}
 AssistantSuggestion::AssistantSuggestion(
     const AssistantSuggestion& suggestion) = default;
@@ -23,5 +21,4 @@ AssistantSuggestion& AssistantSuggestion::operator=(AssistantSuggestion&&) =
     default;
 AssistantSuggestion::~AssistantSuggestion() = default;
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

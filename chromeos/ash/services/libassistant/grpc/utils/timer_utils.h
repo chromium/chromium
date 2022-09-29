@@ -25,23 +25,21 @@ namespace ash::libassistant {
 
 ::assistant::api::OnAlarmTimerEventRequest
 CreateOnAlarmTimerEventRequestProtoForV1(
-    const std::vector<chromeos::assistant::AssistantTimer>& all_curr_timers);
+    const std::vector<assistant::AssistantTimer>& all_curr_timers);
 
 // `timer_params` contains the information of all the current timers.
-std::vector<chromeos::assistant::AssistantTimer>
-ConstructAssistantTimersFromProto(
+std::vector<assistant::AssistantTimer> ConstructAssistantTimersFromProto(
     const ::assistant::api::params::TimerParams& timer_params);
 
-void ConvertAssistantTimerToProtoTimer(
-    const chromeos::assistant::AssistantTimer& input,
-    ::assistant::api::params::Timer* output);
+void ConvertAssistantTimerToProtoTimer(const assistant::AssistantTimer& input,
+                                       ::assistant::api::params::Timer* output);
 
 void ConvertProtoTimerToAssistantTimer(
     const ::assistant::api::params::Timer& input,
-    chromeos::assistant::AssistantTimer* output);
+    assistant::AssistantTimer* output);
 
 // Used both in |AssistantClientV1| and |FakeAssistantClient|.
-std::vector<chromeos::assistant::AssistantTimer> GetAllCurrentTimersFromEvents(
+std::vector<assistant::AssistantTimer> GetAllCurrentTimersFromEvents(
     const std::vector<assistant_client::AlarmTimerManager::Event>& events);
 
 }  // namespace ash::libassistant

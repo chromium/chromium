@@ -581,7 +581,7 @@ bool Service::ShouldEnableHotword() {
 }
 
 void Service::LoadLibassistant() {
-  chromeos::libassistant::LibassistantLoader::Load(base::BindOnce(
+  libassistant::LibassistantLoader::Load(base::BindOnce(
       &Service::OnLibassistantLoaded, weak_ptr_factory_.GetWeakPtr()));
 }
 

@@ -18,7 +18,7 @@ namespace ash::libassistant {
 
 namespace {
 
-using ::chromeos::assistant::AssistantTimerState;
+using assistant::AssistantTimerState;
 using ::testing::Invoke;
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom = ::chromeos::libassistant::mojom;
@@ -45,10 +45,9 @@ class TimerDelegateMock : public mojom::TimerDelegate {
   ~TimerDelegateMock() override = default;
 
   // mojom::TimerDelegate implementation:
-  MOCK_METHOD(
-      void,
-      OnTimerStateChanged,
-      (const std::vector<::chromeos::assistant::AssistantTimer>& timers));
+  MOCK_METHOD(void,
+              OnTimerStateChanged,
+              (const std::vector<assistant::AssistantTimer>& timers));
 
   mojo::PendingRemote<mojom::TimerDelegate> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();

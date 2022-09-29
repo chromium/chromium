@@ -16,7 +16,7 @@ namespace ash::libassistant {
 
 namespace {
 
-using chromeos::assistant::AndroidAppInfo;
+using assistant::AndroidAppInfo;
 using chromeos::assistant::InteractionInfo;
 // TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom = ::chromeos::libassistant::mojom;

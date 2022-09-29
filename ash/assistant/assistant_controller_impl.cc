@@ -93,7 +93,7 @@ void AssistantControllerImpl::SendAssistantFeedback(
     bool assistant_debug_info_allowed,
     const std::string& feedback_description,
     const std::string& screenshot_png) {
-  chromeos::assistant::AssistantFeedback assistant_feedback;
+  assistant::AssistantFeedback assistant_feedback;
   assistant_feedback.assistant_debug_info_allowed =
       assistant_debug_info_allowed;
   assistant_feedback.description = feedback_description;

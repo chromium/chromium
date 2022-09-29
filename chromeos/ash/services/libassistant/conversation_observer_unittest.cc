@@ -83,10 +83,9 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   ~ConversationObserverMock() override = default;
 
   // mojom::ConversationObserver implementation:
-  MOCK_METHOD(
-      void,
-      OnInteractionStarted,
-      (const ::chromeos::assistant::AssistantInteractionMetadata& metadata));
+  MOCK_METHOD(void,
+              OnInteractionStarted,
+              (const ::ash::assistant::AssistantInteractionMetadata& metadata));
   MOCK_METHOD(void,
               OnInteractionFinished,
               (chromeos::assistant::AssistantInteractionResolution resolution));
@@ -101,7 +100,7 @@ class ConversationObserverMock : public mojom::ConversationObserver {
   MOCK_METHOD(void, OnOpenUrlResponse, (const GURL& url, bool in_background));
   MOCK_METHOD(void,
               OnOpenAppResponse,
-              (const chromeos::assistant::AndroidAppInfo& app_info));
+              (const assistant::AndroidAppInfo& app_info));
   MOCK_METHOD(void, OnWaitStarted, ());
 
   mojo::PendingRemote<mojom::ConversationObserver> BindNewPipeAndPassRemote() {

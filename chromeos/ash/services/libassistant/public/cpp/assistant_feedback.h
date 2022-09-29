@@ -11,8 +11,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 //  Details for Assistant feedback.
 struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantFeedback {
@@ -30,12 +29,6 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantFeedback {
   std::vector<uint8_t> screenshot_png;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AssistantFeedback;
-}
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_FEEDBACK_H_

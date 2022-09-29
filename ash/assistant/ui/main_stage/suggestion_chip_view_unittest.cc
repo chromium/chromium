@@ -41,7 +41,7 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantSuggestion;
+using assistant::AssistantSuggestion;
 
 constexpr gfx::Size kSuggestionChipViewSize = gfx::Size(120, 32);
 

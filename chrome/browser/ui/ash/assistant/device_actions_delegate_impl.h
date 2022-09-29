@@ -21,7 +21,7 @@ class DeviceActionsDelegateImpl : public DeviceActionsDelegate {
 
   ~DeviceActionsDelegateImpl() override;
 
-  chromeos::assistant::AppStatus GetAndroidAppStatus(
+  ash::assistant::AppStatus GetAndroidAppStatus(
       const std::string& package_name) override;
 };
 

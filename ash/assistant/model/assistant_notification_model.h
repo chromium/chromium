@@ -21,7 +21,7 @@ class AssistantNotificationModelObserver;
 // notification state and notifies a pool of observers.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNotificationModel {
  public:
-  using AssistantNotification = chromeos::assistant::AssistantNotification;
+  using AssistantNotification = assistant::AssistantNotification;
 
   AssistantNotificationModel();
 

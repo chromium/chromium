@@ -37,7 +37,7 @@ namespace ash::libassistant {
 
 namespace {
 
-using AppStatus = ::chromeos::assistant::AppStatus;
+using AppStatus = assistant::AppStatus;
 
 void CreateUserAgent(std::string* user_agent) {
   DCHECK(user_agent->empty());
@@ -302,7 +302,7 @@ std::string CreateLibAssistantConfig(
 
 Interaction CreateVerifyProviderResponseInteraction(
     const int interaction_id,
-    const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info) {
+    const std::vector<assistant::AndroidAppInfo>& apps_info) {
   // Construct verify provider result proto.
   VerifyProviderClientOpResult result_proto;
   bool any_provider_available = false;

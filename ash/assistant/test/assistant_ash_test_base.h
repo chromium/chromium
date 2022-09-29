@@ -148,7 +148,7 @@ class AssistantAshTestBase : public AshTestBase {
 
   // Return the current interaction. Returns |absl::nullopt| if no interaction
   // is in progress.
-  absl::optional<chromeos::assistant::AssistantInteractionMetadata>
+  absl::optional<ash::assistant::AssistantInteractionMetadata>
   current_interaction();
 
   // Create a new App window, and activate it.

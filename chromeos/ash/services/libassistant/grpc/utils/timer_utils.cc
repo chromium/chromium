@@ -13,8 +13,8 @@ namespace ash::libassistant {
 
 namespace {
 
-using chromeos::assistant::AssistantTimer;
-using chromeos::assistant::AssistantTimerState;
+using assistant::AssistantTimer;
+using assistant::AssistantTimerState;
 
 AssistantTimerState GetTimerState(assistant_client::Timer::State state) {
   switch (state) {

@@ -32,12 +32,12 @@ namespace ash {
 
 namespace {
 
+using assistant::AssistantNotification;
+using assistant::AssistantNotificationButton;
+using assistant::AssistantNotificationPriority;
+using assistant::AssistantTimer;
+using assistant::AssistantTimerState;
 using assistant::util::AlarmTimerAction;
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantNotificationPriority;
-using chromeos::assistant::AssistantTimer;
-using chromeos::assistant::AssistantTimerState;
 
 // Grouping key and ID prefix for timer notifications.
 constexpr char kTimerNotificationGroupingKey[] = "assistant/timer";

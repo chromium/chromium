@@ -12,8 +12,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Represents the current state of an Assistant timer.
 enum class AssistantTimerState {
@@ -59,12 +58,6 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantTimer {
   AssistantTimerState state{AssistantTimerState::kUnknown};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AssistantTimer;
-}
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_TIMER_H_

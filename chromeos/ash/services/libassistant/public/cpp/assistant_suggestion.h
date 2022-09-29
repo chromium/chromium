@@ -9,8 +9,7 @@
 #include "base/unguessable_token.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Enumeration of possible Assistant suggestion types.
 enum class AssistantSuggestionType {
@@ -38,7 +37,7 @@ enum class AssistantBetterOnboardingType {
 struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantSuggestion {
   AssistantSuggestion();
   AssistantSuggestion(base::UnguessableToken id,
-                      chromeos::assistant::AssistantSuggestionType type,
+                      AssistantSuggestionType type,
                       const std::string& text);
   AssistantSuggestion(const AssistantSuggestion& suggestion);
   AssistantSuggestion& operator=(const AssistantSuggestion&);
@@ -51,11 +50,10 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantSuggestion {
 
   // Allows us to differentiate between a typical Assistant suggestion and an
   // Assistant suggestion of another type (e.g. a conversation starter).
-  chromeos::assistant::AssistantSuggestionType type{
-      chromeos::assistant::AssistantSuggestionType::kUnspecified};
+  AssistantSuggestionType type{AssistantSuggestionType::kUnspecified};
 
-  chromeos::assistant::AssistantBetterOnboardingType better_onboarding_type{
-      chromeos::assistant::AssistantBetterOnboardingType::kUnspecified};
+  AssistantBetterOnboardingType better_onboarding_type{
+      AssistantBetterOnboardingType::kUnspecified};
 
   // Display text. e.g. "Cancel".
   std::string text;
@@ -70,12 +68,6 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantSuggestion {
   GURL action_url;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::assistant {
-using ::chromeos::assistant::AssistantSuggestion;
-}
+}  // namespace ash::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_SUGGESTION_H_

@@ -14,7 +14,7 @@ void FakeAndroidIntentHelper::LaunchAndroidIntent(const std::string& intent) {
 }
 
 absl::optional<std::string> FakeAndroidIntentHelper::GetAndroidAppLaunchIntent(
-    const chromeos::assistant::AndroidAppInfo& app_info) {
+    const assistant::AndroidAppInfo& app_info) {
   auto iterator = apps_.find(app_info.localized_app_name);
   if (iterator != apps_.end())
     return iterator->second;

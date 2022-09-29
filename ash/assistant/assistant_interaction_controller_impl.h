@@ -42,15 +42,13 @@ class AssistantInteractionControllerImpl
       public TabletModeObserver,
       public HighlighterController::Observer {
  public:
-  using AssistantInteractionMetadata =
-      chromeos::assistant::AssistantInteractionMetadata;
+  using AssistantInteractionMetadata = assistant::AssistantInteractionMetadata;
   using AssistantInteractionResolution =
       assistant::AssistantInteractionResolution;
-  using AssistantInteractionType =
-      chromeos::assistant::AssistantInteractionType;
-  using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
-  using AssistantSuggestionType = chromeos::assistant::AssistantSuggestionType;
+  using AssistantInteractionType = assistant::AssistantInteractionType;
+  using AssistantQuerySource = assistant::AssistantQuerySource;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
+  using AssistantSuggestionType = assistant::AssistantSuggestionType;
 
   explicit AssistantInteractionControllerImpl(
       AssistantControllerImpl* assistant_controller);
@@ -109,8 +107,7 @@ class AssistantInteractionControllerImpl
       const std::vector<AssistantSuggestion>& response) override;
   void OnTextResponse(const std::string& response) override;
   void OnOpenUrlResponse(const GURL& url, bool in_background) override;
-  void OnOpenAppResponse(
-      const chromeos::assistant::AndroidAppInfo& app_info) override;
+  void OnOpenAppResponse(const assistant::AndroidAppInfo& app_info) override;
   void OnSpeechRecognitionStarted() override;
   void OnSpeechRecognitionIntermediateResult(
       const std::string& high_confidence_text,

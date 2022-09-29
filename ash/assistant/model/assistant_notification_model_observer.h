@@ -8,20 +8,18 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace assistant {
 struct AssistantNotification;
-}  // namespace assistant
-}  // namespace chromeos
-
-namespace ash {
+}
 
 // A checked observer which receives notification of changes to the Assistant
 // notification model.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantNotificationModelObserver
     : public base::CheckedObserver {
  public:
-  using AssistantNotification = chromeos::assistant::AssistantNotification;
+  using AssistantNotification = assistant::AssistantNotification;
 
   // Invoked when the specified |notification| has been added.
   virtual void OnNotificationAdded(const AssistantNotification& notification) {}

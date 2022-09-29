@@ -13,11 +13,7 @@
 namespace mojo {
 
 using AndroidAppStatus = chromeos::libassistant::mojom::AndroidAppStatus;
-using AppStatus = chromeos::assistant::AppStatus;
-using AssistantInteractionType = chromeos::assistant::AssistantInteractionType;
-using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
 using AssistantResolution = chromeos::assistant::AssistantInteractionResolution;
-using AssistantSuggestionType = chromeos::assistant::AssistantSuggestionType;
 using MojoResolution =
     chromeos::libassistant::mojom::AssistantInteractionResolution;
 using MojomInteractionType =
@@ -25,13 +21,18 @@ using MojomInteractionType =
 using MojomQuerySource = chromeos::libassistant::mojom::AssistantQuerySource;
 using MojoSuggestionType =
     chromeos::libassistant::mojom::AssistantSuggestionType;
-using chromeos::assistant::AndroidAppInfo;
-using chromeos::assistant::AssistantFeedback;
-using chromeos::assistant::AssistantInteractionMetadata;
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantTimer;
+using ::ash::assistant::AndroidAppInfo;
+using ::ash::assistant::AppStatus;
+using ::ash::assistant::AssistantFeedback;
+using ::ash::assistant::AssistantInteractionMetadata;
+using ::ash::assistant::AssistantInteractionType;
+using ::ash::assistant::AssistantNotification;
+using ::ash::assistant::AssistantNotificationButton;
+using ::ash::assistant::AssistantQuerySource;
+using ::ash::assistant::AssistantSuggestion;
+using ::ash::assistant::AssistantSuggestionType;
+using ::ash::assistant::AssistantTimer;
+using ::ash::assistant::AssistantTimerState;
 using chromeos::libassistant::mojom::AndroidAppInfoDataView;
 using chromeos::libassistant::mojom::AssistantFeedbackDataView;
 using chromeos::libassistant::mojom::AssistantInteractionMetadataDataView;
@@ -41,7 +42,6 @@ using chromeos::libassistant::mojom::AssistantSuggestionDataView;
 using chromeos::libassistant::mojom::AssistantTimerDataView;
 using MojomAssistantTimerState =
     chromeos::libassistant::mojom::AssistantTimerState;
-using AssistantTimerState = chromeos::assistant::AssistantTimerState;
 
 ////////////////////////////////////////////////////////////////////////////////
 // AndroidAppStatus
@@ -111,8 +111,7 @@ const std::string& StructTraits<AndroidAppInfoDataView, AndroidAppInfo>::intent(
   return input.intent;
 }
 
-chromeos::assistant::AppStatus
-StructTraits<AndroidAppInfoDataView, AndroidAppInfo>::status(
+AppStatus StructTraits<AndroidAppInfoDataView, AndroidAppInfo>::status(
     const AndroidAppInfo& input) {
   return input.status;
 }
@@ -616,8 +615,7 @@ StructTraits<AssistantTimerDataView, AssistantTimer>::remaining_time(
   return input.remaining_time;
 }
 
-chromeos::assistant::AssistantTimerState
-StructTraits<AssistantTimerDataView, AssistantTimer>::state(
+AssistantTimerState StructTraits<AssistantTimerDataView, AssistantTimer>::state(
     const AssistantTimer& input) {
   return input.state;
 }

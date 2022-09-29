@@ -35,8 +35,8 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::AssistantSuggestion;
-using chromeos::assistant::AssistantSuggestionType;
+using assistant::AssistantSuggestion;
+using assistant::AssistantSuggestionType;
 
 // Greeting.
 constexpr int kGreetingLabelLineHeight = 28;

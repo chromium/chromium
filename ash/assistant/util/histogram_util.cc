@@ -30,8 +30,7 @@ void IncrementAssistantButtonClickCount(AssistantButtonId button_id) {
                             AssistantButtonId::kMaxValue);
 }
 
-void RecordAssistantQuerySource(
-    chromeos::assistant::AssistantQuerySource source) {
+void RecordAssistantQuerySource(AssistantQuerySource source) {
   UMA_HISTOGRAM_ENUMERATION("Assistant.QuerySource", source);
 }
 

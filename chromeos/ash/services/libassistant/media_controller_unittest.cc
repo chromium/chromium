@@ -22,7 +22,7 @@ namespace {
 
 using LibassistantPlaybackState = assistant_client::MediaStatus::PlaybackState;
 using ProtoAndroidAppInfo = chromeos::assistant::shared::AndroidAppInfo;
-using AndroidAppInfo = chromeos::assistant::AndroidAppInfo;
+using assistant::AndroidAppInfo;
 using chromeos::assistant::shared::PlayMediaArgs;
 using ::chromeos::libassistant::mojom::PlaybackState;
 

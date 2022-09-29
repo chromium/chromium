@@ -170,8 +170,8 @@ void AssistantResponse::AddSuggestions(
   NotifySuggestionsAdded(suggestions);
 }
 
-const chromeos::assistant::AssistantSuggestion*
-AssistantResponse::GetSuggestionById(const base::UnguessableToken& id) const {
+const assistant::AssistantSuggestion* AssistantResponse::GetSuggestionById(
+    const base::UnguessableToken& id) const {
   for (auto& suggestion : suggestions_) {
     if (suggestion.id == id)
       return &suggestion;
@@ -179,7 +179,7 @@ AssistantResponse::GetSuggestionById(const base::UnguessableToken& id) const {
   return nullptr;
 }
 
-const std::vector<chromeos::assistant::AssistantSuggestion>&
+const std::vector<assistant::AssistantSuggestion>&
 AssistantResponse::GetSuggestions() const {
   return suggestions_;
 }

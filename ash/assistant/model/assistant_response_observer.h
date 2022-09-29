@@ -19,7 +19,7 @@ class AssistantUiElement;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantResponseObserver
     : public base::CheckedObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   // Invoked when the specified |ui_element| is added to the response.
   virtual void OnUiElementAdded(const AssistantUiElement* ui_element) {}

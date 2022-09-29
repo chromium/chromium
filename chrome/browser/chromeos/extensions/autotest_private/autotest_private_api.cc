@@ -3322,8 +3322,7 @@ class AssistantInteractionHelper
   void SendTextQuery(const std::string& query, bool allow_tts) {
     // Start text interaction with Assistant server.
     GetAssistant()->StartTextInteraction(
-        query, chromeos::assistant::AssistantQuerySource::kUnspecified,
-        allow_tts);
+        query, ash::assistant::AssistantQuerySource::kUnspecified, allow_tts);
 
     query_status_.Set("queryText", query);
   }
@@ -3337,16 +3336,16 @@ class AssistantInteractionHelper
 
  private:
   // chromeos::assistant::AssistantInteractionSubscriber:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = ash::assistant::AssistantSuggestion;
   using AssistantInteractionMetadata =
-      chromeos::assistant::AssistantInteractionMetadata;
+      ash::assistant::AssistantInteractionMetadata;
   using AssistantInteractionResolution =
       chromeos::assistant::AssistantInteractionResolution;
 
   void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) override {
     const bool is_voice_interaction =
-        chromeos::assistant::AssistantInteractionType::kVoice == metadata.type;
+        ash::assistant::AssistantInteractionType::kVoice == metadata.type;
     query_status_.Set("isMicOpen", is_voice_interaction);
     interaction_in_progress_ = true;
   }
@@ -3392,7 +3391,7 @@ class AssistantInteractionHelper
   }
 
   void OnOpenAppResponse(
-      const chromeos::assistant::AndroidAppInfo& app_info) override {
+      const ash::assistant::AndroidAppInfo& app_info) override {
     result_.Set("openAppResponse", app_info.package_name);
     CheckResponseIsValid(__FUNCTION__);
   }

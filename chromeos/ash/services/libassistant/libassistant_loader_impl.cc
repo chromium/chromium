@@ -212,13 +212,9 @@ LibassistantLoaderImpl* LibassistantLoaderImpl::GetInstance() {
   return instance.get();
 }
 
-}  // namespace ash::libassistant
-
-namespace chromeos::libassistant {
-
 // static
 void LibassistantLoader::Load(LoadCallback callback) {
   LibassistantLoaderImpl::GetInstance()->Load(std::move(callback));
 }
 
-}  // namespace chromeos::libassistant
+}  // namespace ash::libassistant

@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AnimatedContainerView
       public AssistantInteractionModelObserver,
       public AssistantResponseObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   METADATA_HEADER(AnimatedContainerView);
 

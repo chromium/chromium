@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AssistantInteractionMetadata::AssistantInteractionMetadata() = default;
 AssistantInteractionMetadata::AssistantInteractionMetadata(
@@ -23,5 +22,4 @@ AssistantInteractionMetadata& AssistantInteractionMetadata::operator=(
     AssistantInteractionMetadata&&) = default;
 AssistantInteractionMetadata::~AssistantInteractionMetadata() = default;
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

@@ -54,24 +54,24 @@ mojom("mojom") {
       types = [
         {
           mojom = "chromeos.libassistant.mojom.AndroidAppInfo"
-          cpp = "::chromeos::assistant::AndroidAppInfo"
+          cpp = "::ash::assistant::AndroidAppInfo"
         },
         {
           mojom = "chromeos.libassistant.mojom.AndroidAppStatus"
-          cpp = "::chromeos::assistant::AppStatus"
+          cpp = "::ash::assistant::AppStatus"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantNotification"
-          cpp = "::chromeos::assistant::AssistantNotification"
+          cpp = "::ash::assistant::AssistantNotification"
           move_only = true
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantFeedback"
-          cpp = "::chromeos::assistant::AssistantFeedback"
+          cpp = "::ash::assistant::AssistantFeedback"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantInteractionMetadata"
-          cpp = "::chromeos::assistant::AssistantInteractionMetadata"
+          cpp = "::ash::assistant::AssistantInteractionMetadata"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantInteractionResolution"
@@ -79,27 +79,27 @@ mojom("mojom") {
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantInteractionType"
-          cpp = "::chromeos::assistant::AssistantInteractionType"
+          cpp = "::ash::assistant::AssistantInteractionType"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantQuerySource"
-          cpp = "::chromeos::assistant::AssistantQuerySource"
+          cpp = "::ash::assistant::AssistantQuerySource"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantSuggestionType"
-          cpp = "::chromeos::assistant::AssistantSuggestionType"
+          cpp = "::ash::assistant::AssistantSuggestionType"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantSuggestion"
-          cpp = "::chromeos::assistant::AssistantSuggestion"
+          cpp = "::ash::assistant::AssistantSuggestion"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantTimer"
-          cpp = "::chromeos::assistant::AssistantTimer"
+          cpp = "::ash::assistant::AssistantTimer"
         },
         {
           mojom = "chromeos.libassistant.mojom.AssistantTimerState"
-          cpp = "::chromeos::assistant::AssistantTimerState"
+          cpp = "::ash::assistant::AssistantTimerState"
         },
       ]
 

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/android_app_info.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AndroidAppInfo::AndroidAppInfo() = default;
 AndroidAppInfo::AndroidAppInfo(const AndroidAppInfo& suggestion) = default;
@@ -14,5 +13,4 @@ AndroidAppInfo::AndroidAppInfo(AndroidAppInfo&& suggestion) = default;
 AndroidAppInfo& AndroidAppInfo::operator=(AndroidAppInfo&&) = default;
 AndroidAppInfo::~AndroidAppInfo() = default;
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

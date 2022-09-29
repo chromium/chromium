@@ -10,12 +10,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
-namespace chromeos {
-namespace assistant {
-struct AssistantSuggestion;
-}  // namespace assistant
-}  // namespace chromeos
-
 namespace views {
 class ImageView;
 class InkDropContainerView;
@@ -23,6 +17,10 @@ class Label;
 }  // namespace views
 
 namespace ash {
+
+namespace assistant {
+struct AssistantSuggestion;
+}
 
 class AssistantViewDelegate;
 
@@ -33,7 +31,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
 
   AssistantOnboardingSuggestionView(
       AssistantViewDelegate* delegate,
-      const chromeos::assistant::AssistantSuggestion& suggestion,
+      const assistant::AssistantSuggestion& suggestion,
       int index);
 
   AssistantOnboardingSuggestionView(const AssistantOnboardingSuggestionView&) =
@@ -56,7 +54,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingSuggestionView
   const std::u16string& GetText() const;
 
  private:
-  void InitLayout(const chromeos::assistant::AssistantSuggestion& suggestion);
+  void InitLayout(const assistant::AssistantSuggestion& suggestion);
   void UpdateIcon(const gfx::ImageSkia& icon);
 
   void OnButtonPressed();

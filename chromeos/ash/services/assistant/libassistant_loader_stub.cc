@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/libassistant_loader.h"
 
-namespace chromeos::libassistant {
+namespace ash::libassistant {
 
 // static
 void LibassistantLoader::Load(LoadCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
 
-}  // namespace chromeos::libassistant
+}  // namespace ash::libassistant

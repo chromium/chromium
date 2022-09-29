@@ -50,7 +50,7 @@
 namespace ash {
 namespace {
 
-using chromeos::assistant::AssistantInteractionMetadata;
+using assistant::AssistantInteractionMetadata;
 
 constexpr char kUser1[] = "user1@gmail.com";
 constexpr char kUser2[] = "user2@gmail.com";

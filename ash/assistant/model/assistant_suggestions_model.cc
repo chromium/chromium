@@ -25,7 +25,7 @@ void AssistantSuggestionsModel::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-const chromeos::assistant::AssistantSuggestion*
+const assistant::AssistantSuggestion*
 AssistantSuggestionsModel::GetSuggestionById(
     const base::UnguessableToken& id) const {
   for (auto& conversation_starter : conversation_starters_) {
@@ -45,7 +45,7 @@ void AssistantSuggestionsModel::SetConversationStarters(
   NotifyConversationStartersChanged();
 }
 
-const std::vector<chromeos::assistant::AssistantSuggestion>&
+const std::vector<assistant::AssistantSuggestion>&
 AssistantSuggestionsModel::GetConversationStarters() const {
   return conversation_starters_;
 }
@@ -56,7 +56,7 @@ void AssistantSuggestionsModel::SetOnboardingSuggestions(
   NotifyOnboardingSuggestionsChanged();
 }
 
-const std::vector<chromeos::assistant::AssistantSuggestion>&
+const std::vector<assistant::AssistantSuggestion>&
 AssistantSuggestionsModel::GetOnboardingSuggestions() const {
   return onboarding_suggestions_;
 }

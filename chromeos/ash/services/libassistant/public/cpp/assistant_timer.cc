@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 AssistantTimer::AssistantTimer() = default;
 AssistantTimer::AssistantTimer(const AssistantTimer&) = default;
@@ -19,5 +18,4 @@ bool AssistantTimer::IsEqualInLibAssistantTo(
          original_duration == other.original_duration && state == other.state;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

@@ -29,7 +29,7 @@ enum class DeepLinkType;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegateObserver
     : public base::CheckedObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   // Invoked when the dialog plate button identified by |id| is pressed.
   virtual void OnDialogPlateButtonPressed(AssistantButtonId id) {}
@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegateObserver
 // etc.
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegate {
  public:
-  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+  using AssistantSuggestion = assistant::AssistantSuggestion;
 
   virtual ~AssistantViewDelegate() = default;
 

@@ -74,13 +74,13 @@ void AssistantNotificationModel::RemoveAllNotifications(bool from_server) {
   NotifyAllNotificationsRemoved(from_server);
 }
 
-const chromeos::assistant::AssistantNotification*
+const assistant::AssistantNotification*
 AssistantNotificationModel::GetNotificationById(const std::string& id) const {
   auto it = notifications_.find(id);
   return it != notifications_.end() ? &it->second : nullptr;
 }
 
-std::vector<const chromeos::assistant::AssistantNotification*>
+std::vector<const assistant::AssistantNotification*>
 AssistantNotificationModel::GetNotifications() const {
   std::vector<const AssistantNotification*> notifications;
   for (const auto& notification : notifications_)
