@@ -41,6 +41,11 @@ bool IsLensSupported() {
   return false;
 }
 
+bool IsLensWebResultsURL(const GURL& url) {
+  // Lens is not supported for tests.
+  return false;
+}
+
 web::NavigationManager::WebLoadParams GenerateLensLoadParamsForImage(
     UIImage* image,
     LensEntrypoint entry_point,

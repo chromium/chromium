@@ -11,6 +11,7 @@
 
 @class LensConfiguration;
 @class UIViewController;
+class GURL;
 enum class LensEntrypoint;
 
 // A delegate that can receive Lens events forwarded by a ChromeLensController.
@@ -18,6 +19,9 @@ enum class LensEntrypoint;
 
 // Called when the Lens view controller's dimiss button has been tapped.
 - (void)lensControllerDidTapDismissButton;
+
+// Called when the user selects a URL in Lens.
+- (void)lensControllerDidSelectURL:(NSURL*)url;
 
 // Called when the user selects an image and the Lens controller has prepared
 // `params` for loading a Lens web page.
@@ -49,6 +53,9 @@ id<ChromeLensController> NewChromeLensController(LensConfiguration* config);
 
 // Returns whether Lens is supported for the current build.
 bool IsLensSupported();
+
+// Returns whether or not the url represents a Lens Web results page.
+bool IsLensWebResultsURL(const GURL& url);
 
 // Generates web load params for a Lens image search for the given
 // 'image' and 'entry_point'.

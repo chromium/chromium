@@ -17,16 +17,25 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/web_navigation_util.h"
+#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface LensCoordinator () <ChromeLensControllerDelegate, LensCommands>
+@interface LensCoordinator () <ChromeLensControllerDelegate,
+                               LensCommands,
+                               CRWWebStateObserver,
+                               WebStateListObserving>
 
 // A controller that can provide an entrypoint into Lens features.
 @property(nonatomic, strong) id<ChromeLensController> lensController;
@@ -34,34 +43,82 @@
 // The Lens viewController.
 @property(nonatomic, strong) UIViewController* viewController;
 
+// Whether or not a Lens Web page load was triggered from the Lens UI.
+@property(nonatomic, assign) BOOL lensWebPageLoadTriggeredFromInputSelection;
+
+// The WebState that is loading a Lens results page, if any.
+@property(nonatomic, assign) web::WebState* loadingWebState;
+
 @end
 
-@implementation LensCoordinator
+@implementation LensCoordinator {
+  // Used to observe the active WebState.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  std::unique_ptr<base::ScopedObservation<web::WebState, web::WebStateObserver>>
+      _webStateObservation;
+
+  // Used to observe the WebStateList.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
+  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
+      _webStateListObservation;
+}
 @synthesize baseViewController = _baseViewController;
+
+// The timeout before the Lens UI is closed, if the Lens Web page
+// fails to load.
+const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 
 #pragma mark - ChromeCoordinator
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
-  return [super initWithBaseViewController:nil browser:browser];
+  self = [super initWithBaseViewController:nil browser:browser];
+  if (self) {
+    _webStateObserverBridge =
+        std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateListObserverBridge =
+        std::make_unique<WebStateListObserverBridge>(self);
+  }
+  return self;
 }
 
 - (void)start {
-  DCHECK(self.browser);
-  [self.browser->GetCommandDispatcher()
+  [super start];
+
+  Browser* browser = self.browser;
+  DCHECK(browser);
+
+  [browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(LensCommands)];
 
-  [super start];
+  _webStateListObservation = std::make_unique<
+      base::ScopedObservation<WebStateList, WebStateListObserver>>(
+      _webStateListObserverBridge.get());
+
+  _webStateObservation = std::make_unique<
+      base::ScopedObservation<web::WebState, web::WebStateObserver>>(
+      _webStateObserverBridge.get());
+
+  self.loadingWebState = nil;
+  self.lensWebPageLoadTriggeredFromInputSelection = NO;
+  _webStateListObservation->Observe(browser->GetWebStateList());
 }
 
 - (void)stop {
+  Browser* browser = self.browser;
+  DCHECK(browser);
+
+  [self dismissViewController];
+  self.loadingWebState = nullptr;
+  self.lensWebPageLoadTriggeredFromInputSelection = NO;
+
+  _webStateListObservation.reset();
+  _webStateObservation.reset();
+
+  [browser->GetCommandDispatcher() stopDispatchingToTarget:self];
+
   [super stop];
-  if (self.baseViewController.presentedViewController == self.viewController) {
-    [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
-  }
-  self.viewController = nil;
-  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
 }
 
 #pragma mark - Commands
@@ -141,16 +198,95 @@
 #pragma mark - ChromeLensControllerDelegate
 
 - (void)lensControllerDidTapDismissButton {
-  if (self.baseViewController.presentedViewController == self.viewController) {
-    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  self.lensWebPageLoadTriggeredFromInputSelection = NO;
+  web::WebState* loadingWebState = self.loadingWebState;
+  // If there is a webstate loading Lens results underneath the Lens UI,
+  // close it so we return the user to the initial state.
+  if (loadingWebState) {
+    const int index =
+        self.browser->GetWebStateList()->GetIndexOfWebState(loadingWebState);
+    self.loadingWebState = nil;
+    if (index != WebStateList::kInvalidIndex) {
+      self.browser->GetWebStateList()->CloseWebStateAt(
+          index, WebStateList::CLOSE_USER_ACTION);
+    }
   }
 
-  self.viewController = nil;
+  [self dismissViewController];
 }
 
 - (void)lensControllerDidGenerateLoadParams:
     (const web::NavigationManager::WebLoadParams&)params {
+  const __weak UIViewController* lensViewController = self.viewController;
+  if (!lensViewController) {
+    // If the coordinator view controller is nil, simply open the params and
+    // return early.
+    [self openWebLoadParams:params];
+    return;
+  }
+
+  // Prepare the coordinator for dismissing the presented view controller.
+  // Since we are opening Lens Web, mark the page load as triggered.
+  self.lensWebPageLoadTriggeredFromInputSelection = YES;
   [self openWebLoadParams:params];
+
+  // This function will be called when the user selects an image in Lens.
+  // we should continue to display the Lens UI until the search results
+  // for that image have loaded, or a timeout occurs.
+  // Fallback to close the preview if the page never loads beneath.
+  __weak LensCoordinator* weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        // Only dismiss the Lens view if the displayed view controller is the
+        // same as the one that was displayed when the load params were
+        // initially generated.
+        if (weakSelf.viewController == lensViewController) {
+          weakSelf.lensWebPageLoadTriggeredFromInputSelection = NO;
+          [weakSelf dismissViewController];
+        }
+      }),
+      kCloseLensViewTimeout);
+}
+
+- (void)lensControllerDidSelectURL:(NSURL*)url {
+  // This method is called when the user selects a URL within the Lens UI
+  // and should be treated as a link press.
+  web::NavigationManager::WebLoadParams params =
+      web_navigation_util::CreateWebLoadParams(
+          net::GURLWithNSURL(url), ui::PAGE_TRANSITION_LINK, nullptr);
+  [self openWebLoadParams:params];
+  [self dismissViewController];
+}
+
+#pragma mark - WebStateListObserving methods
+
+- (void)webStateList:(WebStateList*)webStateList
+    didChangeActiveWebState:(web::WebState*)newWebState
+                oldWebState:(web::WebState*)oldWebState
+                    atIndex:(int)atIndex
+                     reason:(ActiveWebStateChangeReason)reason {
+  if (self.lensWebPageLoadTriggeredFromInputSelection) {
+    self.loadingWebState = newWebState;
+  }
+}
+
+#pragma mark - CRWWebStateObserver methods
+
+- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+  DCHECK_EQ(webState, self.loadingWebState);
+  // If the loaded page is a Lens Web page and we are expecting a Lens Web page
+  // load, dismiss the Lens UI.
+  if (self.lensWebPageLoadTriggeredFromInputSelection &&
+      ios::provider::IsLensWebResultsURL(webState->GetLastCommittedURL())) {
+    self.lensWebPageLoadTriggeredFromInputSelection = NO;
+    self.loadingWebState = nil;
+    [self dismissViewController];
+  }
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  DCHECK_EQ(webState, self.loadingWebState);
+  self.loadingWebState = nil;
 }
 
 #pragma mark - Private
@@ -163,6 +299,23 @@
   loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
   loadParams.append_to = kCurrentTab;
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
+}
+
+- (void)dismissViewController {
+  if (self.baseViewController.presentedViewController == self.viewController) {
+    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  }
+
+  self.viewController = nil;
+}
+
+- (void)setLoadingWebState:(web::WebState*)webState {
+  DCHECK(_webStateObservation);
+  _webStateObservation->Reset();
+  _loadingWebState = webState;
+  if (_loadingWebState) {
+    _webStateObservation->Observe(_loadingWebState);
+  }
 }
 
 @end
