@@ -86,7 +86,7 @@ void TooltipIcon::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // static text for screenreader users, since that's the role it serves here
   // anyway.
   node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetName(tooltip_);
+  node_data->SetNameChecked(tooltip_);
 }
 
 void TooltipIcon::OnThemeChanged() {
