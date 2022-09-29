@@ -96,7 +96,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     public void testPromoNotShownAfterBeingDismissed() {
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
-        onView(withId(R.id.signin_promo_close_button)).perform(click());
+        onView(withId(R.id.sync_promo_close_button)).perform(click());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
         closeBookmarkManager();
@@ -116,7 +116,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
-        onView(withId(R.id.signin_promo_close_button)).perform(click());
+        onView(withId(R.id.sync_promo_close_button)).perform(click());
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
         closeBookmarkManager();

@@ -38,7 +38,7 @@ public class PersonalizedSigninPromoView extends LinearLayout {
 
         mIllustration = findViewById(R.id.sync_promo_illustration);
         mImage = findViewById(R.id.sync_promo_image);
-        mDismissButton = findViewById(R.id.signin_promo_close_button);
+        mDismissButton = findViewById(R.id.sync_promo_close_button);
         mPrimaryButton = findViewById(R.id.sync_promo_signin_button);
         mSecondaryButton = findViewById(R.id.signin_promo_choose_account_button);
 
