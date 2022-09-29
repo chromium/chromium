@@ -255,9 +255,6 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kDeletePassword:
       out << "DeletePassword";
       break;
-    case ActionProto::ActionInfoCase::kEditPassword:
-      out << "EditPassword";
-      break;
     case ActionProto::ActionInfoCase::kBlurField:
       out << "BlurField";
       break;

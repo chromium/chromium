@@ -309,33 +309,6 @@ TEST_F(WebsiteLoginManagerImplTest, GetGetLastTimePasswordUsedFailed) {
   WaitForPasswordStore();
 }
 
-TEST_F(WebsiteLoginManagerImplTest, EditPasswordSuccess) {
-  password_manager::PasswordFormDigest form_digest(
-      password_manager::PasswordForm::Scheme::kHtml, kFakeUrl, GURL());
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
-  // |EditPasswordForLogin| will first fetch all existing logins.
-  EXPECT_CALL(*store(), GetLogins(form_digest, _));
-  PasswordForm new_form = MakeSimplePasswordForm();
-  new_form.password_value = kFakeNewPassword16;
-  // Check that additional data is populated correctly from matched form.
-  EXPECT_CALL(*store(), UpdateLogin(FormMatches(new_form)));
-  EXPECT_CALL(mock_callback, Run(true)).Times(1);
-  manager_->EditPasswordForLogin({GURL(kFakeUrl), kFakeUsername},
-                                 kFakeNewPassword, mock_callback.Get());
-  WaitForPasswordStore();
-}
-
-TEST_F(WebsiteLoginManagerImplTest, EditPasswordFailed) {
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
-  // `EditPasswordForLogin` will first fetch all existing logins.
-  EXPECT_CALL(*store(), GetLogins);
-  EXPECT_CALL(*store(), UpdateLogin).Times(0);
-  EXPECT_CALL(mock_callback, Run(false)).Times(1);
-  manager_->EditPasswordForLogin({GURL(kFakeUrl2), kFakeUsername2},
-                                 kFakeNewPassword, mock_callback.Get());
-  WaitForPasswordStore();
-}
-
 TEST_F(WebsiteLoginManagerImplTest, ResetPendingCredentials) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
 

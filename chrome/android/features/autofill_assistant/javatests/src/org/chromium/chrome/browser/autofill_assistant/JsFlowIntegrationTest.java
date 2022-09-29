@@ -240,8 +240,6 @@ public class JsFlowIntegrationTest {
                 return action.getSetTouchableArea().toByteArray();
             case DELETE_PASSWORD:
                 return action.getDeletePassword().toByteArray();
-            case EDIT_PASSWORD:
-                return action.getEditPassword().toByteArray();
             case BLUR_FIELD:
                 return action.getBlurField().toByteArray();
             case RESET_PENDING_CREDENTIALS:

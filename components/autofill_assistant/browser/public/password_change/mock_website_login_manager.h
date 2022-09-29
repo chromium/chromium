@@ -38,13 +38,6 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
               (const Login& login, base::OnceCallback<void(bool)> callback),
               (override));
 
-  MOCK_METHOD(void,
-              EditPasswordForLogin,
-              (const Login& login,
-               const std::string& new_password,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-
   MOCK_METHOD(absl::optional<std::string>,
               GeneratePassword,
               (content::RenderFrameHost * rfh,

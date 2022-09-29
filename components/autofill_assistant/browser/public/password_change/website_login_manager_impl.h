@@ -43,9 +43,6 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
       const Login& login,
       base::OnceCallback<void(absl::optional<base::Time>)> callback) override;
 
-  void EditPasswordForLogin(const Login& login,
-                            const std::string& new_password,
-                            base::OnceCallback<void(bool)> callback) override;
   absl::optional<std::string> GeneratePassword(
       content::RenderFrameHost* rfh,
       autofill::FormSignature form_signature,
@@ -81,7 +78,6 @@ class WebsiteLoginManagerImpl : public WebsiteLoginManager {
   class PendingFetchPasswordRequest;
   class UpdatePasswordRequest;
   class PendingDeletePasswordRequest;
-  class PendingEditPasswordRequest;
   class PendingFetchLastTimePasswordUseRequest;
   class WebsiteLeakDetectionDelegate;
 

@@ -40,14 +40,6 @@ void EmptyWebsiteLoginManagerImpl::GetGetLastTimePasswordUsed(
   std::move(callback).Run(absl::nullopt);
 }
 
-void EmptyWebsiteLoginManagerImpl::EditPasswordForLogin(
-    const Login& login,
-    const std::string& new_password,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::move(callback).Run(false);
-}
-
 absl::optional<std::string> EmptyWebsiteLoginManagerImpl::GeneratePassword(
     content::RenderFrameHost* rfh,
     autofill::FormSignature form_signature,

@@ -1184,7 +1184,6 @@ message ActionProto {
     ScrollContainerProto scroll_container = 81;
     SetTouchableAreaProto set_touchable_area = 82;
     DeleteSelectedPasswordProto delete_password = 83;
-    EditSelectedPasswordProto edit_password = 84;
     BlurFieldProto blur_field = 85;
     ResetPendingCredentialsProto reset_pending_credentials = 86;
     SaveSubmittedPasswordProto save_submitted_password = 87;
@@ -1206,7 +1205,7 @@ message ActionProto {
   optional bool clean_contextual_ui = 33;
 
   reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 31, 34, 38, 46 to 48, 50,
-      51, 71, 88, 90, 91;
+      51, 71, 84, 88, 90, 91;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -3190,14 +3189,6 @@ message SaveGeneratedPasswordProto {
 // Manager. For flows, other than password change, |CollectUserData| must be
 // called before |DeleteSelectedPasswowrd|.
 message DeleteSelectedPasswordProto {}
-
-// Edits password for |UserData::selected_login_| in Chrome Password Manager.
-// For flows, other than password change, |CollectUserData| must be
-// called before |DeleteSelectedPasswowrd|.
-message EditSelectedPasswordProto {
-  // The client memory key where the new password is stored.
-  optional string memory_key = 1;
-}
 
 // Clears potentially submitted or pending forms in password manager. Used to
 // make password manager "forget" about any previously processed form that
