@@ -356,7 +356,7 @@ class CaptionBubbleLabel : public views::Label {
     ui::AXNodeData& ax_node_data = ax_lines[line_index]->GetCustomData();
     if (base::UTF8ToUTF16(ax_node_data.GetStringAttribute(
             ax::mojom::StringAttribute::kName)) != line_text) {
-      ax_node_data.SetName(line_text);
+      ax_node_data.SetNameChecked(line_text);
       std::vector<gfx::Rect> bounds = GetSubstringBounds(text_range);
       ax_node_data.relative_bounds.bounds = gfx::RectF(bounds[0]);
       ax_lines[line_index]->NotifyAccessibilityEvent(
@@ -671,7 +671,7 @@ void CaptionBubble::OnWidgetActivationChanged(views::Widget* widget,
 
 void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(title_->GetText());
+  node_data->SetNameChecked(title_->GetText());
 }
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
