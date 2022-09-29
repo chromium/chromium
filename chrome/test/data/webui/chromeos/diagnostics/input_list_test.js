@@ -218,13 +218,13 @@ export function inputListTestSuite() {
 
     assertEquals(0, diagnosticsBrowserProxy.getCallCount('recordNavigation'));
 
-    diagnosticsBrowserProxy.setPreviousView(NavigationView.kSystem);
+    diagnosticsBrowserProxy.setPreviousView(NavigationView.SYSTEM);
     inputListElement.onNavigationPageChanged({isActive: true});
 
     await flushTasks();
     assertEquals(1, diagnosticsBrowserProxy.getCallCount('recordNavigation'));
     assertArrayEquals(
-        [NavigationView.kSystem, NavigationView.kInput],
+        [NavigationView.SYSTEM, NavigationView.INPUT],
         /** @type {!Array<!NavigationView>} */
         (diagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
   });

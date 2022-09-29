@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TroubleshootingInfo} from 'chrome://diagnostics/diagnostics_types.js';
 import {NetworkTroubleshootingElement} from 'chrome://diagnostics/network_troubleshooting.js';
 
 import {assertFalse, assertTrue} from '../../chai_assert.js';
@@ -44,10 +43,7 @@ export function networkTroubleshootingTestSuite() {
     return flushTasks();
   }
 
-  /**
-   * @param {!TroubleshootingInfo} info
-   * @return {!Promise}
-   */
+  /** @return {!Promise} */
   function initializeNetworkTroubleshooting(info) {
     assertFalse(!!networkTroubleshootingElement);
 
@@ -81,7 +77,6 @@ export function networkTroubleshootingTestSuite() {
   });
 
   test('IsLoggedInFalseThenLinkTextHidden', () => {
-    /** @type {TroubleshootingInfo} */
     const troubleShootingInfo = {
       header: 'header',
       linkText: 'linkText',

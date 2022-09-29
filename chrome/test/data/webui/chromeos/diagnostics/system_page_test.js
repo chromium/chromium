@@ -393,7 +393,7 @@ export function systemPageTestSuite() {
           assertEquals(
               0, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
 
-          DiagnosticsBrowserProxy.setPreviousView(NavigationView.kConnectivity);
+          DiagnosticsBrowserProxy.setPreviousView(NavigationView.CONNECTIVITY);
           page.onNavigationPageChanged({isActive: true});
 
           return flushTasks();
@@ -402,7 +402,7 @@ export function systemPageTestSuite() {
           assertEquals(
               1, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
           assertArrayEquals(
-              [NavigationView.kConnectivity, NavigationView.kSystem],
+              [NavigationView.CONNECTIVITY, NavigationView.SYSTEM],
               /** @type {!Array<!NavigationView>} */
               (DiagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
         });

@@ -42,11 +42,11 @@ export function getNavigationIcon(id: string): string {
 export function getNavigationViewForPageId(id: string): NavigationView {
   switch (id) {
     case 'system':
-      return NavigationView.kSystem;
+      return NavigationView.SYSTEM;
     case 'connectivity':
-      return NavigationView.kConnectivity;
+      return NavigationView.CONNECTIVITY;
     case 'input':
-      return NavigationView.kInput;
+      return NavigationView.INPUT;
     default:
       assertNotReached();
   }

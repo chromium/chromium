@@ -15,7 +15,7 @@ preprocessed_dir = "preprocessed"
 
 non_web_component_files = [
   "diagnostics_browser_proxy.ts",
-  "diagnostics_types.js",
+  "diagnostics_types.ts",
   "diagnostics_utils.ts",
   "fake_data.js",
   "fake_input_data_provider.js",

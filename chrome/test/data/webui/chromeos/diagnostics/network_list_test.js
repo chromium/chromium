@@ -6,7 +6,7 @@ import 'chrome://diagnostics/network_list.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {DiagnosticsBrowserProxyImpl} from 'chrome://diagnostics/diagnostics_browser_proxy.js';
-import {NavigationView, NetworkGuidInfo} from 'chrome://diagnostics/diagnostics_types.js';
+import {NavigationView} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
@@ -56,9 +56,6 @@ export function networkListTestSuite() {
     provider.reset();
   });
 
-  /**
-   * @param {!Array<!NetworkGuidInfo>} fakeNetworkGuidInfoList
-   */
   function initializeNetworkList(fakeNetworkGuidInfoList) {
     assertFalse(!!networkListElement);
     provider.setFakeNetworkGuidInfo(fakeNetworkGuidInfoList);
@@ -262,7 +259,7 @@ export function networkListTestSuite() {
           assertEquals(
               0, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
 
-          DiagnosticsBrowserProxy.setPreviousView(NavigationView.kSystem);
+          DiagnosticsBrowserProxy.setPreviousView(NavigationView.SYSTEM);
           networkListElement.onNavigationPageChanged({isActive: true});
 
           return flushTasks();
@@ -271,7 +268,7 @@ export function networkListTestSuite() {
           assertEquals(
               1, DiagnosticsBrowserProxy.getCallCount('recordNavigation'));
           assertArrayEquals(
-              [NavigationView.kSystem, NavigationView.kConnectivity],
+              [NavigationView.SYSTEM, NavigationView.CONNECTIVITY],
               /** @type {!Array<!NavigationView>} */
               (DiagnosticsBrowserProxy.getArgs('recordNavigation')[0]));
         });
