@@ -47,6 +47,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
+#include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -284,27 +285,12 @@ PasswordCheckDelegate::~PasswordCheckDelegate() = default;
 
 std::vector<api::passwords_private::PasswordUiEntry>
 PasswordCheckDelegate::GetInsecureCredentials() {
-  std::vector<CredentialUIEntry> compromised_credentials =
+  std::vector<CredentialUIEntry> credentials =
       insecure_credentials_manager_.GetInsecureCredentialEntries();
-  std::vector<CredentialUIEntry> weak_credentials =
-      insecure_credentials_manager_.GetWeakCredentialEntries();
 
   std::vector<api::passwords_private::PasswordUiEntry> insecure_credentials;
-  insecure_credentials.reserve(compromised_credentials.size() +
-                               weak_credentials.size());
-  for (auto& credential : compromised_credentials) {
-    insecure_credentials.push_back(
-        ConstructInsecureCredentialUiEntry(credential));
-  }
-
-  for (auto& credential : weak_credentials) {
-    // TODO:(crbug.com/1350947) - Remove this after InsecureCredentialsManager
-    // sets Weak flag by itself.
-    credential.password_issues.clear();
-    credential.password_issues.insert(
-        {password_manager::InsecureType::kWeak,
-         password_manager::InsecurityMetadata(
-             base::Time(), password_manager::IsMuted(false))});
+  insecure_credentials.reserve(credentials.size());
+  for (auto& credential : credentials) {
     insecure_credentials.push_back(
         ConstructInsecureCredentialUiEntry(credential));
   }
@@ -522,13 +508,6 @@ void PasswordCheckDelegate::OnInsecureCredentialsChanged() {
   }
 }
 
-void PasswordCheckDelegate::OnWeakCredentialsChanged() {
-  if (auto* event_router =
-          PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
-    event_router->OnInsecureCredentialsChanged(GetInsecureCredentials());
-  }
-}
-
 void PasswordCheckDelegate::OnStateChanged(State state) {
   if (state == State::kIdle && std::exchange(is_check_running_, false)) {
     // When the service transitions from running into idle it has finished a
@@ -618,11 +597,19 @@ PasswordCheckDelegate::ConstructInsecureCredentialUiEntry(
   auto facet = password_manager::FacetURI::FromPotentiallyInvalidSpec(
       entry.GetFirstSignonRealm());
   api_credential.is_android_credential = facet.IsValidAndroidFacetURI();
-  api_credential.id = id_generator_->GenerateId(entry);
   api_credential.username = base::UTF16ToUTF8(entry.username);
   api_credential.urls = CreateUrlCollectionFromCredential(entry);
   api_credential.stored_in = StoreSetFromCredential(entry);
   api_credential.compromised_info = CreateCompromiseInfo(entry);
+  CredentialUIEntry copy = entry;
+  // Weak and reused flags should be cleaned before obtaining id. Otherwise
+  // weak or reused flag will be saved to the database whenever credential is
+  // modified.
+  // TODO(crbug.com/1369650): Update this once saving weak and reused issues is
+  // supported.
+  copy.password_issues.erase(InsecureType::kWeak);
+  copy.password_issues.erase(InsecureType::kReused);
+  api_credential.id = id_generator_->GenerateId(copy);
   GURL entry_url = entry.GetURL();
   if (api_credential.is_android_credential) {
     // |change_password_url| need special handling for Android. Here we use

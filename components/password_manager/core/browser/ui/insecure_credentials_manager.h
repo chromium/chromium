@@ -47,7 +47,6 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnInsecureCredentialsChanged() = 0;
-    virtual void OnWeakCredentialsChanged() {}
   };
 
   InsecureCredentialsManager(
@@ -77,9 +76,6 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   // Returns a vector of currently insecure credentials.
   std::vector<CredentialUIEntry> GetInsecureCredentialEntries() const;
 
-  // Returns a vector of currently weak credentials.
-  std::vector<CredentialUIEntry> GetWeakCredentialEntries() const;
-
   // Allows clients and register and de-register themselves.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -97,9 +93,6 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
 
   // Notifies observers when insecure credentials have changed.
   void NotifyInsecureCredentialsChanged();
-
-  // Notifies observers when weak credentials have changed.
-  void NotifyWeakCredentialsChanged();
 
   // Returns the `profile_store_` or `account_store_` if `form` is stored in the
   // profile store of the account store accordingly.

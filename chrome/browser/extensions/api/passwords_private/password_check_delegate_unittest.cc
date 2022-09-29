@@ -1283,8 +1283,6 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
               ElementsAre(ExpectCredentialWithScriptInfo(
                               kUsername1, /*has_startable_script=*/true),
                           ExpectCredentialWithScriptInfo(
-                              kUsername1, /*has_startable_script=*/false),
-                          ExpectCredentialWithScriptInfo(
                               kUsername2, /*has_startable_script=*/false)));
 
   // After setin the feature parameter for weak credentials to `true` ...
@@ -1296,8 +1294,6 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
   // ... both credentials are marked as having a password change script.
   EXPECT_THAT(delegate().GetInsecureCredentials(),
               ElementsAre(ExpectCredentialWithScriptInfo(
-                              kUsername1, /*has_startable_script=*/true),
-                          ExpectCredentialWithScriptInfo(
                               kUsername1, /*has_startable_script=*/true),
                           ExpectCredentialWithScriptInfo(
                               kUsername2, /*has_startable_script=*/true)));

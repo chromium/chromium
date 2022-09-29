@@ -141,25 +141,28 @@ InsecureCredentialsManager::GetInsecureCredentialEntries() const {
             InsecurityMetadata();
       }
     }
-  } else {
-    // Otherwise erase entries which aren't leaked and phished.
-    base::EraseIf(credentials, [](const auto& credential) {
-      return !credential.IsLeaked() && !credential.IsPhished();
-    });
+    return credentials;
   }
-
-  return credentials;
-}
-
-std::vector<CredentialUIEntry>
-InsecureCredentialsManager::GetWeakCredentialEntries() const {
-  DCHECK(presenter_);
-  std::vector<CredentialUIEntry> credentials =
-      presenter_->GetSavedCredentials();
-  base::EraseIf(credentials, [this](const auto& credential) {
-    return !weak_passwords_.contains(credential.password);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // Otherwise erase entries which aren't leaked and phished.
+  base::EraseIf(credentials, [](const auto& credential) {
+    return !credential.IsLeaked() && !credential.IsPhished();
   });
   return credentials;
+#else
+  for (auto& credential : credentials) {
+    if (weak_passwords_.contains(credential.password)) {
+      credential.password_issues.insert(
+          {password_manager::InsecureType::kWeak,
+           password_manager::InsecurityMetadata(
+               base::Time(), password_manager::IsMuted(false))});
+    }
+  }
+  base::EraseIf(credentials, [](const auto& credential) {
+    return credential.password_issues.empty();
+  });
+  return credentials;
+#endif
 }
 
 void InsecureCredentialsManager::AddObserver(Observer* observer) {
@@ -176,12 +179,12 @@ void InsecureCredentialsManager::OnWeakCheckDone(
   base::UmaHistogramTimes("PasswordManager.WeakCheck.Time",
                           timer_since_weak_check_start.Elapsed());
   weak_passwords_ = std::move(weak_passwords);
-  NotifyWeakCredentialsChanged();
+  NotifyInsecureCredentialsChanged();
 }
 
 void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
-  // The WeakCheck is a Desktop only feature for now. Disable on Mobile to avoid
-  // pulling in a big dependency on zxcvbn.
+  // The WeakCheck is a Desktop only feature for now. Disable on Mobile to
+  // avoid pulling in a big dependency on zxcvbn.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   const std::u16string& password = form.password_value;
   if (weak_passwords_.contains(password) || !IsWeak(password)) {
@@ -191,7 +194,7 @@ void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
   }
 
   weak_passwords_.insert(password);
-  NotifyWeakCredentialsChanged();
+  NotifyInsecureCredentialsChanged();
 #endif
 }
 
@@ -200,18 +203,11 @@ void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
 void InsecureCredentialsManager::OnSavedPasswordsChanged(
     SavedPasswordsPresenter::SavedPasswordsView saved_passwords) {
   NotifyInsecureCredentialsChanged();
-  NotifyWeakCredentialsChanged();
 }
 
 void InsecureCredentialsManager::NotifyInsecureCredentialsChanged() {
   for (auto& observer : observers_) {
     observer.OnInsecureCredentialsChanged();
-  }
-}
-
-void InsecureCredentialsManager::NotifyWeakCredentialsChanged() {
-  for (auto& observer : observers_) {
-    observer.OnWeakCredentialsChanged();
   }
 }
 

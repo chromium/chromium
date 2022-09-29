@@ -116,11 +116,6 @@ class PasswordCheckDelegate
   // a valid pointer can be obtained.
   void OnInsecureCredentialsChanged() override;
 
-  // password_manager::InsecureCredentialsManager::Observer:
-  // Invokes PasswordsPrivateEventRouter::OnWeakCredentialsChanged if a valid
-  // pointer can be obtained.
-  void OnWeakCredentialsChanged() override;
-
   // password_manager::BulkLeakCheckService::Observer:
   void OnStateChanged(
       password_manager::BulkLeakCheckService::State state) override;
