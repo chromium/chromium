@@ -2823,7 +2823,7 @@ TEST_F(RuleFeatureSetTest, isPseudoContainingComplexInsideHas19) {
   }
 }
 
-TEST_F(RuleFeatureSetTest, BloomFilterForSelfInvalidation) {
+TEST_F(RuleFeatureSetTest, BloomFilterForClassSelfInvalidation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kInvalidationSetClassBloomFilter},
@@ -2846,6 +2846,34 @@ TEST_F(RuleFeatureSetTest, BloomFilterForSelfInvalidation) {
   {
     InvalidationLists invalidation_lists;
     CollectInvalidationSetsForClass(invalidation_lists, "q");
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+}
+
+TEST_F(RuleFeatureSetTest, BloomFilterForIdSelfInvalidation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kInvalidationSetClassBloomFilter},
+      /*disabled_features=*/{});
+
+  // Add enough dummy IDs that the filter will be created.
+  for (unsigned i = 0; i < 100; ++i) {
+    CollectFeatures("#dummy");
+  }
+
+  EXPECT_EQ(RuleFeatureSet::kSelectorMayMatch, CollectFeatures("#foo"));
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForId(invalidation_lists, "foo");
+    EXPECT_TRUE(HasSelfInvalidation(invalidation_lists.descendants));
+    EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
+  }
+
+  {
+    InvalidationLists invalidation_lists;
+    CollectInvalidationSetsForId(invalidation_lists, "bar");
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.descendants));
     EXPECT_TRUE(HasNoInvalidation(invalidation_lists.siblings));
   }

@@ -215,6 +215,15 @@ class CORE_EXPORT RuleFeatureSet {
                                                     InvalidationType,
                                                     PositionType);
 
+  // Inserts the given value as a key for self-invalidation.
+  // Return true if the insertion was successful. (It may fail because
+  // e.g. the experiment is not active, or because there is no Bloom
+  // filter yet.)
+  bool InsertIntoSelfInvalidationBloomFilter(const AtomicString& value,
+                                             int salt);
+  const int kClassSalt = 13;
+  const int kIdSalt = 29;
+
   // Each map entry is either a DescendantInvalidationSet or
   // SiblingInvalidationSet.
   // When both are needed, we store the SiblingInvalidationSet, and use it to
@@ -731,10 +740,10 @@ class CORE_EXPORT RuleFeatureSet {
 
   // If the InvalidationSetClassBloomFilter experiment is active:
   //
-  // Class invalidation has a special rule that is different from the other
-  // sets; we do not store self-invalidation entries directly, but as a Bloom
-  // filter (which can have false positives) keyed on the class name's
-  // AtomicString hash.
+  // Class and ID invalidation have a special rule that is different from the
+  // other sets; we do not store self-invalidation entries directly, but as a
+  // Bloom filter (which can have false positives) keyed on the class/ID name's
+  // AtomicString hash (multiplied with kClassSalt or kIdSalt).
   //
   // The reason is that some pages have huge amounts of simple rules of the type
   // “.foo { ...rules... }”, which would cause one such entry (consisting of the
@@ -753,7 +762,7 @@ class CORE_EXPORT RuleFeatureSet {
   // Bloom filter if we had to insert sibling or descendant sets too, but this
   // seems a bit narrow in practice.
   InvalidationSetMap class_invalidation_sets_;
-  std::unique_ptr<WTF::BloomFilter<14>> class_names_with_self_invalidation_;
+  std::unique_ptr<WTF::BloomFilter<14>> names_with_self_invalidation_;
 
   // We don't create the Bloom filter right away; the experiment might be off,
   // or there may be so few of them that we don't really bother. This number
@@ -763,10 +772,11 @@ class CORE_EXPORT RuleFeatureSet {
   // though; they will remain. This also means that when merging the
   // RuleFeatureSets into the global one, we can go over 50 such entries
   // in total.
-  unsigned num_candidates_for_class_names_bloom_filter_ = 0;
+  unsigned num_candidates_for_names_bloom_filter_ = 0;
 
   InvalidationSetMap attribute_invalidation_sets_;
-  InvalidationSetMap id_invalidation_sets_;
+  InvalidationSetMap
+      id_invalidation_sets_;  // See comment on class_invalidation_sets_.
   PseudoTypeInvalidationSetMap pseudo_invalidation_sets_;
   scoped_refptr<SiblingInvalidationSet> universal_sibling_invalidation_set_;
   scoped_refptr<NthSiblingInvalidationSet> nth_invalidation_set_;

@@ -417,8 +417,8 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
   return metadata_ == other.metadata_ &&
          InvalidationSetMapsEqual<AtomicString>(
              class_invalidation_sets_, other.class_invalidation_sets_) &&
-         base::ValuesEquivalent(class_names_with_self_invalidation_,
-                                other.class_names_with_self_invalidation_) &&
+         base::ValuesEquivalent(names_with_self_invalidation_,
+                                other.names_with_self_invalidation_) &&
          InvalidationSetMapsEqual<AtomicString>(id_invalidation_sets_,
                                                 other.id_invalidation_sets_) &&
          InvalidationSetMapsEqual<AtomicString>(
@@ -586,6 +586,27 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSimpleSelector(
   }
 }
 
+bool RuleFeatureSet::InsertIntoSelfInvalidationBloomFilter(
+    const AtomicString& value,
+    int salt) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kInvalidationSetClassBloomFilter)) {
+    return false;
+  }
+
+  if (names_with_self_invalidation_ == nullptr) {
+    if (num_candidates_for_names_bloom_filter_++ < 50) {
+      // It's not worth spending 2 kB on the Bloom filter for this
+      // style sheet yet, so just insert a regular entry.
+      return false;
+    } else {
+      names_with_self_invalidation_ = std::make_unique<WTF::BloomFilter<14>>();
+    }
+  }
+  names_with_self_invalidation_->Add(value.Impl()->ExistingHash() * salt);
+  return true;
+}
+
 InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
     const CSSSelector& selector,
     InvalidationType type,
@@ -593,22 +614,9 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
   if (selector.Match() == CSSSelector::kClass) {
     if (type == InvalidationType::kInvalidateDescendants &&
         position == kSubject &&
-        base::FeatureList::IsEnabled(
-            blink::features::kInvalidationSetClassBloomFilter)) {
+        InsertIntoSelfInvalidationBloomFilter(selector.Value(), kClassSalt)) {
       // Do not insert self-invalidation sets for classes;
       // see comment on class_invalidation_sets_.
-      if (class_names_with_self_invalidation_ == nullptr) {
-        if (num_candidates_for_class_names_bloom_filter_++ < 50) {
-          // It's not worth spending 2 kB on the Bloom filter for this
-          // style sheet yet, so just insert a regular entry.
-          return &EnsureClassInvalidationSet(selector.Value(), type, position);
-        } else {
-          class_names_with_self_invalidation_ =
-              std::make_unique<WTF::BloomFilter<14>>();
-        }
-      }
-      class_names_with_self_invalidation_->Add(
-          selector.Value().Impl()->ExistingHash());
       return nullptr;
     }
     return &EnsureClassInvalidationSet(selector.Value(), type, position);
@@ -617,8 +625,16 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
     return &EnsureAttributeInvalidationSet(selector.Attribute().LocalName(),
                                            type, position);
   }
-  if (selector.Match() == CSSSelector::kId)
+  if (selector.Match() == CSSSelector::kId) {
+    if (type == InvalidationType::kInvalidateDescendants &&
+        position == kSubject &&
+        InsertIntoSelfInvalidationBloomFilter(selector.Value(), kIdSalt)) {
+      // Do not insert self-invalidation sets for IDs;
+      // see comment on class_invalidation_sets_.
+      return nullptr;
+    }
     return &EnsureIdInvalidationSet(selector.Value(), type, position);
+  }
   if (selector.Match() == CSSSelector::kPseudoClass) {
     switch (selector.GetPseudoType()) {
       case CSSSelector::kPseudoEmpty:
@@ -1688,13 +1704,11 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
     MergeInvalidationSet(class_invalidation_sets_, entry.key, entry.value);
   if (base::FeatureList::IsEnabled(
           blink::features::kInvalidationSetClassBloomFilter) &&
-      other.class_names_with_self_invalidation_) {
-    if (class_names_with_self_invalidation_ == nullptr) {
-      class_names_with_self_invalidation_ =
-          std::make_unique<WTF::BloomFilter<14>>();
+      other.names_with_self_invalidation_) {
+    if (names_with_self_invalidation_ == nullptr) {
+      names_with_self_invalidation_ = std::make_unique<WTF::BloomFilter<14>>();
     }
-    class_names_with_self_invalidation_->Merge(
-        *other.class_names_with_self_invalidation_);
+    names_with_self_invalidation_->Merge(*other.names_with_self_invalidation_);
   }
   for (const auto& entry : other.attribute_invalidation_sets_)
     MergeInvalidationSet(attribute_invalidation_sets_, entry.key, entry.value);
@@ -1733,7 +1747,7 @@ void RuleFeatureSet::Merge(const RuleFeatureSet& other) {
 void RuleFeatureSet::Clear() {
   metadata_.Clear();
   class_invalidation_sets_.clear();
-  class_names_with_self_invalidation_.reset();
+  names_with_self_invalidation_.reset();
   attribute_invalidation_sets_.clear();
   id_invalidation_sets_.clear();
   pseudo_invalidation_sets_.clear();
@@ -1767,9 +1781,9 @@ void RuleFeatureSet::CollectInvalidationSetsForClass(
           blink::features::kInvalidationSetClassBloomFilter)) {
     // Implicit self-invalidation sets for all classes (with Bloom filter
     // rejection); see comment on class_invalidation_sets_.
-    if (class_names_with_self_invalidation_ &&
-        class_names_with_self_invalidation_->MayContain(
-            class_name.Impl()->ExistingHash())) {
+    if (names_with_self_invalidation_ &&
+        names_with_self_invalidation_->MayContain(
+            class_name.Impl()->ExistingHash() * kClassSalt)) {
       invalidation_lists.descendants.push_back(
           InvalidationSet::SelfInvalidationSet());
     }
@@ -1823,6 +1837,13 @@ void RuleFeatureSet::CollectInvalidationSetsForId(
     InvalidationLists& invalidation_lists,
     Element& element,
     const AtomicString& id) const {
+  if (names_with_self_invalidation_ &&
+      names_with_self_invalidation_->MayContain(id.Impl()->ExistingHash() *
+                                                kIdSalt)) {
+    invalidation_lists.descendants.push_back(
+        InvalidationSet::SelfInvalidationSet());
+  }
+
   InvalidationSetMap::const_iterator it = id_invalidation_sets_.find(id);
   if (it == id_invalidation_sets_.end())
     return;
