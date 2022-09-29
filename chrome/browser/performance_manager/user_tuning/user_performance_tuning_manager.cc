@@ -57,6 +57,18 @@ class HighEfficiencyModeToggleDelegateImpl
 
 const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(
+    UserPerformanceTuningManager::PreDiscardResourceUsage);
+
+UserPerformanceTuningManager::PreDiscardResourceUsage::PreDiscardResourceUsage(
+    content::WebContents* contents,
+    uint64_t resident_set_size_estimate)
+    : content::WebContentsUserData<PreDiscardResourceUsage>(*contents),
+      resident_set_size_estimate_(resident_set_size_estimate) {}
+
+UserPerformanceTuningManager::PreDiscardResourceUsage::
+    ~PreDiscardResourceUsage() = default;
+
 // static
 UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
   DCHECK(g_user_performance_tuning_manager);

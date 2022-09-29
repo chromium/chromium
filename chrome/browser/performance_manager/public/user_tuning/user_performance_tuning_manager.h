@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 class ChromeBrowserMainExtraPartsPerformanceManager;
 class PerformanceManagerMetricsProviderTest;
@@ -83,6 +84,24 @@ class UserPerformanceTuningManager
     // Raised when the count of janky intervals reaches X.
     // Can be used by the UI to show a promo
     virtual void OnJankThresholdReached() {}
+  };
+
+  class PreDiscardResourceUsage
+      : public content::WebContentsUserData<PreDiscardResourceUsage> {
+   public:
+    PreDiscardResourceUsage(content::WebContents* contents,
+                            uint64_t resident_set_size_estimate);
+    ~PreDiscardResourceUsage() override;
+
+    uint64_t resident_set_size_estimate() const {
+      return resident_set_size_estimate_;
+    }
+
+   private:
+    friend WebContentsUserData;
+    WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+    uint64_t resident_set_size_estimate_ = 0;
   };
 
   static UserPerformanceTuningManager* GetInstance();
