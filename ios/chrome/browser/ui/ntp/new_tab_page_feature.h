@@ -26,6 +26,10 @@ extern const base::Feature kEnableDiscoverFeedStaticResourceServing;
 // Feature flag to enable the sync promo on top of the discover feed.
 extern const base::Feature kEnableDiscoverFeedTopSyncPromo;
 
+// Flag that disables the feed for users on iOS 14.
+// TODO(crbug.com/1369142): Remove this when the issue is fixed.
+extern const base::Feature kDisableFeediOS14;
+
 // A parameter to indicate whether Reconstructed Templates is enabled for static
 // resource serving.
 extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];

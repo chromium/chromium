@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
     "//ios/chrome/test:test_support",
     "//ios/web/common",
     "//ios/web/public",

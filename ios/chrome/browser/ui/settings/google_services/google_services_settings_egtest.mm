@@ -104,7 +104,7 @@ void WaitForSettingDoneButton() {
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   if ([self isRunningTest:@selector

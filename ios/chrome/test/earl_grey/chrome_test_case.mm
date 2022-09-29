@@ -12,7 +12,8 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
+#import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -183,6 +184,13 @@ void ResetAuthentication() {
   [super tearDown];
   gExecutedSetUpForTestCase = false;
   gStartupTest = false;
+}
+
+// TODO(crbug.com/1369142): Remove this entire method when the issue is fixed.
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kDisableFeediOS14);
+  return config;
 }
 
 - (net::EmbeddedTestServer*)testServer {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 
+#import "base/ios/ios_util.h"
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
@@ -42,6 +43,11 @@ const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
 const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Flag that disables the feed for users on iOS 14.
+// TODO(crbug.com/1369142): Remove this when the issue is fixed.
+const base::Feature kDisableFeediOS14{"DisableFeediOS14",
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
@@ -65,5 +71,7 @@ bool IsDiscoverFeedTopSyncPromoCompact() {
 }
 
 bool IsFeedAblationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedAblation);
+  return base::FeatureList::IsEnabled(kEnableFeedAblation) ||
+         (base::FeatureList::IsEnabled(kDisableFeediOS14) &&
+          !base::ios::IsRunningOnIOS15OrLater());
 }
