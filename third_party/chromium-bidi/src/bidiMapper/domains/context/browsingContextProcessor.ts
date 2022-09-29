@@ -21,80 +21,14 @@ import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
-import {
-  InvalidArgumentErrorResponse,
-  NoSuchFrameException,
-} from '../protocol/error';
-import { BrowsingContextImpl, ScriptTarget } from './browsingContextImpl';
+import { InvalidArgumentErrorResponse } from '../protocol/error';
+import { BrowsingContextImpl } from './browsingContextImpl';
 import { Realm } from '../script/realm';
+import { BrowsingContextStorage } from './browsingContextStorage';
 
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
-  static #contexts: Map<string, BrowsingContextImpl> = new Map();
-
-  static getTopLevelContexts(): BrowsingContextImpl[] {
-    return Array.from(BrowsingContextProcessor.#contexts.values()).filter(
-      (c) => c.parentId === null
-    );
-  }
-
-  async #removeChildContexts(context: BrowsingContextImpl): Promise<void> {
-    await Promise.all(
-      context.children.map((child) => this.#removeContext(child.contextId))
-    );
-  }
-
-  async #removeContext(contextId: string): Promise<void> {
-    if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
-      return;
-    }
-    const context = BrowsingContextProcessor.#getKnownContext(contextId);
-
-    // Remove context's children.
-    await this.#removeChildContexts(context);
-
-    // Remove context from the parent.
-    if (context.parentId !== null) {
-      BrowsingContextProcessor.#findContext(context.parentId)?.removeChild(
-        context.contextId
-      );
-    }
-
-    await this.#eventManager.sendEvent(
-      new BrowsingContext.ContextDestroyedEvent(
-        context.serializeToBidiValue(0, true)
-      ),
-      context.contextId
-    );
-    BrowsingContextProcessor.#contexts.delete(contextId);
-  }
-
-  static #registerContext(context: BrowsingContextImpl) {
-    BrowsingContextProcessor.#contexts.set(context.contextId, context);
-    if (context.parentId !== null) {
-      BrowsingContextProcessor.#getKnownContext(context.parentId).addChild(
-        context
-      );
-    }
-  }
-
-  static #hasKnownContext(contextId: string): boolean {
-    return BrowsingContextProcessor.#contexts.has(contextId);
-  }
-
-  static #findContext(contextId: string): BrowsingContextImpl | undefined {
-    return BrowsingContextProcessor.#contexts.get(contextId)!;
-  }
-
-  static #getKnownContext(contextId: string): BrowsingContextImpl {
-    const result = BrowsingContextProcessor.#findContext(contextId);
-    if (result === undefined) {
-      throw new NoSuchFrameException(`Context ${contextId} not found`);
-    }
-    return result;
-  }
-
   readonly sessions: Set<string> = new Set();
   readonly #cdpConnection: CdpConnection;
   readonly #selfTargetId: string;
@@ -124,7 +58,7 @@ export class BrowsingContextProcessor {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
     cdpClient.Target.on('detachedFromTarget', async (params) => {
-      await this.#handleDetachedFromTargetEvent(params);
+      await BrowsingContextProcessor.#handleDetachedFromTargetEvent(params);
     });
   }
 
@@ -153,38 +87,15 @@ export class BrowsingContextProcessor {
     });
 
     sessionCdpClient.Page.on(
-      'frameNavigated',
-      async (params: Protocol.Page.FrameNavigatedEvent) => {
-        const contextId = params.frame.id;
-        if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
-          return;
-        }
-        const context = BrowsingContextProcessor.#getKnownContext(contextId);
-        // At the point the page is initiated, all the nested iframes from the
-        // previous page are detached and realms are destroyed.
-        // Remove context's children.
-        await this.#removeChildContexts(context);
-      }
-    );
-
-    sessionCdpClient.Page.on(
       'frameAttached',
       async (params: Protocol.Page.FrameAttachedEvent) => {
-        const context = BrowsingContextImpl.createFrameContext(
+        await BrowsingContextImpl.createFrameContext(
           params.frameId,
           params.parentFrameId,
           sessionCdpClient,
           this.#bidiServer,
           sessionId,
           this.#eventManager
-        );
-
-        BrowsingContextProcessor.#registerContext(context);
-        await this.#eventManager.sendEvent(
-          new BrowsingContext.ContextCreatedEvent(
-            context.serializeToBidiValue(0, true)
-          ),
-          context.contextId
         );
       }
     );
@@ -209,29 +120,19 @@ export class BrowsingContextProcessor {
 
     this.#setSessionEventListeners(sessionId);
 
-    if (BrowsingContextProcessor.#hasKnownContext(targetInfo.targetId)) {
+    if (BrowsingContextStorage.hasKnownContext(targetInfo.targetId)) {
       // OOPiF.
-      BrowsingContextImpl.convertFrameToTargetContext(
-        BrowsingContextProcessor.#getKnownContext(targetInfo.targetId),
-        targetSessionCdpClient,
-        sessionId
-      );
+      BrowsingContextStorage.getKnownContext(
+        targetInfo.targetId
+      ).convertFrameToTargetContext(targetSessionCdpClient, sessionId);
     } else {
-      const context = BrowsingContextImpl.createTargetContext(
+      await BrowsingContextImpl.createTargetContext(
         targetInfo.targetId,
         null,
         targetSessionCdpClient,
         this.#bidiServer,
         sessionId,
         this.#eventManager
-      );
-
-      BrowsingContextProcessor.#registerContext(context);
-      await this.#eventManager.sendEvent(
-        new BrowsingContext.ContextCreatedEvent(
-          context.serializeToBidiValue(0, true)
-        ),
-        context.contextId
       );
     }
   }
@@ -240,17 +141,14 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
   //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  async #handleDetachedFromTargetEvent(
+  static async #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     // TODO: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;
-    if (!BrowsingContextProcessor.#hasKnownContext(contextId)) {
-      return;
-    }
-    await this.#removeContext(contextId);
+    await BrowsingContextStorage.findContext(contextId)?.delete();
   }
 
   async process_browsingContext_getTree(
@@ -258,13 +156,13 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.GetTreeResult> {
     const resultContexts =
       params.root === undefined
-        ? BrowsingContextProcessor.getTopLevelContexts()
-        : [BrowsingContextProcessor.#getKnownContext(params.root)];
+        ? BrowsingContextStorage.getTopLevelContexts()
+        : [BrowsingContextStorage.getKnownContext(params.root)];
 
     return {
       result: {
         contexts: resultContexts.map((c) =>
-          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE, true)
+          c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)
         ),
       },
     };
@@ -286,23 +184,18 @@ export class BrowsingContextProcessor {
     // are emitted after the next navigation is started.
     // Details: https://github.com/web-platform-tests/wpt/issues/35846
     const contextId = result.targetId;
-    const context = BrowsingContextProcessor.#getKnownContext(contextId);
+    const context = BrowsingContextStorage.getKnownContext(contextId);
     await context.awaitLoaded();
 
     return {
-      result: {
-        context: contextId,
-        parent: null,
-        url: 'about:blank',
-        children: [],
-      },
+      result: context.serializeToBidiValue(1),
     };
   }
 
   async process_browsingContext_navigate(
     params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const context = BrowsingContextProcessor.#getKnownContext(params.context);
+    const context = BrowsingContextStorage.getKnownContext(params.context);
 
     return await context.navigate(
       params.url,
@@ -310,39 +203,23 @@ export class BrowsingContextProcessor {
     );
   }
 
+  static async #getRealm(target: Script.Target): Promise<Realm> {
+    if ('realm' in target) {
+      return Realm.getRealm({ realmId: target.realm });
+    }
+    const context = BrowsingContextStorage.getKnownContext(target.context);
+    return await context.getOrCreateSandbox(target.sandbox);
+  }
+
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
-      params.target
-    );
-
-    return await scriptTarget.context.scriptEvaluate(
+    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    return await realm.scriptEvaluate(
       params.expression,
-      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
-  }
-
-  static #getScriptTarget(target: Script.Target): {
-    context: BrowsingContextImpl;
-    target: ScriptTarget;
-  } {
-    if ('realm' in target) {
-      const { executionContextId, browsingContextId } = Realm.getRealm(
-        target.realm
-      );
-      return {
-        context: BrowsingContextProcessor.#getKnownContext(browsingContextId),
-        target: { executionContext: executionContextId },
-      };
-    } else {
-      return {
-        context: BrowsingContextProcessor.#getKnownContext(target.context),
-        target: { sandbox: target.sandbox ?? null },
-      };
-    }
   }
 
   process_script_getRealms(
@@ -350,7 +227,7 @@ export class BrowsingContextProcessor {
   ): Script.GetRealmsResult {
     if (params.context !== undefined) {
       // Make sure the context is known.
-      BrowsingContextProcessor.#getKnownContext(params.context);
+      BrowsingContextStorage.getKnownContext(params.context);
     }
     const realms = Realm.findRealms({
       browsingContextId: params.context,
@@ -362,17 +239,13 @@ export class BrowsingContextProcessor {
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
-      params.target
-    );
-
-    return await scriptTarget.context.callFunction(
+    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    return await realm.callFunction(
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
-      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
@@ -381,7 +254,7 @@ export class BrowsingContextProcessor {
   async process_PROTO_browsingContext_findElement(
     params: BrowsingContext.PROTO.FindElementParameters
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    const context = BrowsingContextProcessor.#getKnownContext(params.context);
+    const context = BrowsingContextStorage.getKnownContext(params.context);
     return await context.findElement(params.selector);
   }
 
@@ -390,7 +263,7 @@ export class BrowsingContextProcessor {
   ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
 
-    const context = BrowsingContextProcessor.#getKnownContext(
+    const context = BrowsingContextStorage.getKnownContext(
       commandParams.context
     );
     if (context.parentId !== null) {
@@ -448,7 +321,7 @@ export class BrowsingContextProcessor {
   async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
     const context = params.context;
     const sessionId =
-      BrowsingContextProcessor.#getKnownContext(context).cdpSessionId;
+      BrowsingContextStorage.getKnownContext(context).cdpSessionId;
     if (sessionId === undefined) {
       return { result: { cdpSession: null } };
     }

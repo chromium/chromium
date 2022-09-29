@@ -24,12 +24,8 @@ import { Deferred } from '../../utils/deferred';
 import { UnknownErrorResponse } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
-import { ScriptEvaluator } from '../script/scriptEvaluator';
 import { Realm, RealmType } from '../script/realm';
-
-export type ScriptTarget =
-  | { executionContext: number }
-  | { sandbox: string | null };
+import { BrowsingContextStorage } from './browsingContextStorage';
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {
@@ -55,14 +51,19 @@ export class BrowsingContextImpl {
   readonly #bidiServer: IBidiServer;
   #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
-  #scriptEvaluator: ScriptEvaluator;
-  // Default execution context is set with key `null`.
-  #sandboxToExecutionContextIdMap: Map<
-    string | null,
-    Protocol.Runtime.ExecutionContextId
-  > = new Map();
 
-  constructor(
+  #maybeDefaultRealm: Realm | undefined;
+
+  get #defaultRealm(): Realm {
+    if (this.#maybeDefaultRealm === undefined) {
+      throw new Error(
+        `No default realm for browsing context ${this.#contextId}`
+      );
+    }
+    return this.#maybeDefaultRealm;
+  }
+
+  private constructor(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
@@ -77,18 +78,19 @@ export class BrowsingContextImpl {
     this.#cdpSessionId = cdpSessionId;
     this.#bidiServer = bidiServer;
 
-    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
+
+    BrowsingContextStorage.addContext(this);
   }
 
-  public static createFrameContext(
+  public static async createFrameContext(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ): BrowsingContextImpl {
+  ): Promise<void> {
     const context = new BrowsingContextImpl(
       contextId,
       parentId,
@@ -98,17 +100,21 @@ export class BrowsingContextImpl {
       eventManager
     );
     context.#targetDefers.targetUnblocked.resolve();
-    return context;
+
+    await eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
+      context.contextId
+    );
   }
 
-  public static createTargetContext(
+  public static async createTargetContext(
     contextId: string,
     parentId: string | null,
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
     eventManager: IEventManager
-  ): BrowsingContextImpl {
+  ): Promise<void> {
     const context = new BrowsingContextImpl(
       contextId,
       parentId,
@@ -119,22 +125,43 @@ export class BrowsingContextImpl {
     );
 
     // No need in waiting for target to be unblocked.
-    // noinspection JSIgnoredPromiseFromCall
+    // noinspection ES6MissingAwait
     context.#unblockAttachedTarget();
 
-    return context;
+    await eventManager.sendEvent(
+      new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
+      context.contextId
+    );
   }
 
-  public static convertFrameToTargetContext(
-    context: BrowsingContextImpl,
+  public convertFrameToTargetContext(
     cdpClient: CdpClient,
     cdpSessionId: string
-  ): BrowsingContextImpl {
-    context.#updateConnection(cdpClient, cdpSessionId);
+  ) {
+    this.#updateConnection(cdpClient, cdpSessionId);
     // No need in waiting for target to be unblocked.
     // noinspection JSIgnoredPromiseFromCall
-    context.#unblockAttachedTarget();
-    return context;
+    this.#unblockAttachedTarget();
+  }
+
+  public async delete() {
+    await this.#removeChildContexts();
+
+    // Remove context from the parent.
+    if (this.parentId !== null) {
+      const parent = BrowsingContextStorage.getKnownContext(this.parentId);
+      parent.#children.delete(this.contextId);
+    }
+
+    await this.#eventManager.sendEvent(
+      new BrowsingContext.ContextDestroyedEvent(this.serializeToBidiValue()),
+      this.contextId
+    );
+    BrowsingContextStorage.removeContext(this.contextId);
+  }
+
+  async #removeChildContexts() {
+    await Promise.all(this.children.map((child) => child.delete()));
   }
 
   #updateConnection(cdpClient: CdpClient, cdpSessionId: string) {
@@ -146,7 +173,6 @@ export class BrowsingContextImpl {
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
 
-    this.#scriptEvaluator = ScriptEvaluator.create(cdpClient);
     this.#initListeners();
   }
 
@@ -154,8 +180,8 @@ export class BrowsingContextImpl {
     LogManager.create(
       this.#contextId,
       this.#cdpClient,
-      this.#bidiServer,
-      this.#scriptEvaluator
+      this.#cdpSessionId,
+      this.#bidiServer
     );
     await this.#cdpClient.Runtime.enable();
     await this.#cdpClient.Page.enable();
@@ -194,17 +220,17 @@ export class BrowsingContextImpl {
     this.#children.set(child.contextId, child);
   }
 
-  removeChild(childContextId: string): void {
-    this.#children.delete(childContextId);
-  }
-
   async awaitLoaded(): Promise<void> {
     await this.#targetDefers.Page.lifecycleEvent.load;
   }
 
+  async awaitUnblocked(): Promise<void> {
+    await this.#targetDefers.targetUnblocked;
+  }
+
   public serializeToBidiValue(
-    maxDepth: number,
-    isRoot: boolean
+    maxDepth: number = 0,
+    addParentFiled: boolean = true
   ): BrowsingContext.Info {
     return {
       context: this.#contextId,
@@ -215,7 +241,7 @@ export class BrowsingContextImpl {
               c.serializeToBidiValue(maxDepth - 1, false)
             )
           : null,
-      ...(isRoot ? { parent: this.#parentId } : {}),
+      ...(addParentFiled ? { parent: this.#parentId } : {}),
     };
   }
 
@@ -232,17 +258,19 @@ export class BrowsingContextImpl {
 
     this.#cdpClient.Page.on(
       'frameNavigated',
-      (params: Protocol.Page.FrameNavigatedEvent) => {
+      async (params: Protocol.Page.FrameNavigatedEvent) => {
         if (this.contextId !== params.frame.id) {
           return;
         }
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
+        // At the point the page is initiated, all the nested iframes from the
+        // previous page are detached and realms are destroyed.
+        // Remove context's children.
+        await this.#removeChildContexts();
+
         // Remove all the already created realms.
-        Realm.findRealms({ browsingContextId: this.contextId }).map((realm) =>
-          Realm.removeRealm(realm.realmId)
-        );
-        this.#sandboxToExecutionContextIdMap = new Map();
+        Realm.clearBrowsingContext(this.contextId);
       }
     );
 
@@ -315,18 +343,11 @@ export class BrowsingContextImpl {
         if (params.context.auxData.frameId !== this.contextId) {
           return;
         }
-        if (params.context.auxData.isDefault) {
-          // Default execution context is set with key `null`.
-          this.#sandboxToExecutionContextIdMap.set(null, params.context.id);
+        // Only this execution contexts are supported for now.
+        if (!['default', 'isolated'].includes(params.context.auxData.type)) {
+          return;
         }
-        if (params.context.name !== undefined) {
-          this.#sandboxToExecutionContextIdMap.set(
-            params.context.name,
-            params.context.id
-          );
-        }
-
-        Realm.registerRealm(
+        const realm = Realm.create(
           params.context.uniqueId,
           this.contextId,
           params.context.id,
@@ -336,34 +357,33 @@ export class BrowsingContextImpl {
           // Sandbox name for isolated world.
           params.context.auxData.type === 'isolated'
             ? params.context.name
-            : undefined
+            : undefined,
+          this.#cdpSessionId,
+          this.#cdpClient
         );
+
+        if (params.context.auxData.isDefault) {
+          this.#maybeDefaultRealm = realm;
+        }
       }
     );
+
     this.#cdpClient.Runtime.on(
       'executionContextDestroyed',
       (params: Protocol.Runtime.ExecutionContextDestroyedEvent) => {
-        const realmId = Realm.getRealmId(
-          this.contextId,
-          params.executionContextId
-        );
-        Realm.removeRealm(realmId);
+        Realm.findRealms({
+          cdpSessionId: this.#cdpSessionId,
+          executionContextId: params.executionContextId,
+        }).map((realm) => realm.delete());
       }
     );
   }
 
   #getOrigin(params: Protocol.Runtime.ExecutionContextCreatedEvent) {
     if (params.context.auxData.type === 'isolated') {
-      // Sandbox should have the same origin as the context itself, but in CDP it
-      // has an empty one. Get oro
-      const defaultRealm = Realm.getRealm(
-        Realm.getRealmId(
-          this.contextId,
-          this.#sandboxToExecutionContextIdMap.get(null)!
-        )
-      );
-
-      return defaultRealm.origin;
+      // Sandbox should have the same origin as the context itself, but in CDP
+      // it has an empty one.
+      return this.#defaultRealm.origin;
     }
     // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
     return ['://', ''].includes(params.context.origin)
@@ -464,59 +484,6 @@ export class BrowsingContextImpl {
     };
   }
 
-  async #getExecutionContext(
-    target: ScriptTarget
-  ): Promise<Protocol.Runtime.ExecutionContextId> {
-    if ('sandbox' in target) {
-      return await this.#getOrCreateSandbox(target.sandbox);
-    }
-    return target.executionContext;
-  }
-
-  async callFunction(
-    functionDeclaration: string,
-    _this: Script.ArgumentValue,
-    _arguments: Script.ArgumentValue[],
-    target: ScriptTarget,
-    awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
-  ): Promise<Script.CallFunctionResult> {
-    await this.#targetDefers.targetUnblocked;
-
-    const executionContext = await this.#getExecutionContext(target);
-
-    return {
-      result: await this.#scriptEvaluator.callFunction(
-        this.contextId,
-        executionContext,
-        functionDeclaration,
-        _this,
-        _arguments,
-        awaitPromise,
-        resultOwnership
-      ),
-    };
-  }
-
-  async scriptEvaluate(
-    expression: string,
-    target: ScriptTarget,
-    awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
-  ): Promise<Script.EvaluateResult> {
-    await this.#targetDefers.targetUnblocked;
-
-    const executionContext = await this.#getExecutionContext(target);
-
-    return this.#scriptEvaluator.scriptEvaluate(
-      this.contextId,
-      executionContext,
-      expression,
-      awaitPromise,
-      resultOwnership
-    );
-  }
-
   async findElement(
     selector: string
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
@@ -529,15 +496,14 @@ export class BrowsingContextImpl {
       { type: 'string', value: selector },
     ];
 
+    // TODO: execute in isolated world.
     // TODO(sadym): handle not found exception.
-    const result = await this.callFunction(
+    const result = await this.#defaultRealm.callFunction(
       functionDeclaration,
       {
         type: 'undefined',
       },
       _arguments,
-      // TODO: execute in isolated world.
-      { sandbox: null },
       true,
       'root'
     );
@@ -546,24 +512,31 @@ export class BrowsingContextImpl {
     return result as any as BrowsingContext.PROTO.FindElementResult;
   }
 
-  async #getOrCreateSandbox(
-    sandbox: string | null
-  ): Promise<Protocol.Runtime.ExecutionContextId> {
-    if (!this.#sandboxToExecutionContextIdMap.has(sandbox)) {
-      // Default execution context is set with key `null`.
-      if (sandbox === null) {
-        throw Error('No default execution context');
-      }
-      const resp = await this.#cdpClient.Page.createIsolatedWorld({
+  async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
+    if (sandbox === undefined) {
+      return this.#defaultRealm;
+    }
+
+    let maybeSandboxes = Realm.findRealms({
+      browsingContextId: this.contextId,
+      sandbox,
+    });
+
+    if (maybeSandboxes.length == 0) {
+      await this.#cdpClient.Page.createIsolatedWorld({
         frameId: this.contextId,
         worldName: sandbox,
       });
-      this.#sandboxToExecutionContextIdMap.set(
+      // `Runtime.executionContextCreated` should be emitted by the time the
+      // previous command is done.
+      maybeSandboxes = Realm.findRealms({
+        browsingContextId: this.contextId,
         sandbox,
-        resp.executionContextId
-      );
+      });
     }
-
-    return this.#sandboxToExecutionContextIdMap.get(sandbox)!;
+    if (maybeSandboxes.length !== 1) {
+      throw Error(`Sandbox ${sandbox} wasn't created.`);
+    }
+    return maybeSandboxes[0];
   }
 }

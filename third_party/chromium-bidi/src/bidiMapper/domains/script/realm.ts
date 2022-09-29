@@ -16,8 +16,11 @@
  */
 
 import { Protocol } from 'devtools-protocol';
-import { Script } from '../protocol/bidiProtocolTypes';
+import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
+import { ScriptEvaluator } from './scriptEvaluator';
+import { BrowsingContextStorage } from '../context/browsingContextStorage';
 import { NoSuchFrameException } from '../protocol/error';
+import { CdpClient } from '../../../cdp';
 
 export enum RealmType {
   window = 'window',
@@ -26,72 +29,98 @@ export enum RealmType {
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();
 
-  static registerRealm(
+  static create(
     realmId: string,
     browsingContextId: string,
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
-    sandbox: string | undefined
-  ) {
+    sandbox: string | undefined,
+    cdpSessionId: string,
+    cdpClient: CdpClient
+  ): Realm {
     const realm = new Realm(
       realmId,
       browsingContextId,
       executionContextId,
       origin,
       type,
-      sandbox
+      sandbox,
+      cdpSessionId,
+      cdpClient
     );
     Realm.#realmMap.set(realm.realmId, realm);
+    return realm;
   }
 
   static findRealms(
     filter: {
+      realmId?: string;
       browsingContextId?: string;
+      executionContextId?: Protocol.Runtime.ExecutionContextId;
       type?: string;
+      sandbox?: string;
+      cdpSessionId?: string;
     } = {}
   ): Realm[] {
     return Array.from(Realm.#realmMap.values()).filter((realm) => {
+      if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
+        return false;
+      }
       if (
         filter.browsingContextId !== undefined &&
         filter.browsingContextId !== realm.browsingContextId
       ) {
         return false;
       }
+      if (
+        filter.executionContextId !== undefined &&
+        filter.executionContextId !== realm.executionContextId
+      ) {
+        return false;
+      }
       if (filter.type !== undefined && filter.type !== realm.type) {
+        return false;
+      }
+      if (filter.sandbox !== undefined && filter.sandbox !== realm.#sandbox) {
+        return false;
+      }
+      if (
+        filter.cdpSessionId !== undefined &&
+        filter.cdpSessionId !== realm.#cdpSessionId
+      ) {
         return false;
       }
       return true;
     });
   }
 
-  static removeRealm(realmId: string) {
-    Realm.#realmMap.delete(realmId);
+  static getRealm(filter: {
+    realmId?: string;
+    browsingContextId?: string;
+    executionContextId?: Protocol.Runtime.ExecutionContextId;
+    type?: string;
+    sandbox?: string;
+    cdpSessionId?: string;
+  }): Realm {
+    const maybeRealms = Realm.findRealms(filter);
+    if (maybeRealms.length > 1) {
+      throw Error(`Multiple realms found. Filter: ${JSON.stringify(filter)}.`);
+    }
+    if (maybeRealms.length < 1) {
+      throw new NoSuchFrameException(
+        `Realm ${JSON.stringify(filter)} not found`
+      );
+    }
+    return maybeRealms[0];
   }
 
-  static getRealm(realmId: string): Realm {
-    const info = Realm.#realmMap.get(realmId);
-    if (info === undefined) {
-      throw new NoSuchFrameException(`Realm ${realmId} not found`);
-    }
-    return info;
+  static clearBrowsingContext(browsingContextId: string) {
+    Realm.findRealms({ browsingContextId }).map((realm) => realm.delete());
   }
 
-  static getRealmId(
-    browsingContextId: string,
-    executionContextId: number
-  ): string {
-    for (let realm of Realm.#realmMap.values()) {
-      if (
-        realm.executionContextId === executionContextId &&
-        realm.browsingContextId === browsingContextId
-      ) {
-        return realm.realmId;
-      }
-    }
-    throw new Error(
-      `Cannot find execution context ${executionContextId} in frame ${browsingContextId}`
-    );
+  delete() {
+    Realm.#realmMap.delete(this.realmId);
   }
 
   readonly #realmId: string;
@@ -100,6 +129,8 @@ export class Realm {
   readonly #origin: string;
   readonly #type: RealmType;
   readonly #sandbox: string | undefined;
+  readonly #cdpSessionId: string;
+  readonly #cdpClient: CdpClient;
 
   private constructor(
     realmId: string,
@@ -107,7 +138,9 @@ export class Realm {
     executionContextId: Protocol.Runtime.ExecutionContextId,
     origin: string,
     type: RealmType,
-    sandbox: string | undefined
+    sandbox: string | undefined,
+    cdpSessionId: string,
+    cdpClient: CdpClient
   ) {
     this.#realmId = realmId;
     this.#browsingContextId = browsingContextId;
@@ -115,6 +148,8 @@ export class Realm {
     this.#sandbox = sandbox;
     this.#origin = origin;
     this.#type = type;
+    this.#cdpSessionId = cdpSessionId;
+    this.#cdpClient = cdpClient;
   }
 
   toBiDi(): Script.RealmInfo {
@@ -145,5 +180,82 @@ export class Realm {
 
   get type(): RealmType {
     return this.#type;
+  }
+
+  get cdpClient(): CdpClient {
+    return this.#cdpClient;
+  }
+
+  async callFunction(
+    functionDeclaration: string,
+    _this: Script.ArgumentValue,
+    _arguments: Script.ArgumentValue[],
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<Script.CallFunctionResult> {
+    const context = BrowsingContextStorage.getKnownContext(
+      this.browsingContextId
+    );
+    await context.awaitUnblocked();
+
+    return {
+      result: await ScriptEvaluator.callFunction(
+        this,
+        functionDeclaration,
+        _this,
+        _arguments,
+        awaitPromise,
+        resultOwnership
+      ),
+    };
+  }
+
+  async scriptEvaluate(
+    expression: string,
+    awaitPromise: boolean,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<Script.EvaluateResult> {
+    const context = BrowsingContextStorage.getKnownContext(
+      this.browsingContextId
+    );
+    await context.awaitUnblocked();
+
+    return ScriptEvaluator.scriptEvaluate(
+      this,
+      expression,
+      awaitPromise,
+      resultOwnership
+    );
+  }
+
+  /**
+   * Serializes a given CDP object into BiDi, keeping references in the
+   * target's `globalThis`.
+   * @param cdpObject CDP remote object to be serialized.
+   * @param resultOwnership indicates desired OwnershipModel.
+   */
+  public async serializeCdpObject(
+    cdpObject: Protocol.Runtime.RemoteObject,
+    resultOwnership: Script.OwnershipModel
+  ): Promise<CommonDataTypes.RemoteValue> {
+    return await ScriptEvaluator.serializeCdpObject(
+      cdpObject,
+      resultOwnership,
+      this
+    );
+  }
+
+  /**
+   * Gets the string representation of an object. This is equivalent to
+   * calling toString() on the object value.
+   * @param cdpObject CDP remote object representing an object.
+   * @param realm
+   * @returns string The stringified object.
+   */
+  async stringifyObject(
+    cdpObject: Protocol.Runtime.RemoteObject,
+    realm: Realm
+  ): Promise<string> {
+    return ScriptEvaluator.stringifyObject(cdpObject, this);
   }
 }
