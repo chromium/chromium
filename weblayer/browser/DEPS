@@ -54,6 +54,7 @@ include_rules = [
   "+components/password_manager/content/browser",
   "+components/performance_manager/embedder",
   "+components/performance_manager/public",
+  "+components/origin_trials",
   "+components/permissions",
   "+components/pref_registry",
   "+components/prefs",

@@ -41,6 +41,7 @@
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_link_manager_factory.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "weblayer/browser/origin_trials_factory.h"
 #include "weblayer/browser/permissions/weblayer_permissions_client.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
@@ -128,6 +129,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   NoStatePrefetchLinkManagerFactory::GetInstance();
   NoStatePrefetchManagerFactory::GetInstance();
   SubresourceFilterProfileContextFactory::GetInstance();
+  OriginTrialsFactory::GetInstance();
 #if BUILDFLAG(IS_ANDROID)
   SiteEngagementServiceFactory::GetInstance();
   SafeBrowsingMetricsCollectorFactory::GetInstance();

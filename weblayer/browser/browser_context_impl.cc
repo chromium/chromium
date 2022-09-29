@@ -16,6 +16,8 @@
 #include "components/heavy_ad_intervention/heavy_ad_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/language_prefs.h"
+#include "components/origin_trials/browser/origin_trials.h"
+#include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/permissions/permission_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -47,6 +49,7 @@
 #include "weblayer/browser/browsing_data_remover_delegate_factory.h"
 #include "weblayer/browser/client_hints_factory.h"
 #include "weblayer/browser/heavy_ad_service_factory.h"
+#include "weblayer/browser/origin_trials_factory.h"
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/reduce_accept_language_factory.h"
 #include "weblayer/browser/stateful_ssl_host_state_delegate_factory.h"
@@ -227,6 +230,11 @@ BrowserContextImpl::GetReduceAcceptLanguageControllerDelegate() {
   return ReduceAcceptLanguageFactory::GetForBrowserContext(this);
 }
 
+content::OriginTrialsControllerDelegate*
+BrowserContextImpl::GetOriginTrialsControllerDelegate() {
+  return OriginTrialsFactory::GetForBrowserContext(this);
+}
+
 download::InProgressDownloadManager*
 BrowserContextImpl::RetriveInProgressDownloadManager() {
   // Override this to provide a connection to the wake lock service.
@@ -297,6 +305,8 @@ void BrowserContextImpl::RegisterPrefs(
   pref_registry->RegisterBooleanPref(
       translate::prefs::kOfferTranslateEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  origin_trials::PrefServicePersistenceProvider::RegisterProfilePrefs(
+      pref_registry);
 #if BUILDFLAG(IS_ANDROID)
   site_engagement::SiteEngagementService::RegisterProfilePrefs(pref_registry);
   cdm::MediaDrmStorageImpl::RegisterProfilePrefs(pref_registry);

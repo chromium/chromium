@@ -67,6 +67,8 @@ class BrowserContextImpl : public content::BrowserContext {
   content::ContentIndexProvider* GetContentIndexProvider() override;
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
+  content::OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate()
+      override;
 
   ProfileImpl* profile_impl() const { return profile_impl_; }
 
