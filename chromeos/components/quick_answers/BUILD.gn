@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "translation_result_loader_unittest.cc",
     "understanding/intent_generator_unittest.cc",
     "utils/language_detector_unittest.cc",
+    "utils/spell_checker_unittest.cc",
     "utils/unit_converter_unittest.cc",
   ]
 

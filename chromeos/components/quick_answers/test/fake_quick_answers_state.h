@@ -18,12 +18,11 @@ class FakeQuickAnswersState : public QuickAnswersState {
 
   ~FakeQuickAnswersState() override;
 
-  void set_application_locale(const std::string& locale) {
-    resolved_application_locale_ = locale;
-  }
-  void set_preferred_languages(const std::string& preferred_languages) {
-    preferred_languages_ = preferred_languages;
-  }
+  void SetSettingsEnabled(bool settings_enabled);
+  void SetConsentStatus(quick_answers::prefs::ConsentStatus consent_status);
+  void SetApplicationLocale(const std::string& locale);
+  void SetPreferredLanguages(const std::string& preferred_languages);
+  void OnPrefsInitialized();
 };
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_FAKE_QUICK_ANSWERS_STATE_H_

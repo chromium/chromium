@@ -55,6 +55,11 @@ class SpellChecker : public QuickAnswersStateObserver {
     return weak_factory_.GetWeakPtr();
   }
 
+  std::vector<std::unique_ptr<SpellCheckLanguage>>&
+  GetSpellcheckLanguagesForTesting() {
+    return spellcheck_languages_;
+  }
+
  private:
   // Check feature eligibility and correspondingly update languages list. If
   // |should_recreate_languages_list| is false, languages list will not be

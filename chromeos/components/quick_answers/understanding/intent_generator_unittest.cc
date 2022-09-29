@@ -90,8 +90,8 @@ class IntentGeneratorTest : public QuickAnswersTestBase {
                        base::Unretained(this)));
 
     fake_quick_answers_state()->set_use_text_annotator_for_testing();
-    fake_quick_answers_state()->set_application_locale("en");
-    fake_quick_answers_state()->set_preferred_languages("en");
+    fake_quick_answers_state()->SetApplicationLocale("en");
+    fake_quick_answers_state()->SetPreferredLanguages("en");
   }
 
   void TearDown() override {
@@ -141,8 +141,8 @@ TEST_F(IntentGeneratorTest, TranslationIntent) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es");
+  fake_quick_answers_state()->SetApplicationLocale("es");
+  fake_quick_answers_state()->SetPreferredLanguages("es");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -161,8 +161,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentWithSubtag) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es");
+  fake_quick_answers_state()->SetApplicationLocale("es");
+  fake_quick_answers_state()->SetPreferredLanguages("es");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -182,8 +182,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentSameLanguage) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  fake_quick_answers_state()->set_application_locale("en");
-  fake_quick_answers_state()->set_preferred_languages("en");
+  fake_quick_answers_state()->SetApplicationLocale("en");
+  fake_quick_answers_state()->SetPreferredLanguages("en");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -201,8 +201,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLocale) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es,en,zh");
+  fake_quick_answers_state()->SetApplicationLocale("es");
+  fake_quick_answers_state()->SetPreferredLanguages("es,en,zh");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -220,8 +220,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentPreferredLanguage) {
 
   QuickAnswersRequest request;
   request.selected_text = "quick answers";
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es-MX,en-US,zh-CN");
+  fake_quick_answers_state()->SetApplicationLocale("es");
+  fake_quick_answers_state()->SetPreferredLanguages("es-MX,en-US,zh-CN");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -242,8 +242,8 @@ TEST_F(IntentGeneratorTest, TranslationIntentTextLengthAboveThreshold) {
       "Search the world's information, including webpages, images, videos and "
       "more. Google has many special features to help you find exactly what "
       "you're looking ...";
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es");
+  fake_quick_answers_state()->SetApplicationLocale("es");
+  fake_quick_answers_state()->SetPreferredLanguages("es");
   intent_generator_->GenerateIntent(request);
 
   FlushForTesting();
@@ -492,8 +492,8 @@ TEST_F(IntentGeneratorTest, TextAnnotationUnitIntentExtraCharsAboveThreshold) {
 }
 
 TEST_F(IntentGeneratorTest, TextAnnotationNonEnglishLanguage) {
-  fake_quick_answers_state()->set_application_locale("es");
-  fake_quick_answers_state()->set_preferred_languages("es");
+  fake_quick_answers_state()->SetApplicationLocale("es");
+  fake_quick_answers_state()->SetPreferredLanguages("es");
 
   std::unique_ptr<QuickAnswersRequest> quick_answers_request =
       std::make_unique<QuickAnswersRequest>();
