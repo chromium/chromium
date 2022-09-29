@@ -15406,6 +15406,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Do not consider the user as idle while video plays',
+        },
+        {
+          'value': False,
+          'caption': 'Consider the user as idle while video plays',
+        },
+      ],
       'example_value': True,
       'id': 183,
       'caption': '''Specify whether video activity affects power management''',
@@ -15540,6 +15550,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Start power management delays and session length limits after initial user activity',
+        },
+        {
+          'value': False,
+          'caption': 'Start power management delays and session length limits at session start',
+        },
+      ],
       'example_value': True,
       'id': 247,
       'caption': '''Wait for initial user activity''',
@@ -15837,7 +15857,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show accessibility options in the system tray menu',
+        },
+        {
+          'value': False,
+          'caption': 'Hide accessibility options in the system tray menu',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 188,
       'caption': '''Show accessibility options in system tray menu''',
       'tags': [],
@@ -15857,8 +15892,23 @@
         'can_be_recommended': True,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show accessibility options in the login screen system tray menu',
+        },
+        {
+          'value': False,
+          'caption': 'Hide accessibility options in the login screen system tray menu',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'device_only': True,
       'example_value': True,
+      'default': None,
       'id': 646,
       'caption': '''Show accessibility options in system tray menu in the login screen''',
       'tags': [],
@@ -15879,7 +15929,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable large cursor',
+        },
+        {
+          'value': False,
+          'caption': 'Disable large cursor',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 211,
       'caption': '''Enable large cursor''',
       'tags': [],
@@ -15898,7 +15963,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable spoken feedback',
+        },
+        {
+          'value': False,
+          'caption': 'Disable spoken feedback',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 212,
       'caption': '''Enable spoken feedback''',
       'tags': [],
@@ -15917,7 +15997,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable high contrast',
+        },
+        {
+          'value': False,
+          'caption': 'Disable high contrast',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 213,
       'caption': '''Enable high contrast mode''',
       'tags': [],
@@ -15937,7 +16032,22 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable accessibility shortcuts on the sign-in screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable accessibility shortcuts on the sign-in screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 661,
       'caption': '''Enable accessibility features shortcuts on the login screen''',
       'tags': [],
@@ -15962,7 +16072,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable accessibility shortcuts',
+        },
+        {
+          'value': False,
+          'caption': 'Disable accessibility shortcuts',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 659,
       'caption': '''Enable accessibility features shortcuts''',
       'tags': [],
@@ -15987,7 +16112,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable on-screen keyboard',
+        },
+        {
+          'value': False,
+          'caption': 'Disable on-screen keyboard',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 255,
       'caption': '''Enable on-screen keyboard''',
       'tags': [],
