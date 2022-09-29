@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/browser/ash/system_extensions/system_extension.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_profile_utils.h"
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "content/public/common/url_constants.h"
@@ -45,6 +46,11 @@ GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
           "system-extension-peripheral-prototype-";
       host_prefix = kSystemExtensionPeripheralPrototypePrefix;
       break;
+    case SystemExtensionType::kOemDiagnosticsAndControl:
+      static constexpr char kSystemExtensionTelemetryPrefix[] =
+          "system-extension-oem-diagnostics-control";
+      host_prefix = kSystemExtensionTelemetryPrefix;
+      break;
   }
   const std::string host = base::StrCat({host_prefix, id});
   return GURL(base::StrCat({content::kChromeUIUntrustedScheme,
@@ -53,9 +59,11 @@ GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
 
 SystemExtensionType* GetTypeFromString(base::StringPiece type_str) {
   static base::NoDestructor<base::flat_map<std::string, SystemExtensionType>>
-      kStrToType({{"window-management", SystemExtensionType::kWindowManagement},
-                  {"peripheral-prototype",
-                   SystemExtensionType::kPeripheralPrototype}});
+      kStrToType(
+          {{"window-management", SystemExtensionType::kWindowManagement},
+           {"peripheral-prototype", SystemExtensionType::kPeripheralPrototype},
+           {"oem-diagnostics-control",
+            SystemExtensionType::kOemDiagnosticsAndControl}});
 
   auto it = kStrToType->find(type_str);
   if (it == kStrToType->end())

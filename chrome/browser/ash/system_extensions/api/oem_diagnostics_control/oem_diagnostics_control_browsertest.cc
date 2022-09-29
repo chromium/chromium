@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/system_extensions/api/test_support/system_extensions_api_browsertest.h"
+#include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace ash {
+
+namespace {
+
+static constexpr const char kTestsDir[] =
+    "chrome/browser/ash/system_extensions/api/oem_diagnostics_control/test";
+
+static constexpr const char kManifestTemplate[] = R"(
+{
+  "name": "Test Telemetry API",
+  "short_name": "Test",
+  "service_worker_url": "/%s",
+  "id": "01020304",
+  "type": "oem-diagnostics-control"
+})";
+
+}  // namespace
+
+class OemDiagnosticsAndControlBrowserTest
+    : public SystemExtensionsApiBrowserTest {
+ public:
+  OemDiagnosticsAndControlBrowserTest()
+      : SystemExtensionsApiBrowserTest({
+            .tests_dir = kTestsDir,
+            .manifest_template = kManifestTemplate,
+            .additional_src_files = {},
+            .additional_gen_files = {},
+        }) {}
+};
+
+IN_PROC_BROWSER_TEST_F(OemDiagnosticsAndControlBrowserTest, SmokeTest) {
+  RunTest("smoke_test.js");
+}
+
+}  // namespace ash
