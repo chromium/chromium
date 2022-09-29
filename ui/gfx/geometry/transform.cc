@@ -611,12 +611,11 @@ Point3F Transform::TransformPointInternal(const Matrix44& xform,
 
   xform.mapScalars(p);
 
-  if (p[3] != SK_Scalar1 && p[3] != 0.f) {
+  if (p[3] != SK_Scalar1 && std::isnormal(p[3])) {
     float w_inverse = SK_Scalar1 / p[3];
     return gfx::Point3F(p[0] * w_inverse, p[1] * w_inverse, p[2] * w_inverse);
-  } else {
-    return gfx::Point3F(p[0], p[1], p[2]);
   }
+  return gfx::Point3F(p[0], p[1], p[2]);
 }
 
 void Transform::TransformVectorInternal(const Matrix44& xform,
@@ -640,6 +639,11 @@ PointF Transform::TransformPointInternal(const Matrix44& xform,
 
   SkScalar p[4] = {SkIntToScalar(point.x()), SkIntToScalar(point.y()), 0, 1};
   xform.mapScalars(p);
+
+  if (p[3] != SK_Scalar1 && std::isnormal(p[3])) {
+    float w_inverse = SK_Scalar1 / p[3];
+    return gfx::PointF(p[0] * w_inverse, p[1] * w_inverse);
+  }
   return gfx::PointF(p[0], p[1]);
 }
 

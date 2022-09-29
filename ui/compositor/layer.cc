@@ -1442,9 +1442,7 @@ bool Layer::ConvertPointForAncestor(const Layer* ancestor,
   bool result = use_target_transform
                     ? GetTargetTransformRelativeTo(ancestor, &transform)
                     : GetTransformRelativeTo(ancestor, &transform);
-  auto p = gfx::Point3F(*point);
-  transform.TransformPoint(&p);
-  *point = p.AsPointF();
+  transform.TransformPoint(point);
   return result;
 }
 

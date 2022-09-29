@@ -935,14 +935,14 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   gfx::Transform transform_root_to_original;
   query->GetTransformToTarget(original_view->GetFrameSinkId(),
                               &transform_root_to_original);
-  const absl::optional<gfx::Point3F> point_in_pixels =
+  const absl::optional<gfx::PointF> point_in_pixels =
       transform_root_to_original.TransformPointReverse(
-          gfx::Point3F(gfx::ConvertPointToPixels(point, device_scale_factor)));
+          gfx::ConvertPointToPixels(point, device_scale_factor));
   if (!point_in_pixels.has_value())
     return false;
   gfx::PointF transformed_point_in_physical_pixels;
   if (!query->TransformLocationForTarget(
-          target_ancestors, point_in_pixels->AsPointF(),
+          target_ancestors, *point_in_pixels,
           &transformed_point_in_physical_pixels)) {
     return false;
   }

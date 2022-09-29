@@ -68,10 +68,9 @@ constexpr int kCursorPanningMargin = 100;
 constexpr int kKeyboardBottomPanningMargin = 10;
 
 void MoveCursorTo(aura::WindowTreeHost* host, const gfx::Point& root_location) {
-  auto host_location_3f = gfx::Point3F(gfx::PointF(root_location));
-  host->GetRootTransform().TransformPoint(&host_location_3f);
-  host->MoveCursorToLocationInPixels(
-      gfx::ToCeiledPoint(host_location_3f.AsPointF()));
+  auto host_location_f = gfx::PointF(root_location);
+  host->GetRootTransform().TransformPoint(&host_location_f);
+  host->MoveCursorToLocationInPixels(gfx::ToCeiledPoint(host_location_f));
 }
 
 }  // namespace

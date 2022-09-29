@@ -2891,6 +2891,49 @@ TEST(XFormTest, RotationSinCos) {
                       Transform::RotationAboutZAxisSinCos(0, 1));
 }
 
+TEST(XFormTest, TransformPoint) {
+  Transform transform;
+  transform.Translate3d(1.25f, 2.75f, 3.875f);
+  transform.Scale3d(3, 4, 5);
+  PointF p(12.5f, 34.5f);
+  transform.TransformPoint(&p);
+  EXPECT_EQ(PointF(38.75f, 140.75f), p);
+  Point3F p3(12.5f, 34.5f, 56.5f);
+  transform.TransformPoint(&p3);
+  EXPECT_EQ(Point3F(38.75f, 140.75f, 286.375), p3);
+
+  transform.MakeIdentity();
+  transform.set_rc(3, 0, 0.5);
+  transform.set_rc(3, 1, 2);
+  transform.set_rc(3, 2, 0.75);
+  p = PointF(2, 4);
+  transform.TransformPoint(&p);
+  EXPECT_POINTF_EQ(PointF(0.2, 0.4), p);
+  p3 = Point3F(2, 3, 4);
+  transform.TransformPoint(&p3);
+  EXPECT_POINT3F_EQ(Point3F(0.18181818f, 0.27272727f, 0.36363636f), p3);
+
+  // 0 in all perspectives should be ignored.
+  transform.MakeIdentity();
+  transform.Translate3d(10, 20, 30);
+  transform.set_rc(3, 3, 0);
+  p = PointF(2, 4);
+  transform.TransformPoint(&p);
+  EXPECT_EQ(PointF(12, 24), p);
+  p3 = Point3F(2, 3, 4);
+  transform.TransformPoint(&p3);
+  EXPECT_EQ(Point3F(12, 23, 34), p3);
+
+  // NaN in perspective should be ignored.
+  transform.set_rc(3, 3, std::numeric_limits<float>::quiet_NaN());
+  p = PointF(2, 4);
+  transform.TransformPoint(&p);
+  EXPECT_EQ(PointF(12, 24), p);
+  p3 = Point3F(2, 3, 4);
+  transform.TransformPoint(&p3);
+  EXPECT_EQ(Point3F(12, 23, 34), p3);
+}
+
 TEST(XFormTest, TransformPointReverse) {
   Transform transform;
   transform.Translate(1, 2);
