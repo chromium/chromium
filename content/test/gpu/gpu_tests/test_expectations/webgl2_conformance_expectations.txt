@@ -362,6 +362,7 @@ crbug.com/angleproject/7209 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/7209 [ mac passthrough angle-metal amd ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 crbug.com/1355825 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_2d_00.html [ Failure ]
+crbug.com/1369290 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ RetryOnFailure ]
 
 # Metal Intel
 crbug.com/angleproject/6430 [ mac passthrough angle-metal intel ] conformance2/textures/canvas/tex-2d-rgb16f-rgb-float.html [ Failure ]
