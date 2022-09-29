@@ -960,4 +960,121 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
         "The third input tensor should be either a scalar or a 2-D tensor.");
   }
 }
+
+enum class ElementWiseBinaryKind { kAdd, kSub, kMul, kDiv, kMin, kMax };
+
+MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
+                                  MLGraphBuilder* builder,
+                                  ElementWiseBinaryKind kind,
+                                  const MLOperand* a,
+                                  const MLOperand* b) {
+  MLOperand* output = nullptr;
+  switch (kind) {
+    case ElementWiseBinaryKind::kAdd:
+      output = builder->add(a, b, scope.GetExceptionState());
+      break;
+    case ElementWiseBinaryKind::kSub:
+      output = builder->sub(a, b, scope.GetExceptionState());
+      break;
+    case ElementWiseBinaryKind::kMul:
+      output = builder->mul(a, b, scope.GetExceptionState());
+      break;
+    case ElementWiseBinaryKind::kDiv:
+      output = builder->div(a, b, scope.GetExceptionState());
+      break;
+    case ElementWiseBinaryKind::kMin:
+      output = builder->min(a, b, scope.GetExceptionState());
+      break;
+    case ElementWiseBinaryKind::kMax:
+      output = builder->max(a, b, scope.GetExceptionState());
+      break;
+  }
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), a->Type());
+  auto* op = output->Operator();
+  EXPECT_NE(op, nullptr);
+  switch (kind) {
+    case ElementWiseBinaryKind::kAdd:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kAdd);
+      break;
+    case ElementWiseBinaryKind::kSub:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kSub);
+      break;
+    case ElementWiseBinaryKind::kMul:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMul);
+      break;
+    case ElementWiseBinaryKind::kDiv:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kDiv);
+      break;
+    case ElementWiseBinaryKind::kMin:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMin);
+      break;
+    case ElementWiseBinaryKind::kMax:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kMax);
+      break;
+  }
+  EXPECT_EQ(op->IsConnected(), true);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
+  V8TestingScope scope;
+  MLGraphBuilder* builder = CreateMLGraphBuilder(scope);
+  {
+    // Testing building add with two input dimensions - {8, 1, 6, 1} and {7, 1,
+    // 5}. Both the a and b dimensions have axes with length one that are
+    // expanded to a larger size during the broadcast operation.
+    // a_dimensions     (4d) 8 * 1 * 6 * 1
+    // b_dimensions     (3d)     7 * 1 * 5
+    // output_dimenions (4d) 8 * 7 * 6 * 5
+    auto* a = BuildInput(scope, builder, "a", {8, 1, 6, 1},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {7, 1, 5},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* output = BuildElementWiseBinary(scope, builder,
+                                          ElementWiseBinaryKind::kAdd, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({8, 7, 6, 5}));
+  }
+  {
+    // Testing building add with two input dimensions - {4, 2, 1} and {4}.
+    // a_dimensions     (3d) 4 * 2 * 1
+    // b_dimensions     (1d)         4
+    // output_dimenions (3d) 4 * 2 * 4
+    auto* a = BuildInput(scope, builder, "a", {4, 2, 1},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b =
+        BuildInput(scope, builder, "b", {4}, V8MLOperandType::Enum::kFloat32);
+    auto* output = BuildElementWiseBinary(scope, builder,
+                                          ElementWiseBinaryKind::kAdd, a, b);
+    EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({4, 2, 4}));
+  }
+  {
+    // Test throwing exception when the input shapes are not broadcastable.
+    auto* a = BuildInput(scope, builder, "a", {4, 2},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b =
+        BuildInput(scope, builder, "b", {4}, V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->sub(a, b, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input shapes are not broadcastable.");
+  }
+  {
+    // Test throwing exception when the input types don't match.
+    auto* a = BuildInput(scope, builder, "a", {4, 2},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b =
+        BuildInput(scope, builder, "b", {1}, V8MLOperandType::Enum::kInt32);
+    auto* output = builder->max(a, b, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input types don't match.");
+  }
+}
+
 }  // namespace blink
