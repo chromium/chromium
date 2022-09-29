@@ -573,38 +573,181 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
     # Assert 2 contexts are present.
     assert len(result['contexts']) == 2
 
-# TODO(sadym): re-enable after binding is specified and implemented.
-# @pytest.mark.asyncio
-# async def test_script_callFunctionWithBindingAndCallBinding_bindingCalled(
-#       websocket, context_id):
-#     # Send command.
-#     command_id = get_next_command_id()
-#
-#     await send_JSON_command(websocket, {
-#         "id": command_id,
-#         "method": "script.callFunction",
-#         "params": {
-#             "functionDeclaration": "(callback) => {callback('CALLBACK_ARGUMENT'); return 'SOME_RESULT';}",
-#             "arguments": [{
-#                 "type": "PROTO.binding",
-#                 "id": "BINDING_NAME"}],
-#             "target": {"context": context_id}
-#         }})
-#
-#     # Assert callback is called.
-#     resp = await read_JSON_message(websocket)
-#     assert resp == {
-#         "method": "PROTO.script.called",
-#         "params": {
-#             "arguments": [{
-#                 "type": "string",
-#                 "value": "CALLBACK_ARGUMENT"}],
-#             "id": "BINDING_NAME"}}
-#
-#     # Assert command done.
-#     resp = await read_JSON_message(websocket)
-#     assert resp == {
-#         "id": command_id,
-#         "result": {
-#             "type": "string",
-#             "value": "SOME_RESULT"}}
+
+@pytest.mark.asyncio
+async def test_scriptEvaluate_realm(websocket, context_id):
+    # Create a sandbox.
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "(document.foo='bar')",
+            "target": {
+                "context": context_id,
+                "sandbox": 'some_sandbox'
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": {
+            "type": "string",
+            "value": "bar"},
+        "realm": any_string
+    }, result)
+
+    realm = result["realm"]
+
+    # Access sandbox by realm.
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "(document.foo)",
+            "target": {
+                "realm": realm
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": {
+            "type": "string",
+            "value": "bar"},
+        "realm": any_string
+    }, result)
+
+    # Throw an exception in the sandbox.
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "throw new Error('SOME_ERROR')",
+            "target": {
+                "context": context_id,
+                "sandbox": 'some_sandbox'
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    # Assert result contains realm.
+    recursive_compare({
+        "exceptionDetails": any_value,
+        "realm": realm
+    }, result)
+
+
+@pytest.mark.asyncio
+async def test_scriptCallFunction_realm(websocket, context_id):
+    # Create a sandbox.
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{return document.foo='bar';}",
+            "arguments": [],
+            "target": {
+                "context": context_id,
+                "sandbox": 'some_sandbox'
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": {
+            "type": "string",
+            "value": "bar"},
+        "realm": any_string
+    }, result)
+
+    realm = result["realm"]
+
+    # Access sandbox by realm.
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{return document.foo;}",
+            "arguments": [],
+            "target": {
+                "realm": realm
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": {
+            "type": "string",
+            "value": "bar"},
+        "realm": any_string
+    }, result)
+
+    # Throw an exception in the sandbox.
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "()=>{throw new Error('SOME_ERROR');}",
+            "arguments": [],
+            "target": {
+                "realm": realm
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    # Assert result contains realm.
+    recursive_compare({
+        "exceptionDetails": any_value,
+        "realm": realm
+    }, result)
+
+
+@pytest.mark.asyncio
+async def test_scriptGetRealms(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {}})
+
+    recursive_compare({
+        "realms": [{
+            "realm": any_string,
+            "origin": "null",
+            "type": "window",
+            "context": context_id
+        }]}, result)
+
+    old_realm = result["realms"][0]["realm"]
+
+    # Create a sandbox.
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "",
+            "target": {
+                "context": context_id,
+                "sandbox": 'some_sandbox'
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+
+    recursive_compare({
+        "result": any_value,
+        "realm": any_string
+    }, result)
+
+    sandbox_realm = result["realm"]
+
+    result = await execute_command(websocket, {
+        "method": "script.getRealms",
+        "params": {}})
+
+    # Assert 2 realms are created.
+    recursive_compare({
+        "realms":
+            compare_sorted("realm", [{
+                "realm": old_realm,
+                "origin": "null",
+                "type": "window",
+                "context": context_id
+            }, {
+                "realm": sandbox_realm,
+                "origin": "null",
+                "type": "window",
+                "sandbox": "some_sandbox",
+                "context": context_id
+            }])
+    }, result)

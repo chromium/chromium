@@ -129,6 +129,10 @@ export class CommandProcessor {
           BrowsingContext.parseNavigateParams(commandData.params)
         );
 
+      case 'script.getRealms':
+        return this.#contextProcessor.process_script_getRealms(
+          Script.parseGetRealmsParams(commandData.params)
+        );
       case 'script.callFunction':
         return await this.#contextProcessor.process_script_callFunction(
           Script.parseCallFunctionParams(commandData.params)

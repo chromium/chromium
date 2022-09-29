@@ -378,8 +378,14 @@ export namespace CommonDataTypes {
 }
 
 export namespace Script {
-  export type Command = EvaluateCommand | CallFunctionCommand;
-  export type CommandResult = EvaluateResult | CallFunctionResult;
+  export type Command =
+    | EvaluateCommand
+    | CallFunctionCommand
+    | GetRealmsCommand;
+  export type CommandResult =
+    | EvaluateResult
+    | CallFunctionResult
+    | GetRealmsResult;
 
   export type Realm = string;
 
@@ -402,6 +408,86 @@ export namespace Script {
     text: string;
   };
 
+  export type RealmInfo =
+    | WindowRealmInfo
+    | DedicatedWorkerRealmInfo
+    | SharedWorkerRealmInfo
+    | ServiceWorkerRealmInfo
+    | WorkerRealmInfo
+    | PaintWorkletRealmInfo
+    | AudioWorkletRealmInfo
+    | WorkletRealmInfo;
+
+  export type BaseRealmInfo = {
+    realm: Realm;
+    origin: string;
+  };
+
+  export type WindowRealmInfo = BaseRealmInfo & {
+    type: 'window';
+    context: CommonDataTypes.BrowsingContext;
+    sandbox?: string;
+  };
+
+  export type DedicatedWorkerRealmInfo = BaseRealmInfo & {
+    type: 'dedicated-worker';
+  };
+
+  export type SharedWorkerRealmInfo = BaseRealmInfo & {
+    type: 'shared-worker';
+  };
+
+  export type ServiceWorkerRealmInfo = BaseRealmInfo & {
+    type: 'service-worker';
+  };
+
+  export type WorkerRealmInfo = BaseRealmInfo & {
+    type: 'worker';
+  };
+
+  export type PaintWorkletRealmInfo = BaseRealmInfo & {
+    type: 'paint-worklet';
+  };
+
+  export type AudioWorkletRealmInfo = BaseRealmInfo & {
+    type: 'audio-worklet';
+  };
+
+  export type WorkletRealmInfo = BaseRealmInfo & {
+    type: 'worklet';
+  };
+
+  const RealmTypeSchema = zod.enum([
+    'window',
+    'dedicated-worker',
+    'shared-worker',
+    'service-worker',
+    'worker',
+    'paint-worklet',
+    'audio-worklet',
+    'worklet',
+  ]);
+
+  const GetRealmsParametersSchema = zod.object({
+    context: CommonDataTypes.BrowsingContextSchema.optional(),
+    type: RealmTypeSchema.optional(),
+  });
+
+  export type GetRealmsParameters = zod.infer<typeof GetRealmsParametersSchema>;
+
+  export function parseGetRealmsParams(params: unknown): GetRealmsParameters {
+    return parseObject(params, GetRealmsParametersSchema);
+  }
+
+  export type GetRealmsCommand = {
+    method: 'script.getRealms';
+    params: GetRealmsParameters;
+  };
+
+  export type GetRealmsResult = {
+    result: { realms: RealmInfo[] };
+  };
+
   export type EvaluateCommand = {
     method: 'script.evaluate';
     params: EvaluateParameters;
@@ -413,7 +499,7 @@ export namespace Script {
   // }
   const ContextTargetSchema = zod.object({
     context: CommonDataTypes.BrowsingContextSchema,
-    sandbox: zod.string().optional(),
+    sandbox: zod.string().min(1).optional(),
   });
   export type ContextTarget = zod.infer<typeof ContextTargetSchema>;
 

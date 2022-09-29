@@ -25,7 +25,8 @@ import {
   InvalidArgumentErrorResponse,
   NoSuchFrameException,
 } from '../protocol/error';
-import { BrowsingContextImpl } from './browsingContextImpl';
+import { BrowsingContextImpl, ScriptTarget } from './browsingContextImpl';
+import { Realm } from '../script/realm';
 
 const logContext = log('context');
 
@@ -159,8 +160,8 @@ export class BrowsingContextProcessor {
           return;
         }
         const context = BrowsingContextProcessor.#getKnownContext(contextId);
-        // At the point the page is initiated, all the nested iframes are
-        // detached.
+        // At the point the page is initiated, all the nested iframes from the
+        // previous page are detached and realms are destroyed.
         // Remove context's children.
         await this.#removeChildContexts(context);
       }
@@ -312,36 +313,66 @@ export class BrowsingContextProcessor {
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    if ('realm' in params.target) {
-      throw new Error('Realm target is not implemented yet.');
-    }
-    const target: Script.ContextTarget = params.target;
+    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
+      params.target
+    );
 
-    const context = BrowsingContextProcessor.#getKnownContext(target.context);
-    return await context.scriptEvaluate(
+    return await scriptTarget.context.scriptEvaluate(
       params.expression,
-      target.sandbox ?? null,
+      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );
   }
 
+  static #getScriptTarget(target: Script.Target): {
+    context: BrowsingContextImpl;
+    target: ScriptTarget;
+  } {
+    if ('realm' in target) {
+      const { executionContextId, browsingContextId } = Realm.getRealm(
+        target.realm
+      );
+      return {
+        context: BrowsingContextProcessor.#getKnownContext(browsingContextId),
+        target: { executionContext: executionContextId },
+      };
+    } else {
+      return {
+        context: BrowsingContextProcessor.#getKnownContext(target.context),
+        target: { sandbox: target.sandbox ?? null },
+      };
+    }
+  }
+
+  process_script_getRealms(
+    params: Script.GetRealmsParameters
+  ): Script.GetRealmsResult {
+    if (params.context !== undefined) {
+      // Make sure the context is known.
+      BrowsingContextProcessor.#getKnownContext(params.context);
+    }
+    const realms = Realm.findRealms({
+      browsingContextId: params.context,
+      type: params.type,
+    }).map((realm) => realm.toBiDi());
+    return { result: { realms } };
+  }
+
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    if ('realm' in params.target) {
-      throw new Error('Realm target is not implemented yet.');
-    }
-    const target: Script.ContextTarget = params.target;
+    const scriptTarget = BrowsingContextProcessor.#getScriptTarget(
+      params.target
+    );
 
-    const context = BrowsingContextProcessor.#getKnownContext(target.context);
-    return await context.callFunction(
+    return await scriptTarget.context.callFunction(
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
       }, // `this` is `undefined` by default.
       params.arguments || [], // `arguments` is `[]` by default.
-      target.sandbox ?? null,
+      scriptTarget.target,
       params.awaitPromise,
       params.resultOwnership ?? 'none'
     );

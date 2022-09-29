@@ -18,6 +18,7 @@
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
 import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
+import { Realm } from './realm';
 
 export class ScriptEvaluator {
   #cdpClient: CdpClient;
@@ -83,6 +84,7 @@ export class ScriptEvaluator {
   }
 
   public async callFunction(
+    browsingContext: string,
     executionContext: Protocol.Runtime.ExecutionContextId,
     functionDeclaration: string,
     _this: Script.ArgumentValue,
@@ -125,7 +127,7 @@ export class ScriptEvaluator {
           resultOwnership,
           executionContext
         ),
-        realm: 'TODO: ADD',
+        realm: Realm.getRealmId(browsingContext, executionContext),
       };
     }
 
@@ -134,7 +136,7 @@ export class ScriptEvaluator {
         cdpCallFunctionResult,
         resultOwnership
       ),
-      realm: 'TODO: ADD',
+      realm: Realm.getRealmId(browsingContext, executionContext),
     };
   }
 
@@ -206,6 +208,7 @@ export class ScriptEvaluator {
   }
 
   public async scriptEvaluate(
+    browsingContext: string,
     executionContext: Protocol.Runtime.ExecutionContextId,
     expression: string,
     awaitPromise: boolean,
@@ -228,7 +231,7 @@ export class ScriptEvaluator {
             resultOwnership,
             executionContext
           ),
-          realm: 'TODO: ADD',
+          realm: Realm.getRealmId(browsingContext, executionContext),
         },
       };
     }
@@ -236,7 +239,7 @@ export class ScriptEvaluator {
     return {
       result: {
         result: await this.#cdpToBidiValue(cdpEvaluateResult, resultOwnership),
-        realm: 'TODO: ADD',
+        realm: Realm.getRealmId(browsingContext, executionContext),
       },
     };
   }
