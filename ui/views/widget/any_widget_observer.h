@@ -38,7 +38,7 @@ class Widget;
 // details. Uses in tests can be done freely using
 // views::test::AnyWidgetTestPasskey.
 //
-// This class is useful when doing something like this:
+// This class can be used for waiting for a particular View being shown, as in:
 //
 //    RunLoop run_loop;
 //    AnyWidgetCallbackObserver observer(views::test::AnyWidgetTestPasskey{});
@@ -63,6 +63,15 @@ class Widget;
 //        views::test::AnyWidgetTestPasskey{}, "MyWidget");
 //    ThingThatCreatesAndShowsWidget();
 //    Widget* widget = waiter.WaitIfNeededAndGet();
+//
+// This class can also be used to make sure a named widget is _not_ shown, as
+// this particular example (intended for testing code) shows:
+//
+// AnyWidgetCallbackObserver observer(views::test::AnyWidgetTestPasskey{});
+// observer.set_shown_callback(
+//    base::BindLambdaForTesting([&](views::Widget* widget) {
+//        ASSERT_FALSE(widget->GetName() == "MyWidget");
+//      }));
 //
 // TODO(ellyjones): Add Widget::SetDebugName and add a remark about that here.
 //

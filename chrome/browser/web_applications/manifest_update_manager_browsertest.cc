@@ -101,6 +101,8 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -4019,15 +4021,23 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   app_id = app_ids[0];
   EXPECT_EQ(override_title, GetProvider().registrar().GetAppShortName(app_id));
 
+  // Simulate the user accepting the App Identity update dialog (if it appears).
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        // If the App Identity dialog was shown for the shortcut app, then
+        // something is wrong.
+        ASSERT_FALSE(widget->GetName() ==
+                     "WebAppIdentityUpdateConfirmationView");
+      }));
+
   // Now navigate to the same url and allow the update mechanism to run.
   UpdateCheckResultAwaiter result_awaiter(browser(), app_url);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
             ManifestUpdateResult::kAppUpToDate);
-
-  // If the App Identity dialog was shown for the shortcut app, then something
-  // is wrong.
-  ASSERT_FALSE(chrome::AppIdentityUpdateDialogWasRequestedForTesting());
 }
 
 using ManifestUpdateManagerBrowserTest_ManifestId =

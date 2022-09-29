@@ -174,9 +174,6 @@ void ShowWebAppIdentityUpdateDialog(
     content::WebContents* web_contents,
     web_app::AppIdentityDialogCallback callback);
 
-// Returns true if the App Identity Dialog has been requested.
-bool AppIdentityUpdateDialogWasRequestedForTesting();
-
 // Sets whether |ShowWebAppIdentityUpdateDialog| should accept immediately
 // without any user interaction.
 void SetAutoAcceptAppIdentityUpdateForTesting(bool auto_accept);
