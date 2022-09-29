@@ -14,8 +14,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace network {
-namespace corb {
+namespace network::corb {
 
 namespace {
 
@@ -170,5 +169,4 @@ void SanitizeBlockedResponseHeaders(network::mojom::URLResponseHead& response) {
     RemoveAllHttpResponseHeaders(response.headers);
 }
 
-}  // namespace corb
-}  // namespace network
+}  // namespace network::corb

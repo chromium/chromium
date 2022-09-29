@@ -37,8 +37,7 @@ using Decision = network::corb::ResponseAnalyzer::Decision;
 using MimeType = network::corb::CrossOriginReadBlocking::MimeType;
 using SniffingResult = network::corb::CrossOriginReadBlocking::SniffingResult;
 
-namespace network {
-namespace corb {
+namespace network::corb {
 
 namespace {
 
@@ -1207,5 +1206,4 @@ void CrossOriginReadBlocking::CorbResponseAnalyzer::
       supports_range_requests_);
 }
 
-}  // namespace corb
-}  // namespace network
+}  // namespace network::corb

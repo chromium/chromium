@@ -25,8 +25,7 @@
 using ::testing::ElementsAre;
 using ::testing::Optional;
 
-namespace network {
-namespace trust_tokens {
+namespace network::trust_tokens {
 
 namespace {
 MATCHER_P(EqualsProto,
@@ -820,5 +819,4 @@ TEST(TrustTokenStore, RedemptionLimit) {
   EXPECT_FALSE(store->IsRedemptionLimitHit(issuer, top_level));
 }
 
-}  // namespace trust_tokens
-}  // namespace network
+}  // namespace network::trust_tokens

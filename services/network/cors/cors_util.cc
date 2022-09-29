@@ -7,9 +7,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
     const net::HttpRequestHeaders::HeaderVector& headers,
@@ -46,6 +44,4 @@ std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
   return header_names;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

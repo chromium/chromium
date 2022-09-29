@@ -37,8 +37,7 @@ using MimeType = network::corb::CrossOriginReadBlocking::MimeType;
 using MimeTypeBucket = CorbResponseAnalyzer::MimeTypeBucket;
 using SniffingResult = network::corb::CrossOriginReadBlocking::SniffingResult;
 
-namespace network {
-namespace corb {
+namespace network::corb {
 
 namespace {
 
@@ -2782,5 +2781,4 @@ TEST(CrossOriginReadBlockingTest, SupportsRangeRequests) {
       CorbResponseAnalyzer::SupportsRangeRequests(*none_accept_ranges));
 }
 
-}  // namespace corb
-}  // namespace network
+}  // namespace network::corb

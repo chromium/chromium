@@ -10,8 +10,7 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-namespace network {
-namespace test {
+namespace network::test {
 
 bool IsOriginAllowlisted(const url::Origin& origin) {
   return SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(origin);
@@ -237,5 +236,4 @@ INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,
                                AbstractTrustworthinessTest,
                                TrustworthinessTestTraits);
 
-}  // namespace test
-}  // namespace network
+}  // namespace network::test

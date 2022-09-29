@@ -38,9 +38,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -683,6 +681,4 @@ void PreflightController::AppendToCache(
                      target_ip_address_space, std::move(result));
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

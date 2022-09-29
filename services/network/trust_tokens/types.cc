@@ -7,8 +7,7 @@
 #include "base/json/values_util.h"
 #include "base/time/time.h"
 
-namespace network {
-namespace internal {
+namespace network::internal {
 
 absl::optional<base::Time> StringToTime(base::StringPiece my_string) {
   return base::ValueToTime(base::Value(my_string));
@@ -43,5 +42,4 @@ std::string ProtocolVersionToString(
   }
 }
 
-}  // namespace internal
-}  // namespace network
+}  // namespace network::internal

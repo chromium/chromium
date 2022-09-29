@@ -6,9 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -125,6 +123,4 @@ TEST_F(CorsUtilTest, CorsUnsafeNotForbiddenRequestHeaderNamesWithRevalidating) {
 
 }  // namespace
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

@@ -12,8 +12,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace network {
-namespace cors {
+namespace network::cors {
 namespace {
 
 using CorsTest = testing::Test;
@@ -582,5 +581,4 @@ TEST_F(CorsTest, IsForbiddenMethod) {
 }
 
 }  // namespace
-}  // namespace cors
-}  // namespace network
+}  // namespace network::cors

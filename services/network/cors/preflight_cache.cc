@@ -15,9 +15,7 @@
 #include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -162,6 +160,4 @@ void PreflightCache::MayPurge(size_t max_entries, size_t purge_unit) {
   cache_.erase(purge_begin_entry, purge_end_entry);
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

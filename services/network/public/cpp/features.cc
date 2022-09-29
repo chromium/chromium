@@ -12,8 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/mime_sniffer.h"
 
-namespace network {
-namespace features {
+namespace network::features {
 
 // Enables Expect CT reporting, which sends reports for opted-in sites
 // that don't serve sufficient Certificate Transparency information.
@@ -324,5 +323,4 @@ BASE_FEATURE(kPreconnectInNetworkService,
              "PreconnectInNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
-}  // namespace network
+}  // namespace network::features

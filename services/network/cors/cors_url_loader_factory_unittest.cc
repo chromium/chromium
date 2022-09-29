@@ -29,8 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace network {
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -307,5 +306,4 @@ TEST_F(CorsURLLoaderFactoryTest,
       bad_message_observer.WaitForBadMessage());
 }
 
-}  // namespace cors
-}  // namespace network
+}  // namespace network::cors

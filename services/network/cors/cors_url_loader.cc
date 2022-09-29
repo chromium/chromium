@@ -37,9 +37,7 @@
 #include "url/scheme_host_port.h"
 #include "url/url_util.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -1146,6 +1144,4 @@ absl::optional<std::string> CorsURLLoader::GetHeaderString(
   return header_value;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

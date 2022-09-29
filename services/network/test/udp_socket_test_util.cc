@@ -11,9 +11,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
-
-namespace test {
+namespace network::test {
 
 UDPSocketTestHelper::UDPSocketTestHelper(mojo::Remote<mojom::UDPSocket>* socket)
     : socket_(socket) {}
@@ -197,6 +195,4 @@ void UDPSocketListenerImpl::OnReceived(
   }
 }
 
-}  // namespace test
-
-}  // namespace network
+}  // namespace network::test

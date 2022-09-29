@@ -10,9 +10,7 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -159,6 +157,4 @@ OriginAccessEntry::CreateCorsOriginPattern() const {
       protocol_, host_, port_, domain_match_mode_, port_match_mode_, priority_);
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

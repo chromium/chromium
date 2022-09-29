@@ -19,9 +19,7 @@
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
-
-namespace test {
+namespace network::test {
 
 namespace {
 
@@ -125,6 +123,4 @@ void RegisterTrustTokenTestHandlers(net::EmbeddedTestServer* test_server,
       }));
 }
 
-}  // namespace test
-
-}  // namespace network
+}  // namespace network::test

@@ -40,9 +40,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -1009,6 +1007,4 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
 
 }  // namespace
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

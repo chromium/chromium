@@ -11,9 +11,7 @@
 #include "net/websockets/websocket_extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 TEST(WebSocketEncoderHandshakeTest, EmptyRequestShouldBeRejected) {
   net::WebSocketDeflateParameters params;
@@ -505,6 +503,4 @@ TEST_F(WebSocketEncoderCompressionTest, CheckPongFrameNotCompressed) {
   EXPECT_EQ(kOriginalText, encoded.substr(2));
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

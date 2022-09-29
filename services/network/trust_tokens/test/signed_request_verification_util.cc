@@ -23,8 +23,7 @@
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
-namespace network {
-namespace test {
+namespace network::test {
 namespace {
 
 absl::optional<
@@ -360,5 +359,4 @@ bool ExtractRedemptionRecordsFromHeader(
   return true;
 }
 
-}  // namespace test
-}  // namespace network
+}  // namespace network::test

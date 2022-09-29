@@ -163,9 +163,7 @@ class TestHttpClient {
 
 }  // namespace
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 class HttpServerTest : public testing::Test, public HttpServer::Delegate {
  public:
@@ -874,6 +872,4 @@ TEST_F(CloseOnConnectHttpServerTest, ServerImmediatelyClosesConnection) {
   EXPECT_EQ(0ul, requests_.size());
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

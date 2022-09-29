@@ -17,9 +17,7 @@
 #include "net/websockets/websocket_extension_parser.h"
 #include "net/websockets/websocket_frame.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 const char WebSocketEncoder::kClientExtensions[] =
     "permessage-deflate; client_max_window_bits";
@@ -380,6 +378,4 @@ bool WebSocketEncoder::Deflate(base::StringPiece message, std::string* output) {
   return true;
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

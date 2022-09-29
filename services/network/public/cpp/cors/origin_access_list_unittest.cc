@@ -13,9 +13,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -363,6 +361,4 @@ TEST_F(OriginAccessListTest, CreateCorsOriginAccessPatternsList) {
 
 }  // namespace
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

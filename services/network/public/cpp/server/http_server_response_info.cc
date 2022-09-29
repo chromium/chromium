@@ -9,9 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "net/http/http_request_headers.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 HttpServerResponseInfo::HttpServerResponseInfo() : status_code_(net::HTTP_OK) {}
 
@@ -76,6 +74,4 @@ const std::string& HttpServerResponseInfo::body() const {
   return body_;
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

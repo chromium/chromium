@@ -4,9 +4,7 @@
 
 #include "services/network/public/cpp/network_switches.h"
 
-namespace network {
-
-namespace switches {
+namespace network::switches {
 
 // Forces Network Quality Estimator (NQE) to return a specific effective
 // connection type.
@@ -112,6 +110,4 @@ const char kUseFirstPartySet[] = "use-first-party-set";
 // https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
 const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
-}  // namespace switches
-
-}  // namespace network
+}  // namespace network::switches

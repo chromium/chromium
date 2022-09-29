@@ -21,9 +21,7 @@
 #include "services/network/public/cpp/server/http_server_response_info.h"
 #include "services/network/public/cpp/server/web_socket_encoder.h"
 
-namespace network {
-
-namespace server {
+namespace network::server {
 
 namespace {
 
@@ -173,6 +171,4 @@ void WebSocket::SendErrorResponse(
   server_->Send500(connection_->id(), message, traffic_annotation);
 }
 
-}  // namespace server
-
-}  // namespace network
+}  // namespace network::server

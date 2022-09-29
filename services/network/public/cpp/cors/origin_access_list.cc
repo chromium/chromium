@@ -7,9 +7,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 OriginAccessList::OriginAccessList() = default;
 OriginAccessList::~OriginAccessList() = default;
@@ -203,6 +201,4 @@ OriginAccessList::GetHighestPriorityOfRuleForOrigin(
   return highest_priority;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

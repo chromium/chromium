@@ -33,9 +33,7 @@
 #include "services/network/url_loader_factory.h"
 #include "url/origin.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -647,6 +645,4 @@ CorsURLLoaderFactory::GetDevToolsObserver(
   return devtools_observer;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

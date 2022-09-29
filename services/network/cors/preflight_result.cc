@@ -22,9 +22,7 @@
 #include "services/network/cors/cors_util.h"
 #include "services/network/public/cpp/cors/cors.h"
 
-namespace network {
-
-namespace cors {
+namespace network::cors {
 
 namespace {
 
@@ -283,6 +281,4 @@ base::Value PreflightResult::NetLogParams() const {
   return dict;
 }
 
-}  // namespace cors
-
-}  // namespace network
+}  // namespace network::cors

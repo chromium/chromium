@@ -28,8 +28,7 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/trust_token.h"
 
-namespace network {
-namespace test {
+namespace network::test {
 namespace {
 
 struct IssuanceKeyPair {
@@ -416,5 +415,4 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
       options.unavailable_local_operation_fallback;
 }
 
-}  // namespace test
-}  // namespace network
+}  // namespace network::test

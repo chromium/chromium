@@ -9,8 +9,7 @@
 
 using ::testing::Optional;
 
-namespace network {
-namespace internal {
+namespace network::internal {
 
 // trust_tokens/types.h's TimeToString/StringToTime implementations are
 // thin wrappers around well-tested //base conversion methods, so these
@@ -28,5 +27,4 @@ TEST(TrustTokenTypes, TimeFromBadStringFails) {
             absl::nullopt);
 }
 
-}  // namespace internal
-}  // namespace network
+}  // namespace network::internal
