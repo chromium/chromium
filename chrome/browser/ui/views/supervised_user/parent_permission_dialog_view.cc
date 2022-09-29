@@ -83,7 +83,7 @@ class MaybeEmptyLabel : public views::Label {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     views::Label::GetAccessibleNodeData(node_data);
     if (!GetText().empty())
-      node_data->SetName(GetText());
+      node_data->SetNameChecked(GetText());
     else
       node_data->SetNameExplicitlyEmpty();
   }
