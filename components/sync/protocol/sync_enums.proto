@@ -152,6 +152,7 @@ message SyncEnums {
 
   // Types of browsers; used for history-related data types.
   enum BrowserType {
+    BROWSER_TYPE_UNKNOWN = 0;
     TYPE_TABBED = 1;      // A normal tabbed window.
     TYPE_POPUP = 2;       // A popup window.
     TYPE_CUSTOM_TAB = 3;  // A custom tab within an app.

@@ -238,9 +238,10 @@ const char* ProtoEnumToString(sync_pb::SessionTab::FaviconType favicon_type) {
 }
 
 const char* ProtoEnumToString(sync_pb::SyncEnums::BrowserType browser_type) {
-  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, TYPE_TABBED,
+  ASSERT_ENUM_BOUNDS(sync_pb::SyncEnums, BrowserType, BROWSER_TYPE_UNKNOWN,
                      TYPE_CUSTOM_TAB);
   switch (browser_type) {
+    ENUM_CASE(sync_pb::SyncEnums, BROWSER_TYPE_UNKNOWN);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_TABBED);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_POPUP);
     ENUM_CASE(sync_pb::SyncEnums, TYPE_CUSTOM_TAB);

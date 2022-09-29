@@ -69,11 +69,11 @@ base::Time GetVisitTime(const sync_pb::HistorySpecifics& specifics) {
       base::Microseconds(specifics.visit_time_windows_epoch_micros()));
 }
 
-absl::optional<sync_pb::SyncEnums::BrowserType> BrowserTypeToProto(
+sync_pb::SyncEnums::BrowserType BrowserTypeToProto(
     VisitContextAnnotations::BrowserType type) {
   switch (type) {
     case VisitContextAnnotations::BrowserType::kUnknown:
-      return absl::nullopt;
+      return sync_pb::SyncEnums_BrowserType_BROWSER_TYPE_UNKNOWN;
     case VisitContextAnnotations::BrowserType::kTabbed:
       return sync_pb::SyncEnums_BrowserType_TYPE_TABBED;
     case VisitContextAnnotations::BrowserType::kPopup:
@@ -81,12 +81,14 @@ absl::optional<sync_pb::SyncEnums::BrowserType> BrowserTypeToProto(
     case VisitContextAnnotations::BrowserType::kCustomTab:
       return sync_pb::SyncEnums_BrowserType_TYPE_CUSTOM_TAB;
   }
-  return absl::nullopt;
+  return sync_pb::SyncEnums_BrowserType_BROWSER_TYPE_UNKNOWN;
 }
 
 VisitContextAnnotations::BrowserType BrowserTypeFromProto(
     sync_pb::SyncEnums::BrowserType type) {
   switch (type) {
+    case sync_pb::SyncEnums_BrowserType_BROWSER_TYPE_UNKNOWN:
+      return VisitContextAnnotations::BrowserType::kUnknown;
     case sync_pb::SyncEnums_BrowserType_TYPE_TABBED:
       return VisitContextAnnotations::BrowserType::kTabbed;
     case sync_pb::SyncEnums_BrowserType_TYPE_POPUP:
@@ -323,10 +325,10 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
   // annotations attached (if any).
   const VisitContextAnnotations& context_annotations =
       redirect_visits.back().context_annotations;
-  absl::optional<sync_pb::SyncEnums::BrowserType> browser_type =
+  sync_pb::SyncEnums::BrowserType browser_type =
       BrowserTypeToProto(context_annotations.on_visit.browser_type);
-  if (browser_type) {
-    history->set_browser_type(*browser_type);
+  if (browser_type != sync_pb::SyncEnums_BrowserType_BROWSER_TYPE_UNKNOWN) {
+    history->set_browser_type(browser_type);
   }
   history->set_window_id(context_annotations.on_visit.window_id.id());
   history->set_tab_id(context_annotations.on_visit.tab_id.id());
