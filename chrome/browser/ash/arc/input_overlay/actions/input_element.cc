@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 
-#include <algorithm>
 #include <iterator>
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
@@ -161,7 +162,7 @@ bool InputElement::IsOverlapped(const InputElement& input_element) const {
   }
   if (input_sources_ == InputSource::IS_KEYBOARD) {
     for (auto key : input_element.keys()) {
-      if (std::find(keys_.begin(), keys_.end(), key) != keys_.end())
+      if (base::Contains(keys_, key))
         return true;
     }
     return false;
@@ -182,7 +183,7 @@ void InputElement::SetKeys(std::vector<ui::DomCode>& keys) {
 }
 
 int InputElement::GetIndexOfKey(ui::DomCode key) const {
-  auto it = std::find(keys_.begin(), keys_.end(), key);
+  auto it = base::ranges::find(keys_, key);
   return it == keys_.end() ? -1 : it - keys_.begin();
 }
 

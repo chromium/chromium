@@ -5,6 +5,7 @@
 #include "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <set>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -903,8 +905,7 @@ AccessibilityPrivateUpdateSwitchAccessBubbleFunction::Run() {
        *(params->actions)) {
     std::string action = accessibility_private::ToString(extension_action);
     // Check that this action is not already in our actions list.
-    if (std::find(actions_to_show.begin(), actions_to_show.end(), action) !=
-        actions_to_show.end()) {
+    if (base::Contains(actions_to_show, action)) {
       continue;
     }
     actions_to_show.push_back(action);

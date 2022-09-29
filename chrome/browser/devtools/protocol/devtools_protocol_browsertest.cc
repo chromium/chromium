@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -78,10 +79,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       params.FindStringByDottedPath("visibleSecurityState.safetyTipInfo"));
   const base::Value* security_state_issue_ids =
       params.FindByDottedPath("visibleSecurityState.securityStateIssueIds");
-  EXPECT_TRUE(std::find(security_state_issue_ids->GetListDeprecated().begin(),
-                        security_state_issue_ids->GetListDeprecated().end(),
-                        base::Value("scheme-is-not-cryptographic")) !=
-              security_state_issue_ids->GetListDeprecated().end());
+  EXPECT_TRUE(base::Contains(security_state_issue_ids->GetListDeprecated(),
+                             base::Value("scheme-is-not-cryptographic")));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CreateDeleteContext) {

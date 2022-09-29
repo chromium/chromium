@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -1587,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
   // picked up by the browser zoom, then zoom to the next zoom level. This
   // ensures the test passes regardless of the initial default zoom level.
   std::vector<double> preset_zoom_levels = zoom::PageZoom::PresetZoomLevels(0);
-  auto it = std::find(preset_zoom_levels.begin(), preset_zoom_levels.end(), 0);
+  auto it = base::ranges::find(preset_zoom_levels, 0);
   ASSERT_NE(it, preset_zoom_levels.end());
   it++;
   ASSERT_NE(it, preset_zoom_levels.end());

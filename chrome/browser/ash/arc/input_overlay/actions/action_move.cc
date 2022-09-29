@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action_move.h"
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_id_manager.h"
@@ -153,7 +155,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
     DCHECK_EQ(labels_.size(), kActionMoveKeysSize);
     if (labels_.size() != kActionMoveKeysSize)
       return;
-    auto it = std::find(labels_.begin(), labels_.end(), action_label);
+    auto it = base::ranges::find(labels_, action_label);
     DCHECK(it != labels_.end());
     if (it == labels_.end())
       return;
@@ -273,8 +275,7 @@ bool ActionMove::ParseJsonFromKeyboard(const base::Value& value) {
                  << "}.";
       return false;
     }
-    auto it = std::find(keycodes.begin(), keycodes.end(), key);
-    if (it != keycodes.end()) {
+    if (base::Contains(keycodes, key)) {
       LOG(ERROR) << "Duplicated key {" << val
                  << "} for move key action: " << name_;
       return false;
@@ -419,7 +420,7 @@ bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                  const gfx::Transform* rotation_transform,
                                  std::list<ui::TouchEvent>& rewritten_events) {
   auto keys = current_input_->keys();
-  auto it = std::find(keys.begin(), keys.end(), key_event->code());
+  auto it = base::ranges::find(keys, key_event->code());
   if (it == keys.end())
     return false;
 

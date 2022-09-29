@@ -4,12 +4,12 @@
 
 #include "chrome/browser/notifications/scheduler/internal/impression_history_tracker.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "chrome/browser/notifications/scheduler/internal/scheduler_utils.h"
@@ -211,10 +211,7 @@ void ImpressionHistoryTrackerImpl::SyncRegisteredClients() {
   // Remove deprecated clients.
   for (auto it = client_states_.begin(); it != client_states_.end();) {
     auto client_type = it->first;
-    bool deprecated =
-        std::find(registered_clients_.begin(), registered_clients_.end(),
-                  client_type) == registered_clients_.end();
-    if (deprecated) {
+    if (!base::Contains(registered_clients_, client_type)) {
       store_->Delete(ToDatabaseKey(client_type),
                      base::BindOnce(&stats::LogDbOperation,
                                     stats::DatabaseType::kImpressionDb));

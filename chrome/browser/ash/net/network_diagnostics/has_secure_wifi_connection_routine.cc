@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/net/network_diagnostics/has_secure_wifi_connection_routine.h"
 
-#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,18 +40,6 @@ constexpr SecurityType kSecureWiFiEncryptions[] = {SecurityType::kWpaEap,
 constexpr SecurityType kInsecureWiFiEncryptions[] = {
     SecurityType::kNone, SecurityType::kWep8021x, SecurityType::kWepPsk};
 
-bool IsSecureWiFiSecurityType(SecurityType security_type) {
-  return std::find(std::begin(kSecureWiFiEncryptions),
-                   std::end(kSecureWiFiEncryptions),
-                   security_type) != std::end(kSecureWiFiEncryptions);
-}
-
-bool IsInsecureSecurityType(SecurityType security_type) {
-  return std::find(std::begin(kInsecureWiFiEncryptions),
-                   std::end(kInsecureWiFiEncryptions),
-                   security_type) != std::end(kInsecureWiFiEncryptions);
-}
-
 }  // namespace
 
 HasSecureWiFiConnectionRoutine::HasSecureWiFiConnectionRoutine() {
@@ -78,7 +66,7 @@ void HasSecureWiFiConnectionRoutine::Run() {
 void HasSecureWiFiConnectionRoutine::AnalyzeResultsAndExecuteCallback() {
   if (!wifi_connected_) {
     set_verdict(mojom::RoutineVerdict::kNotRun);
-  } else if (IsInsecureSecurityType(wifi_security_)) {
+  } else if (base::Contains(kInsecureWiFiEncryptions, wifi_security_)) {
     set_verdict(mojom::RoutineVerdict::kProblem);
     switch (wifi_security_) {
       case SecurityType::kNone:
@@ -97,7 +85,7 @@ void HasSecureWiFiConnectionRoutine::AnalyzeResultsAndExecuteCallback() {
       case SecurityType::kWpaPsk:
         break;
     }
-  } else if (IsSecureWiFiSecurityType(wifi_security_)) {
+  } else if (base::Contains(kSecureWiFiEncryptions, wifi_security_)) {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
   } else {
     set_verdict(mojom::RoutineVerdict::kProblem);

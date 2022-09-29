@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -148,9 +149,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
               actual_pending_requests.size());
     for (auto it : actual_pending_requests) {
-      EXPECT_EQ(expected_removed_requests.end(),
-                std::find(expected_removed_requests.begin(),
-                          expected_removed_requests.end(), it.first));
+      EXPECT_FALSE(base::Contains(expected_removed_requests, it.first));
     }
     closed_notification_count_ += 1;
     histogram_tester()->ExpectBucketCount(kPendingListUpdateMetricsName,

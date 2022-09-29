@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/tab_android.h"
@@ -55,8 +56,7 @@ std::map<int, TabInfo> AndroidTabFinder::FindAndroidTabs(
 
     for (int index = 0; index < model->GetTabCount(); ++index) {
       TabAndroid* tab = model->GetTabAt(index);
-      if (std::find(android_tab_ids.begin(), android_tab_ids.end(),
-                    tab->GetAndroidId()) != android_tab_ids.end()) {
+      if (base::Contains(android_tab_ids, tab->GetAndroidId())) {
         result[tab->GetAndroidId()] = AnroidTabInfo(*tab);
       }
     }

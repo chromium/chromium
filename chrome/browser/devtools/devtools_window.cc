@@ -4,7 +4,6 @@
 
 #include "chrome/browser/devtools/devtools_window.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -16,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -453,7 +453,7 @@ DevToolsWindow::~DevToolsWindow() {
   owned_toolbox_web_contents_.reset();
 
   DevToolsWindows* instances = g_devtools_window_instances.Pointer();
-  auto it(std::find(instances->begin(), instances->end(), this));
+  auto it = base::ranges::find(*instances, this);
   DCHECK(it != instances->end());
   instances->erase(it);
 

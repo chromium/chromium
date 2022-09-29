@@ -8,7 +8,9 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -36,9 +38,8 @@ DangerousDownloadDialogBridge::~DangerousDownloadDialogBridge() {
 
 void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
                                          ui::WindowAndroid* window_android) {
-  // Don't shown dangerous download again if it is already showing.
-  if (std::find(download_items_.begin(), download_items_.end(),
-                download_item) != download_items_.end()) {
+  // Don't show dangerous download again if it is already showing.
+  if (base::Contains(download_items_, download_item)) {
     return;
   }
   if (!window_android) {
@@ -62,8 +63,7 @@ void DangerousDownloadDialogBridge::Show(download::DownloadItem* download_item,
 
 void DangerousDownloadDialogBridge::OnDownloadDestroyed(
     download::DownloadItem* download_item) {
-  auto iter =
-      std::find(download_items_.begin(), download_items_.end(), download_item);
+  auto iter = base::ranges::find(download_items_, download_item);
   if (iter != download_items_.end())
     download_items_.erase(iter);
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/task_manager/providers/crosapi/task_manager_controller_lacros.h"
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -145,9 +146,7 @@ void TaskManagerControllerLacros::ActivateTask(const std::string& task_uuid) {
       // from ash to remove a task after the task has been removed from lacros
       // task manager but before the cached |id_to_tasks_| is refreshed in
       // GetTaskManagerTasks() call.
-      const auto& task_ids = observed_task_manager()->GetTaskIdsList();
-      if (std::find(task_ids.begin(), task_ids.end(), task_id) !=
-          task_ids.end()) {
+      if (base::Contains(observed_task_manager()->GetTaskIdsList(), task_id)) {
         observed_task_manager()->ActivateTask(task_id);
       }
       return;

@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,15 +52,8 @@ bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
 
   constexpr int kAllowedPopup[] = {IDC_CLOSE_TAB};
 
-  if (std::find(std::cbegin(kAllowed), std::cend(kAllowed), command_id) !=
-      std::cend(kAllowed))
-    return true;
-  if (is_popup &&
-      std::find(std::cbegin(kAllowedPopup), std::cend(kAllowedPopup),
-                command_id) != std::cend(kAllowedPopup))
-    return true;
-
-  return false;
+  return base::Contains(kAllowed, command_id) ||
+         (is_popup && base::Contains(kAllowedPopup, command_id));
 }
 
 bool IsRunningInAppMode() {

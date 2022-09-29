@@ -14,6 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -477,7 +478,7 @@ void AndroidUsbDevice::Terminate() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   // Remove this AndroidUsbDevice from |g_devices|.
-  auto it = std::find(g_devices.Get().begin(), g_devices.Get().end(), this);
+  auto it = base::ranges::find(g_devices.Get(), this);
   if (it != g_devices.Get().end())
     g_devices.Get().erase(it);
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -154,12 +155,9 @@ class WebAppOriginAssociationManagerTest : public InProcessBrowserTest {
         valid_and_invalid_app_url_handler_.origin,
         valid_and_invalid_app_url_handler_.has_origin_wildcard, {}, {});
 
-    auto search = std::find(result.begin(), result.end(),
-                            std::move(valid_app_url_handler));
-    EXPECT_NE(search, result.end());
-    search = std::find(result.begin(), result.end(),
-                       std::move(valid_and_invalid_app_url_handler));
-    EXPECT_NE(search, result.end());
+    EXPECT_TRUE(base::Contains(result, std::move(valid_app_url_handler)));
+    EXPECT_TRUE(
+        base::Contains(result, std::move(valid_and_invalid_app_url_handler)));
 
     if (callback_count_ == expected_callback_count) {
       callback_count_ = 0;

@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/pref_names.h"
 #include "chrome/browser/browser_process.h"
@@ -115,8 +116,7 @@ void KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
   AccountId active_account_id;
   if (active_user)
     active_account_id = active_user->GetAccountId();
-  if (std::find(account_ids.begin(), account_ids.end(), active_account_id) !=
-      account_ids.end()) {
+  if (base::Contains(account_ids, active_account_id)) {
     cryptohomes_barrier_closure = BarrierClosure(
         account_ids.size() - 1, base::BindOnce(&chrome::AttemptUserExit));
   }

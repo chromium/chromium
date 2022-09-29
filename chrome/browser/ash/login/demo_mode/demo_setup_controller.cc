@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
-#include <algorithm>
 #include <cctype>
 #include <utility>
 
@@ -12,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -431,10 +431,7 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   std::string country_lowercase = base::ToLowerASCII(country);
 
   // Exclude US as it is the default country.
-  if (std::find(std::begin(DemoSession::kSupportedCountries),
-                std::end(DemoSession::kSupportedCountries),
-                country_uppercase) !=
-      std::end(DemoSession::kSupportedCountries)) {
+  if (base::Contains(DemoSession::kSupportedCountries, country_uppercase)) {
     if (chromeos::features::IsCloudGamingDeviceEnabled()) {
       return base::StringPrintf("admin-%s-blazey@%s", country_lowercase.c_str(),
                                 policy::kDemoModeDomain);

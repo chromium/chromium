@@ -1291,9 +1291,8 @@ void ChromeUserManagerImpl::AddReportingUser(const AccountId& account_id) {
 void ChromeUserManagerImpl::RemoveReportingUser(const AccountId& account_id) {
   ScopedListPrefUpdate users_update(GetLocalState(), ::prefs::kReportingUsers);
   base::Value::List& update_list = users_update.Get();
-  auto it =
-      std::find(update_list.begin(), update_list.end(),
-                base::Value(FullyCanonicalize(account_id.GetUserEmail())));
+  auto it = base::ranges::find(
+      update_list, base::Value(FullyCanonicalize(account_id.GetUserEmail())));
   if (it == update_list.end())
     return;
   update_list.erase(it);

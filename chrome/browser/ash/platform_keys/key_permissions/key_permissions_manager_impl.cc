@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -337,8 +337,7 @@ void KeyPermissionsManagerImpl::OnGotTokens(
     return;
   }
 
-  if (std::find(token_ids->begin(), token_ids->end(), token_id_) ==
-      token_ids->end()) {
+  if (!base::Contains(*token_ids, token_id_)) {
     LOG(ERROR) << "KeyPermissionsManager doesn't have access to token: "
                << static_cast<int>(token_id_);
     return;

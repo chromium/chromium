@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -142,7 +143,7 @@ void RemovePersistedPathFromPrefs(base::Value::Dict& shared_paths,
                  << " for VM " << vm_name;
     return;
   }
-  auto it = std::find(found->begin(), found->end(), base::Value(vm_name));
+  auto it = base::ranges::find(*found, base::Value(vm_name));
   if (it == found->end()) {
     LOG(WARNING) << "VM not in prefs to unshare path " << path.value()
                  << " for VM " << vm_name;

@@ -28,6 +28,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -2413,8 +2414,7 @@ void ProfileManager::OnBrowserClosed(Browser* browser) {
   DCHECK(profile);
   if (!profile->IsOffTheRecord() && !browser->is_type_app() &&
       --browser_counts_[profile] == 0) {
-    active_profiles_.erase(
-        std::find(active_profiles_.begin(), active_profiles_.end(), profile));
+    active_profiles_.erase(base::ranges::find(active_profiles_, profile));
     if (!closing_all_browsers_)
       SaveActiveProfiles();
   }

@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/extension_telemetry/potential_password_theft_signal_processor.h"
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -37,9 +38,8 @@ void PotentialPasswordTheftSignalProcessor::ProcessSignal(
     extension_id = rhc_signal.extension_id();
     (remote_host_url_queue_[extension_id])
         .emplace_back(std::make_pair(host_url, signal_creation_time));
-  }
-  // Process password reuse signal.
-  else {
+  } else {
+    // Process password reuse signal.
     const auto& pw_reuse_signal =
         static_cast<const PasswordReuseSignal&>(signal);
     extension_id = pw_reuse_signal.extension_id();
@@ -109,8 +109,7 @@ void PotentialPasswordTheftSignalProcessor::UpdateDataStores(
       // Each password reuse event has a reputable domain list, aka
       // matching_domains. Remote host urls that are in the reputable domain
       // lists associated with the password reuse events will not be added.
-      if (std::find(matching_domains.begin(), matching_domains.end(),
-                    host_url) == matching_domains.end()) {
+      if (!base::Contains(matching_domains, host_url)) {
         temp_remote_host_url_queue.push_back(host_url);
       }
     }
@@ -156,8 +155,7 @@ void PotentialPasswordTheftSignalProcessor::UpdatePasswordReuseInfo(
   reuse_info.count += 1;
   for (auto& domain : incoming_reuse_info.matching_domains) {
     // Update the matching domain list once we find new domains.
-    if (std::find(matching_domains.begin(), matching_domains.end(), domain) ==
-        matching_domains.end()) {
+    if (!base::Contains(matching_domains, domain)) {
       matching_domains.push_back(domain);
     }
   }

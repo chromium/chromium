@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/history/print_job_database_impl.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -227,8 +228,8 @@ TEST_F(PrintJobDatabaseImplTest, TwoSimultaneousSavePrintJobRequests) {
   std::vector<PrintJobInfo> entries = GetPrintJobsFromProtoDatabase();
   ASSERT_EQ(2u, entries.size());
   std::vector<std::string> ids = {entries[0].id(), entries[1].id()};
-  EXPECT_TRUE(std::find(ids.begin(), ids.end(), kId1) != ids.end());
-  EXPECT_TRUE(std::find(ids.begin(), ids.end(), kId2) != ids.end());
+  EXPECT_TRUE(base::Contains(ids, kId1));
+  EXPECT_TRUE(base::Contains(ids, kId2));
 }
 
 TEST_F(PrintJobDatabaseImplTest, RequestsBeforeInitialization) {

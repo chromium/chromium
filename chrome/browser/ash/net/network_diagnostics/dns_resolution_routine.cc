@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -123,18 +124,13 @@ void DnsResolutionRoutine::OnComplete(
         endpoint_results_with_metadata) {
   receiver_.reset();
 
-  bool success = result == net::OK && !resolved_addresses->empty() &&
-                 resolved_addresses.has_value();
-  if (success) {
+  if (result == net::OK && !resolved_addresses->empty() &&
+      resolved_addresses.has_value()) {
     resolved_address_received_ = true;
     AnalyzeResultsAndExecuteCallback();
     return;
   }
-  bool retry =
-      std::find(std::begin(kRetryResponseCodes), std::end(kRetryResponseCodes),
-                result) != std::end(kRetryResponseCodes) &&
-      num_retries_ > 0;
-  if (retry) {
+  if (base::Contains(kRetryResponseCodes, result) && num_retries_ > 0) {
     num_retries_--;
     AttemptResolution();
   } else {

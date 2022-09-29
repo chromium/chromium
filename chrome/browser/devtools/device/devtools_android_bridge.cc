@@ -5,7 +5,7 @@
 #include "chrome/browser/devtools/device/devtools_android_bridge.h"
 
 #include <stddef.h>
-#include <algorithm>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -184,8 +185,7 @@ void DevToolsAndroidBridge::AddDeviceListListener(
 void DevToolsAndroidBridge::RemoveDeviceListListener(
     DeviceListListener* listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = std::find(device_list_listeners_.begin(),
-                      device_list_listeners_.end(), listener);
+  auto it = base::ranges::find(device_list_listeners_, listener);
   DCHECK(it != device_list_listeners_.end());
   device_list_listeners_.erase(it);
   if (!NeedsDeviceListPolling())
@@ -202,8 +202,7 @@ void DevToolsAndroidBridge::AddDeviceCountListener(
 void DevToolsAndroidBridge::RemoveDeviceCountListener(
     DeviceCountListener* listener) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = std::find(device_count_listeners_.begin(),
-                      device_count_listeners_.end(), listener);
+  auto it = base::ranges::find(device_count_listeners_, listener);
   DCHECK(it != device_count_listeners_.end());
   device_count_listeners_.erase(it);
   if (device_count_listeners_.empty())
@@ -220,8 +219,7 @@ void DevToolsAndroidBridge::AddPortForwardingListener(
 
 void DevToolsAndroidBridge::RemovePortForwardingListener(
     PortForwardingListener* listener) {
-  auto it = std::find(port_forwarding_listeners_.begin(),
-                      port_forwarding_listeners_.end(), listener);
+  auto it = base::ranges::find(port_forwarding_listeners_, listener);
   DCHECK(it != port_forwarding_listeners_.end());
   port_forwarding_listeners_.erase(it);
   if (!NeedsDeviceListPolling())

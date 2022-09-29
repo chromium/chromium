@@ -5,6 +5,7 @@
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 
 namespace task_manager {
@@ -21,8 +22,9 @@ void MockWebContentsTaskManager::TaskAdded(Task* task) {
 
 void MockWebContentsTaskManager::TaskRemoved(Task* task) {
   DCHECK(task);
-  DCHECK(base::Contains(tasks_, task));
-  tasks_.erase(std::find(tasks_.begin(), tasks_.end(), task));
+  const auto it = base::ranges::find(tasks_, task);
+  DCHECK(it != tasks_.end());
+  tasks_.erase(it);
 }
 
 void MockWebContentsTaskManager::StartObserving() {

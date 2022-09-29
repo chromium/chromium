@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -140,9 +141,7 @@ class FakeBinaryUploadService : public BinaryUploadService {
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
     EXPECT_EQ(final_action_, ack->ack().final_action());
     ++num_acks_;
-    ASSERT_NE(requests_tokens_.end(),
-              std::find(requests_tokens_.begin(), requests_tokens_.end(),
-                        ack->ack().request_token()));
+    ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
   }
 
   void SetResponse(const base::FilePath& path,

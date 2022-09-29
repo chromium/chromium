@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
@@ -123,7 +124,7 @@ void BinaryUploadService::Request::set_digest(const std::string& digest) {
 
 void BinaryUploadService::Request::clear_dlp_scan_request() {
   auto* tags = content_analysis_request_.mutable_tags();
-  auto it = std::find(tags->begin(), tags->end(), "dlp");
+  auto it = base::ranges::find(*tags, "dlp");
   if (it != tags->end())
     tags->erase(it);
 }

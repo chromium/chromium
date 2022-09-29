@@ -15,6 +15,7 @@
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -628,8 +629,7 @@ TEST_F(AutocompleteActionPredictorTest,
   result.AppendMatches(matches);
   std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
-  auto it = std::find(transitional_matches()->begin(),
-                      transitional_matches()->end(), user_text);
+  auto it = base::ranges::find(*transitional_matches(), user_text);
   ASSERT_NE(it, transitional_matches()->end());
   EXPECT_THAT(it->urls, ::testing::ElementsAre(urls[0], urls[1]));
 }

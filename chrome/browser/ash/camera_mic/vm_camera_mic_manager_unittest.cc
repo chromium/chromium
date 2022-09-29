@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -19,6 +18,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -96,12 +96,6 @@ struct IsActiveTestParam {
   // Notification types that are expected to be active.
   std::vector<NotificationType> notification_expectations;
 };
-
-template <typename T, typename V>
-bool contains(const T& container, const V& value) {
-  return std::find(container.begin(), container.end(), value) !=
-         container.end();
-}
 
 // Check the visibility of privacy indicators in all displays.
 void ExpectPrivacyIndicatorsVisible(bool visible) {
@@ -327,13 +321,14 @@ TEST_P(VmCameraMicManagerIsActiveTest, IsNotificationActive) {
 
   for (auto device : {kCamera, kMic}) {
     EXPECT_EQ(vm_camera_mic_manager_->IsDeviceActive(device),
-              contains(GetParam().device_expectations, device));
+              base::Contains(GetParam().device_expectations, device));
   }
 
   for (auto notification :
        {kCameraNotification, kMicNotification, kCameraAndMicNotification}) {
-    EXPECT_EQ(vm_camera_mic_manager_->IsNotificationActive(notification),
-              contains(GetParam().notification_expectations, notification));
+    EXPECT_EQ(
+        vm_camera_mic_manager_->IsNotificationActive(notification),
+        base::Contains(GetParam().notification_expectations, notification));
   }
 }
 

@@ -4,9 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
 
-#include <algorithm>
-
-#include "base/ranges/algorithm.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -173,9 +171,7 @@ const char* const kManagedGuestSessionAllowlist[] = {
 }  // namespace
 
 bool IsAllowlistedForManagedGuestSession(const std::string& extension_id) {
-  return std::find(std::begin(kManagedGuestSessionAllowlist),
-                   std::end(kManagedGuestSessionAllowlist),
-                   extension_id) != std::end(kManagedGuestSessionAllowlist);
+  return base::Contains(kManagedGuestSessionAllowlist, extension_id);
 }
 
 ExtensionsPermissionsTracker::ExtensionsPermissionsTracker(
@@ -287,10 +283,9 @@ void ExtensionsPermissionsTracker::RegisterLocalStatePrefs(
 
 void ExtensionsPermissionsTracker::ParseExtensionPermissions(
     const Extension* extension) {
-  bool is_safe = IsAllowlistedForManagedGuestSession(extension->id()) ||
-                 IsSafePerms(extension->permissions_data());
-
-  extension_safety_ratings_[extension->id()] = is_safe;
+  extension_safety_ratings_[extension->id()] =
+      IsAllowlistedForManagedGuestSession(extension->id()) ||
+      IsSafePerms(extension->permissions_data());
 }
 
 }  // namespace extensions

@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -145,7 +146,7 @@ void FilesRequestHandler::FileRequestCallbackForTesting(
     base::FilePath path,
     safe_browsing::BinaryUploadService::Result result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  auto it = std::find(paths_.begin(), paths_.end(), path);
+  auto it = base::ranges::find(paths_, path);
   DCHECK(it != paths_.end());
   size_t index = std::distance(paths_.begin(), it);
   FileRequestCallback(index, result, response);

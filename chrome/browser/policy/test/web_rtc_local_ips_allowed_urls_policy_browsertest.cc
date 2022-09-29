@@ -4,6 +4,7 @@
 
 #include "base/values.h"
 
+#include "base/containers/contains.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -52,9 +53,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcLocalIpsAllowedUrlsTest, RunTest) {
   const auto& expected_urls = GenerateUrlList();
   EXPECT_EQ(expected_urls.size(), allowed_urls.size());
   for (const auto& allowed_url : allowed_urls) {
-    auto it =
-        std::find(expected_urls.begin(), expected_urls.end(), allowed_url);
-    EXPECT_TRUE(it != expected_urls.end());
+    EXPECT_TRUE(base::Contains(expected_urls, allowed_url));
   }
 }
 

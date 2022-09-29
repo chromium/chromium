@@ -4,6 +4,7 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -92,8 +93,8 @@ void SwapRankingElement(std::vector<std::string>& ranking,
   DCHECK(RankingContains(ranking, from));
   DCHECK(RankingContains(ranking, to));
 
-  auto from_loc = std::find(ranking.begin(), ranking.end(), from);
-  auto to_loc = std::find(ranking.begin(), ranking.end(), to);
+  auto from_loc = base::ranges::find(ranking, from);
+  auto to_loc = base::ranges::find(ranking, to);
   *from_loc = to;
   *to_loc = from;
 }

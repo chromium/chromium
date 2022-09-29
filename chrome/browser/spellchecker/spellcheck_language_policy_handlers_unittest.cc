@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -91,8 +92,7 @@ class SpellcheckLanguagePolicyHandlersTest
 
       for (const auto& language : languages_list->GetListDeprecated()) {
         EXPECT_TRUE(language.is_string());
-        EXPECT_TRUE(std::find(expected.begin(), expected.end(),
-                              language.GetString()) != expected.end());
+        EXPECT_TRUE(base::Contains(expected, language.GetString()));
       }
     } else {
       EXPECT_FALSE(is_spellcheck_enabled_pref_set);

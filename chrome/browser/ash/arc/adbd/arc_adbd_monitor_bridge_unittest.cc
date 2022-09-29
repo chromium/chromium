@@ -13,6 +13,7 @@
 #include "ash/components/arc/test/fake_adbd_monitor_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/test_browser_context.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
@@ -124,8 +125,8 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdSuccess) {
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it = std::find(ops.begin(), ops.end(),
-                      std::make_pair(std::string(kArcVmAdbdJobName), false));
+  auto it = base::ranges::find(
+      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
   ASSERT_NE(ops.end(), it);
   ++it;
   ASSERT_NE(ops.end(), it);
@@ -151,8 +152,8 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStartArcVmAdbdFailure) {
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it = std::find(ops.begin(), ops.end(),
-                      std::make_pair(std::string(kArcVmAdbdJobName), false));
+  auto it = base::ranges::find(
+      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
   EXPECT_EQ(ops.size(), 2u);
   ASSERT_NE(ops.end(), it);
   ++it;
@@ -177,8 +178,8 @@ TEST_F(ArcAdbdMonitorBridgeTest, TestStopArcVmAdbdSuccess) {
 
   const auto& ops = upstart_operations();
   // Find the STOP operation for the job.
-  auto it = std::find(ops.begin(), ops.end(),
-                      std::make_pair(std::string(kArcVmAdbdJobName), false));
+  auto it = base::ranges::find(
+      ops, std::make_pair(std::string(kArcVmAdbdJobName), false));
   EXPECT_EQ(ops.size(), 1u);
   // The next operation must be START for the job.
   EXPECT_EQ(it->first, kArcVmAdbdJobName);

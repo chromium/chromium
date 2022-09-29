@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -203,8 +204,7 @@ class MockSystemLogDelegate : public SystemLogUploader::Delegate {
                      ZippedLogUploadCallback upload_callback) override {
     EXPECT_TRUE(is_zipped_upload_);
     for (const auto& log : system_logs_)
-      EXPECT_NE(system_logs->end(),
-                std::find(system_logs->begin(), system_logs->end(), log));
+      EXPECT_TRUE(base::Contains(*system_logs, log));
     std::move(upload_callback).Run(std::string(kZippedData));
   }
 

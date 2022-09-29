@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -81,7 +82,7 @@ class TestPrefsUtil : public PrefsUtil {
     if (value.is_string())
       email = value.GetString();
 
-    auto iter = std::find(user_list_.begin(), user_list_.end(), email);
+    auto iter = base::ranges::find(user_list_, email);
     if (iter != user_list_.end())
       user_list_.erase(iter);
 

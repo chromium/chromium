@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <memory>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -104,9 +104,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
     EXPECT_EQ(final_action_, ack->ack().final_action());
 
     ++ack_count_;
-    ASSERT_NE(requests_tokens_.end(),
-              std::find(requests_tokens_.begin(), requests_tokens_.end(),
-                        ack->ack().request_token()));
+    ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
   }
 
   void UploadForDeepScanning(std::unique_ptr<Request> request) override {

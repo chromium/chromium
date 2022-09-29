@@ -10,6 +10,7 @@
 #include "base/format_macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -160,8 +161,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 
  private:
   bool IsHangingHost(const GURL& url) const {
-    return std::find(hanging_hosts_.begin(), hanging_hosts_.end(),
-                     url.host()) != hanging_hosts_.end();
+    return base::Contains(hanging_hosts_, url.host());
   }
 
   using ResolveHostClientKey = std::pair<std::string, net::NetworkIsolationKey>;

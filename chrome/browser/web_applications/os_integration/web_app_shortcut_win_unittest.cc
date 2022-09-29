@@ -9,6 +9,7 @@
 
 #include "base/base_paths_win.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -113,8 +114,7 @@ TEST_F(WebAppShortcutWinTest, GetShortcutPaths) {
   for (const auto& location : expected_locations) {
     ASSERT_TRUE(ShellUtil::GetShortcutPath(location, ShellUtil::CURRENT_USER,
                                            &expected_result));
-    EXPECT_NE(result.end(),
-              std::find(result.begin(), result.end(), expected_result));
+    EXPECT_TRUE(base::Contains(result, expected_result));
   }
 }
 
@@ -168,27 +168,19 @@ TEST_F(WebAppShortcutWinTest, FindAppShortcutsByProfileAndTitle) {
   std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
       shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
   EXPECT_EQ(2u, result.size());
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), shortcut_path));
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), duplicate_shortcut_path));
-  EXPECT_EQ(result.end(),
-            std::find(result.begin(), result.end(), other_shortcut_path));
-  EXPECT_EQ(result.end(), std::find(result.begin(), result.end(),
-                                    other_profile_shortcut_path));
+  EXPECT_TRUE(base::Contains(result, shortcut_path));
+  EXPECT_TRUE(base::Contains(result, duplicate_shortcut_path));
+  EXPECT_FALSE(base::Contains(result, other_shortcut_path));
+  EXPECT_FALSE(base::Contains(result, other_profile_shortcut_path));
 
   // Find all shortcuts for |profile_name|. The shortcuts matching that profile
   // should be found.
   result = FindAppShortcutsByProfileAndTitle(shortcut_dir, profile_path, u"");
   EXPECT_EQ(3u, result.size());
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), shortcut_path));
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), duplicate_shortcut_path));
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), other_shortcut_path));
-  EXPECT_EQ(result.end(), std::find(result.begin(), result.end(),
-                                    other_profile_shortcut_path));
+  EXPECT_TRUE(base::Contains(result, shortcut_path));
+  EXPECT_TRUE(base::Contains(result, duplicate_shortcut_path));
+  EXPECT_TRUE(base::Contains(result, other_shortcut_path));
+  EXPECT_FALSE(base::Contains(result, other_profile_shortcut_path));
 }
 
 TEST_F(WebAppShortcutWinTest,
@@ -213,8 +205,7 @@ TEST_F(WebAppShortcutWinTest,
   std::vector<base::FilePath> result = FindAppShortcutsByProfileAndTitle(
       shortcut_dir, profile_path, base::WideToUTF16(shortcut_name));
   EXPECT_EQ(1u, result.size());
-  EXPECT_NE(result.end(),
-            std::find(result.begin(), result.end(), sanitized_shortcut_path));
+  EXPECT_TRUE(base::Contains(result, sanitized_shortcut_path));
 }
 
 TEST_F(WebAppShortcutWinTest, UpdatePlatformShortcuts) {
