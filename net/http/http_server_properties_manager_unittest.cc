@@ -44,25 +44,25 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::StrictMock;
 
-enum class NetworkIsolationKeyMode {
+enum class NetworkAnonymizationKeyMode {
   kDisabled,
   kEnabled,
 };
 
-const NetworkIsolationKeyMode kNetworkIsolationKeyModes[] = {
-    NetworkIsolationKeyMode::kDisabled,
-    NetworkIsolationKeyMode::kEnabled,
+const NetworkAnonymizationKeyMode kNetworkAnonymizationKeyModes[] = {
+    NetworkAnonymizationKeyMode::kDisabled,
+    NetworkAnonymizationKeyMode::kEnabled,
 };
 
-std::unique_ptr<base::test::ScopedFeatureList> SetNetworkIsolationKeyMode(
-    NetworkIsolationKeyMode mode) {
+std::unique_ptr<base::test::ScopedFeatureList> SetNetworkAnonymizationKeyMode(
+    NetworkAnonymizationKeyMode mode) {
   auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
   switch (mode) {
-    case NetworkIsolationKeyMode::kDisabled:
+    case NetworkAnonymizationKeyMode::kDisabled:
       feature_list->InitAndDisableFeature(
           features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
       break;
-    case NetworkIsolationKeyMode::kEnabled:
+    case NetworkAnonymizationKeyMode::kEnabled:
       feature_list->InitAndEnableFeature(
           features::kPartitionHttpServerPropertiesByNetworkIsolationKey);
       break;
@@ -269,11 +269,12 @@ class HttpServerPropertiesManagerTest : public testing::Test,
     http_server_props_.reset();
   }
 
-  bool HasAlternativeService(const url::SchemeHostPort& server,
-                             const NetworkIsolationKey& network_isolation_key) {
+  bool HasAlternativeService(
+      const url::SchemeHostPort& server,
+      const NetworkAnonymizationKey& network_anonymization_key) {
     const AlternativeServiceInfoVector alternative_service_info_vector =
-        http_server_props_->GetAlternativeServiceInfos(server,
-                                                       network_isolation_key);
+        http_server_props_->GetAlternativeServiceInfos(
+            server, network_anonymization_key);
     return !alternative_service_info_vector.empty();
   }
 
@@ -339,10 +340,10 @@ TEST_F(HttpServerPropertiesManagerTest, BadCachedHostPortPair) {
                                     google_host_port_pair.port());
 
   EXPECT_FALSE(http_server_props_->SupportsRequestPriority(
-      gooler_server, NetworkIsolationKey()));
-  EXPECT_FALSE(HasAlternativeService(gooler_server, NetworkIsolationKey()));
+      gooler_server, NetworkAnonymizationKey()));
+  EXPECT_FALSE(HasAlternativeService(gooler_server, NetworkAnonymizationKey()));
   const ServerNetworkStats* stats1 = http_server_props_->GetServerNetworkStats(
-      gooler_server, NetworkIsolationKey());
+      gooler_server, NetworkAnonymizationKey());
   EXPECT_EQ(nullptr, stats1);
   EXPECT_EQ(0u, http_server_props_->quic_server_info_map().size());
 }
@@ -376,7 +377,7 @@ TEST_F(HttpServerPropertiesManagerTest, BadCachedAltProtocolPort) {
   // Verify alternative service is not set.
   EXPECT_FALSE(
       HasAlternativeService(url::SchemeHostPort("http", "www.google.com", 80),
-                            NetworkIsolationKey()));
+                            NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesManagerTest, SupportsSpdy) {
@@ -385,11 +386,13 @@ TEST_F(HttpServerPropertiesManagerTest, SupportsSpdy) {
   // Add mail.google.com:443 as a supporting spdy server.
   url::SchemeHostPort spdy_server("https", "mail.google.com", 443);
   EXPECT_FALSE(http_server_props_->SupportsRequestPriority(
-      spdy_server, NetworkIsolationKey()));
-  http_server_props_->SetSupportsSpdy(spdy_server, NetworkIsolationKey(), true);
+      spdy_server, NetworkAnonymizationKey()));
+  http_server_props_->SetSupportsSpdy(spdy_server, NetworkAnonymizationKey(),
+                                      true);
   // Setting the value to the same thing again should not trigger another pref
   // update.
-  http_server_props_->SetSupportsSpdy(spdy_server, NetworkIsolationKey(), true);
+  http_server_props_->SetSupportsSpdy(spdy_server, NetworkAnonymizationKey(),
+                                      true);
 
   // Run the task.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -399,12 +402,13 @@ TEST_F(HttpServerPropertiesManagerTest, SupportsSpdy) {
 
   // Setting the value to the same thing again should not trigger another pref
   // update.
-  http_server_props_->SetSupportsSpdy(spdy_server, NetworkIsolationKey(), true);
+  http_server_props_->SetSupportsSpdy(spdy_server, NetworkAnonymizationKey(),
+                                      true);
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
 
   EXPECT_TRUE(http_server_props_->SupportsRequestPriority(
-      spdy_server, NetworkIsolationKey()));
+      spdy_server, NetworkAnonymizationKey()));
 }
 
 // Regression test for crbug.com/670519. Test that there is only one pref update
@@ -419,8 +423,9 @@ TEST_F(HttpServerPropertiesManagerTest,
   // of 60ms.
   url::SchemeHostPort spdy_server("https", "mail.google.com", 443);
   EXPECT_FALSE(http_server_props_->SupportsRequestPriority(
-      spdy_server, NetworkIsolationKey()));
-  http_server_props_->SetSupportsSpdy(spdy_server, NetworkIsolationKey(), true);
+      spdy_server, NetworkAnonymizationKey()));
+  http_server_props_->SetSupportsSpdy(spdy_server, NetworkAnonymizationKey(),
+                                      true);
   // The pref update task should be scheduled.
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
@@ -431,7 +436,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   // Set another spdy server to trigger another call to
   // ScheduleUpdatePrefs. There should be no new update posted.
   url::SchemeHostPort spdy_server2("https", "drive.google.com", 443);
-  http_server_props_->SetSupportsSpdy(spdy_server2, NetworkIsolationKey(),
+  http_server_props_->SetSupportsSpdy(spdy_server2, NetworkAnonymizationKey(),
                                       true);
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
@@ -442,14 +447,14 @@ TEST_F(HttpServerPropertiesManagerTest,
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
 
   EXPECT_TRUE(http_server_props_->SupportsRequestPriority(
-      spdy_server, NetworkIsolationKey()));
+      spdy_server, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->SupportsRequestPriority(
-      spdy_server2, NetworkIsolationKey()));
+      spdy_server2, NetworkAnonymizationKey()));
   // Set the third spdy server to trigger one more call to
   // ScheduleUpdatePrefs. A new update task should be posted now since the
   // previous one is completed.
   url::SchemeHostPort spdy_server3("https", "maps.google.com", 443);
-  http_server_props_->SetSupportsSpdy(spdy_server3, NetworkIsolationKey(),
+  http_server_props_->SetSupportsSpdy(spdy_server3, NetworkAnonymizationKey(),
                                       true);
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
@@ -463,15 +468,16 @@ TEST_F(HttpServerPropertiesManagerTest, GetAlternativeServiceInfos) {
   InitializePrefs();
 
   url::SchemeHostPort spdy_server_mail("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   const AlternativeService alternative_service(kProtoHTTP2, "mail.google.com",
                                                443);
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
   // ExpectScheduleUpdatePrefs() should be called only once.
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
 
   // Run the task.
@@ -482,7 +488,7 @@ TEST_F(HttpServerPropertiesManagerTest, GetAlternativeServiceInfos) {
 
   AlternativeServiceInfoVector alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
@@ -492,7 +498,8 @@ TEST_F(HttpServerPropertiesManagerTest, SetAlternativeServices) {
   InitializePrefs();
 
   url::SchemeHostPort spdy_server_mail("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   AlternativeServiceInfoVector alternative_service_info_vector;
   const AlternativeService alternative_service1(kProtoHTTP2, "mail.google.com",
                                                 443);
@@ -504,11 +511,13 @@ TEST_F(HttpServerPropertiesManagerTest, SetAlternativeServices) {
   alternative_service_info_vector.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           alternative_service2, one_day_from_now_, advertised_versions_));
-  http_server_props_->SetAlternativeServices(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service_info_vector);
+  http_server_props_->SetAlternativeServices(spdy_server_mail,
+                                             NetworkAnonymizationKey(),
+                                             alternative_service_info_vector);
   // ExpectScheduleUpdatePrefs() should be called only once.
-  http_server_props_->SetAlternativeServices(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service_info_vector);
+  http_server_props_->SetAlternativeServices(spdy_server_mail,
+                                             NetworkAnonymizationKey(),
+                                             alternative_service_info_vector);
 
   // Run the task.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -517,7 +526,7 @@ TEST_F(HttpServerPropertiesManagerTest, SetAlternativeServices) {
 
   AlternativeServiceInfoVector alternative_service_info_vector2 =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   ASSERT_EQ(2u, alternative_service_info_vector2.size());
   EXPECT_EQ(alternative_service1,
             alternative_service_info_vector2[0].alternative_service());
@@ -529,16 +538,19 @@ TEST_F(HttpServerPropertiesManagerTest, SetAlternativeServicesEmpty) {
   InitializePrefs();
 
   url::SchemeHostPort spdy_server_mail("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   const AlternativeService alternative_service(kProtoHTTP2, "mail.google.com",
                                                443);
-  http_server_props_->SetAlternativeServices(
-      spdy_server_mail, NetworkIsolationKey(), AlternativeServiceInfoVector());
+  http_server_props_->SetAlternativeServices(spdy_server_mail,
+                                             NetworkAnonymizationKey(),
+                                             AlternativeServiceInfoVector());
 
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
 
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesManagerTest, ConfirmAlternativeService) {
@@ -548,36 +560,37 @@ TEST_F(HttpServerPropertiesManagerTest, ConfirmAlternativeService) {
   AlternativeService alternative_service;
 
   spdy_server_mail = url::SchemeHostPort("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   alternative_service = AlternativeService(kProtoHTTP2, "mail.google.com", 443);
 
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   http_server_props_->MarkAlternativeServiceBroken(alternative_service,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   // In addition to the pref update task, there's now a task to mark the
   // alternative service as no longer broken.
   EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
 
   http_server_props_->ConfirmAlternativeService(alternative_service,
-                                                NetworkIsolationKey());
+                                                NetworkAnonymizationKey());
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
 
@@ -587,20 +600,21 @@ TEST_F(HttpServerPropertiesManagerTest, ConfirmAlternativeService) {
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 // Check the case that prefs are loaded only after setting alternative service
 // info. Prefs should not be written until after the load happens.
 TEST_F(HttpServerPropertiesManagerTest, LateLoadAlternativeServiceInfo) {
   url::SchemeHostPort spdy_server_mail("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   const AlternativeService alternative_service(kProtoHTTP2, "mail.google.com",
                                                443);
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
 
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -609,7 +623,7 @@ TEST_F(HttpServerPropertiesManagerTest, LateLoadAlternativeServiceInfo) {
 
   AlternativeServiceInfoVector alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
@@ -619,14 +633,14 @@ TEST_F(HttpServerPropertiesManagerTest, LateLoadAlternativeServiceInfo) {
                   true /* expect_pref_update */);
   alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   EXPECT_EQ(1u, alternative_service_info_vector.size());
 
   // Updating the entry should result in a task to save prefs. Have to at least
   // double (or half) the lifetime, to ensure the change triggers a save to
   // prefs.
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_ + base::Days(2));
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
@@ -634,7 +648,7 @@ TEST_F(HttpServerPropertiesManagerTest, LateLoadAlternativeServiceInfo) {
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
   alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   EXPECT_EQ(1u, alternative_service_info_vector.size());
 }
 
@@ -642,11 +656,12 @@ TEST_F(HttpServerPropertiesManagerTest, LateLoadAlternativeServiceInfo) {
 TEST_F(HttpServerPropertiesManagerTest,
        ClearPrefsBeforeLoadAlternativeServiceInfo) {
   url::SchemeHostPort spdy_server_mail("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   const AlternativeService alternative_service(kProtoHTTP2, "mail.google.com",
                                                443);
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
 
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -656,7 +671,7 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   AlternativeServiceInfoVector alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
@@ -675,12 +690,12 @@ TEST_F(HttpServerPropertiesManagerTest,
   EXPECT_TRUE(callback_invoked_);
   alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   EXPECT_EQ(0u, alternative_service_info_vector.size());
 
   // Re-creating the entry should result in a task to save prefs.
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
@@ -688,7 +703,7 @@ TEST_F(HttpServerPropertiesManagerTest,
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
   alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(spdy_server_mail,
-                                                     NetworkIsolationKey());
+                                                     NetworkAnonymizationKey());
   EXPECT_EQ(1u, alternative_service_info_vector.size());
 }
 
@@ -700,36 +715,37 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeService alternative_service;
 
   spdy_server_mail = url::SchemeHostPort("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   alternative_service = AlternativeService(kProtoHTTP2, "mail.google.com", 443);
 
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   http_server_props_->MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, NetworkIsolationKey());
+      alternative_service, NetworkAnonymizationKey());
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   // In addition to the pref update task, there's now a task to mark the
   // alternative service as no longer broken.
   EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
 
   http_server_props_->ConfirmAlternativeService(alternative_service,
-                                                NetworkIsolationKey());
+                                                NetworkAnonymizationKey());
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
 
@@ -739,9 +755,9 @@ TEST_F(HttpServerPropertiesManagerTest,
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesManagerTest,
@@ -752,25 +768,26 @@ TEST_F(HttpServerPropertiesManagerTest,
   AlternativeService alternative_service;
 
   spdy_server_mail = url::SchemeHostPort("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   alternative_service = AlternativeService(kProtoHTTP2, "mail.google.com", 443);
 
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   http_server_props_->MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-      alternative_service, NetworkIsolationKey());
+      alternative_service, NetworkAnonymizationKey());
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   // In addition to the pref update task, there's now a task to mark the
   // alternative service as no longer broken.
@@ -778,9 +795,9 @@ TEST_F(HttpServerPropertiesManagerTest,
 
   http_server_props_->OnDefaultNetworkChanged();
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
 
@@ -790,9 +807,9 @@ TEST_F(HttpServerPropertiesManagerTest,
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesManagerTest, OnDefaultNetworkChangedWithBrokenOnly) {
@@ -802,25 +819,26 @@ TEST_F(HttpServerPropertiesManagerTest, OnDefaultNetworkChangedWithBrokenOnly) {
   AlternativeService alternative_service;
 
   spdy_server_mail = url::SchemeHostPort("http", "mail.google.com", 80);
-  EXPECT_FALSE(HasAlternativeService(spdy_server_mail, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      HasAlternativeService(spdy_server_mail, NetworkAnonymizationKey()));
   alternative_service = AlternativeService(kProtoHTTP2, "mail.google.com", 443);
 
   http_server_props_->SetHttp2AlternativeService(
-      spdy_server_mail, NetworkIsolationKey(), alternative_service,
+      spdy_server_mail, NetworkAnonymizationKey(), alternative_service,
       one_day_from_now_);
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(1u, GetPendingMainThreadTaskCount());
 
   http_server_props_->MarkAlternativeServiceBroken(alternative_service,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   // In addition to the pref update task, there's now a task to mark the
   // alternative service as no longer broken.
@@ -828,9 +846,9 @@ TEST_F(HttpServerPropertiesManagerTest, OnDefaultNetworkChangedWithBrokenOnly) {
 
   http_server_props_->OnDefaultNetworkChanged();
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   EXPECT_EQ(2u, GetPendingMainThreadTaskCount());
 
@@ -840,9 +858,9 @@ TEST_F(HttpServerPropertiesManagerTest, OnDefaultNetworkChangedWithBrokenOnly) {
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesManagerTest, LastLocalAddressWhenQuicWorked) {
@@ -876,15 +894,15 @@ TEST_F(HttpServerPropertiesManagerTest, ServerNetworkStats) {
 
   url::SchemeHostPort mail_server("http", "mail.google.com", 80);
   const ServerNetworkStats* stats = http_server_props_->GetServerNetworkStats(
-      mail_server, NetworkIsolationKey());
+      mail_server, NetworkAnonymizationKey());
   EXPECT_EQ(nullptr, stats);
   ServerNetworkStats stats1;
   stats1.srtt = base::Microseconds(10);
-  http_server_props_->SetServerNetworkStats(mail_server, NetworkIsolationKey(),
-                                            stats1);
+  http_server_props_->SetServerNetworkStats(mail_server,
+                                            NetworkAnonymizationKey(), stats1);
   // Another task should not be scheduled.
-  http_server_props_->SetServerNetworkStats(mail_server, NetworkIsolationKey(),
-                                            stats1);
+  http_server_props_->SetServerNetworkStats(mail_server,
+                                            NetworkAnonymizationKey(), stats1);
 
   // Run the task.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -893,17 +911,17 @@ TEST_F(HttpServerPropertiesManagerTest, ServerNetworkStats) {
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   // Another task should not be scheduled.
-  http_server_props_->SetServerNetworkStats(mail_server, NetworkIsolationKey(),
-                                            stats1);
+  http_server_props_->SetServerNetworkStats(mail_server,
+                                            NetworkAnonymizationKey(), stats1);
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_EQ(GetPendingMainThreadTaskCount(), 0u);
 
   const ServerNetworkStats* stats2 = http_server_props_->GetServerNetworkStats(
-      mail_server, NetworkIsolationKey());
+      mail_server, NetworkAnonymizationKey());
   EXPECT_EQ(10, stats2->srtt.ToInternalValue());
 
   http_server_props_->ClearServerNetworkStats(mail_server,
-                                              NetworkIsolationKey());
+                                              NetworkAnonymizationKey());
 
   // Run the task.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -912,7 +930,7 @@ TEST_F(HttpServerPropertiesManagerTest, ServerNetworkStats) {
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   EXPECT_EQ(nullptr, http_server_props_->GetServerNetworkStats(
-                         mail_server, NetworkIsolationKey()));
+                         mail_server, NetworkAnonymizationKey()));
 }
 
 TEST_F(HttpServerPropertiesManagerTest, QuicServerInfo) {
@@ -920,13 +938,13 @@ TEST_F(HttpServerPropertiesManagerTest, QuicServerInfo) {
 
   quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
   EXPECT_EQ(nullptr, http_server_props_->GetQuicServerInfo(
-                         mail_quic_server_id, NetworkIsolationKey()));
+                         mail_quic_server_id, NetworkAnonymizationKey()));
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
   // Another task should not be scheduled.
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
 
   // Run the task.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -934,12 +952,13 @@ TEST_F(HttpServerPropertiesManagerTest, QuicServerInfo) {
   FastForwardUntilNoTasksRemain();
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
-  EXPECT_EQ(quic_server_info1, *http_server_props_->GetQuicServerInfo(
-                                   mail_quic_server_id, NetworkIsolationKey()));
+  EXPECT_EQ(quic_server_info1,
+            *http_server_props_->GetQuicServerInfo(mail_quic_server_id,
+                                                   NetworkAnonymizationKey()));
 
   // Another task should not be scheduled.
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
 }
@@ -963,20 +982,21 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
   alt_svc_info_vector.push_back(
       AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
           broken_alternative_service, one_day_from_now_));
-  http_server_props_->SetAlternativeServices(spdy_server, NetworkIsolationKey(),
-                                             alt_svc_info_vector);
+  http_server_props_->SetAlternativeServices(
+      spdy_server, NetworkAnonymizationKey(), alt_svc_info_vector);
 
   http_server_props_->MarkAlternativeServiceBroken(broken_alternative_service,
-                                                   NetworkIsolationKey());
-  http_server_props_->SetSupportsSpdy(spdy_server, NetworkIsolationKey(), true);
+                                                   NetworkAnonymizationKey());
+  http_server_props_->SetSupportsSpdy(spdy_server, NetworkAnonymizationKey(),
+                                      true);
   http_server_props_->SetLastLocalAddressWhenQuicWorked(actual_address);
   ServerNetworkStats stats;
   stats.srtt = base::Microseconds(10);
-  http_server_props_->SetServerNetworkStats(spdy_server, NetworkIsolationKey(),
-                                            stats);
+  http_server_props_->SetServerNetworkStats(spdy_server,
+                                            NetworkAnonymizationKey(), stats);
 
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
 
   // Advance time by just enough so that the prefs update task is executed but
   // not the task to expire the brokenness of |broken_alternative_service|.
@@ -985,17 +1005,18 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
   EXPECT_EQ(1, pref_delegate_->GetAndClearNumPrefUpdates());
 
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      broken_alternative_service, NetworkIsolationKey()));
+      broken_alternative_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->SupportsRequestPriority(
-      spdy_server, NetworkIsolationKey()));
-  EXPECT_TRUE(HasAlternativeService(spdy_server, NetworkIsolationKey()));
+      spdy_server, NetworkAnonymizationKey()));
+  EXPECT_TRUE(HasAlternativeService(spdy_server, NetworkAnonymizationKey()));
   EXPECT_TRUE(
       http_server_props_->WasLastLocalAddressWhenQuicWorked(actual_address));
   const ServerNetworkStats* stats1 = http_server_props_->GetServerNetworkStats(
-      spdy_server, NetworkIsolationKey());
+      spdy_server, NetworkAnonymizationKey());
   EXPECT_EQ(10, stats1->srtt.ToInternalValue());
-  EXPECT_EQ(quic_server_info1, *http_server_props_->GetQuicServerInfo(
-                                   mail_quic_server_id, NetworkIsolationKey()));
+  EXPECT_EQ(quic_server_info1,
+            *http_server_props_->GetQuicServerInfo(mail_quic_server_id,
+                                                   NetworkAnonymizationKey()));
 
   // Clear http server data, which should instantly update prefs.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -1012,16 +1033,16 @@ TEST_F(HttpServerPropertiesManagerTest, Clear) {
   EXPECT_TRUE(callback_invoked_);
 
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      broken_alternative_service, NetworkIsolationKey()));
+      broken_alternative_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->SupportsRequestPriority(
-      spdy_server, NetworkIsolationKey()));
-  EXPECT_FALSE(HasAlternativeService(spdy_server, NetworkIsolationKey()));
+      spdy_server, NetworkAnonymizationKey()));
+  EXPECT_FALSE(HasAlternativeService(spdy_server, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->HasLastLocalAddressWhenQuicWorked());
   const ServerNetworkStats* stats2 = http_server_props_->GetServerNetworkStats(
-      spdy_server, NetworkIsolationKey());
+      spdy_server, NetworkAnonymizationKey());
   EXPECT_EQ(nullptr, stats2);
   EXPECT_EQ(nullptr, http_server_props_->GetQuicServerInfo(
-                         mail_quic_server_id, NetworkIsolationKey()));
+                         mail_quic_server_id, NetworkAnonymizationKey()));
 }
 
 // https://crbug.com/444956: Add 200 alternative_service servers followed by
@@ -1068,8 +1089,8 @@ TEST_F(HttpServerPropertiesManagerTest, BadLastLocalAddressWhenQuicWorked) {
       server_gurl = GURL(StringPrintf("https://www.google.com:%d", i));
     url::SchemeHostPort server(server_gurl);
     AlternativeServiceInfoVector alternative_service_info_vector =
-        http_server_props_->GetAlternativeServiceInfos(server,
-                                                       NetworkIsolationKey());
+        http_server_props_->GetAlternativeServiceInfos(
+            server, NetworkAnonymizationKey());
     ASSERT_EQ(1u, alternative_service_info_vector.size());
     EXPECT_EQ(
         kProtoQUIC,
@@ -1104,39 +1125,41 @@ TEST_F(HttpServerPropertiesManagerTest, UpdatePrefsWithCache) {
   alternative_service_info_vector.push_back(
       AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
           www_alternative_service2, expiration2));
-  http_server_props_->SetAlternativeServices(server_www, NetworkIsolationKey(),
-                                             alternative_service_info_vector);
+  http_server_props_->SetAlternativeServices(
+      server_www, NetworkAnonymizationKey(), alternative_service_info_vector);
 
   AlternativeService mail_alternative_service(kProtoHTTP2, "foo.google.com",
                                               444);
   base::Time expiration3 = base::Time::Max();
   http_server_props_->SetHttp2AlternativeService(
-      server_mail, NetworkIsolationKey(), mail_alternative_service,
+      server_mail, NetworkAnonymizationKey(), mail_alternative_service,
       expiration3);
 
   http_server_props_->MarkAlternativeServiceBroken(www_alternative_service2,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   http_server_props_->MarkAlternativeServiceRecentlyBroken(
-      mail_alternative_service, NetworkIsolationKey());
+      mail_alternative_service, NetworkAnonymizationKey());
 
   // #3: Set SPDY server map
-  http_server_props_->SetSupportsSpdy(server_www, NetworkIsolationKey(), false);
-  http_server_props_->SetSupportsSpdy(server_mail, NetworkIsolationKey(), true);
+  http_server_props_->SetSupportsSpdy(server_www, NetworkAnonymizationKey(),
+                                      false);
+  http_server_props_->SetSupportsSpdy(server_mail, NetworkAnonymizationKey(),
+                                      true);
   http_server_props_->SetSupportsSpdy(
       url::SchemeHostPort("http", "not_persisted.com", 80),
-      NetworkIsolationKey(), false);
+      NetworkAnonymizationKey(), false);
 
   // #4: Set ServerNetworkStats.
   ServerNetworkStats stats;
   stats.srtt = base::TimeDelta::FromInternalValue(42);
-  http_server_props_->SetServerNetworkStats(server_mail, NetworkIsolationKey(),
-                                            stats);
+  http_server_props_->SetServerNetworkStats(server_mail,
+                                            NetworkAnonymizationKey(), stats);
 
   // #5: Set quic_server_info string.
   quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
 
   // #6: Set SupportsQuic.
   IPAddress actual_address(127, 0, 0, 1);
@@ -1317,7 +1340,7 @@ TEST_F(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
           broken_alternative_service, time_one_day_later));
   // #1: MarkAlternativeServiceBroken().
   http_server_props_->MarkAlternativeServiceBroken(broken_alternative_service,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
 
   const AlternativeService expired_alternative_service(
       kProtoHTTP2, "expired.example.com", 443);
@@ -1334,7 +1357,7 @@ TEST_F(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
 
   const url::SchemeHostPort server("https", "www.example.com", 443);
   // #2: SetAlternativeServices().
-  http_server_props_->SetAlternativeServices(server, NetworkIsolationKey(),
+  http_server_props_->SetAlternativeServices(server, NetworkAnonymizationKey(),
                                              alternative_service_info_vector);
 
   // |net_test_task_runner_| has a remaining pending task to expire
@@ -1361,11 +1384,11 @@ TEST_F(HttpServerPropertiesManagerTest, DoNotPersistExpiredAlternativeService) {
   ASSERT_TRUE(server_str);
   EXPECT_EQ("https://www.example.com", *server_str);
 
-  const base::Value* network_isolation_key_value =
+  const base::Value* network_anonymization_key_value =
       server_pref_dict.GetDict().Find("isolation");
-  ASSERT_TRUE(network_isolation_key_value);
-  ASSERT_EQ(base::Value::Type::LIST, network_isolation_key_value->type());
-  EXPECT_TRUE(network_isolation_key_value->GetList().empty());
+  ASSERT_TRUE(network_anonymization_key_value);
+  ASSERT_EQ(base::Value::Type::LIST, network_anonymization_key_value->type());
+  EXPECT_TRUE(network_anonymization_key_value->GetList().empty());
 
   const base::Value::List* altsvc_list =
       server_pref_dict.GetDict().FindList("alternative_service");
@@ -1471,27 +1494,27 @@ TEST_F(HttpServerPropertiesManagerTest, PersistAdvertisedVersionsToPref) {
   alternative_service_info_vector.push_back(
       AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
           h2_alternative_service, expiration2));
-  http_server_props_->SetAlternativeServices(server_www, NetworkIsolationKey(),
-                                             alternative_service_info_vector);
+  http_server_props_->SetAlternativeServices(
+      server_www, NetworkAnonymizationKey(), alternative_service_info_vector);
 
   // Set another QUIC alternative service with a single advertised QUIC version.
   AlternativeService mail_alternative_service(kProtoQUIC, "foo.google.com",
                                               444);
   base::Time expiration3 = base::Time::Max();
   http_server_props_->SetQuicAlternativeService(
-      server_mail, NetworkIsolationKey(), mail_alternative_service, expiration3,
-      advertised_versions_);
+      server_mail, NetworkAnonymizationKey(), mail_alternative_service,
+      expiration3, advertised_versions_);
   // #3: Set ServerNetworkStats.
   ServerNetworkStats stats;
   stats.srtt = base::TimeDelta::FromInternalValue(42);
-  http_server_props_->SetServerNetworkStats(server_mail, NetworkIsolationKey(),
-                                            stats);
+  http_server_props_->SetServerNetworkStats(server_mail,
+                                            NetworkAnonymizationKey(), stats);
 
   // #4: Set quic_server_info string.
   quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
 
   // #5: Set SupportsQuic.
   IPAddress actual_address(127, 0, 0, 1);
@@ -1605,14 +1628,14 @@ TEST_F(HttpServerPropertiesManagerTest,
   alternative_service_info_vector.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions_));
-  http_server_props_->SetAlternativeServices(server_www, NetworkIsolationKey(),
-                                             alternative_service_info_vector);
+  http_server_props_->SetAlternativeServices(
+      server_www, NetworkAnonymizationKey(), alternative_service_info_vector);
 
   // Set quic_server_info string.
   quic::QuicServerId mail_quic_server_id("mail.google.com", 80, false);
   std::string quic_server_info1("quic_server_info1");
   http_server_props_->SetQuicServerInfo(
-      mail_quic_server_id, NetworkIsolationKey(), quic_server_info1);
+      mail_quic_server_id, NetworkAnonymizationKey(), quic_server_info1);
 
   // Set SupportsQuic.
   IPAddress actual_address(127, 0, 0, 1);
@@ -1656,8 +1679,8 @@ TEST_F(HttpServerPropertiesManagerTest,
   alternative_service_info_vector_2.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions));
-  http_server_props_->SetAlternativeServices(server_www, NetworkIsolationKey(),
-                                             alternative_service_info_vector_2);
+  http_server_props_->SetAlternativeServices(
+      server_www, NetworkAnonymizationKey(), alternative_service_info_vector_2);
 
   // Update Prefs.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -1692,8 +1715,8 @@ TEST_F(HttpServerPropertiesManagerTest,
   alternative_service_info_vector_3.push_back(
       AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
           quic_alternative_service1, expiration1, advertised_versions_2));
-  http_server_props_->SetAlternativeServices(server_www, NetworkIsolationKey(),
-                                             alternative_service_info_vector_3);
+  http_server_props_->SetAlternativeServices(
+      server_www, NetworkAnonymizationKey(), alternative_service_info_vector_3);
 
   // Change in version ordering causes prefs update.
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
@@ -1728,11 +1751,11 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
                                                     "cached_rbroken", 443);
 
   http_server_props_->MarkAlternativeServiceBroken(cached_broken_service,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   http_server_props_->MarkAlternativeServiceBroken(cached_broken_service2,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   http_server_props_->MarkAlternativeServiceRecentlyBroken(
-      cached_recently_broken_service, NetworkIsolationKey());
+      cached_recently_broken_service, NetworkAnonymizationKey());
 
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   // There should be a task to remove remove alt services from the cache of
@@ -1812,7 +1835,7 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   AlternativeServiceInfoVector alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(
           url::SchemeHostPort("https", "www.google.com", 80),
-          NetworkIsolationKey());
+          NetworkAnonymizationKey());
   ASSERT_EQ(2u, alternative_service_info_vector.size());
 
   EXPECT_EQ(kProtoHTTP2,
@@ -1842,7 +1865,7 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(
           url::SchemeHostPort("https", "mail.google.com", 80),
-          NetworkIsolationKey());
+          NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
 
   EXPECT_EQ(kProtoHTTP2,
@@ -1860,11 +1883,11 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   //
   AlternativeService prefs_broken_service(kProtoHTTP2, "www.google.com", 1234);
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service, NetworkIsolationKey()));
+      cached_broken_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service2, NetworkIsolationKey()));
+      cached_broken_service2, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      prefs_broken_service, NetworkIsolationKey()));
+      prefs_broken_service, NetworkAnonymizationKey()));
 
   // Verify brokenness expiration times.
   // |cached_broken_service|'s expiration time should've been overwritten by the
@@ -1875,25 +1898,25 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   FastForwardBy(base::Minutes(5) -
                 HttpServerProperties::GetUpdatePrefsDelayForTesting());
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service, NetworkIsolationKey()));
+      cached_broken_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service2, NetworkIsolationKey()));
+      cached_broken_service2, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      prefs_broken_service, NetworkIsolationKey()));
+      prefs_broken_service, NetworkAnonymizationKey()));
   FastForwardBy(base::Days(1));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service, NetworkIsolationKey()));
+      cached_broken_service, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service2, NetworkIsolationKey()));
+      cached_broken_service2, NetworkAnonymizationKey()));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      prefs_broken_service, NetworkIsolationKey()));
+      prefs_broken_service, NetworkAnonymizationKey()));
 
   // Now that |prefs_broken_service|'s brokenness has expired, it should've
   // been removed from the alternative services info vectors of all servers.
   alternative_service_info_vector =
       http_server_props_->GetAlternativeServiceInfos(
           url::SchemeHostPort("https", "www.google.com", 80),
-          NetworkIsolationKey());
+          NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
 
   //
@@ -1909,60 +1932,60 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   // broken.
 
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      prefs_broken_service, NetworkIsolationKey()));
+      prefs_broken_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      cached_recently_broken_service, NetworkIsolationKey()));
+      cached_recently_broken_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      cached_broken_service, NetworkIsolationKey()));
+      cached_broken_service, NetworkAnonymizationKey()));
   EXPECT_TRUE(http_server_props_->WasAlternativeServiceRecentlyBroken(
-      cached_broken_service2, NetworkIsolationKey()));
+      cached_broken_service2, NetworkAnonymizationKey()));
   // Make sure |prefs_broken_service| has the right expiration delay when marked
   // broken. Since |prefs_broken_service| had no broken_count specified in the
   // prefs, a broken_count value of 1 should have been assumed by
   // |http_server_props_|.
   http_server_props_->MarkAlternativeServiceBroken(prefs_broken_service,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   FastForwardBy(base::Minutes(10) - base::TimeDelta::FromInternalValue(1));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      prefs_broken_service, NetworkIsolationKey()));
+      prefs_broken_service, NetworkAnonymizationKey()));
   FastForwardBy(base::TimeDelta::FromInternalValue(1));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      prefs_broken_service, NetworkIsolationKey()));
+      prefs_broken_service, NetworkAnonymizationKey()));
   // Make sure |cached_recently_broken_service| has the right expiration delay
   // when marked broken.
   http_server_props_->MarkAlternativeServiceBroken(
-      cached_recently_broken_service, NetworkIsolationKey());
+      cached_recently_broken_service, NetworkAnonymizationKey());
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   FastForwardBy(base::Minutes(40) - base::TimeDelta::FromInternalValue(1));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      cached_recently_broken_service, NetworkIsolationKey()));
+      cached_recently_broken_service, NetworkAnonymizationKey()));
   FastForwardBy(base::TimeDelta::FromInternalValue(1));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      cached_recently_broken_service, NetworkIsolationKey()));
+      cached_recently_broken_service, NetworkAnonymizationKey()));
   // Make sure |cached_broken_service| has the right expiration delay when
   // marked broken.
   http_server_props_->MarkAlternativeServiceBroken(cached_broken_service,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   FastForwardBy(base::Minutes(20) - base::TimeDelta::FromInternalValue(1));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service, NetworkIsolationKey()));
+      cached_broken_service, NetworkAnonymizationKey()));
   FastForwardBy(base::TimeDelta::FromInternalValue(1));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service, NetworkIsolationKey()));
+      cached_broken_service, NetworkAnonymizationKey()));
   // Make sure |cached_broken_service2| has the right expiration delay when
   // marked broken.
   http_server_props_->MarkAlternativeServiceBroken(cached_broken_service2,
-                                                   NetworkIsolationKey());
+                                                   NetworkAnonymizationKey());
   EXPECT_NE(0u, GetPendingMainThreadTaskCount());
   FastForwardBy(base::Minutes(10) - base::TimeDelta::FromInternalValue(1));
   EXPECT_TRUE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service2, NetworkIsolationKey()));
+      cached_broken_service2, NetworkAnonymizationKey()));
   FastForwardBy(base::TimeDelta::FromInternalValue(1));
   EXPECT_FALSE(http_server_props_->IsAlternativeServiceBroken(
-      cached_broken_service2, NetworkIsolationKey()));
+      cached_broken_service2, NetworkAnonymizationKey()));
 
   //
   // Verify ServerNetworkStats.
@@ -1970,7 +1993,7 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   const ServerNetworkStats* server_network_stats =
       http_server_props_->GetServerNetworkStats(
           url::SchemeHostPort("https", "mail.google.com", 80),
-          NetworkIsolationKey());
+          NetworkAnonymizationKey());
   EXPECT_TRUE(server_network_stats);
   EXPECT_EQ(server_network_stats->srtt, base::TimeDelta::FromInternalValue(42));
 
@@ -1978,7 +2001,8 @@ TEST_F(HttpServerPropertiesManagerTest, UpdateCacheWithPrefs) {
   // Verify QUIC server info.
   //
   const std::string* quic_server_info = http_server_props_->GetQuicServerInfo(
-      quic::QuicServerId("mail.google.com", 80, false), NetworkIsolationKey());
+      quic::QuicServerId("mail.google.com", 80, false),
+      NetworkAnonymizationKey());
   EXPECT_EQ("quic_server_info1", *quic_server_info);
 
   //
@@ -2011,17 +2035,20 @@ TEST_F(HttpServerPropertiesManagerTest, ForceHTTP11) {
 
   // Set kServer1 to support H2, but require HTTP/1.1.  Set kServer2 to only
   // require HTTP/1.1.
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer1, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->RequiresHTTP11(kServer1, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->RequiresHTTP11(kServer2, NetworkIsolationKey()));
-  properties->SetSupportsSpdy(kServer1, NetworkIsolationKey(), true);
-  properties->SetHTTP11Required(kServer1, NetworkIsolationKey());
-  properties->SetHTTP11Required(kServer2, NetworkIsolationKey());
-  EXPECT_TRUE(properties->GetSupportsSpdy(kServer1, NetworkIsolationKey()));
-  EXPECT_TRUE(properties->RequiresHTTP11(kServer1, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
-  EXPECT_TRUE(properties->RequiresHTTP11(kServer2, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties->RequiresHTTP11(kServer1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties->RequiresHTTP11(kServer2, NetworkAnonymizationKey()));
+  properties->SetSupportsSpdy(kServer1, NetworkAnonymizationKey(), true);
+  properties->SetHTTP11Required(kServer1, NetworkAnonymizationKey());
+  properties->SetHTTP11Required(kServer2, NetworkAnonymizationKey());
+  EXPECT_TRUE(properties->GetSupportsSpdy(kServer1, NetworkAnonymizationKey()));
+  EXPECT_TRUE(properties->RequiresHTTP11(kServer1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer2, NetworkAnonymizationKey()));
+  EXPECT_TRUE(properties->RequiresHTTP11(kServer2, NetworkAnonymizationKey()));
 
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
@@ -2049,30 +2076,36 @@ TEST_F(HttpServerPropertiesManagerTest, ForceHTTP11) {
 
   // Before the data has loaded, set kServer1 and kServer3 as requiring
   // HTTP/1.1.
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer1, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->RequiresHTTP11(kServer1, NetworkIsolationKey()));
-  properties->SetHTTP11Required(kServer1, NetworkIsolationKey());
-  properties->SetHTTP11Required(kServer3, NetworkIsolationKey());
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer1, NetworkIsolationKey()));
-  EXPECT_TRUE(properties->RequiresHTTP11(kServer1, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->RequiresHTTP11(kServer2, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer3, NetworkIsolationKey()));
-  EXPECT_TRUE(properties->RequiresHTTP11(kServer3, NetworkIsolationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties->RequiresHTTP11(kServer1, NetworkAnonymizationKey()));
+  properties->SetHTTP11Required(kServer1, NetworkAnonymizationKey());
+  properties->SetHTTP11Required(kServer3, NetworkAnonymizationKey());
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer1, NetworkAnonymizationKey()));
+  EXPECT_TRUE(properties->RequiresHTTP11(kServer1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties->RequiresHTTP11(kServer2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer3, NetworkAnonymizationKey()));
+  EXPECT_TRUE(properties->RequiresHTTP11(kServer3, NetworkAnonymizationKey()));
 
   // The data loads.
   unowned_pref_delegate->InitializePrefs(saved_value);
 
   // The properties should contain a combination of the old and new data.
-  EXPECT_TRUE(properties->GetSupportsSpdy(kServer1, NetworkIsolationKey()));
-  EXPECT_TRUE(properties->RequiresHTTP11(kServer1, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->RequiresHTTP11(kServer2, NetworkIsolationKey()));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer3, NetworkIsolationKey()));
-  EXPECT_TRUE(properties->RequiresHTTP11(kServer3, NetworkIsolationKey()));
+  EXPECT_TRUE(properties->GetSupportsSpdy(kServer1, NetworkAnonymizationKey()));
+  EXPECT_TRUE(properties->RequiresHTTP11(kServer1, NetworkAnonymizationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(properties->RequiresHTTP11(kServer2, NetworkAnonymizationKey()));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer3, NetworkAnonymizationKey()));
+  EXPECT_TRUE(properties->RequiresHTTP11(kServer3, NetworkAnonymizationKey()));
 }
 
-TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
+TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyServerInfo) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
@@ -2082,72 +2115,76 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
   HttpServerProperties::ServerInfo server_info;
   server_info.supports_spdy = true;
 
-  for (auto save_network_isolation_key_mode : kNetworkIsolationKeyModes) {
-    SCOPED_TRACE(static_cast<int>(save_network_isolation_key_mode));
+  for (auto save_network_anonymization_key_mode :
+       kNetworkAnonymizationKeyModes) {
+    SCOPED_TRACE(static_cast<int>(save_network_anonymization_key_mode));
 
-    // Save prefs using |save_network_isolation_key_mode|.
+    // Save prefs using |save_network_anonymization_key_mode|.
     base::Value saved_value;
     {
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-          SetNetworkIsolationKeyMode(save_network_isolation_key_mode);
+          SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
 
       // This parameter is normally calculated by HttpServerProperties based on
       // the kPartitionHttpServerPropertiesByNetworkIsolationKey feature, but
       // this test doesn't use that class.
-      bool use_network_isolation_key =
-          save_network_isolation_key_mode != NetworkIsolationKeyMode::kDisabled;
+      bool use_network_anonymization_key =
+          save_network_anonymization_key_mode !=
+          NetworkAnonymizationKeyMode::kDisabled;
 
       HttpServerProperties::ServerInfoMap server_info_map;
 
       // Add server info entry using two origins with value of |server_info|.
-      // NetworkIsolationKey's constructor takes the state of the
-      // kAppendFrameOriginToNetworkIsolationKey feature into account, so need
-      // to make sure to call the constructor after setting up the feature
+      // NetworkAnonymizationKey's constructor takes the state of the
+      // kAppendFrameOriginToNetworkAnonymizationKey feature into account, so
+      // need to make sure to call the constructor after setting up the feature
       // above.
       HttpServerProperties::ServerInfoMapKey server_info_key(
-          kServer, NetworkIsolationKey(kSite1, kSite2),
-          use_network_isolation_key);
+          kServer, NetworkAnonymizationKey(kSite1, kSite2),
+          use_network_anonymization_key);
       server_info_map.Put(server_info_key, server_info);
 
-      // Also add an etry with an opaque origin, if |use_network_isolation_key|
-      // is true. This value should not be saved to disk, since opaque origins
-      // are only meaningful within a browsing session.
-      if (use_network_isolation_key) {
+      // Also add an etry with an opaque origin, if
+      // |use_network_anonymization_key| is true. This value should not be saved
+      // to disk, since opaque origins are only meaningful within a browsing
+      // session.
+      if (use_network_anonymization_key) {
         HttpServerProperties::ServerInfoMapKey server_info_key2(
-            kServer2, NetworkIsolationKey(kOpaqueSite, kOpaqueSite),
-            use_network_isolation_key);
+            kServer2, NetworkAnonymizationKey(kOpaqueSite, kOpaqueSite),
+            use_network_anonymization_key);
         server_info_map.Put(server_info_key2, server_info);
       }
 
       saved_value = ServerInfoMapToValue(server_info_map);
     }
 
-    for (auto load_network_isolation_key_mode : kNetworkIsolationKeyModes) {
-      SCOPED_TRACE(static_cast<int>(load_network_isolation_key_mode));
+    for (auto load_network_anonymization_key_mode :
+         kNetworkAnonymizationKeyModes) {
+      SCOPED_TRACE(static_cast<int>(load_network_anonymization_key_mode));
 
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-          SetNetworkIsolationKeyMode(load_network_isolation_key_mode);
+          SetNetworkAnonymizationKeyMode(load_network_anonymization_key_mode);
       std::unique_ptr<HttpServerProperties::ServerInfoMap> server_info_map2 =
           ValueToServerInfoMap(saved_value);
       ASSERT_TRUE(server_info_map2);
-      if (save_network_isolation_key_mode ==
-          NetworkIsolationKeyMode::kDisabled) {
-        // If NetworkIsolationKey was disabled when saving, it was saved with an
-        // empty NetworkIsolationKey, which should always be loaded
+      if (save_network_anonymization_key_mode ==
+          NetworkAnonymizationKeyMode::kDisabled) {
+        // If NetworkAnonymizationKey was disabled when saving, it was saved
+        // with an empty NetworkAnonymizationKey, which should always be loaded
         // successfully. This is needed to continue to support consumers that
-        // don't use NetworkIsolationKeys.
+        // don't use NetworkAnonymizationKeys.
         ASSERT_EQ(1u, server_info_map2->size());
         const HttpServerProperties::ServerInfoMapKey& server_info_key2 =
             server_info_map2->begin()->first;
         const HttpServerProperties::ServerInfo& server_info2 =
             server_info_map2->begin()->second;
         EXPECT_EQ(kServer, server_info_key2.server);
-        EXPECT_EQ(NetworkIsolationKey(),
-                  server_info_key2.network_isolation_key);
+        EXPECT_EQ(NetworkAnonymizationKey(),
+                  server_info_key2.network_anonymization_key);
         EXPECT_EQ(server_info, server_info2);
-      } else if (save_network_isolation_key_mode ==
-                 load_network_isolation_key_mode) {
+      } else if (save_network_anonymization_key_mode ==
+                 load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
         // the network isolation keys should match.
         ASSERT_EQ(1u, server_info_map2->size());
@@ -2156,11 +2193,11 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
         const HttpServerProperties::ServerInfo& server_info2 =
             server_info_map2->begin()->second;
         EXPECT_EQ(kServer, server_info_key2.server);
-        EXPECT_EQ(NetworkIsolationKey(kSite1, kSite2),
-                  server_info_key2.network_isolation_key);
+        EXPECT_EQ(NetworkAnonymizationKey(kSite1, kSite2),
+                  server_info_key2.network_anonymization_key);
         EXPECT_EQ(server_info, server_info2);
       } else {
-        // Otherwise, the NetworkIsolationKey doesn't make sense with the
+        // Otherwise, the NetworkAnonymizationKey doesn't make sense with the
         // current feature values, so the ServerInfo should be discarded.
         EXPECT_EQ(0u, server_info_map2->size());
       }
@@ -2168,16 +2205,16 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyServerInfo) {
   }
 }
 
-// Tests a full round trip with a NetworkIsolationKey, using the
+// Tests a full round trip with a NetworkAnonymizationKey, using the
 // HttpServerProperties interface.
-TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
+TEST_F(HttpServerPropertiesManagerTest, NetworkAnonymizationKeyIntegration) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
   const url::SchemeHostPort kServer("https", "baz.test", 443);
 
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
-  const NetworkIsolationKey kOpaqueSiteNetworkIsolationKey(kOpaqueSite,
-                                                           kOpaqueSite);
+  const NetworkAnonymizationKey kOpaqueSiteNetworkAnonymizationKey(kOpaqueSite,
+                                                                   kOpaqueSite);
   const url::SchemeHostPort kServer2("https", "zab.test", 443);
 
   base::test::ScopedFeatureList feature_list;
@@ -2195,20 +2232,22 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
   unowned_pref_delegate->InitializePrefs(
       base::Value(base::Value::Type::DICTIONARY));
 
-  // Set a values using kNetworkIsolationKey.
-  properties->SetSupportsSpdy(kServer, kNetworkIsolationKey, true);
-  EXPECT_TRUE(properties->GetSupportsSpdy(kServer, kNetworkIsolationKey));
+  // Set a values using kNetworkAnonymizationKey.
+  properties->SetSupportsSpdy(kServer, kNetworkAnonymizationKey, true);
+  EXPECT_TRUE(properties->GetSupportsSpdy(kServer, kNetworkAnonymizationKey));
   EXPECT_FALSE(
-      properties->GetSupportsSpdy(kServer, kOpaqueSiteNetworkIsolationKey));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer, NetworkIsolationKey()));
+      properties->GetSupportsSpdy(kServer, kOpaqueSiteNetworkAnonymizationKey));
+  EXPECT_FALSE(properties->GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
 
   // Opaque origins should works with HttpServerProperties, but not be persisted
   // to disk.
-  properties->SetSupportsSpdy(kServer2, kOpaqueSiteNetworkIsolationKey, true);
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, kNetworkIsolationKey));
-  EXPECT_TRUE(
-      properties->GetSupportsSpdy(kServer2, kOpaqueSiteNetworkIsolationKey));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
+  properties->SetSupportsSpdy(kServer2, kOpaqueSiteNetworkAnonymizationKey,
+                              true);
+  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, kNetworkAnonymizationKey));
+  EXPECT_TRUE(properties->GetSupportsSpdy(kServer2,
+                                          kOpaqueSiteNetworkAnonymizationKey));
+  EXPECT_FALSE(
+      properties->GetSupportsSpdy(kServer2, NetworkAnonymizationKey()));
 
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
@@ -2224,31 +2263,32 @@ TEST_F(HttpServerPropertiesManagerTest, NetworkIsolationKeyIntegration) {
       std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
   unowned_pref_delegate->InitializePrefs(saved_value);
 
-  // The information set using kNetworkIsolationKey on the original
+  // The information set using kNetworkAnonymizationKey on the original
   // HttpServerProperties should also be set on the restored
   // HttpServerProperties.
-  EXPECT_TRUE(properties->GetSupportsSpdy(kServer, kNetworkIsolationKey));
+  EXPECT_TRUE(properties->GetSupportsSpdy(kServer, kNetworkAnonymizationKey));
   EXPECT_FALSE(
-      properties->GetSupportsSpdy(kServer, kOpaqueSiteNetworkIsolationKey));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer, NetworkIsolationKey()));
+      properties->GetSupportsSpdy(kServer, kOpaqueSiteNetworkAnonymizationKey));
+  EXPECT_FALSE(properties->GetSupportsSpdy(kServer, NetworkAnonymizationKey()));
 
-  // The information set using kOpaqueSiteNetworkIsolationKey should not have
-  // been restored.
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, kNetworkIsolationKey));
+  // The information set using kOpaqueSiteNetworkAnonymizationKey should not
+  // have been restored.
+  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, kNetworkAnonymizationKey));
+  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2,
+                                           kOpaqueSiteNetworkAnonymizationKey));
   EXPECT_FALSE(
-      properties->GetSupportsSpdy(kServer2, kOpaqueSiteNetworkIsolationKey));
-  EXPECT_FALSE(properties->GetSupportsSpdy(kServer2, NetworkIsolationKey()));
+      properties->GetSupportsSpdy(kServer2, NetworkAnonymizationKey()));
 }
 
 // Tests a full round trip to prefs and back in the canonical suffix case.
-// Enable NetworkIsolationKeys, as they have some interactions with the
+// Enable NetworkAnonymizationKeys, as they have some interactions with the
 // canonical suffix logic.
 TEST_F(HttpServerPropertiesManagerTest,
-       CanonicalSuffixRoundTripWithNetworkIsolationKey) {
+       CanonicalSuffixRoundTripWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
   // Three servers with the same canonical suffix (".c.youtube.com").
   const url::SchemeHostPort kServer1("https", "foo.c.youtube.com", 443);
   const url::SchemeHostPort kServer2("https", "bar.c.youtube.com", 443);
@@ -2289,78 +2329,78 @@ TEST_F(HttpServerPropertiesManagerTest,
   unowned_pref_delegate->InitializePrefs(
       base::Value(base::Value::Type::DICTIONARY));
 
-  // Set alternative services for kServer1 using kNetworkIsolationKey1. That
+  // Set alternative services for kServer1 using kNetworkAnonymizationKey1. That
   // information should be retrieved when fetching information for any server
-  // with the same canonical suffix, when using kNetworkIsolationKey1.
-  properties->SetAlternativeServices(kServer1, kNetworkIsolationKey1,
+  // with the same canonical suffix, when using kNetworkAnonymizationKey1.
+  properties->SetAlternativeServices(kServer1, kNetworkAnonymizationKey1,
                                      alt_service_vector1);
   EXPECT_EQ(
-      1u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey1)
-          .size());
+      1u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      1u,
-      properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey1)
-          .size());
+      1u, properties
+              ->GetAlternativeServiceInfos(kServer2, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      1u,
-      properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey1)
-          .size());
+      1u, properties
+              ->GetAlternativeServiceInfos(kServer3, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      0u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey2)
-          .size());
+      0u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey2)
+              .size());
 
   // Set different alternative services for kServer2 using
-  // kNetworkIsolationKey1. It should not affect information retrieved for
+  // kNetworkAnonymizationKey1. It should not affect information retrieved for
   // kServer1, but should for kServer2 and kServer3.
-  properties->SetAlternativeServices(kServer2, kNetworkIsolationKey1,
+  properties->SetAlternativeServices(kServer2, kNetworkAnonymizationKey1,
                                      alt_service_vector2);
   EXPECT_EQ(
-      1u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey1)
-          .size());
+      1u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer2, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer3, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      0u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey2)
-          .size());
+      0u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey2)
+              .size());
 
-  // Set different information for kServer1 using kNetworkIsolationKey2. It
-  // should not affect information stored for kNetworkIsolationKey1.
-  properties->SetAlternativeServices(kServer1, kNetworkIsolationKey2,
+  // Set different information for kServer1 using kNetworkAnonymizationKey2. It
+  // should not affect information stored for kNetworkAnonymizationKey1.
+  properties->SetAlternativeServices(kServer1, kNetworkAnonymizationKey2,
                                      alt_service_vector3);
   EXPECT_EQ(
-      1u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey1)
-          .size());
+      1u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer2, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer3, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      3u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey2)
-          .size());
+      3u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey2)
+              .size());
   EXPECT_EQ(
-      3u,
-      properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey2)
-          .size());
+      3u, properties
+              ->GetAlternativeServiceInfos(kServer2, kNetworkAnonymizationKey2)
+              .size());
   EXPECT_EQ(
-      3u,
-      properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey2)
-          .size());
+      3u, properties
+              ->GetAlternativeServiceInfos(kServer3, kNetworkAnonymizationKey2)
+              .size());
 
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
@@ -2376,39 +2416,39 @@ TEST_F(HttpServerPropertiesManagerTest,
       std::move(pref_delegate), /*net_log=*/nullptr, GetMockTickClock());
   unowned_pref_delegate->InitializePrefs(saved_value);
 
-  // Only the last of the values learned for kNetworkIsolationKey1 should have
-  // been saved, and the value for kNetworkIsolationKey2 as well. The canonical
-  // suffix logic should still be respected.
+  // Only the last of the values learned for kNetworkAnonymizationKey1 should
+  // have been saved, and the value for kNetworkAnonymizationKey2 as well. The
+  // canonical suffix logic should still be respected.
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer2, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      2u,
-      properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey1)
-          .size());
+      2u, properties
+              ->GetAlternativeServiceInfos(kServer3, kNetworkAnonymizationKey1)
+              .size());
   EXPECT_EQ(
-      3u,
-      properties->GetAlternativeServiceInfos(kServer1, kNetworkIsolationKey2)
-          .size());
+      3u, properties
+              ->GetAlternativeServiceInfos(kServer1, kNetworkAnonymizationKey2)
+              .size());
   EXPECT_EQ(
-      3u,
-      properties->GetAlternativeServiceInfos(kServer2, kNetworkIsolationKey2)
-          .size());
+      3u, properties
+              ->GetAlternativeServiceInfos(kServer2, kNetworkAnonymizationKey2)
+              .size());
   EXPECT_EQ(
-      3u,
-      properties->GetAlternativeServiceInfos(kServer3, kNetworkIsolationKey2)
-          .size());
+      3u, properties
+              ->GetAlternativeServiceInfos(kServer3, kNetworkAnonymizationKey2)
+              .size());
 }
 
-// Tests a full round trip with a NetworkIsolationKey, using the
+// Tests a full round trip with a NetworkAnonymizationKey, using the
 // HttpServerProperties interface and setting alternative services as broken.
 TEST_F(HttpServerPropertiesManagerTest,
-       NetworkIsolationKeyBrokenAltServiceRoundTrip) {
+       NetworkAnonymizationKeyBrokenAltServiceRoundTrip) {
   const SchemefulSite kSite1(GURL("https://foo1.test/"));
   const SchemefulSite kSite2(GURL("https://foo2.test/"));
 
@@ -2417,20 +2457,21 @@ TEST_F(HttpServerPropertiesManagerTest,
   const AlternativeService kAlternativeService2(kProtoHTTP2,
                                                 "alt.service2.test", 443);
 
-  for (auto save_network_isolation_key_mode : kNetworkIsolationKeyModes) {
-    SCOPED_TRACE(static_cast<int>(save_network_isolation_key_mode));
+  for (auto save_network_anonymization_key_mode :
+       kNetworkAnonymizationKeyModes) {
+    SCOPED_TRACE(static_cast<int>(save_network_anonymization_key_mode));
 
-    // Save prefs using |save_network_isolation_key_mode|.
+    // Save prefs using |save_network_anonymization_key_mode|.
     base::Value saved_value;
     {
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-          SetNetworkIsolationKeyMode(save_network_isolation_key_mode);
+          SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
 
-      // The NetworkIsolationKey constructor checks the field trial state, so
-      // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+      // The NetworkAnonymizationKey constructor checks the field trial state,
+      // so need to create the keys only after setting up the field trials.
+      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create and initialize an HttpServerProperties, must be done after
       // setting the feature.
@@ -2445,51 +2486,51 @@ TEST_F(HttpServerPropertiesManagerTest,
           base::Value(base::Value::Type::DICTIONARY));
 
       // Set kAlternativeService1 as broken in the context of
-      // kNetworkIsolationKey1, and kAlternativeService2 as broken in the
-      // context of the empty NetworkIsolationKey2, and recently broken in the
-      // context of the empty NetworkIsolationKey.
+      // kNetworkAnonymizationKey1, and kAlternativeService2 as broken in the
+      // context of the empty NetworkAnonymizationKey2, and recently broken in
+      // the context of the empty NetworkAnonymizationKey.
       properties->MarkAlternativeServiceBroken(kAlternativeService1,
-                                               kNetworkIsolationKey1);
-      properties->MarkAlternativeServiceRecentlyBroken(kAlternativeService2,
-                                                       NetworkIsolationKey());
+                                               kNetworkAnonymizationKey1);
+      properties->MarkAlternativeServiceRecentlyBroken(
+          kAlternativeService2, NetworkAnonymizationKey());
       properties->MarkAlternativeServiceBroken(kAlternativeService2,
-                                               kNetworkIsolationKey2);
+                                               kNetworkAnonymizationKey2);
 
       // Verify values were set.
       EXPECT_TRUE(properties->IsAlternativeServiceBroken(
-          kAlternativeService1, kNetworkIsolationKey1));
+          kAlternativeService1, kNetworkAnonymizationKey1));
       EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-          kAlternativeService1, kNetworkIsolationKey1));
-      // When NetworkIsolationKeys are disabled, kAlternativeService2 is marked
-      // as broken regardless of the values passed to NetworkIsolationKey's
-      // constructor.
-      EXPECT_EQ(
-          save_network_isolation_key_mode == NetworkIsolationKeyMode::kDisabled,
-          properties->IsAlternativeServiceBroken(kAlternativeService2,
-                                                 NetworkIsolationKey()));
+          kAlternativeService1, kNetworkAnonymizationKey1));
+      // When NetworkAnonymizationKeys are disabled, kAlternativeService2 is
+      // marked as broken regardless of the values passed to
+      // NetworkAnonymizationKey's constructor.
+      EXPECT_EQ(save_network_anonymization_key_mode ==
+                    NetworkAnonymizationKeyMode::kDisabled,
+                properties->IsAlternativeServiceBroken(
+                    kAlternativeService2, NetworkAnonymizationKey()));
       EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-          kAlternativeService2, NetworkIsolationKey()));
+          kAlternativeService2, NetworkAnonymizationKey()));
       EXPECT_TRUE(properties->IsAlternativeServiceBroken(
-          kAlternativeService2, kNetworkIsolationKey2));
+          kAlternativeService2, kNetworkAnonymizationKey2));
       EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-          kAlternativeService2, kNetworkIsolationKey2));
+          kAlternativeService2, kNetworkAnonymizationKey2));
 
-      // If NetworkIsolationKeys are enabled, there should be no
-      // cross-contamination of the NetworkIsolationKeys.
-      if (save_network_isolation_key_mode !=
-          NetworkIsolationKeyMode::kDisabled) {
+      // If NetworkAnonymizationKeys are enabled, there should be no
+      // cross-contamination of the NetworkAnonymizationKeys.
+      if (save_network_anonymization_key_mode !=
+          NetworkAnonymizationKeyMode::kDisabled) {
         EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-            kAlternativeService2, kNetworkIsolationKey1));
+            kAlternativeService2, kNetworkAnonymizationKey1));
         EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService2, kNetworkIsolationKey1));
+            kAlternativeService2, kNetworkAnonymizationKey1));
         EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-            kAlternativeService1, NetworkIsolationKey()));
+            kAlternativeService1, NetworkAnonymizationKey()));
         EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService1, NetworkIsolationKey()));
+            kAlternativeService1, NetworkAnonymizationKey()));
         EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-            kAlternativeService1, kNetworkIsolationKey2));
+            kAlternativeService1, kNetworkAnonymizationKey2));
         EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService1, kNetworkIsolationKey2));
+            kAlternativeService1, kNetworkAnonymizationKey2));
       }
 
       // Wait until the data's been written to prefs, and then create a copy of
@@ -2499,16 +2540,17 @@ TEST_F(HttpServerPropertiesManagerTest,
     }
 
     // Now try and load the data in each of the feature modes.
-    for (auto load_network_isolation_key_mode : kNetworkIsolationKeyModes) {
-      SCOPED_TRACE(static_cast<int>(load_network_isolation_key_mode));
+    for (auto load_network_anonymization_key_mode :
+         kNetworkAnonymizationKeyModes) {
+      SCOPED_TRACE(static_cast<int>(load_network_anonymization_key_mode));
 
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-          SetNetworkIsolationKeyMode(load_network_isolation_key_mode);
+          SetNetworkAnonymizationKeyMode(load_network_anonymization_key_mode);
 
-      // The NetworkIsolationKey constructor checks the field trial state, so
-      // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+      // The NetworkAnonymizationKey constructor checks the field trial state,
+      // so need to create the keys only after setting up the field trials.
+      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create a new HttpServerProperties, loading the data from before.
       std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2520,95 +2562,95 @@ TEST_F(HttpServerPropertiesManagerTest,
                                                  GetMockTickClock());
       unowned_pref_delegate->InitializePrefs(saved_value);
 
-      if (save_network_isolation_key_mode ==
-          NetworkIsolationKeyMode::kDisabled) {
-        // If NetworkIsolationKey was disabled when saving, it was saved with an
-        // empty NetworkIsolationKey, which should always be loaded
+      if (save_network_anonymization_key_mode ==
+          NetworkAnonymizationKeyMode::kDisabled) {
+        // If NetworkAnonymizationKey was disabled when saving, it was saved
+        // with an empty NetworkAnonymizationKey, which should always be loaded
         // successfully. This is needed to continue to support consumers that
-        // don't use NetworkIsolationKeys.
+        // don't use NetworkAnonymizationKeys.
         EXPECT_TRUE(properties->IsAlternativeServiceBroken(
-            kAlternativeService1, NetworkIsolationKey()));
+            kAlternativeService1, NetworkAnonymizationKey()));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService1, NetworkIsolationKey()));
+            kAlternativeService1, NetworkAnonymizationKey()));
         EXPECT_TRUE(properties->IsAlternativeServiceBroken(
-            kAlternativeService2, NetworkIsolationKey()));
+            kAlternativeService2, NetworkAnonymizationKey()));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService2, NetworkIsolationKey()));
-      } else if (save_network_isolation_key_mode ==
-                 load_network_isolation_key_mode) {
+            kAlternativeService2, NetworkAnonymizationKey()));
+      } else if (save_network_anonymization_key_mode ==
+                 load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
         // the network isolation keys should match.
         EXPECT_TRUE(properties->IsAlternativeServiceBroken(
-            kAlternativeService1, kNetworkIsolationKey1));
+            kAlternativeService1, kNetworkAnonymizationKey1));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService1, kNetworkIsolationKey1));
-        // When NetworkIsolationKeys are disabled, kAlternativeService2 is
+            kAlternativeService1, kNetworkAnonymizationKey1));
+        // When NetworkAnonymizationKeys are disabled, kAlternativeService2 is
         // marked as broken regardless of the values passed to
-        // NetworkIsolationKey's constructor.
-        EXPECT_EQ(save_network_isolation_key_mode ==
-                      NetworkIsolationKeyMode::kDisabled,
+        // NetworkAnonymizationKey's constructor.
+        EXPECT_EQ(save_network_anonymization_key_mode ==
+                      NetworkAnonymizationKeyMode::kDisabled,
                   properties->IsAlternativeServiceBroken(
-                      kAlternativeService2, NetworkIsolationKey()));
+                      kAlternativeService2, NetworkAnonymizationKey()));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService2, NetworkIsolationKey()));
+            kAlternativeService2, NetworkAnonymizationKey()));
         EXPECT_TRUE(properties->IsAlternativeServiceBroken(
-            kAlternativeService2, kNetworkIsolationKey2));
+            kAlternativeService2, kNetworkAnonymizationKey2));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService2, kNetworkIsolationKey2));
+            kAlternativeService2, kNetworkAnonymizationKey2));
 
-        // If NetworkIsolationKeys are enabled, there should be no
-        // cross-contamination of the NetworkIsolationKeys.
-        if (save_network_isolation_key_mode !=
-            NetworkIsolationKeyMode::kDisabled) {
+        // If NetworkAnonymizationKeys are enabled, there should be no
+        // cross-contamination of the NetworkAnonymizationKeys.
+        if (save_network_anonymization_key_mode !=
+            NetworkAnonymizationKeyMode::kDisabled) {
           EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-              kAlternativeService2, kNetworkIsolationKey1));
+              kAlternativeService2, kNetworkAnonymizationKey1));
           EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-              kAlternativeService2, kNetworkIsolationKey1));
+              kAlternativeService2, kNetworkAnonymizationKey1));
           EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-              kAlternativeService1, NetworkIsolationKey()));
+              kAlternativeService1, NetworkAnonymizationKey()));
           EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-              kAlternativeService1, NetworkIsolationKey()));
+              kAlternativeService1, NetworkAnonymizationKey()));
           EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-              kAlternativeService1, kNetworkIsolationKey2));
+              kAlternativeService1, kNetworkAnonymizationKey2));
           EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-              kAlternativeService1, kNetworkIsolationKey2));
+              kAlternativeService1, kNetworkAnonymizationKey2));
         }
       } else {
-        // Otherwise, only the values set with an empty NetworkIsolationKey
+        // Otherwise, only the values set with an empty NetworkAnonymizationKey
         // should have been loaded successfully.
         EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-            kAlternativeService1, kNetworkIsolationKey1));
+            kAlternativeService1, kNetworkAnonymizationKey1));
         EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService1, kNetworkIsolationKey1));
+            kAlternativeService1, kNetworkAnonymizationKey1));
         EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-            kAlternativeService2, NetworkIsolationKey()));
+            kAlternativeService2, NetworkAnonymizationKey()));
         EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-            kAlternativeService2, NetworkIsolationKey()));
+            kAlternativeService2, NetworkAnonymizationKey()));
         EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-            kAlternativeService2, kNetworkIsolationKey2));
-        // If the load mode is NetworkIsolationKeyMode::kDisabled,
-        // kNetworkIsolationKey2 is NetworkIsolationKey().
-        EXPECT_EQ(load_network_isolation_key_mode ==
-                      NetworkIsolationKeyMode::kDisabled,
+            kAlternativeService2, kNetworkAnonymizationKey2));
+        // If the load mode is NetworkAnonymizationKeyMode::kDisabled,
+        // kNetworkAnonymizationKey2 is NetworkAnonymizationKey().
+        EXPECT_EQ(load_network_anonymization_key_mode ==
+                      NetworkAnonymizationKeyMode::kDisabled,
                   properties->WasAlternativeServiceRecentlyBroken(
-                      kAlternativeService2, kNetworkIsolationKey2));
+                      kAlternativeService2, kNetworkAnonymizationKey2));
 
-        // There should be no cross-contamination of NetworkIsolationKeys, if
-        // NetworkIsolationKeys are enabled.
-        if (load_network_isolation_key_mode !=
-            NetworkIsolationKeyMode::kDisabled) {
+        // There should be no cross-contamination of NetworkAnonymizationKeys,
+        // if NetworkAnonymizationKeys are enabled.
+        if (load_network_anonymization_key_mode !=
+            NetworkAnonymizationKeyMode::kDisabled) {
           EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-              kAlternativeService2, kNetworkIsolationKey1));
+              kAlternativeService2, kNetworkAnonymizationKey1));
           EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-              kAlternativeService2, kNetworkIsolationKey1));
+              kAlternativeService2, kNetworkAnonymizationKey1));
           EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-              kAlternativeService1, NetworkIsolationKey()));
+              kAlternativeService1, NetworkAnonymizationKey()));
           EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-              kAlternativeService1, NetworkIsolationKey()));
+              kAlternativeService1, NetworkAnonymizationKey()));
           EXPECT_FALSE(properties->IsAlternativeServiceBroken(
-              kAlternativeService1, kNetworkIsolationKey2));
+              kAlternativeService1, kNetworkAnonymizationKey2));
           EXPECT_FALSE(properties->WasAlternativeServiceRecentlyBroken(
-              kAlternativeService1, kNetworkIsolationKey2));
+              kAlternativeService1, kNetworkAnonymizationKey2));
         }
       }
     }
@@ -2617,9 +2659,10 @@ TEST_F(HttpServerPropertiesManagerTest,
 
 // Make sure broken alt services with opaque origins aren't saved.
 TEST_F(HttpServerPropertiesManagerTest,
-       NetworkIsolationKeyBrokenAltServiceOpaqueOrigin) {
+       NetworkAnonymizationKeyBrokenAltServiceOpaqueOrigin) {
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOpaqueSite, kOpaqueSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey(kOpaqueSite,
+                                                         kOpaqueSite);
   const AlternativeService kAlternativeService(kProtoHTTP2, "alt.service1.test",
                                                443);
 
@@ -2640,13 +2683,13 @@ TEST_F(HttpServerPropertiesManagerTest,
       base::Value(base::Value::Type::DICTIONARY));
 
   properties->MarkAlternativeServiceBroken(kAlternativeService,
-                                           kNetworkIsolationKey);
+                                           kNetworkAnonymizationKey);
 
   // Verify values were set.
   EXPECT_TRUE(properties->IsAlternativeServiceBroken(kAlternativeService,
-                                                     kNetworkIsolationKey));
+                                                     kNetworkAnonymizationKey));
   EXPECT_TRUE(properties->WasAlternativeServiceRecentlyBroken(
-      kAlternativeService, kNetworkIsolationKey));
+      kAlternativeService, kNetworkAnonymizationKey));
 
   // Wait until the data's been written to prefs, and then create a copy of
   // the prefs data.
@@ -2659,10 +2702,10 @@ TEST_F(HttpServerPropertiesManagerTest,
   EXPECT_EQ("{\"servers\":[],\"version\":5}", preferences_json);
 }
 
-// Tests a full round trip with a NetworkIsolationKey, using the
+// Tests a full round trip with a NetworkAnonymizationKey, using the
 // HttpServerProperties interface and setting QuicServerInfo.
 TEST_F(HttpServerPropertiesManagerTest,
-       NetworkIsolationKeyQuicServerInfoRoundTrip) {
+       NetworkAnonymizationKeyQuicServerInfoRoundTrip) {
   const SchemefulSite kSite1(GURL("https://foo1.test/"));
   const SchemefulSite kSite2(GURL("https://foo2.test/"));
 
@@ -2675,20 +2718,21 @@ TEST_F(HttpServerPropertiesManagerTest,
   const char kQuicServerInfo2[] = "info2";
   const char kQuicServerInfo3[] = "info3";
 
-  for (auto save_network_isolation_key_mode : kNetworkIsolationKeyModes) {
-    SCOPED_TRACE(static_cast<int>(save_network_isolation_key_mode));
+  for (auto save_network_anonymization_key_mode :
+       kNetworkAnonymizationKeyModes) {
+    SCOPED_TRACE(static_cast<int>(save_network_anonymization_key_mode));
 
-    // Save prefs using |save_network_isolation_key_mode|.
+    // Save prefs using |save_network_anonymization_key_mode|.
     base::Value saved_value;
     {
       // Configure the the feature.
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-          SetNetworkIsolationKeyMode(save_network_isolation_key_mode);
+          SetNetworkAnonymizationKeyMode(save_network_anonymization_key_mode);
 
-      // The NetworkIsolationKey constructor checks the field trial state, so
-      // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+      // The NetworkAnonymizationKey constructor checks the field trial state,
+      // so need to create the keys only after setting up the field trials.
+      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create and initialize an HttpServerProperties, must be done after
       // setting the feature.
@@ -2703,37 +2747,37 @@ TEST_F(HttpServerPropertiesManagerTest,
           base::Value(base::Value::Type::DICTIONARY));
 
       // Set kServer1 to kQuicServerInfo1 in the context of
-      // kNetworkIsolationKey1, Set kServer2 to kQuicServerInfo2 in the context
-      // of kNetworkIsolationKey2, and kServer1 to kQuicServerInfo3 in the
-      // context of NetworkIsolationKey().
-      properties->SetQuicServerInfo(kServer1, kNetworkIsolationKey1,
+      // kNetworkAnonymizationKey1, Set kServer2 to kQuicServerInfo2 in the
+      // context of kNetworkAnonymizationKey2, and kServer1 to kQuicServerInfo3
+      // in the context of NetworkAnonymizationKey().
+      properties->SetQuicServerInfo(kServer1, kNetworkAnonymizationKey1,
                                     kQuicServerInfo1);
-      properties->SetQuicServerInfo(kServer2, kNetworkIsolationKey2,
+      properties->SetQuicServerInfo(kServer2, kNetworkAnonymizationKey2,
                                     kQuicServerInfo2);
-      properties->SetQuicServerInfo(kServer1, NetworkIsolationKey(),
+      properties->SetQuicServerInfo(kServer1, NetworkAnonymizationKey(),
                                     kQuicServerInfo3);
 
       // Verify values were set.
-      if (save_network_isolation_key_mode !=
-          NetworkIsolationKeyMode::kDisabled) {
+      if (save_network_anonymization_key_mode !=
+          NetworkAnonymizationKeyMode::kDisabled) {
         EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                        kServer1, kNetworkIsolationKey1));
+                                        kServer1, kNetworkAnonymizationKey1));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer1, kNetworkIsolationKey2));
+                               kServer1, kNetworkAnonymizationKey2));
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkIsolationKey()));
+                                        kServer1, NetworkAnonymizationKey()));
 
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkIsolationKey1));
+                               kServer2, kNetworkAnonymizationKey1));
         EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, kNetworkIsolationKey2));
+                                        kServer2, kNetworkAnonymizationKey2));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, NetworkIsolationKey()));
+                               kServer2, NetworkAnonymizationKey()));
       } else {
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkIsolationKey()));
+                                        kServer1, NetworkAnonymizationKey()));
         EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, NetworkIsolationKey()));
+                                        kServer2, NetworkAnonymizationKey()));
       }
 
       // Wait until the data's been written to prefs, and then create a copy of
@@ -2743,16 +2787,17 @@ TEST_F(HttpServerPropertiesManagerTest,
     }
 
     // Now try and load the data in each of the feature modes.
-    for (auto load_network_isolation_key_mode : kNetworkIsolationKeyModes) {
-      SCOPED_TRACE(static_cast<int>(load_network_isolation_key_mode));
+    for (auto load_network_anonymization_key_mode :
+         kNetworkAnonymizationKeyModes) {
+      SCOPED_TRACE(static_cast<int>(load_network_anonymization_key_mode));
 
       std::unique_ptr<base::test::ScopedFeatureList> feature_list =
-          SetNetworkIsolationKeyMode(load_network_isolation_key_mode);
+          SetNetworkAnonymizationKeyMode(load_network_anonymization_key_mode);
 
-      // The NetworkIsolationKey constructor checks the field trial state, so
-      // need to create the keys only after setting up the field trials.
-      const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-      const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+      // The NetworkAnonymizationKey constructor checks the field trial state,
+      // so need to create the keys only after setting up the field trials.
+      const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+      const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
       // Create a new HttpServerProperties, loading the data from before.
       std::unique_ptr<MockPrefDelegate> pref_delegate =
@@ -2764,66 +2809,66 @@ TEST_F(HttpServerPropertiesManagerTest,
                                                  GetMockTickClock());
       unowned_pref_delegate->InitializePrefs(saved_value);
 
-      if (save_network_isolation_key_mode ==
-          NetworkIsolationKeyMode::kDisabled) {
-        // If NetworkIsolationKey was disabled when saving, entries were saved
-        // with an empty NetworkIsolationKey, which should always be loaded
-        // successfully. This is needed to continue to support consumers that
-        // don't use NetworkIsolationKeys.
+      if (save_network_anonymization_key_mode ==
+          NetworkAnonymizationKeyMode::kDisabled) {
+        // If NetworkAnonymizationKey was disabled when saving, entries were
+        // saved with an empty NetworkAnonymizationKey, which should always be
+        // loaded successfully. This is needed to continue to support consumers
+        // that don't use NetworkAnonymizationKeys.
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkIsolationKey()));
+                                        kServer1, NetworkAnonymizationKey()));
         EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, NetworkIsolationKey()));
-        if (load_network_isolation_key_mode !=
-            NetworkIsolationKeyMode::kDisabled) {
+                                        kServer2, NetworkAnonymizationKey()));
+        if (load_network_anonymization_key_mode !=
+            NetworkAnonymizationKeyMode::kDisabled) {
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkIsolationKey1));
+                                 kServer1, kNetworkAnonymizationKey1));
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkIsolationKey2));
+                                 kServer1, kNetworkAnonymizationKey2));
 
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer2, kNetworkIsolationKey1));
+                                 kServer2, kNetworkAnonymizationKey1));
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer2, kNetworkIsolationKey2));
+                                 kServer2, kNetworkAnonymizationKey2));
         }
-      } else if (save_network_isolation_key_mode ==
-                 load_network_isolation_key_mode) {
+      } else if (save_network_anonymization_key_mode ==
+                 load_network_anonymization_key_mode) {
         // If the save and load modes are the same, the load should succeed, and
         // the network isolation keys should match.
         EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
-                                        kServer1, kNetworkIsolationKey1));
+                                        kServer1, kNetworkAnonymizationKey1));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer1, kNetworkIsolationKey2));
+                               kServer1, kNetworkAnonymizationKey2));
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkIsolationKey()));
+                                        kServer1, NetworkAnonymizationKey()));
 
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkIsolationKey1));
+                               kServer2, kNetworkAnonymizationKey1));
         EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
-                                        kServer2, kNetworkIsolationKey2));
+                                        kServer2, kNetworkAnonymizationKey2));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, NetworkIsolationKey()));
+                               kServer2, NetworkAnonymizationKey()));
       } else {
-        // Otherwise, only the value set with an empty NetworkIsolationKey
+        // Otherwise, only the value set with an empty NetworkAnonymizationKey
         // should have been loaded successfully.
         EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
-                                        kServer1, NetworkIsolationKey()));
+                                        kServer1, NetworkAnonymizationKey()));
 
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkIsolationKey1));
+                               kServer2, kNetworkAnonymizationKey1));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, kNetworkIsolationKey2));
+                               kServer2, kNetworkAnonymizationKey2));
         EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                               kServer2, NetworkIsolationKey()));
+                               kServer2, NetworkAnonymizationKey()));
 
-        // There should be no cross-contamination of NetworkIsolationKeys, if
-        // NetworkIsolationKeys are enabled.
-        if (load_network_isolation_key_mode !=
-            NetworkIsolationKeyMode::kDisabled) {
+        // There should be no cross-contamination of NetworkAnonymizationKeys,
+        // if NetworkAnonymizationKeys are enabled.
+        if (load_network_anonymization_key_mode !=
+            NetworkAnonymizationKeyMode::kDisabled) {
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkIsolationKey1));
+                                 kServer1, kNetworkAnonymizationKey1));
           EXPECT_EQ(nullptr, properties->GetQuicServerInfo(
-                                 kServer1, kNetworkIsolationKey2));
+                                 kServer1, kNetworkAnonymizationKey2));
         }
       }
     }
@@ -2831,14 +2876,14 @@ TEST_F(HttpServerPropertiesManagerTest,
 }
 
 // Tests a full round trip to prefs and back in the canonical suffix for
-// QuicServerInfo case. Enable NetworkIsolationKeys, as they have some
+// QuicServerInfo case. Enable NetworkAnonymizationKeys, as they have some
 // interactions with the canonical suffix logic.
 TEST_F(HttpServerPropertiesManagerTest,
-       NetworkIsolationKeyQuicServerInfoCanonicalSuffixRoundTrip) {
+       NetworkAnonymizationKeyQuicServerInfoCanonicalSuffixRoundTrip) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   // Three servers with the same canonical suffix (".c.youtube.com").
   const quic::QuicServerId kServer1("foo.c.youtube.com", 443,
@@ -2867,48 +2912,50 @@ TEST_F(HttpServerPropertiesManagerTest,
   unowned_pref_delegate->InitializePrefs(
       base::Value(base::Value::Type::DICTIONARY));
 
-  // Set kQuicServerInfo1 for kServer1 using kNetworkIsolationKey1. That
+  // Set kQuicServerInfo1 for kServer1 using kNetworkAnonymizationKey1. That
   // information should be retrieved when fetching information for any server
-  // with the same canonical suffix, when using kNetworkIsolationKey1.
-  properties->SetQuicServerInfo(kServer1, kNetworkIsolationKey1,
+  // with the same canonical suffix, when using kNetworkAnonymizationKey1.
+  properties->SetQuicServerInfo(kServer1, kNetworkAnonymizationKey1,
                                 kQuicServerInfo1);
-  EXPECT_EQ(kQuicServerInfo1,
-            *properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo1,
-            *properties->GetQuicServerInfo(kServer2, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo1,
-            *properties->GetQuicServerInfo(kServer3, kNetworkIsolationKey1));
-  EXPECT_FALSE(properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey2));
+  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
+                                  kServer1, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
+                                  kServer2, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
+                                  kServer3, kNetworkAnonymizationKey1));
+  EXPECT_FALSE(
+      properties->GetQuicServerInfo(kServer1, kNetworkAnonymizationKey2));
 
-  // Set kQuicServerInfo2 for kServer2 using kNetworkIsolationKey1. It should
-  // not affect information retrieved for kServer1, but should for kServer2 and
-  // kServer3.
-  properties->SetQuicServerInfo(kServer2, kNetworkIsolationKey1,
+  // Set kQuicServerInfo2 for kServer2 using kNetworkAnonymizationKey1. It
+  // should not affect information retrieved for kServer1, but should for
+  // kServer2 and kServer3.
+  properties->SetQuicServerInfo(kServer2, kNetworkAnonymizationKey1,
                                 kQuicServerInfo2);
-  EXPECT_EQ(kQuicServerInfo1,
-            *properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo2,
-            *properties->GetQuicServerInfo(kServer2, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo2,
-            *properties->GetQuicServerInfo(kServer3, kNetworkIsolationKey1));
-  EXPECT_FALSE(properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey2));
+  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
+                                  kServer1, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
+                                  kServer2, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
+                                  kServer3, kNetworkAnonymizationKey1));
+  EXPECT_FALSE(
+      properties->GetQuicServerInfo(kServer1, kNetworkAnonymizationKey2));
 
-  // Set kQuicServerInfo3 for kServer1 using kNetworkIsolationKey2. It should
-  // not affect information stored for kNetworkIsolationKey1.
-  properties->SetQuicServerInfo(kServer1, kNetworkIsolationKey2,
+  // Set kQuicServerInfo3 for kServer1 using kNetworkAnonymizationKey2. It
+  // should not affect information stored for kNetworkAnonymizationKey1.
+  properties->SetQuicServerInfo(kServer1, kNetworkAnonymizationKey2,
                                 kQuicServerInfo3);
-  EXPECT_EQ(kQuicServerInfo1,
-            *properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo2,
-            *properties->GetQuicServerInfo(kServer2, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo2,
-            *properties->GetQuicServerInfo(kServer3, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo3,
-            *properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey2));
-  EXPECT_EQ(kQuicServerInfo3,
-            *properties->GetQuicServerInfo(kServer2, kNetworkIsolationKey2));
-  EXPECT_EQ(kQuicServerInfo3,
-            *properties->GetQuicServerInfo(kServer3, kNetworkIsolationKey2));
+  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
+                                  kServer1, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
+                                  kServer2, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
+                                  kServer3, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
+                                  kServer1, kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
+                                  kServer2, kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
+                                  kServer3, kNetworkAnonymizationKey2));
 
   // Wait until the data's been written to prefs, and then tear down the
   // HttpServerProperties.
@@ -2928,28 +2975,29 @@ TEST_F(HttpServerPropertiesManagerTest,
   // servers.
   //
   // TODO(mmenke): The rest of this test corresponds exactly to behavior in
-  // CanonicalSuffixRoundTripWithNetworkIsolationKey. It seems like these lines
-  // should correspond as well.
-  EXPECT_EQ(kQuicServerInfo1,
-            *properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo2,
-            *properties->GetQuicServerInfo(kServer2, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo2,
-            *properties->GetQuicServerInfo(kServer3, kNetworkIsolationKey1));
-  EXPECT_EQ(kQuicServerInfo3,
-            *properties->GetQuicServerInfo(kServer1, kNetworkIsolationKey2));
-  EXPECT_EQ(kQuicServerInfo3,
-            *properties->GetQuicServerInfo(kServer2, kNetworkIsolationKey2));
-  EXPECT_EQ(kQuicServerInfo3,
-            *properties->GetQuicServerInfo(kServer3, kNetworkIsolationKey2));
+  // CanonicalSuffixRoundTripWithNetworkAnonymizationKey. It seems like these
+  // lines should correspond as well.
+  EXPECT_EQ(kQuicServerInfo1, *properties->GetQuicServerInfo(
+                                  kServer1, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
+                                  kServer2, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo2, *properties->GetQuicServerInfo(
+                                  kServer3, kNetworkAnonymizationKey1));
+  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
+                                  kServer1, kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
+                                  kServer2, kNetworkAnonymizationKey2));
+  EXPECT_EQ(kQuicServerInfo3, *properties->GetQuicServerInfo(
+                                  kServer3, kNetworkAnonymizationKey2));
 }
 
-// Make sure QuicServerInfo associated with NetworkIsolationKeys with opaque
+// Make sure QuicServerInfo associated with NetworkAnonymizationKeys with opaque
 // origins aren't saved.
 TEST_F(HttpServerPropertiesManagerTest,
-       NetworkIsolationKeyQuicServerInfoOpaqueOrigin) {
+       NetworkAnonymizationKeyQuicServerInfoOpaqueOrigin) {
   const SchemefulSite kOpaqueSite(GURL("data:text/plain,Hello World"));
-  const NetworkIsolationKey kNetworkIsolationKey(kOpaqueSite, kOpaqueSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey(kOpaqueSite,
+                                                         kOpaqueSite);
   const quic::QuicServerId kServer("foo", 443,
                                    false /* privacy_mode_enabled */);
 
@@ -2969,9 +3017,9 @@ TEST_F(HttpServerPropertiesManagerTest,
   unowned_pref_delegate->InitializePrefs(
       base::Value(base::Value::Type::DICTIONARY));
 
-  properties->SetQuicServerInfo(kServer, kNetworkIsolationKey,
+  properties->SetQuicServerInfo(kServer, kNetworkAnonymizationKey,
                                 "QuicServerInfo");
-  EXPECT_TRUE(properties->GetQuicServerInfo(kServer, kNetworkIsolationKey));
+  EXPECT_TRUE(properties->GetQuicServerInfo(kServer, kNetworkAnonymizationKey));
 
   // Wait until the data's been written to prefs, and then create a copy of
   // the prefs data.
@@ -3006,7 +3054,7 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
         AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
             quic_alternative_service, expiration, advertised_versions));
     http_server_props_->SetAlternativeServices(
-        server, NetworkIsolationKey(), alternative_service_info_vector_in);
+        server, NetworkAnonymizationKey(), alternative_service_info_vector_in);
     // Save to JSON.
     EXPECT_EQ(0, pref_delegate_->GetAndClearNumPrefUpdates());
     EXPECT_NE(0u, GetPendingMainThreadTaskCount());
@@ -3050,8 +3098,8 @@ TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
 TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -3083,22 +3131,22 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
   const url::SchemeHostPort kServer1("https", "1.example", 443);
   const url::SchemeHostPort kServer2("https", "2.example", 443);
   const url::SchemeHostPort kServer3("https", "3.example", 443);
-  properties->SetAlternativeServices(kServer1, kNetworkIsolationKey1,
+  properties->SetAlternativeServices(kServer1, kNetworkAnonymizationKey1,
                                      {alt_service1});
-  properties->SetAlternativeServices(kServer2, kNetworkIsolationKey1,
+  properties->SetAlternativeServices(kServer2, kNetworkAnonymizationKey1,
                                      {alt_service2});
-  properties->SetAlternativeServices(kServer3, kNetworkIsolationKey2,
+  properties->SetAlternativeServices(kServer3, kNetworkAnonymizationKey2,
                                      {alt_service3});
 
   // Set quic_server_info.
   quic::QuicServerId quic_server_id1("quic1.example", 80, false);
   quic::QuicServerId quic_server_id2("quic2.example", 80, false);
   quic::QuicServerId quic_server_id3("quic3.example", 80, false);
-  properties->SetQuicServerInfo(quic_server_id1, kNetworkIsolationKey1,
+  properties->SetQuicServerInfo(quic_server_id1, kNetworkAnonymizationKey1,
                                 "quic_server_info1");
-  properties->SetQuicServerInfo(quic_server_id2, kNetworkIsolationKey1,
+  properties->SetQuicServerInfo(quic_server_id2, kNetworkAnonymizationKey1,
                                 "quic_server_info2");
-  properties->SetQuicServerInfo(quic_server_id3, kNetworkIsolationKey2,
+  properties->SetQuicServerInfo(quic_server_id3, kNetworkAnonymizationKey2,
                                 "quic_server_info3");
 
   // Set broken_alternative_service info.
@@ -3106,13 +3154,13 @@ TEST_F(HttpServerPropertiesManagerTest, SameOrderAfterReload) {
   AlternativeService broken_service2(kProtoQUIC, "broken2.example", 443);
   AlternativeService broken_service3(kProtoQUIC, "broken3.example", 443);
   properties->MarkAlternativeServiceBroken(broken_service1,
-                                           kNetworkIsolationKey1);
+                                           kNetworkAnonymizationKey1);
   FastForwardBy(base::Milliseconds(1));
   properties->MarkAlternativeServiceBroken(broken_service2,
-                                           kNetworkIsolationKey1);
+                                           kNetworkAnonymizationKey1);
   FastForwardBy(base::Milliseconds(1));
   properties->MarkAlternativeServiceBroken(broken_service3,
-                                           kNetworkIsolationKey2);
+                                           kNetworkAnonymizationKey2);
 
   // The first item of `server_info_map` must be the latest item.
   EXPECT_EQ(3u, properties->server_info_map_for_testing().size());

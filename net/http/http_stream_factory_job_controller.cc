@@ -821,7 +821,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       session_->IsQuicEnabled() && proxy_info_.is_direct() &&
       !session_->http_server_properties()->IsAlternativeServiceBroken(
           GetAlternativeServiceForDnsJob(origin_url),
-          request_info_.network_isolation_key);
+          request_info_.network_anonymization_key);
 
   if (is_preconnect_) {
     // Due to how the socket pools handle priorities and idle sockets, only IDLE
@@ -1075,7 +1075,7 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
     // network changes.
     session_->http_server_properties()
         ->MarkAlternativeServiceBrokenUntilDefaultNetworkChanges(
-            alt_service, request_info_.network_isolation_key);
+            alt_service, request_info_.network_anonymization_key);
     return;
   }
 
@@ -1093,7 +1093,7 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
   HistogramBrokenAlternateProtocolLocation(
       BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_STREAM_FACTORY_JOB_ALT);
   session_->http_server_properties()->MarkAlternativeServiceBroken(
-      alt_service, request_info_.network_isolation_key);
+      alt_service, request_info_.network_anonymization_key);
 }
 
 void HttpStreamFactory::JobController::MaybeNotifyFactoryOfCompletion() {
@@ -1182,7 +1182,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
   const AlternativeServiceInfoVector alternative_service_info_vector =
       http_server_properties.GetAlternativeServiceInfos(
           url::SchemeHostPort(original_url),
-          request_info.network_isolation_key);
+          request_info.network_anonymization_key);
   if (alternative_service_info_vector.empty())
     return AlternativeServiceInfo();
 
@@ -1200,7 +1200,7 @@ HttpStreamFactory::JobController::GetAlternativeServiceInfoInternal(
       quic_advertised = true;
     const bool is_broken = http_server_properties.IsAlternativeServiceBroken(
         alternative_service_info.alternative_service(),
-        request_info.network_isolation_key);
+        request_info.network_anonymization_key);
     net_log_.AddEvent(
         NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND, [&] {
           return NetLogAltSvcParams(&alternative_service_info, is_broken);

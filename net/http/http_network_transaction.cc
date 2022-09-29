@@ -309,7 +309,10 @@ void HttpNetworkTransaction::PrepareForAuthRestart(HttpAuth::Target target) {
   if (target == HttpAuth::AUTH_SERVER &&
       auth_controllers_[target]->NeedsHTTP11()) {
     session_->http_server_properties()->SetHTTP11Required(
-        url::SchemeHostPort(request_->url), network_isolation_key_);
+        url::SchemeHostPort(request_->url),
+        NetworkAnonymizationKey::
+            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                network_isolation_key_));
   }
 
   bool keep_alive = false;
@@ -1335,7 +1338,10 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
       HistogramBrokenAlternateProtocolLocation(
           BROKEN_ALTERNATE_PROTOCOL_LOCATION_HTTP_NETWORK_TRANSACTION);
       session_->http_server_properties()->MarkAlternativeServiceBroken(
-          retried_alternative_service_, network_isolation_key_);
+          retried_alternative_service_,
+          NetworkAnonymizationKey::
+              CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                  network_isolation_key_));
     }
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -1654,7 +1660,10 @@ int HttpNetworkTransaction::HandleIOError(int error) {
       if (HasExceededMaxRetries())
         break;
       if (session_->http_server_properties()->IsAlternativeServiceBroken(
-              retried_alternative_service_, network_isolation_key_)) {
+              retried_alternative_service_,
+              NetworkAnonymizationKey::
+                  CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                      network_isolation_key_))) {
         // If the alternative service was marked as broken while the request
         // was in flight, retry the request which will not use the broken
         // alternative service.

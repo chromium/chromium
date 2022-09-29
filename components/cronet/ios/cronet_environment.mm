@@ -403,7 +403,7 @@ void CronetEnvironment::InitializeOnNetworkThread() {
     url::SchemeHostPort quic_hint_server("https", quic_hint.host(),
                                          quic_hint.port());
     main_context_->http_server_properties()->SetQuicAlternativeService(
-        quic_hint_server, net::NetworkIsolationKey(), alternative_service,
+        quic_hint_server, net::NetworkAnonymizationKey(), alternative_service,
         base::Time::Max(), quic::ParsedQuicVersionVector());
   }
 

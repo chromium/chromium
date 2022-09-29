@@ -3732,7 +3732,7 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyNoKeepAliveHttp10) {
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
       HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
-      NetworkIsolationKey());
+      NetworkAnonymizationKey());
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
@@ -4512,14 +4512,14 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
       HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
-      NetworkIsolationKey());
+      NetworkAnonymizationKey());
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo, entry->credentials().username());
   ASSERT_EQ(kBar, entry->credentials().password());
   entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
       HttpAuth::AUTH_SERVER, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
-      NetworkIsolationKey());
+      NetworkAnonymizationKey());
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
@@ -9398,7 +9398,7 @@ TEST_F(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   EXPECT_THAT(initial_callback.GetResult(rv), IsOk());
 
   EXPECT_FALSE(session->http_server_properties()->RequiresHTTP11(
-      url::SchemeHostPort(kInitialUrl), NetworkIsolationKey()));
+      url::SchemeHostPort(kInitialUrl), NetworkAnonymizationKey()));
 
   HttpRequestInfo websocket_request_info;
   websocket_request_info.method = "GET";
@@ -9449,7 +9449,7 @@ TEST_F(HttpNetworkTransactionTest, NTLMOverHttp2WithWebsockets) {
   // part here is that the scheme that requires HTTP/1.1 should be HTTPS, not
   // WSS.
   EXPECT_TRUE(session->http_server_properties()->RequiresHTTP11(
-      url::SchemeHostPort(kInitialUrl), NetworkIsolationKey()));
+      url::SchemeHostPort(kInitialUrl), NetworkAnonymizationKey()));
 }
 
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -12710,7 +12710,7 @@ std::unique_ptr<HttpNetworkSession> SetupSessionForGroupIdTests(
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
       url::SchemeHostPort("https", "host.with.alternate", 443),
-      NetworkIsolationKey(), alternative_service, expiration);
+      NetworkAnonymizationKey(), alternative_service, expiration);
 
   return session;
 }
@@ -13540,7 +13540,7 @@ TEST_F(HttpNetworkTransactionTest, IgnoreAltSvcWithInvalidCert) {
       session->http_server_properties();
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -13558,7 +13558,7 @@ TEST_F(HttpNetworkTransactionTest, IgnoreAltSvcWithInvalidCert) {
 
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 }
 
@@ -13599,7 +13599,7 @@ TEST_F(HttpNetworkTransactionTest, HonorAlternativeServiceHeader) {
       session->http_server_properties();
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -13616,8 +13616,8 @@ TEST_F(HttpNetworkTransactionTest, HonorAlternativeServiceHeader) {
   EXPECT_EQ("hello world", response_data);
 
   AlternativeServiceInfoVector alternative_service_info_vector =
-      http_server_properties->GetAlternativeServiceInfos(test_server,
-                                                         NetworkIsolationKey());
+      http_server_properties->GetAlternativeServiceInfos(
+          test_server, NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   AlternativeService alternative_service(kProtoHTTP2, "mail.example.org", 443);
   EXPECT_EQ(alternative_service,
@@ -13685,7 +13685,7 @@ TEST_F(HttpNetworkTransactionTest,
       session->http_server_properties();
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, kNetworkIsolationKey1)
+          ->GetAlternativeServiceInfos(test_server, kNetworkAnonymizationKey1)
           .empty());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -13702,22 +13702,22 @@ TEST_F(HttpNetworkTransactionTest,
   EXPECT_EQ("hello world", response_data);
 
   AlternativeServiceInfoVector alternative_service_info_vector =
-      http_server_properties->GetAlternativeServiceInfos(test_server,
-                                                         kNetworkIsolationKey1);
+      http_server_properties->GetAlternativeServiceInfos(
+          test_server, kNetworkAnonymizationKey1);
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   AlternativeService alternative_service(kProtoHTTP2, "mail.example.org", 443);
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
 
   // Make sure the alternative service information is only associated with
-  // kNetworkIsolationKey1.
+  // kNetworkAnonymizationKey1.
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, kNetworkIsolationKey2)
+          ->GetAlternativeServiceInfos(test_server, kNetworkAnonymizationKey2)
           .empty());
 }
 
@@ -13752,7 +13752,7 @@ TEST_F(HttpNetworkTransactionTest,
       session->http_server_properties();
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 
   int rv = trans.Start(&request, callback.callback(), NetLogWithSource());
@@ -13772,7 +13772,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 }
 
@@ -13812,7 +13812,7 @@ TEST_F(HttpNetworkTransactionTest,
                                          444);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(request.url), NetworkIsolationKey(),
+      url::SchemeHostPort(request.url), NetworkAnonymizationKey(),
       alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -13853,7 +13853,7 @@ TEST_F(HttpNetworkTransactionTest,
   AlternativeService alternative_service(kProtoHTTP2, "", 444);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(request.url), NetworkIsolationKey(),
+      url::SchemeHostPort(request.url), NetworkAnonymizationKey(),
       alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -13873,12 +13873,12 @@ TEST_F(HttpNetworkTransactionTest, ClearAlternativeServices) {
   AlternativeService alternative_service(kProtoQUIC, "", 80);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetQuicAlternativeService(
-      test_server, NetworkIsolationKey(), alternative_service, expiration,
+      test_server, NetworkAnonymizationKey(), alternative_service, expiration,
       session->context().quic_context->params()->supported_versions);
-  EXPECT_EQ(1u,
-            http_server_properties
-                ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
-                .size());
+  EXPECT_EQ(1u, http_server_properties
+                    ->GetAlternativeServiceInfos(test_server,
+                                                 NetworkAnonymizationKey())
+                    .size());
 
   // Send a clear header.
   MockRead data_reads[] = {
@@ -13923,7 +13923,7 @@ TEST_F(HttpNetworkTransactionTest, ClearAlternativeServices) {
 
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 }
 
@@ -13964,7 +13964,7 @@ TEST_F(HttpNetworkTransactionTest, HonorMultipleAlternativeServiceHeaders) {
       session->http_server_properties();
   EXPECT_TRUE(
       http_server_properties
-          ->GetAlternativeServiceInfos(test_server, NetworkIsolationKey())
+          ->GetAlternativeServiceInfos(test_server, NetworkAnonymizationKey())
           .empty());
 
   EXPECT_THAT(callback.WaitForResult(), IsOk());
@@ -13981,8 +13981,8 @@ TEST_F(HttpNetworkTransactionTest, HonorMultipleAlternativeServiceHeaders) {
   EXPECT_EQ("hello world", response_data);
 
   AlternativeServiceInfoVector alternative_service_info_vector =
-      http_server_properties->GetAlternativeServiceInfos(test_server,
-                                                         NetworkIsolationKey());
+      http_server_properties->GetAlternativeServiceInfos(
+          test_server, NetworkAnonymizationKey());
   ASSERT_EQ(2u, alternative_service_info_vector.size());
 
   AlternativeService alternative_service(kProtoHTTP2, "www.example.com", 443);
@@ -14032,11 +14032,11 @@ TEST_F(HttpNetworkTransactionTest, IdentifyQuicBroken) {
   AlternativeService alternative_service(kProtoQUIC, alternative);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       DefaultSupportedQuicVersions());
   // Mark the QUIC alternative service as broken.
-  http_server_properties->MarkAlternativeServiceBroken(alternative_service,
-                                                       NetworkIsolationKey());
+  http_server_properties->MarkAlternativeServiceBroken(
+      alternative_service, NetworkAnonymizationKey());
 
   HttpRequestInfo request;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14107,14 +14107,15 @@ TEST_F(HttpNetworkTransactionTest, IdentifyQuicNotBroken) {
           session->context().quic_context->params()->supported_versions));
 
   http_server_properties->SetAlternativeServices(
-      server, NetworkIsolationKey(), alternative_service_info_vector);
+      server, NetworkAnonymizationKey(), alternative_service_info_vector);
 
   // Mark one of the QUIC alternative service as broken.
-  http_server_properties->MarkAlternativeServiceBroken(alternative_service1,
-                                                       NetworkIsolationKey());
-  EXPECT_EQ(2u, http_server_properties
-                    ->GetAlternativeServiceInfos(server, NetworkIsolationKey())
-                    .size());
+  http_server_properties->MarkAlternativeServiceBroken(
+      alternative_service1, NetworkAnonymizationKey());
+  EXPECT_EQ(2u,
+            http_server_properties
+                ->GetAlternativeServiceInfos(server, NetworkAnonymizationKey())
+                .size());
 
   HttpRequestInfo request;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14167,7 +14168,7 @@ TEST_F(HttpNetworkTransactionTest, MarkBrokenAlternateProtocolAndFallback) {
                                                666);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration);
+      server, NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -14186,13 +14187,13 @@ TEST_F(HttpNetworkTransactionTest, MarkBrokenAlternateProtocolAndFallback) {
   EXPECT_EQ("hello world", response_data);
 
   const AlternativeServiceInfoVector alternative_service_info_vector =
-      http_server_properties->GetAlternativeServiceInfos(server,
-                                                         NetworkIsolationKey());
+      http_server_properties->GetAlternativeServiceInfos(
+          server, NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   EXPECT_EQ(alternative_service,
             alternative_service_info_vector[0].alternative_service());
   EXPECT_TRUE(http_server_properties->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 }
 
 // Ensure that we are not allowed to redirect traffic via an alternate protocol
@@ -14232,8 +14233,8 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedBlocked) {
                                          kUnrestrictedAlternatePort);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(restricted_port_request.url), NetworkIsolationKey(),
-      alternative_service, expiration);
+      url::SchemeHostPort(restricted_port_request.url),
+      NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -14283,8 +14284,8 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedPermitted) {
                                          kUnrestrictedAlternatePort);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(restricted_port_request.url), NetworkIsolationKey(),
-      alternative_service, expiration);
+      url::SchemeHostPort(restricted_port_request.url),
+      NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -14333,8 +14334,8 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortRestrictedAllowed) {
                                          kRestrictedAlternatePort);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(restricted_port_request.url), NetworkIsolationKey(),
-      alternative_service, expiration);
+      url::SchemeHostPort(restricted_port_request.url),
+      NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -14383,8 +14384,8 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortUnrestrictedAllowed1) {
                                          kRestrictedAlternatePort);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(unrestricted_port_request.url), NetworkIsolationKey(),
-      alternative_service, expiration);
+      url::SchemeHostPort(unrestricted_port_request.url),
+      NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -14433,8 +14434,8 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolPortUnrestrictedAllowed2) {
                                          kUnrestrictedAlternatePort);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(unrestricted_port_request.url), NetworkIsolationKey(),
-      alternative_service, expiration);
+      url::SchemeHostPort(unrestricted_port_request.url),
+      NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
   TestCompletionCallback callback;
@@ -14475,7 +14476,7 @@ TEST_F(HttpNetworkTransactionTest, AlternateProtocolUnsafeBlocked) {
                                          kUnsafePort);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      url::SchemeHostPort(request.url), NetworkIsolationKey(),
+      url::SchemeHostPort(request.url), NetworkAnonymizationKey(),
       alternative_service, expiration);
 
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -14804,7 +14805,7 @@ TEST_F(HttpNetworkTransactionTest, UseOriginNotAlternativeForProxy) {
   AlternativeService alternative_service(kProtoHTTP2, alternative);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration);
+      server, NetworkAnonymizationKey(), alternative_service, expiration);
 
   // Non-alternative job should hang.
   MockConnect never_finishing_connect(SYNCHRONOUS, ERR_IO_PENDING);
@@ -15873,9 +15874,9 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
         url::SchemeHostPort scheme_host_port(GURL(test_config.proxy_url));
         HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
                                              auth_challenge.end());
-        auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_PROXY,
-                                        empty_ssl_info, NetworkIsolationKey(),
-                                        scheme_host_port, NetLogWithSource());
+        auth_handler->InitFromChallenge(
+            &tokenizer, HttpAuth::AUTH_PROXY, empty_ssl_info,
+            NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource());
         auth_handler->SetGenerateExpectation(
             test_config.proxy_auth_timing == AUTH_ASYNC,
             n == 0 ? test_config.first_generate_proxy_token_rv : OK);
@@ -15890,7 +15891,7 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       HttpAuthChallengeTokenizer tokenizer(auth_challenge.begin(),
                                            auth_challenge.end());
       auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
-                                      empty_ssl_info, NetworkIsolationKey(),
+                                      empty_ssl_info, NetworkAnonymizationKey(),
                                       scheme_host_port, NetLogWithSource());
       auth_handler->SetGenerateExpectation(
           test_config.server_auth_timing == AUTH_ASYNC,
@@ -15903,9 +15904,9 @@ TEST_F(HttpNetworkTransactionTest, GenerateAuthToken) {
       // transaction using the same auth scheme.
       std::unique_ptr<HttpAuthHandlerMock> second_handler =
           std::make_unique<HttpAuthHandlerMock>();
-      second_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
-                                        empty_ssl_info, NetworkIsolationKey(),
-                                        scheme_host_port, NetLogWithSource());
+      second_handler->InitFromChallenge(
+          &tokenizer, HttpAuth::AUTH_SERVER, empty_ssl_info,
+          NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource());
       second_handler->SetGenerateExpectation(true, OK);
       auth_factory_ptr->AddMockHandler(std::move(second_handler),
                                        HttpAuth::AUTH_SERVER);
@@ -16021,7 +16022,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
                                        auth_challenge.end());
   SSLInfo empty_ssl_info;
   auth_handler->InitFromChallenge(&tokenizer, HttpAuth::AUTH_SERVER,
-                                  empty_ssl_info, NetworkIsolationKey(),
+                                  empty_ssl_info, NetworkAnonymizationKey(),
                                   url::SchemeHostPort(url), NetLogWithSource());
   auth_factory_ptr->AddMockHandler(std::move(auth_handler),
                                    HttpAuth::AUTH_SERVER);
@@ -17295,7 +17296,7 @@ TEST_F(HttpNetworkTransactionTest, UseIPConnectionPooling) {
 
   // Preload mail.example.com into HostCache.
   rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.com", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.com", 443), NetworkAnonymizationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -17470,7 +17471,7 @@ TEST_F(HttpNetworkTransactionTest, RetryWithoutConnectionPooling) {
 
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.org", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -17597,7 +17598,7 @@ TEST_F(HttpNetworkTransactionTest, ReturnHTTP421OnRetry) {
 
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.org", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -17872,7 +17873,7 @@ TEST_F(HttpNetworkTransactionTest,
 
   // Preload cache entries into HostCache.
   rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.com", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.com", 443), NetworkAnonymizationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -18007,7 +18008,7 @@ TEST_F(HttpNetworkTransactionTest, AlternativeServiceNotOnHttp11) {
   AlternativeService alternative_service(kProtoHTTP2, alternative);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration);
+      server, NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpRequestInfo request;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
@@ -18075,7 +18076,7 @@ TEST_F(HttpNetworkTransactionTest, FailedAlternativeServiceIsNotUserVisible) {
   AlternativeService alternative_service(kProtoHTTP2, alternative);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration);
+      server, NetworkAnonymizationKey(), alternative_service, expiration);
 
   HttpNetworkTransaction trans1(DEFAULT_PRIORITY, session.get());
   HttpRequestInfo request1;
@@ -18102,7 +18103,7 @@ TEST_F(HttpNetworkTransactionTest, FailedAlternativeServiceIsNotUserVisible) {
   // Alternative should be marked as broken, because HTTP/1.1 is not sufficient
   // for alternative service.
   EXPECT_TRUE(http_server_properties->IsAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey()));
+      alternative_service, NetworkAnonymizationKey()));
 
   // Since |alternative_service| is broken, a second transaction to server
   // should not start an alternate Job.  It should pool to existing connection
@@ -18185,7 +18186,7 @@ TEST_F(HttpNetworkTransactionTest, AlternativeServiceShouldNotPoolToHttp11) {
   AlternativeService alternative_service(kProtoHTTP2, alternative);
   base::Time expiration = base::Time::Now() + base::Days(1);
   http_server_properties->SetHttp2AlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration);
+      server, NetworkAnonymizationKey(), alternative_service, expiration);
 
   // First transaction to alternative to open an HTTP/1.1 socket.
   HttpRequestInfo request1;
@@ -19798,7 +19799,7 @@ TEST_F(HttpNetworkTransactionTest, ProxyHeadersNotSentOverWsTunnel) {
 
   session->http_auth_cache()->Add(
       url::SchemeHostPort(GURL("http://myproxy:70/")), HttpAuth::AUTH_PROXY,
-      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
       "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   TestWebSocketHandshakeStreamCreateHelper websocket_stream_create_helper;
@@ -21129,7 +21130,7 @@ TEST_F(HttpNetworkTransactionNetworkErrorLoggingTest,
 
   // Preload mail.example.org into HostCache.
   int rv = session_deps_.host_resolver->LoadIntoCache(
-      HostPortPair("mail.example.org", 443), NetworkIsolationKey(),
+      HostPortPair("mail.example.org", 443), NetworkAnonymizationKey(),
       absl::nullopt);
   EXPECT_THAT(rv, IsOk());
 
@@ -22675,8 +22676,8 @@ TEST_F(HttpNetworkTransactionTest, ClientCertSocketReuse) {
 }
 
 // Test for kPartitionConnectionsByNetworkIsolationKey. Runs 3 requests in
-// sequence with two different NetworkIsolationKeys, the first and last have the
-// same key, the second a different one. Checks that the requests are
+// sequence with two different NetworkAnonymizationKeys, the first and last have
+// the same key, the second a different one. Checks that the requests are
 // partitioned across sockets as expected.
 TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite1(GURL("http://origin1/"));

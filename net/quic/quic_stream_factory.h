@@ -436,7 +436,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   void ConfigureInitialRttEstimate(
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       quic::QuicConfig* config);
 
   // Returns |srtt| in micro seconds from ServerNetworkStats. Returns 0 if there
@@ -444,14 +444,14 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // have ServerNetworkStats for the given |server_id|.
   int64_t GetServerNetworkStatsSmoothedRttInMicroseconds(
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key) const;
+      const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Returns |srtt| from ServerNetworkStats. Returns null if there
   // is no |http_server_properties_| or if |http_server_properties_| doesn't
   // have ServerNetworkStats for the given |server_id|.
   const base::TimeDelta* GetServerNetworkStatsSmoothedRtt(
       const quic::QuicServerId& server_id,
-      const NetworkIsolationKey& network_isolation_key) const;
+      const NetworkAnonymizationKey& network_anonymization_key) const;
 
   // Helper methods.
   bool WasQuicRecentlyBroken(const QuicSessionKey& session_key) const;
