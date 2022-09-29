@@ -6840,7 +6840,7 @@ crbug.com/1180274 virtual/first-party-sets/http/tests/inspector-protocol/network
 crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
 
 # Sheriff 2022-07-12
-crbug.com/1343674 [ Linux ] editing/deleting/460938.html [ Failure Pass ]
+crbug.com/1343674 editing/deleting/460938.html [ Failure Pass ]
 crbug.com/1343664 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-document.html [ Failure Pass ]
 
 # Disable test to land a MSE change. Spec change (MSE PR#306) is still pending,
