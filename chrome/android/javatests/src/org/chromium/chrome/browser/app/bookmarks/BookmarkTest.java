@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkActionBar;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
@@ -95,6 +94,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -1181,13 +1181,12 @@ public class BookmarkTest {
         // Verify that bookmark 1 is editable (so more button can be triggered) but not movable.
         BookmarkId partnerBookmarkId1 = getReorderAdapter().getIdByPosition(0);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkBridge.BookmarkItem partnerBookmarkItem1 =
-                    mBookmarkModel.getBookmarkById(partnerBookmarkId1);
+            BookmarkItem partnerBookmarkItem1 = mBookmarkModel.getBookmarkById(partnerBookmarkId1);
             partnerBookmarkItem1.forceEditableForTesting();
             Assert.assertEquals("Incorrect bookmark type for item 1", BookmarkType.PARTNER,
                     partnerBookmarkId1.getType());
-            Assert.assertFalse(
-                    "Partner item 1 should not be movable", partnerBookmarkItem1.isMovable());
+            Assert.assertFalse("Partner item 1 should not be movable",
+                    BookmarkUtils.isMovable(partnerBookmarkItem1));
             Assert.assertTrue(
                     "Partner item 1 should be editable", partnerBookmarkItem1.isEditable());
         });
@@ -1202,13 +1201,12 @@ public class BookmarkTest {
         // Verify that bookmark 2 is not movable.
         BookmarkId partnerBookmarkId2 = getReorderAdapter().getIdByPosition(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkBridge.BookmarkItem partnerBookmarkItem2 =
-                    mBookmarkModel.getBookmarkById(partnerBookmarkId2);
+            BookmarkItem partnerBookmarkItem2 = mBookmarkModel.getBookmarkById(partnerBookmarkId2);
             partnerBookmarkItem2.forceEditableForTesting();
             Assert.assertEquals("Incorrect bookmark type for item 2", BookmarkType.PARTNER,
                     partnerBookmarkId2.getType());
-            Assert.assertFalse(
-                    "Partner item 2 should not be movable", partnerBookmarkItem2.isMovable());
+            Assert.assertFalse("Partner item 2 should not be movable",
+                    BookmarkUtils.isMovable(partnerBookmarkItem2));
             Assert.assertTrue(
                     "Partner item 2 should be editable", partnerBookmarkItem2.isEditable());
         });

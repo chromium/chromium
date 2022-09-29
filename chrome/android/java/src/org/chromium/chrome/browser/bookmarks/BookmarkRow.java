@@ -21,8 +21,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
@@ -170,7 +170,7 @@ public abstract class BookmarkRow
             if (bookmarkItem != null) {
                 // Reading list items can sometimes be movable (for type swapping purposes), but for
                 // UI purposes they shouldn't be movable.
-                canMove = bookmarkItem.isMovable();
+                canMove = BookmarkUtils.isMovable(bookmarkItem);
                 canReorder = bookmarkItem.isReorderable() && !mFromFilterView;
             }
         }
