@@ -215,7 +215,7 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="virtual-keyboard=resize-visual"> tag (which works
+     * Tests the <meta name="viewport" content="interactive-widgets=resize-visual"> tag (which works
      * only when the OSKResizesVisualViewport flag is enabled) causes the page to resize only the
      * visual viewport.
      */
@@ -248,8 +248,8 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="virtual-keyboard=resize-layout"> tag opts the page
-     * back into a mode where the keyboard resizes layout.
+     * Tests the <meta name="viewport" content="interactive-widgets=resize-layout"> tag opts the
+     * page back into a mode where the keyboard resizes layout.
      */
     @Test
     @MediumTest
@@ -281,9 +281,9 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="virtual-keyboard=overlays-content"> tag (which works
-     * only when the OSKResizesVisualViewport flag is enabled) causes the page to avoid resizing any
-     * viewports.
+     * Tests the <meta name="viewport" content="interactive-widgets=overlays-content"> tag (which
+     * works only when the OSKResizesVisualViewport flag is enabled) causes the page to avoid
+     * resizing any viewports.
      */
     @Test
     @MediumTest

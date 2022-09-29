@@ -33,7 +33,7 @@ enum VirtualKeyboardMode {
   kResizeVisual,
   // The virtual keyboard resizes the layout (and visual) viewport as well as
   // the initial containing block. Can be set by the page via the viewport meta
-  // tag using `virtual-keyboard=resize-layout`. Currently works only on
+  // tag using `interactive-widgets=resize-layout`. Currently works only on
   // Android Chrome and only when the OSKResizesVisualViewport flag is enabled.
   kResizeLayout,
   // The virtual keyboard doesn't resize any viewports and is observable only

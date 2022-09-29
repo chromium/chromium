@@ -5,11 +5,11 @@
       const params = new URLSearchParams(window.location.search);
       let metaTagContent = 'width=device-width';
       if (params.has('resize-layout'))
-        metaTagContent += ',virtual-keyboard=resize-layout';
+        metaTagContent += ',interactive-widgets=resize-layout';
       else if (params.has('resize-visual'))
-        metaTagContent += ',virtual-keyboard=resize-visual';
+        metaTagContent += ',interactive-widgets=resize-visual';
       else if (params.has('overlays-content')) {
-        metaTagContent += ',virtual-keyboard=overlays-content';
+        metaTagContent += ',interactive-widgets=overlays-content';
 
         window.numGeometryChangeEvents = 0;
         navigator.virtualKeyboard.addEventListener('geometrychange', () => {
