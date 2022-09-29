@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="41">
+  <interface name="zaura_shell" version="42">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -272,12 +272,12 @@
 
     <request name="activate" since="9">
       <description summary="Indicate that this window wants to be the active window">
-	Make this the active window. This usually implies something like
-	restacking this surface to the foreground. The compositor is free to
-	ignore this request if it deems the client to be misbehaving. Typically
-	this request will only be honoured in response to some user driven
-	event, such as executing an application or opening a file in a window
-	that already exists.
+        [Deprecated] Make this the active window. This usually implies something
+        like restacking this surface to the foreground. The compositor is free
+        to ignore this request if it deems the client to be misbehaving.
+        Typically this request will only be honoured in response to some user
+        driven event, such as executing an application or opening a file in a
+        window that already exists.
       </description>
     </request>
 
@@ -684,7 +684,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_toplevel" version="41">
+  <interface name="zaura_toplevel" version="42">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -922,6 +922,23 @@
       <arg name="y" type="int"/>
       <arg name="output" type="object" interface="wl_output" allow-null="true"
            summary="output to contain the surface"/>
+    </request>
+
+    <request name="activate" since="42">
+      <description summary="activates the window">
+        Activates this window. This is equivalent to bringing the window to the
+        foreground. The compositor is free to ignore this request if it deems
+        the client to be misbehaving.
+      </description>
+    </request>
+
+    <request name="deactivate" since="42">
+      <description summary="deactivates the window">
+        Deactivates this window. This is equivalent to requesting that the
+        window not be the foreground window. The exact behavior is
+        compositor-defined. The compositor is free to ignore this request
+        if it deems the client to be misbehaving.
+      </description>
     </request>
   </interface>
 

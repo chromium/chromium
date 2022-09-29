@@ -243,8 +243,10 @@ void WaylandToplevelWindow::Activate() {
   // user.
   //
   // Exo provides activation through aura-shell, Mutter--through gtk-shell.
-  if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
-                           ZAURA_SURFACE_ACTIVATE_SINCE_VERSION) {
+  if (shell_toplevel_ && shell_toplevel_->SupportsActivation()) {
+    shell_toplevel_->Activate();
+  } else if (aura_surface_ && zaura_surface_get_version(aura_surface_.get()) >=
+                                  ZAURA_SURFACE_ACTIVATE_SINCE_VERSION) {
     zaura_surface_activate(aura_surface_.get());
   } else if (connection()->xdg_activation()) {
     // xdg-activation implementation in some compositors is still buggy and
@@ -261,6 +263,13 @@ void WaylandToplevelWindow::Activate() {
   // window in which case events will start and the activation will come
   // through).
   connection()->Flush();
+}
+
+void WaylandToplevelWindow::Deactivate() {
+  if (shell_toplevel_ && shell_toplevel_->SupportsActivation()) {
+    shell_toplevel_->Deactivate();
+    connection()->Flush();
+  }
 }
 
 void WaylandToplevelWindow::SizeConstraintsChanged() {

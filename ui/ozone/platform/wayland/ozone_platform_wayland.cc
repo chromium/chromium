@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include <components/exo/wayland/protocol/aura-shell-client-protocol.h>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -46,6 +48,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_menu_utils.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/wayland_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -328,6 +331,11 @@ class OzonePlatformWayland : public OzonePlatform,
       // accelerated widget to occlude contents below.
       properties.needs_background_image =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
+      if (connection_->zaura_shell()) {
+        properties.supports_activation =
+            zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
+            ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
+      }
 
       if (surface_factory_) {
         DCHECK(has_initialized_gpu());

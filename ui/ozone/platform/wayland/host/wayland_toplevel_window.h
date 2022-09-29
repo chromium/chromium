@@ -61,6 +61,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Restore() override;
   PlatformWindowState GetPlatformWindowState() const override;
   void Activate() override;
+  void Deactivate() override;
   void SizeConstraintsChanged() override;
   // `SetZOrderLevel()` must be called on `z_order_` in
   // `SetUpShellIntegration()`.

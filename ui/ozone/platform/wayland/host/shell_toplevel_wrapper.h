@@ -136,6 +136,12 @@ class ShellToplevelWrapper {
 
   // Sets the z order of the window.
   virtual void SetZOrder(ZOrderLevel z_order) = 0;
+
+  // Activation brings a window to the foreground. Deactivation makes a window
+  // non-foregrounded.
+  virtual bool SupportsActivation() = 0;
+  virtual void Activate() = 0;
+  virtual void Deactivate() = 0;
 };
 
 // Look for |value| in |wl_array| in C++ style.

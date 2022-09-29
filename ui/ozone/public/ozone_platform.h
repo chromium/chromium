@@ -195,6 +195,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Wayland only: determines whether clip rects can be delegated via the
     // wayland protocol.
     bool supports_clip_rect = false;
+
+    // Wayland only: determine whether toplevel surfaces can be activated and
+    // deactivated.
+    bool supports_activation = false;
   };
 
   // Corresponds to chrome_browser_main_extra_parts.h.

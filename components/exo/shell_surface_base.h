@@ -95,8 +95,13 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     client_supports_window_bounds_ = enable;
   }
 
-  // Activates the shell surface.
+  // Activates the shell surface. Brings it to the foreground.
   void Activate();
+  void RequestActivation();
+
+  // Deactivates the shell surface. Makes it not the foreground.
+  void Deactivate();
+  void RequestDeactivation();
 
   // Set title for the surface.
   void SetTitle(const std::u16string& title);

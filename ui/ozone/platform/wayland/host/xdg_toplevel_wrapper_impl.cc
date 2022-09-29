@@ -483,6 +483,27 @@ void XDGToplevelWrapperImpl::SetZOrder(ZOrderLevel z_order) {
   }
 }
 
+bool XDGToplevelWrapperImpl::SupportsActivation() {
+  static_assert(
+      ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION ==
+          ZAURA_TOPLEVEL_DEACTIVATE_SINCE_VERSION,
+      "Support for activation and deactivation was added in the same version.");
+  return aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
+                               ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
+}
+
+void XDGToplevelWrapperImpl::Activate() {
+  if (aura_toplevel_ && SupportsActivation()) {
+    zaura_toplevel_activate(aura_toplevel_.get());
+  }
+}
+
+void XDGToplevelWrapperImpl::Deactivate() {
+  if (aura_toplevel_ && SupportsActivation()) {
+    zaura_toplevel_deactivate(aura_toplevel_.get());
+  }
+}
+
 void XDGToplevelWrapperImpl::SetRestoreInfo(int32_t restore_session_id,
                                             int32_t restore_window_id) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=

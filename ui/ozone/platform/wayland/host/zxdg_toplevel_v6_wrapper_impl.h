@@ -58,6 +58,9 @@ class ZXDGToplevelV6WrapperImpl : public ShellToplevelWrapper {
   void SetFloat() override;
   void UnSetFloat() override;
   void SetZOrder(ZOrderLevel z_order) override;
+  bool SupportsActivation() override;
+  void Activate() override;
+  void Deactivate() override;
 
   ZXDGSurfaceV6WrapperImpl* zxdg_surface_v6_wrapper() const;
 

@@ -4792,6 +4792,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/tablet_mode_lacros_browsertest.cc",
       "../browser/lacros/wallpaper_lacros_browsertest.cc",
       "../browser/lacros/web_contents_can_go_back_observer_browsertest.cc",
+      "../browser/lacros/window_lacros_browsertest.cc",
       "../browser/metrics/structured/lacros_structured_metrics_recorder_browsertest.cc",
       "../browser/speech/extension_api/tts_extension_api_lacros_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.cc",
@@ -4841,6 +4842,7 @@ if (is_chromeos_lacros) {
       "//components/services/app_service/public/cpp:test_support",
       "//components/user_manager:user_manager",
       "//ui/gfx/codec",
+      "//ui/ozone",
       "//ui/platform_window",
     ]
 

@@ -54,6 +54,9 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetFloat() override;
   void UnSetFloat() override;
   void SetZOrder(ZOrderLevel z_order) override;
+  bool SupportsActivation() override;
+  void Activate() override;
+  void Deactivate() override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 

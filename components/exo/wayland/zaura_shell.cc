@@ -737,6 +737,14 @@ void AuraToplevel::SetZOrder(ui::ZOrderLevel z_order) {
   shell_surface_->SetZOrder(z_order);
 }
 
+void AuraToplevel::Activate() {
+  shell_surface_->RequestActivation();
+}
+
+void AuraToplevel::Deactivate() {
+  shell_surface_->RequestDeactivation();
+}
+
 void AuraToplevel::SetClientUsesScreenCoordinates() {
   supports_window_bounds_ = true;
   shell_surface_->set_client_supports_window_bounds(true);
@@ -1240,6 +1248,14 @@ void aura_toplevel_set_z_order(wl_client* client,
       AuraTopLevelZOrderLevel(z_order));
 }
 
+void aura_toplevel_activate(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->Activate();
+}
+
+void aura_toplevel_deactivate(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->Deactivate();
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1255,6 +1271,8 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_unset_float,
     aura_toplevel_set_z_order,
     aura_toplevel_set_origin,
+    aura_toplevel_activate,
+    aura_toplevel_deactivate,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

@@ -221,5 +221,10 @@ void ZXDGToplevelV6WrapperImpl::SetFloat() {}
 void ZXDGToplevelV6WrapperImpl::UnSetFloat() {}
 
 void ZXDGToplevelV6WrapperImpl::SetZOrder(ZOrderLevel z_order) {}
+bool ZXDGToplevelV6WrapperImpl::SupportsActivation() {
+  return false;
+}
+void ZXDGToplevelV6WrapperImpl::Activate() {}
+void ZXDGToplevelV6WrapperImpl::Deactivate() {}
 
 }  // namespace ui

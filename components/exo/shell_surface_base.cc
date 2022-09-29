@@ -377,6 +377,15 @@ void ShellSurfaceBase::Activate() {
   widget_->Activate();
 }
 
+void ShellSurfaceBase::Deactivate() {
+  TRACE_EVENT0("exo", "ShellSurfaceBase::Deactivate");
+
+  if (!widget_ || !widget_->IsActive())
+    return;
+
+  widget_->Deactivate();
+}
+
 void ShellSurfaceBase::SetTitle(const std::u16string& title) {
   TRACE_EVENT1("exo", "ShellSurfaceBase::SetTitle", "title",
                base::UTF16ToUTF8(title));
@@ -962,9 +971,20 @@ void ShellSurfaceBase::OnSetApplicationId(const char* application_id) {
 }
 
 void ShellSurfaceBase::OnActivationRequested() {
+  RequestActivation();
+}
+
+void ShellSurfaceBase::RequestActivation() {
   if (widget_ && GetSecurityDelegate() &&
       GetSecurityDelegate()->CanSelfActivate(widget_->GetNativeWindow())) {
     this->Activate();
+  }
+}
+
+void ShellSurfaceBase::RequestDeactivation() {
+  if (widget_ && GetSecurityDelegate() &&
+      GetSecurityDelegate()->CanSelfActivate(widget_->GetNativeWindow())) {
+    this->Deactivate();
   }
 }
 
