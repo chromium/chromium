@@ -107,7 +107,7 @@ class RatingsView : public views::View {
               IDS_EXTENSION_PROMPT_RATING_ACCESSIBLE_TEXT),
           rating_, rating_count_);
     }
-    node_data->SetName(accessible_text);
+    node_data->SetNameChecked(accessible_text);
   }
 
  private:
