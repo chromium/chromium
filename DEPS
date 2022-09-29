@@ -495,6 +495,10 @@ vars = {
 
   # GN CIPD package version.
   'gn_version': 'git_revision:cc28efe62ef0c2fb32455f414a29c4a55bb7fbc4',
+
+  # ninja CIPD package version.
+  # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
+  'ninja_version': 'version:2@1.8.2.chromium.3',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
@@ -570,6 +574,15 @@ deps = {
     ],
     'dep_type': 'cipd',
     'condition': 'checkout_reclient',
+  },
+  'src/third_party/ninja': {
+    'packages': [
+      {
+        'package': 'infra/3pp/tools/ninja/${{platform}}',
+        'version': Var('ninja_version'),
+      }
+    ],
+    'dep_type': 'cipd',
   },
   'src/third_party/android_rust_toolchain/toolchain': {
     'packages': [
