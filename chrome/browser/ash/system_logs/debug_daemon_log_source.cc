@@ -194,7 +194,7 @@ void DebugDaemonLogSource::OnGetOneLog(std::string key,
 }
 
 void DebugDaemonLogSource::OnGetLogs(const base::TimeTicks get_start_time,
-                                     bool /* succeeded */,
+                                     bool succeeded,
                                      const KeyValueMap& logs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -202,6 +202,8 @@ void DebugDaemonLogSource::OnGetLogs(const base::TimeTicks get_start_time,
   // reports only where the logs will always be scrubbed. GetBigFeedbackLogs is
   // the dbus method used.
   if (scrub_) {
+    base::UmaHistogramBoolean("Feedback.ChromeOSApp.GetBigFeedbackLogs.Success",
+                              succeeded);
     base::UmaHistogramMediumTimes(
         "Feedback.ChromeOSApp.Duration.GetBigFeedbackLogs",
         base::TimeTicks::Now() - get_start_time);

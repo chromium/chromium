@@ -5888,6 +5888,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Feedback.ChromeOSApp.GetBigFeedbackLogs.Success"
+    units="boolean" expires_after="2023-06-30">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the success status of fetching the feedback logs via debus method
+    GetBigFeedbackLogs. Fires during the process of sending a feedback report on
+    Chrome OS, or when the user previews the system logs from the feedback app
+    on Chrome OS.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.ChromeOSApp.HelpContentOutcome"
     enum="FeedbackAppHelpContentOutcome" expires_after="2023-07-27">
   <owner>longbowei@google.com</owner>
