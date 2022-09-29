@@ -39,7 +39,7 @@ export class TabDiscardExceptionEntryElement extends
     };
   }
 
-  private site: string;
+  site: string;
 
   private onMenuClick_(e: Event) {
     this.fire('menu-click', {target: e.target as HTMLElement, site: this.site});

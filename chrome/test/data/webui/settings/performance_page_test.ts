@@ -1,19 +1,17 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/lazy_load.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsPerformancePageElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/lazy_load.js';
+import {SettingsPerformancePageElement, SUBMIT_EVENT, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PerformanceBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
-// clang-format on
 
 suite('PerformancePage', function() {
   let performancePage: SettingsPerformancePageElement;
@@ -28,15 +26,27 @@ suite('PerformancePage', function() {
 
   function getExceptionListEntries():
       NodeListOf<TabDiscardExceptionEntryElement> {
-    return tabDiscardExceptionsList.$.container
-        .querySelectorAll<TabDiscardExceptionEntryElement>(
-            'tab-discard-exception-entry:not([hidden])');
+    return tabDiscardExceptionsList.$.list.querySelectorAll(
+        `${TabDiscardExceptionEntryElement.is}:not([hidden])`);
   }
 
   function clickDeleteMenuItem() {
-    const buttons = tabDiscardExceptionsList.$.menu.querySelectorAll('button');
-    assertEquals(2, buttons.length);
-    buttons[1]!.click();
+    const button: HTMLButtonElement|null =
+        tabDiscardExceptionsList.$.menu.get().querySelector('button#delete');
+    assertTrue(!!button);
+    button.click();
+  }
+
+  function clickEditMenuItem() {
+    const button: HTMLButtonElement|null =
+        tabDiscardExceptionsList.$.menu.get().querySelector('button#edit');
+    assertTrue(!!button);
+    button.click();
+  }
+
+  function getDialog(): TabDiscardExceptionDialogElement|null {
+    return tabDiscardExceptionsList.shadowRoot!.querySelector(
+        TabDiscardExceptionDialogElement.is);
   }
 
   setup(function() {
@@ -111,37 +121,95 @@ suite('PerformancePage', function() {
     // </if>
   });
 
+  function setupExceptionListEntries(existingRules: string[]) {
+    performancePage.set(tabDiscardExceptionsPref, existingRules);
+    flush();
+    assertDeepEquals(existingRules, tabDiscardExceptionsList.$.list.items);
+  }
+
   test('testTabDiscardExceptionsList', function() {
     // no sites added message should be shown when list is empty
     assertFalse(tabDiscardExceptionsList.$.noSitesAdded.hidden);
-    assertEquals(0, getExceptionListEntries().length);
+    assertDeepEquals([], tabDiscardExceptionsList.$.list.items);
 
     // list should be updated when pref is changed
-    performancePage.set(tabDiscardExceptionsPref, ['foo', 'bar']);
-    flush();
+    setupExceptionListEntries(['foo', 'bar']);
     assertTrue(tabDiscardExceptionsList.$.noSitesAdded.hidden);
-    assertEquals(2, getExceptionListEntries().length);
   });
 
   test('testTabDiscardExceptionsListDelete', function() {
-    performancePage.set(tabDiscardExceptionsPref, ['foo', 'bar']);
-    flush();
-    let entries = getExceptionListEntries();
-    assertEquals(2, entries.length);
-    assertEquals('foo', entries[0]!.get('site'));
-    assertEquals('bar', entries[1]!.get('site'));
+    setupExceptionListEntries(['foo', 'bar']);
 
-    entries[0]!.$.button.click();
+    getExceptionListEntries()[0]!.$.button.click();
     clickDeleteMenuItem();
     flush();
-    entries = getExceptionListEntries();
-    assertEquals(1, entries.length);
-    assertEquals('bar', entries[0]!.get('site'));
+    assertDeepEquals(['bar'], tabDiscardExceptionsList.$.list.items);
 
-    entries[0]!.$.button.click();
+    getExceptionListEntries()[0]!.$.button.click();
     clickDeleteMenuItem();
     flush();
-    entries = getExceptionListEntries();
-    assertEquals(0, entries.length);
+    assertDeepEquals([], tabDiscardExceptionsList.$.list.items);
+  });
+
+  function openAddDialog(): TabDiscardExceptionDialogElement {
+    let addDialog = getDialog();
+    assertFalse(!!addDialog, 'dialog should not exist by default');
+
+    tabDiscardExceptionsList.$.addButton.click();
+    flush();
+
+    addDialog = getDialog();
+    assertTrue(
+        !!addDialog, 'add dialog should exist after clicking add button');
+    assertTrue(
+        addDialog.$.dialog.open,
+        'add dialog should be opened after clicking add button');
+    assertEquals(
+        '', addDialog.$.input.value,
+        'add dialog input should be empty initially');
+    return addDialog;
+  }
+
+  function openEditDialog(entry: TabDiscardExceptionEntryElement):
+      TabDiscardExceptionDialogElement {
+    let editDialog = getDialog();
+    assertFalse(!!editDialog, 'dialog should not exist by default');
+
+    entry.$.button.click();
+    clickEditMenuItem();
+    flush();
+
+    editDialog = getDialog();
+    assertTrue(
+        !!editDialog, 'edit dialog should exist after clicking edit button');
+    assertTrue(
+        editDialog.$.dialog.open,
+        'edit dialog should be opened after clicking edit button');
+    assertEquals(
+        entry.site, editDialog.$.input.value,
+        'edit dialog input should be populated initially');
+    return editDialog;
+  }
+
+  test('testTabDiscardExceptionsListAdd', function() {
+    setupExceptionListEntries(['foo']);
+    const dialog = openAddDialog();
+    dialog.fire(SUBMIT_EVENT, 'bar');
+
+    // tabDiscardExceptionsList.$.list._render();
+    assertDeepEquals(
+        ['foo', 'bar'], tabDiscardExceptionsList.$.list.items,
+        'expected valid rule to be added to the end of the list');
+  });
+
+  test('testTabDiscardExceptionsListEdit', function() {
+    setupExceptionListEntries(['foo', 'bar']);
+    const dialog = openEditDialog(getExceptionListEntries()[1]!);
+    dialog.fire(SUBMIT_EVENT, 'baz');
+
+    // tabDiscardExceptionsList.$.list._render();
+    assertDeepEquals(
+        ['foo', 'baz'], tabDiscardExceptionsList.$.list.items,
+        'expected valid rule to be added to the end of the list');
   });
 });

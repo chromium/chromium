@@ -127,6 +127,7 @@ non_preprocessed_files = [
   "site_settings_page_test.ts",
   "startup_urls_page_test.ts",
   "sync_test_util.ts",
+  "tab_discard_exception_dialog_test.ts",
   "test_autofill_assistant_browser_proxy.ts",
   "test_clear_browsing_data_browser_proxy.ts",
   "test_extension_control_browser_proxy.ts",

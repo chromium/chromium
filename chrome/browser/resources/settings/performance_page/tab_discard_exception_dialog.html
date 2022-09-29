@@ -1,0 +1,20 @@
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">[[title_]]</div>
+  <div slot="body">
+    <cr-input id="input" label="$i18n{addSite}"
+        placeholder="$i18n{addSiteExceptionPlaceholder}" value="{{rule}}"
+        on-input="validate_" error-message="[[errorMessage_]]"
+        invalid="[[inputInvalid_]]" spellcheck="false" autofocus>
+    </cr-input>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="actionButton" class="action-button" on-click="onSubmitClick_"
+        disabled$="[[submitDisabled_]]">
+      [[submitButtonText_]]
+    </cr-button>
+  </div>
+</cr-dialog>

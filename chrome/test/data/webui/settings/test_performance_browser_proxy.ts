@@ -7,10 +7,13 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
     PerformanceBrowserProxy {
+  private validationResult_: boolean = true;
+
   constructor() {
     super([
       'openBatterySaverFeedbackDialog',
       'openHighEfficiencyFeedbackDialog',
+      'validateTabDiscardExceptionRule',
     ]);
   }
 
@@ -20,5 +23,14 @@ export class TestPerformanceBrowserProxy extends TestBrowserProxy implements
 
   openHighEfficiencyFeedbackDialog() {
     this.methodCalled('openHighEfficiencyFeedbackDialog');
+  }
+
+  setValidationResult(result: boolean) {
+    this.validationResult_ = result;
+  }
+
+  validateTabDiscardExceptionRule(rule: string) {
+    this.methodCalled('validateTabDiscardExceptionRule', rule);
+    return Promise.resolve(this.validationResult_);
   }
 }

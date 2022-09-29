@@ -461,6 +461,18 @@ TEST_F('CrSettingsBatteryPageTest', 'All', function() {
   mocha.run();
 });
 
+var CrSettingsTabDiscardExceptionDialogTest =
+    class extends CrSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/tab_discard_exception_dialog_test.js';
+  }
+};
+
+TEST_F('CrSettingsTabDiscardExceptionDialogTest', 'All', function() {
+  mocha.run();
+});
+
 var CrSettingsPersonalizationOptionsTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
