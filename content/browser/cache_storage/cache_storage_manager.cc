@@ -721,7 +721,7 @@ void CacheStorageManager::GetStorageKeys(
       if (!bucket_locator.is_default)
         continue;
 
-      storage_keys.push_back(key_value.first.first.storage_key);
+      storage_keys.push_back(bucket_locator.storage_key);
     }
 
     scheduler_task_runner_->PostTask(

@@ -74,12 +74,9 @@ class CONTENT_EXPORT CacheStorageManager
 
   static bool IsValidQuotaStorageKey(const blink::StorageKey& storage_key);
 
-  // Open the CacheStorage for the given storage_key and owner.  A reference
+  // Open the CacheStorage for the given bucket_locator and owner. A reference
   // counting handle is returned which can be stored and used similar to a weak
   // pointer.
-  CacheStorageHandle OpenCacheStorage(const blink::StorageKey& storage_key,
-                                      storage::mojom::CacheStorageOwner owner);
-
   CacheStorageHandle OpenCacheStorage(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner);

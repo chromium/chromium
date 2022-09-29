@@ -88,11 +88,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
     return cache_manager_;
   }
 
-  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return quota_manager_proxy_;
-  }
-
   bool is_incognito() const { return is_incognito_; }
 
  private:

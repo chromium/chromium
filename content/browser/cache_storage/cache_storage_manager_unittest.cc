@@ -264,12 +264,6 @@ class CacheStorageManagerTest : public testing::Test {
       ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     CreateStorageManager();
-
-    // Instantiate these after `quota_manager_proxy_` has been initialized.
-    bucket_locator1_ =
-        GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
-    bucket_locator2_ =
-        GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName);
   }
 
   void TearDown() override {
@@ -383,6 +377,13 @@ class CacheStorageManagerTest : public testing::Test {
             mock_quota_manager_.get(),
             base::ThreadTaskRunnerHandle::Get().get());
 
+    // These must be instantiated after `quota_manager_proxy_` has been
+    // initialized.
+    bucket_locator1_ =
+        GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
+    bucket_locator2_ =
+        GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName);
+
     cache_manager_ = CacheStorageManager::Create(
         temp_dir_path, base::ThreadTaskRunnerHandle::Get(),
         base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
@@ -421,6 +422,10 @@ class CacheStorageManagerTest : public testing::Test {
 
     quota_policy_ = nullptr;
     mock_quota_manager_ = nullptr;
+    // Note: After the MockQuotaManager goes away, the buckets get destroyed as
+    // well. We won't clear `bucket_locator1_` or `bucket_locator2_`, though,
+    // for cases where it's useful to compare the bucket locator values to
+    // values written to the Cache Storage index files.
 
     cache_manager_ = nullptr;
   }
@@ -897,6 +902,27 @@ class CacheStorageManagerStorageKeyAndBucketTestP
           net::features::kThirdPartyStoragePartitioning);
     }
 
+    ReinitializeStorageKeysAndBucketLocators();
+  }
+
+  void CreateStorageManager() {
+    // Always reset `storage_key1_` and `storage_key2_` to what they
+    // are expected to be in CacheStorageManagerTest so that when we
+    // reinitialize below the bucket IDs of the new `bucket_locator1_`
+    // and `bucket_locator2_` will be the same regardless of how many
+    // times `DestroyStorageManager()` and then `CreateStorageManager()`
+    // are called.
+    storage_key1_ =
+        blink::StorageKey(url::Origin::Create(GURL("http://example1.com")));
+    storage_key2_ =
+        blink::StorageKey(url::Origin::Create(GURL("http://example2.com")));
+
+    CacheStorageManagerTest::CreateStorageManager();
+
+    ReinitializeStorageKeysAndBucketLocators();
+  }
+
+  void ReinitializeStorageKeysAndBucketLocators() {
     std::string bucket_name;
     switch (test_case_) {
       case (StorageKeyAndBucketTestCase::kFirstPartyDefault):
@@ -916,13 +942,23 @@ class CacheStorageManagerStorageKeyAndBucketTestP
       case (StorageKeyAndBucketTestCase::kFirstPartyDefaultPartitionEnabled):
         // For this case, the storage keys and bucket locators are already
         // initialized correctly.
+        ASSERT_TRUE(storage_key1_.IsFirstPartyContext());
+        ASSERT_TRUE(storage_key2_.IsFirstPartyContext());
+
+        ASSERT_EQ(bucket_locator1_.id, storage::BucketId::FromUnsafeValue(1));
+        ASSERT_EQ(bucket_locator2_.id, storage::BucketId::FromUnsafeValue(2));
         break;
       case (StorageKeyAndBucketTestCase::kFirstPartyNamed):
       case (StorageKeyAndBucketTestCase::kFirstPartyNamedPartitionEnabled):
         // For this case, the storage keys are initialized correctly but we
         // need to create new named buckets.
+        ASSERT_TRUE(storage_key1_.IsFirstPartyContext());
+        ASSERT_TRUE(storage_key2_.IsFirstPartyContext());
+
         bucket_locator1_ = GetOrCreateBucket(storage_key1_, bucket_name);
         bucket_locator2_ = GetOrCreateBucket(storage_key2_, bucket_name);
+        ASSERT_EQ(bucket_locator1_.id, storage::BucketId::FromUnsafeValue(3));
+        ASSERT_EQ(bucket_locator2_.id, storage::BucketId::FromUnsafeValue(4));
         break;
 
       case (StorageKeyAndBucketTestCase::kThirdPartyDefault):
@@ -937,9 +973,12 @@ class CacheStorageManagerStorageKeyAndBucketTestP
 
         bucket_locator1_ = GetOrCreateBucket(storage_key1_, bucket_name);
         bucket_locator2_ = GetOrCreateBucket(storage_key2_, bucket_name);
+        ASSERT_EQ(bucket_locator1_.id, storage::BucketId::FromUnsafeValue(3));
+        ASSERT_EQ(bucket_locator2_.id, storage::BucketId::FromUnsafeValue(4));
         break;
     }
   }
+
   bool ThirdPartyStoragePartitioningEnabled() {
     return test_case_ == StorageKeyAndBucketTestCase::
                              kFirstPartyDefaultPartitionEnabled ||
@@ -1827,9 +1866,8 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetAllStorageKeysUsage) {
   EXPECT_FALSE(usage[storage_key2_index]->last_modified.is_null());
 }
 
-// TODO(crbug.com/1369300): Re-enable this test.
 TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
-       DISABLED_GetAllStorageKeysUsageWithPadding) {
+       GetAllStorageKeysUsageWithPadding) {
   EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
 
   EXPECT_TRUE(Open(bucket_locator1_, "foo"));
@@ -1839,6 +1877,11 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
       storage_dir.AppendASCII(CacheStorage::kIndexFileName);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+
+  // Ensure that the index file has been written to disk before calling
+  // `GetAllStorageKeysUsage()`.
+  disk_cache::FlushCacheThreadForTesting();
+  content::RunAllTasksUntilIdle();
 
   auto usage = GetAllStorageKeysUsage();
   ASSERT_EQ(1ULL, usage.size());
@@ -3127,11 +3170,8 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     }
 
     // Double-check that total_usage is comparable with what's returned by
-    // `GetBucketUsage()`. Note that in my testing the value returned by
-    // `GetBucketUsage()` here is larger than total_usage by 256, possibly
-    // because the migration increases the calculated size depending on how
-    // and/or when the calculation is done.
-    EXPECT_LE(total_usage, GetBucketUsage(bucket_locator1_));
+    // `GetBucketUsage()`.
+    EXPECT_EQ(total_usage, GetBucketUsage(bucket_locator1_));
 
     // Destroy the manager and then ensure that all tasks have completed before
     // continuing. We can't rely on `FlushCacheStorageIndex()` here because it
