@@ -439,8 +439,6 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_OPTIONS_LOCK},
       {"multideviceForgetDeviceDisconnect",
        IDS_SETTINGS_MULTIDEVICE_FORGET_THIS_DEVICE_DISCONNECT},
-      {"multidevicePhoneHubAppsItemTitle",
-       IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE},
       {"multidevicePhoneHubAppsAndNotificationsItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE},
       {"multidevicePhoneHubCameraRollAndNotificationsItemTitle",
@@ -640,6 +638,18 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source->AddBoolean(
       "isSmartLockSignInRemoved",
       base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved));
+
+  if (base::FeatureList::IsEnabled(features::kPhoneHubAppStreamingBetaBadge)) {
+    html_source->AddString(
+        "multidevicePhoneHubAppsItemTitle",
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_BETA_TITLE));
+  } else {
+    html_source->AddString(
+        "multidevicePhoneHubAppsItemTitle",
+        l10n_util::GetStringUTF16(
+            IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
+  }
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {
