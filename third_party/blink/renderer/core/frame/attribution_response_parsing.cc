@@ -74,6 +74,14 @@ bool ParseAttributionAggregationKey(const JSONValue* value,
   return true;
 }
 
+mojom::blink::AttributionTriggerDedupKeyPtr ParseDedupKey(
+    const String& string) {
+  bool is_valid = false;
+  uint64_t value = string.ToUInt64Strict(&is_valid);
+  return is_valid ? mojom::blink::AttributionTriggerDedupKey::New(value)
+                  : nullptr;
+}
+
 }  // namespace
 
 bool ParseAttributionFilterData(
@@ -311,14 +319,8 @@ bool ParseEventTriggerData(
         event_trigger->priority = priority;
     }
 
-    if (String s; object_val->GetString("deduplication_key", &s)) {
-      bool valid = false;
-      uint64_t dedup_key = s.ToUInt64Strict(&valid);
-      if (valid) {
-        event_trigger->dedup_key =
-            mojom::blink::AttributionTriggerDedupKey::New(dedup_key);
-      }
-    }
+    if (String s; object_val->GetString("deduplication_key", &s))
+      event_trigger->dedup_key = ParseDedupKey(s);
 
     event_trigger->filters = mojom::blink::AttributionFilterData::New();
     if (!ParseAttributionFilterData(object_val->Get("filters"),
@@ -502,6 +504,9 @@ bool ParseTriggerRegistrationHeader(
 
   if (String s; object->GetString("debug_key", &s))
     trigger_data.debug_key = ParseDebugKey(s);
+
+  if (String s; object->GetString("aggregatable_deduplication_key", &s))
+    trigger_data.aggregatable_dedup_key = ParseDedupKey(s);
 
   return true;
 }

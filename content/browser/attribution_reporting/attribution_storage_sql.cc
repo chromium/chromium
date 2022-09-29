@@ -60,11 +60,11 @@
 namespace content {
 
 // Version number of the database.
-const int AttributionStorageSql::kCurrentVersionNumber = 36;
+const int AttributionStorageSql::kCurrentVersionNumber = 37;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 36;
+const int AttributionStorageSql::kCompatibleVersionNumber = 37;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -236,6 +236,10 @@ absl::optional<AttributionSourceType> DeserializeSourceType(int val) {
     default:
       return absl::nullopt;
   }
+}
+
+int SerializeReportType(AttributionReport::Type val) {
+  return static_cast<int>(val);
 }
 
 std::string SerializePotentiallyTrustworthyOrigin(const url::Origin& origin) {
@@ -883,7 +887,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     DCHECK(new_aggregatable_report.has_value());
     store_aggregatable_status = MaybeStoreAggregatableAttributionReport(
         *new_aggregatable_report,
-        source_to_attribute->source.aggregatable_budget_consumed());
+        source_to_attribute->source.aggregatable_budget_consumed(),
+        trigger.aggregatable_dedup_key());
   }
 
   if (store_event_level_status == EventLevelResult::kInternalError ||
@@ -1034,7 +1039,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
     return EventLevelResult::kNoMatchingConfigurations;
 
   switch (ReportAlreadyStored(attribution_info.source.source_id(),
-                              event_trigger->dedup_key)) {
+                              event_trigger->dedup_key,
+                              AttributionReport::Type::kEventLevel)) {
     case ReportAlreadyStoredStatus::kNotStored:
       break;
     case ReportAlreadyStoredStatus::kStored:
@@ -1138,16 +1144,10 @@ EventLevelResult AttributionStorageSql::MaybeStoreEventLevelReport(
   // If a dedup key is present, store it. We do this regardless of whether
   // `create_report` is true to avoid leaking whether the report was actually
   // stored.
-  if (dedup_key.has_value()) {
-    static constexpr char kInsertDedupKeySql[] =
-        "INSERT INTO dedup_keys(source_id,dedup_key)VALUES(?,?)";
-    sql::Statement insert_dedup_key_statement(
-        db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
-    insert_dedup_key_statement.BindInt64(0,
-                                         *attribution_info.source.source_id());
-    insert_dedup_key_statement.BindInt64(1, SerializeUint64(*dedup_key));
-    if (!insert_dedup_key_statement.Run())
-      return EventLevelResult::kInternalError;
+  if (dedup_key.has_value() &&
+      !StoreDedupKey(attribution_info.source.source_id(), *dedup_key,
+                     AttributionReport::Type::kEventLevel)) {
+    return EventLevelResult::kInternalError;
   }
 
   // Only increment the number of conversions associated with the source if
@@ -1784,18 +1784,21 @@ bool AttributionStorageSql::HasCapacityForStoringSource(
 }
 
 AttributionStorageSql::ReportAlreadyStoredStatus
-AttributionStorageSql::ReportAlreadyStored(StoredSource::Id source_id,
-                                           absl::optional<uint64_t> dedup_key) {
+AttributionStorageSql::ReportAlreadyStored(
+    StoredSource::Id source_id,
+    absl::optional<uint64_t> dedup_key,
+    AttributionReport::Type report_type) {
   if (!dedup_key.has_value())
     return ReportAlreadyStoredStatus::kNotStored;
 
   static constexpr char kCountReportsSql[] =
       "SELECT COUNT(*)FROM dedup_keys "
-      "WHERE source_id=? AND dedup_key=?";
+      "WHERE source_id=? AND report_type=? AND dedup_key=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kCountReportsSql));
   statement.BindInt64(0, *source_id);
-  statement.BindInt64(1, SerializeUint64(*dedup_key));
+  statement.BindInt(1, SerializeReportType(report_type));
+  statement.BindInt64(2, SerializeUint64(*dedup_key));
 
   // If there's an error, return true so `MaybeCreateAndStoreReport()`
   // returns early.
@@ -1867,22 +1870,31 @@ std::vector<StoredSource> AttributionStorageSql::GetActiveSources(int limit) {
 
   for (auto& source : sources) {
     absl::optional<std::vector<uint64_t>> dedup_keys =
-        ReadDedupKeys(source.source_id());
+        ReadDedupKeys(source.source_id(), AttributionReport::Type::kEventLevel);
     if (!dedup_keys.has_value())
       return {};
     source.SetDedupKeys(std::move(*dedup_keys));
+
+    absl::optional<std::vector<uint64_t>> aggregatable_dedup_keys =
+        ReadDedupKeys(source.source_id(),
+                      AttributionReport::Type::kAggregatableAttribution);
+    if (!aggregatable_dedup_keys.has_value())
+      return {};
+    source.SetAggregatableDedupKeys(std::move(*aggregatable_dedup_keys));
   }
 
   return sources;
 }
 
 absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
-    StoredSource::Id source_id) {
+    StoredSource::Id source_id,
+    AttributionReport::Type report_type) {
   static constexpr char kDedupKeySql[] =
-      "SELECT dedup_key FROM dedup_keys WHERE source_id=?";
+      "SELECT dedup_key FROM dedup_keys WHERE source_id=? AND report_type=?";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kDedupKeySql));
   statement.BindInt64(0, *source_id);
+  statement.BindInt(1, SerializeReportType(report_type));
 
   std::vector<uint64_t> dedup_keys;
   while (statement.Step()) {
@@ -1892,6 +1904,19 @@ absl::optional<std::vector<uint64_t>> AttributionStorageSql::ReadDedupKeys(
     return absl ::nullopt;
 
   return dedup_keys;
+}
+
+bool AttributionStorageSql::StoreDedupKey(StoredSource::Id source_id,
+                                          uint64_t dedup_key,
+                                          AttributionReport::Type report_type) {
+  static constexpr char kInsertDedupKeySql[] =
+      "INSERT INTO dedup_keys(source_id,report_type,dedup_key)VALUES(?,?,?)";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
+  statement.BindInt64(0, *source_id);
+  statement.BindInt(1, SerializeReportType(report_type));
+  statement.BindInt64(2, SerializeUint64(dedup_key));
+  return statement.Run();
 }
 
 void AttributionStorageSql::HandleInitializationFailure(
@@ -2154,8 +2179,9 @@ bool AttributionStorageSql::CreateSchema() {
   static constexpr char kDedupKeyTableSql[] =
       "CREATE TABLE dedup_keys("
       "source_id INTEGER NOT NULL,"
+      "report_type INTEGER NOT NULL,"
       "dedup_key INTEGER NOT NULL,"
-      "PRIMARY KEY(source_id,dedup_key))WITHOUT ROWID";
+      "PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID";
   if (!db_->Execute(kDedupKeyTableSql))
     return false;
 
@@ -2625,6 +2651,17 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
   if (contributions.empty())
     return AggregatableResult::kNoHistograms;
 
+  switch (ReportAlreadyStored(
+      attribution_info.source.source_id(), trigger.aggregatable_dedup_key(),
+      AttributionReport::Type::kAggregatableAttribution)) {
+    case ReportAlreadyStoredStatus::kNotStored:
+      break;
+    case ReportAlreadyStoredStatus::kStored:
+      return AggregatableResult::kDeduplicated;
+    case ReportAlreadyStoredStatus::kError:
+      return AggregatableResult::kInternalError;
+  }
+
   switch (CapacityForStoringReport(
       trigger, AttributionReport::Type::kAggregatableAttribution)) {
     case ConversionCapacityStatus::kHasCapacity:
@@ -2709,7 +2746,8 @@ bool AttributionStorageSql::StoreAggregatableAttributionReport(
 AggregatableResult
 AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
     AttributionReport& report,
-    int64_t aggregatable_budget_consumed) {
+    int64_t aggregatable_budget_consumed,
+    absl::optional<uint64_t> dedup_key) {
   const auto* aggregatable_attribution =
       absl::get_if<AttributionReport::AggregatableAttributionData>(
           &report.data());
@@ -2732,14 +2770,20 @@ AttributionStorageSql::MaybeStoreAggregatableAttributionReport(
   if (!StoreAggregatableAttributionReport(report))
     return AggregatableResult::kInternalError;
 
+  StoredSource::Id source_id = report.attribution_info().source.source_id();
+
   base::CheckedNumeric<int64_t> budget_required =
       aggregatable_attribution->BudgetRequired();
   // The value was already validated by
   // `AggregatableAttributionAllowedForBudgetLimit()` above.
   DCHECK(budget_required.IsValid());
-  if (!AdjustBudgetConsumedForSource(
-          report.attribution_info().source.source_id(),
-          budget_required.ValueOrDie())) {
+  if (!AdjustBudgetConsumedForSource(source_id, budget_required.ValueOrDie())) {
+    return AggregatableResult::kInternalError;
+  }
+
+  if (dedup_key.has_value() &&
+      !StoreDedupKey(source_id, *dedup_key,
+                     AttributionReport::Type::kAggregatableAttribution)) {
     return AggregatableResult::kInternalError;
   }
 

@@ -157,7 +157,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   ReportAlreadyStoredStatus ReportAlreadyStored(
       StoredSource::Id source_id,
-      absl::optional<uint64_t> dedup_key)
+      absl::optional<uint64_t> dedup_key,
+      AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   enum class ConversionCapacityStatus {
@@ -190,7 +191,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<std::vector<uint64_t>> ReadDedupKeys(
-      StoredSource::Id source_id) VALID_CONTEXT_REQUIRED(sequence_checker_);
+      StoredSource::Id source_id,
+      AttributionReport::Type report_type)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  bool StoreDedupKey(StoredSource::Id source_id,
+                     uint64_t dedup_key,
+                     AttributionReport::Type report_type)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] RateLimitResult
   HasCapacityForUniqueDestinationLimitForPendingSource(
@@ -348,7 +356,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   AttributionTrigger::AggregatableResult
   MaybeStoreAggregatableAttributionReport(AttributionReport& report,
-                                          int64_t aggregatable_budget_consumed)
+                                          int64_t aggregatable_budget_consumed,
+                                          absl::optional<uint64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] bool StoreAggregatableAttributionReport(

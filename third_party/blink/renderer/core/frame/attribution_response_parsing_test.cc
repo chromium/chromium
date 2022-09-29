@@ -557,6 +557,84 @@ TEST(AttributionResponseParsingTest, ParseFilterData) {
   }
 }
 
+TEST(AttributionResponseParsingTest, ParseAggregatableDedupKey) {
+  const auto reporting_origin =
+      SecurityOrigin::CreateFromString("https://r.test");
+
+  const struct {
+    String description;
+    String json;
+    mojom::blink::AttributionTriggerDataPtr expected;
+  } kTestCases[] = {
+      {"no_aggregatable_dedup_key", R"json({})json",
+       mojom::blink::AttributionTriggerData::New(
+           reporting_origin, WTF::Vector<mojom::blink::EventTriggerDataPtr>(),
+           /*filters=*/AttributionFilterDataBuilder().Build(),
+           /*not_filters=*/AttributionFilterDataBuilder().Build(),
+           WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
+           WTF::HashMap<String, uint32_t>(),
+           /*debug_key=*/nullptr,
+           /*aggregatable_dedup_key=*/nullptr)},
+      {"valid_aggregatable_dedup_key",
+       R"json({
+        "aggregatable_deduplication_key": "3"
+      })json",
+       mojom::blink::AttributionTriggerData::New(
+           reporting_origin, WTF::Vector<mojom::blink::EventTriggerDataPtr>(),
+           /*filters=*/AttributionFilterDataBuilder().Build(),
+           /*not_filters=*/AttributionFilterDataBuilder().Build(),
+           WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
+           WTF::HashMap<String, uint32_t>(),
+           /*debug_key=*/nullptr,
+           /*aggregatable_dedup_key=*/
+           mojom::blink::AttributionTriggerDedupKey::New(3))},
+      {"aggregatable_dedup_key_not_string",
+       R"json({
+        "aggregatable_deduplication_key": 3
+      })json",
+       mojom::blink::AttributionTriggerData::New(
+           reporting_origin, WTF::Vector<mojom::blink::EventTriggerDataPtr>(),
+           /*filters=*/AttributionFilterDataBuilder().Build(),
+           /*not_filters=*/AttributionFilterDataBuilder().Build(),
+           WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
+           WTF::HashMap<String, uint32_t>(),
+           /*debug_key=*/nullptr,
+           /*aggregatable_dedup_key=*/nullptr)},
+      {"invalid_aggregatable_dedup_key",
+       R"json({
+        "aggregatable_deduplication_key": "abc"
+      })json",
+       mojom::blink::AttributionTriggerData::New(
+           reporting_origin, WTF::Vector<mojom::blink::EventTriggerDataPtr>(),
+           /*filters=*/AttributionFilterDataBuilder().Build(),
+           /*not_filters=*/AttributionFilterDataBuilder().Build(),
+           WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>(),
+           WTF::HashMap<String, uint32_t>(),
+           /*debug_key=*/nullptr,
+           /*aggregatable_dedup_key=*/nullptr)},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    mojom::blink::AttributionTriggerData trigger_data;
+    // This field is not populated by `ParseTriggerRegistrationHeader()`, so
+    // just set it to an arbitrary origin so we can ensure it isn't changed.
+    trigger_data.reporting_origin = reporting_origin;
+
+    bool valid = ParseTriggerRegistrationHeader(test_case.json, trigger_data);
+    EXPECT_EQ(valid, !test_case.expected.is_null()) << test_case.description;
+
+    if (test_case.expected) {
+      EXPECT_EQ(test_case.expected->reporting_origin->ToUrlOrigin(),
+                trigger_data.reporting_origin->ToUrlOrigin())
+          << test_case.description;
+
+      EXPECT_EQ(test_case.expected->aggregatable_dedup_key,
+                trigger_data.aggregatable_dedup_key)
+          << test_case.description;
+    }
+  }
+}
+
 TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
   const auto reporting_origin =
       SecurityOrigin::CreateFromString("https://r.test");

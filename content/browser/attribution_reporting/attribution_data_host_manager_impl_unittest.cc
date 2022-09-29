@@ -481,7 +481,8 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
                           }))),
                       EventTriggerDataMatches(EventTriggerDataMatcherConfig(
                           4, 5, Eq(absl::nullopt), AttributionFilterData(),
-                          AttributionFilterData())))))));
+                          AttributionFilterData()))),
+          Optional(123)))));
 
   {
     RemoteDataHost data_host_remote{.task_environment = task_environment_};
@@ -513,6 +514,9 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
         /*dedup_key=*/nullptr,
         /*filters=*/blink::mojom::AttributionFilterData::New(),
         /*not_filters=*/blink::mojom::AttributionFilterData::New()));
+
+    trigger_data->aggregatable_dedup_key =
+        blink::mojom::AttributionTriggerDedupKey::New(123);
 
     data_host_remote.data_host->TriggerDataAvailable(std::move(trigger_data));
     data_host_remote.data_host.FlushForTesting();

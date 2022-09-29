@@ -305,6 +305,7 @@ class AttributionSimulatorInputParser {
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data;
     AttributionAggregatableValues aggregatable_values;
+    absl::optional<uint64_t> aggregatable_dedup_key;
 
     if (!ParseAttributionEvent(
             trigger_dict,
@@ -324,6 +325,9 @@ class AttributionSimulatorInputParser {
                       ParseAggregatableTriggerData(dict);
 
                   aggregatable_values = ParseAggregatableValues(dict);
+
+                  aggregatable_dedup_key = ParseOptionalUint64(
+                      dict, "aggregatable_deduplication_key");
                 }))) {
       return;
     }
@@ -336,7 +340,8 @@ class AttributionSimulatorInputParser {
             .trigger = AttributionTrigger(
                 std::move(destination_origin), std::move(reporting_origin),
                 std::move(filters), std::move(not_filters), debug_key,
-                std::move(event_triggers), std::move(aggregatable_trigger_data),
+                aggregatable_dedup_key, std::move(event_triggers),
+                std::move(aggregatable_trigger_data),
                 std::move(aggregatable_values)),
             .time = trigger_time,
         },

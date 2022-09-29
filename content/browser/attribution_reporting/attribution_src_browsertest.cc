@@ -922,6 +922,7 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcBasicTriggerBrowserTest,
       IsEmpty());
   EXPECT_THAT(trigger_data.front()->aggregatable_trigger_data, IsEmpty());
   EXPECT_THAT(trigger_data.front()->aggregatable_values, IsEmpty());
+  EXPECT_FALSE(trigger_data.front()->aggregatable_dedup_key);
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
@@ -1004,6 +1005,8 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_THAT(trigger_data.front()->aggregatable_values,
               ElementsAre(Pair("key", 123)));
+  EXPECT_EQ(trigger_data.front()->aggregatable_dedup_key,
+            blink::mojom::AttributionTriggerDedupKey::New(123));
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -882,6 +882,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       /*filters=*/AttributionFilterData::CreateForTesting({{"a", {"b"}}}),
       /*not_filters=*/AttributionFilterData::CreateForTesting({{"g", {"h"}}}),
       /*debug_key=*/1,
+      /*aggregatable_dedup_key=*/absl::nullopt,
       {
           AttributionTrigger::EventTriggerData(
               /*data=*/2,

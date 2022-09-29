@@ -120,6 +120,10 @@ struct AttributionTriggerData {
   // A key that is propagated through the Attribution Reporting API for
   // debugging purposes.
   AttributionDebugKey? debug_key;
+
+  // Key which allows deduplication against existing aggregatable reports for
+  // the same source.
+  AttributionTriggerDedupKey? aggregatable_dedup_key;
 };
 
 // Browser-process interface responsible for processing attribution

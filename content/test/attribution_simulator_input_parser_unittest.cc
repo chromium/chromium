@@ -329,7 +329,8 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
           "source_keys": ["a"],
           "key_piece": "0x1"
         }],
-        "aggregatable_values": {"a": 1}
+        "aggregatable_values": {"a": 1},
+        "aggregatable_deduplication_key": "789"
       }
     }
   ]})json";
@@ -358,6 +359,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                           {"e", {"f"}},
                       }),
                       /*debug_key=*/14,
+                      /*aggregatable_dedup_key=*/absl::nullopt,
                       {
                           AttributionTrigger::EventTriggerData(
                               /*data=*/10,
@@ -393,6 +395,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*filters=*/AttributionFilterData(),
                       /*not_filters=*/AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
+                      /*aggregatable_dedup_key=*/absl::nullopt,
                       /*event_triggers=*/{},
                       /*aggregatable_trigger_data=*/{},
                       /*aggregatable_values=*/AttributionAggregatableValues()),
@@ -409,6 +412,7 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
                       /*filters=*/AttributionFilterData(),
                       /*not_filters=*/AttributionFilterData(),
                       /*debug_key=*/absl::nullopt,
+                      /*aggregatable_dedup_key=*/789,
                       /*event_triggers=*/{},
                       {AttributionAggregatableTriggerData::CreateForTesting(
                           absl::MakeUint128(/*high=*/0, /*low=*/1),
@@ -1023,6 +1027,14 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "reporting_origin": "https://a.r.test",
             "destination_origin": " https://a.d1.test",
             "event_trigger_data":[true]
+          }
+        }]})json",
+    },
+    {
+        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]["aggregatable_deduplication_key"]: must be a uint64 formatted)",
+        R"json({"triggers":[{
+          "Attribution-Reporting-Register-Trigger": {
+            "aggregatable_deduplication_key": 123
           }
         }]})json",
     },

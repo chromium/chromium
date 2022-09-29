@@ -561,6 +561,9 @@ void AttributionDataHostManagerImpl::TriggerDataAvailable(
       std::move(*not_filters),
       data->debug_key ? absl::make_optional(data->debug_key->value)
                       : absl::nullopt,
+      data->aggregatable_dedup_key
+          ? absl::make_optional(data->aggregatable_dedup_key->value)
+          : absl::nullopt,
       std::move(event_triggers), std::move(*aggregatable_trigger_data),
       std::move(*aggregatable_values));
 

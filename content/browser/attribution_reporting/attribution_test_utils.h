@@ -461,6 +461,9 @@ class SourceBuilder {
   SourceBuilder& SetAggregatableBudgetConsumed(
       int64_t aggregatable_budget_consumed);
 
+  SourceBuilder& SetAggregatableDedupKeys(
+      std::vector<uint64_t> aggregatable_dedup_keys);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
@@ -487,6 +490,7 @@ class SourceBuilder {
   std::vector<uint64_t> dedup_keys_;
   AttributionAggregationKeys aggregation_keys_;
   int64_t aggregatable_budget_consumed_ = 0;
+  std::vector<uint64_t> aggregatable_dedup_keys_;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -528,7 +532,10 @@ class TriggerBuilder {
   TriggerBuilder& SetAggregatableValues(
       AttributionAggregatableValues aggregatable_values);
 
-  AttributionTrigger Build() const;
+  TriggerBuilder& SetAggregatableDedupKey(
+      absl::optional<uint64_t> aggregatable_dedup_key);
+
+  AttributionTrigger Build(bool generate_event_trigger_data = true) const;
 
  private:
   uint64_t trigger_data_ = 111;
@@ -540,6 +547,7 @@ class TriggerBuilder {
   absl::optional<uint64_t> debug_key_;
   std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data_;
   AttributionAggregatableValues aggregatable_values_;
+  absl::optional<uint64_t> aggregatable_dedup_key_;
 };
 
 // Helper class to construct an `AttributionInfo` for tests using default data.
@@ -765,6 +773,11 @@ MATCHER_P(DedupKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.dedup_keys(), result_listener);
 }
 
+MATCHER_P(AggregatableDedupKeysAre, matcher, "") {
+  return ExplainMatchResult(matcher, arg.aggregatable_dedup_keys(),
+                            result_listener);
+}
+
 MATCHER_P(AggregationKeysAre, matcher, "") {
   return ExplainMatchResult(matcher, arg.common_info().aggregation_keys(),
                             result_listener);
@@ -907,6 +920,8 @@ struct AttributionTriggerMatcherConfig {
   ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_;
   ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
       event_triggers = ::testing::_;
+  ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
+      ::testing::_;
 
   AttributionTriggerMatcherConfig() = delete;
   AttributionTriggerMatcherConfig(
@@ -914,9 +929,10 @@ struct AttributionTriggerMatcherConfig {
       ::testing::Matcher<const url::Origin&> reporting_origin = ::testing::_,
       ::testing::Matcher<const AttributionFilterData&> filters = ::testing::_,
       ::testing::Matcher<absl::optional<uint64_t>> debug_key = ::testing::_,
-      ::testing::Matcher<
-          const std::vector<AttributionTrigger::EventTriggerData>&>
-          event_triggers = ::testing::_);
+      ::testing::Matcher<const std::vector<
+          AttributionTrigger::EventTriggerData>&> event_triggers = ::testing::_,
+      ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key =
+          ::testing::_);
   ~AttributionTriggerMatcherConfig();
 };
 

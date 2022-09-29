@@ -159,9 +159,9 @@ struct WebUITrigger {
     kExcessiveAttributions,
     kExcessiveReportingOrigins,
     kProhibitedByBrowserPolicy,
+    kDeduplicated,
 
     // Event-level statuses:
-    kDeduplicated,
     kLowPriority,
     kNoised,
     kNoMatchingConfigurations,

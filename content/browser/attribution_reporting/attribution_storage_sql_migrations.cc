@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "sql/database.h"
@@ -224,6 +225,48 @@ bool MigrateToVersion36(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion37(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kNewDedupKeyTableSql[] =
+      "CREATE TABLE IF NOT EXISTS new_dedup_keys"
+      "(source_id INTEGER NOT NULL,"
+      "report_type INTEGER NOT NULL,"
+      "dedup_key INTEGER NOT NULL,"
+      "PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID";
+  if (!db->Execute(kNewDedupKeyTableSql))
+    return false;
+
+  static_assert(static_cast<int>(AttributionReport::Type::kEventLevel) == 0,
+                "update the report type value `0` below");
+
+  // Transfer the existing rows to the new table, inserting
+  // `Attribution::Type::kEventLevel` as default values for the
+  // report_type column.
+  static constexpr char kPopulateNewDedupKeyTableSql[] =
+      "INSERT INTO new_dedup_keys SELECT "
+      "source_id,0,dedup_key "
+      "FROM dedup_keys";
+  if (!db->Execute(kPopulateNewDedupKeyTableSql))
+    return false;
+
+  static constexpr char kDropOldDedupKeyTableSql[] = "DROP TABLE dedup_keys";
+  if (!db->Execute(kDropOldDedupKeyTableSql))
+    return false;
+
+  static constexpr char kRenameDedupKeyTableSql[] =
+      "ALTER TABLE new_dedup_keys RENAME TO dedup_keys";
+  if (!db->Execute(kRenameDedupKeyTableSql))
+    return false;
+
+  meta_table->SetVersionNumber(37);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -243,6 +286,10 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 35) {
     if (!MigrateToVersion36(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 36) {
+    if (!MigrateToVersion37(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

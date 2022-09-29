@@ -561,6 +561,12 @@ SourceBuilder& SourceBuilder::SetAggregatableBudgetConsumed(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetAggregatableDedupKeys(
+    std::vector<uint64_t> dedup_keys) {
+  aggregatable_dedup_keys_ = std::move(dedup_keys);
+  return *this;
+}
+
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
   return CommonSourceInfo(source_event_id_, source_origin_, destination_origin_,
                           reporting_origin_, source_time_,
@@ -577,6 +583,7 @@ StoredSource SourceBuilder::BuildStored() const {
   StoredSource source(BuildCommonInfo(), attribution_logic_, active_state_,
                       source_id_, aggregatable_budget_consumed_);
   source.SetDedupKeys(dedup_keys_);
+  source.SetAggregatableDedupKeys(aggregatable_dedup_keys_);
   return source;
 }
 
@@ -650,25 +657,34 @@ TriggerBuilder& TriggerBuilder::SetAggregatableValues(
   return *this;
 }
 
-AttributionTrigger TriggerBuilder::Build() const {
+TriggerBuilder& TriggerBuilder::SetAggregatableDedupKey(
+    absl::optional<uint64_t> aggregatable_dedup_key) {
+  aggregatable_dedup_key_ = aggregatable_dedup_key;
+  return *this;
+}
+
+AttributionTrigger TriggerBuilder::Build(
+    bool generate_event_trigger_data) const {
   std::vector<AttributionTrigger::EventTriggerData> event_triggers;
 
-  event_triggers.emplace_back(
-      trigger_data_, priority_, dedup_key_,
-      /*filters=*/
-      AttributionFilterData::ForSourceType(AttributionSourceType::kNavigation),
-      /*not_filters=*/AttributionFilterData());
+  if (generate_event_trigger_data) {
+    event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
+                                /*filters=*/
+                                AttributionFilterData::ForSourceType(
+                                    AttributionSourceType::kNavigation),
+                                /*not_filters=*/AttributionFilterData());
 
-  event_triggers.emplace_back(
-      event_source_trigger_data_, priority_, dedup_key_,
-      /*filters=*/
-      AttributionFilterData::ForSourceType(AttributionSourceType::kEvent),
-      /*not_filters=*/AttributionFilterData());
+    event_triggers.emplace_back(
+        event_source_trigger_data_, priority_, dedup_key_,
+        /*filters=*/
+        AttributionFilterData::ForSourceType(AttributionSourceType::kEvent),
+        /*not_filters=*/AttributionFilterData());
+  }
 
   return AttributionTrigger(destination_origin_, reporting_origin_,
                             /*filters=*/AttributionFilterData(),
                             /*not_filters=*/AttributionFilterData(), debug_key_,
-                            std::move(event_triggers),
+                            aggregatable_dedup_key_, std::move(event_triggers),
                             aggregatable_trigger_data_, aggregatable_values_);
 }
 
@@ -771,7 +787,7 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
     return std::make_tuple(t.destination_origin(), t.reporting_origin(),
                            t.filters(), t.not_filters(), t.debug_key(),
                            t.event_triggers(), t.aggregatable_trigger_data(),
-                           t.aggregatable_values());
+                           t.aggregatable_values(), t.aggregatable_dedup_key());
   };
   return tie(a) == tie(b);
 }
@@ -830,7 +846,8 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
   const auto tie = [](const StoredSource& source) {
     return std::make_tuple(source.common_info(), source.attribution_logic(),
                            source.active_state(), source.dedup_keys(),
-                           source.aggregatable_budget_consumed());
+                           source.aggregatable_budget_consumed(),
+                           source.aggregatable_dedup_keys());
   };
   return tie(a) == tie(b);
 }
@@ -984,6 +1001,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
       out << "prohibitedByBrowserPolicy";
       break;
+    case AttributionTrigger::AggregatableResult::kDeduplicated:
+      out << "deduplicated";
+      break;
   }
   return out;
 }
@@ -1076,7 +1096,11 @@ std::ostream& operator<<(std::ostream& out,
     separator = ", ";
   }
 
-  out << "],aggregatable_values=" << conversion.aggregatable_values();
+  out << "],aggregatable_values=" << conversion.aggregatable_values()
+      << ",aggregatable_dedup_key="
+      << (conversion.aggregatable_dedup_key()
+              ? base::NumberToString(*conversion.aggregatable_dedup_key())
+              : "null");
 
   return out << "}";
 }
@@ -1149,6 +1173,14 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   for (int64_t dedup_key : source.dedup_keys()) {
     out << separator << dedup_key;
     separator = ", ";
+  }
+
+  out << "],aggregatable_dedup_keys=[";
+
+  separator = "";
+  for (int64_t dedup_key : source.aggregatable_dedup_keys()) {
+    out << separator << dedup_key;
+    separator = ",";
   }
 
   return out << "]}";
@@ -1353,12 +1385,14 @@ AttributionTriggerMatcherConfig::AttributionTriggerMatcherConfig(
     ::testing::Matcher<const AttributionFilterData&> filters,
     ::testing::Matcher<absl::optional<uint64_t>> debug_key,
     ::testing::Matcher<const std::vector<AttributionTrigger::EventTriggerData>&>
-        event_triggers)
+        event_triggers,
+    ::testing::Matcher<absl::optional<uint64_t>> aggregatable_dedup_key)
     : destination_origin(std::move(destination_origin)),
       reporting_origin(std::move(reporting_origin)),
       filters(std::move(filters)),
       debug_key(std::move(debug_key)),
-      event_triggers(std::move(event_triggers)) {}
+      event_triggers(std::move(event_triggers)),
+      aggregatable_dedup_key(std::move(aggregatable_dedup_key)) {}
 
 AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
 
@@ -1372,7 +1406,10 @@ AttributionTriggerMatcherConfig::~AttributionTriggerMatcherConfig() = default;
       Property("filters", &AttributionTrigger::filters, cfg.filters),
       Property("debug_key", &AttributionTrigger::debug_key, cfg.debug_key),
       Property("event_triggers", &AttributionTrigger::event_triggers,
-               cfg.event_triggers));
+               cfg.event_triggers),
+      Property("aggregatable_dedup_key",
+               &AttributionTrigger::aggregatable_dedup_key,
+               cfg.aggregatable_dedup_key));
 }
 
 std::vector<AttributionReport> GetAttributionReportsForTesting(

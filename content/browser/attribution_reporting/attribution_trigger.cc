@@ -30,6 +30,7 @@ AttributionTrigger::AttributionTrigger(
     AttributionFilterData filters,
     AttributionFilterData not_filters,
     absl::optional<uint64_t> debug_key,
+    absl::optional<uint64_t> aggregatable_dedup_key,
     std::vector<EventTriggerData> event_triggers,
     std::vector<AttributionAggregatableTriggerData> aggregatable_trigger_data,
     AttributionAggregatableValues aggregatable_values)
@@ -38,6 +39,7 @@ AttributionTrigger::AttributionTrigger(
       filters_(std::move(filters)),
       not_filters_(std::move(not_filters)),
       debug_key_(debug_key),
+      aggregatable_dedup_key_(aggregatable_dedup_key),
       event_triggers_(std::move(event_triggers)),
       aggregatable_trigger_data_(std::move(aggregatable_trigger_data)),
       aggregatable_values_(std::move(aggregatable_values)) {

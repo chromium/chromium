@@ -277,4 +277,12 @@ object_value {
       }
     }
   }
+  field {
+    name: "aggregatable_deduplication_key"
+    value {
+      string_value {
+        value: "3"
+      }
+    }
+  }
 }

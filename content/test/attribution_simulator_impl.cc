@@ -430,6 +430,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::AggregatableResult::kNoMatchingSourceFilterData:
       case AttributionTrigger::AggregatableResult::kNoHistograms:
       case AttributionTrigger::AggregatableResult::kProhibitedByBrowserPolicy:
+      case AttributionTrigger::AggregatableResult::kDeduplicated:
         aggregatable_reason << result.aggregatable_status();
         break;
     }

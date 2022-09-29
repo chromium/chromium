@@ -400,6 +400,8 @@ WebUITriggerStatus GetWebUITriggerStatus(AggregatableStatus status) {
       return WebUITriggerStatus::kNotRegistered;
     case AggregatableStatus::kProhibitedByBrowserPolicy:
       return WebUITriggerStatus::kProhibitedByBrowserPolicy;
+    case AggregatableStatus::kDeduplicated:
+      return WebUITriggerStatus::kDeduplicated;
   }
 }
 
@@ -449,6 +451,8 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
   }
 
   web_ui_trigger->aggregatable_values = trigger.aggregatable_values().values();
+
+  // TODO(crbug.com/1368147): Display aggregatable dedup key in internals UI.
 
   for (auto& observer : observers_) {
     observer->OnTriggerHandled(web_ui_trigger.Clone());
