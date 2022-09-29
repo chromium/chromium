@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/user_education/common/feature_promo_snooze_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_education {

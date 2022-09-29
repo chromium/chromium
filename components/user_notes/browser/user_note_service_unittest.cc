@@ -13,7 +13,6 @@
 #include "components/user_notes/browser/frame_user_note_changes.h"
 #include "components/user_notes/browser/user_note_base_test.h"
 #include "components/user_notes/browser/user_note_manager.h"
-#include "components/user_notes/browser/user_note_service.h"
 #include "components/user_notes/interfaces/user_note_service_delegate.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "components/user_notes/model/user_note_metadata.h"
