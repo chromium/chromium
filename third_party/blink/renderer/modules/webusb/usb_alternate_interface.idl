@@ -5,7 +5,9 @@
 // https://wicg.github.io/webusb/#interfaces
 
 [
-    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers, Window WebUSB),
+    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers,
+            ServiceWorker WebUSBOnServiceWorkers,
+            Window WebUSB),
     SecureContext
 ] interface USBAlternateInterface {
     [RaisesException] constructor(USBInterface deviceInterface, octet alternateSetting);

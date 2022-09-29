@@ -5,7 +5,9 @@
 // https://wicg.github.io/webusb/#configurations
 
 [
-    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers, Window WebUSB),
+    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers,
+            ServiceWorker WebUSBOnServiceWorkers,
+            Window WebUSB),
     SecureContext
 ] interface USBConfiguration {
     [RaisesException] constructor(USBDevice device, octet configurationValue);

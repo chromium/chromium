@@ -5,7 +5,9 @@
 // https://wicg.github.io/webusb/#usbintransferresult
 
 [
-    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers, Window WebUSB),
+    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers,
+            ServiceWorker WebUSBOnServiceWorkers,
+            Window WebUSB),
     SecureContext
 ] interface USBInTransferResult {
     constructor(USBTransferStatus status, optional DataView? data);

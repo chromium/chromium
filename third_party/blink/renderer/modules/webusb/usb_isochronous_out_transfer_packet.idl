@@ -5,7 +5,9 @@
 // https://wicg.github.io/webusb/#usbisochronousouttransferpacket
 
 [
-    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers, Window WebUSB),
+    Exposed(DedicatedWorker WebUSBOnDedicatedWorkers,
+            ServiceWorker WebUSBOnServiceWorkers,
+            Window WebUSB),
     SecureContext
 ] interface USBIsochronousOutTransferPacket {
     constructor(USBTransferStatus status, optional unsigned long bytesWritten = 0);

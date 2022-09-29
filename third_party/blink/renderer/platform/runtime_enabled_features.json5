@@ -3007,6 +3007,12 @@
       depends_on: ["WebUSB"],
     },
     {
+      // It is only enabled in extension environment for now.
+      name: "WebUSBOnServiceWorkers",
+      depends_on: ["WebUSB"],
+      public: true,
+    },
+    {
       name: "WebVTTRegions",
       status: "experimental",
     },
