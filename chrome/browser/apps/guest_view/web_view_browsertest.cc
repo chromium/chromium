@@ -4240,9 +4240,7 @@ IN_PROC_BROWSER_TEST_P(WebViewCaptureTest, DISABLED_Shim_ScreenshotCapture) {
   TestHelper("testScreenshotCapture", "web_view/shim", NO_TEST_SERVER);
 }
 
-// Test is disabled because it times out often.
-// http://crbug.com/403325
-IN_PROC_BROWSER_TEST_P(WebViewTest, DISABLED_WebViewInBackgroundPage) {
+IN_PROC_BROWSER_TEST_P(WebViewTest, WebViewInBackgroundPage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("platform_apps/web_view/background"))
       << message_;
