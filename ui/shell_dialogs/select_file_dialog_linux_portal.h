@@ -5,6 +5,7 @@
 #ifndef UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
 #define UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_LINUX_PORTAL_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -16,6 +17,10 @@
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 
 namespace ui {
+using OnSelectFileExecutedCallback =
+    base::OnceCallback<void(std::vector<base::FilePath> paths,
+                            std::string current_filter)>;
+using OnSelectFileCanceledCallback = base::OnceCallback<void()>;
 
 // Implementation of SelectFileDialog that has the XDG file chooser portal show
 // a platform-dependent file selection dialog. This acts as a modal dialog.
@@ -91,35 +96,78 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   };
 
   // A wrapper over some shared contextual information that needs to be passed
-  // around between various handler functions. This is ref-counted due to some
-  // of the locations its used in having slightly unclear or error-prone
-  // lifetimes.
-  struct DialogInfo : base::RefCountedThreadSafe<DialogInfo> {
-    DialogInfo();
+  // around between SelectFileDialogLinuxPortal and the Portal via D-Bus.
+  // This is ref-counted due to sharing between the 2 sequences: dbus sequence
+  // and main sequence.
+  // Usage: SelectFileDialogLinuxPortal instantiates DialogInfo with the 2
+  // callbacks, sets the public members and then call SelectFileImplOnDbus().
+  // DialogInfo notifies the end result via one of the callbacks.
+  class DialogInfo : public base::RefCountedThreadSafe<DialogInfo> {
+   public:
+    DialogInfo(OnSelectFileExecutedCallback selected_callback,
+               OnSelectFileCanceledCallback canceled_callback);
 
-    // The response object handle that the portal will send a signal to upon the
-    // dialog's completion.
-    raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle = nullptr;
-    absl::optional<gfx::AcceleratedWidget> parent;
+    // Sets up listeners for the response handle's signals.
+    void SelectFileImplOnBusThread(std::u16string title,
+                                   base::FilePath default_path,
+                                   const bool default_path_exists,
+                                   PortalFilterSet filter_set,
+                                   base::FilePath::StringType default_extension,
+                                   std::string parent_handle);
     Type type;
     // The task runner the SelectFileImpl method was called on.
     scoped_refptr<base::SequencedTaskRunner> main_task_runner;
-    // The untyped params to pass to the listener.
-    raw_ptr<void> listener_params = nullptr;
 
    private:
     friend class base::RefCountedThreadSafe<DialogInfo>;
-
     ~DialogInfo();
+
+    // Should run on D-Bus thread.
+    void ConnectToHandle();
+    void OnCallResponse(dbus::Bus* bus,
+                        dbus::Response* response,
+                        dbus::ErrorResponse* error_response);
+    void OnResponseSignalEmitted(dbus::Signal* signal);
+    bool CheckResponseCode(dbus::MessageReader* reader);
+    bool ReadResponseResults(dbus::MessageReader* reader,
+                             std::vector<std::string>* uris,
+                             std::string* current_filter);
+    void OnResponseSignalConnected(const std::string& interface,
+                                   const std::string& signal,
+                                   bool connected);
+    void AppendFiltersOption(dbus::MessageWriter* writer,
+                             const std::vector<PortalFilter>& filters);
+    void AppendOptions(dbus::MessageWriter* writer,
+                       const std::string& response_handle_token,
+                       const base::FilePath& default_path,
+                       const bool derfault_path_exists,
+                       const PortalFilterSet& filter_set);
+    void AppendFilterStruct(dbus::MessageWriter* writer,
+                            const PortalFilter& filter);
+    std::vector<base::FilePath> ConvertUrisToPaths(
+        const std::vector<std::string>& uris);
+
+    // Completes an open call, notifying the listener with the given paths, and
+    // marks the dialog as closed.
+    void CompleteOpen(std::vector<base::FilePath> paths,
+                      std::string current_filter);
+    // Completes an open call, notifying the listener with a cancellation, and
+    // marks the dialog as closed.
+    void CancelOpen();
+
+    // These callbacks should run on main thread.
+    // It will point to SelectFileDialogPortal::CompleteOpenOnMainThread.
+    OnSelectFileExecutedCallback selected_callback_;
+    // It will point to SelectFileDialogPortal::CancelOpenOnMainThread.
+    OnSelectFileCanceledCallback canceled_callback_;
+
+    // The response object handle that the portal will send a signal to upon the
+    // dialog's completion.
+    raw_ptr<dbus::ObjectProxy, DanglingUntriaged> response_handle_ = nullptr;
   };
 
-  static scoped_refptr<dbus::Bus>* AcquireBusStorageOnBusThread();
-  static dbus::Bus* AcquireBusOnBusThread();
-
-  static void DestroyBusOnBusThread();
-
+  // D-Bus configuration and initialization.
   static void CheckPortalAvailabilityOnBusThread();
-
   static bool IsPortalRunningOnBusThread(dbus::ObjectProxy* dbus_proxy);
   static bool IsPortalActivatableOnBusThread(dbus::ObjectProxy* dbus_proxy);
 
@@ -130,71 +178,28 @@ class SelectFileDialogLinuxPortal : public SelectFileDialogLinux {
   PortalFilterSet BuildFilterSet();
 
   void SelectFileImplWithParentHandle(
-      scoped_refptr<DialogInfo> info,
       std::u16string title,
       base::FilePath default_path,
       PortalFilterSet filter_set,
       base::FilePath::StringType default_extension,
       std::string parent_handle);
 
-  void SelectFileImplOnBusThread(scoped_refptr<DialogInfo> info,
-                                 std::u16string title,
-                                 base::FilePath default_path,
-                                 PortalFilterSet filter_set,
-                                 base::FilePath::StringType default_extension,
-                                 std::string parent_handle);
-
-  void AppendOptions(dbus::MessageWriter* writer,
-                     Type type,
-                     const std::string& response_handle_token,
-                     const base::FilePath& default_path,
-                     const PortalFilterSet& filter_set);
-  void AppendFiltersOption(dbus::MessageWriter* writer,
-                           const std::vector<PortalFilter>& filters);
-  void AppendFilterStruct(dbus::MessageWriter* writer,
-                          const PortalFilter& filter);
-
-  // Sets up listeners for the response handle's signals.
-  void ConnectToHandle(scoped_refptr<DialogInfo> info);
-
-  // Completes an open call, notifying the listener with the given paths, and
-  // marks the dialog as closed.
-  void CompleteOpen(scoped_refptr<DialogInfo> info,
-                    std::vector<base::FilePath> paths,
-                    std::string current_filter);
-  // Completes an open call, notifying the listener with a cancellation, and
-  // marks the dialog as closed.
-  void CancelOpen(scoped_refptr<DialogInfo> info);
-
-  void CompleteOpenOnMainThread(scoped_refptr<DialogInfo> info,
-                                std::vector<base::FilePath> paths,
+  void CompleteOpenOnMainThread(std::vector<base::FilePath> paths,
                                 std::string current_filter);
-  void CancelOpenOnMainThread(scoped_refptr<DialogInfo> info);
+  void CancelOpenOnMainThread();
 
   // Removes the DialogInfo parent. Must be called on the UI task runner.
-  void UnparentOnMainThread(DialogInfo* info);
+  void UnparentOnMainThread();
 
-  void OnCallResponse(dbus::Bus* bus,
-                      scoped_refptr<DialogInfo> info,
-                      dbus::Response* response,
-                      dbus::ErrorResponse* error_response);
+  // This should be used in the main thread.
+  absl::optional<gfx::AcceleratedWidget> parent_;
 
-  void OnResponseSignalConnected(scoped_refptr<DialogInfo> info,
-                                 const std::string& interface,
-                                 const std::string& signal,
-                                 bool connected);
+  // The untyped params to pass to the listener, it should be used in the main
+  // thread.
+  raw_ptr<void> listener_params_ = nullptr;
 
-  void OnResponseSignalEmitted(scoped_refptr<DialogInfo> info,
-                               dbus::Signal* signal);
-
-  bool CheckResponseCode(dbus::MessageReader* reader);
-  bool ReadResponseResults(dbus::MessageReader* reader,
-                           std::vector<std::string>* uris,
-                           std::string* current_filter);
-  std::vector<base::FilePath> ConvertUrisToPaths(
-      const std::vector<std::string>& uris);
-
-  std::set<gfx::AcceleratedWidget> parents_;
+  // Data shared across main thread and D-Bus thread.
+  scoped_refptr<DialogInfo> info_;
 
   // Written by the D-Bus thread and read by the UI thread.
   static bool is_portal_available_;
