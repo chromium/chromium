@@ -341,6 +341,7 @@ text-underline-position: auto
 toggle-group: none
 toggle-root: none
 toggle-trigger: none
+toggle-visibility: normal
 top: auto
 touch-action: auto
 transform: none

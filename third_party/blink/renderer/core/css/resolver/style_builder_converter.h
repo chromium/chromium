@@ -332,6 +332,8 @@ class StyleBuilderConverter {
   static scoped_refptr<ToggleTriggerList> ConvertToggleTrigger(
       const StyleResolverState&,
       const CSSValue&);
+  static AtomicString ConvertToggleVisibility(const StyleResolverState&,
+                                              const CSSValue&);
 
   static absl::optional<StyleOverflowClipMargin> ConvertOverflowClipMargin(
       StyleResolverState&,

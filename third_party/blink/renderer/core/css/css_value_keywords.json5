@@ -1540,6 +1540,9 @@
     "next",
     "set",
 
+    // toggle-visibility
+    "toggle",
+
     // color-contrast()
     "color-contrast",
     "vs",

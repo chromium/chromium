@@ -436,6 +436,7 @@ toggle
 toggleGroup
 toggleRoot
 toggleTrigger
+toggleVisibility
 top
 touchAction
 transform

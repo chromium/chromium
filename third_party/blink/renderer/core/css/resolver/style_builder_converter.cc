@@ -2547,6 +2547,23 @@ scoped_refptr<ToggleTriggerList> StyleBuilderConverter::ConvertToggleTrigger(
   return result;
 }
 
+AtomicString StyleBuilderConverter::ConvertToggleVisibility(
+    const StyleResolverState& state,
+    const CSSValue& value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(ident->GetValueID(), CSSValueID::kNormal);
+    return g_null_atom;
+  }
+
+  const auto& css_value_list = To<CSSValueList>(value);
+  DCHECK_EQ(css_value_list.length(), 2u);
+  DCHECK(css_value_list.Item(0).IsIdentifierValue());
+  DCHECK_EQ(To<CSSIdentifierValue>(css_value_list.Item(0)).GetValueID(),
+            CSSValueID::kToggle);
+  const auto& custom_ident = To<CSSCustomIdentValue>(css_value_list.Item(1));
+  return custom_ident.Value();
+}
+
 absl::optional<StyleOverflowClipMargin>
 StyleBuilderConverter::ConvertOverflowClipMargin(StyleResolverState& state,
                                                  const CSSValue& value) {
