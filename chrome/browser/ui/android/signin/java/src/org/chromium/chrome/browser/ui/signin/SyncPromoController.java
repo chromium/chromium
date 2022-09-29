@@ -499,7 +499,7 @@ public class SyncPromoController {
         final Context context = view.getContext();
         Drawable accountImage = mProfileData.getImage();
         view.getImage().setImageDrawable(accountImage);
-        setImageSize(context, view, R.dimen.signin_promo_account_image_size);
+        setImageSize(context, view, R.dimen.sync_promo_account_image_size);
 
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_ILLUSTRATION)) {
             view.getIllustration().setVisibility(View.GONE);
