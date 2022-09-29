@@ -22,7 +22,7 @@ import java.util.Objects;
  * against new states, to infer if anything important has changed. Especially useful when deciding
  * if a new bitmap capture is warranted.
  */
-class ToolbarSnapshotState {
+public class ToolbarSnapshotState {
     /**
      * Reasons that two snapshots are different. Treat this list as append only and keep it in sync
      * with ToolbarSnapshotDifference in enums.xml, as well as the proto in
@@ -34,7 +34,8 @@ class ToolbarSnapshotState {
             ToolbarSnapshotDifference.SECURITY_ICON, ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
             ToolbarSnapshotDifference.PAINT_PREVIEW, ToolbarSnapshotDifference.PROGRESS,
             ToolbarSnapshotDifference.LOCATION_BAR_WIDTH, ToolbarSnapshotDifference.URL_TEXT,
-            ToolbarSnapshotDifference.HOME_BUTTON_COLOR, ToolbarSnapshotDifference.NUM_ENTRIES})
+            ToolbarSnapshotDifference.HOME_BUTTON_COLOR, ToolbarSnapshotDifference.TITLE_TEXT,
+            ToolbarSnapshotDifference.CCT_ANIMATION, ToolbarSnapshotDifference.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ToolbarSnapshotDifference {
         int NONE = 0;
@@ -50,7 +51,9 @@ class ToolbarSnapshotState {
         int LOCATION_BAR_WIDTH = 10;
         int URL_TEXT = 11;
         int HOME_BUTTON_COLOR = 12;
-        int NUM_ENTRIES = 13;
+        int TITLE_TEXT = 13;
+        int CCT_ANIMATION = 14;
+        int NUM_ENTRIES = 15;
     }
 
     private final @ColorInt int mTint;

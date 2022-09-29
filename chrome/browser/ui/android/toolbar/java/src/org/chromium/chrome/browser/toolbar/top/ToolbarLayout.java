@@ -128,7 +128,7 @@ public abstract class ToolbarLayout
      * @param offlineDownloader Triggers downloading an offline page.
      */
     @CallSuper
-    protected void initialize(ToolbarDataProvider toolbarDataProvider,
+    public void initialize(ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
             ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
             HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
@@ -538,7 +538,7 @@ public abstract class ToolbarLayout
      * For extending classes to override and carry out the changes related with the primary color
      * for the current tab changing.
      */
-    protected void onPrimaryColorChanged(boolean shouldAnimate) {}
+    public void onPrimaryColorChanged(boolean shouldAnimate) {}
 
     /**
      * Sets the icon drawable that the close button in the toolbar (if any) should show, or hides
@@ -582,7 +582,7 @@ public abstract class ToolbarLayout
      */
     void onTabContentViewChanged() {}
 
-    CaptureReadinessResult isReadyForTextureCapture() {
+    protected CaptureReadinessResult isReadyForTextureCapture() {
         return CaptureReadinessResult.unknown(/*isReady=*/true);
     }
 
@@ -663,7 +663,7 @@ public abstract class ToolbarLayout
         outRect.offset(mTempPosition[0], mTempPosition[1]);
     }
 
-    void setTextureCaptureMode(boolean textureMode) {}
+    protected void setTextureCaptureMode(boolean textureMode) {}
 
     boolean shouldIgnoreSwipeGesture() {
         if (mUrlHasFocus || mFindInPageToolbarShowing) return true;
@@ -854,7 +854,10 @@ public abstract class ToolbarLayout
      */
     protected void setToolbarHairlineColor(@ColorInt int toolbarColor) {
         final ImageView shadow = getRootView().findViewById(R.id.toolbar_hairline);
-        shadow.setImageTintList(ColorStateList.valueOf(getToolbarHairlineColor(toolbarColor)));
+        // Tests don't always set this up. TODO(https://crbug.com/1365954): Refactor this dep.
+        if (shadow != null) {
+            shadow.setImageTintList(ColorStateList.valueOf(getToolbarHairlineColor(toolbarColor)));
+        }
     }
 
     /**

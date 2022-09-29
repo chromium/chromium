@@ -132,6 +132,11 @@ class BrandingSecurityButtonAnimationDelegate {
         }
     }
 
+    /** Returns whether an animation is currently running. */
+    boolean isInAnimation() {
+        return mIsAnimationInProgress;
+    }
+
     /**
      * Add padding around the |drawable| until |targetWidth| and |targetHeight|, and convert it
      * to a {@link BitmapDrawable}.
