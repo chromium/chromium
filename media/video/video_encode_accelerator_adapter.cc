@@ -936,8 +936,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   auto gpu_frame = gmb_frame_pool_->MaybeCreateVideoFrame(size);
   if (!gpu_frame)
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode);
-  gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(src_frame->ColorSpace());
-  gpu_frame->set_color_space(src_frame->ColorSpace());
+
   gpu_frame->set_timestamp(src_frame->timestamp());
   gpu_frame->metadata().MergeMetadataFrom(src_frame->metadata());
 
@@ -960,6 +959,12 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   if (!status.is_ok())
     return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode)
         .AddCause(std::move(status));
+
+  // |mapped_gpu_frame| has the color space respecting the color conversion in
+  // ConvertAndScaleFrame().
+  gpu_frame->GetGpuMemoryBuffer()->SetColorSpace(
+      mapped_gpu_frame->ColorSpace());
+  gpu_frame->set_color_space(mapped_gpu_frame->ColorSpace());
 
   return gpu_frame;
 }
