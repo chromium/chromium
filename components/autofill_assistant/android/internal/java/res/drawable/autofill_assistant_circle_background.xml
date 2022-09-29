@@ -7,5 +7,5 @@ found in the LICENSE file.
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-  <solid android:color="@color/blue_when_enabled_list"/>
+  <solid android:color="@color/default_text_color_accent1_tint_list"/>
 </shape>
