@@ -43,7 +43,7 @@ namespace {
 // queue during startup. After startup, it has a normal priority.
 BASE_FEATURE(kServiceWorkerStorageControlResponseQueue,
              "ServiceWorkerStorageControlResponseQueue",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 blink::ServiceWorkerStatusCode DatabaseStatusToStatusCode(
     storage::mojom::ServiceWorkerDatabaseStatus status) {

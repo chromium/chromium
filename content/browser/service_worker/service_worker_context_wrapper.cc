@@ -76,7 +76,7 @@ namespace {
 // on Android.
 BASE_FEATURE(kServiceWorkerStorageControlOnIOThread,
              "ServiceWorkerStorageControlOnIOThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 void DidFindRegistrationForStartActiveWorker(
