@@ -24,6 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHARACTER_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHARACTER_DATA_H_
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -41,11 +42,15 @@ class CORE_EXPORT CharacterData : public Node {
   // Makes the data Parkable. This enables de-duplication and compression.
   void MakeParkable();
   const String& data() const {
-    return is_parkable_ ? parkable_data_.ToString() : data_;
+    if (auto* parked = absl::get_if<ParkableString>(&data_))
+      return parked->ToString();
+    return absl::get<String>(data_);
   }
   void setData(const String&);
   unsigned length() const {
-    return is_parkable_ ? parkable_data_.length() : data_.length();
+    if (auto* parked = absl::get_if<ParkableString>(&data_))
+      return parked->length();
+    return absl::get<String>(data_).length();
   }
   String substringData(unsigned offset, unsigned count, ExceptionState&);
   void appendData(const String&);
@@ -67,9 +72,7 @@ class CORE_EXPORT CharacterData : public Node {
   CharacterData(TreeScope& tree_scope,
                 const String& text,
                 ConstructionType type)
-      : Node(&tree_scope, type),
-        is_parkable_(false),
-        data_(!text.IsNull() ? text : g_empty_string) {
+      : Node(&tree_scope, type), data_(!text.IsNull() ? text : g_empty_string) {
     DCHECK(type == kCreateComment || type == kCreateText ||
            type == kCreateCdataSection ||
            type == kCreateProcessingInstruction || type == kCreateEditingText);
@@ -77,10 +80,6 @@ class CORE_EXPORT CharacterData : public Node {
 
   void SetDataWithoutUpdate(const String& data) {
     DCHECK(!data.IsNull());
-    if (is_parkable_) {
-      is_parkable_ = false;
-      parkable_data_ = ParkableString();
-    }
     data_ = data;
   }
   enum UpdateSource {
@@ -89,9 +88,7 @@ class CORE_EXPORT CharacterData : public Node {
   };
   void DidModifyData(const String& old_value, UpdateSource);
 
-  bool is_parkable_;
-  ParkableString parkable_data_;
-  String data_;
+  absl::variant<ParkableString, String> data_;
 
  private:
   String nodeValue() const final;
