@@ -54,6 +54,7 @@ class SmsRemoteFetcherUiController
   bool ShouldShowLoadingIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
   SharingFeatureName GetFeatureMetricsPrefix() const override;
+  bool HasAccessibleUi() const override;
 
   void OnSmsRemoteFetchResponse(
       OnRemoteCallback callback,

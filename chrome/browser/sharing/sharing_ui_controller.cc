@@ -174,6 +174,10 @@ bool SharingUiController::ShouldShowLoadingIcon() const {
   return true;
 }
 
+bool SharingUiController::HasAccessibleUi() const {
+  return true;
+}
+
 base::OnceClosure SharingUiController::SendMessageToDevice(
     const syncer::DeviceInfo& device,
     absl::optional<base::TimeDelta> response_timeout,

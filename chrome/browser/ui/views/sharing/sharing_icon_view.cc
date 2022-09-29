@@ -6,6 +6,8 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -167,6 +169,20 @@ std::u16string SharingIconView::GetTextForTooltipAndAccessibleName() const {
   auto* controller = GetController();
   return controller ? controller->GetTextForTooltipAndAccessibleName()
                     : std::u16string();
+}
+
+void SharingIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  auto* controller = GetController();
+  if (controller && !controller->HasAccessibleUi()) {
+    // This should rarely be true. One example where it is true is the
+    // SmsRemoteFetcherUiController: crrev.com/c/2964059 stopped all UI
+    // from being shown and removed the accessible name. Setting the state
+    // to ignored is needed to stop the UI from being shown to assistive
+    // technologies.
+    node_data->AddState(ax::mojom::State::kIgnored);
+    return;
+  }
+  PageActionIconView::GetAccessibleNodeData(node_data);
 }
 
 BEGIN_METADATA(SharingIconView, PageActionIconView)
