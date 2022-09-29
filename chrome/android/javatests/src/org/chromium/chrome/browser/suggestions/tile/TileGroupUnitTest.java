@@ -154,7 +154,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1336867")
+    // If this flakes again, refer to https://crbug.com/1336867.
     public void testReceiveNewTilesWithoutChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
 
@@ -203,7 +203,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
+    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
     public void testReceiveNewTilesWithDataChanges_TrackLoad() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true, URLS);
 
@@ -297,7 +297,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
+    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
     public void testRenderTileView() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mImageFetcher);
@@ -339,7 +339,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
-    @DisabledTest(message = "Test is flaky, see crbug.com/1286755")
+    // If this flakes again, refer to https://crbug.com/1286755.
     public void testRenderTileViewReplacing() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mMockImageFetcher);
