@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
@@ -16,16 +17,22 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
+using autofill_assistant::password_change::TopIcon;
 using PromptChoice = PasswordChangeRunDisplay::PromptChoice;
 using testing::IsEmpty;
 using testing::SizeIs;
@@ -93,6 +100,13 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::TearDown();
   }
 
+  views::ImageView* GetTopIcon() {
+    return view() ? static_cast<views::ImageView*>(
+                        view()->GetViewByID(static_cast<int>(
+                            PasswordChangeRunView::ChildrenViewsIds::kTopIcon)))
+                  : nullptr;
+  }
+
   views::View* GetBody() {
     return view() ? view()->GetViewByID(static_cast<int>(
                         PasswordChangeRunView::ChildrenViewsIds::kBody))
@@ -121,6 +135,12 @@ class PasswordChangeRunViewTest : public views::ViewsTestBase {
     return static_cast<PasswordChangeRunView*>(view_);
   }
 
+  ui::ImageModel GetExpectedTopIconModel(TopIcon top_icon) {
+    return ui::ImageModel::FromVectorIcon(
+        GetApcTopIconFromEnum(top_icon, /*dark_mode=*/false),
+        ui::kColorWindowBackground, /*icon_size=*/96);
+  }
+
  private:
   // Mock display delegate and controller.
   MockAssistantDisplayDelegate display_delegate_;
@@ -138,6 +158,25 @@ TEST_F(PasswordChangeRunViewTest, CreateAndSetInTheProvidedDisplay) {
 
   PasswordChangeRunDisplay::Create(controller()->GetWeakPtr(),
                                    display_delegate());
+}
+
+TEST_F(PasswordChangeRunViewTest, SetTopIcon) {
+  views::ImageView* icon = GetTopIcon();
+  ASSERT_TRUE(icon);
+
+  // The open site settings icon is shown by default.
+  EXPECT_EQ(icon->GetImageModel(),
+            GetExpectedTopIconModel(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS));
+
+  view()->SetTopIcon(TopIcon::TOP_ICON_CHOOSE_NEW_PASSWORD);
+  EXPECT_NE(icon->GetImageModel(),
+            GetExpectedTopIconModel(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS));
+  EXPECT_EQ(icon->GetImageModel(),
+            GetExpectedTopIconModel(TopIcon::TOP_ICON_CHOOSE_NEW_PASSWORD));
+
+  view()->SetTopIcon(TopIcon::TOP_ICON_ERROR_OCCURRED);
+  EXPECT_EQ(icon->GetImageModel(),
+            GetExpectedTopIconModel(TopIcon::TOP_ICON_ERROR_OCCURRED));
 }
 
 TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
@@ -254,6 +293,11 @@ TEST_F(PasswordChangeRunViewTest, ShowStartingScreen) {
   views::View* body = GetBody();
   ASSERT_TRUE(body);
   EXPECT_THAT(body->children(), IsEmpty());
+
+  views::ImageView* icon = GetTopIcon();
+  ASSERT_TRUE(icon);
+  EXPECT_EQ(icon->GetImageModel(),
+            GetExpectedTopIconModel(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS));
 }
 
 TEST_F(PasswordChangeRunViewTest, ShowErrorScreen) {
@@ -275,6 +319,11 @@ TEST_F(PasswordChangeRunViewTest, ShowErrorScreen) {
       static_cast<views::Label*>(body->children()[1])->GetText(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ERROR_SCREEN_DESCRIPTION));
+
+  views::ImageView* icon = GetTopIcon();
+  ASSERT_TRUE(icon);
+  EXPECT_EQ(icon->GetImageModel(),
+            GetExpectedTopIconModel(TopIcon::TOP_ICON_ERROR_OCCURRED));
 }
 
 TEST_F(PasswordChangeRunViewTest, SetTitle) {

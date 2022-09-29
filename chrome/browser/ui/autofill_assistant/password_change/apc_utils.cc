@@ -9,6 +9,8 @@
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "components/vector_icons/vector_icons.h"
 
+using autofill_assistant::password_change::TopIcon;
+
 const gfx::VectorIcon& GetAssistantIconOrFallback() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kAssistantIcon;
@@ -18,32 +20,48 @@ const gfx::VectorIcon& GetAssistantIconOrFallback() {
 #endif
 }
 
-const gfx::VectorIcon& GetApcTopIconFromEnum(
-    autofill_assistant::password_change::TopIcon icon) {
-  switch (icon) {
-    case autofill_assistant::password_change::TopIcon::TOP_ICON_UNSPECIFIED:
-      return autofill_assistant::password_change::kUnspecifiedStateIcon;
-    case autofill_assistant::password_change::TopIcon::
-        TOP_ICON_OPEN_SITE_SETTINGS:
-      return autofill_assistant::password_change::kOpenSiteSettingsIcon;
-    case autofill_assistant::password_change::TopIcon::
-        TOP_ICON_ENTER_OLD_PASSWORD:
-      return autofill_assistant::password_change::kEnterOldPasswordIcon;
-    case autofill_assistant::password_change::TopIcon::
-        TOP_ICON_CHOOSE_NEW_PASSWORD:
-      return autofill_assistant::password_change::kChooseNewPasswordIcon;
-    case autofill_assistant::password_change::TopIcon::
-        TOP_ICON_SAVE_NEW_PASSWORD:
-      return autofill_assistant::password_change::kSaveNewPasswordIcon;
-    case autofill_assistant::password_change::TOP_ICON_CHANGED_PASSWORD:
-      return autofill_assistant::password_change::kChangedPasswordIcon;
-    case autofill_assistant::password_change::TOP_ICON_BAD_NEW_PASSWORD:
-      return autofill_assistant::password_change::kBadNewPasswordIcon;
-    case autofill_assistant::password_change::TOP_ICON_ERROR_OCCURRED:
-      return autofill_assistant::password_change::kErrorOccurredIcon;
-    case autofill_assistant::password_change::TOP_ICON_USER_ACTION_REQUIRED:
-      return autofill_assistant::password_change::kUserActionRequiredIcon;
+const gfx::VectorIcon& GetApcTopIconFromEnum(TopIcon icon, bool dark_mode) {
+  if (!dark_mode) {
+    switch (icon) {
+      case TopIcon::TOP_ICON_UNSPECIFIED:
+        return autofill_assistant::password_change::kUnspecifiedStateIcon;
+      case TopIcon::TOP_ICON_OPEN_SITE_SETTINGS:
+        return autofill_assistant::password_change::kOpenSiteSettingsIcon;
+      case TopIcon::TOP_ICON_ENTER_OLD_PASSWORD:
+        return autofill_assistant::password_change::kEnterOldPasswordIcon;
+      case TopIcon::TOP_ICON_CHOOSE_NEW_PASSWORD:
+        return autofill_assistant::password_change::kChooseNewPasswordIcon;
+      case TopIcon::TOP_ICON_SAVE_NEW_PASSWORD:
+        return autofill_assistant::password_change::kSaveNewPasswordIcon;
+      case TopIcon::TOP_ICON_CHANGED_PASSWORD:
+        return autofill_assistant::password_change::kChangedPasswordIcon;
+      case TopIcon::TOP_ICON_BAD_NEW_PASSWORD:
+        return autofill_assistant::password_change::kBadNewPasswordIcon;
+      case TopIcon::TOP_ICON_ERROR_OCCURRED:
+        return autofill_assistant::password_change::kErrorOccurredIcon;
+      case TopIcon::TOP_ICON_USER_ACTION_REQUIRED:
+        return autofill_assistant::password_change::kUserActionRequiredIcon;
+    }
+  } else {
+    switch (icon) {
+      case TopIcon::TOP_ICON_UNSPECIFIED:
+        return autofill_assistant::password_change::kUnspecifiedStateDarkIcon;
+      case TopIcon::TOP_ICON_OPEN_SITE_SETTINGS:
+        return autofill_assistant::password_change::kOpenSiteSettingsDarkIcon;
+      case TopIcon::TOP_ICON_ENTER_OLD_PASSWORD:
+        return autofill_assistant::password_change::kEnterOldPasswordDarkIcon;
+      case TopIcon::TOP_ICON_CHOOSE_NEW_PASSWORD:
+        return autofill_assistant::password_change::kChooseNewPasswordDarkIcon;
+      case TopIcon::TOP_ICON_SAVE_NEW_PASSWORD:
+        return autofill_assistant::password_change::kSaveNewPasswordDarkIcon;
+      case TopIcon::TOP_ICON_CHANGED_PASSWORD:
+        return autofill_assistant::password_change::kChangedPasswordDarkIcon;
+      case TopIcon::TOP_ICON_BAD_NEW_PASSWORD:
+        return autofill_assistant::password_change::kBadNewPasswordDarkIcon;
+      case TopIcon::TOP_ICON_ERROR_OCCURRED:
+        return autofill_assistant::password_change::kErrorOccurredDarkIcon;
+      case TopIcon::TOP_ICON_USER_ACTION_REQUIRED:
+        return autofill_assistant::password_change::kUserActionRequiredDarkIcon;
+    }
   }
-
-  return autofill_assistant::password_change::kUnspecifiedStateIcon;
 }

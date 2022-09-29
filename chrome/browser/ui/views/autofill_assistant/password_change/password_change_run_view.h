@@ -13,16 +13,17 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
-class ImageView;
 class View;
 }  // namespace views
 
 class PasswordChangeRunController;
 class PasswordChangeRunProgress;
+class ThemeTrackingNonAccessibleImageView;
 
 // View that displays the automatic password change experience. When this class
 // is instantiated its ownership is given to the `display_delegate` passed
@@ -38,6 +39,7 @@ class PasswordChangeRunView : public views::View,
 
     kTitleContainer,
     kTitle,
+    kTopIcon,
     kSuggestedPassword,
 
     kBody,
@@ -87,6 +89,9 @@ class PasswordChangeRunView : public views::View,
   // Creates/initialises the view.
   void CreateView();
 
+  // Returns the currently used background color.
+  SkColor GetBackgroundColor() const;
+
   // Renders the options for a base prompt.
   void CreateBasePromptOptions(const std::vector<PromptChoice>& choices);
 
@@ -106,7 +111,7 @@ class PasswordChangeRunView : public views::View,
   // The display that owns this view.
   raw_ptr<AssistantDisplayDelegate> display_delegate_;
 
-  raw_ptr<views::ImageView> top_icon_ = nullptr;
+  raw_ptr<ThemeTrackingNonAccessibleImageView> top_icon_ = nullptr;
   raw_ptr<views::View> title_container_ = nullptr;
   raw_ptr<PasswordChangeRunProgress> password_change_run_progress_ = nullptr;
 

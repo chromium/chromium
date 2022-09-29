@@ -15,6 +15,7 @@ const gfx::VectorIcon& GetAssistantIconOrFallback();
 // Convert the protobuf enum that specifies a top icon for an Automate Password
 // Change flow to its correct `gfx::VectorIcon` counterpart.
 const gfx::VectorIcon& GetApcTopIconFromEnum(
-    autofill_assistant::password_change::TopIcon icon);
+    autofill_assistant::password_change::TopIcon icon,
+    bool dark_mode);
 
 #endif  // CHROME_BROWSER_UI_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_UTILS_H_

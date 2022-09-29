@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -15,13 +16,17 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill_assistant/password_change/password_change_run_progress.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "components/url_formatter/url_formatter.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -32,6 +37,8 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
+
+using autofill_assistant::password_change::TopIcon;
 
 namespace {
 
@@ -88,6 +95,12 @@ void PasswordChangeRunView::Show() {
   PasswordChangeRunView::CreateView();
 }
 
+SkColor PasswordChangeRunView::GetBackgroundColor() const {
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  return color_provider ? color_provider->GetColor(ui::kColorWindowBackground)
+                        : SK_ColorWHITE;
+}
+
 void PasswordChangeRunView::CreateView() {
   DCHECK(controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -106,7 +119,19 @@ void PasswordChangeRunView::CreateView() {
                           views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                       /*left=*/0, /*bottom=*/0, /*right=*/0));
 
-  top_icon_ = AddChildView(views::Builder<views::ImageView>().Build());
+  top_icon_ =
+      AddChildView(std::make_unique<ThemeTrackingNonAccessibleImageView>(
+          ui::ImageModel::FromVectorIcon(
+              GetApcTopIconFromEnum(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS,
+                                    /*dark_mode=*/false),
+              ui::kColorWindowBackground, kTopIconSize),
+          ui::ImageModel::FromVectorIcon(
+              GetApcTopIconFromEnum(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS,
+                                    /*dark_mode=*/false),
+              ui::kColorWindowBackground, kTopIconSize),
+          base::BindRepeating(&PasswordChangeRunView::GetBackgroundColor,
+                              base::Unretained(this))));
+  top_icon_->SetID(static_cast<int>(ChildrenViewsIds::kTopIcon));
 
   password_change_run_progress_ =
       AddChildView(std::make_unique<PasswordChangeRunProgress>());
@@ -145,11 +170,16 @@ void PasswordChangeRunView::CreateView() {
                       /*left=*/0, /*bottom=*/0, /*right=*/0));
 }
 
-void PasswordChangeRunView::SetTopIcon(
-    autofill_assistant::password_change::TopIcon top_icon) {
+void PasswordChangeRunView::SetTopIcon(TopIcon top_icon) {
   DCHECK(top_icon_);
-  top_icon_->SetImage(gfx::CreateVectorIcon(
-      GetApcTopIconFromEnum(top_icon), kTopIconSize, gfx::kPlaceholderColor));
+  top_icon_->SetLightImage(
+      ui::ImageModel::FromVectorIcon(GetApcTopIconFromEnum(top_icon,
+                                                           /*dark_mode=*/false),
+                                     ui::kColorWindowBackground, kTopIconSize));
+  top_icon_->SetDarkImage(
+      ui::ImageModel::FromVectorIcon(GetApcTopIconFromEnum(top_icon,
+                                                           /*dark_mode=*/true),
+                                     ui::kColorWindowBackground, kTopIconSize));
 }
 
 void PasswordChangeRunView::SetTitle(const std::u16string& title) {
@@ -265,8 +295,7 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
 }
 
 void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
-  SetTopIcon(autofill_assistant::password_change::TopIcon::
-                 TOP_ICON_OPEN_SITE_SETTINGS);
+  SetTopIcon(TopIcon::TOP_ICON_OPEN_SITE_SETTINGS);
 
   const std::u16string formatted_url = url_formatter::FormatUrl(
       url,
@@ -283,8 +312,7 @@ void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
 
 void PasswordChangeRunView::ShowErrorScreen() {
   password_change_run_progress_->PauseIconAnimation();
-  SetTopIcon(
-      autofill_assistant::password_change::TopIcon::TOP_ICON_ERROR_OCCURRED);
+  SetTopIcon(TopIcon::TOP_ICON_ERROR_OCCURRED);
   SetTitle(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_ERROR_SCREEN_TITLE));
   SetDescription(l10n_util::GetStringUTF16(
@@ -307,8 +335,7 @@ void PasswordChangeRunView::ShowCompletionScreen(
 }
 
 void PasswordChangeRunView::OnShowCompletionScreen() {
-  SetTopIcon(
-      autofill_assistant::password_change::TopIcon::TOP_ICON_CHANGED_PASSWORD);
+  SetTopIcon(TopIcon::TOP_ICON_CHANGED_PASSWORD);
   password_change_run_progress_->SetVisible(false);
   SetTitle(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_TITLE));
