@@ -43,12 +43,11 @@ bool IsConsentVersionLessThan(const std::string& lhs_version,
 
 void UpdateAcceptedToSVersionPref(Profile* profile,
                                   const UserConsentInfo& user_consent_info) {
-  DictionaryPrefUpdate update(profile->GetPrefs(),
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kEduCoexistenceToSAcceptedVersion);
-  base::Value* dict = update.Get();
 
-  dict->SetStringPath(user_consent_info.edu_account_gaia_id,
-                      user_consent_info.edu_coexistence_tos_version);
+  update->SetByDottedPath(user_consent_info.edu_account_gaia_id,
+                          user_consent_info.edu_coexistence_tos_version);
 }
 
 void SetUserConsentInfoListForProfile(

@@ -449,10 +449,8 @@ TEST_F(AppTimeControllerTest, RestoreLastResetTime) {
     builder.AddAppLimit(kApp2, AppLimit(AppRestriction::kTimeLimit,
                                         kOneHour / 2, base::Time::Now()));
     builder.SetResetTime(6, 0);
-    DictionaryPrefUpdate update(profile().GetPrefs(),
-                                prefs::kPerAppTimeLimitsPolicy);
-    base::Value* value = update.Get();
-    *value = builder.value().Clone();
+    profile().GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
+                                  builder.value().GetDict().Clone());
   }
 
   // If there was no valid last reset time stored in user pref,
@@ -533,10 +531,8 @@ TEST_F(AppTimeControllerTest, MetricsTest) {
     builder.AddAppLimit(absent_app, app_limit);
     builder.AddAppLimit(kApp2, blocked_app);
     builder.SetResetTime(6, 0);
-    DictionaryPrefUpdate update(profile().GetPrefs(),
-                                prefs::kPerAppTimeLimitsPolicy);
-    base::Value* value = update.Get();
-    *value = builder.value().Clone();
+    profile().GetPrefs()->SetDict(prefs::kPerAppTimeLimitsPolicy,
+                                  builder.value().GetDict().Clone());
   }
 
   // Enagagement is recorded at the beginning of the session when
