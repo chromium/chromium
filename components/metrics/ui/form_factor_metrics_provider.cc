@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/form_factor_metrics_provider.h"
+#include "components/metrics/ui/form_factor_metrics_provider.h"
 
 #include "build/build_config.h"
 #include "ui/base/device_form_factor.h"

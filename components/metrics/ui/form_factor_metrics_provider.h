@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_METRICS_FORM_FACTOR_METRICS_PROVIDER_H_
-#define COMPONENTS_METRICS_FORM_FACTOR_METRICS_PROVIDER_H_
+#ifndef COMPONENTS_METRICS_UI_FORM_FACTOR_METRICS_PROVIDER_H_
+#define COMPONENTS_METRICS_UI_FORM_FACTOR_METRICS_PROVIDER_H_
 
 #include "components/metrics/metrics_provider.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -32,4 +32,4 @@ class FormFactorMetricsProvider : public MetricsProvider {
 
 }  // namespace metrics
 
-#endif  // COMPONENTS_METRICS_FORM_FACTOR_METRICS_PROVIDER_H_
+#endif  // COMPONENTS_METRICS_UI_FORM_FACTOR_METRICS_PROVIDER_H_
