@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.ui.fast_checkout;
 
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DetailItemType;
@@ -34,17 +36,25 @@ import org.chromium.ui.modelutil.PropertyModel;
  * to events like clicks.
  */
 public class FastCheckoutMediator {
+    private static final float MAX_VISIBLE_ADDRESSES = 2.5f;
+    private static final float MAX_VISIBLE_CREDIT_CARDS = 3.5f;
+
     private PropertyModel mModel;
     private FastCheckoutComponent.Delegate mDelegate;
     private BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetClosedObserver;
     private BottomSheetObserver mBottomSheetDismissedObserver;
+    private @Px int mAddressItemHeight;
+    private @Px int mCreditCardItemHeight;
 
     void initialize(FastCheckoutComponent.Delegate delegate, PropertyModel model,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController, @Px int addressItemHeight,
+            @Px int creditCardItemHeight) {
         mModel = model;
         mDelegate = delegate;
         mBottomSheetController = bottomSheetController;
+        mAddressItemHeight = addressItemHeight;
+        mCreditCardItemHeight = creditCardItemHeight;
 
         mBottomSheetClosedObserver = new EmptyBottomSheetObserver() {
             @Override
@@ -103,6 +113,7 @@ public class FastCheckoutMediator {
             FastCheckoutAutofillProfile[] profiles, FastCheckoutCreditCard[] creditCards) {
         setAutofillProfileItems(profiles);
         setCreditCardItems(creditCards);
+        setCurrentScreen(mModel.get(FastCheckoutProperties.CURRENT_SCREEN));
 
         // It is possible that FC onboarding has been just accepted but the bottom sheet is still
         // showing. If that's the case we try hiding it and then show FC bottom sheet.
@@ -308,6 +319,8 @@ public class FastCheckoutMediator {
                     createSettingsOnClickListener(() -> mDelegate.openAutofillProfileSettings()));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST));
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX,
+                    computeAddressListSheetHeight());
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
                     R.string.fast_checkout_credit_card_sheet_title);
@@ -317,9 +330,48 @@ public class FastCheckoutMediator {
                     createSettingsOnClickListener(() -> mDelegate.openCreditCardSettings()));
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST,
                     mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST));
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX,
+                    computeCreditCardListSheetHeight());
         }
 
         mModel.set(FastCheckoutProperties.CURRENT_SCREEN, screenType);
+    }
+
+    /**
+     * Computes the height of the detail address list.
+     *
+     * If there are 1 or 2 items, it shows all items fully. For 3+ suggestions, it shows the
+     * first 2.5 suggestions to encourage scrolling.
+     */
+    private @Px int computeAddressListSheetHeight() {
+        // Remove the "Add item" button at the end of the list.
+        int numItems = mModel.get(FastCheckoutProperties.PROFILE_MODEL_LIST).size() - 1;
+        // When there are more than {@link MAX_VISIBLE_ADDRESSES} items, resize the list
+        // so that only {@link MAX_VISIBLE_ADDRESSES} items and part of the next one are visible.
+        if (numItems > MAX_VISIBLE_ADDRESSES) {
+            return Math.round((float) mAddressItemHeight * MAX_VISIBLE_ADDRESSES);
+        }
+        // Otherwise display all the items.
+        return FrameLayout.LayoutParams.WRAP_CONTENT;
+    }
+
+    /**
+     * Computes the height of the detail credit card list.
+     *
+     * if there are less than 4 items, it shows all items fully. For 4+ suggestions, it shows the
+     * first 3.5 suggestions to encourage scrolling.
+     */
+    private @Px int computeCreditCardListSheetHeight() {
+        // Remove the "Add item" button at the end of the list.
+        int numItems = mModel.get(FastCheckoutProperties.CREDIT_CARD_MODEL_LIST).size() - 1;
+        // When there are more than {@link MAX_VISIBLE_CREDIT_CARDS} items, resize the
+        // list so that only {@link MAX_VISIBLE_CREDIT_CARDS} items and part of the next one are
+        // visible.
+        if (numItems > MAX_VISIBLE_CREDIT_CARDS) {
+            return Math.round((float) mCreditCardItemHeight * MAX_VISIBLE_CREDIT_CARDS);
+        }
+        // Otherwise display all the items.
+        return FrameLayout.LayoutParams.WRAP_CONTENT;
     }
 
     /**

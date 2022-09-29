@@ -28,7 +28,11 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
     public void initialize(Context context, BottomSheetController sheetController,
             FastCheckoutComponent.Delegate delegate) {
         mBottomSheetController = sheetController;
-        mMediator.initialize(delegate, mModel, mBottomSheetController);
+        mMediator.initialize(delegate, mModel, mBottomSheetController,
+                context.getResources().getDimensionPixelSize(
+                        R.dimen.fast_checkout_detail_sheet_height_single_address),
+                context.getResources().getDimensionPixelSize(
+                        R.dimen.fast_checkout_detail_sheet_height_single_credit_card));
 
         LinearLayout rootView = (LinearLayout) LayoutInflater.from(context).inflate(
                 R.layout.fast_checkout_bottom_sheet, null);

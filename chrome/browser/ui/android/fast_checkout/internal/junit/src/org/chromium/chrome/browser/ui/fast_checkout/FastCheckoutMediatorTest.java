@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CREDIT_CARD_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
@@ -30,6 +31,7 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.VISIBLE;
 
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
@@ -87,7 +89,9 @@ public class FastCheckoutMediatorTest {
             FastCheckoutTestUtils.createDummyCreditCard(
                     "hfg", "https://example.co.uk", "4111111145454111"),
             FastCheckoutTestUtils.createDummyCreditCard(
-                    "iyul", "https://neverseenbefore.com", "411167568911")};
+                    "iyul", "https://neverseenbefore.com", "411167568911"),
+            FastCheckoutTestUtils.createDummyCreditCard(
+                    "iyul", "https://www.example.com", "4118102027996045")};
 
     @Mock
     RecyclerView mMockParentView;
@@ -105,7 +109,7 @@ public class FastCheckoutMediatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mMediator.initialize(mMockDelegate, mModel, mMockBottomSheetController);
+        mMediator.initialize(mMockDelegate, mModel, mMockBottomSheetController, 160, 92);
     }
 
     @Test
@@ -419,5 +423,37 @@ public class FastCheckoutMediatorTest {
 
         mMediator.destroy();
         assertThat(mModel.get(VISIBLE), is(false));
+    }
+
+    @Test
+    public void testHeightOfAddressItemList() {
+        mMediator.showOptions(
+                DUMMY_PROFILES, DUMMY_CARDS); /* 3 addresses, should show 2 and a half items. */
+        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
+        assertThat(mModel.get(VISIBLE), is(true));
+        assertThat(mModel.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX), is(400));
+
+        mMediator.showOptions(
+                new FastCheckoutAutofillProfile[] {DUMMY_PROFILES[0], DUMMY_PROFILES[1]},
+                DUMMY_CARDS); /* 2 addresses, should show all items */
+        mMediator.setCurrentScreen(ScreenType.AUTOFILL_PROFILE_SCREEN);
+        assertThat(mModel.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX),
+                is(FrameLayout.LayoutParams.WRAP_CONTENT));
+    }
+
+    @Test
+    public void testHeightOfCreditCardItemList() {
+        mMediator.showOptions(
+                DUMMY_PROFILES, DUMMY_CARDS); /* 4 credit cards, should show 3 and a half items. */
+        mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
+        assertThat(mModel.get(VISIBLE), is(true));
+        assertThat(mModel.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX), is(322));
+
+        mMediator.showOptions(DUMMY_PROFILES,
+                new FastCheckoutCreditCard[] {DUMMY_CARDS[0], DUMMY_CARDS[1],
+                        DUMMY_CARDS[2]}); /* 3 addresses, should show all items */
+        mMediator.setCurrentScreen(ScreenType.CREDIT_CARD_SCREEN);
+        assertThat(mModel.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX),
+                is(FrameLayout.LayoutParams.WRAP_CONTENT));
     }
 }

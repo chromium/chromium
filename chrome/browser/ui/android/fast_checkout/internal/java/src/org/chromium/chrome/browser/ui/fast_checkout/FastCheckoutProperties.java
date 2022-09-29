@@ -108,6 +108,10 @@ public class FastCheckoutProperties {
     public static final WritableObjectPropertyKey<ModelList> DETAIL_SCREEN_MODEL_LIST =
             new WritableObjectPropertyKey<>("detail_screen_model_list");
 
+    /** The height in px for the detail sheet item list. */
+    public static final WritableIntPropertyKey DETAIL_SCREEN_LIST_HEIGHT_IN_PX =
+            new WritableIntPropertyKey("detail_screen_recycler_view_height");
+
     public static PropertyModel createDefaultModel() {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(VISIBLE, false)
@@ -122,5 +126,5 @@ public class FastCheckoutProperties {
             SELECTED_PROFILE, PROFILE_MODEL_LIST, SELECTED_CREDIT_CARD, CREDIT_CARD_MODEL_LIST,
             HOME_SCREEN_DELEGATE, DETAIL_SCREEN_TITLE, DETAIL_SCREEN_SETTINGS_MENU_TITLE,
             DETAIL_SCREEN_BACK_CLICK_HANDLER, DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-            DETAIL_SCREEN_MODEL_LIST};
+            DETAIL_SCREEN_MODEL_LIST, DETAIL_SCREEN_LIST_HEIGHT_IN_PX};
 }

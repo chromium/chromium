@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_LIST_HEIGHT_IN_PX;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_MODEL_LIST;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
@@ -13,6 +14,7 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import android.content.Context;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,11 +31,13 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class DetailScreenViewBinder {
     /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
     static class ViewHolder {
-        final RecyclerView mRecyclerView;
         final Toolbar mToolbar;
         final MenuItem mSettingsMenuItem;
+        final FrameLayout mSheetItemListContainer;
+        final RecyclerView mRecyclerView;
 
         ViewHolder(Context context, View contentView) {
+            mSheetItemListContainer = contentView.findViewById(R.id.sheet_item_list_container);
             mRecyclerView =
                     contentView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
             mToolbar = contentView.findViewById(R.id.action_bar);
@@ -71,6 +75,9 @@ public class DetailScreenViewBinder {
             adapter.registerType(DetailItemType.PROFILE, AutofillProfileItemViewBinder::create,
                     AutofillProfileItemViewBinder::bind);
             view.setAdapter(adapter);
+        } else if (propertyKey == DETAIL_SCREEN_LIST_HEIGHT_IN_PX) {
+            view.mSheetItemListContainer.getLayoutParams().height =
+                    model.get(DETAIL_SCREEN_LIST_HEIGHT_IN_PX);
         }
     }
 }
