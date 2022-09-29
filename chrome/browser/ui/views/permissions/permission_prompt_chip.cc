@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
 #include <algorithm>
 #include <memory>
-
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,35 +28,32 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
     : PermissionPromptDesktop(browser, web_contents, delegate),
       delegate_(delegate) {
   DCHECK(delegate_);
-
   LocationBarView* lbv = GetLocationBarView();
   if (!lbv->chip_controller()->chip()) {
     lbv->CreateChip();
   }
 
   chip_controller_ = lbv->chip_controller();
-  chip_controller_->ShowPermissionPrompt(delegate_);
+  chip_controller_->ShowPermissionPrompt(web_contents, delegate);
 }
 
-PermissionPromptChip::~PermissionPromptChip() {
-  chip_controller_->FinalizePermissionPromptChip();
-}
+PermissionPromptChip::~PermissionPromptChip() = default;
 
-void PermissionPromptChip::UpdateAnchor() {
+bool PermissionPromptChip::UpdateAnchor() {
   UpdateBrowser();
 
   LocationBarView* lbv = GetLocationBarView();
   const bool is_location_bar_drawn =
       lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
-
   if (chip_controller_->IsPermissionPromptChipVisible() &&
       !is_location_bar_drawn) {
-    chip_controller_->FinalizePermissionPromptChip();
+    chip_controller_->ResetPermissionPromptChip();
     if (delegate_) {
       chip_controller_->UpdateBrowser(browser());
-      delegate_->RecreateView();
+      return false;
     }
   }
+  return true;
 }
 
 permissions::PermissionPromptDisposition
@@ -84,6 +80,6 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
 
   return chip_controller_->IsPermissionPromptChipVisible() &&
                  lbv->chip_controller()->IsBubbleShowing()
-             ? lbv->chip_controller()->GetPromptBubbleWidget()
+             ? lbv->chip_controller()->GetBubbleWidget()
              : nullptr;
 }

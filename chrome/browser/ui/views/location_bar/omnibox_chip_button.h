@@ -30,11 +30,12 @@ class OmniboxChipButton : public views::MdTextButton {
 
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
-  void AnimateCollapse();
-  void AnimateExpand();
+  void AnimateCollapse(base::TimeDelta duration);
+  void AnimateExpand(base::TimeDelta duration);
   void ResetAnimation(double value = 0);
   void SetExpandAnimationEndedCallback(
       base::RepeatingCallback<void()> callback);
+  void SetCollapseEndedCallback(base::RepeatingCallback<void()> callback);
   bool is_fully_collapsed() const { return fully_collapsed_; }
   bool is_animating() const { return animation_->is_animating(); }
   gfx::SlideAnimation* animation_for_testing() { return animation_.get(); }
@@ -87,6 +88,8 @@ class OmniboxChipButton : public views::MdTextButton {
   raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
+
+  base::RepeatingCallback<void()> collapse_animation_ended_callback_;
 
   base::RepeatingCallback<void()> visibility_changed_callback_;
 

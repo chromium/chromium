@@ -23,8 +23,9 @@ PermissionPromptAndroid::PermissionPromptAndroid(
 
 PermissionPromptAndroid::~PermissionPromptAndroid() = default;
 
-void PermissionPromptAndroid::UpdateAnchor() {
+bool PermissionPromptAndroid::UpdateAnchor() {
   NOTIMPLEMENTED();
+  return false;
 }
 
 PermissionPrompt::TabSwitchingBehavior

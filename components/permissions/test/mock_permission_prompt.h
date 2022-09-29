@@ -20,7 +20,7 @@ class MockPermissionPrompt : public PermissionPrompt {
   ~MockPermissionPrompt() override;
 
   // PermissionPrompt:
-  void UpdateAnchor() override;
+  bool UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   PermissionPromptDisposition GetPromptDisposition() const override;
 

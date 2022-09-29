@@ -57,6 +57,15 @@ class PermissionRequest {
   PermissionRequest(const PermissionRequest&) = delete;
   PermissionRequest& operator=(const PermissionRequest&) = delete;
 
+  enum ChipTextType {
+    LOUD_REQUEST,
+    QUIET_REQUEST,
+    ALLOW_CONFIRMATION,
+    BLOCKED_CONFIRMATION,
+    ACCESSIBILITY_ALLOWED_CONFIRMATION,
+    ACCESSIBILITY_BLOCKED_CONFIRMATION
+  };
+
   virtual ~PermissionRequest();
 
   GURL requesting_origin() const { return requesting_origin_; }
@@ -82,11 +91,7 @@ class PermissionRequest {
 
   // Returns prompt text appropriate for displaying on the chip button in the
   // location bar.
-  absl::optional<std::u16string> GetRequestChipText() const;
-
-  // Returns prompt text appropriate for displaying on the quiet chip button in
-  // the location bar.
-  absl::optional<std::u16string> GetQuietChipText() const;
+  absl::optional<std::u16string> GetRequestChipText(ChipTextType type) const;
 
   // Returns prompt text appropriate for displaying under the dialog title
   // "[domain] wants to:".

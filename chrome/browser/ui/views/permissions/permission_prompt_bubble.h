@@ -31,7 +31,7 @@ class PermissionPromptBubble : public PermissionPromptDesktop,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // permissions::PermissionPrompt:
-  void UpdateAnchor() override;
+  bool UpdateAnchor() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
 
