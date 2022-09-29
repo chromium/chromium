@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -22,6 +23,10 @@ class StoragePartition;
 }
 
 namespace extensions {
+
+// When enabled, cookies in the `launchWebAuthFlow()` partition are persisted
+// across browser restarts.
+BASE_DECLARE_FEATURE(kPersistentStorageForWebAuthFlow);
 
 // Controller class for web based auth flows. The WebAuthFlow creates
 // a dialog window in the scope approval component app by firing an
