@@ -440,6 +440,15 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         View dragBar = mActivity.findViewById(R.id.drag_bar);
         GradientDrawable drawable = (GradientDrawable) dragBar.getBackground();
         drawable.setColor(color);
+
+        ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handlebar);
+        int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
+        if (scrimFraction > 0.f) {
+            handle.setColorFilter(ColorUtils.getColorWithOverlay(
+                    handleColor, scrimColorOpaque, scrimFraction * scrimColorAlpha, false));
+        } else {
+            handle.clearColorFilter();
+        }
     }
 
     private void initializeHeight() {
