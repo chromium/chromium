@@ -25,7 +25,6 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
