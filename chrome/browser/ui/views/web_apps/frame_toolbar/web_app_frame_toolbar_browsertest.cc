@@ -257,8 +257,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
   AppMenuButton* const app_menu_button =
       toolbar_button_provider->GetAppMenuButton();
 
-  const SkColor original_ink_drop_color =
-      views::InkDrop::Get(app_menu_button)->GetBaseColor();
+  auto get_ink_drop_color = [app_menu_button]() -> SkColor {
+    return SkColorSetA(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
+                       SK_AlphaOPAQUE);
+  };
+
+  const SkColor original_ink_drop_color = get_ink_drop_color();
 
   // Change the theme-color.
   {
@@ -268,8 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
                                 "setAttribute('content', '#246')"));
     theme_change_waiter.Wait();
 
-    EXPECT_NE(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
-              original_ink_drop_color);
+    EXPECT_NE(get_ink_drop_color(), original_ink_drop_color);
   }
 
   // Change the theme-color back to its original one.
@@ -280,8 +283,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
                                 "setAttribute('content', '#ace')"));
     theme_change_waiter.Wait();
 
-    EXPECT_EQ(views::InkDrop::Get(app_menu_button)->GetBaseColor(),
-              original_ink_drop_color);
+    EXPECT_EQ(get_ink_drop_color(), original_ink_drop_color);
   }
 #endif
 }
