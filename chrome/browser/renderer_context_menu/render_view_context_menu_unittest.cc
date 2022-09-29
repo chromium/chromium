@@ -527,6 +527,17 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     return browser_.get();
   }
 
+  Browser* GetPwaBrowser() {
+    if (!browser_) {
+      Browser::CreateParams create_params(Browser::Type::TYPE_APP, profile(),
+                                          true);
+      auto test_window = std::make_unique<TestBrowserWindow>();
+      create_params.window = test_window.get();
+      browser_.reset(Browser::Create(create_params));
+    }
+    return browser_.get();
+  }
+
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
@@ -1047,6 +1058,93 @@ TEST_P(RenderViewContestMenuAutofillTest, ShowAutofillOptions) {
                                  IDC_CONTENT_CONTEXT_AUTOFILL_CUSTOM_LAST));
 }
 
+// Verify that the Lens Image Search menu item is disabled on non-image content
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchNonImage) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
+// Verify that the Lens Image Search menu item is enabled on image content
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
+// Verify that the Lens Image Search menu item is enabled for Progressive Web
+// Apps
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetPwaBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
+// Verify that the Lens Image Search menu item is enabled for third-party
+// default search engines that support image search.
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchEnabledFor3pDse) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.bing.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
+// Verify that the Lens Image Search menu item is disabled for third-part
+// default search engines that do not support image search.
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchDisabledFor3pDse) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.yahoo.com",
+                                       /*supports_image_search=*/false);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Verify that the Lens Region Search menu item is displayed when the feature
 // is enabled.
@@ -1232,6 +1330,22 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
   menu.Init();
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
+}
+
+// Verify that the Lens Region Search menu item is enabled for Progressive Web
+// Apps
+TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchProgressiveWebApp) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetPwaBrowser());
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
 
 #endif
