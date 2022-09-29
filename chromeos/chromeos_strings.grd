@@ -3220,6 +3220,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SHIMLESS_RMA_HARDWARE_SHUTDOWN_BUTTON" translateable="false" desc="Label for the shut down button on the hardware error page.">
         Shut down
       </message>
+      <message name="IDS_SHIMLESS_RMA_HARDWARE_ERROR_CODE_MESSAGE" translateable="false" desc="The message that displays an error code.">
+        Error code: 0x<ph name="ERROR_CODE">$1<ex>1004</ex></ph>
+      </message>
       <!-- Reboot page -->
       <message name="IDS_SHIMLESS_RMA_REBOOT_PAGE_TITLE" translateable="false" desc="The title for the reboot page. The reboot page is shown when the device is preparing to reboot.">
         Preparing to restart...

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {HardwareErrorPage} from 'chrome://shimless-rma/hardware_error_page.js';
@@ -11,6 +12,9 @@ import {ShutdownMethod} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+/** @type {number} */
+const ERROR_CODE = 1004;
 
 export function hardwareErrorPageTest() {
   /**
@@ -53,6 +57,7 @@ export function hardwareErrorPageTest() {
 
     component = /** @type {!HardwareErrorPage} */ (
         document.createElement('hardware-error-page'));
+    component.errorCode = ERROR_CODE;
     assertTrue(!!component);
     document.body.appendChild(component);
 
@@ -92,5 +97,13 @@ export function hardwareErrorPageTest() {
     await flushTasks();
 
     assertEquals(1, callCount);
+  });
+
+  test('ErrorCodeDisplayed', async () => {
+    await initializeHardwareErrorPage();
+
+    assertEquals(
+        loadTimeData.getStringF('hardwareErrorCode', ERROR_CODE),
+        component.shadowRoot.querySelector('#errorCode').textContent.trim());
   });
 }

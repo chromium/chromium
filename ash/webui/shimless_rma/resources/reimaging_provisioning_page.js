@@ -24,6 +24,12 @@ import {disableNextButton, enableNextButton, executeThenTransitionState, focusPa
  */
 
 /**
+ * The prefix for a `ProvisioningError` displayed on the Hardware Error page.
+ * @type {number}
+ */
+export const PROVISIONING_ERROR_CODE_PREFIX = 1000;
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
@@ -100,7 +106,10 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       this.dispatchEvent(new CustomEvent('fatal-hardware-error', {
         bubbles: true,
         composed: true,
-        detail: RmadErrorCode.kProvisioningFailed,
+        detail: {
+          rmadErrorCode: RmadErrorCode.kProvisioningFailed,
+          fatalErrorCode: (PROVISIONING_ERROR_CODE_PREFIX + error),
+        },
       }));
     }
 

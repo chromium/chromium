@@ -26,6 +26,12 @@ const finalizationStatusTextKeys = {
  */
 
 /**
+ * The prefix for a `FinalizationError` displayed on the Hardware Error page.
+ * @type {number}
+ */
+export const FINALIZATION_ERROR_CODE_PREFIX = 2000;
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
@@ -91,7 +97,10 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
       this.dispatchEvent(new CustomEvent('fatal-hardware-error', {
         bubbles: true,
         composed: true,
-        detail: RmadErrorCode.kFinalizationFailed,
+        detail: {
+          rmadErrorCode: RmadErrorCode.kFinalizationFailed,
+          fatalErrorCode: (FINALIZATION_ERROR_CODE_PREFIX + error),
+        },
       }));
     } else {
       this.finalizationMessage_ = this.i18n(finalizationStatusTextKeys[status]);

@@ -441,7 +441,7 @@ export class ShimlessRma extends ShimlessRmaBase {
           state: State.kHardwareError,
           canExit: false,
           canGoBack: false,
-          error: event.detail,
+          error: event.detail.fatalErrorCode,
         },
       };
       this.showState_(errorState);

@@ -43,6 +43,12 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
        * @type {boolean}
        */
       allButtonsDisabled: Boolean,
+
+      /**
+       * Set by shimless_rma.js.
+       * @type {number}
+       */
+      errorCode: Number,
     };
   }
 
@@ -63,6 +69,14 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
   onShutDownButtonClicked_() {
     this.shimlessRmaService_.shutDownAfterHardwareError();
     disableAllButtons(this, /* showBusyStateOverlay= */ true);
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getErrorCodeString_() {
+    return this.i18n('hardwareErrorCode', this.errorCode);
   }
 }
 

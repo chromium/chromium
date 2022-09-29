@@ -5,7 +5,7 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ReimagingProvisioningPage} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
+import {PROVISIONING_ERROR_CODE_PREFIX, ReimagingProvisioningPage} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {ProvisioningError, ProvisioningStatus, RmadErrorCode} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -112,10 +112,15 @@ export function reimagingProvisioningPageTest() {
     await initializeWaitForProvisioningPage();
 
     let hardwareErrorEventFired = false;
+    const expectedProvisoningError = ProvisioningError.kInternal;
 
     const eventHandler = (event) => {
       hardwareErrorEventFired = true;
-      assertEquals(RmadErrorCode.kProvisioningFailed, event.detail);
+      assertEquals(
+          RmadErrorCode.kProvisioningFailed, event.detail.rmadErrorCode);
+      assertEquals(
+          PROVISIONING_ERROR_CODE_PREFIX + expectedProvisoningError,
+          event.detail.fatalErrorCode);
     };
     component.addEventListener('fatal-hardware-error', eventHandler);
 
@@ -125,8 +130,7 @@ export function reimagingProvisioningPageTest() {
     assertFalse(wpEnabledDialog.open);
 
     service.triggerProvisioningObserver(
-        ProvisioningStatus.kFailedBlocking, 1.0, ProvisioningError.kInternal,
-        0);
+        ProvisioningStatus.kFailedBlocking, 1.0, expectedProvisoningError, 0);
     await flushTasks();
 
     assertFalse(wpEnabledDialog.open);

@@ -565,7 +565,14 @@ export function shimlessRMAAppTest() {
 
     component.dispatchEvent(new CustomEvent(
         'fatal-hardware-error',
-        {bubbles: true, composed: true},
+        {
+          bubbles: true,
+          composed: true,
+          detail: {
+            rmadErrorCode: RmadErrorCode.kProvisioningFailed,
+            fatalErrorCode: 1001,
+          },
+        },
         ));
 
     await flushTasks();
