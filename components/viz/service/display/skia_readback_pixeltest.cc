@@ -161,8 +161,10 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
         auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
                                          ->gpu_service()
                                          ->shared_image_manager();
-        auto* context_state =
-            TestGpuServiceHolder::GetInstance()->GetSharedContextState().get();
+        auto* context_state = TestGpuServiceHolder::GetInstance()
+                                  ->gpu_service()
+                                  ->GetContextState()
+                                  .get();
 
         ReadbackTextureOnGpuThread(shared_image_manager, context_state,
                                    result.GetTextureResult()->planes[0].mailbox,
