@@ -2315,7 +2315,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
 // and then save the desk, that the desk is closed. Regression test for
 // https://crbug.com/1329350.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       SystemUIReEnterLibraryAndSaveDesk) {
+                       // TODO(crbug.com/1369348): Re-enable this test
+                       DISABLED_SystemUIReEnterLibraryAndSaveDesk) {
   // Create a template that has a window because the "Save desk for later"
   // button is not enabled on empty desks.
   ash::ToggleOverview();
