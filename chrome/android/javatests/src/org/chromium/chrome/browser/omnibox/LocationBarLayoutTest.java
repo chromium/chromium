@@ -293,9 +293,7 @@ public class LocationBarLayoutTest {
             urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
             int endMarginWithIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
 
-            Assert.assertEquals(endMarginNoIcon
-                            + locationBar.getStatusCoordinatorForTesting()
-                                      .getEndPaddingPixelSizeOnFocusDelta(),
+            Assert.assertEquals(endMarginNoIcon + locationBar.getEndPaddingPixelSizeOnFocusDelta(),
                     endMarginWithIcon);
         });
     }

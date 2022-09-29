@@ -1064,10 +1064,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
         // When the dse icon is enabled, the UrlBar needs additional translation to compensate for
         // the additional translation applied to the LocationBar. See comments in
-        // LocationBar#getUrlBarTranslationXForToolbarAnimation() for implementation details.
+        // LocationBarCoordinator#getUrlBarTranslationXForToolbarAnimation() and
+        // LocationBarMediator#getUrlBarTranslationXForToolbarAnimation() for implementation
+        // details.
         if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
-            mUrlBar.setTranslationX(
-                    getUrlBarTranslationXForToolbarAnimation(mUrlExpansionFraction, hasFocus()));
+            mUrlBar.setTranslationX(mLocationBar.getUrlBarTranslationXForToolbarAnimation(
+                    mUrlExpansionFraction,
+                    UrlUtilities.isCanonicalizedNTPUrl(getToolbarDataProvider().getCurrentUrl())));
         } else {
             mUrlBar.setTranslationX(0);
         }
@@ -2612,60 +2615,6 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // right-hand side.
         int offset = statusCoordinator.getStatusIconWidth() - getAdditionalOffsetForNTP();
         return mLocationBar.isLayoutRtl() ? offset : -offset;
-    }
-
-    /**
-     * Function used to position the url bar inside the location bar during omnibox animation.
-     *
-     * @param urlExpansionPercent The current expansion percent, 1 is fully focused and 0 is
-     *                            completely unfocused.
-     * @param hasFocus True if the LocationBar has focus, this will be true between the focus
-     *                 animation starting and the unfocus animation starting.
-     * @return The X translation for the URL bar, used in the toolbar animation.
-     */
-    private float getUrlBarTranslationXForToolbarAnimation(
-            float urlExpansionPercent, boolean hasFocus) {
-        StatusCoordinator statusCoordinator = mLocationBar.getStatusCoordinator();
-        if (statusCoordinator == null) return 0;
-        SearchEngineLogoUtils searchEngineLogoUtils = SearchEngineLogoUtils.getInstance();
-        assert searchEngineLogoUtils != null;
-
-        // No offset is required if the experiment is disabled.
-        if (!searchEngineLogoUtils.shouldShowSearchEngineLogo(
-                    getToolbarDataProvider().isIncognito())) {
-            return 0;
-        }
-
-        boolean isRtl = mLocationBar.isLayoutRtl();
-        // The calculation here is: the difference in padding between the focused vs unfocused
-        // states and also accounts for the translation that the status icon will do. In the end,
-        // this translation will be the distance that the url bar needs to travel to arrive at the
-        // desired padding when focused.
-        float translation =
-                urlExpansionPercent * statusCoordinator.getEndPaddingPixelSizeOnFocusDelta();
-
-        boolean scrollingOnNtp = !hasFocus && statusCoordinator.isSearchEngineStatusIconVisible()
-                && UrlUtilities.isCanonicalizedNTPUrl(getToolbarDataProvider().getCurrentUrl());
-        if (scrollingOnNtp) {
-            // When:
-            // 1. unfocusing the LocationBar on the NTP.
-            // 2. scrolling the fakebox to the LocationBar on the NTP.
-            // The status icon and the URL bar text overlap in the animation.
-            //
-            // This branch calculates the negative distance the URL bar needs to travel to
-            // completely overlap the status icon and end up in a state that matches the fakebox.
-            float overStatusIconTranslation = translation
-                    - (1f - urlExpansionPercent)
-                            * (statusCoordinator.getStatusIconWidth()
-                                    - getAdditionalOffsetForNTP());
-            // For LTR, the value is negative because the status icon is left of the url bar on the
-            // x/y plane.
-            // For RTL, the value is positive because the status icon is right of the url bar on the
-            // x/y plane.
-            return isRtl ? -overStatusIconTranslation : overStatusIconTranslation;
-        }
-
-        return isRtl ? -translation : translation;
     }
 
     private int getAdditionalOffsetForNTP() {

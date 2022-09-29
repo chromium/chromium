@@ -98,7 +98,7 @@ public class StatusView extends LinearLayout {
     }
 
     /**
-     * @return Whether search engine status icon is visible.
+     * Return whether search engine status icon is visible.
      */
     public boolean isSearchEngineStatusIconVisible() {
         return mIconView.getVisibility() == VISIBLE;

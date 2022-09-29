@@ -187,7 +187,10 @@ public class LocationBarLayout extends FrameLayout {
                     MarginLayoutParamsCompat.getMarginStart(urlActionContainerLayoutParams)
                     + MarginLayoutParamsCompat.getMarginEnd(urlActionContainerLayoutParams);
         }
-        urlContainerMarginEnd += mStatusCoordinator.getAdditionalUrlContainerMarginEnd();
+        urlContainerMarginEnd += mStatusCoordinator.isSearchEngineStatusIconVisible()
+                        && mStatusCoordinator.shouldDisplaySearchEngineIcon()
+                ? getEndPaddingPixelSizeOnFocusDelta()
+                : 0;
         // Account for the URL action container end padding on tablets.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             urlContainerMarginEnd +=
@@ -296,6 +299,12 @@ public class LocationBarLayout extends FrameLayout {
 
     /* package */ void setUrlActionContainerVisibility(int visibility) {
         mUrlActionContainer.setVisibility(visibility);
+    }
+
+    /** Returns the increase in StatusView end padding, when the Url bar is focused. */
+    public int getEndPaddingPixelSizeOnFocusDelta() {
+        return getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                - getResources().getDimensionPixelSize(R.dimen.location_bar_icon_end_padding);
     }
 
     public void notifyVoiceRecognitionCanceled() {}

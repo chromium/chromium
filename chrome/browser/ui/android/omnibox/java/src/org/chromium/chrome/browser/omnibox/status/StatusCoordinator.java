@@ -208,6 +208,11 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         return mStatusView.isSearchEngineStatusIconVisible();
     }
 
+    /** Returns {@code true} if the search engine icon is  currently being displayed. */
+    public boolean shouldDisplaySearchEngineIcon() {
+        return mMediator.shouldDisplaySearchEngineIcon();
+    }
+
     /** Returns the ID of the drawable currently shown in the security icon. */
     @DrawableRes
     public int getSecurityIconResourceIdForTesting() {
@@ -277,11 +282,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         return mStatusView.getMeasuredWidth();
     }
 
-    /** Returns the increase in StatusView end padding, when the Url bar is focused. */
-    public int getEndPaddingPixelSizeOnFocusDelta() {
-        return mMediator.getEndPaddingPixelSizeOnFocusDelta();
-    }
-
     /**
      * Notifies StatusCoordinator that the default match for the currently entered autocomplete text
      * has been classified, indicating whether the default match is a search.
@@ -290,13 +290,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      */
     public void onDefaultMatchClassified(boolean defaultMatchIsSearch) {
         mMediator.updateLocationBarIconForDefaultMatchCategory(defaultMatchIsSearch);
-    }
-
-    /** Returns the additional end margin for the url container. */
-    public int getAdditionalUrlContainerMarginEnd() {
-        return mMediator.shouldDisplaySearchEngineIcon() && isSearchEngineStatusIconVisible()
-                ? getEndPaddingPixelSizeOnFocusDelta()
-                : 0;
     }
 
     public void destroy() {
