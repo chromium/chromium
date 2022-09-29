@@ -12,6 +12,8 @@ export class InputTextStrategy extends ParseStrategy {
   /** @param {!InputController} inputController */
   constructor(inputController) {
     super(inputController);
+    // InputTextStrategy is always enabled.
+    this.enabled = true;
   }
 
   /** @override */
