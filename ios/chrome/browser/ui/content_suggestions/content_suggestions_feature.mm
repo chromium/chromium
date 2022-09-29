@@ -147,7 +147,7 @@ bool ShouldRemoveHeadersForModuleRefresh() {
           kContentSuggestionsUIModuleRefreshFlagOverrideFieldTrialName)) {
     return base::GetFieldTrialParamByFeatureAsBool(
         kContentSuggestionsUIModuleRefresh,
-        kContentSuggestionsUIModuleRefreshMinimizeSpacingParam, false);
+        kContentSuggestionsUIModuleRefreshRemoveHeadersParam, false);
   }
   // If client is registered in the client-side FieldTrial, check its unique
   // base::Feature for enabled state.
