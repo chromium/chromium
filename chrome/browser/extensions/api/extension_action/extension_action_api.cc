@@ -401,6 +401,12 @@ ExtensionActionHideFunction::RunExtensionAction() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+ActionIsEnabledFunction::RunExtensionAction() {
+  return RespondNow(OneArgument(base::Value(
+      extension_action_->GetIsVisibleIgnoringDeclarative(tab_id_))));
+}
+
 // static
 void ExtensionActionSetIconFunction::SetReportErrorForInvisibleIconForTesting(
     bool value) {

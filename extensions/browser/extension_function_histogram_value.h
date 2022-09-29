@@ -1776,6 +1776,7 @@ enum HistogramValue {
   OS_DIAGNOSTICS_RUNDNSRESOLVERPRESENTROUTINE = 1713,
   OS_TELEMETRY_GETINTERNETCONNECTIVITYINFO = 1714,
   PASSWORDSPRIVATE_GETINSECURECREDENTIALS = 1715,
+  ACTION_ISENABLED = 1716,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

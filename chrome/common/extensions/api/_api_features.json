@@ -66,6 +66,10 @@
     // TODO(https://crbug.com/1245093): Upgrade to stable channel.
     "channel": "dev"
   },
+  "action.isEnabled": {
+    // TODO(https://crbug.com/1189295): Upgrade to stable channel.
+    "channel": "dev"
+  },
   "activityLogPrivate": [{
     "dependencies": ["permission:activityLogPrivate"],
     "contexts": ["blessed_extension"]

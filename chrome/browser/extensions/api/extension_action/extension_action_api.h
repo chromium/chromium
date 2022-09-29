@@ -333,6 +333,15 @@ class ActionDisableFunction : public ExtensionActionHideFunction {
   ~ActionDisableFunction() override {}
 };
 
+class ActionIsEnabledFunction : public ExtensionActionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("action.isEnabled", ACTION_ISENABLED)
+
+ protected:
+  ~ActionIsEnabledFunction() override = default;
+  ResponseAction RunExtensionAction() override;
+};
+
 class ActionGetUserSettingsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("action.getUserSettings", ACTION_GETUSERSETTINGS)

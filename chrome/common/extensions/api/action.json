@@ -281,6 +281,29 @@
         "optional": true
       }
     }, {
+      "name": "isEnabled",
+      "type": "function",
+      "description": "Retrieves the state of whether the extension action is enabled for a tab (or globally if no tab is provided).",
+      "parameters": [
+        {
+          "type": "integer",
+          "optional": true,
+          "name": "tabId",
+          "minimum": 0,
+          "description": "The id of the tab for which you want check enabled status."
+        }
+      ],
+      "returns_async": {
+        "name": "callback",
+        "parameters": [
+          {
+            "name": "isEnabled",
+            "type": "boolean",
+            "description": "True if the extension action is enabled."
+          }
+        ]
+      }
+    }, {
       "name": "getUserSettings",
       "type": "function",
       "description": "Returns the user-specified settings relating to an extension's action.",
