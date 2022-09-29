@@ -183,13 +183,13 @@ bool AtDomainWithPathPrefix(const absl::optional<GURL>& url,
 }
 
 template <size_t N>
-bool IsMatchedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
+bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
                                 const absl::optional<GURL>& url) {
   if (!url)
     return false;
   for (size_t i = 0; i < N; i++) {
-    auto domain = allowedDomainAndPaths[i][0];
-    auto path_prefix = allowedDomainAndPaths[i][1];
+    auto domain = expected_domains_and_paths[i][0];
+    auto path_prefix = expected_domains_and_paths[i][1];
     if (AtDomainWithPathPrefix(url, domain, path_prefix)) {
       return true;
     }
@@ -198,14 +198,18 @@ bool IsMatchedUrlWithPathPrefix(const char* (&allowedDomainAndPaths)[N][2],
 }
 
 template <size_t N>
-bool IsMatchedApp(const char* (&allowedApps)[N], WindowProperties w) {
+bool IsMatchedApp(const char* (&expected_app_ids_or_package_names)[N],
+                  WindowProperties w) {
   if (!w.arc_package_name.empty() &&
-      std::find(allowedApps, allowedApps + N, w.arc_package_name) !=
-          allowedApps + N) {
+      std::find(expected_app_ids_or_package_names,
+                expected_app_ids_or_package_names + N,
+                w.arc_package_name) != expected_app_ids_or_package_names + N) {
     return true;
   }
   if (!w.app_id.empty() &&
-      std::find(allowedApps, allowedApps + N, w.app_id) != allowedApps + N) {
+      std::find(expected_app_ids_or_package_names,
+                expected_app_ids_or_package_names + N,
+                w.app_id) != expected_app_ids_or_package_names + N) {
     return true;
   }
   return false;
