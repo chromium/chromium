@@ -27,15 +27,15 @@ remote work was the only available option.
 
 ---
 
-After building chromium, be sure to have a paved device that has gone through
-OOBEattached to the host. Run the following from the chromium build
+After building chromium, be sure to have a device that has gone through
+OOBE attached to the host. Run the following from the chromium build
 directory if you want to run a specific benchmark:
 
 ```shell
 $ ../../content/test/gpu/run_telemetry_benchmark_fuchsia.py \
 --browser=web-engine-shell  --output-format=histograms  \
---experimental-tbmv3-metrics -d --host=localhost \
-[--fuchsia-out-dir=/path/to/fuchsia/out/dir] \  # Deploy custom fuchsia.
+--experimental-tbmv3-metrics -d
+[--repo=/path/to/fuchsia/out/dir --no-repo-init] \  # Deploy custom fuchsia.
 [benchmark] [--story-filter=<story name>]
 ```
 
@@ -45,13 +45,13 @@ For instance, to run the simplest story, `load:chrome:blank` from the benchmark
 ```shell
 $ ../../content/test/gpu/run_telemetry_benchmark_fuchsia.py \
 --browser=web-engine-shell  --output-format=histograms  \
---experimental-tbmv3-metrics -d --host=localhost system_health.memory_desktop \
+--experimental-tbmv3-metrics -d system_health.memory_desktop \
 --story-filter=load:chrome:blank
 ```
 
 If no benchmark or filter is specified, all supported benchmarks will run.
 
-## Run on an emulator
+## Run on an ephemeral emulator
 If you wish to run the tests on an emulator, simply drop the `-d` flag. This
 will start an emulator and run through the supported tests, like so.
 
@@ -69,15 +69,12 @@ Note that this needs to be run from an x64 build directory.
 As connecting to a device that is not connected to a workstation is more common,
 this flow is what is recommended and tested.
 
-Be sure to first open a tunnel to your device and have a `pm` server running and
-serving to your device:
+Be sure to first open a tunnel to your device:
 
 ```shell
 $ ../../content/test/gpu/run_telemetry_benchmark_fuchsia.py \
 --browser=web-engine-shell  --output-format=histograms  \
---experimental-tbmv3-metrics -d --host=localhost \
---ssh-config=<sshconfig file>  [benchmark] [--story-filter=<story name>]
+--experimental-tbmv3-metrics -d --target-id=[::1]:8022 \
+[benchmark] [--story-filter=<story name>]
 ```
-The SSH config path is typically `$HOME/.fuchsia/sshconfig`.
-
 See the above section on how to use the `benchmark` and `--story-filter`.

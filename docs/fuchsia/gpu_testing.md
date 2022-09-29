@@ -28,24 +28,22 @@ $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --browser=web-engine-shell --out-dir=/path/to/outdir -d
 ```
 
-## Run on a device paved with Fuchsia built from source
+## Run on a device that needs packages built from Fuchsia source
 
 ```bash
 $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
 --browser=web-engine-shell --out-dir=/path/to/outdir -d
---fuchsia-out-dir=/path/to/fuchsia/outdir
+--repo=/path/to/fuchsia/outdir --no-repo-init
 ```
 
-Note that `fx serve` must be running for communication with the device to
-succeed.
+Note that `fx serve` should not be running, since the script
+handles launching the package server from the Fuchsia output directory.
 
 ## Run on a device the host is connected to remotely via ssh
 
-Note the `--ssh-config` flag, which should point to the config file used to set
-up the connection between the host and the remote device.
-
 ```bash
 $ content/test/gpu/run_gpu_integration_test_fuchsia.py gpu_process
---browser=web-engine-shell --out-dir=/path/to/outdir -d --host=localhost
---ssh-config=/path/to/ssh/config
+--browser=web-engine-shell --out-dir=/path/to/outdir -d --target-id=[::1]:8022
 ```
+
+Note the this requires a remote tunnel to have been set up first.

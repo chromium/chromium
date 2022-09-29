@@ -16,7 +16,7 @@ from common import register_common_args  # pylint: disable=no-name-in-module
 def RunTestOnFuchsiaDevice(script_type):
   """Helper method that runs Telemetry based tests on Fuchsia."""
 
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(add_help=False)
   register_common_args(parser)
   script_args, rest_args = parser.parse_known_args()
 
