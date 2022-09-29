@@ -1726,15 +1726,15 @@ void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,
 
 bool NGBoxFragmentPainter::ShouldPaint(
     const ScopedPaintState& paint_state) const {
-  // TODO(layout-dev): Add support for scrolling, see BlockPainter::ShouldPaint.
-  const NGPhysicalBoxFragment& fragment = PhysicalFragment();
-  if (!fragment.IsInlineBox()) {
-    return paint_state.LocalRectIntersectsCullRect(
-        To<LayoutBox>(fragment.GetLayoutObject())
-            ->PhysicalVisualOverflowRect());
-  }
-  NOTREACHED();
-  return false;
+  DCHECK(!box_fragment_.IsInlineBox());
+  // When printing, the root fragment's background (i.e. the document's
+  // background) should extend onto every page, regardless of the overflow
+  // rectangle.
+  if (box_fragment_.IsPaginatedRoot())
+    return true;
+  const auto& box = *To<LayoutBox>(box_fragment_.GetLayoutObject());
+  return paint_state.LocalRectIntersectsCullRect(
+      box.PhysicalVisualOverflowRect());
 }
 
 void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,

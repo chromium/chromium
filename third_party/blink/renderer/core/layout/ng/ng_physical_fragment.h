@@ -225,6 +225,13 @@ class CORE_EXPORT NGPhysicalFragment
   // inside the fieldset except the rendered legend).
   bool IsFieldsetContainer() const { return is_fieldset_container_; }
 
+  // Return true if this is the layout root fragment for pagination
+  // (aka. printing).
+  bool IsPaginatedRoot() const {
+    return layout_object_->IsLayoutView() && IsCSSBox() &&
+           GetDocument().Printing();
+  }
+
   // Returns whether the fragment is legacy layout root.
   bool IsLegacyLayoutRoot() const { return is_legacy_layout_root_; }
 
