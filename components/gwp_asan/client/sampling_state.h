@@ -10,8 +10,8 @@
 #include <random>
 
 #include "base/compiler_specific.h"
-#include "base/rand_util.h"
 #include "build/build_config.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 #define USE_PTHREAD_TLS
@@ -24,6 +24,23 @@ namespace internal {
 enum ParentAllocator {
   MALLOC = 0,
   PARTITIONALLOC = 1,
+};
+
+class RandomBitGenerator {
+ public:
+  using result_type = uint64_t;
+  static constexpr result_type min() { return 0; }
+  static constexpr result_type max() { return UINT64_MAX; }
+  result_type operator()() const {
+    uint64_t result;
+    // To avoid infinite recursion use non-allocating RNG from BoringSSL.
+    RAND_get_system_entropy_for_custom_prng(reinterpret_cast<uint8_t*>(&result),
+                                            sizeof(result));
+    return result;
+  }
+
+  RandomBitGenerator() = default;
+  ~RandomBitGenerator() = default;
 };
 
 // Class that encapsulates the current sampling state. Sampling is performed
@@ -65,7 +82,7 @@ class SamplingState {
   // Sample an allocation on every average one out of every
   // |sampling_frequency_| allocations.
   size_t NextSample() {
-    base::RandomBitGenerator generator;
+    RandomBitGenerator generator;
     std::geometric_distribution<size_t> distribution(sampling_probability_);
     return distribution(generator) + 1;
   }

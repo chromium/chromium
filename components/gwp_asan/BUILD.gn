@@ -13,6 +13,7 @@ test("gwp_asan_unittests") {
     "//base/test:run_all_unittests",
     "//components/gwp_asan/common:unit_tests",
     "//testing/gtest",
+    "//third_party/boringssl",
   ]
   if (is_win || is_mac || is_linux || is_chromeos || is_android) {
     deps += [
