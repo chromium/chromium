@@ -100,6 +100,7 @@
   "utf-7",
   "utf-32",
   "viscii",
+  "windows-936-2000",
   "windows-sami-2",
   "ws2",
   "x-chinese-cns",
