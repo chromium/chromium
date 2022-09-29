@@ -14,12 +14,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/views/borealis/borealis_installer_disallowed_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -50,10 +52,14 @@ constexpr auto kButtonRowInsets = gfx::Insets::TLBR(0, 64, 32, 64);
 constexpr int kWindowWidth = 768;
 constexpr int kWindowHeight = 636;
 
-}  // namespace
+void ShowBorealisInstallerViewIfAllowed(
+    Profile* profile,
+    borealis::BorealisFeatures::AllowStatus status) {
+  if (status != borealis::BorealisFeatures::AllowStatus::kAllowed) {
+    views::borealis::ShowInstallerDisallowedDialog(status);
+    return;
+  }
 
-// Defined in chrome/browser/ash/borealis/borealis_util.h.
-void borealis::ShowBorealisInstallerView(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!g_borealis_installer_view) {
     g_borealis_installer_view = new BorealisInstallerView(profile);
@@ -64,6 +70,14 @@ void borealis::ShowBorealisInstallerView(Profile* profile) {
   }
   g_borealis_installer_view->SetButtonRowInsets(kButtonRowInsets);
   g_borealis_installer_view->GetWidget()->Show();
+}
+
+}  // namespace
+
+// Defined in chrome/browser/ash/borealis/borealis_util.h.
+void borealis::ShowBorealisInstallerView(Profile* profile) {
+  borealis::BorealisService::GetForProfile(profile)->Features().IsAllowed(
+      base::BindOnce(&ShowBorealisInstallerViewIfAllowed, profile));
 }
 
 // We need a separate class so that we can alert screen readers appropriately

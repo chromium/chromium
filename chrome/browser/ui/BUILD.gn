@@ -2532,6 +2532,8 @@ static_library("ui") {
       "views/apps/chrome_native_app_window_views_aura_ash.h",
       "views/arc_app_dialog_view.cc",
       "views/arc_data_removal_dialog_view.cc",
+      "views/borealis/borealis_installer_disallowed_dialog.cc",
+      "views/borealis/borealis_installer_disallowed_dialog.h",
       "views/borealis/borealis_installer_view.cc",
       "views/borealis/borealis_installer_view.h",
       "views/borealis/borealis_splash_screen_view.cc",
