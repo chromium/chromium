@@ -184,6 +184,8 @@ dependencies {
     androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
 
     androidTestCompile "org.mockito:mockito-core:4.7.0"
+    //Depended on by downstream guava_java rewrite.
+    androidTestCompile "org.checkerframework:checker-qual:3.22.1"
 
     String robolectricVersion = '4.8.1'
     // Use testCompile to avoid having support_android = true set on
