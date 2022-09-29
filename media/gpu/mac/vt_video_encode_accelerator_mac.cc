@@ -11,6 +11,7 @@
 #include "base/mac/mac_logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -58,6 +59,53 @@ static CFStringRef VideoCodecProfileToVTProfile(VideoCodecProfile profile) {
       NOTREACHED();
   }
   return kVTProfileLevel_H264_Baseline_AutoLevel;
+}
+
+base::ScopedCFTypeRef<CFArrayRef> CreateRateLimitArray(const Bitrate& bitrate) {
+  std::vector<CFNumberRef> limits;
+  switch (bitrate.mode()) {
+    case Bitrate::Mode::kConstant: {
+      // CBR should be enforces with granularity of a second.
+      float target_interval = 1.0;
+      int32_t target_bitrate = bitrate.target_bps() / kBitsPerByte;
+
+      limits.push_back(
+          CFNumberCreate(nullptr, kCFNumberSInt32Type, &target_bitrate));
+      limits.push_back(
+          CFNumberCreate(nullptr, kCFNumberFloat32Type, &target_interval));
+      break;
+    }
+    case Bitrate::Mode::kVariable: {
+      // 5 seconds should be an okay interval for VBR to enforce the long-term
+      // limit.
+      float avg_interval = 5.0;
+      int32_t avg_bitrate = base::saturated_cast<int32_t>(
+          bitrate.target_bps() / kBitsPerByte * avg_interval);
+
+      // And the peak bitrate is measured per-second in a way similar to CBR.
+      float peak_interval = 1.0;
+      int32_t peak_bitrate = bitrate.peak_bps() / kBitsPerByte;
+      limits.push_back(
+          CFNumberCreate(nullptr, kCFNumberSInt32Type, &peak_bitrate));
+      limits.push_back(
+          CFNumberCreate(nullptr, kCFNumberFloat32Type, &peak_interval));
+      limits.push_back(
+          CFNumberCreate(nullptr, kCFNumberSInt32Type, &avg_bitrate));
+      limits.push_back(
+          CFNumberCreate(nullptr, kCFNumberFloat32Type, &avg_interval));
+      break;
+    }
+
+    default:
+      NOTREACHED();
+  }
+
+  base::ScopedCFTypeRef<CFArrayRef> result(CFArrayCreate(
+      kCFAllocatorDefault, reinterpret_cast<const void**>(limits.data()),
+      limits.size(), &kCFTypeArrayCallBacks));
+  for (auto* number : limits)
+    CFRelease(number);
+  return result;
 }
 
 }  // namespace
@@ -396,7 +444,7 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
   bitrate_ = bitrate;
 }
 
-void VTVideoEncodeAccelerator::SetAdjustedConstantBitrate(int32_t bitrate) {
+void VTVideoEncodeAccelerator::SetAdjustedConstantBitrate(uint32_t bitrate) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
   if (bitrate == encoder_set_bitrate_)
@@ -406,11 +454,11 @@ void VTVideoEncodeAccelerator::SetAdjustedConstantBitrate(int32_t bitrate) {
   video_toolbox::SessionPropertySetter session_property_setter(
       compression_session_);
   [[maybe_unused]] bool rv = session_property_setter.Set(
-      kVTCompressionPropertyKey_AverageBitRate, encoder_set_bitrate_);
+      kVTCompressionPropertyKey_AverageBitRate,
+      base::saturated_cast<int32_t>(encoder_set_bitrate_));
   rv &= session_property_setter.Set(
       kVTCompressionPropertyKey_DataRateLimits,
-      video_toolbox::ArrayWithIntegerAndFloat(
-          encoder_set_bitrate_ / kBitsPerByte, 1.0f));
+      CreateRateLimitArray(Bitrate::ConstantBitrate(bitrate)));
   DLOG_IF(ERROR, !rv)
       << "Couldn't change bitrate parameters of encode session.";
 }
@@ -424,10 +472,8 @@ void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
   [[maybe_unused]] bool rv =
       session_property_setter.Set(kVTCompressionPropertyKey_AverageBitRate,
                                   static_cast<int32_t>(bitrate.target_bps()));
-  rv &=
-      session_property_setter.Set(kVTCompressionPropertyKey_DataRateLimits,
-                                  video_toolbox::ArrayWithIntegerAndFloat(
-                                      bitrate.peak_bps() / kBitsPerByte, 1.0f));
+  rv &= session_property_setter.Set(kVTCompressionPropertyKey_DataRateLimits,
+                                    CreateRateLimitArray(bitrate));
   DLOG_IF(ERROR, !rv)
       << "Couldn't change bitrate parameters of encode session.";
 }

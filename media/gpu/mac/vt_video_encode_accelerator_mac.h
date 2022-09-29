@@ -70,7 +70,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   void DestroyTask();
 
   // Helper functions to set bitrate.
-  void SetAdjustedConstantBitrate(int32_t bitrate);
+  void SetAdjustedConstantBitrate(uint32_t bitrate);
   void SetVariableBitrate(const Bitrate& bitrate);
 
   // Helper function to notify the client of an error on |client_task_runner_|.
@@ -125,8 +125,8 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // bitrate mode no adjustments are needed.
   // Bitrate adjuster used to fix VideoToolbox's inconsistent bitrate issues.
   webrtc::BitrateAdjuster bitrate_adjuster_;
-  int32_t target_bitrate_ = 0;       // User for CBR only
-  int32_t encoder_set_bitrate_ = 0;  // User for CBR only
+  uint32_t target_bitrate_ = 0;       // User for CBR only
+  uint32_t encoder_set_bitrate_ = 0;  // User for CBR only
 
   // If True, the encoder fails initialization if setting of session's property
   // kVTCompressionPropertyKey_MaxFrameDelayCount returns an error.
