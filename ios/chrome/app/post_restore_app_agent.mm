@@ -129,7 +129,7 @@
 - (void)maybeRegisterPromo {
   if (!self.shouldRegisterPromo) {
     if (_promosManager)
-      [self deregisterPromo];
+      [self deregisterPromos];
     return;
   }
 
@@ -143,10 +143,12 @@
   // reauthenticating.
   _authenticationService->ResetReauthPromptForSignInAndSync();
 
+  // Deregister any previously registered promos.
+  [self deregisterPromos];
   _promosManager->RegisterPromoForSingleDisplay(self.promoForEnabledFeature);
 }
 
-- (void)deregisterPromo {
+- (void)deregisterPromos {
   DCHECK(_promosManager);
   _promosManager->DeregisterPromo(
       promos_manager::Promo::PostRestoreSignInFullscreen);

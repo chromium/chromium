@@ -29,6 +29,10 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+const char kFakePreRestoreAccountEmail[] = "person@example.org";
+}  // namespace
+
 // Tests the PostRestoreAppAgent.
 class PostRestoreAppAgentTest : public PlatformTest {
  public:
@@ -75,10 +79,23 @@ class PostRestoreAppAgentTest : public PlatformTest {
         .size();
   }
 
+  void ExpectRegisteredPromo(promos_manager::Promo promo) {
+    const base::Value::List& promos = local_state_.Get()->GetList(
+        prefs::kIosPromosManagerSingleDisplayActivePromos);
+    EXPECT_EQ(promos.size(), unsigned(1));
+    EXPECT_EQ(promos[0], promos_manager::NameForPromo(promo));
+  }
+
   void MockAppStateChange(InitStage initStage) {
     OCMStub([mockAppState_ initStage]).andReturn(initStage);
     [appAgent_ appState:mockAppState_
         didTransitionFromInitStage:InitStageStart];
+  }
+
+  void SetFakePreRestoreAccountInfo() {
+    AccountInfo accountInfo;
+    accountInfo.email = kFakePreRestoreAccountEmail;
+    StorePreRestoreIdentity(accountInfo);
   }
 
   void EnableFeatureVariationFullscreen() {
@@ -105,9 +122,7 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
-  AccountInfo accountInfo;
-  accountInfo.email = std::string("person@example.org");
-  StorePreRestoreIdentity(accountInfo);
+  SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
@@ -119,35 +134,21 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
 
 TEST_F(PostRestoreAppAgentTest, registerPromoFullscreen) {
   EnableFeatureVariationFullscreen();
-  AccountInfo accountInfo;
-  accountInfo.email = std::string("person@example.org");
-  StorePreRestoreIdentity(accountInfo);
+  SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
-  const base::Value::List& promos = local_state_.Get()->GetList(
-      prefs::kIosPromosManagerSingleDisplayActivePromos);
-  std::string expectedName = promos_manager::NameForPromo(
-      promos_manager::Promo::PostRestoreSignInFullscreen);
-  EXPECT_EQ(promos[0], expectedName);
+  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInFullscreen);
 }
 
 TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
   EnableFeatureVariationAlert();
-  AccountInfo accountInfo;
-  accountInfo.email = std::string("person@example.org");
-  StorePreRestoreIdentity(accountInfo);
+  SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
-  const base::Value::List& promos = local_state_.Get()->GetList(
-      prefs::kIosPromosManagerSingleDisplayActivePromos);
-  std::string expectedName = promos_manager::NameForPromo(
-      promos_manager::Promo::PostRestoreSignInAlert);
-  EXPECT_EQ(promos[0], expectedName);
+  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInAlert);
 }
 
 TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
   EnableFeatureVariationFullscreen();
-  AccountInfo accountInfo;
-  accountInfo.email = std::string("person@example.org");
-  StorePreRestoreIdentity(accountInfo);
+  SetFakePreRestoreAccountInfo();
   auth_service_->SetReauthPromptForSignInAndSync();
   EXPECT_TRUE(auth_service_->ShouldReauthPromptForSignInAndSync());
   MockAppStateChange(InitStageFinal);
@@ -174,4 +175,30 @@ TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
   ClearPreRestoreIdentity();
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
+}
+
+TEST_F(PostRestoreAppAgentTest, featureVariationSwitchToFullscreen) {
+  // Simulate that the Alert promo was previously registered.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::PostRestoreSignInAlert);
+  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+
+  EnableFeatureVariationFullscreen();
+  SetFakePreRestoreAccountInfo();
+
+  MockAppStateChange(InitStageFinal);
+  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInFullscreen);
+}
+
+TEST_F(PostRestoreAppAgentTest, featureVariationSwitchToAlert) {
+  // Simulate that the Fullscreen promo was previously registered.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::PostRestoreSignInFullscreen);
+  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+
+  EnableFeatureVariationAlert();
+  SetFakePreRestoreAccountInfo();
+
+  MockAppStateChange(InitStageFinal);
+  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInAlert);
 }
