@@ -128,7 +128,11 @@ bool WaylandSurface::Initialize() {
       return false;
     }
   } else {
-    LOG(WARNING) << "Server doesn't support wp_viewporter.";
+    static bool log_once = false;
+    if (!log_once) {
+      log_once = true;
+      LOG(WARNING) << "Server doesn't support wp_viewporter.";
+    }
   }
 
   if (connection_->alpha_compositing()) {
@@ -139,7 +143,11 @@ bool WaylandSurface::Initialize() {
       return false;
     }
   } else {
-    LOG(WARNING) << "Server doesn't support zcr_alpha_compositing_v1.";
+    static bool log_once = false;
+    if (!log_once) {
+      log_once = true;
+      LOG(WARNING) << "Server doesn't support zcr_alpha_compositing_v1.";
+    }
   }
 
   if (auto* overlay_prioritizer = connection_->overlay_prioritizer()) {
@@ -150,7 +158,11 @@ bool WaylandSurface::Initialize() {
       return false;
     }
   } else {
-    LOG(WARNING) << "Server doesn't support overlay_prioritizer.";
+    static bool log_once = false;
+    if (!log_once) {
+      log_once = true;
+      LOG(WARNING) << "Server doesn't support overlay_prioritizer.";
+    }
   }
 
   if (auto* surface_augmenter = connection_->surface_augmenter()) {
@@ -160,7 +172,11 @@ bool WaylandSurface::Initialize() {
       return false;
     }
   } else {
-    LOG(WARNING) << "Server doesn't support surface_augmenter.";
+    static bool log_once = false;
+    if (!log_once) {
+      log_once = true;
+      LOG(WARNING) << "Server doesn't support surface_augmenter.";
+    }
   }
 
   if (auto* content_type_manager = connection_->content_type_manager_v1()) {
@@ -171,7 +187,11 @@ bool WaylandSurface::Initialize() {
           << "Failed to create wp_content_type_v1. Continuing without it.";
     }
   } else {
-    LOG(WARNING) << "Server doesn't support wp_content_type_v1";
+    static bool log_once = false;
+    if (!log_once) {
+      log_once = true;
+      LOG(WARNING) << "Server doesn't support wp_content_type_v1";
+    }
   }
 
   if (auto* zcr_color_manager = connection_->zcr_color_manager()) {
@@ -186,7 +206,11 @@ bool WaylandSurface::Initialize() {
     }
     zcr_color_management_surface_->SetDefaultColorSpace();
   } else {
-    LOG(WARNING) << "Server doesn't support zcr_color_management_surface.";
+    static bool log_once = false;
+    if (!log_once) {
+      log_once = true;
+      LOG(WARNING) << "Server doesn't support zcr_color_management_surface.";
+    }
   }
 
   return true;
