@@ -4,8 +4,8 @@
 
 import 'chrome://bluetooth-pairing/strings.m.js';
 
-import {BluetoothBatteryIconPercentageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_battery_icon_percentage.js';
-import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {BluetoothBatteryIconPercentageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_battery_icon_percentage.js';
+import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {BluetoothDeviceProperties, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

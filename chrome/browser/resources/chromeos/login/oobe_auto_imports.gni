@@ -91,7 +91,7 @@ oobe_namespace_rewrites = [
 
 oobe_migrated_imports = [
   "chrome/browser/resources/gaia_auth_host/authenticator.html",
-  "ui/webui/resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.html",
+  "ash/webui/common/resources/bluetooth/bluetooth_pairing_enter_code_page.html",
   "ash/webui/common/resources/multidevice_setup/button_bar.html",
   "ash/webui/common/resources/multidevice_setup/fake_mojo_service.html",
   "ash/webui/common/resources/multidevice_setup/mojo_api.html",

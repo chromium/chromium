@@ -7,9 +7,10 @@
  * UI element used to display Bluetooth device icon.
  */
 
-import './bluetooth_icons.js';
+import './bluetooth_icons.html.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './bluetooth_icon.html.js';
 import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {hasDefaultImage} from './bluetooth_utils.js';
@@ -21,7 +22,7 @@ export class SettingsBluetoothIconElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

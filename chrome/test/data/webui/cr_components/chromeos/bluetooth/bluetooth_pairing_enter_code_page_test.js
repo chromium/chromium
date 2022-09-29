@@ -4,7 +4,7 @@
 
 import 'chrome://bluetooth-pairing/strings.m.js';
 
-import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
+import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_enter_code_page.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertTrue} from '../../../chai_assert.js';

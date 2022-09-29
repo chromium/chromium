@@ -8,7 +8,7 @@
  *  properties and devices.
  */
 
-import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_dialog.js';
+import 'chrome://resources/ash/common/bluetooth/bluetooth_dialog.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -18,7 +18,7 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../../settings_shared.css.js';
 import './bluetooth_device_list_item.js';
 
-import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics, recordUserInitiatedReconnectionAttemptDuration} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js';
+import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics, recordUserInitiatedReconnectionAttemptDuration} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
 import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/cr_elements/cr_scrollable_behavior.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {ListPropertyUpdateBehavior, ListPropertyUpdateBehaviorInterface} from 'chrome://resources/js/list_property_update_behavior.js';

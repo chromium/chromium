@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {PairingAuthType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {BluetoothDeviceProperties, DevicePairingDelegateInterface, DevicePairingHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerRemote, PairingResult} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 

@@ -23,6 +23,19 @@ web_component_files = [
   "navigation_view_panel.js",
   "page_toolbar.js",
 
+  "bluetooth/bluetooth_dialog.js",
+  "bluetooth/bluetooth_icon.js",
+  "bluetooth/bluetooth_pairing_confirm_code_page.js",
+  "bluetooth/bluetooth_pairing_enter_code_page.js",
+  "bluetooth/bluetooth_pairing_device_selection_page.js",
+  "bluetooth/bluetooth_pairing_request_code_page.js",
+  "bluetooth/bluetooth_pairing_device_item.js",
+  "bluetooth/bluetooth_pairing_ui.js",
+  "bluetooth/bluetooth_base_page.js",
+  "bluetooth/bluetooth_battery_icon_percentage.js",
+  "bluetooth/bluetooth_device_battery_info.js",
+  "bluetooth/bluetooth_spinner_page.js",
+
   "cellular_setup/activation_code_page.js",
   "cellular_setup/activation_verification_page.js",
   "cellular_setup/base_page.js",
@@ -78,6 +91,10 @@ web_component_files = [
 
 non_web_component_files = [
   "cr.js",
+  "bluetooth/bluetooth_metrics_utils.js",
+  "bluetooth/bluetooth_types.js",
+  "bluetooth/bluetooth_utils.js",
+  "bluetooth/cros_bluetooth_config.js",
   "cellular_setup/cellular_types.js",
   "cellular_setup/cellular_setup_delegate.js",
   "cellular_setup/esim_manager_listener_behavior.js",
@@ -118,6 +135,7 @@ icons_html_files = [
   "multidevice_setup/icons.html",
   "navigation_icons.html",
 
+  "bluetooth/bluetooth_icons.html",
   "cellular_setup/cellular_setup_icons.html",
   "cr_picture/icons.html",
   "network/network_icons.html",
@@ -237,6 +255,10 @@ generate_grd("build_grdp") {
 }
 
 generate_definitions_js_files = [
+  "bluetooth/bluetooth_metrics_utils.js",
+  "bluetooth/bluetooth_types.js",
+  "bluetooth/bluetooth_utils.js",
+  "bluetooth/cros_bluetooth_config.js",
   "cellular_setup/cellular_setup_icons.html.js",
   "cellular_setup/esim_manager_utils.js",
   "cellular_setup/mojo_interface_provider.js",
@@ -279,6 +301,19 @@ checked_in_dts_files = [
   "page_toolbar.d.ts",
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
+
+  "bluetooth/bluetooth_base_page.d.ts",
+  "bluetooth/bluetooth_battery_icon_percentage.d.ts",
+  "bluetooth/bluetooth_device_battery_info.d.ts",
+  "bluetooth/bluetooth_dialog.d.ts",
+  "bluetooth/bluetooth_icon.d.ts",
+  "bluetooth/bluetooth_pairing_confirm_code_page.d.ts",
+  "bluetooth/bluetooth_pairing_device_item.d.ts",
+  "bluetooth/bluetooth_pairing_device_selection_page.d.ts",
+  "bluetooth/bluetooth_pairing_enter_code_page.d.ts",
+  "bluetooth/bluetooth_pairing_request_code_page.d.ts",
+  "bluetooth/bluetooth_pairing_ui.d.ts",
+  "bluetooth/bluetooth_spinner_page.d.ts",
 
   "cellular_setup/base_page.d.ts",
   "cellular_setup/button_bar.d.ts",
@@ -331,6 +366,7 @@ copy("copy_checked_in_dts_files") {
 group("closure_compile") {
   deps = [
     ":closure_compile_local",
+    "bluetooth:closure_compile_module",
     "cellular_setup:closure_compile_module",
     "cr_picture:closure_compile_module",
     "multidevice_setup:closure_compile_module",

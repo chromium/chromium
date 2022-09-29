@@ -19,7 +19,7 @@ namespace chromeos {
 namespace bluetooth {
 
 // Adds the strings needed for bluetooth elements to |html_source|. String ids
-// correspond to ids in ui/webui/resources/cr_components/chromeos/bluetooth/.
+// correspond to ids in ash/webui/common/resources/bluetooth/.
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"bluetoothPairNewDevice", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES},

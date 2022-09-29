@@ -8,7 +8,7 @@
  */
 
 import '//resources/polymer/v3_0/paper-styles/color.js';
-import '//resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
+import '//resources/ash/common/bluetooth/bluetooth_pairing_enter_code_page.js';
 import '../../components/hd_iron_icon.m.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/common_styles/common_styles.m.js';

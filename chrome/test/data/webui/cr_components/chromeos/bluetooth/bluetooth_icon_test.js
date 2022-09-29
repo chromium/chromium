@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SettingsBluetoothIconElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_icon.js';
+import {SettingsBluetoothIconElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_icon.js';
 import {AudioOutputCapability, BluetoothDeviceProperties, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

@@ -7,17 +7,18 @@
  * Root UI element for Bluetooth pairing dialog.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import './bluetooth_pairing_device_selection_page.js';
 import './bluetooth_pairing_enter_code_page.js';
 import './bluetooth_pairing_request_code_page.js';
 import './bluetooth_pairing_confirm_code_page.js';
 import './bluetooth_spinner_page.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './bluetooth_pairing_ui.html.js';
 import {BluetoothDeviceProperties, BluetoothDiscoveryDelegateInterface, BluetoothDiscoveryDelegateReceiver, BluetoothSystemState, DevicePairingDelegateInterface, DevicePairingDelegateReceiver, DevicePairingHandlerInterface, KeyEnteredHandlerInterface, KeyEnteredHandlerPendingReceiver, KeyEnteredHandlerReceiver, PairingResult, SystemPropertiesObserverInterface, SystemPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {assert, assertNotReached} from '../../../js/assert.js';
+import {assert, assertNotReached} from '//resources/js/assert.js';
 
 import {PairingAuthType} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';
@@ -88,7 +89,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

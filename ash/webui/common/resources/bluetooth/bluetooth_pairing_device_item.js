@@ -7,15 +7,16 @@
  * UI element to show a list of discovered Bluetooth devices and initiate
  * pairing to a device.
  */
-import '../../../cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import './bluetooth_icon.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/cr_elements/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.js';
+import {getTemplate} from './bluetooth_pairing_device_item.html.js';
+import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.js';
 import {BluetoothDeviceProperties, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {assertNotReached} from '../../../js/assert.js';
+import {assertNotReached} from '//resources/js/assert.js';
 
 import {DeviceItemState} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';
@@ -36,7 +37,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

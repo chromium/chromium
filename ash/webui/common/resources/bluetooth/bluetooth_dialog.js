@@ -9,150 +9,175 @@
  * NOTE: This module depends on I18nBehavior which depends on loadTimeData.
  */
 
-import '../../../cr_elements/cr_button/cr_button.js';
-import '../../../cr_elements/cr_dialog/cr_dialog.js';
-import '../../../cr_elements/cr_input/cr_input.js';
-import '../../../cr_elements/cr_hidden_style.css.js';
-import '../../../js/cr.m.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/cr_elements/cr_hidden_style.css.js';
+import '//resources/js/cr.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert} from '../../../js/assert.js';
-import {I18nBehavior} from '../../../cr_elements/i18n_behavior.js';
+import {assert} from '//resources/js/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/cr_elements/i18n_behavior.js';
+
+import {getTemplate} from './bluetooth_dialog.html.js';
 
 const PairingEventType = chrome.bluetoothPrivate.PairingEventType;
 
-Polymer({
-  is: 'bluetooth-dialog',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const BluetoothDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class BluetoothDialogElement extends BluetoothDialogElementBase {
+  static get is() {
+    return 'bluetooth-dialog';
+  }
 
-  behaviors: [I18nBehavior],
+  static get template() {
+    return getTemplate();
+  }
 
-  properties: {
+  static get properties() {
+    return {
+      /**
+       * Interface for bluetooth calls. Set in bluetooth-page.
+       * @type {Bluetooth}
+       * @private
+       */
+      bluetooth: {
+        type: Object,
+        value: chrome.bluetooth,
+      },
+
+      /**
+       * Interface for bluetoothPrivate calls.
+       * @type {BluetoothPrivate}
+       */
+      bluetoothPrivate: {
+        type: Object,
+        value: chrome.bluetoothPrivate,
+      },
+
+      noCancel: Boolean,
+
+      dialogTitle: String,
+
+      /**
+       * Current Pairing device.
+       * @type {!chrome.bluetooth.Device|undefined}
+       */
+      pairingDevice: Object,
+
+      /**
+       * Current Pairing event.
+       * @private {?chrome.bluetoothPrivate.PairingEvent}
+       */
+      pairingEvent_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * May be set by the host to show a pairing error result, or may be
+       * set by the dialog if a pairing or connect error occured.
+       * @private
+       */
+      errorMessage_: String,
+
+      /**
+       * Pincode or passkey value, used to trigger connect enabled changes.
+       * @private
+       */
+      pinOrPass_: String,
+
+      /**
+       * @const {!Array<number>}
+       * @private
+       */
+      digits_: {
+        type: Array,
+        readOnly: true,
+        value: [0, 1, 2, 3, 4, 5],
+      },
+
+      /**
+       * The time in milliseconds at which a connection attempt started (that is,
+       * when this dialog is opened).
+       * @private {?number}
+       */
+      connectionAttemptStartTimestampMs_: {
+        type: Number,
+        value: null,
+      },
+
+      /**
+       * The time in milliseconds at which the user is asked to comfirm the
+       * pairing auth process.
+       * @private {?number}
+       */
+      pairingUserAuthAttemptStartTimestampMs_: {
+        type: Number,
+        value: null,
+      },
+
+      /**
+       * The time in milliseconds at which the user confirms the pairing auth
+       * process.
+       * @private {?number}
+       */
+      pairingUserAuthAttemptFinishTimestampMs_: {
+        type: Number,
+        value: null,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'dialogUpdated_(errorMessage_, pairingEvent_)',
+      'pairingChanged_(pairingDevice, pairingEvent_)',
+    ];
+  }
+
+  /** @override */
+  constructor() {
+    super();
+
     /**
-     * Interface for bluetooth calls. Set in bluetooth-page.
-     * @type {Bluetooth}
-     * @private
+     * Listener for chrome.bluetoothPrivate.onPairing events.
+     * @private {?function(!chrome.bluetoothPrivate.PairingEvent)}
      */
-    bluetooth: {
-      type: Object,
-      value: chrome.bluetooth,
-    },
+    this.bluetoothPrivateOnPairingListener_ = null;
 
     /**
-     * Interface for bluetoothPrivate calls.
-     * @type {BluetoothPrivate}
+     * Listener for chrome.bluetoothPrivate.deviceAddressChanged events.
+     * @private {?function(!chrome.bluetooth.Device, !string)}
      */
-    bluetoothPrivate: {
-      type: Object,
-      value: chrome.bluetoothPrivate,
-    },
-
-    noCancel: Boolean,
-
-    dialogTitle: String,
+    this.bluetoothPrivateDeviceAddressChangedListener_ = null;
 
     /**
-     * Current Pairing device.
-     * @type {!chrome.bluetooth.Device|undefined}
+     * Listener for chrome.bluetooth.onBluetoothDeviceChanged events.
+     * @private {?function(!chrome.bluetooth.Device)}
      */
-    pairingDevice: Object,
+    this.bluetoothDeviceChangedListener_ = null;
 
-    /**
-     * Current Pairing event.
-     * @private {?chrome.bluetoothPrivate.PairingEvent}
-     */
-    pairingEvent_: {
-      type: Object,
-      value: null,
-    },
-
-    /**
-     * May be set by the host to show a pairing error result, or may be
-     * set by the dialog if a pairing or connect error occured.
-     * @private
-     */
-    errorMessage_: String,
-
-    /**
-     * Pincode or passkey value, used to trigger connect enabled changes.
-     * @private
-     */
-    pinOrPass_: String,
-
-    /**
-     * @const {!Array<number>}
-     * @private
-     */
-    digits_: {
-      type: Array,
-      readOnly: true,
-      value: [0, 1, 2, 3, 4, 5],
-    },
-
-    /**
-     * The time in milliseconds at which a connection attempt started (that is,
-     * when this dialog is opened).
-     * @private {?number}
-     */
-    connectionAttemptStartTimestampMs_: {
-      type: Number,
-      value: null,
-    },
-
-    /**
-     * The time in milliseconds at which the user is asked to comfirm the
-     * pairing auth process.
-     * @private {?number}
-     */
-    pairingUserAuthAttemptStartTimestampMs_: {
-      type: Number,
-      value: null,
-    },
-
-    /**
-     * The time in milliseconds at which the user confirms the pairing auth
-     * process.
-     * @private {?number}
-     */
-    pairingUserAuthAttemptFinishTimestampMs_: {
-      type: Number,
-      value: null,
-    },
-  },
-
-  observers: [
-    'dialogUpdated_(errorMessage_, pairingEvent_)',
-    'pairingChanged_(pairingDevice, pairingEvent_)',
-  ],
-
-  /**
-   * Listener for chrome.bluetoothPrivate.onPairing events.
-   * @private {?function(!chrome.bluetoothPrivate.PairingEvent)}
-   */
-  bluetoothPrivateOnPairingListener_: null,
-
-  /**
-   * Listener for chrome.bluetoothPrivate.deviceAddressChanged events.
-   * @private {?function(!chrome.bluetooth.Device, !string)}
-   */
-  bluetoothPrivateDeviceAddressChangedListener_: null,
-
-  /**
-   * Listener for chrome.bluetooth.onBluetoothDeviceChanged events.
-   * @private {?function(!chrome.bluetooth.Device)}
-   */
-  bluetoothDeviceChangedListener_: null,
+    /** @private {boolean} */
+    this.itemWasFocused_ = false;
+  }
 
   open() {
     this.startPairing();
     this.pinOrPass_ = '';
     this.getDialog_().showModal();
     this.itemWasFocused_ = false;
-  },
+  }
 
   close() {
     this.endPairing();
@@ -160,7 +185,7 @@ Polymer({
     if (dialog.open) {
       dialog.close();
     }
-  },
+  }
 
   /**
    * Updates the dialog after a connection attempt.
@@ -222,31 +247,32 @@ Polymer({
     this.errorMessage_ = this.i18n(id, name);
 
     return true;
-  },
+  }
 
   /** @private */
   dialogUpdated_() {
     if (this.showEnterPincode_()) {
-      this.$$('#pincode').focus();
+      this.shadowRoot.querySelector('#pincode').focus();
     } else if (this.showEnterPasskey_()) {
-      this.$$('#passkey').focus();
+      this.shadowRoot.querySelector('#passkey').focus();
     } else if (this.showAcceptReject_()) {
-      this.$$('#accept-button').focus();
+      this.shadowRoot.querySelector('#accept-button').focus();
     }
-  },
+  }
 
   /**
    * @return {!CrDialogElement}
    * @private
    */
   getDialog_() {
-    return /** @type {!CrDialogElement} */ (this.$.dialog);
-  },
+    return /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#dialog'));
+  }
 
   /** @private */
   onCancelTap_() {
     this.getDialog_().cancel();
-  },
+  }
 
   /** @private */
   onDialogCanceled_() {
@@ -254,7 +280,7 @@ Polymer({
       this.sendResponse_(chrome.bluetoothPrivate.PairingResponse.CANCEL);
     }
     this.endPairing();
-  },
+  }
 
   /** Called when the dialog is opened. Starts listening for pairing events. */
   startPairing() {
@@ -278,7 +304,7 @@ Polymer({
       this.bluetooth.onDeviceChanged.addListener(
           this.bluetoothDeviceChangedListener_);
     }
-  },
+  }
 
   /** Called when the dialog is closed. */
   endPairing() {
@@ -298,7 +324,7 @@ Polymer({
       this.bluetoothDeviceChangedListener_ = null;
     }
     this.pairingEvent_ = null;
-  },
+  }
 
   /**
    * Process bluetoothPrivate.onPairing events.
@@ -317,7 +343,7 @@ Polymer({
       event.passkey = this.pairingEvent_.passkey;
     }
     this.pairingEvent_ = event;
-  },
+  }
 
   /**
    * Process bluetoothPrivate.onDeviceAddressChanged events.
@@ -330,7 +356,7 @@ Polymer({
       return;
     }
     this.pairingDevice = device;
-  },
+  }
 
   /**
    * Process bluetooth.onDeviceChanged events. This ensures that the dialog
@@ -343,7 +369,7 @@ Polymer({
       return;
     }
     this.pairingDevice = device;
-  },
+  }
 
   /** @private */
   pairingChanged_() {
@@ -373,7 +399,7 @@ Polymer({
     }
     this.errorMessage_ = '';
     this.pinOrPass_ = '';
-  },
+  }
 
   /**
    * @return {string}
@@ -393,7 +419,7 @@ Polymer({
     }
 
     return this.i18n(message, pairingDeviceName);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -402,7 +428,7 @@ Polymer({
   showEnterPincode_() {
     return !!this.pairingEvent_ &&
         this.pairingEvent_.pairing === PairingEventType.REQUEST_PINCODE;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -411,7 +437,7 @@ Polymer({
   showEnterPasskey_() {
     return !!this.pairingEvent_ &&
         this.pairingEvent_.pairing === PairingEventType.REQUEST_PASSKEY;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -427,7 +453,7 @@ Polymer({
         pairing === PairingEventType.DISPLAY_PASSKEY ||
         pairing === PairingEventType.CONFIRM_PASSKEY ||
         pairing === PairingEventType.KEYS_ENTERED);
-  },
+  }
 
   /**
    * @return {boolean}
@@ -436,7 +462,7 @@ Polymer({
   showAcceptReject_() {
     return !!this.pairingEvent_ &&
         this.pairingEvent_.pairing === PairingEventType.CONFIRM_PASSKEY;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -449,7 +475,7 @@ Polymer({
     const pairing = this.pairingEvent_.pairing;
     return pairing === PairingEventType.REQUEST_PINCODE ||
         pairing === PairingEventType.REQUEST_PASSKEY;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -463,11 +489,12 @@ Polymer({
         (this.pairingEvent_.pairing === PairingEventType.REQUEST_PINCODE) ?
         '#pincode' :
         '#passkey';
-    const crInput = /** @type {!CrInputElement} */ (this.$$(inputId));
+    const crInput = /** @type {!CrInputElement} */ (
+        this.shadowRoot.querySelector(inputId));
     assert(crInput);
     /** @type {string} */ const value = crInput.value;
     return !!value && crInput.validate();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -477,22 +504,22 @@ Polymer({
     return (!!this.pairingDevice && this.pairingDevice.paired) ||
         (!!this.pairingEvent_ &&
          this.pairingEvent_.pairing === PairingEventType.COMPLETE);
-  },
+  }
 
   /** @private */
   onAcceptTap_() {
     this.sendResponse_(chrome.bluetoothPrivate.PairingResponse.CONFIRM);
-  },
+  }
 
   /** @private */
   onConnectTap_() {
     this.sendResponse_(chrome.bluetoothPrivate.PairingResponse.CONFIRM);
-  },
+  }
 
   /** @private */
   onRejectTap_() {
     this.sendResponse_(chrome.bluetoothPrivate.PairingResponse.REJECT);
-  },
+  }
 
   /**
    * @param {!chrome.bluetoothPrivate.PairingResponse} response
@@ -508,9 +535,10 @@ Polymer({
     if (response === chrome.bluetoothPrivate.PairingResponse.CONFIRM) {
       const pairing = this.pairingEvent_.pairing;
       if (pairing === PairingEventType.REQUEST_PINCODE) {
-        options.pincode = this.$$('#pincode').value;
+        options.pincode = this.shadowRoot.querySelector('#pincode').value;
       } else if (pairing === PairingEventType.REQUEST_PASSKEY) {
-        options.passkey = parseInt(this.$$('#passkey').value, 10);
+        options.passkey =
+            parseInt(this.shadowRoot.querySelector('#passkey').value, 10);
       }
     }
     this.bluetoothPrivate.setPairingResponse(options, () => {
@@ -524,8 +552,9 @@ Polymer({
       this.close();
     });
 
-    this.fire('response', options);
-  },
+    this.dispatchEvent(new CustomEvent(
+        'response', {bubbles: true, composed: true, detail: options}));
+  }
 
   /**
    * @param {!PairingEventType} eventType
@@ -539,7 +568,7 @@ Polymer({
       return 'bluetoothStartConnecting';
     }
     return 'bluetooth_' + /** @type {string} */ (eventType);
-  },
+  }
 
   /**
    * @param {number} index
@@ -566,7 +595,7 @@ Polymer({
       digit = passkeyString[index];
     }
     return digit;
-  },
+  }
 
   /**
    * @param {number} index
@@ -600,7 +629,7 @@ Polymer({
       }
     }
     return cssClass;
-  },
+  }
 
   /**
    * Calculate how long it took to complete pairing, excluding how long the user
@@ -638,5 +667,7 @@ Polymer({
     // If the pairing process required authentication, do not include the time
     // it took the user to complete or confirm the authentication process.
     return unadjustedPairingDurationMs - userAuthActionDurationMs;
-  },
-});
+  }
+}
+
+customElements.define(BluetoothDialogElement.is, BluetoothDialogElement);

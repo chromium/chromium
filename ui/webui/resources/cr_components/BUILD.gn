@@ -14,72 +14,11 @@ assert(!is_android && !is_ios)
 preprocess_folder =
     "$root_gen_dir/ui/webui/resources/preprocessed/cr_components"
 
-if (is_chromeos_ash) {
-  preprocess_gen_manifest = "preprocessed_gen_manifest.json"
-  preprocess_src_manifest = "preprocessed_src_manifest.json"
-
-  generate_grd("build_grdp") {
-    grd_prefix = "cr_components"
-    out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-    public_deps = [ ":preprocess" ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_gen_manifest",
-      "$target_gen_dir/$preprocess_src_manifest",
-    ]
-
-    resource_path_prefix = "cr_components"
-  }
-}
-
 group("preprocess") {
   public_deps = [
     ":preprocess_generated_ts",
     ":preprocess_src_ts",
   ]
-
-  if (is_chromeos_ash) {
-    public_deps += [
-      ":preprocess_generated",
-      ":preprocess_src",
-    ]
-  }
-}
-
-if (is_chromeos_ash) {
-  preprocess_if_expr("preprocess_src") {
-    in_folder = "."
-    out_folder = preprocess_folder
-    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-    in_files = [
-      "chromeos/bluetooth/bluetooth_utils.js",
-      "chromeos/bluetooth/bluetooth_types.js",
-      "chromeos/bluetooth/bluetooth_metrics_utils.js",
-      "chromeos/bluetooth/cros_bluetooth_config.js",
-    ]
-  }
-
-  preprocess_if_expr("preprocess_generated") {
-    deps = [ "chromeos:web_components" ]
-    in_folder = target_gen_dir
-    out_folder = preprocess_folder
-    out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-
-    in_files = [
-      "chromeos/bluetooth/bluetooth_base_page.js",
-      "chromeos/bluetooth/bluetooth_dialog.js",
-      "chromeos/bluetooth/bluetooth_icon.js",
-      "chromeos/bluetooth/bluetooth_icons.js",
-      "chromeos/bluetooth/bluetooth_spinner_page.js",
-      "chromeos/bluetooth/bluetooth_pairing_device_selection_page.js",
-      "chromeos/bluetooth/bluetooth_pairing_enter_code_page.js",
-      "chromeos/bluetooth/bluetooth_pairing_request_code_page.js",
-      "chromeos/bluetooth/bluetooth_pairing_confirm_code_page.js",
-      "chromeos/bluetooth/bluetooth_pairing_device_item.js",
-      "chromeos/bluetooth/bluetooth_battery_icon_percentage.js",
-      "chromeos/bluetooth/bluetooth_device_battery_info.js",
-      "chromeos/bluetooth/bluetooth_pairing_ui.js",
-    ]
-  }
 }
 
 # TS files are passed to a separate target so that they are not listed in the

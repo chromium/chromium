@@ -4,9 +4,9 @@
 
 import 'chrome://bluetooth-pairing/strings.m.js';
 
-import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.js';
-import {DeviceItemState} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_device_selection_page.js';
+import {DeviceItemState} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {AudioOutputCapability, BluetoothDeviceProperties, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

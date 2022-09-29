@@ -765,7 +765,7 @@
                   '|device/bluetooth/bluez/'\
                   '|device/bluetooth/chromeos/'\
                   '|device/bluetooth/floss/'\
-                  '|ui/webui/resources/cr_components/chromeos/bluetooth/'
+                  '|ash/webui/common/resources/bluetooth/'
     },
     'chromeos_cellular': {
       'filepath': 'chromeos/ash/services/cellular_setup/|'\
@@ -1799,7 +1799,6 @@
                   '|chrome/browser/ui/webui/settings/ash/'\
                   '|chrome/browser/ui/webui/settings/chromeos/'\
                   '|chrome/test/data/webui/settings/chromeos/'\
-                  '|ui/webui/resources/cr_components/chromeos/'\
                   '|ui/webui/resources/cr_elements/chromeos/',
     },
     'share_service': {

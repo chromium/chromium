@@ -40,8 +40,8 @@ js_library("bluetooth_pairing_ui_test") {
   deps = [
     ":fake_bluetooth_config",
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_ui",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_ui",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -49,8 +49,8 @@ js_library("bluetooth_pairing_ui_test") {
 js_library("bluetooth_icon_test") {
   deps = [
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_icon",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_icon",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -58,7 +58,7 @@ js_library("bluetooth_icon_test") {
 js_library("bluetooth_base_page_test") {
   deps = [
     "../../..:chai_assert",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_base_page",
+    "//ash/webui/common/resources/bluetooth:bluetooth_base_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -66,8 +66,8 @@ js_library("bluetooth_base_page_test") {
 js_library("bluetooth_battery_icon_percentage_tests") {
   deps = [
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_battery_icon_percentage",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_battery_icon_percentage",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -75,8 +75,8 @@ js_library("bluetooth_battery_icon_percentage_tests") {
 js_library("bluetooth_device_battery_info_tests") {
   deps = [
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_device_battery_info",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_device_battery_info",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -84,8 +84,8 @@ js_library("bluetooth_device_battery_info_tests") {
 js_library("bluetooth_pairing_device_item_test") {
   deps = [
     "../../..:chai_assert",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_device_item",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_types",
+    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_device_item",
+    "//ash/webui/common/resources/bluetooth:bluetooth_types",
   ]
   externs_list = [
     "$externs_path/mocha-2.5.js",
@@ -96,9 +96,9 @@ js_library("bluetooth_pairing_device_item_test") {
 js_library("bluetooth_pairing_device_selection_page_test") {
   deps = [
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_device_selection_page",
+    "//ash/webui/common/resources/bluetooth:bluetooth_types",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_device_selection_page",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_types",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -106,9 +106,9 @@ js_library("bluetooth_pairing_device_selection_page_test") {
 js_library("bluetooth_pairing_request_code_page_test") {
   deps = [
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_request_code_page",
+    "//ash/webui/common/resources/bluetooth:bluetooth_types",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_request_code_page",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_types",
   ]
   externs_list = [
     "$externs_path/mocha-2.5.js",
@@ -120,8 +120,8 @@ js_library("bluetooth_pairing_enter_code_page_test") {
   deps = [
     ":fake_bluetooth_config",
     "../../..:chai_assert",
+    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_enter_code_page",
     "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_enter_code_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -129,7 +129,7 @@ js_library("bluetooth_pairing_enter_code_page_test") {
 js_library("bluetooth_pairing_confirm_code_page_test") {
   deps = [
     "../../..:chai_assert",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_confirm_code_page",
+    "//ash/webui/common/resources/bluetooth:bluetooth_pairing_confirm_code_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -137,7 +137,7 @@ js_library("bluetooth_pairing_confirm_code_page_test") {
 js_library("bluetooth_spinner_page_test") {
   deps = [
     "../../..:chai_assert",
-    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_spinner_page",
+    "//ash/webui/common/resources/bluetooth:bluetooth_spinner_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

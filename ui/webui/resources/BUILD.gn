@@ -81,7 +81,6 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     public_deps += [
       ":build_cros_styles_grdp",
-      "cr_components:build_grdp",
       "js/cr/ui:build_grdp",
       "//ash/webui/common/resources:build_grdp",
       "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
@@ -95,7 +94,6 @@ generate_grd("build_grd") {
       "$root_gen_dir/chromeos/ash/components/cros_elements/cros_elements_resources.grdp",
       "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
       "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
-      "$target_gen_dir/cr_components/cr_components_resources.grdp",
       "$target_gen_dir/cros_styles_resources.grdp",
       "$target_gen_dir/js/cr/ui/resources.grdp",
     ]
@@ -143,10 +141,7 @@ group("closure_compile") {
   ]
 
   if (include_polymer && is_chromeos_ash) {
-    deps += [
-      "cr_components/chromeos:closure_compile",
-      "cr_elements:closure_compile",
-    ]
+    deps += [ "cr_elements:closure_compile" ]
   }
 }
 
@@ -166,18 +161,6 @@ checked_in_dts_files = [
 
 if (is_chromeos_ash) {
   checked_in_dts_files += [
-    "cr_components/chromeos/bluetooth/bluetooth_base_page.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_battery_icon_percentage.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_device_battery_info.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_dialog.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_icon.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_pairing_confirm_code_page.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_pairing_device_item.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_pairing_request_code_page.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_pairing_ui.d.ts",
-    "cr_components/chromeos/bluetooth/bluetooth_spinner_page.d.ts",
     "cr_elements/cr_container_shadow_behavior.d.ts",
     "js/list_property_update_behavior.d.ts",
     "js/cr/ui/focus_row_behavior.d.ts",
@@ -210,16 +193,6 @@ if (is_chromeos_ash) {
   generate_definitions_js_files += [
     "js/cr/ui/focus_row_js.js",
     "js/cr/ui/focus_without_ink_js.js",
-  ]
-}
-
-if (include_polymer && is_chromeos_ash) {
-  generate_definitions_js_files += [
-    "cr_components/chromeos/bluetooth/bluetooth_icons.js",
-    "cr_components/chromeos/bluetooth/bluetooth_metrics_utils.js",
-    "cr_components/chromeos/bluetooth/bluetooth_types.js",
-    "cr_components/chromeos/bluetooth/bluetooth_utils.js",
-    "cr_components/chromeos/bluetooth/cros_bluetooth_config.js",
   ]
 }
 
@@ -260,8 +233,8 @@ ts_library("library") {
   }
 
   definitions = [
-    "//tools/typescript/definitions/bluetooth_private.d.ts",
-    "//tools/typescript/definitions/bluetooth.d.ts",
+    #    "//tools/typescript/definitions/bluetooth_private.d.ts",
+    #    "//tools/typescript/definitions/bluetooth.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",

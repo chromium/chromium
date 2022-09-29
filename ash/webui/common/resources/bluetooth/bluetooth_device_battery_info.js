@@ -7,10 +7,11 @@
  * View displaying Bluetooth device battery information.
  */
 
-import '../../../cr_elements/cr_shared_style.css.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
 import './bluetooth_battery_icon_percentage.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './bluetooth_device_battery_info.html.js';
 import {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {BatteryType} from './bluetooth_types.js';
@@ -23,7 +24,7 @@ export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -4,14 +4,14 @@
 
 import 'chrome://bluetooth-pairing/strings.m.js';
 
-import {SettingsBluetoothPairingConfirmCodePageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_confirm_code_page.js';
-import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_device_selection_page.js';
-import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_enter_code_page.js';
-import {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_request_code_page.js';
-import {SettingsBluetoothPairingUiElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_pairing_ui.js';
-import {SettingsBluetoothSpinnerPageElement} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_spinner_page.js';
-import {PairingAuthType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
-import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {SettingsBluetoothPairingConfirmCodePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_confirm_code_page.js';
+import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_device_selection_page.js';
+import {SettingsBluetoothPairingEnterCodeElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_enter_code_page.js';
+import {SettingsBluetoothRequestCodePageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_request_code_page.js';
+import {SettingsBluetoothPairingUiElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_pairing_ui.js';
+import {SettingsBluetoothSpinnerPageElement} from 'chrome://resources/ash/common/bluetooth/bluetooth_spinner_page.js';
+import {PairingAuthType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
+import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {AudioOutputCapability, BluetoothDeviceProperties, BluetoothSystemState, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
