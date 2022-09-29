@@ -252,7 +252,7 @@ class AttributionSimulatorInputParser {
     url::Origin destination_origin;
     absl::optional<uint64_t> debug_key;
     int64_t priority = 0;
-    base::TimeDelta expiry;
+    absl::optional<base::TimeDelta> expiry;
     AttributionFilterData filter_data;
     AttributionAggregationKeys aggregation_keys;
 
@@ -264,7 +264,7 @@ class AttributionSimulatorInputParser {
               destination_origin = ParseOrigin(dict, "destination");
               debug_key = ParseOptionalUint64(dict, "debug_key");
               priority = ParseOptionalInt64(dict, "priority").value_or(0);
-              expiry = ParseSourceExpiry(dict).value_or(base::Days(30));
+              expiry = ParseSourceExpiry(dict);
               filter_data = ParseFilterData(
                   dict, "filter_data",
                   &AttributionFilterData::FromSourceFilterValues);
