@@ -12,7 +12,7 @@ import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {Command, CommandStore} from '../common/command_store.js';
+import {Command, CommandCategory, CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
@@ -354,18 +354,18 @@ export class Panel extends PanelInterface {
       // Create a mapping between categories from CommandStore, and our
       // top-level menus. Some categories aren't mapped to any menu.
       const categoryToMenu = {
-        'navigation': jumpMenu,
-        'jump_commands': jumpMenu,
-        'overview': jumpMenu,
-        'tables': jumpMenu,
-        'controlling_speech': speechMenu,
-        'information': speechMenu,
-        'modifier_keys': chromevoxMenu,
-        'help_commands': chromevoxMenu,
-        'actions': actionsMenu,
+        [CommandCategory.NAVIGATION]: jumpMenu,
+        [CommandCategory.JUMP_COMMANDS]: jumpMenu,
+        [CommandCategory.OVERVIEW]: jumpMenu,
+        [CommandCategory.TABLES]: jumpMenu,
+        [CommandCategory.CONTROLLING_SPEECH]: speechMenu,
+        [CommandCategory.INFORMATION]: speechMenu,
+        [CommandCategory.MODIFIER_KEYS]: chromevoxMenu,
+        [CommandCategory.HELP_COMMANDS]: chromevoxMenu,
+        [CommandCategory.ACTIONS]: actionsMenu,
 
-        'braille': null,
-        'developer': null,
+        [CommandCategory.BRAILLE]: null,
+        [CommandCategory.DEVELOPER]: null,
       };
 
       // TODO(accessibility): Commands should be based off of CommandStore and
