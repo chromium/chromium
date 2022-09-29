@@ -55,6 +55,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuTest.java",
   "javatests/src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditTest.java",
   "javatests/src/org/chromium/chrome/browser/app/bookmarks/BookmarkTest.java",
+  "javatests/src/org/chromium/chrome/browser/app/bookmarks/ReadingListTest.java",
   "javatests/src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetricsTest.java",
   "javatests/src/org/chromium/chrome/browser/app/tab_activity_glue/TabletPhoneLayoutChangeTest.java",
   "javatests/src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
