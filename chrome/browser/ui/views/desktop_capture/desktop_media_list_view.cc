@@ -269,5 +269,5 @@ DesktopMediaSourceView* DesktopMediaListView::GetSelectedView() {
 
 void DesktopMediaListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kGroup;
-  node_data->SetName(accessible_name_);
+  node_data->SetNameChecked(accessible_name_);
 }
