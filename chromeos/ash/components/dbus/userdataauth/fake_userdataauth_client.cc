@@ -78,6 +78,10 @@ constexpr int kDircryptoMigrationUpdateIntervalMs = 200;
 // The number of updates the MigrateToDircrypto will send before it completes.
 constexpr uint64_t kDircryptoMigrationMaxProgress = 15;
 
+// Timeout after which an authenticated session is destroyed by the real
+// cryptohome service.
+constexpr int kSessionTimeoutSeconds = 5 * 60;
+
 // Template for auth session ID.
 constexpr char kAuthSessionIdTemplate[] = "AuthSession-%d";
 
@@ -268,6 +272,24 @@ bool CheckCredentialsViaAuthFactor(const FakeAuthFactor& factor,
             return true;
           }),
       factor);
+}
+
+bool AuthInputMatchesFakeFactorType(
+    const ::user_data_auth::AuthInput& auth_input,
+    const FakeAuthFactor& fake_factor) {
+  return absl::visit(
+      Overload<bool>(
+          [&](const PasswordFactor& password) {
+            return auth_input.has_password_input();
+          },
+          [&](const PinFactor& pin) { return auth_input.has_pin_input(); },
+          [&](const RecoveryFactor& recovery) {
+            return auth_input.has_cryptohome_recovery_input();
+          },
+          [&](const KioskFactor& kiosk) {
+            return auth_input.has_kiosk_input();
+          }),
+      fake_factor);
 }
 
 // Helper that automatically sends a reply struct to a supplied callback when
@@ -1246,22 +1268,105 @@ void FakeUserDataAuthClient::AddAuthFactor(
 void FakeUserDataAuthClient::AuthenticateAuthFactor(
     const ::user_data_auth::AuthenticateAuthFactorRequest& request,
     AuthenticateAuthFactorCallback callback) {
-  last_authenticate_auth_factor_request_ = request;
   ::user_data_auth::AuthenticateAuthFactorReply reply;
+  ReplyOnReturn auto_reply(&reply, std::move(callback));
 
-  const std::string auth_session_id = request.auth_session_id();
-  const auto auth_session = auth_sessions_.find(auth_session_id);
-  if (auth_session == auth_sessions_.end()) {
+  const auto session_it = auth_sessions_.find(request.auth_session_id());
+  if (session_it == auth_sessions_.end()) {
     LOG(ERROR) << "AuthSession not found";
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_INVALID_AUTH_SESSION_TOKEN);
-  } else if (auth_session->second.authenticated) {
-    LOG(WARNING) << "AuthSession is already authenticated";
-  } else {
-    // TODO(b/241259026): Check if key is present and if secret matches.
-    auth_session->second.authenticated = true;
+    return;
   }
-  ReturnProtobufMethodCallback(reply, std::move(callback));
+  auto& session = session_it->second;
+
+  CHECK(!session.authenticated) << "Session is already authenticated";
+
+  const auto user_it = users_.find(session.account);
+  DCHECK(user_it != std::end(users_));
+  const UserCryptohomeState& user_state = user_it->second;
+
+  const std::string& label = request.auth_factor_label();
+  const auto factor_it = user_state.auth_factors.find(label);
+  if (factor_it == user_state.auth_factors.end()) {
+    LOG(ERROR) << "Factor not found: " << label;
+    reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+    return;
+  }
+  const FakeAuthFactor& factor = factor_it->second;
+
+  const ::user_data_auth::AuthInput& auth_input = request.auth_input();
+
+  if (!AuthInputMatchesFakeFactorType(auth_input, factor)) {
+    LOG(ERROR) << "Auth input does not match factor type";
+    reply.set_error(::user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND);
+    return;
+  }
+
+  // Factor-specific verification logic. Will set the `error` field in the
+  // reply if a check didn't pass.
+  absl::visit(
+      Overload<void>(
+          [&](const PasswordFactor& password_factor) {
+            const auto& password_input = auth_input.password_input();
+
+            if (TestApi::Get()->enable_auth_check_ &&
+                password_input.secret() != password_factor.password) {
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+              return;
+            }
+          },
+          [&](const PinFactor& pin_factor) {
+            const auto& pin_input = auth_input.pin_input();
+
+            if (pin_factor.locked) {
+              LOG(ERROR) << "PIN is locked";
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+              return;
+            }
+
+            if (TestApi::Get()->enable_auth_check_ &&
+                pin_input.secret() != pin_factor.pin) {
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+              return;
+            }
+          },
+          [&](const RecoveryFactor& recovery) {
+            const auto& recovery_input = auth_input.cryptohome_recovery_input();
+
+            if (recovery_input.mediator_pub_key().empty()) {
+              LOG(ERROR) << "Missing mediate pub key";
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+              return;
+            }
+            if (recovery_input.epoch_response().empty()) {
+              LOG(ERROR) << "Missing epoch response";
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+              return;
+            }
+            if (recovery_input.recovery_response().empty()) {
+              LOG(ERROR) << "Missing recovery response";
+              reply.set_error(
+                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
+              return;
+            }
+          },
+          [&](const KioskFactor& kiosk) {}),
+      factor);
+
+  if (reply.error() !=
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET) {
+    return;
+  }
+
+  session.authenticated = true;
+  reply.set_authenticated(true);
+  reply.set_seconds_left(kSessionTimeoutSeconds);
 }
 
 void FakeUserDataAuthClient::UpdateAuthFactor(
