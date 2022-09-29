@@ -248,7 +248,7 @@ void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   std::u16string accessible_name;
   base::RemoveChars(instruction_view_->GetText(), kKeyNameDelimiter,
                     &accessible_name);
-  node_data->SetName(accessible_name);
+  node_data->SetNameChecked(accessible_name);
 }
 
 BEGIN_METADATA(SubtleNotificationView, views::View)
