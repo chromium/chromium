@@ -274,7 +274,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool brp_enabled_;
     bool brp_zapping_enabled_;
-#endif
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+    bool mac11_malloc_size_hack_enabled_ = false;
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool use_configurable_pool;
 
 #if defined(PA_EXTRAS_REQUIRED)
@@ -391,6 +394,10 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // PartitionRoots over the lifetime of a process, which can exhaust the
   // GigaCage and cause tests to fail.
   void DestructForTesting();
+
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+  void EnableMac11MallocSizeHackForTesting();
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
 
   // Public API
   //
@@ -521,6 +528,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
                                              uintptr_t slot_start);
 
   PA_ALWAYS_INLINE static size_t GetUsableSize(void* ptr);
+  // Same as GetUsableSize() except it adjusts the return value for macOS 11
+  // malloc_size() hack.
+  PA_ALWAYS_INLINE static size_t GetUsableSizeWithMac11MallocSizeHack(
+      void* ptr);
+
   PA_ALWAYS_INLINE PageAccessibilityConfiguration GetPageAccessibility() const;
 
   PA_ALWAYS_INLINE size_t
@@ -1678,6 +1690,32 @@ PA_ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
   return slot_span->GetUsableSize(root);
 }
 
+template <bool thread_safe>
+PA_ALWAYS_INLINE size_t
+PartitionRoot<thread_safe>::GetUsableSizeWithMac11MallocSizeHack(void* ptr) {
+  // malloc_usable_size() is expected to handle NULL gracefully and return 0.
+  if (!ptr)
+    return 0;
+  auto* slot_span = SlotSpan::FromObjectInnerPtr(ptr);
+  auto* root = FromSlotSpan(slot_span);
+  size_t usable_size = slot_span->GetUsableSize(root);
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+  // Check |mac11_malloc_size_hack_enabled_| flag first as this doesn't
+  // concern OS versions other than macOS 11.
+  if (PA_UNLIKELY(root->flags.mac11_malloc_size_hack_enabled_ &&
+                  usable_size == internal::kMac11MallocSizeHackUsableSize)) {
+    uintptr_t slot_start =
+        internal::PartitionAllocGetSlotStartInBRPPool(UntagPtr(ptr));
+    auto* ref_count = internal::PartitionRefCountPointer(slot_start);
+    if (ref_count->NeedsMac11MallocSizeHack()) {
+      return internal::kMac11MallocSizeHackRequestedSize;
+    }
+  }
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+
+  return usable_size;
+}
+
 // Returns the page configuration to use when mapping slot spans for a given
 // partition root. ReadWriteTagged is used on MTE-enabled systems for
 // PartitionRoots supporting it.
@@ -1937,8 +1975,18 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // TODO(keishi): Add PA_LIKELY when brp is fully enabled as |brp_enabled| will
   // be false only for the aligned partition.
   if (brp_enabled()) {
+    bool needs_mac11_malloc_size_hack = false;
+#if defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
+    // Only apply hack to size 32 allocations on macOS 11. There is a buggy
+    // assertion that malloc_size() equals sizeof(class_rw_t) which is 32.
+    if (PA_UNLIKELY(this->flags.mac11_malloc_size_hack_enabled_ &&
+                    requested_size ==
+                        internal::kMac11MallocSizeHackRequestedSize)) {
+      needs_mac11_malloc_size_hack = true;
+    }
+#endif  // defined(PA_ENABLE_MAC11_MALLOC_SIZE_HACK)
     auto* ref_count = new (internal::PartitionRefCountPointer(slot_start))
-        internal::PartitionRefCount();
+        internal::PartitionRefCount(needs_mac11_malloc_size_hack);
 #if defined(PA_REF_COUNT_STORE_REQUESTED_SIZE)
     ref_count->SetRequestedSize(requested_size);
 #else

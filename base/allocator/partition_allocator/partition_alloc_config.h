@@ -263,4 +263,16 @@ constexpr bool kUseLazyCommit = false;
 #define PA_ENABLE_SHADOW_METADATA
 #endif
 
+// According to crbug.com/1349955#c24, macOS 11 has a bug where they asset that
+// malloc_size() of an allocation is equal to the requested size. This is
+// generally not true. The assert passed only because it happened to be true for
+// the sizes they requested. BRP changes that, hence can't be deployed without a
+// workaround.
+//
+// The bug has been fixed in macOS 12. Here we can only check the platform, and
+// the version is checked dynamically later.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(IS_MAC)
+#define PA_ENABLE_MAC11_MALLOC_SIZE_HACK
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
