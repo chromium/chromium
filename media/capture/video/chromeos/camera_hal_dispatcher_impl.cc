@@ -59,6 +59,10 @@ const base::FilePath::CharType kForceEnableAutoFramingPath[] =
     "/run/camera/force_enable_auto_framing";
 const base::FilePath::CharType kForceDisableAutoFramingPath[] =
     "/run/camera/force_disable_auto_framing";
+const base::FilePath::CharType kForceEnableEffectsPath[] =
+    "/run/camera/force_enable_effects";
+const base::FilePath::CharType kForceDisableEffectsPath[] =
+    "/run/camera/force_disable_effects";
 
 std::string GenerateRandomToken() {
   char random_bytes[16];
@@ -259,6 +263,32 @@ bool CameraHalDispatcherImpl::Start(
                                               base::File::FLAG_WRITE);
         file.Close();
       } else if (value == switches::kAutoFramingForceDisabled) {
+        base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                               base::File::FLAG_WRITE);
+        file.Close();
+      }
+    }
+  }
+
+  {
+    base::FilePath enable_file_path(kForceEnableEffectsPath);
+    base::FilePath disable_file_path(kForceDisableEffectsPath);
+    if (!base::DeleteFile(enable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceEnableEffectsPath;
+    }
+    if (!base::DeleteFile(disable_file_path)) {
+      LOG(WARNING) << "Could not delete " << kForceDisableEffectsPath;
+    }
+    const base::CommandLine* command_line =
+        base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(media::switches::kEffectsOverride)) {
+      std::string value =
+          command_line->GetSwitchValueASCII(switches::kEffectsOverride);
+      if (value == switches::kEffectsForceEnabled) {
+        base::File file(enable_file_path, base::File::FLAG_CREATE_ALWAYS |
+                                              base::File::FLAG_WRITE);
+        file.Close();
+      } else if (value == switches::kEffectsForceDisabled) {
         base::File file(disable_file_path, base::File::FLAG_CREATE_ALWAYS |
                                                base::File::FLAG_WRITE);
         file.Close();
