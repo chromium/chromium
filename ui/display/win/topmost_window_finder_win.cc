@@ -5,6 +5,7 @@
 #include "ui/display/win/topmost_window_finder_win.h"
 
 #include "ui/display/win/screen_win.h"
+#include "ui/gfx/win/hwnd_util.h"
 
 namespace display {
 namespace win {
@@ -28,6 +29,11 @@ bool TopMostFinderWin::ShouldStopIterating(HWND hwnd) {
     // The window isn't visible, keep iterating.
     return false;
   }
+
+  // Cloaked windows are not visible. They may be on the non-current virtual
+  // desktop.
+  if (gfx::IsWindowCloaked(hwnd))
+    return false;
 
   RECT r;
   if (!GetWindowRect(hwnd, &r) || !PtInRect(&r, screen_loc_.ToPOINT())) {

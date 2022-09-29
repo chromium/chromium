@@ -5,6 +5,8 @@
 #ifndef UI_DISPLAY_WIN_TOPMOST_WINDOW_FINDER_WIN_H_
 #define UI_DISPLAY_WIN_TOPMOST_WINDOW_FINDER_WIN_H_
 
+#include <set>
+
 #include "base/win/scoped_gdi_object.h"
 #include "ui/display/win/base_window_finder_win.h"
 #include "ui/gfx/geometry/point.h"

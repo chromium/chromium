@@ -8,6 +8,8 @@
 #include <shobjidl.h>
 #include <wrl/client.h>
 
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/display/win/base_window_finder_win.h"
 #include "ui/gfx/geometry/point.h"

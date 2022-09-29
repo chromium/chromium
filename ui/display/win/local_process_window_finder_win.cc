@@ -7,6 +7,7 @@
 #include "base/win/windows_version.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/topmost_window_finder_win.h"
+#include "ui/gfx/win/hwnd_util.h"
 
 namespace display::win {
 
@@ -29,9 +30,7 @@ gfx::NativeWindow LocalProcessWindowFinder::GetProcessWindowAtPoint(
 }
 
 bool LocalProcessWindowFinder::ShouldStopIterating(HWND hwnd) {
-  RECT r;
-  // Make sure the window is on the same virtual desktop. First check if the
-  // host knows if the window is on the current_workspace or not.
+  // If the host knows `hwnd` is not on the current_workspace, return.
   gfx::NativeWindow native_win = screen_win_->GetNativeWindowFromHWND(hwnd);
   absl::optional<bool> on_current_workspace;
   if (native_win) {
@@ -41,34 +40,16 @@ bool LocalProcessWindowFinder::ShouldStopIterating(HWND hwnd) {
   if (on_current_workspace == false)
     return false;
 
-  if (!IsWindowVisible(hwnd) || !GetWindowRect(hwnd, &r) ||
-      !PtInRect(&r, screen_loc_.ToPOINT())) {
+  // Ignore non visible  and cloaked windows. This will include windows not on
+  // the current virtual desktop, which are cloaked.
+  RECT r;
+  if (!IsWindowVisible(hwnd) || gfx::IsWindowCloaked(hwnd) ||
+      !GetWindowRect(hwnd, &r) || !PtInRect(&r, screen_loc_.ToPOINT())) {
     return false;  // Window is not at `screen_loc_`.
   }
 
   // The window is at the correct position on the screen.
-  // If we're Win10 or greater, and host doesn't know if the window is on the
-  // current virtual desktop, create the a VirtualDesktopManager if we haven't
-  // already, and if that succeeds, check if the window is on the current
-  // virtual desktop.
-  if (base::win::GetVersion() >= base::win::Version::WIN10 &&
-      !on_current_workspace.has_value()) {
-    // Lazily create virtual_desktop_manager_ since we should rarely need it.
-    if (!virtual_desktop_manager_) {
-      ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
-                         IID_PPV_ARGS(&virtual_desktop_manager_));
-    }
-
-    BOOL on_current_desktop;
-    if (virtual_desktop_manager_ &&
-        SUCCEEDED(virtual_desktop_manager_->IsWindowOnCurrentVirtualDesktop(
-            hwnd, &on_current_desktop)) &&
-        !on_current_desktop) {
-      return false;
-    }
-  }
-
-  // Don't set result_ if the window is occluded, because there is at least
+  // Don't set `result_` if the window is occluded, because there is at least
   // one window covering the browser window. E.g., tab drag drop shouldn't
   // drop on an occluded browser window.
   if (!native_win || !screen_win_->IsNativeWindowOccluded(native_win))
