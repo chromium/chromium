@@ -3,17 +3,24 @@
  * found in the LICENSE file. */
 
 html {
-  --google-grey-200: rgb(232, 234, 237);
-  --google-grey-900: rgb(32, 33, 36);
-
+  --google-grey-200-rgb: 232, 234, 237;
+  --google-grey-200: rgb(var(--google-grey-200-rgb));
+  --google-grey-900-rgb: 32, 33, 36;
+  --google-grey-900: rgb(var(--google-grey-900-rgb));
   --primary-color: var(--google-grey-900);
-  background: white;
+  --active-background-color: rgba(var(--google-grey-900-rgb), .16);
+  --hover-background-color: rgba(var(--google-grey-900-rgb), .1);
+  --background-color: white;
+  background: var(--background-color);
 }
 
 @media (prefers-color-scheme: dark) {
   html {
     --primary-color: var(--google-grey-200);
-    background: var(--google-grey-900);
+    --active-background-color: rgba(var(--google-grey-200-rgb), .16);
+    --hover-background-color: rgba(var(--google-grey-200-rgb), .1);
+    --background-color: var(--google-grey-900);
+    background: var(--background-color);
   }
 }
 
@@ -86,15 +93,30 @@ body {
 
 #copy-to-clipboard,
 #copy-os-content-to-clipboard {
+  background-color: var(--background-color);
+  border: none;
+  border-radius: 2px;
+}
+
+#copy-to-clipboard-icon {
   -webkit-mask-image: url(chrome://resources/images/icon_copy_content.svg);
   -webkit-mask-size: cover;
   background: none;
   background-color: var(--primary-color);
-  border: none;
   display: inline-block;
   height: 1em;
   padding: 0;
   position: relative;
   top: .2em;
   width: 1em;
+}
+
+#copy-to-clipboard:hover,
+#copy-os-content-to-clipboard:hover {
+  background-color: var(--hover-background-color);
+}
+
+#copy-to-clipboard:active,
+#copy-os-content-to-clipboard:active {
+  background-color: var(--active-background-color);
 }
