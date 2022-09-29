@@ -9,10 +9,12 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -143,6 +145,9 @@ void SelectFileDialogLacros::SelectFileImpl(
   if (owning_window) {
     owning_shell_window_id_ = GetShellWindowUniqueId(owning_window);
     options->owning_shell_window_id = owning_shell_window_id_;
+  }
+  if (caller && caller->is_valid()) {
+    options->caller = *caller;
   }
 
   // Send request to ash-chrome.

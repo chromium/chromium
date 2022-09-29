@@ -98,6 +98,9 @@ struct SelectFileOptions {
   // If provided, the dialog will be window-modal to that shell window.
   // If empty, a modeless dialog will be opened on the default display.
   string owning_shell_window_id@4;
+
+  // Optional URL of the caller that created the dialog.
+  [MinVersion=1]url.mojom.Url? caller@5;
 };
 
 // Result of the select file dialog.

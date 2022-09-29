@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
+#include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -73,6 +74,9 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
     owner.is_lacros = true;
     owner.window = owner_window;
     owner.lacros_window_id = options->owning_shell_window_id;
+    if (options->caller.has_value()) {
+      owner.dialog_caller.emplace(options->caller.value().spec());
+    }
 
     int file_type_index = 0;
     if (options->file_types) {
