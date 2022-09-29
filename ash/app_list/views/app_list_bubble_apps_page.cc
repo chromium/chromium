@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
@@ -493,6 +494,10 @@ void AppListBubbleAppsPage::AbortAllAnimations() {
 }
 
 void AppListBubbleAppsPage::DisableFocusForShowingActiveFolder(bool disabled) {
+  toggle_continue_section_button_->SetEnabled(!disabled);
+  // Prevent container items from being accessed by ChromeVox.
+  SetViewIgnoredForAccessibility(continue_label_container_, disabled);
+
   continue_section_->DisableFocusForShowingActiveFolder(disabled);
   recent_apps_->DisableFocusForShowingActiveFolder(disabled);
   if (toast_container_)

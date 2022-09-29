@@ -1275,7 +1275,14 @@ TEST_F(AppListBubbleViewTest, OpenFolderWithMouseDoesNotFocusItem) {
   EXPECT_FALSE(GetFocusedView()) << GetFocusedViewName();
 }
 
+// Verifies that keyboard focus stays inside an open folder. If this test breaks
+// then one of the DisableFocusForShowingActiveFolder() methods needs to be
+// updated to include the incorrectly focused view.
 TEST_F(AppListBubbleViewTest, PressingTabMovesFocusInsideFolder) {
+  // Ensure all sections are showing, so the test verifies that none of these
+  // sections (or the hide continue section button) take focus.
+  AddContinueSuggestionResult(4);
+  AddRecentApps(5);
   AddFolderWithApps(3);
   ShowAppList();
 
