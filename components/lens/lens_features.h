@@ -14,31 +14,31 @@ namespace lens {
 namespace features {
 
 // Enables context menu search by image sending to the Lens homepage.
-extern const base::Feature kLensStandalone;
+BASE_DECLARE_FEATURE(kLensStandalone);
 
 // Feature that controls the compression of images before they are sent to Lens.
-extern const base::Feature kLensImageCompression;
+BASE_DECLARE_FEATURE(kLensImageCompression);
 
 // Enables a variety of changes aimed to improve user's engagement with current
 // Lens features.
-extern const base::Feature kLensSearchOptimizations;
+BASE_DECLARE_FEATURE(kLensSearchOptimizations);
 
 // Enables a fix to properly handle transparent images in Lens Image Search
-extern const base::Feature kLensTransparentImagesFix;
+BASE_DECLARE_FEATURE(kLensTransparentImagesFix);
 
 // Enables Lens integration into the Chrome screenshot sharing feature by adding
 // a "Search Image" button.
-extern const base::Feature kLensSearchImageInScreenshotSharing;
+BASE_DECLARE_FEATURE(kLensSearchImageInScreenshotSharing);
 
 // Enables Latency logging for the LensStandalone feature.
-extern const base::Feature kEnableLatencyLogging;
+BASE_DECLARE_FEATURE(kEnableLatencyLogging);
 
 // Enable the Lens Region Search feature on the PDF viewer.
-extern const base::Feature kEnableRegionSearchOnPdfViewer;
+BASE_DECLARE_FEATURE(kEnableRegionSearchOnPdfViewer);
 
 // Enables the modification of the instruction chip UI that is presented when
 // region search is opened.
-extern const base::Feature kLensInstructionChipImprovements;
+BASE_DECLARE_FEATURE(kLensInstructionChipImprovements);
 
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
@@ -69,7 +69,7 @@ extern const base::FeatureParam<std::string> kHomepageURLForLens;
 extern const base::FeatureParam<bool> kEnableLensHtmlRedirectFix;
 
 // Enables footer for the unified side panel
-extern const base::Feature kLensUnifiedSidePanelFooter;
+BASE_DECLARE_FEATURE(kLensUnifiedSidePanelFooter);
 
 // Enables Lens fullscreen search on Desktop platforms.
 extern const base::FeatureParam<bool> kEnableFullscreenSearch;

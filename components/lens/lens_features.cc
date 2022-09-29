@@ -10,32 +10,41 @@
 namespace lens {
 namespace features {
 
-const base::Feature kLensStandalone{"LensStandalone",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLensStandalone,
+             "LensStandalone",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kLensImageCompression{"LensImageCompression",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLensImageCompression,
+             "LensImageCompression",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kLensSearchOptimizations{"LensSearchOptimizations",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLensSearchOptimizations,
+             "LensSearchOptimizations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kLensTransparentImagesFix{
-    "LensTransparentImagesFix", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLensTransparentImagesFix,
+             "LensTransparentImagesFix",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kLensSearchImageInScreenshotSharing{
-    "LensSearchImageInScreenshotSharing", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLensSearchImageInScreenshotSharing,
+             "LensSearchImageInScreenshotSharing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kLensUnifiedSidePanelFooter{
-    "LensUnifiedSidePanelFooter", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLensUnifiedSidePanelFooter,
+             "LensUnifiedSidePanelFooter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnableLatencyLogging{"LensImageLatencyLogging",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableLatencyLogging,
+             "LensImageLatencyLogging",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kEnableRegionSearchOnPdfViewer{
-    "LensEnableRegionSearchOnPdfViewer", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableRegionSearchOnPdfViewer,
+             "LensEnableRegionSearchOnPdfViewer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kLensInstructionChipImprovements{
-    "LensInstructionChipImprovements", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kLensInstructionChipImprovements,
+             "LensInstructionChipImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
