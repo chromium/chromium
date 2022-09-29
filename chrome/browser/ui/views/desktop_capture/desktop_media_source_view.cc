@@ -166,10 +166,11 @@ void DesktopMediaSourceView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesktopMediaSourceView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(label_->GetText().empty()
-                         ? l10n_util::GetStringUTF16(
-                               IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
-                         : label_->GetText());
+  node_data->SetNameChecked(
+      label_->GetText().empty()
+          ? l10n_util::GetStringUTF16(
+                IDS_DESKTOP_MEDIA_SOURCE_EMPTY_ACCESSIBLE_NAME)
+          : label_->GetText());
 }
 
 BEGIN_METADATA(DesktopMediaSourceView, views::View)
