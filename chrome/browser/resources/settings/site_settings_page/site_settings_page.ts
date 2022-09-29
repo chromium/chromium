@@ -300,12 +300,12 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsVrBlocked',
     },
     {
-      route: routes.SITE_SETTINGS_WINDOW_PLACEMENT,
-      id: Id.WINDOW_PLACEMENT,
-      label: 'siteSettingsWindowPlacement',
-      icon: 'settings:window-placement',
-      enabledLabel: 'siteSettingsWindowPlacementAsk',
-      disabledLabel: 'siteSettingsWindowPlacementBlocked',
+      route: routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
+      id: Id.WINDOW_MANAGEMENT,
+      label: 'siteSettingsWindowManagement',
+      icon: 'settings:window-management',
+      enabledLabel: 'siteSettingsWindowManagementAsk',
+      disabledLabel: 'siteSettingsWindowManagementBlocked',
     },
     {
       route: routes.SITE_SETTINGS_ZOOM_LEVELS,
@@ -378,7 +378,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.AR,
               Id.VR,
               Id.IDLE_DETECTION,
-              Id.WINDOW_PLACEMENT,
+              Id.WINDOW_MANAGEMENT,
               Id.LOCAL_FONTS,
             ]),
             contentBasic: buildItemListFromIds([

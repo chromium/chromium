@@ -103,7 +103,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       ContentSettingsTypes.SOUND,
       ContentSettingsTypes.USB_DEVICES,
       ContentSettingsTypes.VR,
-      ContentSettingsTypes.WINDOW_PLACEMENT,
+      ContentSettingsTypes.WINDOW_MANAGEMENT,
     ];
 
     this.prefs_ = createSiteSettingsPrefs([], [], []);

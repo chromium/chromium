@@ -40,7 +40,7 @@ export enum ContentSettingsTypes {
   SOUND = 'sound',
   USB_DEVICES = 'usb-devices',
   VR = 'vr',
-  WINDOW_PLACEMENT = 'window-placement',
+  WINDOW_MANAGEMENT = 'window-placement',
   ZOOM_LEVELS = 'zoom-levels',
 
   // The following item is not in the C++ kContentSettingsTypeGroupNames, but it

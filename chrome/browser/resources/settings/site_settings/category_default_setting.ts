@@ -217,7 +217,7 @@ export class CategoryDefaultSettingElement extends
       case ContentSettingsTypes.SERIAL_PORTS:
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.VR:
-      case ContentSettingsTypes.WINDOW_PLACEMENT:
+      case ContentSettingsTypes.WINDOW_MANAGEMENT:
         // "Ask" vs "Blocked".
         this.browserProxy.setDefaultValueForContentType(
             this.category,

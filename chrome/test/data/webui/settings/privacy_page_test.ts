@@ -52,7 +52,7 @@ const redesignedPages: Route[] = [
   // routes which depend on flags being enabled.
   // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
   // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
-  // routes.SITE_SETTINGS_WINDOW_PLACEMENT,
+  // routes.SITE_SETTINGS_WINDOW_MANAGEMENT,
 
   // Doesn't contain toggle or radio buttons
   // routes.SITE_SETTINGS_INSECURE_CONTENT,

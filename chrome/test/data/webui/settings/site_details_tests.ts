@@ -150,7 +150,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.VR,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.WINDOW_PLACEMENT,
+              ContentSettingsTypes.WINDOW_MANAGEMENT,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.LOCAL_FONTS,

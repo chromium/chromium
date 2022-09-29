@@ -190,8 +190,8 @@ export class SettingsRecentSitePermissionsElement extends
         return this.i18n('siteSettingsArMidSentence');
       case ContentSettingsTypes.VR:
         return this.i18n('siteSettingsVrMidSentence');
-      case ContentSettingsTypes.WINDOW_PLACEMENT:
-        return this.i18n('siteSettingsWindowPlacementMidSentence');
+      case ContentSettingsTypes.WINDOW_MANAGEMENT:
+        return this.i18n('siteSettingsWindowManagementMidSentence');
       case ContentSettingsTypes.LOCAL_FONTS:
         return this.i18n('siteSettingsFontAccessMidSentence');
       case ContentSettingsTypes.IDLE_DETECTION:
