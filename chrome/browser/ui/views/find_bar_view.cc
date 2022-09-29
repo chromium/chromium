@@ -84,10 +84,10 @@ class FindBarMatchCountLabel : public views::Label {
     if (!last_result_) {
       node_data->SetNameExplicitlyEmpty();
     } else if (last_result_->number_of_matches() < 1) {
-      node_data->SetName(
+      node_data->SetNameChecked(
           l10n_util::GetStringUTF16(IDS_ACCESSIBLE_FIND_IN_PAGE_NO_RESULTS));
     } else {
-      node_data->SetName(l10n_util::GetStringFUTF16(
+      node_data->SetNameChecked(l10n_util::GetStringFUTF16(
           IDS_ACCESSIBLE_FIND_IN_PAGE_COUNT,
           base::FormatNumber(last_result_->active_match_ordinal()),
           base::FormatNumber(last_result_->number_of_matches())));
