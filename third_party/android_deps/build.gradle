@@ -145,7 +145,6 @@ dependencies {
     // Used by downstream targets.
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     compile 'org.checkerframework:checker-compat-qual:2.5.3'
-    compile 'org.checkerframework:checker-util:3.22.1'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
     // Dedicated configuration to avoid using higher version number. The 9999 version is empty.

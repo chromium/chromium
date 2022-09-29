@@ -1366,14 +1366,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_checkerframework_checker_util_java") {
-    jar_path = "libs/org_checkerframework_checker_util/checker-util-3.22.1.jar"
-    output_name = "org_checkerframework_checker_util"
-    supports_android = true
-    deps = [ ":org_checkerframework_checker_qual_java" ]
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_codehaus_mojo_animal_sniffer_annotations_java") {
     jar_path = "libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.17.jar"
     output_name = "org_codehaus_mojo_animal_sniffer_annotations"

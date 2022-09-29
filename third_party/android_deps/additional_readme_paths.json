@@ -121,7 +121,6 @@
     "libs/org_ccil_cowan_tagsoup_tagsoup",
     "libs/org_checkerframework_checker_compat_qual",
     "libs/org_checkerframework_checker_qual",
-    "libs/org_checkerframework_checker_util",
     "libs/org_checkerframework_dataflow_errorprone",
     "libs/org_codehaus_mojo_animal_sniffer_annotations",
     "libs/org_eclipse_jgit_org_eclipse_jgit",
