@@ -438,12 +438,6 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
     }
   }
 
-  // Enqueue event right away, before attaching an actual queue.
-  test::TestEvent<Status> enqueue_record_event;
-  report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
-  const auto enqueue_record_result = enqueue_record_event.result();
-  EXPECT_OK(enqueue_record_result) << enqueue_record_result;
-
   if (StorageSelector::is_uploader_required() &&
       !StorageSelector::is_use_missive()) {
     if (is_encryption_enabled()) {
@@ -456,6 +450,12 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
                 UploadEncryptedReport(IsDataUploadRequestValid(), _, _))
         .WillOnce(WithArgs<0, 2>(Invoke(GetVerifyDataInvocation())));
   }
+
+  // Enqueue event right away, before attaching an actual queue.
+  test::TestEvent<Status> enqueue_record_event;
+  report_queue->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
+  const auto enqueue_record_result = enqueue_record_event.result();
+  EXPECT_OK(enqueue_record_result) << enqueue_record_result;
 
   // Trigger upload.
   task_environment_.FastForwardBy(base::Seconds(1));

@@ -45,7 +45,6 @@ StatusOr<std::string> ProtoToString(
   }
   return protobuf_record;
 }
-
 }  // namespace
 
 ReportQueue::~ReportQueue() = default;

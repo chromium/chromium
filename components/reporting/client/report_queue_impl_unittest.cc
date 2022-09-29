@@ -34,6 +34,7 @@ using ::testing::Invoke;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::SizeIs;
 using ::testing::WithArg;
 
 using ::reporting::test::TestStorageModule;
@@ -76,6 +77,11 @@ class ReportQueueImplTest : public testing::Test {
     report_queue_ = std::move(report_queue_result.ValueOrDie());
   }
 
+  void TearDown() override {
+    // Let everything ongoing to finish.
+    task_environment_.RunUntilIdle();
+  }
+
   TestStorageModule* test_storage_module() const {
     TestStorageModule* test_storage_module =
         google::protobuf::down_cast<TestStorageModule*>(storage_module_.get());
@@ -103,7 +109,7 @@ class ReportQueueImplTest : public testing::Test {
 // Enqueues a random string and ensures that the string arrives unaltered in the
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
-  constexpr char kTestString[] = "El-Chupacabra";
+  static constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
   report_queue_->Enqueue(kTestString, priority_, a.cb());
   EXPECT_OK(a.result());
@@ -114,8 +120,8 @@ TEST_F(ReportQueueImplTest, SuccessfulStringRecord) {
 // Enqueues a |base::Value| dictionary and ensures it arrives unaltered in the
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
-  constexpr char kTestKey[] = "TEST_KEY";
-  constexpr char kTestValue[] = "TEST_VALUE";
+  static constexpr char kTestKey[] = "TEST_KEY";
+  static constexpr char kTestValue[] = "TEST_VALUE";
   base::Value::Dict test_dict;
   test_dict.Set(kTestKey, kTestValue);
   test::TestEvent<Status> a;
@@ -171,7 +177,7 @@ TEST_F(ReportQueueImplTest, CallSuccessCallbackFailure) {
 TEST_F(ReportQueueImplTest, EnqueueStringFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
-  constexpr char kTestString[] = "El-Chupacabra";
+  static constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
   report_queue_->Enqueue(std::string(kTestString), priority_, a.cb());
   const auto result = a.result();
@@ -195,8 +201,8 @@ TEST_F(ReportQueueImplTest, EnqueueProtoFailsOnPolicy) {
 TEST_F(ReportQueueImplTest, EnqueueValueFailsOnPolicy) {
   EXPECT_CALL(mocked_policy_check_, Call())
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
-  constexpr char kTestKey[] = "TEST_KEY";
-  constexpr char kTestValue[] = "TEST_VALUE";
+  static constexpr char kTestKey[] = "TEST_KEY";
+  static constexpr char kTestValue[] = "TEST_VALUE";
   base::Value::Dict test_dict;
   test_dict.Set(kTestKey, kTestValue);
   test::TestEvent<Status> a;
@@ -242,14 +248,16 @@ TEST_F(ReportQueueImplTest, EnqueueSuccessFlushFailure) {
 // attaches actual one and ensures that the string arrives unaltered in the
 // |StorageModuleInterface|.
 TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
-  constexpr char kTestString[] = "El-Chupacabra";
+  static constexpr char kTestString[] = "El-Chupacabra";
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
   speculative_report_queue->Enqueue(std::string(kTestString), priority_,
                                     a.cb());
+
+  // Enqueue would not end until actual queue is attached.
+  speculative_report_queue->AttachActualQueue(std::move(report_queue_));
   EXPECT_OK(a.result());
 
-  speculative_report_queue->AttachActualQueue(std::move(report_queue_));
   // Let everything ongoing to finish.
   task_environment_.RunUntilIdle();
 
@@ -258,8 +266,8 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
 }
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {
-  constexpr char kTestString1[] = "record1";
-  constexpr char kTestString2[] = "record2";
+  static constexpr char kTestString1[] = "record1";
+  static constexpr char kTestString2[] = "record2";
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
 
   speculative_report_queue->AttachActualQueue(std::move(report_queue_));
@@ -285,79 +293,19 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {
 
 TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailed) {
   constexpr char kTestString[] = "record";
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
-
-  auto attach_cb = speculative_report_queue->PrepareToAttachActualQueue();
-  std::move(attach_cb).Run(Status(error::UNKNOWN, "error msg"));
-  task_environment_.RunUntilIdle();
-
   test::TestEvent<Status> test_event;
-  speculative_report_queue->Enqueue(kTestString, Priority::IMMEDIATE,
-                                    test_event.cb());
+  {
+    auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+
+    auto attach_cb = speculative_report_queue->PrepareToAttachActualQueue();
+    std::move(attach_cb).Run(Status(error::UNKNOWN, "error msg"));
+
+    speculative_report_queue->Enqueue(kTestString, Priority::IMMEDIATE,
+                                      test_event.cb());
+  }
   const auto result = test_event.result();
   ASSERT_FALSE(result.ok());
-  EXPECT_EQ(result.code(), error::UNKNOWN);
-}
-
-TEST_F(ReportQueueImplTest, OverlappingStringRecords) {
-  constexpr char kTestString1[] = "record1";
-  constexpr char kTestString2[] = "record2";
-  constexpr char kTestString3[] = "record3";
-
-  test::TestEvent<Status> event1;
-  test::TestEvent<Status> event2;
-  test::TestEvent<Status> event3;
-  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
-
-  // Call `Enqueue` for 2 records before report queue is ready, both will be
-  // added to pending records.
-  speculative_report_queue->Enqueue(std::string(kTestString1), priority_,
-                                    event1.cb());
-  EXPECT_OK(event1.result());
-  speculative_report_queue->Enqueue(std::string(kTestString2), priority_,
-                                    event2.cb());
-  EXPECT_OK(event2.result());
-
-  base::queue<ReportQueue::EnqueueCallback> enqueue_cb_queue;
-  int enqueue_count = 0;
-  auto mock_queue = std::make_unique<MockReportQueue>();
-  EXPECT_CALL(*mock_queue, AddRecord)
-      .Times(3)
-      .WillRepeatedly([&enqueue_cb_queue, &enqueue_count](
-                          std::string record_string, Priority event_priority,
-                          ReportQueue::EnqueueCallback cb) {
-        ++enqueue_count;
-        enqueue_cb_queue.emplace(std::move(cb));
-      });
-
-  // First record should be enqueued after calling `AttachActualQueue`.
-  speculative_report_queue->AttachActualQueue(std::move(mock_queue));
-  // Second record should be enqueued after calling `Enqueue` for the third
-  // record, and third record should be added to pending records.
-  speculative_report_queue->Enqueue(std::string(kTestString3), priority_,
-                                    event3.cb());
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(enqueue_count, 2);
-
-  // Executing the first callback with success status should cause the third
-  // record to be enqueued and pending records to be empty.
-  ASSERT_THAT(enqueue_cb_queue, testing::SizeIs(2));
-  std::move(enqueue_cb_queue.front()).Run(Status());
-  enqueue_cb_queue.pop();
-  task_environment_.RunUntilIdle();
-  ASSERT_EQ(enqueue_count, 3);
-
-  // Executing the second and third callback.
-  ASSERT_THAT(enqueue_cb_queue, testing::SizeIs(2));
-  std::move(enqueue_cb_queue.front()).Run(Status());
-  enqueue_cb_queue.pop();
-  task_environment_.RunUntilIdle();
-
-  ASSERT_THAT(enqueue_cb_queue, testing::SizeIs(1));
-  std::move(enqueue_cb_queue.front()).Run(Status());
-  enqueue_cb_queue.pop();
-  EXPECT_OK(event3.result());
-  task_environment_.RunUntilIdle();
+  EXPECT_EQ(result.code(), error::DATA_LOSS);
 }
 
 TEST_F(ReportQueueImplTest, EnqueueRecordWithInvalidPriority) {
@@ -435,8 +383,8 @@ TEST_F(ReportQueueImplTest, AsyncProcessingReportQueue) {
                       priority_, a_proto.cb());
 
   test::TestEvent<Status> a_json;
-  constexpr char kTestKey[] = "TEST_KEY";
-  constexpr char kTestValue[] = "TEST_VALUE";
+  static constexpr char kTestKey[] = "TEST_KEY";
+  static constexpr char kTestValue[] = "TEST_VALUE";
   base::Value::Dict test_dict;
   test_dict.Set(kTestKey, kTestValue);
   mock_queue->Enqueue(std::move(test_dict), priority_, a_json.cb());
@@ -461,16 +409,12 @@ TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
       a_proto.cb());
 
   test::TestEvent<Status> a_json;
-  constexpr char kTestKey[] = "TEST_KEY";
-  constexpr char kTestValue[] = "TEST_VALUE";
+  static constexpr char kTestKey[] = "TEST_KEY";
+  static constexpr char kTestValue[] = "TEST_VALUE";
   base::Value::Dict test_dict;
   test_dict.Set(kTestKey, kTestValue);
   speculative_report_queue->Enqueue(std::move(test_dict), priority_,
                                     a_json.cb());
-
-  EXPECT_OK(a_string.result());
-  EXPECT_OK(a_proto.result());
-  EXPECT_OK(a_json.result());
 
   auto mock_queue = std::make_unique<MockReportQueue>();
   EXPECT_CALL(*mock_queue, AddProducedRecord)
@@ -481,8 +425,10 @@ TEST_F(ReportQueueImplTest, AsyncProcessingSpeculativeReportQueue) {
         std::move(cb).Run(Status::StatusOK());
       });
   speculative_report_queue->AttachActualQueue(std::move(mock_queue));
-  // Let everything ongoing to finish.
-  task_environment_.RunUntilIdle();
+
+  EXPECT_OK(a_string.result());
+  EXPECT_OK(a_proto.result());
+  EXPECT_OK(a_json.result());
 }
 }  // namespace
 }  // namespace reporting
