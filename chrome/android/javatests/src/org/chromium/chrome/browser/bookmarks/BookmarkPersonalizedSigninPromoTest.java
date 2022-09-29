@@ -131,7 +131,7 @@ public class BookmarkPersonalizedSigninPromoTest {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
-        onView(withId(R.id.signin_promo_choose_account_button)).perform(click());
+        onView(withId(R.id.sync_promo_choose_account_button)).perform(click());
         verify(mMockSyncConsentActivityLauncher)
                 .launchActivityForPromoChooseAccountFlow(any(Activity.class),
                         eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(accountInfo.getEmail()));

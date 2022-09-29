@@ -40,7 +40,7 @@ public class PersonalizedSigninPromoView extends LinearLayout {
         mImage = findViewById(R.id.sync_promo_image);
         mDismissButton = findViewById(R.id.sync_promo_close_button);
         mPrimaryButton = findViewById(R.id.sync_promo_signin_button);
-        mSecondaryButton = findViewById(R.id.signin_promo_choose_account_button);
+        mSecondaryButton = findViewById(R.id.sync_promo_choose_account_button);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE)) {
             // TODO(crbug.com/1323197): remove new_sync_promo_description or
