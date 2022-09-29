@@ -105,6 +105,10 @@ extern const base::FeatureParam<int> kMigrationVersion;
 extern const base::FeatureParam<int> kGmsApiErrorListVersion;
 extern const base::FeatureParam<std::string> kIgnoredGmsApiErrors;
 extern const base::FeatureParam<std::string> kRetriableGmsApiErrors;
+extern const base::FeatureParam<bool> kFallbackOnModifyingOperations;
+extern const base::FeatureParam<bool> kFallbackOnRemoveOperations;
+extern const base::FeatureParam<bool> kFallbackOnUserAffectingReadOperations;
+extern const base::FeatureParam<bool> kFallbackOnNonUserAffectingReadOperations;
 constexpr base::FeatureParam<UpmExperimentVariation>::Option
     kUpmExperimentVariationOption[] = {
         {UpmExperimentVariation::kEnableForSyncingUsers, "0"},
