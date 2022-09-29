@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
+#include "net/log/test_net_log.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -103,7 +104,7 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
       cert_verifier_service_factory_;
 };
 
-#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 namespace {
 
 network::mojom::NetworkContextParamsPtr CreateContextParams() {
@@ -156,62 +157,54 @@ std::unique_ptr<network::TestURLLoaderClient> FetchRequest(
 
 }  // namespace
 
-class NetworkContextCertVerifierBuiltinFeatureFlagTest
+class NetworkContextChromeRootStoreFeatureFlagTest
     : public NetworkContextWithRealCertVerifierTest,
       public testing::WithParamInterface<
           std::tuple<bool, absl::optional<bool>>> {
  public:
-  NetworkContextCertVerifierBuiltinFeatureFlagTest() {
+  NetworkContextChromeRootStoreFeatureFlagTest() {
     scoped_feature_list_.InitWithFeatureState(
-        net::features::kCertVerifierBuiltinFeature,
-        feature_use_builtin_cert_verifier());
+        net::features::kChromeRootStoreUsed, feature_use_chrome_root_store());
   }
 
   mojom::CertVerifierServiceParamsPtr GetCertVerifierServiceParams() override {
     mojom::CertVerifierServiceParamsPtr params;
-    if (param_use_builtin_cert_verifier().has_value()) {
+    if (param_use_chrome_root_store().has_value()) {
       params = mojom::CertVerifierServiceParams::New();
-      params->use_builtin_cert_verifier = *param_use_builtin_cert_verifier();
+      params->use_chrome_root_store = *param_use_chrome_root_store();
     }
     return params;
   }
 
-  bool feature_use_builtin_cert_verifier() const {
-    return std::get<0>(GetParam());
-  }
+  bool feature_use_chrome_root_store() const { return std::get<0>(GetParam()); }
 
-  absl::optional<bool> param_use_builtin_cert_verifier() const {
+  absl::optional<bool> param_use_chrome_root_store() const {
     return std::get<1>(GetParam());
   }
 
-  bool expected_use_builtin_cert_verifier() const {
-    if (param_use_builtin_cert_verifier().has_value())
-      return *param_use_builtin_cert_verifier();
-    return feature_use_builtin_cert_verifier();
+  bool expected_use_chrome_root_store() const {
+    if (param_use_chrome_root_store().has_value())
+      return *param_use_chrome_root_store();
+    return feature_use_chrome_root_store();
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(NetworkContextCertVerifierBuiltinFeatureFlagTest,
+TEST_P(NetworkContextChromeRootStoreFeatureFlagTest,
        CombinationOfFeatureFlagAndServiceParamsUsesCorrectVerifier) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   net::test_server::RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
-  // This just happens to be a histogram that directly records which verifier
-  // was used.
-  const char kBuiltinVerifierHistogram[] =
-      "Net.CertVerifier.NameNormalizationPrivateRoots.Builtin";
-
-  // Test creating a NetworkContextParams without specifying a value for
-  // use_builtin_cert_verifier. Should use whatever the default cert verifier
-  // implementation is according to the feature flag.
   network::mojom::NetworkContextParamsPtr params = CreateContextParams();
   params->cert_verifier_params = GetCertVerifierParams();
   std::unique_ptr<network::NetworkContext> network_context =
       CreateContextWithParams(std::move(params));
+
+  net::RecordingNetLogObserver net_log_observer(
+      net::NetLogCaptureMode::kDefault);
 
   network::ResourceRequest request;
   request.url = test_server.GetURL("/nocontent");
@@ -219,26 +212,26 @@ TEST_P(NetworkContextCertVerifierBuiltinFeatureFlagTest,
   std::unique_ptr<network::TestURLLoaderClient> client =
       FetchRequest(request, network_context.get());
   EXPECT_EQ(net::OK, client->completion_status().error_code);
-  histogram_tester.ExpectTotalCount(
-      kBuiltinVerifierHistogram, expected_use_builtin_cert_verifier() ? 1 : 0);
+
+  std::vector<net::NetLogEntry> crs_netlog_entries =
+      net_log_observer.GetEntriesWithType(
+          net::NetLogEventType::CERT_VERIFY_PROC_CHROME_ROOT_STORE_VERSION);
+  EXPECT_EQ(expected_use_chrome_root_store(), !crs_netlog_entries.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    NetworkContextCertVerifierBuiltinFeatureFlagTest,
+    NetworkContextChromeRootStoreFeatureFlagTest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values(absl::nullopt, false, true)),
     [](const testing::TestParamInfo<
-        NetworkContextCertVerifierBuiltinFeatureFlagTest::ParamType>& info) {
+        NetworkContextChromeRootStoreFeatureFlagTest::ParamType>& info) {
       return base::StrCat(
           {std::get<0>(info.param) ? "FeatureTrue" : "FeatureFalse",
            std::get<1>(info.param).has_value()
                ? (*std::get<1>(info.param) ? "ParamTrue" : "ParamFalse")
                : "ParamNotSet"});
     });
-#endif  // BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-
-// TODO(mattm): can a root store test be added too? Is there any histogram
-// that can be checked?
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 }  // namespace cert_verifier
