@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -156,6 +157,7 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
                                    weak_ptr_factory_.GetWeakPtr(), true));
   ++num_pending_requests_;
 
+  const auto start_time = base::TimeTicks::Now();
   if (scrub_) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
@@ -163,10 +165,11 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
         cryptohome::CreateAccountIdentifierFromAccountId(
             user ? user->GetAccountId() : EmptyAccountId()),
         base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), start_time));
   } else {
     client->GetAllLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                                      weak_ptr_factory_.GetWeakPtr()));
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      start_time));
   }
   ++num_pending_requests_;
 }
@@ -190,10 +193,19 @@ void DebugDaemonLogSource::OnGetOneLog(std::string key,
   RequestCompleted();
 }
 
-void DebugDaemonLogSource::OnGetLogs(bool /* succeeded */,
+void DebugDaemonLogSource::OnGetLogs(const base::TimeTicks get_start_time,
+                                     bool /* succeeded */,
                                      const KeyValueMap& logs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // We are interested in the performance of gathering the logs for feedback
+  // reports only where the logs will always be scrubbed. GetBigFeedbackLogs is
+  // the dbus method used.
+  if (scrub_) {
+    base::UmaHistogramMediumTimes(
+        "Feedback.ChromeOSApp.Duration.GetBigFeedbackLogs",
+        base::TimeTicks::Now() - get_start_time);
+  }
   // We ignore 'succeeded' for this callback - we want to display as much of the
   // debug info as we can even if we failed partway through parsing, and if we
   // couldn't fetch any of it, none of the fields will even appear.

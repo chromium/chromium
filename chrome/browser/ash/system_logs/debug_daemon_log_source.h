@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -55,7 +56,8 @@ class DebugDaemonLogSource : public SystemLogsSource {
   void OnGetRoutes(bool is_ipv6,
                    absl::optional<std::vector<std::string>> routes);
   void OnGetOneLog(std::string key, absl::optional<std::string> status);
-  void OnGetLogs(bool succeeded,
+  void OnGetLogs(const base::TimeTicks get_start_time,
+                 bool succeeded,
                  const KeyValueMap& logs);
 
   // Reads the logged-in users' log files that have to be read by Chrome as
