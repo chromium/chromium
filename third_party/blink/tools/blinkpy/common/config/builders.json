@@ -1,5 +1,5 @@
 {
-    "Fuchsia x64": {
+    "fuchsia-x64-rel": {
         "main": "chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"]
@@ -55,26 +55,6 @@
         "specifiers": ["Win11", "Release"]
     },
     "fuchsia_x64": {
-        "main": "tryserver.chromium.linux",
-        "port_name": "fuchsia",
-        "specifiers": ["Fuchsia", "Release"],
-        "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
-        },
-        "is_try_builder": true
-    },
-    "fuchsia-x64-cast-receiver-rel": {
-        "main": "tryserver.chromium.linux",
-        "port_name": "fuchsia",
-        "specifiers": ["Fuchsia", "Release"],
-        "steps": {
-            "blink_web_tests (with patch)": {},
-            "blink_wpt_tests (with patch)": {}
-        },
-        "is_try_builder": true
-    },
-    "fuchsia-x64-rel": {
         "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
