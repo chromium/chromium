@@ -438,7 +438,7 @@ bool AppBrowserController::ShouldUseCustomFrame() const {
 void AppBrowserController::AddColorMixers(
     ui::ColorProvider* provider,
     const ui::ColorProviderManager::Key& key) const {
-  constexpr float kSeparatorOpacity = 0.15f;
+  constexpr SkAlpha kSeparatorOpacity = 0.15f * 255.0f;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // This color is the same as the default active frame color.
   const absl::optional<SkColor> theme_color = GetThemeColor();

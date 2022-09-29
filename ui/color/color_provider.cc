@@ -82,8 +82,13 @@ void ColorProvider::GenerateColorMap() {
   // computed values. Use a std::map rather than a base::flat_map since it has
   // frequent inserts and could grow very large.
   std::map<ColorId, SkColor> color_map;
-  for (const auto& color_id : color_ids)
-    color_map.insert({color_id, mixers_.front().GetResultColor(color_id)});
+  for (const auto& color_id : color_ids) {
+    SkColor resulting_color = mixers_.front().GetResultColor(color_id);
+    DVLOG(2) << "GenerateColorMap:"
+             << " Color Id: " << ColorIdName(color_id)
+             << " Resulting Color: " << SkColorName(resulting_color);
+    color_map.insert({color_id, resulting_color});
+  }
 
   // Construct the color_map_.
   color_map_ = ColorMap(color_map.begin(), color_map.end());

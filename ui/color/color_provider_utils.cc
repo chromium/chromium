@@ -225,13 +225,13 @@ std::string SkColorName(SkColor color) {
           {SK_ColorMAGENTA, "SK_ColorMAGENTA"},
       });
   auto color_with_alpha = color;
-  color = SkColorSetA(color, SK_AlphaOPAQUE);
+  SkAlpha color_alpha = SkColorGetA(color_with_alpha);
+  color = SkColorSetA(color, color_alpha != 0 ? SK_AlphaOPAQUE : color_alpha);
   auto* i = color_name_map.find(color);
   if (i != color_name_map.cend()) {
     if (SkColorGetA(color_with_alpha) == SkColorGetA(color))
       return i->second;
-    return base::StringPrintf("rgba(%s, %f)", i->second,
-                              1.0 / SkColorGetA(color_with_alpha));
+    return base::StringPrintf("rgba(%s, %f)", i->second, 1.0 / color_alpha);
   }
   return color_utils::SkColorToRgbaString(color);
 }
