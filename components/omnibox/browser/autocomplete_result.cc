@@ -95,7 +95,7 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
   // autocomplete suggestions on iPad, so if an experiment defines
   // MaxZeroSuggestMatches to 15, it would be 15 on iPhone and 10 on iPad.
   constexpr size_t kMaxAutocompleteMatchesOnIPad = 10;
-  constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
+  constexpr size_t kDefaultMaxZeroSuggestMatches = 20;
   // By default, iPad has the same max as iPhone. `kMaxZeroSuggestMatchesOnIPad`
   // defines a hard limit on the number of ZPS suggestions on iPad, so if an
   // experiment defines MaxZeroSuggestMatches to 15, it would be 15 on iPhone

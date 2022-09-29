@@ -7034,7 +7034,6 @@
                 {
                     "name": "IOSExperiments",
                     "params": {
-                        "MaxZeroSuggestMatches": "20",
                         "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "ZeroSuggestIgnoreDuplicateVisits": "false"
@@ -7042,7 +7041,6 @@
                     "enable_features": [
                         "LocalHistorySuggestRevamp",
                         "OmniboxLocalZeroSuggestAgeThreshold",
-                        "OmniboxMaxZeroSuggestMatches",
                         "ZeroSuggestPrefetching"
                     ]
                 }
