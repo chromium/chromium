@@ -22,8 +22,9 @@ import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
 import {FocusRowBehavior} from '//resources/js/cr/ui/focus_row_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {ActivationStateType, CrosNetworkConfigRemote, GlobalPolicy, ManagedCellularProperties, ManagedProperties, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
@@ -238,6 +239,18 @@ Polymer({
     isCellularUnlockDialogOpen_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * Return true if captivePortalUI2022 feature flag is enabled.
+     * @private
+     */
+    isCaptivePortalUI2022Enabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('captivePortalUI2022') &&
+            loadTimeData.getBoolean('captivePortalUI2022');
+      },
     },
   },
 
@@ -643,6 +656,17 @@ Polymer({
 
     const connectionState = this.networkState.connectionState;
     if (OncMojo.connectionStateIsConnected(connectionState)) {
+      if (this.isCaptivePortalUI2022Enabled_) {
+        if (this.isPortalState_(this.networkState.portalState)) {
+          return this.i18n('networkListItemSignIn');
+        }
+        if (this.networkState.portalState === PortalState.kPortalSuspected) {
+          return this.i18n('networkListItemConnectedLimited');
+        }
+        if (this.networkState.portalState === PortalState.kNoInternet) {
+          return this.i18n('networkListItemConnectedNoConnectivity');
+        }
+      }
       // TODO(khorimoto): Consider differentiating between Portal, Connected,
       // and Online.
       return this.i18n('networkListItemConnected');
@@ -658,14 +682,37 @@ Polymer({
    * @private
    */
   getNetworkStateTextClass_() {
-    if (this.networkState && this.networkState.type === NetworkType.kCellular &&
-        this.networkState.typeState.cellular.simLocked) {
-      return 'warning';
-    }
-    if (this.isPSimUnavailableNetwork_ || this.isESimUnactivatedProfile_) {
+    if (this.shouldShowWarningState_()) {
       return 'warning';
     }
     return 'cr-secondary-text';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowWarningState_() {
+    // Warning is shown when a cellular SIM is locked, since connectivity is not
+    // available in this state.
+    if (this.networkState && this.networkState.type === NetworkType.kCellular &&
+        this.networkState.typeState.cellular.simLocked) {
+      return true;
+    }
+
+    // Warning is shown when a PSim is unavailable on current network or ESim is
+    // unactivated on current network.
+    if (this.isPSimUnavailableNetwork_ || this.isESimUnactivatedProfile_) {
+      return true;
+    }
+
+    // Warning is shown when there is restricted connectivity.
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        OncMojo.isRestrictedConnectivity(this.networkState.portalState)) {
+      return true;
+    }
+
+    return false;
   },
 
   /**
@@ -706,6 +753,10 @@ Polymer({
       return false;
     }
     if (this.isESimUnactivatedProfile_) {
+      return false;
+    }
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        OncMojo.isRestrictedConnectivity(this.networkState.portalState)) {
       return false;
     }
     return OncMojo.connectionStateIsConnected(
@@ -1099,5 +1150,16 @@ Polymer({
       this.blur();
     }
     this.setAttribute('aria-disabled', !!this.disabled_);
+  },
+
+  /**
+   * Return true if portalState is either kPortal or kProxyAuthRequired.
+   * @param {!PortalState} portalState
+   * @return {boolean}
+   * @private
+   */
+  isPortalState_(portalState) {
+    return portalState === PortalState.kPortal ||
+        portalState === PortalState.kProxyAuthRequired;
   },
 });

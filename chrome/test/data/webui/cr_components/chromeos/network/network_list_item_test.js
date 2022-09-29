@@ -11,7 +11,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, NetworkType, OncSource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
@@ -735,4 +735,101 @@ suite('NetworkListItemTest', function() {
         const showDetailEvent = await showDetailPromise;
         assertEquals(showDetailEvent.detail, networkState);
       });
+
+  suite('Portal', function() {
+    function initWithPortalState(flagEnabled, portalState) {
+      const managedProperties =
+          OncMojo.getDefaultManagedProperties(NetworkType.kWiFi, 'wifiguid');
+      managedProperties.source = OncSource.kUser;
+      managedProperties.typeProperties.wifi.security = SecurityType.kNone;
+      mojoApi_.setManagedPropertiesForTest(managedProperties);
+      const networkState =
+          OncMojo.managedPropertiesToNetworkState(managedProperties);
+      networkState.portalState = portalState;
+      networkState.connectionState = ConnectionStateType.kPortal;
+      listItem.isCaptivePortalUI2022Enabled_ = flagEnabled;
+      listItem.item = networkState;
+      flush();
+    }
+
+    test('kPortal portalState flag disabled', async () => {
+      init();
+      initWithPortalState(false /* flagEnabled */, PortalState.kPortal);
+      const getNetworkStateText = () => {
+        const element = listItem.$$('#networkStateText');
+        return element ? element.textContent.trim() : '';
+      };
+      assertNotEquals(
+          getNetworkStateText(), listItem.i18n('networkListItemSignIn'));
+      assertFalse(
+          listItem.$$('#networkStateText').classList.contains('warning'));
+      assertTrue(!!listItem.$$('#networkStateText').hasAttribute('active'));
+    });
+
+    test('kPortal portalState show sign in description', async () => {
+      init();
+      initWithPortalState(true /* flagEnabled */, PortalState.kPortal);
+      const getNetworkStateText = () => {
+        const element = listItem.$$('#networkStateText');
+        return element ? element.textContent.trim() : '';
+      };
+      assertEquals(
+          getNetworkStateText(), listItem.i18n('networkListItemSignIn'));
+      assertTrue(
+          listItem.$$('#networkStateText').classList.contains('warning'));
+      assertFalse(!!listItem.$$('#networkStateText').hasAttribute('active'));
+    });
+
+    test('kPortalProxyAuth portalState show sign in description', async () => {
+      init();
+      initWithPortalState(
+          true /* flagEnabled */, PortalState.kProxyAuthRequired);
+      const getNetworkStateText = () => {
+        const element = listItem.$$('#networkStateText');
+        return element ? element.textContent.trim() : '';
+      };
+      assertEquals(
+          getNetworkStateText(), listItem.i18n('networkListItemSignIn'));
+      assertTrue(
+          listItem.$$('#networkStateText').classList.contains('warning'));
+      assertFalse(!!listItem.$$('#networkStateText').hasAttribute('active'));
+    });
+
+    test(
+        'kPortalSuspected portalState show limited connectivity description',
+        async () => {
+          init();
+          initWithPortalState(
+              true /* flagEnabled */, PortalState.kPortalSuspected);
+          const getNetworkStateText = () => {
+            const element = listItem.$$('#networkStateText');
+            return element ? element.textContent.trim() : '';
+          };
+          assertEquals(
+              getNetworkStateText(),
+              listItem.i18n('networkListItemConnectedLimited'));
+          assertTrue(
+              listItem.$$('#networkStateText').classList.contains('warning'));
+          assertFalse(
+              !!listItem.$$('#networkStateText').hasAttribute('active'));
+        });
+
+    test(
+        'kNoInternet portalState show no connectivity description',
+        async () => {
+          init();
+          initWithPortalState(true /* flagEnabled */, PortalState.kNoInternet);
+          const getNetworkStateText = () => {
+            const element = listItem.$$('#networkStateText');
+            return element ? element.textContent.trim() : '';
+          };
+          assertEquals(
+              getNetworkStateText(),
+              listItem.i18n('networkListItemConnectedNoConnectivity'));
+          assertTrue(
+              listItem.$$('#networkStateText').classList.contains('warning'));
+          assertFalse(
+              !!listItem.$$('#networkStateText').hasAttribute('active'));
+        });
+  });
 });
