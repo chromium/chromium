@@ -10,6 +10,7 @@ check_install_icon_not_shown,                          🌕, 🌕,  🌕,   🌕
 check_install_icon_shown,                              🌕, 🌕,  🌕,   🌕,
 check_launch_icon_not_shown,                           🌕, 🌕,  🌕,   🌕,
 check_launch_icon_shown,                               🌕, 🌕,  🌕,   🌕,
+check_app_navigation,                                  🌕, 🌕,  🌕,   🌕,
 check_app_navigation_is_start_url,                     🌕, 🌕,  🌕,   🌕,
 check_no_toolbar,                                      🌕, 🌕,  🌕,   🌕,
 check_platform_shortcut_and_icon,                      🌕, 🌓,  🌓,   🌓,

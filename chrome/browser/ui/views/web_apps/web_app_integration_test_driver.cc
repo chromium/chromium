@@ -1950,6 +1950,16 @@ void WebAppIntegrationTestDriver::CheckAppInListWindowed(Site site) {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckAppNavigation(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__))
+    return;
+  ASSERT_TRUE(app_browser());
+  GURL url =
+      app_browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
+  EXPECT_EQ(GetUrlForSite(site), url);
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   if (!BeforeStateCheckAction(__FUNCTION__))
     return;

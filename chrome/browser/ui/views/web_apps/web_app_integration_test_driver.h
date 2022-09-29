@@ -273,6 +273,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListNotLocallyInstalled(Site site);
   void CheckAppInListWindowed(Site site);
   void CheckAppInListTabbed(Site site);
+  void CheckAppNavigation(Site site);
   void CheckAppNavigationIsStartUrl();
   void CheckBrowserNavigationIsAppSettings(Site site);
   void CheckAppNotInList(Site site);

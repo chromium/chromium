@@ -6,6 +6,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 
 namespace web_app::integration_tests {
 namespace {
@@ -139,6 +140,17 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrect) {
   helper_.InstallMenuOption(InstallableSite::kStandalone);
   helper_.CheckAppInListIconCorrect(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigation) {
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  helper_.CheckAppNavigation(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigationFails) {
+  helper_.InstallMenuOption(InstallableSite::kStandalone);
+  EXPECT_NONFATAL_FAILURE(helper_.CheckAppNavigation(Site::kStandaloneNestedB),
+                          "webapps_integration/standalone/basic.html");
 }
 
 // Generated tests:
