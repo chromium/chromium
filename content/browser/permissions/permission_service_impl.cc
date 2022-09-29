@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
@@ -37,23 +38,6 @@ void PermissionRequestResponseCallbackWrapper(
     const std::vector<PermissionStatus>& vector) {
   DCHECK_EQ(vector.size(), 1ul);
   std::move(callback).Run(vector[0]);
-}
-
-bool IsDomainOverride(const PermissionDescriptorPtr& descriptor) {
-  return descriptor->extension && descriptor->extension->is_storage_access();
-}
-
-url::Origin ExtractDomainOverride(const PermissionDescriptorPtr& descriptor) {
-  const blink::mojom::StorageAccessPermissionDescriptorPtr&
-      override_descriptor = descriptor->extension->get_storage_access();
-  return override_descriptor->siteOverride;
-}
-
-bool IsDomainOverrideEnabled() {
-  // This code path is currently available only when
-  // requestStorageAccessForOrigin is enabled.
-  return base::FeatureList::IsEnabled(
-      blink::features::kStorageAccessAPIForOriginExtension);
 }
 
 }  // anonymous namespace
@@ -145,17 +129,15 @@ void PermissionServiceImpl::RequestPermissions(
 
   int pending_request_id = pending_requests_.Add(std::move(pending_request));
 
-  if (!permissions.empty() && IsDomainOverride(permissions[0])) {
-    if (!IsDomainOverrideEnabled()) {
+  if (!permissions.empty() &&
+      PermissionUtil::IsDomainOverride(permissions[0])) {
+    if (!PermissionUtil::ValidateDomainOverride(
+            types, context_->render_frame_host())) {
       ReceivedBadMessage();
       return;
     }
-    if (types.size() > 1) {
-      // Requests with domain overrides must be requested individually.
-      ReceivedBadMessage();
-      return;
-    }
-    url::Origin requested_origin = ExtractDomainOverride(permissions[0]);
+    url::Origin requested_origin =
+        PermissionUtil::ExtractDomainOverride(permissions[0]);
     PermissionControllerImpl::FromBrowserContext(browser_context)
         ->RequestPermissions(
             types, context_->render_frame_host(), requested_origin,
