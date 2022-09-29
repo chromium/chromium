@@ -147,6 +147,9 @@ SkColor DarkModeFilter::AdjustDarkenColor(SkColor color,
   if (contrast_background == 0)
     contrast_background = SK_ColorDark;
 
+  if (color == SkColorSetARGB(SkColorGetA(color), 0, 0, 0))
+    return color;
+
   if (color_utils::GetContrastRatio(color, contrast_background) <
       color_utils::kMinimumReadableContrastRatio)
     return color;
