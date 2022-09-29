@@ -128,6 +128,7 @@ class CONTENT_EXPORT AttributionReport {
       AttributionInfo attribution_info,
       base::Time report_time,
       base::GUID external_report_id,
+      int failed_send_attempts,
       absl::variant<EventLevelData, AggregatableAttributionData> data);
   AttributionReport(const AttributionReport&);
   AttributionReport& operator=(const AttributionReport&);
@@ -163,8 +164,6 @@ class CONTENT_EXPORT AttributionReport {
 
   void set_report_time(base::Time report_time);
 
-  void set_failed_send_attempts(int failed_send_attempts);
-
   void SetExternalReportIdForTesting(base::GUID external_report_id);
 
  private:
@@ -179,7 +178,7 @@ class CONTENT_EXPORT AttributionReport {
   base::GUID external_report_id_;
 
   // Number of times the browser has tried and failed to send this report.
-  int failed_send_attempts_ = 0;
+  int failed_send_attempts_;
 
   // Only one type of data may be stored at once.
   absl::variant<EventLevelData, AggregatableAttributionData> data_;

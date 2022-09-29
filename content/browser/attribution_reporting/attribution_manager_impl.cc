@@ -763,43 +763,37 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
                                           SendResult info) {
   // If there was a transient failure, and another attempt is allowed,
   // update the report's DB state to reflect that. Otherwise, delete the report
-  // from storage if it wasn't skipped due to the browser being offline.
+  // from storage.
 
-  bool should_retry = false;
+  absl::optional<base::Time> new_report_time;
   if (info.status == SendResult::Status::kTransientFailure) {
-    report.set_failed_send_attempts(report.failed_send_attempts() + 1);
-    const absl::optional<base::TimeDelta> delay =
-        GetFailedReportDelay(report.failed_send_attempts());
-    if (delay.has_value()) {
-      should_retry = true;
-      report.set_report_time(base::Time::Now() + *delay);
+    if (absl::optional<base::TimeDelta> delay =
+            GetFailedReportDelay(report.failed_send_attempts() + 1)) {
+      new_report_time = base::Time::Now() + *delay;
     }
   }
 
-  if (should_retry) {
-    // After updating the report's failure count and new report time in the DB,
-    // add it directly to the queue so that the retry is attempted as the new
-    // report time is reached, rather than wait for the next DB-polling to
-    // occur.
+  base::OnceCallback then = base::BindOnce(
+      [](base::OnceClosure done, base::WeakPtr<AttributionManagerImpl> manager,
+         AttributionReport::Id report_id,
+         absl::optional<base::Time> new_report_time, bool success) {
+        std::move(done).Run();
+
+        if (manager && success) {
+          manager->MarkReportCompleted(report_id);
+          manager->scheduler_timer_.MaybeSet(new_report_time);
+          manager->NotifyReportsChanged(
+              AttributionReport::GetReportType(report_id));
+        }
+      },
+      std::move(done), weak_factory_.GetWeakPtr(), report.ReportId(),
+      new_report_time);
+
+  if (new_report_time) {
     attribution_storage_
         .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
-        .WithArgs(report.ReportId(), report.report_time())
-        .Then(base::BindOnce(
-            [](base::OnceClosure done,
-               base::WeakPtr<AttributionManagerImpl> manager,
-               AttributionReport::Id report_id, base::Time new_report_time,
-               bool success) {
-              std::move(done).Run();
-
-              if (manager && success) {
-                manager->MarkReportCompleted(report_id);
-                manager->scheduler_timer_.MaybeSet(new_report_time);
-                manager->NotifyReportsChanged(
-                    AttributionReport::GetReportType(report_id));
-              }
-            },
-            std::move(done), weak_factory_.GetWeakPtr(), report.ReportId(),
-            report.report_time()));
+        .WithArgs(report.ReportId(), *new_report_time)
+        .Then(std::move(then));
 
     // TODO(apaseltiner): Consider surfacing retry attempts in internals UI.
 
@@ -808,19 +802,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
 
   attribution_storage_.AsyncCall(&AttributionStorage::DeleteReport)
       .WithArgs(report.ReportId())
-      .Then(base::BindOnce(
-          [](base::OnceClosure done,
-             base::WeakPtr<AttributionManagerImpl> manager,
-             AttributionReport::Id report_id, bool success) {
-            std::move(done).Run();
-
-            if (manager && success) {
-              manager->MarkReportCompleted(report_id);
-              manager->NotifyReportsChanged(
-                  AttributionReport::GetReportType(report_id));
-            }
-          },
-          std::move(done), weak_factory_.GetWeakPtr(), report.ReportId()));
+      .Then(std::move(then));
 
   LogMetricsOnReportCompleted(report, info.status);
 

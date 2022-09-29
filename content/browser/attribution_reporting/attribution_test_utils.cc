@@ -762,6 +762,7 @@ ReportBuilder& ReportBuilder::SetAggregatableHistogramContributions(
 AttributionReport ReportBuilder::Build() const {
   return AttributionReport(
       attribution_info_, report_time_, external_report_id_,
+      /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(trigger_data_, priority_,
                                         randomized_trigger_rate_, report_id_));
 }
@@ -769,6 +770,7 @@ AttributionReport ReportBuilder::Build() const {
 AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
   return AttributionReport(
       attribution_info_, report_time_, external_report_id_,
+      /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           contributions_, aggregatable_attribution_report_id_, report_time_));
 }

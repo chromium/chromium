@@ -1079,6 +1079,7 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   // data was out of range for DevTools issue reporting.
   report = AttributionReport(
       attribution_info, report_time, delegate_->NewReportID(),
+      /*failed_send_attempts=*/0,
       AttributionReport::EventLevelData(
           delegate_->SanitizeTriggerData(event_trigger->data, source_type),
           event_trigger->priority, randomized_response_rate,
@@ -1243,14 +1244,12 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
   double randomized_response_rate = delegate_->GetRandomizedResponseRate(
       source_data->source.common_info().source_type());
 
-  AttributionReport report(
+  return AttributionReport(
       AttributionInfo(std::move(source_data->source), trigger_time,
                       trigger_debug_key),
-      report_time, std::move(external_report_id),
+      report_time, std::move(external_report_id), failed_send_attempts,
       AttributionReport::EventLevelData(trigger_data, conversion_priority,
                                         randomized_response_rate, report_id));
-  report.set_failed_send_attempts(failed_send_attempts);
-  return report;
 }
 
 std::vector<AttributionReport> AttributionStorageSql::GetAttributionReports(
@@ -2677,6 +2676,7 @@ AttributionStorageSql::MaybeCreateAggregatableAttributionReport(
 
   report = AttributionReport(
       attribution_info, report_time, delegate_->NewReportID(),
+      /*failed_send_attempts=*/0,
       AttributionReport::AggregatableAttributionData(
           std::move(contributions),
           AttributionReport::AggregatableAttributionData::Id(kUnsetReportId),
@@ -2827,14 +2827,12 @@ AttributionStorageSql::ReadAggregatableAttributionReportFromStatement(
   if (contributions.empty())
     return absl::nullopt;
 
-  AttributionReport report(
+  return AttributionReport(
       AttributionInfo(std::move(source_data->source), trigger_time,
                       trigger_debug_key),
-      report_time, std::move(external_report_id),
+      report_time, std::move(external_report_id), failed_send_attempts,
       AttributionReport::AggregatableAttributionData(
           std::move(contributions), report_id, initial_report_time));
-  report.set_failed_send_attempts(failed_send_attempts);
-  return report;
 }
 
 absl::optional<AttributionReport> AttributionStorageSql::GetReport(

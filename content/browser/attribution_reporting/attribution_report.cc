@@ -88,12 +88,15 @@ AttributionReport::AttributionReport(
     AttributionInfo attribution_info,
     base::Time report_time,
     base::GUID external_report_id,
+    int failed_send_attempts,
     absl::variant<EventLevelData, AggregatableAttributionData> data)
     : attribution_info_(std::move(attribution_info)),
       report_time_(report_time),
       external_report_id_(std::move(external_report_id)),
+      failed_send_attempts_(failed_send_attempts),
       data_(std::move(data)) {
   DCHECK(external_report_id_.is_valid());
+  DCHECK_GE(failed_send_attempts_, 0);
 }
 
 AttributionReport::AttributionReport(const AttributionReport&) = default;
@@ -209,11 +212,6 @@ AttributionReport::Id AttributionReport::ReportId() const {
 
 void AttributionReport::set_report_time(base::Time report_time) {
   report_time_ = report_time;
-}
-
-void AttributionReport::set_failed_send_attempts(int failed_send_attempts) {
-  DCHECK_GE(failed_send_attempts, 0);
-  failed_send_attempts_ = failed_send_attempts;
 }
 
 void AttributionReport::SetExternalReportIdForTesting(
