@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -235,6 +236,7 @@ void WebAppNavigationBrowserTest::SetUpOnMainThread() {
 }
 
 void WebAppNavigationBrowserTest::TearDownOnMainThread() {
+#if BUILDFLAG(IS_CHROMEOS)
   auto* const provider = WebAppProvider::GetForWebApps(profile());
   const WebAppRegistrar& registrar = provider->registrar();
   std::vector<AppId> app_ids = registrar.GetAppIds();
@@ -256,6 +258,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     run_loop.Run();
     app_readiness_waiter.Await();
   }
+#endif
 
   InProcessBrowserTest::TearDownOnMainThread();
 }
