@@ -1910,8 +1910,8 @@ void WebAppIntegrationTestDriver::CheckAppInListIconCorrect(Site site) {
   SkColor expected_color = GetSiteConfiguration(site).icon_color;
   // Compare the center pixel color instead of top left corner
   // The app list icon has a filter that changes the color at the corner.
-  EXPECT_TRUE(expected_color ==
-              icon_bitmap.getColor(icon_size::k128 / 2, icon_size::k128 / 2));
+  EXPECT_EQ(expected_color,
+            icon_bitmap.getColor(icon_size::k128 / 2, icon_size::k128 / 2));
   chrome::CloseTab(browser());
   AfterStateCheckAction();
 }
