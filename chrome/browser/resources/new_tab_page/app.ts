@@ -408,7 +408,8 @@ export class AppElement extends PolymerElement {
   // Called to update the OGB of relevant NTP state changes.
   private udpateOneGoogleBarAppearance_() {
     if (this.oneGoogleBarLoaded_) {
-      const isNtpDarkTheme = this.theme_ && this.theme_.isDark;
+      const isNtpDarkTheme =
+          this.theme_ && (!!this.theme_.backgroundImage || this.theme_.isDark);
       $$<IframeElement>(this, '#oneGoogleBar')!.postMessage({
         type: 'updateAppearance',
         // We should be using a light OGB for dark themes and vice versa.

@@ -380,6 +380,38 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
       assertTrue(mostVisited.hasAttribute('is-dark_'));
     });
+
+    [true, false].forEach((isDark) => {
+      test(
+          `OGB light mode whenever background image
+          (ignoring dark mode) isDark: ${isDark}`,
+          async () => {
+            // Act.
+
+            // Create a theme with a custom background.
+            const theme = createTheme(isDark);
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            callbackRouterRemote.setTheme(theme);
+            await callbackRouterRemote.$.flushForTesting();
+
+            // Notify the NTP that the ogb has loaded.
+            window.dispatchEvent(new MessageEvent('message', {
+              data: {
+                frameType: 'one-google-bar',
+                messageType: 'loaded',
+              },
+              source: window,
+              origin: window.origin,
+            }));
+
+            // Assert.
+            assertEquals(1, windowProxy.getCallCount('postMessage'));
+            const [_, {type, applyLightTheme}] =
+                windowProxy.getArgs('postMessage')[0];
+            assertEquals('updateAppearance', type);
+            assertEquals(true, applyLightTheme);
+          });
+    });
   });
 
   suite('promo', () => {
