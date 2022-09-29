@@ -127,7 +127,7 @@ void TransformState::ApplyTransform(
       accumulated_transform_ = std::make_unique<TransformationMatrix>(
           transform_from_container * *accumulated_transform_);
     else
-      accumulated_transform_->Multiply(transform_from_container);
+      accumulated_transform_->PreConcat(transform_from_container);
   } else if (accumulate == kAccumulateTransform) {
     // Make one if we started to accumulate
     accumulated_transform_ =

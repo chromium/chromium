@@ -200,7 +200,7 @@ static AffineTransform MaskToContentTransform(
     }
   }
 
-  mask_to_content.Multiply(
+  mask_to_content.PreConcat(
       resource_clipper.CalculateClipTransform(reference_box));
   return mask_to_content;
 }

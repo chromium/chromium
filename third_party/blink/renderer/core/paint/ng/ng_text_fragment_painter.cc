@@ -364,7 +364,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       const auto fragment_transform = text_item.BuildSvgTransformForPaint();
       context.ConcatCTM(fragment_transform);
       DCHECK(fragment_transform.IsInvertible());
-      svg_state.EnsureShaderTransform().PreMultiply(
+      svg_state.EnsureShaderTransform().PostConcat(
           fragment_transform.Inverse());
     }
   }
@@ -379,7 +379,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     context.ConcatCTM(*rotation);
     if (NGTextPainter::SvgTextPaintState* state = text_painter.GetSvgState()) {
       DCHECK(rotation->IsInvertible());
-      state->EnsureShaderTransform().PreMultiply(rotation->Inverse());
+      state->EnsureShaderTransform().PostConcat(rotation->Inverse());
     }
   }
 

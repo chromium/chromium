@@ -322,7 +322,7 @@ AffineTransform SVGElement::CalculateTransform(
 
   // Apply any "motion transform" contribution if requested (and existing.)
   if (apply_motion_transform == kIncludeMotionTransform && HasSVGRareData())
-    matrix.PreMultiply(*SvgRareData()->AnimateMotionTransform());
+    matrix.PostConcat(*SvgRareData()->AnimateMotionTransform());
 
   return matrix;
 }

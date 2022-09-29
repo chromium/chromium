@@ -103,7 +103,7 @@ void GeometryMapperTransformCache::Update(
       plane_root_transform_->plane_root = parent.plane_root();
       plane_root_transform_->to_plane_root.MakeIdentity();
       parent.ApplyToPlaneRoot(plane_root_transform_->to_plane_root);
-      plane_root_transform_->to_plane_root.Multiply(local);
+      plane_root_transform_->to_plane_root.PreConcat(local);
       plane_root_transform_->from_plane_root = local.Inverse();
       parent.ApplyFromPlaneRoot(plane_root_transform_->from_plane_root);
       plane_root_transform_->has_animation =
@@ -154,7 +154,7 @@ void GeometryMapperTransformCache::UpdateScreenTransform(
     const auto& translation = node.Translation2D();
     screen_transform_->to_screen.Translate(translation.x(), translation.y());
   } else {
-    screen_transform_->to_screen.Multiply(node.MatrixWithOriginApplied());
+    screen_transform_->to_screen.PreConcat(node.MatrixWithOriginApplied());
   }
 
   auto to_screen_flattened = screen_transform_->to_screen;

@@ -501,7 +501,7 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform() {
       scale, 0, 0, scale, border_and_padding.Width() + translate.x(),
       border_and_padding.Height() + translate.y());
   view_to_border_box_transform.Scale(svg->currentScale());
-  local_to_border_box_transform_.PreMultiply(view_to_border_box_transform);
+  local_to_border_box_transform_.PostConcat(view_to_border_box_transform);
   return change_detector.ComputeChange(local_to_border_box_transform_);
 }
 

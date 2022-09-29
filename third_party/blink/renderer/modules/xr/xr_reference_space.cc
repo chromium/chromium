@@ -155,7 +155,7 @@ absl::optional<TransformationMatrix> XRReferenceSpace::NativeFromViewer(
   auto native_from_viewer = NativeFromMojo();
   if (!native_from_viewer)
     return absl::nullopt;
-  native_from_viewer->Multiply(*mojo_from_viewer);
+  native_from_viewer->PreConcat(*mojo_from_viewer);
   return native_from_viewer;
 }
 

@@ -478,12 +478,12 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
 
       // Apply transforms from our ancestor coordinate space, including any
       // non-SVG ancestor transforms.
-      matrix.Multiply(layout_object->LocalToAbsoluteTransform());
+      matrix.PreConcat(layout_object->LocalToAbsoluteTransform());
 
       // At the SVG/HTML boundary (aka LayoutSVGRoot), we need to apply the
       // localToBorderBoxTransform to map an element from SVG viewport
       // coordinates to CSS box coordinates.
-      matrix.Multiply(TransformationMatrix(
+      matrix.PreConcat(TransformationMatrix(
           To<LayoutSVGRoot>(layout_object)->LocalToBorderBoxTransform()));
       // Drop any potential non-affine parts, because we're not able to convey
       // that information further anyway until getScreenCTM returns a DOMMatrix
@@ -492,7 +492,7 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
     }
   }
   if (!HasEmptyViewBox())
-    transform.Multiply(ViewBoxToViewTransform(CurrentViewportSize()));
+    transform.PreConcat(ViewBoxToViewTransform(CurrentViewportSize()));
   return transform;
 }
 

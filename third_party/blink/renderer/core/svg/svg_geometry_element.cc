@@ -122,7 +122,7 @@ bool SVGGeometryElement::isPointInStroke(SVGPointTearOff* point) const {
     // Un-scale to get back to the root-transform (cheaper than re-computing
     // the root transform from scratch).
     root_transform.Scale(layout_shape.StyleRef().EffectiveZoom())
-        .Multiply(transform);
+        .PreConcat(transform);
   } else {
     root_transform = layout_shape.ComputeRootTransform();
   }

@@ -2043,7 +2043,7 @@ bool LayoutBox::MapVisualRectToContainer(
   // a) Transform.
   TransformationMatrix transform;
   if (Layer() && Layer()->Transform())
-    transform.Multiply(Layer()->CurrentTransform());
+    transform.PreConcat(Layer()->CurrentTransform());
 
   // b) Container offset.
   transform.PostTranslate(container_offset.left.ToFloat(),

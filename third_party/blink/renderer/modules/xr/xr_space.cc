@@ -25,7 +25,7 @@ absl::optional<TransformationMatrix> XRSpace::NativeFromViewer(
   if (!native_from_mojo)
     return absl::nullopt;
 
-  native_from_mojo->Multiply(*mojo_from_viewer);
+  native_from_mojo->PreConcat(*mojo_from_viewer);
 
   // This is now native_from_viewer
   return native_from_mojo;
@@ -49,7 +49,7 @@ absl::optional<TransformationMatrix> XRSpace::MojoFromOffsetMatrix() const {
 
   // Modifies maybe_mojo_from_native - it becomes mojo_from_offset_matrix.
   // Saves a heap allocation since there is no need to create a new unique_ptr.
-  maybe_mojo_from_native->Multiply(NativeFromOffsetMatrix());
+  maybe_mojo_from_native->PreConcat(NativeFromOffsetMatrix());
   return maybe_mojo_from_native;
 }
 
@@ -79,7 +79,7 @@ XRPose* XRSpace::getPose(const XRSpace* other_space) const {
   }
 
   // Add any origin offset now.
-  mojo_from_offset->Multiply(NativeFromOffsetMatrix());
+  mojo_from_offset->PreConcat(NativeFromOffsetMatrix());
 
   absl::optional<TransformationMatrix> other_from_mojo =
       other_space->NativeFromMojo();

@@ -65,14 +65,14 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   void ApplyToScreen(TransformationMatrix& m) const {
     DCHECK(screen_transform_updated_);
     if (UNLIKELY(screen_transform_))
-      m.Multiply(to_screen());
+      m.PreConcat(to_screen());
     else
       ApplyToPlaneRoot(m);
   }
   void ApplyProjectionFromScreen(TransformationMatrix& m) const {
     DCHECK(screen_transform_updated_);
     if (UNLIKELY(screen_transform_))
-      m.Multiply(projection_from_screen());
+      m.PreConcat(projection_from_screen());
     else
       ApplyFromPlaneRoot(m);
   }
@@ -92,14 +92,14 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   }
   void ApplyToPlaneRoot(TransformationMatrix& m) const {
     if (UNLIKELY(plane_root_transform_)) {
-      m.Multiply(to_plane_root());
+      m.PreConcat(to_plane_root());
     } else {
       m.Translate(to_2d_translation_root_.x(), to_2d_translation_root_.y());
     }
   }
   void ApplyFromPlaneRoot(TransformationMatrix& m) const {
     if (UNLIKELY(plane_root_transform_)) {
-      m.Multiply(from_plane_root());
+      m.PreConcat(from_plane_root());
     } else {
       m.Translate(-to_2d_translation_root_.x(), -to_2d_translation_root_.y());
     }

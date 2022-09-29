@@ -635,7 +635,7 @@ AffineTransform NGFragmentItem::BuildSvgTransformForPaint() const {
   AffineTransform transform = BuildSvgTransformForBoundingBox();
   AffineTransform length_adjust = BuildSvgTransformForLengthAdjust();
   if (!length_adjust.IsIdentity())
-    transform.PreMultiply(length_adjust);
+    transform.PostConcat(length_adjust);
   return transform;
 }
 
@@ -691,7 +691,7 @@ AffineTransform NGFragmentItem::BuildSvgTransformForTextPath(
     x += font_data->GetFontMetrics().FixedDescent(font_baseline);
     transform.Translate(svg_data.baseline_shift, -svg_data.rect.height() / 2);
   }
-  transform.Multiply(length_adjust);
+  transform.PreConcat(length_adjust);
   transform.SetE(transform.E() + x);
   transform.SetF(transform.F() + y);
   transform.Translate(-x, -y);

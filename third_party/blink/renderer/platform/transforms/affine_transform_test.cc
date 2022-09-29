@@ -73,8 +73,8 @@ TEST(AffineTransformTest, Multiply) {
   EXPECT_EQ(AffineTransform(70, 100, 150, 220, 235, 346), c);
   EXPECT_EQ(AffineTransform(70, 100, 150, 220, 280, 400), d);
   AffineTransform a1 = a;
-  a.Multiply(b);
-  b.Multiply(a1);
+  a.PreConcat(b);
+  b.PreConcat(a1);
   EXPECT_EQ(c, a);
   EXPECT_EQ(d, b);
 }
@@ -83,8 +83,8 @@ TEST(AffineTransformTest, PreMultiply) {
   AffineTransform a(1, 2, 3, 4, 5, 6);
   AffineTransform b(10, 20, 30, 40, 50, 60);
   AffineTransform a1 = a;
-  a.PreMultiply(b);
-  b.PreMultiply(a1);
+  a.PostConcat(b);
+  b.PostConcat(a1);
   EXPECT_EQ(AffineTransform(70, 100, 150, 220, 280, 400), a);
   EXPECT_EQ(AffineTransform(70, 100, 150, 220, 235, 346), b);
 }
@@ -120,9 +120,9 @@ TEST(AffineTransformTest, Inverse) {
 TEST(AffineTransformTest, MultiplySelf) {
   AffineTransform a(1, 2, 3, 4, 5, 6);
   auto b = a;
-  a.Multiply(a);
+  a.PreConcat(a);
   EXPECT_EQ(AffineTransform(7, 10, 15, 22, 28, 40), a);
-  b.PreMultiply(b);
+  b.PostConcat(b);
   EXPECT_EQ(a, b);
 }
 

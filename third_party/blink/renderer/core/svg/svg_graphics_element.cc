@@ -73,7 +73,7 @@ AffineTransform SVGGraphicsElement::ComputeCTM(
     if (!svg_element)
       break;
 
-    ctm = svg_element->LocalCoordinateSpaceTransform(mode).Multiply(ctm);
+    ctm = svg_element->LocalCoordinateSpaceTransform(mode).PreConcat(ctm);
 
     switch (mode) {
       case kNearestViewportScope:

@@ -453,7 +453,7 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
     paint_server_transform->Scale(scaling_factor);
 
     if (shader_transform)
-      paint_server_transform->Multiply(*shader_transform);
+      paint_server_transform->PreConcat(*shader_transform);
   }
 
   if (!SVGObjectPainter(ParentInlineLayoutObject())

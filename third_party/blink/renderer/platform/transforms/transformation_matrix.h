@@ -216,8 +216,12 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   void TransformBox(gfx::BoxF&) const;
 
+  // Corresponds to DOMMatrix.multiplySelf().
   // *this = *this * mat.
-  void Multiply(const TransformationMatrix&);
+  void PreConcat(const TransformationMatrix& mat);
+
+  // The following methods except PostTranslate() have the "Pre" semantics,
+  // i.e. *this = *this * operation.
 
   // Applies the current transformation on a scaling and assigns the result
   // to |this|, i.e *this = *this * scaling;
@@ -336,14 +340,14 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // *this = *this * t
   TransformationMatrix& operator*=(const TransformationMatrix& t) {
-    Multiply(t);
+    PreConcat(t);
     return *this;
   }
 
   // result = *this * t
   TransformationMatrix operator*(const TransformationMatrix& t) const {
     TransformationMatrix result = *this;
-    result.Multiply(t);
+    result.PreConcat(t);
     return result;
   }
 

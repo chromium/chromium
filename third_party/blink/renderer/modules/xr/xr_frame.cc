@@ -98,7 +98,7 @@ XRViewerPose* XRFrame::getViewerPose(XRReferenceSpace* reference_space,
 
   TransformationMatrix ref_space_from_mojo =
       reference_space->OffsetFromNativeMatrix();
-  ref_space_from_mojo.Multiply(*native_from_mojo);
+  ref_space_from_mojo.PreConcat(*native_from_mojo);
 
   // Can only update an XRViewerPose's views with an invertible matrix.
   if (!ref_space_from_mojo.IsInvertible()) {

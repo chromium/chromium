@@ -32,7 +32,7 @@ AffineTransform SVGRootPainter::TransformToPixelSnappedBorderBox(
         snapped_size.width() / size.Width().ToFloat(),
         snapped_size.height() / size.Height().ToFloat());
   }
-  paint_offset_to_border_box.Multiply(
+  paint_offset_to_border_box.PreConcat(
       layout_svg_root_.LocalToBorderBoxTransform());
   return paint_offset_to_border_box;
 }

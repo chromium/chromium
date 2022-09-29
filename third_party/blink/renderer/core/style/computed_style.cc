@@ -1530,9 +1530,10 @@ void ComputedStyle::ApplyMotionPathTransform(
       path_position.point.y() - anchor_point.y() + origin_shift_y);
   transform.Rotate(path_position.tangent_in_degrees + rotate.angle);
 
-  if (!position.X().IsAuto() || !anchor.X().IsAuto())
+  if (!position.X().IsAuto() || !anchor.X().IsAuto()) {
     // Shift the origin back to transform-origin.
     transform.Translate(-origin_shift_x, -origin_shift_y);
+  }
 }
 
 bool ComputedStyle::TextShadowDataEquivalent(const ComputedStyle& other) const {

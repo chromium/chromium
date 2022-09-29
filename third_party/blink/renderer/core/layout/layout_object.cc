@@ -3393,7 +3393,7 @@ void LayoutObject::GetTransformFromContainer(
   PaintLayer* layer =
       HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
   if (layer && layer->Transform())
-    transform.Multiply(layer->CurrentTransform());
+    transform.PreConcat(layer->CurrentTransform());
 
   transform.PostTranslate(offset_in_container.left.ToFloat(),
                           offset_in_container.top.ToFloat());

@@ -163,7 +163,7 @@ struct SVGTextFragment {
 
     AffineTransform result = transform;
     TransformAroundOrigin(result);
-    result.PreMultiply(LengthAdjustTransform());
+    result.PostConcat(LengthAdjustTransform());
     return result;
   }
 };

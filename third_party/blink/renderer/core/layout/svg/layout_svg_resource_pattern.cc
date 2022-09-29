@@ -170,7 +170,7 @@ std::unique_ptr<PatternData> LayoutSVGResourcePattern::BuildPatternData(
 
   // Compute pattern space transformation.
   pattern_data->transform.Translate(tile_bounds.x(), tile_bounds.y());
-  pattern_data->transform.PreMultiply(attributes.PatternTransform());
+  pattern_data->transform.PostConcat(attributes.PatternTransform());
 
   return pattern_data;
 }

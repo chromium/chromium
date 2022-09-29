@@ -48,7 +48,7 @@ void InterpolatedTransformOperation::Apply(
   to_.ApplyRemaining(border_box_size, starting_index_, to_transform);
 
   to_transform.Blend(from_transform, progress_);
-  transform.Multiply(to_transform);
+  transform.PreConcat(to_transform);
 }
 
 scoped_refptr<TransformOperation> InterpolatedTransformOperation::Blend(

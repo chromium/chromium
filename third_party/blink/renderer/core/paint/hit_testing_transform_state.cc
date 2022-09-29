@@ -39,7 +39,7 @@ void HitTestingTransformState::ApplyTransform(
   if (transform.IsIdentityOr2DTranslation()) {
     Translate(transform.Translation2D());
   } else {
-    accumulated_transform_.Multiply(transform.MatrixWithOriginApplied());
+    accumulated_transform_.PreConcat(transform.MatrixWithOriginApplied());
   }
 }
 
@@ -48,7 +48,7 @@ void HitTestingTransformState::ApplyTransform(
   if (transform.IsIdentityOr2DTranslation()) {
     Translate(transform.Translation2D());
   } else {
-    accumulated_transform_.Multiply(transform.Matrix());
+    accumulated_transform_.PreConcat(transform.Matrix());
   }
 }
 

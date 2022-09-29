@@ -98,10 +98,12 @@ class PLATFORM_EXPORT AffineTransform {
   void MakeIdentity() { *this = AffineTransform(); }
 
   // this' = this * other
-  AffineTransform& Multiply(const AffineTransform& other);
+  AffineTransform& PreConcat(const AffineTransform& other);
   // this' = other * this
-  AffineTransform& PreMultiply(const AffineTransform& other);
+  AffineTransform& PostConcat(const AffineTransform& other);
 
+  // The semantics of the following methods are the same as PreConcat(), i.e.
+  // this' = this * operation.
   AffineTransform& Scale(double);
   AffineTransform& Scale(double sx, double sy);
   AffineTransform& ScaleNonUniform(double sx, double sy);
@@ -139,7 +141,7 @@ class PLATFORM_EXPORT AffineTransform {
   }
 
   // *this = *this * t (i.e., a multRight)
-  AffineTransform& operator*=(const AffineTransform& t) { return Multiply(t); }
+  AffineTransform& operator*=(const AffineTransform& t) { return PreConcat(t); }
 
   // result = *this * t (i.e., a multRight)
   AffineTransform operator*(const AffineTransform& t) const {

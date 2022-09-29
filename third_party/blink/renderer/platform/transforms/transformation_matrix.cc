@@ -470,7 +470,7 @@ void TransformationMatrix::RotateAboutXAxis(double angle) {
   rotation_matrix.matrix_[2][1] = -sin_theta;
   rotation_matrix.matrix_[2][2] = cos_theta;
 
-  Multiply(rotation_matrix);
+  PreConcat(rotation_matrix);
 }
 
 void TransformationMatrix::RotateAboutYAxis(double angle) {
@@ -484,7 +484,7 @@ void TransformationMatrix::RotateAboutYAxis(double angle) {
   rotation_matrix.matrix_[2][0] = sin_theta;
   rotation_matrix.matrix_[2][2] = cos_theta;
 
-  Multiply(rotation_matrix);
+  PreConcat(rotation_matrix);
 }
 
 void TransformationMatrix::RotateAboutZAxis(double angle) {
@@ -498,7 +498,7 @@ void TransformationMatrix::RotateAboutZAxis(double angle) {
   rotation_matrix.matrix_[1][0] = -sin_theta;
   rotation_matrix.matrix_[1][1] = cos_theta;
 
-  Multiply(rotation_matrix);
+  PreConcat(rotation_matrix);
 }
 
 void TransformationMatrix::RotateAbout(double x,
@@ -563,7 +563,7 @@ void TransformationMatrix::RotateAbout(double x,
     mat.matrix_[2][1] = y * z * one_minus_cos_theta - x * sin_theta;
     mat.matrix_[2][2] = cos_theta + z * z * one_minus_cos_theta;
   }
-  Multiply(mat);
+  PreConcat(mat);
 }
 
 void TransformationMatrix::Translate(double tx, double ty) {
@@ -610,7 +610,7 @@ void TransformationMatrix::Skew(double degrees_x, double degrees_y) {
   // And the x shear in the second column.
   mat.matrix_[1][0] = std::tan(rad_x);
 
-  Multiply(mat);
+  PreConcat(mat);
 }
 
 void TransformationMatrix::ApplyPerspectiveDepth(double p) {
@@ -618,7 +618,7 @@ void TransformationMatrix::ApplyPerspectiveDepth(double p) {
   if (p != 0)
     mat.matrix_[2][3] = -1 / p;
 
-  Multiply(mat);
+  PreConcat(mat);
 }
 
 void TransformationMatrix::ApplyTransformOrigin(double x, double y, double z) {
@@ -644,10 +644,10 @@ void TransformationMatrix::Zoom(double zoom_factor) {
 // TransformationMatrix lhs; lhs.Rotate(90.f);
 // TransformationMatrix rhs; rhs.Translate(12.f, 34.f);
 // TransformationMatrix prod = lhs;
-// prod.Multiply(rhs);
+// prod.PreConcat(rhs);
 // lhs.MapPoint(rhs.MapPoint(p)) == prod.MapPoint(p)
 // Also 'prod' corresponds to CSS transform:rotateZ(90deg)translate(12px,34px).
-void TransformationMatrix::Multiply(const TransformationMatrix& mat) {
+void TransformationMatrix::PreConcat(const TransformationMatrix& mat) {
   auto c0 = Col(0);
   auto c1 = Col(1);
   auto c2 = Col(2);
@@ -1097,25 +1097,25 @@ void TransformationMatrix::Recompose(const DecomposedType& decomp) {
                                        1 - 2 * (xx + yy), 0,  // Q_zz
                                        0, 0, 0, 1);
 
-  Multiply(rotation_matrix);
+  PreConcat(rotation_matrix);
 
   // now apply skew
   if (decomp.skew_yz) {
     TransformationMatrix tmp;
     tmp.matrix_[2][1] = decomp.skew_yz;
-    Multiply(tmp);
+    PreConcat(tmp);
   }
 
   if (decomp.skew_xz) {
     TransformationMatrix tmp;
     tmp.matrix_[2][0] = decomp.skew_xz;
-    Multiply(tmp);
+    PreConcat(tmp);
   }
 
   if (decomp.skew_xy) {
     TransformationMatrix tmp;
     tmp.matrix_[1][0] = decomp.skew_xy;
-    Multiply(tmp);
+    PreConcat(tmp);
   }
 
   // finally, apply scale
@@ -1141,7 +1141,7 @@ void TransformationMatrix::Recompose2D(const Decomposed2dType& decomp) {
   if (decomp.skew_xy) {
     TransformationMatrix skew_transform;
     skew_transform.matrix_[1][0] = decomp.skew_xy;
-    Multiply(skew_transform);
+    PreConcat(skew_transform);
   }
 
   // Scale transform.

@@ -108,12 +108,12 @@ inline AffineTransform DoMultiply(const AffineTransform& t1,
 
 }  // anonymous namespace
 
-AffineTransform& AffineTransform::Multiply(const AffineTransform& other) {
+AffineTransform& AffineTransform::PreConcat(const AffineTransform& other) {
   *this = DoMultiply(*this, other);
   return *this;
 }
 
-AffineTransform& AffineTransform::PreMultiply(const AffineTransform& other) {
+AffineTransform& AffineTransform::PostConcat(const AffineTransform& other) {
   *this = DoMultiply(other, *this);
   return *this;
 }
@@ -128,7 +128,7 @@ AffineTransform& AffineTransform::RotateRadians(double a) {
   double sin_angle = sin(a);
   AffineTransform rot(cos_angle, sin_angle, -sin_angle, cos_angle, 0, 0);
 
-  Multiply(rot);
+  PreConcat(rot);
   return *this;
 }
 

@@ -64,7 +64,7 @@ class PLATFORM_EXPORT MatrixTransformOperation final
 
   void Apply(TransformationMatrix& transform,
              const gfx::SizeF&) const override {
-    transform.Multiply(Matrix());
+    transform.PreConcat(Matrix());
   }
 
   scoped_refptr<TransformOperation> Accumulate(
