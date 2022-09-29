@@ -4,6 +4,8 @@
 
 import {KeyCode} from '../../common/key_code.js';
 
+import {Command} from './command_store.js';
+
 export const GestureCommandData = {};
 
 /**
@@ -12,7 +14,7 @@ export const GestureCommandData = {};
  *
  * Note that only one of |command|, |acceleratorAction|, or |globalKey| is
  * expected.
- * @type {!Object<string, {msgId: string, command: (string|undefined),
+ * @type {!Object<string, {msgId: string, command: (!Command|undefined),
  *     commandDescriptionMsgId: (string|undefined),
  *     acceleratorAction:
  *     (chrome.accessibilityPrivate.AcceleratorAction|undefined),
@@ -23,29 +25,30 @@ export const GestureCommandData = {};
  * @const
  */
 GestureCommandData.GESTURE_COMMAND_MAP = {
-  'click': {command: 'forceClickOnCurrentItem', msgId: 'click_gesture'},
+  'click':
+      {command: Command.FORCE_CLICK_ON_CURRENT_ITEM, msgId: 'click_gesture'},
   'swipeUp1': {
     msgId: 'swipeup1_gesture',
-    command: 'previousAtGranularity',
+    command: Command.PREVIOUS_AT_GRANULARITY,
     menuKeyOverride: {keyCode: KeyCode.UP},
   },
   'swipeDown1': {
     msgId: 'swipedown1_gesture',
-    command: 'nextAtGranularity',
+    command: Command.NEXT_AT_GRANULARITY,
     menuKeyOverride: {keyCode: KeyCode.DOWN},
   },
   'swipeLeft1': {
     msgId: 'swipeleft1_gesture',
-    command: 'previousObject',
+    command: Command.PREVIOUS_OBJECT,
     menuKeyOverride: {keyCode: KeyCode.LEFT},
   },
   'swipeRight1': {
     msgId: 'swiperight1_gesture',
-    command: 'nextObject',
+    command: Command.NEXT_OBJECT,
     menuKeyOverride: {keyCode: KeyCode.RIGHT},
   },
-  'swipeUp2': {msgId: 'swipeup2_gesture', command: 'jumpToTop'},
-  'swipeDown2': {msgId: 'swipedown2_gesture', command: 'readFromHere'},
+  'swipeUp2': {msgId: 'swipeup2_gesture', command: Command.JUMP_TO_TOP},
+  'swipeDown2': {msgId: 'swipedown2_gesture', command: Command.READ_FROM_HERE},
   'swipeLeft2': {
     msgId: 'swipeleft2_gesture',
     commandDescriptionMsgId: 'escape_gesture_description',
@@ -59,15 +62,17 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
   'swipeUp3': {
     msgId: 'swipeup3_gesture',
     commandDescriptionMsgId: 'next_page_gesture_description',
-    command: 'nextPage',
+    command: Command.NEXT_PAGE,
   },
   'swipeDown3': {
     msgId: 'swipedown3_gesture',
     commandDescriptionMsgId: 'previous_page_gesture_description',
-    command: 'previousPage',
+    command: Command.PREVIOUS_PAGE,
   },
-  'swipeLeft3': {msgId: 'swipeleft3_gesture', command: 'previousGranularity'},
-  'swipeRight3': {msgId: 'swiperight3_gesture', command: 'nextGranularity'},
+  'swipeLeft3':
+      {msgId: 'swipeleft3_gesture', command: Command.PREVIOUS_GRANULARITY},
+  'swipeRight3':
+      {msgId: 'swiperight3_gesture', command: Command.NEXT_GRANULARITY},
   'swipeLeft4': {
     msgId: 'swipeleft4_gesture',
     commandDescriptionMsgId: 'previous_pane_gesture_description',
@@ -83,8 +88,8 @@ GestureCommandData.GESTURE_COMMAND_MAP = {
 
   'touchExplore': {msgId: 'touch_explore_gesture'},
 
-  'tap2': {msgId: 'tap2_gesture', command: 'stopSpeech'},
-  'tap4': {msgId: 'tap4_gesture', command: 'showPanelMenuMostRecent'},
+  'tap2': {msgId: 'tap2_gesture', command: Command.STOP_SPEECH},
+  'tap4': {msgId: 'tap4_gesture', command: Command.SHOW_PANEL_MENU_MOST_RECENT},
 };
 
 /**

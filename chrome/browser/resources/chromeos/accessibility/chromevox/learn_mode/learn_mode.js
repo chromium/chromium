@@ -11,7 +11,7 @@ import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BrailleKeyCommand, BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
-import {CommandStore} from '../common/command_store.js';
+import {Command, CommandStore} from '../common/command_store.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
@@ -262,7 +262,7 @@ export class LearnMode {
 
   /**
    * Queues up command description.
-   * @param {string} command
+   * @param {!Command} command
    * @return {boolean|undefined} True if command existed and was handled.
    */
   static onCommand(command) {

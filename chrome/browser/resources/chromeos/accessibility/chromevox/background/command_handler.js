@@ -18,7 +18,7 @@ import {AbstractTts} from '../common/abstract_tts.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {CommandStore} from '../common/command_store.js';
+import {Command, CommandStore} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureGranularity} from '../common/gesture_command_data.js';
@@ -102,129 +102,130 @@ export class CommandHandler extends CommandHandlerInterface {
 
     // These commands don't require a current range.
     switch (command) {
-      case 'speakTimeAndDate':
+      case Command.SPEAK_TIME_AND_DATE:
         this.speakTimeAndDate_();
         return false;
-      case 'showOptionsPage':
+      case Command.SHOW_OPTIONS_PAGE:
         chrome.runtime.openOptionsPage();
         break;
-      case 'toggleStickyMode':
+      case Command.TOGGLE_STICKY_MODE:
         this.toggleStickyMode_();
         return false;
-      case 'passThroughMode':
+      case Command.PASS_THROUGH_MODE:
         ChromeVox.passThroughMode = true;
         ChromeVox.tts.speak(Msgs.getMsg('pass_through_key'), QueueMode.QUEUE);
         return true;
-      case 'showLearnModePage':
+      case Command.SHOW_LEARN_MODE_PAGE:
         this.showLearnModePage_();
         break;
-      case 'showLogPage':
+      case Command.SHOW_LOG_PAGE:
         const logPage = {url: 'chromevox/log_page/log.html'};
         chrome.tabs.create(logPage);
         break;
-      case 'enableLogging':
+      case Command.ENABLE_LOGGING:
         this.enableLogging_();
         break;
-      case 'disableLogging':
+      case Command.DISABLE_LOGGING:
         this.disableLogging_();
         break;
-      case 'dumpTree':
+      case Command.DUMP_TREE:
         chrome.automation.getDesktop(
             root => LogStore.getInstance().writeTreeLog(new TreeDumper(root)));
         break;
-      case 'decreaseTtsRate':
+      case Command.DECREASE_TTS_RATE:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.RATE, false);
         return false;
-      case 'increaseTtsRate':
+      case Command.INCREASE_TTS_RATE:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.RATE, true);
         return false;
-      case 'decreaseTtsPitch':
+      case Command.DECREASE_TTS_PITCH:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.PITCH, false);
         return false;
-      case 'increaseTtsPitch':
+      case Command.INCREASE_TTS_PITCH:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.PITCH, true);
         return false;
-      case 'decreaseTtsVolume':
+      case Command.DECREASE_TTS_VOLUME:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.VOLUME, false);
         return false;
-      case 'increaseTtsVolume':
+      case Command.INCREASE_TTS_VOLUME:
         this.increaseOrDecreaseSpeechProperty_(AbstractTts.VOLUME, true);
         return false;
-      case 'stopSpeech':
+      case Command.STOP_SPEECH:
         ChromeVox.tts.stop();
         ChromeVoxState.instance.isReadingContinuously = false;
         return false;
-      case 'toggleEarcons':
+      case Command.TOGGLE_EARCONS:
         this.toggleEarcons_();
         return false;
-      case 'cycleTypingEcho':
+      case Command.CYCLE_TYPING_ECHO:
         this.cycleTypingEcho_();
         return false;
-      case 'cyclePunctuationEcho':
+      case Command.CYCLE_PUNCTUATION_ECHO:
         ChromeVox.tts.speak(
             Msgs.getMsg(
                 ChromeVoxState.instance.backgroundTts.cyclePunctuationEcho()),
             QueueMode.FLUSH);
         return false;
-      case 'reportIssue':
+      case Command.REPORT_ISSUE:
         this.reportIssue_();
         return false;
-      case 'toggleBrailleCaptions':
+      case Command.TOGGLE_BRAILLE_CAPTIONS:
         BrailleCaptionsBackground.setActive(
             !BrailleCaptionsBackground.isEnabled());
         return false;
-      case 'toggleBrailleTable':
+      case Command.TOGGLE_BRAILLE_TABLE:
         this.toggleBrailleTable_();
         return false;
-      case 'help':
+      case Command.HELP:
         (new PanelCommand(PanelCommandType.TUTORIAL)).send();
         return false;
-      case 'toggleScreen':
+      case Command.TOGGLE_SCREEN:
         this.toggleScreen_();
         return false;
-      case 'toggleSpeechOnOrOff':
+      case Command.TOGGLE_SPEECH_ON_OR_OFF:
         const state = ChromeVox.tts.toggleSpeechOnOrOff();
         new Output().format(state ? '@speech_on' : '@speech_off').go();
         return false;
-      case 'enableChromeVoxArcSupportForCurrentApp':
+      case Command.ENABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP:
         this.enableChromeVoxArcSupportForCurrentApp_();
         break;
-      case 'disableChromeVoxArcSupportForCurrentApp':
+      case Command.DISABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP:
         this.disableChromeVoxArcSupportForCurrentApp_();
         break;
-      case 'showTalkBackKeyboardShortcuts':
+      case Command.SHOW_TALKBACK_KEYBOARD_SHORTCUTS:
         this.showTalkBackKeyboardShortcuts_();
         return false;
-      case 'showTtsSettings':
+      case Command.SHOW_TTS_SETTINGS:
         chrome.accessibilityPrivate.openSettingsSubpage(
             'manageAccessibility/tts');
         break;
       default:
         break;
-      case 'toggleKeyboardHelp':
+      case Command.TOGGLE_KEYBOARD_HELP:
         (new PanelCommand(PanelCommandType.OPEN_MENUS)).send();
         return false;
-      case 'showPanelMenuMostRecent':
+      case Command.SHOW_PANEL_MENU_MOST_RECENT:
         (new PanelCommand(PanelCommandType.OPEN_MENUS_MOST_RECENT)).send();
         return false;
-      case 'nextGranularity':
-      case 'previousGranularity':
-        this.nextOrPreviousGranularity_(command === 'previousGranularity');
+      case Command.NEXT_GRANULARITY:
+      case Command.PREVIOUS_GRANULARITY:
+        this.nextOrPreviousGranularity_(
+            command === Command.PREVIOUS_GRANULARITY);
         return false;
-      case 'announceBatteryDescription':
+      case Command.ANNOUNCE_BATTERY_DESCRIPTION:
         this.announceBatteryDescription_();
         break;
-      case 'resetTextToSpeechSettings':
+      case Command.RESET_TEXT_TO_SPEECH_SETTINGS:
         ChromeVox.tts.resetTextToSpeechSettings();
         return false;
-      case 'copy':
+      case Command.COPY:
         EventGenerator.sendKeyPress(KeyCode.C, {ctrl: true});
 
         // The above command doesn't trigger document clipboard events, so we
         // need to set this manually.
         ChromeVoxState.instance.readNextClipboardDataChange();
         return false;
-      case 'toggleDictation':
+      case Command.TOGGLE_DICTATION:
         EventGenerator.sendKeyPress(KeyCode.D, {search: true});
         return false;
     }
@@ -262,223 +263,223 @@ export class CommandHandler extends CommandHandlerInterface {
     let skipSettingSelection = false;
     let skipInitialAncestry = true;
     switch (command) {
-      case 'nextCharacter':
+      case Command.NEXT_CHARACTER:
         didNavigate = true;
         speechProps.phoneticCharacters = true;
         unit = CursorUnit.CHARACTER;
         currentRange = currentRange.move(CursorUnit.CHARACTER, Dir.FORWARD);
         break;
-      case 'previousCharacter':
+      case Command.PREVIOUS_CHARACTER:
         dir = Dir.BACKWARD;
         didNavigate = true;
         speechProps.phoneticCharacters = true;
         unit = CursorUnit.CHARACTER;
         currentRange = currentRange.move(CursorUnit.CHARACTER, dir);
         break;
-      case 'nativeNextCharacter':
-      case 'nativePreviousCharacter':
+      case Command.NATIVE_NEXT_CHARACTER:
+      case Command.NATIVE_PREVIOUS_CHARACTER:
         DesktopAutomationInterface.instance.onNativeNextOrPreviousCharacter();
         return true;
-      case 'nextWord':
+      case Command.NEXT_WORD:
         didNavigate = true;
         unit = CursorUnit.WORD;
         currentRange = currentRange.move(CursorUnit.WORD, Dir.FORWARD);
         break;
-      case 'previousWord':
+      case Command.PREVIOUS_WORD:
         dir = Dir.BACKWARD;
         didNavigate = true;
         unit = CursorUnit.WORD;
         currentRange = currentRange.move(CursorUnit.WORD, dir);
         break;
-      case 'nativeNextWord':
-      case 'nativePreviousWord':
+      case Command.NATIVE_NEXT_WORD:
+      case Command.NATIVE_PREVIOUS_WORD:
         DesktopAutomationInterface.instance.onNativeNextOrPreviousWord(
-            command === 'nativeNextWord');
+            command === Command.NATIVE_NEXT_WORD);
         return true;
-      case 'forward':
-      case 'nextLine':
+      case Command.FORWARD:
+      case Command.NEXT_LINE:
         didNavigate = true;
         unit = CursorUnit.LINE;
         currentRange = currentRange.move(CursorUnit.LINE, Dir.FORWARD);
         break;
-      case 'backward':
-      case 'previousLine':
+      case Command.BACKWARD:
+      case Command.PREVIOUS_LINE:
         dir = Dir.BACKWARD;
         didNavigate = true;
         unit = CursorUnit.LINE;
         currentRange = currentRange.move(CursorUnit.LINE, dir);
         break;
-      case 'nextButton':
+      case Command.NEXT_BUTTON:
         dir = Dir.FORWARD;
         pred = AutomationPredicate.button;
         predErrorMsg = 'no_next_button';
         break;
-      case 'previousButton':
+      case Command.PREVIOUS_BUTTON:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.button;
         predErrorMsg = 'no_previous_button';
         break;
-      case 'nextCheckbox':
+      case Command.NEXT_CHECKBOX:
         pred = AutomationPredicate.checkBox;
         predErrorMsg = 'no_next_checkbox';
         break;
-      case 'previousCheckbox':
+      case Command.PREVIOUS_CHECKBOX:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.checkBox;
         predErrorMsg = 'no_previous_checkbox';
         break;
-      case 'nextComboBox':
+      case Command.NEXT_COMBO_BOX:
         pred = AutomationPredicate.comboBox;
         predErrorMsg = 'no_next_combo_box';
         break;
-      case 'previousComboBox':
+      case Command.PREVIOUS_COMBO_BOX:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.comboBox;
         predErrorMsg = 'no_previous_combo_box';
         break;
-      case 'nextEditText':
+      case Command.NEXT_EDIT_TEXT:
         skipSettingSelection = true;
         pred = AutomationPredicate.editText;
         predErrorMsg = 'no_next_edit_text';
         this.smartStickyMode_.startIgnoringRangeChanges();
         break;
-      case 'previousEditText':
+      case Command.PREVIOUS_EDIT_TEXT:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.editText;
         predErrorMsg = 'no_previous_edit_text';
         this.smartStickyMode_.startIgnoringRangeChanges();
         break;
-      case 'nextFormField':
+      case Command.NEXT_FORM_FIELD:
         skipSettingSelection = true;
         pred = AutomationPredicate.formField;
         predErrorMsg = 'no_next_form_field';
         this.smartStickyMode_.startIgnoringRangeChanges();
         break;
-      case 'previousFormField':
+      case Command.PREVIOUS_FORM_FIELD:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.formField;
         predErrorMsg = 'no_previous_form_field';
         this.smartStickyMode_.startIgnoringRangeChanges();
         break;
-      case 'previousGraphic':
+      case Command.PREVIOUS_GRAPHIC:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.image;
         predErrorMsg = 'no_previous_graphic';
         break;
-      case 'nextGraphic':
+      case Command.NEXT_GRAPHIC:
         skipSettingSelection = true;
         pred = AutomationPredicate.image;
         predErrorMsg = 'no_next_graphic';
         break;
-      case 'nextHeading':
+      case Command.NEXT_HEADING:
         pred = AutomationPredicate.heading;
         predErrorMsg = 'no_next_heading';
         break;
-      case 'nextHeading1':
+      case Command.NEXT_HEADING_1:
         pred = AutomationPredicate.makeHeadingPredicate(1);
         predErrorMsg = 'no_next_heading_1';
         break;
-      case 'nextHeading2':
+      case Command.NEXT_HEADING_2:
         pred = AutomationPredicate.makeHeadingPredicate(2);
         predErrorMsg = 'no_next_heading_2';
         break;
-      case 'nextHeading3':
+      case Command.NEXT_HEADING_3:
         pred = AutomationPredicate.makeHeadingPredicate(3);
         predErrorMsg = 'no_next_heading_3';
         break;
-      case 'nextHeading4':
+      case Command.NEXT_HEADING_4:
         pred = AutomationPredicate.makeHeadingPredicate(4);
         predErrorMsg = 'no_next_heading_4';
         break;
-      case 'nextHeading5':
+      case Command.NEXT_HEADING_5:
         pred = AutomationPredicate.makeHeadingPredicate(5);
         predErrorMsg = 'no_next_heading_5';
         break;
-      case 'nextHeading6':
+      case Command.NEXT_HEADING_6:
         pred = AutomationPredicate.makeHeadingPredicate(6);
         predErrorMsg = 'no_next_heading_6';
         break;
-      case 'previousHeading':
+      case Command.PREVIOUS_HEADING:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.heading;
         predErrorMsg = 'no_previous_heading';
         break;
-      case 'previousHeading1':
+      case Command.PREVIOUS_HEADING_1:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeHeadingPredicate(1);
         predErrorMsg = 'no_previous_heading_1';
         break;
-      case 'previousHeading2':
+      case Command.PREVIOUS_HEADING_2:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeHeadingPredicate(2);
         predErrorMsg = 'no_previous_heading_2';
         break;
-      case 'previousHeading3':
+      case Command.PREVIOUS_HEADING_3:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeHeadingPredicate(3);
         predErrorMsg = 'no_previous_heading_3';
         break;
-      case 'previousHeading4':
+      case Command.PREVIOUS_HEADING_4:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeHeadingPredicate(4);
         predErrorMsg = 'no_previous_heading_4';
         break;
-      case 'previousHeading5':
+      case Command.PREVIOUS_HEADING_5:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeHeadingPredicate(5);
         predErrorMsg = 'no_previous_heading_5';
         break;
-      case 'previousHeading6':
+      case Command.PREVIOUS_HEADING_6:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeHeadingPredicate(6);
         predErrorMsg = 'no_previous_heading_6';
         break;
-      case 'nextLink':
+      case Command.NEXT_LINK:
         pred = AutomationPredicate.link;
         predErrorMsg = 'no_next_link';
         break;
-      case 'previousLink':
+      case Command.PREVIOUS_LINK:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.link;
         predErrorMsg = 'no_previous_link';
         break;
-      case 'nextTable':
+      case Command.NEXT_TABLE:
         pred = AutomationPredicate.table;
         predErrorMsg = 'no_next_table';
         break;
-      case 'previousTable':
+      case Command.PREVIOUS_TABLE:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.table;
         predErrorMsg = 'no_previous_table';
         break;
-      case 'nextVisitedLink':
+      case Command.NEXT_VISITED_LINK:
         pred = AutomationPredicate.visitedLink;
         predErrorMsg = 'no_next_visited_link';
         break;
-      case 'previousVisitedLink':
+      case Command.PREVIOUS_VISITED_LINK:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.visitedLink;
         predErrorMsg = 'no_previous_visited_link';
         break;
-      case 'nextLandmark':
+      case Command.NEXT_LANDMARK:
         pred = AutomationPredicate.landmark;
         predErrorMsg = 'no_next_landmark';
         break;
-      case 'previousLandmark':
+      case Command.PREVIOUS_LANDMARK:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.landmark;
         predErrorMsg = 'no_previous_landmark';
         break;
-      case 'left':
-      case 'previousObject':
+      case Command.LEFT:
+      case Command.PREVIOUS_OBJECT:
         skipSettingSelection = true;
         dir = Dir.BACKWARD;
         // Falls through.
-      case 'right':
-      case 'nextObject':
+      case Command.RIGHT:
+      case Command.NEXT_OBJECT:
         skipSettingSelection = true;
         didNavigate = true;
         unit = (EventSourceState.get() === EventSourceType.TOUCH_GESTURE) ?
@@ -487,123 +488,123 @@ export class CommandHandler extends CommandHandlerInterface {
         currentRange = currentRange.move(unit, dir);
         currentRange = this.skipLabelOrDescriptionFor(currentRange, dir);
         break;
-      case 'previousGroup':
+      case Command.PREVIOUS_GROUP:
         skipSync = true;
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.group;
         break;
-      case 'nextGroup':
+      case Command.NEXT_GROUP:
         skipSync = true;
         pred = AutomationPredicate.group;
         break;
-      case 'previousPage':
-      case 'nextPage':
+      case Command.PREVIOUS_PAGE:
+      case Command.NEXT_PAGE:
         this.nextOrPreviousPage_(command, currentRange);
         return false;
-      case 'previousSimilarItem':
+      case Command.PREVIOUS_SIMILAR_ITEM:
         dir = Dir.BACKWARD;
         // Falls through.
-      case 'nextSimilarItem':
+      case Command.NEXT_SIMILAR_ITEM:
         skipSync = true;
         pred = this.getPredicateForNextOrPreviousSimilarItem_(node);
         break;
-      case 'previousInvalidItem':
+      case Command.PREVIOUS_INVALID_ITEM:
         dir = Dir.BACKWARD;
         // Falls through.
-      case 'nextInvalidItem':
+      case Command.NEXT_INVALID_ITEM:
         pred = AutomationPredicate.isInvalid;
         rootPred = AutomationPredicate.root;
         predErrorMsg = 'no_invalid_item';
         break;
-      case 'nextList':
+      case Command.NEXT_LIST:
         pred = AutomationPredicate.makeListPredicate(node);
         predErrorMsg = 'no_next_list';
         break;
-      case 'previousList':
+      case Command.PREVIOUS_LIST:
         dir = Dir.BACKWARD;
         pred = AutomationPredicate.makeListPredicate(node);
         predErrorMsg = 'no_previous_list';
         skipInitialAncestry = false;
         break;
-      case 'jumpToTop':
+      case Command.JUMP_TO_TOP:
         newRangeData = this.getNewRangeForJumpToTop_(node, currentRange);
         currentRange = newRangeData.range;
         tryScrolling = false;
         break;
-      case 'jumpToBottom':
+      case Command.JUMP_TO_BOTTOM:
         newRangeData = this.getNewRangeForJumpToBottom_(node, currentRange);
         currentRange = newRangeData.range;
         tryScrolling = false;
         break;
-      case 'forceClickOnCurrentItem':
+      case Command.FORCE_CLICK_ON_CURRENT_ITEM:
         this.forceClickOnCurrentItem_();
         // Skip all other processing; if focus changes, we should get an event
         // for that.
         return false;
-      case 'forceLongClickOnCurrentItem':
+      case Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM:
         node.longClick();
         // Skip all other processing; if focus changes, we should get an event
         // for that.
         return false;
-      case 'jumpToDetails':
+      case Command.JUMP_TO_DETAILS:
         newRangeData = this.getNewRangeForJumpToDetails_(node, currentRange);
         node = newRangeData.node;
         currentRange = newRangeData.range;
         break;
-      case 'readFromHere':
+      case Command.READ_FROM_HERE:
         this.readFromHere_();
         return false;
-      case 'contextMenu':
+      case Command.CONTEXT_MENU:
         EventGenerator.sendKeyPress(KeyCode.APPS);
         break;
-      case 'showHeadingsList':
+      case Command.SHOW_HEADINGS_LIST:
         (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_heading')).send();
         return false;
-      case 'showFormsList':
+      case Command.SHOW_FORMS_LIST:
         (new PanelCommand(
              PanelCommandType.OPEN_MENUS, 'panel_menu_form_controls'))
             .send();
         return false;
-      case 'showLandmarksList':
+      case Command.SHOW_LANDMARKS_LIST:
         (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_landmark')).send();
         return false;
-      case 'showLinksList':
+      case Command.SHOW_LINKS_LIST:
         (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_link')).send();
         return false;
-      case 'showActionsMenu':
+      case Command.SHOW_ACTIONS_MENU:
         (new PanelCommand(PanelCommandType.OPEN_MENUS, 'panel_menu_actions'))
             .send();
         return false;
-      case 'showTablesList':
+      case Command.SHOW_TABLES_LIST:
         (new PanelCommand(PanelCommandType.OPEN_MENUS, 'table_strategy'))
             .send();
         return false;
-      case 'toggleSearchWidget':
+      case Command.TOGGLE_SEARCH_WIDGET:
         (new PanelCommand(PanelCommandType.SEARCH)).send();
         return false;
-      case 'readCurrentTitle':
+      case Command.READ_CURRENT_TITLE:
         this.readCurrentTitle_();
         return false;
-      case 'readCurrentURL':
+      case Command.READ_CURRENT_URL:
         new Output().withString(node.root.docUrl || '').go();
         return false;
-      case 'toggleSelection':
+      case Command.TOGGLE_SELECTION:
         if (!this.toggleSelection_()) {
           return false;
         }
         break;
-      case 'fullyDescribe':
+      case Command.FULLY_DESCRIBE:
         const o = new Output();
         o.withContextFirst()
             .withRichSpeechAndBraille(
                 currentRange, null, OutputEventType.NAVIGATE)
             .go();
         return false;
-      case 'viewGraphicAsBraille':
+      case Command.VIEW_GRAPHIC_AS_BRAILLE:
         this.viewGraphicAsBraille_(currentRange);
         return false;
       // Table commands.
-      case 'previousRow':
+      case Command.PREVIOUS_ROW:
         skipSync = true;
         dir = Dir.BACKWARD;
         pred = this.getPredicateForPreviousRow_(currentRange, dir);
@@ -611,7 +612,7 @@ export class CommandHandler extends CommandHandlerInterface {
         rootPred = AutomationPredicate.table;
         shouldWrap = false;
         break;
-      case 'previousCol':
+      case Command.PREVIOUS_COL:
         skipSync = true;
         dir = Dir.BACKWARD;
         pred = this.getPredicateForPreviousCol_(currentRange, dir);
@@ -619,29 +620,29 @@ export class CommandHandler extends CommandHandlerInterface {
         rootPred = AutomationPredicate.row;
         shouldWrap = false;
         break;
-      case 'nextRow':
+      case Command.NEXT_ROW:
         skipSync = true;
         pred = this.getPredicateForNextRow_(currentRange, dir);
         predErrorMsg = 'no_cell_below';
         rootPred = AutomationPredicate.table;
         shouldWrap = false;
         break;
-      case 'nextCol':
+      case Command.NEXT_COL:
         skipSync = true;
         pred = this.getPredicateForNextCol_(currentRange, dir);
         predErrorMsg = 'no_cell_right';
         rootPred = AutomationPredicate.row;
         shouldWrap = false;
         break;
-      case 'goToRowFirstCell':
-      case 'goToRowLastCell':
+      case Command.GO_TO_ROW_FIRST_CELL:
+      case Command.GO_TO_ROW_LAST_CELL:
         skipSync = true;
         newRangeData = this.getNewRangeForGoToRowFirstOrLastCell_(
             node, currentRange, command);
         node = newRangeData.node;
         currentRange = newRangeData.range;
         break;
-      case 'goToColFirstCell':
+      case Command.GO_TO_COL_FIRST_CELL:
         skipSync = true;
         node = this.getTableNode_(node);
         if (!node || !node.firstChild) {
@@ -654,7 +655,7 @@ export class CommandHandler extends CommandHandlerInterface {
         rootPred = AutomationPredicate.table;
         shouldWrap = false;
         break;
-      case 'goToColLastCell':
+      case Command.GO_TO_COL_LAST_CELL:
         skipSync = true;
         dir = Dir.BACKWARD;
         node = this.getTableNode_(node);
@@ -672,8 +673,8 @@ export class CommandHandler extends CommandHandlerInterface {
         rootPred = AutomationPredicate.table;
         shouldWrap = false;
         break;
-      case 'goToFirstCell':
-      case 'goToLastCell':
+      case Command.GO_TO_FIRST_CELL:
+      case Command.GO_TO_LAST_CELL:
         skipSync = true;
         node = this.getTableNode_(node);
         if (!node) {
@@ -685,17 +686,18 @@ export class CommandHandler extends CommandHandlerInterface {
         break;
 
       // These commands are only available when invoked from touch.
-      case 'nextAtGranularity':
-      case 'previousAtGranularity':
-        this.nextOrPreviousAtGranularity_(command === 'previousAtGranularity');
+      case Command.NEXT_AT_GRANULARITY:
+      case Command.PREVIOUS_AT_GRANULARITY:
+        this.nextOrPreviousAtGranularity_(
+            command === Command.PREVIOUS_AT_GRANULARITY);
         return false;
-      case 'announceRichTextDescription':
+      case Command.ANNOUNCE_RICH_TEXT_DESCRIPTION:
         this.announceRichTextDescription_(node);
         return false;
-      case 'readPhoneticPronunciation':
+      case Command.READ_PHONETIC_PRONUNCIATION:
         this.readPhoneticPronunciation_(node);
         return false;
-      case 'readLinkURL':
+      case Command.READ_LINK_URL:
         this.readLinkURL_(node);
         return false;
       default:
@@ -890,7 +892,7 @@ export class CommandHandler extends CommandHandlerInterface {
   /**
    * Provides a partial mapping from ChromeVox key combinations to
    * Search-as-a-function key as seen in Chrome OS documentation.
-   * @param {string} command
+   * @param {!Command} command
    * @return {boolean} True if the command should propagate.
    * @private
    */
@@ -921,19 +923,19 @@ export class CommandHandler extends CommandHandlerInterface {
 
     const isMultiline = AutomationPredicate.multiline(textEditHandler.node);
     switch (command) {
-      case 'previousCharacter':
+      case Command.PREVIOUS_CHARACTER:
         EventGenerator.sendKeyPress(KeyCode.HOME, {shift: true});
         break;
-      case 'nextCharacter':
+      case Command.NEXT_CHARACTER:
         EventGenerator.sendKeyPress(KeyCode.END, {shift: true});
         break;
-      case 'previousWord':
+      case Command.PREVIOUS_WORD:
         EventGenerator.sendKeyPress(KeyCode.HOME, {shift: true, ctrl: true});
         break;
-      case 'nextWord':
+      case Command.NEXT_WORD:
         EventGenerator.sendKeyPress(KeyCode.END, {shift: true, ctrl: true});
         break;
-      case 'previousObject':
+      case Command.PREVIOUS_OBJECT:
         if (!isMultiline) {
           return true;
         }
@@ -945,7 +947,7 @@ export class CommandHandler extends CommandHandlerInterface {
         }
         EventGenerator.sendKeyPress(KeyCode.HOME);
         break;
-      case 'nextObject':
+      case Command.NEXT_OBJECT:
         if (!isMultiline) {
           return true;
         }
@@ -957,7 +959,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
         EventGenerator.sendKeyPress(KeyCode.END);
         break;
-      case 'previousLine':
+      case Command.PREVIOUS_LINE:
         if (!isMultiline) {
           return true;
         }
@@ -968,7 +970,7 @@ export class CommandHandler extends CommandHandlerInterface {
         }
         EventGenerator.sendKeyPress(KeyCode.PRIOR);
         break;
-      case 'nextLine':
+      case Command.NEXT_LINE:
         if (!isMultiline) {
           return true;
         }
@@ -979,10 +981,10 @@ export class CommandHandler extends CommandHandlerInterface {
         }
         EventGenerator.sendKeyPress(KeyCode.NEXT);
         break;
-      case 'jumpToTop':
+      case Command.JUMP_TO_TOP:
         EventGenerator.sendKeyPress(KeyCode.HOME, {ctrl: true});
         break;
-      case 'jumpToBottom':
+      case Command.JUMP_TO_BOTTOM:
         EventGenerator.sendKeyPress(KeyCode.END, {ctrl: true});
         break;
       default:
@@ -1216,13 +1218,13 @@ export class CommandHandler extends CommandHandlerInterface {
   /**
    * @param {!AutomationNode} node
    * @param {!CursorRange} currentRange
-   * @param {string} command
+   * @param {!Command} command
    * @return {!NewRangeData}
    * @private
    */
   getNewRangeForGoToFirstOrLastCell_(node, currentRange, command) {
     const end = AutomationUtil.findNodePost(
-        node, command === 'goToLastCell' ? Dir.BACKWARD : Dir.FORWARD,
+        node, command === Command.GO_TO_LAST_CELL ? Dir.BACKWARD : Dir.FORWARD,
         AutomationPredicate.leaf);
     if (end) {
       return {node: end, range: CursorRange.fromNode(end)};
@@ -1267,7 +1269,7 @@ export class CommandHandler extends CommandHandlerInterface {
   /**
    * @param {!AutomationNode} node
    * @param {!CursorRange} currentRange
-   * @param {string} command
+   * @param {!Command} command
    * @return {!NewRangeData}
    * @private
    */
@@ -1280,7 +1282,8 @@ export class CommandHandler extends CommandHandlerInterface {
       return {node: current, range: currentRange};
     }
     const end = AutomationUtil.findNodePost(
-        current, command === 'goToRowLastCell' ? Dir.BACKWARD : Dir.FORWARD,
+        current,
+        command === Command.GO_TO_ROW_LAST_CELL ? Dir.BACKWARD : Dir.FORWARD,
         AutomationPredicate.leaf);
     if (end) {
       currentRange = CursorRange.fromNode(end);
@@ -1398,7 +1401,7 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /**
-   * @param {string} command
+   * @param {!Command} command
    * @return {boolean}
    * @private
    */
@@ -1419,22 +1422,24 @@ export class CommandHandler extends CommandHandlerInterface {
     let command;
     switch (GestureInterface.getGranularity()) {
       case GestureGranularity.CHARACTER:
-        command = isPrevious ? 'previousCharacter' : 'nextCharacter';
+        command =
+            isPrevious ? Command.PREVIOUS_CHARACTER : Command.NEXT_CHARACTER;
         break;
       case GestureGranularity.WORD:
-        command = isPrevious ? 'previousWord' : 'nextWord';
+        command = isPrevious ? Command.PREVIOUS_WORD : Command.NEXT_WORD;
         break;
       case GestureGranularity.LINE:
-        command = isPrevious ? 'previousLine' : 'nextLine';
+        command = isPrevious ? Command.PREVIOUS_LINE : Command.NEXT_LINE;
         break;
       case GestureGranularity.HEADING:
-        command = isPrevious ? 'previousHeading' : 'nextHeading';
+        command = isPrevious ? Command.PREVIOUS_HEADING : Command.NEXT_HEADING;
         break;
       case GestureGranularity.LINK:
-        command = isPrevious ? 'previousLink' : 'nextLink';
+        command = isPrevious ? Command.PREVIOUS_LINK : Command.NEXT_LINK;
         break;
       case GestureGranularity.FORM_FIELD_CONTROL:
-        command = isPrevious ? 'previousFormField' : 'nextFormField';
+        command =
+            isPrevious ? Command.PREVIOUS_FORM_FIELD : Command.NEXT_FORM_FIELD;
         break;
     }
     if (command) {
@@ -1443,7 +1448,7 @@ export class CommandHandler extends CommandHandlerInterface {
   }
 
   /**
-   * @param {string} command
+   * @param {!Command} command
    * @param {!CursorRange} currentRange
    * @private
    */
@@ -1451,7 +1456,7 @@ export class CommandHandler extends CommandHandlerInterface {
     const root = AutomationUtil.getTopLevelRoot(currentRange.start.node);
     if (root && root.scrollY !== undefined) {
       let page = Math.ceil(root.scrollY / root.location.height) || 1;
-      page = command === 'nextPage' ? page + 1 : page - 1;
+      page = command === Command.NEXT_PAGE ? page + 1 : page - 1;
       ChromeVox.tts.stop();
       root.setScrollOffset(0, page * root.location.height);
     }
@@ -1861,5 +1866,11 @@ CommandHandlerInterface.instance = new CommandHandler();
 
 BridgeHelper.registerHandler(
     BridgeConstants.CommandHandler.TARGET,
-    BridgeConstants.CommandHandler.Action.ON_COMMAND,
-    command => CommandHandlerInterface.instance.onCommand(command));
+    BridgeConstants.CommandHandler.Action.ON_COMMAND, command => {
+      if (Object.values(Command).includes(command)) {
+        CommandHandlerInterface.instance.onCommand(
+            /** @type {Command} */ (command));
+      } else {
+        console.warn('ChromeVox got an unrecognized command: ' + command);
+      }
+    });

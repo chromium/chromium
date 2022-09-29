@@ -4,11 +4,12 @@
 
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
+import {Command} from '../common/command_store.js';
 
 export class CommandHandlerInterface {
   /**
    * Handles ChromeVox commands.
-   * @param {string} command
+   * @param {!Command} command
    * @return {boolean} True if the command should propagate.
    */
   onCommand(command) {}

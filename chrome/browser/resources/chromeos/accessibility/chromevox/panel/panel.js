@@ -12,7 +12,7 @@ import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {CommandStore} from '../common/command_store.js';
+import {Command, CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
 import {KeyMap} from '../common/key_map.js';
@@ -485,7 +485,8 @@ export class Panel extends PanelInterface {
           const menu = Panel.menus_[i];
           for (let j = 0; j < menu.items.length; ++j) {
             const item = menu.items[j];
-            if (CommandStore.denySignedOut(item.element.id)) {
+            if (CommandStore.denySignedOut(
+                    /** @type {!Command} */ (item.element.id))) {
               item.disable();
             }
           }
@@ -1162,7 +1163,7 @@ export class Panel extends PanelInterface {
           await BackgroundBridge.UserActionMonitor.destroy();
         });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', evt => {
-      BackgroundBridge.CommandHandler.onCommand('fullyDescribe');
+      BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
     });
     $('chromevox-tutorial').addEventListener('requestearcon', evt => {
       const earconId = evt.detail.earconId;
@@ -1288,7 +1289,7 @@ window.addEventListener('hashchange', function() {
   // it in in every case. (fullscreen/focus turns the state off, collapse
   // turns it back on).
   if (Panel.originalStickyState_) {
-    BackgroundBridge.CommandHandler.onCommand('toggleStickyMode');
+    BackgroundBridge.CommandHandler.onCommand(Command.TOGGLE_STICKY_MODE);
   }
 }, false);
 

@@ -11,6 +11,7 @@ import {constants} from '../../common/constants.js';
 
 import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
+import {Command} from './command_store.js';
 import {BaseLog, SerializableLog} from './log_types.js';
 import {PanelTabMenuItemData} from './panel_menu_data.js';
 
@@ -127,7 +128,7 @@ BackgroundBridge.ChromeVoxState = {
 BackgroundBridge.CommandHandler = {
   /**
    * Handles ChromeVox commands.
-   * @param {string} command
+   * @param {!Command} command
    * @return {!Promise<boolean>} True if the command should propagate.
    */
   async onCommand(command) {

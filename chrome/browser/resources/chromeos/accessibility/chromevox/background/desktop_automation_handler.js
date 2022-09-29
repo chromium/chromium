@@ -10,6 +10,7 @@ import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {WrappingCursor} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
+import {Command} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {Msgs} from '../common/msgs.js';
@@ -433,7 +434,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
         ChromeVoxState.instance.setCurrentRange(
             CursorRange.fromNode(evt.target));
         ChromeVox.tts.stop();
-        CommandHandlerInterface.instance.onCommand('readFromHere');
+        CommandHandlerInterface.instance.onCommand(Command.READ_FROM_HERE);
         return;
       }
 

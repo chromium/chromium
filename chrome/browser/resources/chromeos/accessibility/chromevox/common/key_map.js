@@ -21,17 +21,18 @@
  */
 import {KeyCode} from '../../common/key_code.js';
 
+import {Command} from './command_store.js';
 import {KeySequence} from './key_sequence.js';
 
 export class KeyMap {
   /**
-   * @param {Array<Object<{command: string, sequence: KeySequence}>>}
+   * @param {Array<Object<{command: !Command, sequence: KeySequence}>>}
    * commandsAndKeySequences An array of pairs - KeySequences and commands.
    */
   constructor(commandsAndKeySequences) {
     /**
      * An array of bindings - commands and KeySequences.
-     * @type {Array<Object<{command: string, sequence: KeySequence}>>}
+     * @type {Array<Object<{command: !Command, sequence: KeySequence}>>}
      * @private
      */
     this.bindings_ = commandsAndKeySequences;
@@ -73,7 +74,7 @@ export class KeyMap {
 
   /**
    * Checks if this key map has a given binding.
-   * @param {string} command The command.
+   * @param {!Command} command The command.
    * @param {KeySequence} sequence The key sequence.
    * @return {boolean} Whether the binding exists.
    */
@@ -93,8 +94,8 @@ export class KeyMap {
 
   /**
    * Checks if this key map has a given command.
-   * @param {string} command The command to check.
-   * @return {boolean} Whether 'command' has a binding.
+   * @param {!Command} command The command to check.
+   * @return {boolean} Whether |command| has a binding.
    */
   hasCommand(command) {
     if (this.commandToKey_ != null) {
@@ -128,7 +129,7 @@ export class KeyMap {
   /**
    * Gets a command given a key.
    * @param {KeySequence} key The key to query.
-   * @return {?string} The command, if any.
+   * @return {?Command} The command, if any.
    */
   commandForKey(key) {
     if (key != null) {
@@ -144,7 +145,7 @@ export class KeyMap {
 
   /**
    * Gets a key given a command.
-   * @param {string} command The command to query.
+   * @param {!Command} command The command to query.
    * @return {!Array<KeySequence>} The keys associated with that command,
    * if any.
    */
@@ -171,7 +172,7 @@ export class KeyMap {
   static get() {
     const commandsAndKeySequences =
         /**
-         * @type {Array<Object<{command: string,
+         * @type {Array<Object<{command: !Command,
          *                       sequence: KeySequence}>>}
          */
         (KeyMap.BINDINGS_);
@@ -213,255 +214,255 @@ export class KeyMap {
 /** @private {!Object} */
 KeyMap.BINDINGS_ = [
   {
-    command: 'previousObject',
+    command: Command.PREVIOUS_OBJECT,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT]}},
   },
   {
-    command: 'previousLine',
+    command: Command.PREVIOUS_LINE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.UP]}},
   },
   {
-    command: 'nextObject',
+    command: Command.NEXT_OBJECT,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT]}},
   },
   {
-    command: 'nextLine',
+    command: Command.NEXT_LINE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN]}},
   },
   {
-    command: 'nextCharacter',
+    command: Command.NEXT_CHARACTER,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.RIGHT], shiftKey: [true]},
     },
   },
   {
-    command: 'previousCharacter',
+    command: Command.PREVIOUS_CHARACTER,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], shiftKey: [true]}},
   },
   {
-    command: 'nativeNextCharacter',
+    command: Command.NATIVE_NEXT_CHARACTER,
     sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.RIGHT]}},
   },
   {
-    command: 'nativePreviousCharacter',
+    command: Command.NATIVE_PREVIOUS_CHARACTER,
     sequence: {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT]}},
   },
   {
-    command: 'nextWord',
+    command: Command.NEXT_WORD,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], shiftKey: [true]},
     },
   },
   {
-    command: 'previousWord',
+    command: Command.PREVIOUS_WORD,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], shiftKey: [true]},
     },
   },
   {
-    command: 'nativeNextWord',
+    command: Command.NATIVE_NEXT_WORD,
     sequence: {
       cvoxModifier: false,
       keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]},
     },
   },
   {
-    command: 'nativePreviousWord',
+    command: Command.NATIVE_PREVIOUS_WORD,
     sequence:
         {cvoxModifier: false, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}},
   },
   {
-    command: 'nextButton',
+    command: Command.NEXT_BUTTON,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.B]}},
   },
   {
-    command: 'previousButton',
+    command: Command.PREVIOUS_BUTTON,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.B], shiftKey: [true]}},
   },
   {
-    command: 'nextCheckbox',
+    command: Command.NEXT_CHECKBOX,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.X]}},
   },
   {
-    command: 'previousCheckbox',
+    command: Command.PREVIOUS_CHECKBOX,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.X], shiftKey: [true]}},
   },
   {
-    command: 'nextComboBox',
+    command: Command.NEXT_COMBO_BOX,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.C]}},
   },
   {
-    command: 'previousComboBox',
+    command: Command.PREVIOUS_COMBO_BOX,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.C], shiftKey: [true]}},
   },
   {
-    command: 'nextEditText',
+    command: Command.NEXT_EDIT_TEXT,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.E]}},
   },
   {
-    command: 'previousEditText',
+    command: Command.PREVIOUS_EDIT_TEXT,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.E], shiftKey: [true]}},
   },
   {
-    command: 'nextFormField',
+    command: Command.NEXT_FORM_FIELD,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.F]}},
   },
   {
-    command: 'previousFormField',
+    command: Command.PREVIOUS_FORM_FIELD,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.F], shiftKey: [true]}},
   },
   {
-    command: 'previousGraphic',
+    command: Command.PREVIOUS_GRAPHIC,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.G], shiftKey: [true]}},
   },
   {
-    command: 'nextGraphic',
+    command: Command.NEXT_GRAPHIC,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.G]}},
   },
   {
-    command: 'nextHeading',
+    command: Command.NEXT_HEADING,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.H]}},
   },
   {
-    command: 'nextHeading1',
+    command: Command.NEXT_HEADING_1,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE]}},
   },
   {
-    command: 'nextHeading2',
+    command: Command.NEXT_HEADING_2,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO]}},
   },
   {
-    command: 'nextHeading3',
+    command: Command.NEXT_HEADING_3,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.THREE]}},
   },
   {
-    command: 'nextHeading4',
+    command: Command.NEXT_HEADING_4,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR]}},
   },
   {
-    command: 'nextHeading5',
+    command: Command.NEXT_HEADING_5,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE]}},
   },
   {
-    command: 'nextHeading6',
+    command: Command.NEXT_HEADING_6,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX]}},
   },
   {
-    command: 'previousHeading',
+    command: Command.PREVIOUS_HEADING,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.H], shiftKey: [true]}},
   },
   {
-    command: 'previousHeading1',
+    command: Command.PREVIOUS_HEADING_1,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.ONE], shiftKey: [true]}},
   },
   {
-    command: 'previousHeading2',
+    command: Command.PREVIOUS_HEADING_2,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.TWO], shiftKey: [true]}},
   },
   {
-    command: 'previousHeading3',
+    command: Command.PREVIOUS_HEADING_3,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.THREE], shiftKey: [true]},
     },
   },
   {
-    command: 'previousHeading4',
+    command: Command.PREVIOUS_HEADING_4,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.FOUR], shiftKey: [true]}},
   },
   {
-    command: 'previousHeading5',
+    command: Command.PREVIOUS_HEADING_5,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.FIVE], shiftKey: [true]}},
   },
   {
-    command: 'previousHeading6',
+    command: Command.PREVIOUS_HEADING_6,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.SIX], shiftKey: [true]}},
   },
   {
-    command: 'nextLink',
+    command: Command.NEXT_LINK,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.L]}},
   },
   {
-    command: 'previousLink',
+    command: Command.PREVIOUS_LINK,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.L], shiftKey: [true]}},
   },
   {
-    command: 'nextTable',
+    command: Command.NEXT_TABLE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.T]}},
   },
   {
-    command: 'previousTable',
+    command: Command.PREVIOUS_TABLE,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.T], shiftKey: [true]}},
   },
   {
-    command: 'nextVisitedLink',
+    command: Command.NEXT_VISITED_LINK,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.V]}},
   },
   {
-    command: 'previousVisitedLink',
+    command: Command.PREVIOUS_VISITED_LINK,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.V], shiftKey: [true]}},
   },
   {
-    command: 'nextLandmark',
+    command: Command.NEXT_LANDMARK,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1]}},
   },
   {
-    command: 'previousLandmark',
+    command: Command.PREVIOUS_LANDMARK,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.OEM_1], shiftKey: [true]},
     },
   },
   {
-    command: 'jumpToBottom',
+    command: Command.JUMP_TO_BOTTOM,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true]}},
   },
   {
-    command: 'jumpToTop',
+    command: Command.JUMP_TO_TOP,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true]}},
   },
   {
-    command: 'forceClickOnCurrentItem',
+    command: Command.FORCE_CLICK_ON_CURRENT_ITEM,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}},
   },
   {
-    command: 'forceLongClickOnCurrentItem',
+    command: Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.SPACE], shiftKey: [true]},
     },
   },
   {
-    command: 'contextMenu',
+    command: Command.CONTEXT_MENU,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.M]}},
   },
   {
-    command: 'readFromHere',
+    command: Command.READ_FROM_HERE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.R]}},
   },
   {
-    command: 'toggleStickyMode',
+    command: Command.TOGGLE_STICKY_MODE,
     sequence: {
       skipStripping: false,
       doubleTap: true,
@@ -469,193 +470,193 @@ KeyMap.BINDINGS_ = [
     },
   },
   {
-    command: 'passThroughMode',
+    command: Command.PASS_THROUGH_MODE,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.ESCAPE], shiftKey: [true]},
     },
   },
   {
-    command: 'toggleKeyboardHelp',
+    command: Command.TOGGLE_KEYBOARD_HELP,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_PERIOD]}},
   },
   {
-    command: 'stopSpeech',
+    command: Command.STOP_SPEECH,
     sequence: {
       cvoxModifier: false,
       keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]},
     },
   },
   {
-    command: 'decreaseTtsRate',
+    command: Command.DECREASE_TTS_RATE,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.OEM_4], shiftKey: [true]},
     },
   },
   {
-    command: 'increaseTtsRate',
+    command: Command.INCREASE_TTS_RATE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_4]}},
   },
   {
-    command: 'decreaseTtsPitch',
+    command: Command.DECREASE_TTS_PITCH,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.OEM_6], shiftKey: [true]},
     },
   },
   {
-    command: 'increaseTtsPitch',
+    command: Command.INCREASE_TTS_PITCH,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_6]}},
   },
   {
-    command: 'stopSpeech',
+    command: Command.STOP_SPEECH,
     sequence: {keys: {ctrlKey: [true], keyCode: [KeyCode.CONTROL]}},
   },
   {
-    command: 'cyclePunctuationEcho',
+    command: Command.CYCLE_PUNCTUATION_ECHO,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.P]}},
   },
   {
-    command: 'showLearnModePage',
+    command: Command.SHOW_LEARN_MODE_PAGE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.K]}},
   },
   {
-    command: 'cycleTypingEcho',
+    command: Command.CYCLE_TYPING_ECHO,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.T]}},
   },
   {
-    command: 'showOptionsPage',
+    command: Command.SHOW_OPTIONS_PAGE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.O]}},
   },
   {
-    command: 'showLogPage',
+    command: Command.SHOW_LOG_PAGE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.W]}},
   },
   {
-    command: 'enableLogging',
+    command: Command.ENABLE_LOGGING,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.E]}},
   },
   {
-    command: 'disableLogging',
+    command: Command.DISABLE_LOGGING,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.D]}},
   },
   {
-    command: 'dumpTree',
+    command: Command.DUMP_TREE,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.D, KeyCode.T], ctrlKey: [true]},
     },
   },
   {
-    command: 'help',
+    command: Command.HELP,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.T]}},
   },
   {
-    command: 'toggleEarcons',
+    command: Command.TOGGLE_EARCONS,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.E]}},
   },
   {
-    command: 'speakTimeAndDate',
+    command: Command.SPEAK_TIME_AND_DATE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.D]}},
   },
   {
-    command: 'readCurrentTitle',
+    command: Command.READ_CURRENT_TITLE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.W]}},
   },
   {
-    command: 'readCurrentURL',
+    command: Command.READ_CURRENT_URL,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.U]}},
   },
   {
-    command: 'reportIssue',
+    command: Command.REPORT_ISSUE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.I]}},
   },
   {
-    command: 'toggleSearchWidget',
+    command: Command.TOGGLE_SEARCH_WIDGET,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_2]}},
   },
   {
-    command: 'showHeadingsList',
+    command: Command.SHOW_HEADINGS_LIST,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.H], ctrlKey: [true]}},
   },
   {
-    command: 'showFormsList',
+    command: Command.SHOW_FORMS_LIST,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.F], ctrlKey: [true]}},
   },
   {
-    command: 'showLandmarksList',
+    command: Command.SHOW_LANDMARKS_LIST,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.OEM_1], ctrlKey: [true]}},
   },
   {
-    command: 'showLinksList',
+    command: Command.SHOW_LINKS_LIST,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.L], ctrlKey: [true]}},
   },
   {
-    command: 'showActionsMenu',
+    command: Command.SHOW_ACTIONS_MENU,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.A], ctrlKey: [true]}},
   },
   {
-    command: 'showTablesList',
+    command: Command.SHOW_TABLES_LIST,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.T], ctrlKey: [true]}},
   },
   {
-    command: 'toggleBrailleCaptions',
+    command: Command.TOGGLE_BRAILLE_CAPTIONS,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.B]}},
   },
   {
-    command: 'toggleBrailleTable',
+    command: Command.TOGGLE_BRAILLE_TABLE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.G]}},
   },
   {
-    command: 'viewGraphicAsBraille',
+    command: Command.VIEW_GRAPHIC_AS_BRAILLE,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.G], altKey: [true]}},
   },
   {
-    command: 'toggleSelection',
+    command: Command.TOGGLE_SELECTION,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.S]}},
   },
   {
-    command: 'fullyDescribe',
+    command: Command.FULLY_DESCRIBE,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.K]}},
   },
   {
-    command: 'previousRow',
+    command: Command.PREVIOUS_ROW,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.UP], ctrlKey: [true], altKey: [true]},
     },
   },
   {
-    command: 'nextRow',
+    command: Command.NEXT_ROW,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true], altKey: [true]},
     },
   },
   {
-    command: 'nextCol',
+    command: Command.NEXT_COL,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.RIGHT], ctrlKey: [true], altKey: [true]},
     },
   },
   {
-    command: 'previousCol',
+    command: Command.PREVIOUS_COL,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.LEFT], ctrlKey: [true], altKey: [true]},
     },
   },
   {
-    command: 'goToRowFirstCell',
+    command: Command.GO_TO_ROW_FIRST_CELL,
     sequence: {
       cvoxModifier: true,
       keys: {
@@ -667,7 +668,7 @@ KeyMap.BINDINGS_ = [
     },
   },
   {
-    command: 'goToColFirstCell',
+    command: Command.GO_TO_COL_FIRST_CELL,
     sequence: {
       cvoxModifier: true,
       keys: {
@@ -679,7 +680,7 @@ KeyMap.BINDINGS_ = [
     },
   },
   {
-    command: 'goToColLastCell',
+    command: Command.GO_TO_COL_LAST_CELL,
     sequence: {
       cvoxModifier: true,
       keys: {
@@ -691,21 +692,21 @@ KeyMap.BINDINGS_ = [
     },
   },
   {
-    command: 'goToFirstCell',
+    command: Command.GO_TO_FIRST_CELL,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.LEFT], altKey: [true], shiftKey: [true]},
     },
   },
   {
-    command: 'goToLastCell',
+    command: Command.GO_TO_LAST_CELL,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.RIGHT], altKey: [true], shiftKey: [true]},
     },
   },
   {
-    command: 'goToRowLastCell',
+    command: Command.GO_TO_ROW_LAST_CELL,
     sequence: {
       cvoxModifier: true,
       keys: {
@@ -717,106 +718,106 @@ KeyMap.BINDINGS_ = [
     },
   },
   {
-    command: 'previousGroup',
+    command: Command.PREVIOUS_GROUP,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.UP], ctrlKey: [true]}},
   },
   {
-    command: 'nextGroup',
+    command: Command.NEXT_GROUP,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.DOWN], ctrlKey: [true]}},
   },
   {
-    command: 'previousSimilarItem',
+    command: Command.PREVIOUS_SIMILAR_ITEM,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.I], shiftKey: [true]}},
   },
   {
-    command: 'nextSimilarItem',
+    command: Command.NEXT_SIMILAR_ITEM,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.I]}},
   },
   {
-    command: 'previousInvalidItem',
+    command: Command.PREVIOUS_INVALID_ITEM,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.P, KeyCode.I]}},
   },
   {
-    command: 'nextInvalidItem',
+    command: Command.NEXT_INVALID_ITEM,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.N, KeyCode.I]}},
   },
   {
-    command: 'jumpToDetails',
+    command: Command.JUMP_TO_DETAILS,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.J]}},
   },
   {
-    command: 'toggleScreen',
+    command: Command.TOGGLE_SCREEN,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.BRIGHTNESS_UP]}},
   },
   {
-    command: 'toggleSpeechOnOrOff',
+    command: Command.TOGGLE_SPEECH_ON_OR_OFF,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.VOLUME_MUTE]}},
   },
   {
-    command: 'enableChromeVoxArcSupportForCurrentApp',
+    command: Command.ENABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_4]}},
   },
   {
-    command: 'disableChromeVoxArcSupportForCurrentApp',
+    command: Command.DISABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.OEM_6]}},
   },
   {
-    command: 'showTalkBackKeyboardShortcuts',
+    command: Command.SHOW_TALKBACK_KEYBOARD_SHORTCUTS,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.K]}},
   },
   {
-    command: 'forceClickOnCurrentItem',
+    command: Command.FORCE_CLICK_ON_CURRENT_ITEM,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.SPACE]}, doubleTap: true},
   },
   {
-    command: 'showTtsSettings',
+    command: Command.SHOW_TTS_SETTINGS,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.S]}},
   },
   {
-    command: 'announceBatteryDescription',
+    command: Command.ANNOUNCE_BATTERY_DESCRIPTION,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.O, KeyCode.B]}},
   },
   {
-    command: 'announceRichTextDescription',
+    command: Command.ANNOUNCE_RICH_TEXT_DESCRIPTION,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.F]}},
   },
   {
-    command: 'readPhoneticPronunciation',
+    command: Command.READ_PHONETIC_PRONUNCIATION,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.C]}},
   },
   {
-    command: 'readLinkURL',
+    command: Command.READ_LINK_URL,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.A, KeyCode.L]}},
   },
   {
-    command: 'nextList',
+    command: Command.NEXT_LIST,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.J, KeyCode.L]}},
   },
   {
-    command: 'previousList',
+    command: Command.PREVIOUS_LIST,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.J, KeyCode.L], shiftKey: [true]},
     },
   },
   {
-    command: 'resetTextToSpeechSettings',
+    command: Command.RESET_TEXT_TO_SPEECH_SETTINGS,
     sequence: {
       cvoxModifier: true,
       keys: {keyCode: [KeyCode.OEM_5], ctrlKey: [true], shiftKey: [true]},
     },
   },
   {
-    command: 'copy',
+    command: Command.COPY,
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}},
   },
   {
-    command: 'toggleDictation',
+    command: Command.TOGGLE_DICTATION,
     sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.D]}},
   },
 ];
