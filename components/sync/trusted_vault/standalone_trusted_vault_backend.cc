@@ -391,8 +391,8 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
 
     // A persistent auth error could have just been resolved.
     if (had_persistent_auth_error_before && !has_persistent_auth_error) {
-      // TODO(crbug.com/1368591): Pending recovery methods may need to be
-      // processed here.
+      MaybeProcessPendingTrustedRecoveryMethod();
+      MaybeRegisterDevice();
 
       // |degraded_recoverability_handler_| is null unless
       // |kSyncTrustedVaultPeriodicDegradedRecoverabilityPolling| is set.
@@ -413,7 +413,6 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
 
   if (!primary_account_.has_value()) {
-    DCHECK(!pending_trusted_recovery_method_.has_value());
     return;
   }
 
@@ -549,7 +548,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     return;
   }
 
-  if (!primary_account_.has_value()) {
+  if (!primary_account_.has_value() || has_persistent_auth_error_) {
     // Defer until SetPrimaryAccount() gets called.
     pending_trusted_recovery_method_ = PendingTrustedRecoveryMethod();
     pending_trusted_recovery_method_->gaia_id = gaia_id;
@@ -771,9 +770,9 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
 }
 
 void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
-  DCHECK(primary_account_.has_value());
-
-  if (!pending_trusted_recovery_method_.has_value()) {
+  if (!primary_account_.has_value() || has_persistent_auth_error_ ||
+      !pending_trusted_recovery_method_.has_value() ||
+      pending_trusted_recovery_method_->gaia_id != primary_account_->gaia) {
     return;
   }
 
@@ -784,6 +783,8 @@ void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
   AddTrustedRecoveryMethod(recovery_method.gaia_id, recovery_method.public_key,
                            recovery_method.method_type_hint,
                            std::move(recovery_method.completion_callback));
+
+  DCHECK(!pending_trusted_recovery_method_.has_value());
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(

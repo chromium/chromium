@@ -770,6 +770,24 @@ TEST_F(StandaloneTrustedVaultBackendTest,
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithPersistentAuthError,
       /*expected_bucket_count=*/1);
+
+  Mock::VerifyAndClearExpectations(connection());
+
+  // When the auth error is resolved, the registration should be retried.
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
+                  AuthenticationFactorType::kPhysicalDevice,
+                  /*authentication_factor_type_hint=*/Eq(absl::nullopt), _));
+
+  base::HistogramTester histogram_tester2;
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // The second attempt should NOT have logged the histogram, following the
+  // histogram's definition that it should be logged once.
+  histogram_tester2.ExpectTotalCount("Sync.TrustedVaultDeviceRegistrationState",
+                                     /*count=*/0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -1520,6 +1538,67 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(*connection(),
               RegisterAuthenticationFactor(
                   _, _, _, _, AuthenticationFactorType::kPhysicalDevice, _, _));
+  EXPECT_CALL(
+      *connection(),
+      RegisterAuthenticationFactor(
+          Eq(account_info), Eq(kVaultKeys), kLastKeyVersion,
+          PublicKeyWhenExportedEq(kPublicKey),
+          AuthenticationFactorType::kUnspecified, Eq(kMethodTypeHint), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const std::vector<std::vector<uint8_t>>&, int,
+                    const SecureBoxPublicKey& device_public_key,
+                    AuthenticationFactorType, absl::optional<int>,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        registration_callback = std::move(callback);
+        // Note: TrustedVaultConnection::Request doesn't support
+        // cancellation, so these tests don't cover the contract that
+        // caller should store Request object until it's completed or need
+        // to be cancelled.
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  // The operation should be in flight.
+  EXPECT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
+  ASSERT_FALSE(registration_callback.is_null());
+
+  // Mimic successful completion of the request.
+  EXPECT_CALL(completion_callback, Run());
+  std::move(registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDeferTrustedRecoveryMethodUntilPersistentAuthErrorFixed) {
+  const std::vector<std::vector<uint8_t>> kVaultKeys = {{1, 2, 3}};
+  const int kLastKeyVersion = 1;
+  const std::vector<uint8_t> kPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const int kMethodTypeHint = 7;
+
+  // Mimic device previously registered with some keys.
+  StoreKeysAndMimicDeviceRegistration(kVaultKeys, kLastKeyVersion,
+                                      account_info);
+
+  // Mimic entering a persistent auth error.
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/true);
+
+  // No request should be issued while there is a persistent auth error.
+  base::MockCallback<base::OnceClosure> completion_callback;
+  EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
+  backend()->AddTrustedRecoveryMethod(account_info.gaia, kPublicKey,
+                                      kMethodTypeHint,
+                                      completion_callback.Get());
+
+  EXPECT_TRUE(backend()->HasPendingTrustedRecoveryMethodForTesting());
+
+  // Upon resolving the auth error, the request should be issued.
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      registration_callback;
   EXPECT_CALL(
       *connection(),
       RegisterAuthenticationFactor(
