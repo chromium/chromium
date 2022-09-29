@@ -113,8 +113,6 @@ static_library("router") {
     public_deps += [ "//components/media_router/common/mojom:logger" ]
 
     sources += [
-      "logger_list.cc",
-      "logger_list.h",
       "mojo/media_router_desktop.cc",
       "mojo/media_router_desktop.h",
       "mojo/media_router_mojo_impl.cc",
@@ -169,6 +167,8 @@ static_library("router") {
       "providers/wired_display/wired_display_presentation_receiver_factory.cc",
       "providers/wired_display/wired_display_presentation_receiver_factory.h",
     ]
+
+    deps += [ ":logger_list" ]
 
     if (is_win) {
       sources += [
@@ -322,6 +322,7 @@ source_set("unittests") {
       "providers/wired_display/wired_display_media_route_provider_unittest.cc",
     ]
     deps += [
+      ":logger_list",
       ":test_support",
       "//chrome/browser/media/router/discovery:discovery",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
