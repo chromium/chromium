@@ -33,6 +33,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -251,6 +252,7 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1348710")
     public void testSingleActionView_Click() throws Exception {
         List<FakeTabSelectionEditorAction> actions = new ArrayList<>();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
