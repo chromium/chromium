@@ -1190,7 +1190,7 @@ const FeatureEntry::FeatureVariation
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysContentClusteringParams[] = {
-    {"collections_blocklist", "/collections/software"},
+    {"collections_blocklist", "/collection/software"},
     {"exclude_entities_that_have_no_collections", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
