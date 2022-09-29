@@ -75,8 +75,8 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
         absolute_resource_(absolute_resource),
         specified_resource_(specified_resource),
         referrer_(referrer),
-        is_local_(local),
         world_(std::move(world)),
+        is_local_(local),
         origin_clean_(origin_clean),
         is_ad_related_(is_ad_related) {}
 
@@ -120,19 +120,6 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
   }
 
  private:
-  void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
-
-  const String absolute_resource_;
-  const String specified_resource_;
-  String format_;
-  const Referrer referrer_;
-  const bool is_local_;
-  const scoped_refptr<const DOMWrapperWorld> world_;
-  const OriginClean origin_clean_;
-  bool is_ad_related_;
-
-  Vector<FontTechnology> technologies_;
-
   class FontResourceHelper : public GarbageCollected<FontResourceHelper>,
                              public FontResourceClient {
    public:
@@ -150,7 +137,19 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
       return "CSSFontFaceSrcValue::FontResourceHelper";
     }
   };
+
+  void RestoreCachedResourceIfNeeded(ExecutionContext*) const;
+
+  Vector<FontTechnology> technologies_;
+  const String absolute_resource_;
+  const String specified_resource_;
+  String format_;
+  const Referrer referrer_;
+  const scoped_refptr<const DOMWrapperWorld> world_;
   mutable Member<FontResourceHelper> fetched_;
+  const bool is_local_;
+  const OriginClean origin_clean_;
+  bool is_ad_related_;
 };
 
 template <>

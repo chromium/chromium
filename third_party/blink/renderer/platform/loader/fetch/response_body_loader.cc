@@ -350,10 +350,10 @@ ResponseBodyLoader::ResponseBodyLoader(
     ResponseBodyLoaderClient& client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     BackForwardCacheLoaderHelper* back_forward_cache_loader_helper)
-    : bytes_consumer_(bytes_consumer),
+    : task_runner_(std::move(task_runner)),
+      bytes_consumer_(bytes_consumer),
       client_(client),
-      back_forward_cache_loader_helper_(back_forward_cache_loader_helper),
-      task_runner_(std::move(task_runner)) {
+      back_forward_cache_loader_helper_(back_forward_cache_loader_helper) {
   bytes_consumer_->SetClient(this);
   body_buffer_ = MakeGarbageCollected<Buffer>(this);
 }

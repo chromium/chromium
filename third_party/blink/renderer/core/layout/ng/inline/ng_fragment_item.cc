@@ -23,7 +23,6 @@ namespace blink {
 namespace {
 
 struct SameSizeAsNGFragmentItem {
-  Member<void*> member;
   union {
     NGFragmentItem::TextItem text_;
     NGFragmentItem::SvgTextItem svg_text_;
@@ -33,6 +32,7 @@ struct SameSizeAsNGFragmentItem {
   };
   PhysicalRect rect;
   NGInkOverflow ink_overflow;
+  Member<void*> member;
   wtf_size_t sizes[2];
   unsigned flags;
 };
@@ -47,9 +47,9 @@ NGFragmentItem::NGFragmentItem(
     const NGTextOffset& text_offset,
     const PhysicalSize& size,
     bool is_hidden_for_paint)
-    : layout_object_(inline_item.GetLayoutObject()),
-      text_({std::move(shape_result), text_offset}),
+    : text_({std::move(shape_result), text_offset}),
       rect_({PhysicalOffset(), size}),
+      layout_object_(inline_item.GetLayoutObject()),
       const_traced_type_(kNone),
       type_(kText),
       sub_type_(static_cast<unsigned>(inline_item.TextType())),
@@ -78,9 +78,9 @@ NGFragmentItem::NGFragmentItem(
     const String& text_content,
     const PhysicalSize& size,
     bool is_hidden_for_paint)
-    : layout_object_(&layout_object),
-      generated_text_({std::move(shape_result), text_content}),
+    : generated_text_({std::move(shape_result), text_content}),
       rect_({PhysicalOffset(), size}),
+      layout_object_(&layout_object),
       const_traced_type_(kNone),
       type_(kGeneratedText),
       sub_type_(static_cast<unsigned>(text_type)),
@@ -112,9 +112,9 @@ NGFragmentItem::NGFragmentItem(
                      is_hidden_for_paint) {}
 
 NGFragmentItem::NGFragmentItem(const NGPhysicalLineBoxFragment& line)
-    : layout_object_(line.ContainerLayoutObject()),
-      line_({&line, /* descendants_count */ 1}),
+    : line_({&line, /* descendants_count */ 1}),
       rect_({PhysicalOffset(), line.Size()}),
+      layout_object_(line.ContainerLayoutObject()),
       const_traced_type_(kLineItem),
       type_(kLine),
       sub_type_(static_cast<unsigned>(line.LineBoxType())),
@@ -129,9 +129,9 @@ NGFragmentItem::NGFragmentItem(const NGPhysicalLineBoxFragment& line)
 
 NGFragmentItem::NGFragmentItem(const NGPhysicalBoxFragment& box,
                                TextDirection resolved_direction)
-    : layout_object_(box.GetLayoutObject()),
-      box_(&box, /* descendants_count */ 1),
+    : box_(&box, /* descendants_count */ 1),
       rect_({PhysicalOffset(), box.Size()}),
+      layout_object_(box.GetLayoutObject()),
       const_traced_type_(kBoxItem),
       type_(kBox),
       style_variant_(static_cast<unsigned>(box.StyleVariant())),
@@ -192,8 +192,8 @@ NGFragmentItem::NGFragmentItem(NGLogicalLineItem&& line_item,
 }
 
 NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
-    : layout_object_(source.layout_object_),
-      rect_(source.rect_),
+    : rect_(source.rect_),
+      layout_object_(source.layout_object_),
       fragment_id_(source.fragment_id_),
       delta_to_next_for_same_layout_object_(
           source.delta_to_next_for_same_layout_object_),
@@ -234,9 +234,9 @@ NGFragmentItem::NGFragmentItem(const NGFragmentItem& source)
 }
 
 NGFragmentItem::NGFragmentItem(NGFragmentItem&& source)
-    : layout_object_(source.layout_object_),
-      rect_(source.rect_),
+    : rect_(source.rect_),
       ink_overflow_(source.InkOverflowType(), std::move(source.ink_overflow_)),
+      layout_object_(source.layout_object_),
       fragment_id_(source.fragment_id_),
       delta_to_next_for_same_layout_object_(
           source.delta_to_next_for_same_layout_object_),

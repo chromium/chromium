@@ -83,7 +83,7 @@ class CORE_EXPORT ClassicPendingScript final
 
  private:
   // See AdvanceReadyState implementation for valid state transitions.
-  enum ReadyState {
+  enum ReadyState : uint8_t {
     // These states are considered "not ready".
     kWaitingForResource,
     kWaitingForCacheConsumer,
@@ -124,14 +124,14 @@ class CORE_EXPORT ClassicPendingScript final
   // This is a null string for external scripts and is not used.
   const String source_text_for_inline_script_;
 
+  Member<ClassicScript> classic_script_;
+
   const ScriptSourceLocationType source_location_type_;
   const bool is_external_;
   ReadyState ready_state_;
 
   // The request is intervened by document.write() intervention.
   bool intervened_ = false;
-
-  Member<ClassicScript> classic_script_;
 };
 
 }  // namespace blink

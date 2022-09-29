@@ -47,7 +47,7 @@ using ExpressionHeapVector = Vector<MediaQueryExp>;
 
 class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  public:
-  enum class RestrictorType { kOnly, kNot, kNone };
+  enum class RestrictorType : uint8_t { kOnly, kNot, kNone };
 
   static MediaQuery* CreateNotAll();
 
@@ -67,11 +67,11 @@ class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
   MediaQuery& operator=(const MediaQuery&) = delete;
   bool BehaveAsNotAll() const;
 
-  RestrictorType restrictor_;
   String media_type_;
-  Member<const MediaQueryExpNode> exp_node_;
   String serialization_cache_;
+  Member<const MediaQueryExpNode> exp_node_;
 
+  RestrictorType restrictor_;
   // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.
   //
   // If the runtime flag CSSMediaQueries4 is *not* enabled, this will cause the

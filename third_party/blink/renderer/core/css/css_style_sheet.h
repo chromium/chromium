@@ -263,18 +263,9 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   bool AlternateFromConstructor() const { return alternate_from_constructor_; }
 
   Member<StyleSheetContents> contents_;
-  bool is_inline_stylesheet_ = false;
-  bool is_for_css_module_script_ = false;
-  bool is_disabled_ = false;
-  bool load_completed_ = false;
-  // This alternate variable is only used for constructed CSSStyleSheet.
-  // For other CSSStyleSheet, consult the alternate attribute.
-  bool alternate_from_constructor_ = false;
-  bool enable_rule_access_for_inspector_ = false;
-
-  String title_;
   Member<const MediaQuerySet> media_queries_;
   MediaQueryResultFlags media_query_result_flags_;
+  String title_;
 
   Member<Node> owner_node_;
   Member<CSSRule> owner_rule_;
@@ -288,6 +279,15 @@ class CORE_EXPORT CSSStyleSheet final : public StyleSheet,
   Member<MediaList> media_cssom_wrapper_;
   mutable HeapVector<Member<CSSRule>> child_rule_cssom_wrappers_;
   mutable Member<CSSRuleList> rule_list_cssom_wrapper_;
+
+  bool is_inline_stylesheet_ = false;
+  bool is_for_css_module_script_ = false;
+  bool is_disabled_ = false;
+  bool load_completed_ = false;
+  // This alternate variable is only used for constructed CSSStyleSheet.
+  // For other CSSStyleSheet, consult the alternate attribute.
+  bool alternate_from_constructor_ = false;
+  bool enable_rule_access_for_inspector_ = false;
 };
 
 inline CSSStyleSheet::RuleMutationScope::RuleMutationScope(CSSStyleSheet* sheet)

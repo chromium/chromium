@@ -305,10 +305,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                 Functor& func) const;
 
   MatchedPropertiesCache matched_properties_cache_;
-  Member<Document> document_;
   scoped_refptr<const ComputedStyle> initial_style_;
   SelectorFilter selector_filter_;
 
+  Member<Document> document_;
   Member<StyleRuleUsageTracker> tracker_;
 
   // This is a dummy/disconnected element that we use for FormattedText

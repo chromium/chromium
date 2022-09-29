@@ -208,16 +208,16 @@ class CORE_EXPORT DisplayLockDocumentState final
   Member<IntersectionObserver> intersection_observer_ = nullptr;
   HeapHashSet<WeakMember<DisplayLockContext>> display_lock_contexts_;
 
+  // Contains all of the currently forced node infos, each of which represents
+  // the node that caused the scope to be created.
+  HeapVector<ForcedNodeInfo> forced_node_infos_;
+  HeapVector<ForcedRangeInfo> forced_range_infos_;
+
   int locked_display_lock_count_ = 0;
   int display_lock_blocking_all_activation_count_ = 0;
 
   // If greater than 0, then the activatable locks are forced.
   int activatable_display_locks_forced_ = 0;
-
-  // Contains all of the currently forced node infos, each of which represents
-  // the node that caused the scope to be created.
-  HeapVector<ForcedNodeInfo> forced_node_infos_;
-  HeapVector<ForcedRangeInfo> forced_range_infos_;
 
   bool printing_ = false;
 

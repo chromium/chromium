@@ -81,8 +81,8 @@ DocumentTimeline::DocumentTimeline(Document* document,
     : AnimationTimeline(document),
       origin_time_(origin_time),
       zero_time_(base::TimeTicks() + origin_time_),
-      zero_time_initialized_(false),
-      playback_rate_(1) {
+      playback_rate_(1),
+      zero_time_initialized_(false) {
   if (!timing)
     timing_ = MakeGarbageCollected<DocumentTimelineTiming>(this);
   else

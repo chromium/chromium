@@ -21,7 +21,11 @@ class FontCustomPlatformData;
 class RemoteFontFaceSource final : public CSSFontFaceSource,
                                    public FontResourceClient {
  public:
-  enum Phase { kNoLimitExceeded, kShortLimitExceeded, kLongLimitExceeded };
+  enum Phase : uint8_t {
+    kNoLimitExceeded,
+    kShortLimitExceeded,
+    kLongLimitExceeded
+  };
 
   RemoteFontFaceSource(CSSFontFace*,
                        FontSelector*,
@@ -74,7 +78,7 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   // the font is loaded from memory cache synchronously, and hence, made
   // immediately available. As we never need to use a fallback for it, using
   // other DisplayPeriod values seem artificial. So we use a special value.
-  enum DisplayPeriod {
+  enum DisplayPeriod : uint8_t {
     kBlockPeriod,
     kSwapPeriod,
     kFailurePeriod,
@@ -161,10 +165,11 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   // |nullptr| if font is not loaded or failed to decode.
   String url_;
 
+  FontLoadHistograms histograms_;
+
   FontDisplay display_;
   Phase phase_;
   DisplayPeriod period_;
-  FontLoadHistograms histograms_;
   bool is_intervention_triggered_;
   bool finished_before_document_rendering_begin_;
 

@@ -700,9 +700,9 @@ class CORE_EXPORT NGLayoutResult final
       SetBfcBlockOffset(bfc_block_offset);
     }
     RareData(const RareData& rare_data)
-        : bfc_line_offset(rare_data.bfc_line_offset),
-          start_page_name(rare_data.start_page_name),
+        : start_page_name(rare_data.start_page_name),
           end_page_name(rare_data.end_page_name),
+          bfc_line_offset(rare_data.bfc_line_offset),
           early_break(rare_data.early_break),
           oof_positioned_offset(rare_data.oof_positioned_offset),
           end_margin_strut(rare_data.end_margin_strut),
@@ -796,10 +796,10 @@ class CORE_EXPORT NGLayoutResult final
 
     void Trace(Visitor* visitor) const;
 
-    LayoutUnit bfc_line_offset;
-
     AtomicString start_page_name;
     AtomicString end_page_name;
+
+    LayoutUnit bfc_line_offset;
 
     Member<const NGEarlyBreak> early_break;
     LogicalOffset oof_positioned_offset;

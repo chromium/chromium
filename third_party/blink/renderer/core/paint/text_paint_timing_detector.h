@@ -33,8 +33,8 @@ class TextRecord final : public GarbageCollected<TextRecord> {
              const gfx::RectF& root_visual_rect,
              uint32_t frame_index)
       : node_(&node),
-        first_size(new_first_size),
         frame_index_(frame_index),
+        first_size(new_first_size),
         element_timing_rect_(element_timing_rect) {
     if (PaintTimingVisualizer::IsTracingEnabled()) {
       lcp_rect_info_ = std::make_unique<LCPRectInfo>(
@@ -47,8 +47,8 @@ class TextRecord final : public GarbageCollected<TextRecord> {
   void Trace(Visitor*) const;
 
   WeakMember<Node> node_;
-  uint64_t first_size = 0;
   uint32_t frame_index_ = 0;
+  uint64_t first_size = 0;
   gfx::RectF element_timing_rect_;
   std::unique_ptr<LCPRectInfo> lcp_rect_info_;
   // The time of the first paint after fully loaded.
@@ -165,12 +165,6 @@ class CORE_EXPORT TextPaintTimingDetector final
     added_entry_in_latest_frame_ = true;
   }
 
-  Member<PaintTimingCallbackManager> callback_manager_;
-  Member<const LocalFrameView> frame_view_;
-  // Set lazily because we may not have the correct Window when first
-  // initializing this class.
-  Member<TextElementTiming> text_element_timing_;
-
   // LayoutObjects for which text has been aggregated.
   HeapHashSet<Member<const LayoutObject>> recorded_set_;
 
@@ -178,6 +172,12 @@ class CORE_EXPORT TextPaintTimingDetector final
   // easy.
   HeapHashMap<Member<const LayoutObject>, Member<TextRecord>>
       texts_queued_for_paint_time_;
+
+  Member<PaintTimingCallbackManager> callback_manager_;
+  Member<const LocalFrameView> frame_view_;
+  // Set lazily because we may not have the correct Window when first
+  // initializing this class.
+  Member<TextElementTiming> text_element_timing_;
 
   Member<LargestTextPaintManager> ltp_manager_;
   bool recording_largest_text_paint_ = true;

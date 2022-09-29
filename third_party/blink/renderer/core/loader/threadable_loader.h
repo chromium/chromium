@@ -151,11 +151,11 @@ class CORE_EXPORT ThreadableLoader final
   void DataDownloaded(Resource*, uint64_t) override;
   void DidDownloadToBlob(Resource*, scoped_refptr<BlobDataHandle>) override;
 
+  const ResourceLoaderOptions resource_loader_options_;
+
   Member<ThreadableLoaderClient> client_;
   Member<ExecutionContext> execution_context_;
   Member<ResourceFetcher> resource_fetcher_;
-
-  const ResourceLoaderOptions resource_loader_options_;
 
   // Saved so that we can use the original mode in ResponseReceived() where
   // |resource| might be a reused one (e.g. preloaded resource) which can have a

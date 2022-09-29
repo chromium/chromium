@@ -582,8 +582,6 @@ class CORE_EXPORT NGFragmentItem final {
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;
 
-  Member<const LayoutObject> layout_object_;
-
   // TODO(kojii): We can make them sub-classes if we need to make the vector of
   // pointers. Sub-classing from DisplayItemClient prohibits copying and that we
   // cannot create a vector of this class.
@@ -599,6 +597,8 @@ class CORE_EXPORT NGFragmentItem final {
   PhysicalRect rect_;
 
   NGInkOverflow ink_overflow_;
+
+  Member<const LayoutObject> layout_object_;
 
   mutable wtf_size_t fragment_id_ = 0;
 

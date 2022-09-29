@@ -114,9 +114,9 @@ class CORE_EXPORT DeferredShapingController
  private:
   size_t ReshapeAllDeferredInternal();
 
-  Member<Document> document_;
   TaskHandle reshaping_task_handle_;
   HeapHashSet<Member<Element>> deferred_elements_;
+  Member<Document> document_;
   LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
   LayoutUnit current_minimum_top_;
   bool allow_deferred_shaping_ = false;

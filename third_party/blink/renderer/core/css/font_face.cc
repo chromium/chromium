@@ -243,8 +243,8 @@ FontFace::FontFace(ExecutionContext* context,
                    const StyleRuleFontFace* style_rule,
                    bool is_user_style)
     : ExecutionContextClient(context),
-      status_(kUnloaded),
       style_rule_(style_rule),
+      status_(kUnloaded),
       is_user_style_(is_user_style) {}
 
 FontFace::FontFace(ExecutionContext* context,

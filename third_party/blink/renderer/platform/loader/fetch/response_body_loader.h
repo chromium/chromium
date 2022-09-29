@@ -141,12 +141,12 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   void OnStateChange() override;
   String DebugName() const override { return "ResponseBodyLoader"; }
 
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<Buffer> body_buffer_;
   Member<BytesConsumer> bytes_consumer_;
   Member<DelegatingBytesConsumer> delegating_bytes_consumer_;
   const Member<ResponseBodyLoaderClient> client_;
   WeakMember<BackForwardCacheLoaderHelper> back_forward_cache_loader_helper_;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   LoaderFreezeMode suspended_state_ = LoaderFreezeMode::kNone;
   bool started_ = false;
   bool aborted_ = false;

@@ -182,7 +182,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual bool GetHotSpot(gfx::Point&) const { return false; }
 
-  enum SizeAvailability {
+  enum SizeAvailability : uint8_t {
     kSizeUnavailable,
     kSizeAvailableAndLoadingAsynchronously,
     kSizeAvailable,

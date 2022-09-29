@@ -106,12 +106,12 @@ ResourceLoadObserverForFrame::ResourceLoadObserverForFrame(
     DocumentLoader& loader,
     Document& document,
     const ResourceFetcherProperties& fetcher_properties)
-    : document_loader_(loader),
-      document_(document),
-      fetcher_properties_(fetcher_properties),
-      power_mode_voter_(
+    : power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.ResourceLoads")) {}
+              "PowerModeVoter.ResourceLoads")),
+      document_loader_(loader),
+      document_(document),
+      fetcher_properties_(fetcher_properties) {}
 ResourceLoadObserverForFrame::~ResourceLoadObserverForFrame() = default;
 
 void ResourceLoadObserverForFrame::DidStartRequest(

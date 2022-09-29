@@ -356,8 +356,8 @@ class CORE_EXPORT CSSAnimations final {
     TransitionEventDelegate(Element* transition_target,
                             const PropertyHandle& property,
                             Timing::Phase previous_phase = Timing::kPhaseNone)
-        : transition_target_(transition_target),
-          property_(property),
+        : property_(property),
+          transition_target_(transition_target),
           previous_phase_(previous_phase) {}
     bool RequiresIterationEvents(const AnimationEffect&) override {
       return false;
@@ -376,8 +376,8 @@ class CORE_EXPORT CSSAnimations final {
     EventTarget* GetEventTarget() const;
     Document& GetDocument() const { return transition_target_->GetDocument(); }
 
-    Member<Element> transition_target_;
     PropertyHandle property_;
+    Member<Element> transition_target_;
     Timing::Phase previous_phase_;
   };
 };

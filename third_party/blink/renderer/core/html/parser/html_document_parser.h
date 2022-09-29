@@ -237,8 +237,8 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // called when data is available.
   bool ShouldPumpTokenizerNowForFinishAppend() const;
 
-  const HTMLParserOptions options_;
   HTMLInputStream input_;
+  const HTMLParserOptions options_;
   Member<HTMLParserReentryPermit> reentry_permit_ =
       MakeGarbageCollected<HTMLParserReentryPermit>();
 

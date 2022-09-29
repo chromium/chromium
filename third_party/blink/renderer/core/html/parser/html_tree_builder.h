@@ -233,10 +233,6 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   };
 
   // https://html.spec.whatwg.org/C/#frameset-ok-flag
-  bool frameset_ok_;
-#if DCHECK_IS_ON()
-  bool is_attached_ = true;
-#endif
   FragmentParsingContext fragment_context_;
   HTMLConstructionSite tree_;
 
@@ -254,6 +250,11 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
   bool should_skip_leading_newline_;
 
   const bool include_shadow_roots_;
+
+  bool frameset_ok_;
+#if DCHECK_IS_ON()
+  bool is_attached_ = true;
+#endif
 
   // We access parser because HTML5 spec requires that we be able to change the
   // state of the tokenizer from within parser actions. We also need it to track

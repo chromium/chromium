@@ -368,8 +368,8 @@ static void CollectScopedResolversForHostedShadowTrees(
 }
 
 StyleResolver::StyleResolver(Document& document)
-    : document_(document),
-      initial_style_(ComputedStyle::CreateInitialStyleSingleton()) {
+    : initial_style_(ComputedStyle::CreateInitialStyleSingleton()),
+      document_(document) {
   UpdateMediaType();
 }
 

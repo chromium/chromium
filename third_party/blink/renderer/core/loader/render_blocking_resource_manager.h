@@ -73,8 +73,6 @@ class CORE_EXPORT RenderBlockingResourceManager final
   void DisableFontPreloadTimeoutForTest();
   bool FontPreloadTimerIsActiveForTest() const;
 
-  Member<Document> document_;
-
   // Tracks the currently loading top-level stylesheets which block
   // rendering from starting. Sheets loaded using the @import directive are not
   // directly included in this set. See:
@@ -89,6 +87,8 @@ class CORE_EXPORT RenderBlockingResourceManager final
   // links, including short-blocking font preloads.
   HeapHashMap<WeakMember<const PendingLinkPreload>, PreloadType>
       pending_preloads_;
+
+  Member<Document> document_;
 
   unsigned imperative_font_loading_count_ = 0;
 

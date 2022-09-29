@@ -119,14 +119,15 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   void RemoveDelayReason(DelayReason);
   void RemoveDelayReasonFromScript(PendingScript*, DelayReason);
 
-  Member<Document> document_;
-
   // https://html.spec.whatwg.org/C/#list-of-scripts-that-will-execute-in-order-as-soon-as-possible
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
   // https://html.spec.whatwg.org/C/#set-of-scripts-that-will-execute-as-soon-as-possible
   // The value represents the `DelayReason`s that the script is waiting for
   // before its evaluation.
   HeapHashMap<Member<PendingScript>, DelayReasons> pending_async_scripts_;
+
+  Member<Document> document_;
+
   // The number of async scripts that aren't yet evaluated. This is different
   // from pending_async_scripts_.size() == the number of async scripts that
   // aren't yet scheduled to evaluate.

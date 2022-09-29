@@ -130,9 +130,9 @@ class CORE_EXPORT CSSComputedStyleDeclaration final
 
   bool CssPropertyMatches(CSSPropertyID, const CSSValue&) const override;
 
+  AtomicString pseudo_argument_;
   Member<Node> node_;
   PseudoId pseudo_element_specifier_;
-  AtomicString pseudo_argument_;
   bool allow_visited_style_;
 };
 

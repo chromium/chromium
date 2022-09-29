@@ -56,7 +56,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // Script type at the time of #prepare-the-script-element. Import maps are
   // included here but not in `mojom::blink::ScriptType` because import maps are
   // handled differently from ordinal scripts after PrepareScript().
-  enum class ScriptTypeAtPrepare {
+  enum class ScriptTypeAtPrepare : uint8_t {
     kClassic,
     kModule,
     kImportMap,
@@ -130,13 +130,6 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
 
   Member<ScriptElementBase> element_;
 
-  // https://html.spec.whatwg.org/C/#script-processing-model
-  // "A script element has several associated pieces of state.":
-
-  // <spec href="https://html.spec.whatwg.org/C/#already-started">... initially
-  // false.</spec>
-  bool already_started_ = false;
-
   // <spec href="https://html.spec.whatwg.org/C/#parser-document">... initially
   // null. It is set by the HTML parser and the XML parser on script elements
   // they insert, ...</spec>
@@ -145,6 +138,31 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // information separately from the parser document, so ScriptLoader doesn't
   // need to keep the parser document alive.
   WeakMember<Document> parser_document_;
+
+  // A PendingScript is first created in PrepareScript() and stored in
+  // |prepared_pending_script_|.
+  // Later, TakePendingScript() is called, and its caller holds a reference
+  // to the PendingScript instead and |prepared_pending_script_| is cleared.
+  Member<PendingScript> prepared_pending_script_;
+
+  // This is used only to keep the ScriptResource of a classic script alive
+  // and thus to keep it on MemoryCache, even after script execution, as long
+  // as ScriptLoader is alive. crbug.com/778799
+  Member<Resource> resource_keep_alive_;
+
+  // This is created only for <script type=webbundle>, representing a webbundle
+  // mapping rule and its loader.
+  Member<ScriptWebBundle> script_web_bundle_;
+
+  // Speculation rule set registered by this script, if applicable.
+  Member<SpeculationRuleSet> speculation_rule_set_;
+
+  // https://html.spec.whatwg.org/C/#script-processing-model
+  // "A script element has several associated pieces of state.":
+
+  // <spec href="https://html.spec.whatwg.org/C/#already-started">... initially
+  // false.</spec>
+  bool already_started_ = false;
 
   // <spec href="https://html.spec.whatwg.org/C/#parser-inserted">... script
   // elements with non-null parser documents are known as
@@ -174,24 +192,6 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // ... initially false. It is determined when the script is prepared, based on
   // the src attribute of the element at that time.</spec>
   bool is_external_script_ = false;
-
-  // A PendingScript is first created in PrepareScript() and stored in
-  // |prepared_pending_script_|.
-  // Later, TakePendingScript() is called, and its caller holds a reference
-  // to the PendingScript instead and |prepared_pending_script_| is cleared.
-  Member<PendingScript> prepared_pending_script_;
-
-  // This is used only to keep the ScriptResource of a classic script alive
-  // and thus to keep it on MemoryCache, even after script execution, as long
-  // as ScriptLoader is alive. crbug.com/778799
-  Member<Resource> resource_keep_alive_;
-
-  // This is created only for <script type=webbundle>, representing a webbundle
-  // mapping rule and its loader.
-  Member<ScriptWebBundle> script_web_bundle_;
-
-  // Speculation rule set registered by this script, if applicable.
-  Member<SpeculationRuleSet> speculation_rule_set_;
 };
 
 }  // namespace blink

@@ -137,13 +137,16 @@ class CORE_EXPORT PaintLayerStackingNode
   struct HighestLayers;
   void CollectLayers(PaintLayer&, HighestLayers*);
 
-  Member<PaintLayer> layer_;
-
   // Holds a sorted list of all the descendant nodes within that have z-indices
   // of 0 (or is treated as 0 for positioned objects) or greater.
   PaintLayers pos_z_order_list_;
   // Holds descendants within our stacking context with negative z-indices.
   PaintLayers neg_z_order_list_;
+
+  // All PaintLayers (just in current stacking context, child stacking contexts
+  // will have their own list) that have overlay overflow controls that should
+  // paint reordered. For the above example, this has one entry {target}.
+  PaintLayers overlay_overflow_controls_reordered_list_;
 
   // Overlay overflow controls(scrollbar or resizer) need to be painted above
   // all child contents, even if the contents are stacked in a stacking context
@@ -189,10 +192,7 @@ class CORE_EXPORT PaintLayerStackingNode
   HeapHashMap<Member<const PaintLayer>, Member<PaintLayers>>
       layer_to_overlay_overflow_controls_painting_after_;
 
-  // All PaintLayers (just in current stacking context, child stacking contexts
-  // will have their own list) that have overlay overflow controls that should
-  // paint reordered. For the above example, this has one entry {target}.
-  PaintLayers overlay_overflow_controls_reordered_list_;
+  Member<PaintLayer> layer_;
 
   // Indicates whether the z-order lists above are dirty.
   bool z_order_lists_dirty_ = true;

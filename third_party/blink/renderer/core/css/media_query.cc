@@ -79,16 +79,16 @@ MediaQuery* MediaQuery::CreateNotAll() {
 MediaQuery::MediaQuery(RestrictorType restrictor,
                        String media_type,
                        const MediaQueryExpNode* exp_node)
-    : restrictor_(restrictor),
-      media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
+    : media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
       exp_node_(exp_node),
+      restrictor_(restrictor),
       has_unknown_(exp_node_ ? exp_node_->HasUnknown() : false) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
-    : restrictor_(o.restrictor_),
-      media_type_(o.media_type_),
-      exp_node_(o.exp_node_),
+    : media_type_(o.media_type_),
       serialization_cache_(o.serialization_cache_),
+      exp_node_(o.exp_node_),
+      restrictor_(o.restrictor_),
       has_unknown_(o.has_unknown_) {}
 
 MediaQuery::~MediaQuery() = default;
