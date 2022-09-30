@@ -185,11 +185,10 @@ void SoftwareRenderer::SetClipRRect(const gfx::RRectF& rrect) {
   if (!current_canvas_)
     return;
 
-  gfx::Transform screen_transform =
-      current_frame()->window_matrix * current_frame()->projection_matrix;
   SkRRect result;
-  if (SkRRect(rrect).transform(
-          gfx::TransformToFlattenedSkMatrix(screen_transform), &result)) {
+  if (SkRRect(rrect).transform(gfx::AxisTransform2dToSkMatrix(
+                                   current_frame()->target_to_device_transform),
+                               &result)) {
     // Skia applies the current matrix to clip rects so we reset it temporarily.
     SkMatrix current_matrix = current_canvas_->getTotalMatrix();
     current_canvas_->resetMatrix();
@@ -269,9 +268,9 @@ void SoftwareRenderer::DoDrawQuad(const DrawQuad* quad,
   QuadRectTransform(&quad_rect_matrix,
                     quad->shared_quad_state->quad_to_target_transform,
                     gfx::RectF(quad->rect));
-  gfx::Transform contents_device_transform =
-      current_frame()->window_matrix * current_frame()->projection_matrix *
-      quad_rect_matrix;
+  gfx::Transform contents_device_transform = quad_rect_matrix;
+  contents_device_transform.PostConcat(
+      current_frame()->target_to_device_transform);
   contents_device_transform.FlattenTo2d();
   SkMatrix sk_device_matrix =
       gfx::TransformToFlattenedSkMatrix(contents_device_transform);
@@ -801,9 +800,9 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   QuadRectTransform(&quad_rect_matrix,
                     quad->shared_quad_state->quad_to_target_transform,
                     gfx::RectF(quad->rect));
-  gfx::Transform contents_device_transform =
-      current_frame()->window_matrix * current_frame()->projection_matrix *
-      quad_rect_matrix;
+  gfx::Transform contents_device_transform = quad_rect_matrix;
+  contents_device_transform.PostConcat(
+      current_frame()->target_to_device_transform);
   contents_device_transform.FlattenTo2d();
 
   absl::optional<gfx::RRectF> backdrop_filter_bounds;

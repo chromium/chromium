@@ -354,6 +354,39 @@ TEST(TransformUtilTest, TransformBetweenRects) {
   verify(RectF(0.f, 0.f, 3.f, 5.f), RectF());
 }
 
+TEST(TransformUtilTest, OrthoProjectionTransform) {
+  auto verify = [](float left, float right, float bottom, float top) {
+    AxisTransform2d t = OrthoProjectionTransform(left, right, bottom, top);
+    if (right == left || top == bottom) {
+      EXPECT_EQ(AxisTransform2d(), t);
+    } else {
+      EXPECT_EQ(PointF(-1, -1), t.MapPoint(PointF(left, bottom)));
+      EXPECT_EQ(PointF(1, 1), t.MapPoint(PointF(right, top)));
+    }
+  };
+
+  verify(0, 0, 0, 0);
+  verify(10, 20, 10, 30);
+  verify(10, 30, 20, 30);
+  verify(0, 0, 10, 20);
+  verify(-100, 400, 200, -200);
+  verify(-1.5, 4.25, 2.75, -3.75);
+}
+
+TEST(TransformUtilTest, WindowTransform) {
+  auto verify = [](int x, int y, int width, int height) {
+    AxisTransform2d t = WindowTransform(x, y, width, height);
+    EXPECT_EQ(PointF(x, y), t.MapPoint(PointF(-1, -1)));
+    EXPECT_EQ(PointF(x + width, y + height), t.MapPoint(PointF(1, 1)));
+  };
+
+  verify(0, 0, 0, 0);
+  verify(10, 20, 0, 30);
+  verify(10, 30, 20, 0);
+  verify(0, 0, 10, 20);
+  verify(-100, -400, 200, 300);
+}
+
 TEST(TransformUtilTest, Transform2dScaleComponents) {
   // Values to test quiet NaN, infinity, and a denormal float if they're
   // present; zero otherwise (since for the case this is used for, it

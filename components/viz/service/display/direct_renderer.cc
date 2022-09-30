@@ -131,19 +131,19 @@ void DirectRenderer::InitializeViewport(DrawingFrame* frame,
   DCHECK_LE(viewport_rect.bottom(), surface_size.height());
   bool flip_y = FlippedFramebuffer();
   if (flip_y) {
-    frame->projection_matrix = gfx::OrthoProjectionMatrix(
+    frame->target_to_device_transform = gfx::OrthoProjectionTransform(
         draw_rect.x(), draw_rect.right(), draw_rect.bottom(), draw_rect.y());
   } else {
-    frame->projection_matrix = gfx::OrthoProjectionMatrix(
+    frame->target_to_device_transform = gfx::OrthoProjectionTransform(
         draw_rect.x(), draw_rect.right(), draw_rect.y(), draw_rect.bottom());
   }
 
   gfx::Rect window_rect = viewport_rect;
   if (flip_y)
     window_rect.set_y(surface_size.height() - viewport_rect.bottom());
-  frame->window_matrix =
-      gfx::WindowMatrix(window_rect.x(), window_rect.y(), window_rect.width(),
-                        window_rect.height());
+  frame->target_to_device_transform.PostConcat(
+      gfx::WindowTransform(window_rect.x(), window_rect.y(),
+                           window_rect.width(), window_rect.height()));
   current_draw_rect_ = draw_rect;
   current_viewport_rect_ = viewport_rect;
   current_surface_size_ = surface_size;

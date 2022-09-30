@@ -152,10 +152,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // The returned DrawQuadParams can be modified by the DrawX calls that accept
   // params so that they can apply explicit data transforms before sending to
   // Skia in a consistent manner.
-  DrawQuadParams CalculateDrawQuadParams(const gfx::Transform& target_to_device,
-                                         const gfx::Rect* scissor_rect,
-                                         const DrawQuad* quad,
-                                         const gfx::QuadF* draw_region) const;
+  DrawQuadParams CalculateDrawQuadParams(
+      const gfx::AxisTransform2d& target_to_device,
+      const gfx::Rect* scissor_rect,
+      const DrawQuad* quad,
+      const gfx::QuadF* draw_region) const;
 
   DrawRPDQParams CalculateRPDQParams(const AggregatedRenderPassDrawQuad* quad,
                                      DrawQuadParams* params);

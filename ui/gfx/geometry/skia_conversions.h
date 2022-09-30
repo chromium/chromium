@@ -16,6 +16,7 @@ class SkMatrix;
 
 namespace gfx {
 
+class AxisTransform2d;
 class Point;
 class PointF;
 class Rect;
@@ -39,6 +40,9 @@ GEOMETRY_SKIA_EXPORT SizeF SkSizeToSizeF(const SkSize& size);
 GEOMETRY_SKIA_EXPORT Size SkISizeToSize(const SkISize& size);
 
 GEOMETRY_SKIA_EXPORT void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]);
+
+GEOMETRY_SKIA_EXPORT SkMatrix
+AxisTransform2dToSkMatrix(const AxisTransform2d& transform);
 
 GEOMETRY_SKIA_EXPORT SkM44 TransformToSkM44(const Transform& tranform);
 GEOMETRY_SKIA_EXPORT Transform SkM44ToTransform(const SkM44& matrix);

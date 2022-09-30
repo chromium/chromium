@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -2990,6 +2991,28 @@ TEST(XFormTest, TransformPointReverse) {
       transform3d.TransformPointReverse(transformed_point_3f);
   ASSERT_TRUE(reverted_point_3f.has_value());
   EXPECT_TRUE(PointsAreNearlyEqual(reverted_point_3f.value(), point_3f));
+}
+
+TEST(XFormTest, PreConcatAxisTransform2d) {
+  auto t = Transform::RowMajor(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                               16, 17);
+  AxisTransform2d axis(Vector2dF(10, 20), Vector2dF(100, 200));
+  auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
+  auto t1 = t;
+  t.PreConcat(axis);
+  t1.PreconcatTransform(axis_full);
+  EXPECT_EQ(t, t1);
+}
+
+TEST(XFormTest, PostConcatAxisTransform2d) {
+  auto t = Transform::RowMajor(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                               16, 17);
+  AxisTransform2d axis(Vector2dF(10, 20), Vector2dF(100, 200));
+  auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
+  auto t1 = t;
+  t.PostConcat(axis);
+  t1.ConcatTransform(axis_full);
+  EXPECT_EQ(t, t1);
 }
 
 }  // namespace

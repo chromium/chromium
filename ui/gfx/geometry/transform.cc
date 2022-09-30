@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -238,6 +239,16 @@ void Transform::PreconcatTransform(const Transform& transform) {
 
 void Transform::ConcatTransform(const Transform& transform) {
   matrix_.postConcat(transform.matrix_);
+}
+
+void Transform::PreConcat(const AxisTransform2d& transform) {
+  Translate(transform.translation());
+  Scale(transform.scale().x(), transform.scale().y());
+}
+
+void Transform::PostConcat(const AxisTransform2d& transform) {
+  PostScale(transform.scale().x(), transform.scale().y());
+  PostTranslate(transform.translation());
 }
 
 bool Transform::IsApproximatelyIdentityOrTranslation(SkScalar tolerance) const {

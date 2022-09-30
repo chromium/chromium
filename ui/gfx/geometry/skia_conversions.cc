@@ -9,6 +9,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -85,6 +86,13 @@ void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]) {
   points[1] = PointFToSkPoint(quad.p2());
   points[2] = PointFToSkPoint(quad.p3());
   points[3] = PointFToSkPoint(quad.p4());
+}
+
+SkMatrix AxisTransform2dToSkMatrix(const AxisTransform2d& transform) {
+  return SkMatrix::MakeAll(
+      transform.scale().x(), 0, transform.translation().x(),  // row 0
+      0, transform.scale().y(), transform.translation().y(),  // row 1
+      0, 0, 1);                                               // row 2
 }
 
 SkM44 TransformToSkM44(const Transform& matrix) {

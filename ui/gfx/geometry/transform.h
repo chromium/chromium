@@ -16,6 +16,7 @@
 
 namespace gfx {
 
+class AxisTransform2d;
 class BoxF;
 class RectF;
 class RRectF;
@@ -181,6 +182,14 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Applies a transformation on the current transformation
   // (i.e. 'this = transform * this;').
   void ConcatTransform(const Transform& transform);
+
+  // Applies a 2d-axis transform on the current transformation,
+  // i.e. this = this * transform.
+  void PreConcat(const AxisTransform2d& transform);
+
+  // Applies a transformation on the current transformation,
+  // i.e. this = transform * this.
+  void PostConcat(const AxisTransform2d& transform);
 
   // Returns true if this is the identity matrix.
   // This function modifies a mutable variable in |matrix_|.

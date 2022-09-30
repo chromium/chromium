@@ -27,6 +27,7 @@
 #include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/display_color_spaces.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -128,8 +129,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     gfx::Size device_viewport_size;
     gfx::DisplayColorSpaces display_color_spaces;
 
-    gfx::Transform projection_matrix;
-    gfx::Transform window_matrix;
+    gfx::AxisTransform2d target_to_device_transform;
 
     OverlayProcessorInterface::CandidateList overlay_list;
     // When we have a buffer queue, the output surface could be treated as an

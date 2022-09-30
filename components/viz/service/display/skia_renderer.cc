@@ -483,9 +483,9 @@ struct SkiaRenderer::DrawQuadParams {
                  const SkSamplingOptions& sampling,
                  const gfx::QuadF* draw_region);
 
-  // window_matrix * projection_matrix * quad_to_target_transform normally,
-  // or quad_to_target_transform if the remaining device transform is held in
-  // the DrawRPDQParams for a bypass quad.
+  // target_to_device_transform * quad_to_target_transform normally, or
+  // quad_to_target_transform if the remaining device transform is held in the
+  // DrawRPDQParams for a bypass quad.
   gfx::Transform content_device_transform;
   // The DrawQuad's rect.
   gfx::RectF rect;
@@ -1167,11 +1167,9 @@ void SkiaRenderer::DoDrawQuad(const DrawQuad* quad,
   if (!current_canvas_)
     return;
   TRACE_EVENT0("viz", "SkiaRenderer::DoDrawQuad");
-  gfx::Transform target_to_device =
-      current_frame()->window_matrix * current_frame()->projection_matrix;
   const gfx::Rect* scissor = is_scissor_enabled_ ? &scissor_rect_ : nullptr;
-  DrawQuadParams params =
-      CalculateDrawQuadParams(target_to_device, scissor, quad, draw_region);
+  DrawQuadParams params = CalculateDrawQuadParams(
+      current_frame()->target_to_device_transform, scissor, quad, draw_region);
   // The outer DrawQuad will never have RPDQ params
   DrawQuadInternal(quad, /* rpdq */ nullptr, &params);
 }
@@ -1550,16 +1548,17 @@ void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
 }
 
 SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
-    const gfx::Transform& target_to_device,
+    const gfx::AxisTransform2d& target_to_device,
     const gfx::Rect* scissor_rect,
     const DrawQuad* quad,
     const gfx::QuadF* draw_region) const {
   DrawQuadParams params(
-      target_to_device * quad->shared_quad_state->quad_to_target_transform,
-      gfx::RectF(quad->rect), gfx::RectF(quad->visible_rect),
-      SkCanvas::kNone_QuadAAFlags, quad->shared_quad_state->blend_mode,
-      quad->shared_quad_state->opacity, GetSampling(quad), draw_region);
+      quad->shared_quad_state->quad_to_target_transform, gfx::RectF(quad->rect),
+      gfx::RectF(quad->visible_rect), SkCanvas::kNone_QuadAAFlags,
+      quad->shared_quad_state->blend_mode, quad->shared_quad_state->opacity,
+      GetSampling(quad), draw_region);
 
+  params.content_device_transform.PostConcat(target_to_device);
   params.content_device_transform.FlattenTo2d();
 
   // Respect per-quad setting overrides as highest priority setting
@@ -1602,7 +1601,7 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
     // device space, which should always be a scale+translate.
     SkRRect corner_bounds = static_cast<SkRRect>(
         quad->shared_quad_state->mask_filter_info.rounded_corner_bounds());
-    SkMatrix to_device = gfx::TransformToFlattenedSkMatrix(target_to_device);
+    SkMatrix to_device = gfx::AxisTransform2dToSkMatrix(target_to_device);
 
     // SkRRect::transform should always succeed here, since we know
     // corner_bounds is not empty and 'to_device' should just be scale+translate
@@ -1858,7 +1857,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
   // include the RP's output rect as part of the scissor rect, since it would
   // have been clipped to the edges of the RP's offscreen buffer normally.
   DrawQuadParams bypass_params = CalculateDrawQuadParams(
-      gfx::Transform() /* identity */, nullptr, bypass_quad, nullptr);
+      gfx::AxisTransform2d() /* identity */, nullptr, bypass_quad, nullptr);
 
   // |params| already holds the correct |draw_region|, but must be updated to
   // use the bypassed transform and geometry.
@@ -3405,14 +3404,12 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   }
 
   const auto& viewport_size = current_frame()->device_viewport_size;
-  auto projection_matrix = gfx::OrthoProjectionMatrix(
+  gfx::AxisTransform2d target_to_device = gfx::OrthoProjectionTransform(
       /*left=*/0, /*right=*/viewport_size.width(), /*bottom=*/0,
       /*top=*/viewport_size.height());
-  auto window_matrix =
-      gfx::WindowMatrix(/*x=*/0, /*y=*/0, /*width=*/viewport_size.width(),
-                        /*height=*/viewport_size.height());
-
-  gfx::Transform target_to_device = window_matrix * projection_matrix;
+  target_to_device.PostConcat(
+      gfx::WindowTransform(/*x=*/0, /*y=*/0, /*width=*/viewport_size.width(),
+                           /*height=*/viewport_size.height()));
 
   DrawQuadParams params;
   DrawRPDQParams rpdq_params{gfx::RectF()};
