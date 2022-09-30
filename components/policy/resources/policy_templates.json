@@ -13800,16 +13800,6 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Managed guest sessions behave like managed sessions',
-        },
-        {
-          'value': False,
-          'caption': 'Managed guest sessions behave like standard public sessions',
-        },
-      ],
       'deprecated': True,
       'example_value': True,
       'id': 463,
@@ -13862,16 +13852,6 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Close privacy warning notifications after a delay',
-        },
-        {
-          'value': False,
-          'caption': 'Show privacy notifications until dismissed by the user',
-        },
-      ],
       'deprecated': True,
       'example_value': True,
       'id': 688,
@@ -14134,16 +14114,6 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Allow users to opt in to Safe Browsing extended reporting',
-        },
-        {
-          'value': False,
-          'caption': 'Do not allow users to opt in to Safe Browsing extended reporting',
-        },
-      ],
       'deprecated': True,
       'example_value': True,
       'id': 299,
@@ -22175,16 +22145,6 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Require site isolation for the sign-in screen',
-        },
-        {
-          'value': False,
-          'caption': 'Use the default site isolation settings for the sign-in screen',
-        },
-      ],
       'deprecated': True,
       'example_value': True,
       'id': 418,
@@ -22418,16 +22378,6 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
-      'items': [
-        {
-          'value': True,
-          'caption': 'Allow WebDriver to override incompatible policies',
-        },
-        {
-          'value': False,
-          'caption': 'Do not allow WebDriver to override incompatible policies',
-        },
-      ],
       'deprecated': True,
       'example_value': True,
       'id': 414,
