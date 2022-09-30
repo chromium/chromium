@@ -86,15 +86,12 @@ def CopySectionFilesToStagingDir(config, section, staging_dir, src_dir,
 
 
 def GetLZMAExec(build_dir):
+    executable = '7za'
     if sys.platform == 'win32':
-        lzma_exec = os.path.join(build_dir, "..", "..", "third_party",
-                                 "lzma_sdk", "bin", "win64", "7za.exe")
-    elif sys.platform == 'darwin':
-        lzma_exec = os.path.join(build_dir, "..", "..", "third_party",
-                                 "lzma_sdk", "bin", "mac64", "7zz")
-    else:
-        lzma_exec = '7zr'  # Use system 7zr.
-    return lzma_exec
+        executable += '.exe'
+
+    return os.path.join(build_dir, "..", "..", "third_party", "lzma_sdk",
+                        "bin", "host_platform", executable)
 
 
 def MakeStagingDirectory(staging_dir):
