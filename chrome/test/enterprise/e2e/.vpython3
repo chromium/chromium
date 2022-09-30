@@ -11,8 +11,7 @@ python_version: "3.8"
 
 verify_pep425_tag: [
     {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
-# TODO(https://crbug.com/1363689): Uncomment when this wheel has been added.
-#   {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
 
     {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
     {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
@@ -162,7 +161,7 @@ wheel: <
 
 wheel: <
   name: "infra/python/wheels/grpcio/${vpython_platform}"
-  version: "version:1.39.0"
+  version: "version:1.44.0"
 >
 
 wheel: <
