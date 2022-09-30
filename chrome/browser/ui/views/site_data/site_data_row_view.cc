@@ -15,10 +15,20 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "url/origin.h"
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kMenuButton);
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kDeleteMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kAllowMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kBlockMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SiteDataRowView, kClearOnExitMenuItem);
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kSiteRowMenuItemClicked);
 
 namespace {
 
@@ -78,6 +88,12 @@ std::unique_ptr<views::TableLayout> SetupTableLayout() {
   return layout;
 }
 
+void NotifyMenuItemClicked(views::View* view) {
+  ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+      views::ElementTrackerViews::GetInstance()->GetElementForView(view),
+      kSiteRowMenuItemClicked);
+}
+
 }  // namespace
 
 SiteDataRowView::SiteDataRowView(
@@ -119,6 +135,7 @@ SiteDataRowView::SiteDataRowView(
                           base::Unretained(this)),
       kBrowserToolsIcon, icon_size));
   menu_button_->SetAccessibleName(u"Open context menu");
+  menu_button_->SetProperty(views::kElementIdentifierKey, kMenuButton);
 
   layout->AddRows(1, views::TableLayout::kFixedSize);
   AddChildView(std::make_unique<views::View>());
@@ -146,25 +163,29 @@ void SiteDataRowView::OnMenuIconClicked() {
     builder.AddMenuItem(
         ui::ImageModel(), u"Delete",
         base::BindRepeating(&SiteDataRowView::OnDeleteMenuItemClicked,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        ui::DialogModelMenuItem::Params().SetId(kDeleteMenuItem));
     // TODO(crbug.com/1344787): Consider clearing the data before blocking the
     // site to have a clean slate.
     builder.AddMenuItem(
         ui::ImageModel(), u"Don't allow",
         base::BindRepeating(&SiteDataRowView::OnBlockMenuItemClicked,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        ui::DialogModelMenuItem::Params().SetId(kBlockMenuItem));
   }
   if (setting_ != CONTENT_SETTING_ALLOW) {
     builder.AddMenuItem(
         ui::ImageModel(), u"Allow",
         base::BindRepeating(&SiteDataRowView::OnAllowMenuItemClicked,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        ui::DialogModelMenuItem::Params().SetId(kAllowMenuItem));
   }
   if (setting_ != CONTENT_SETTING_SESSION_ONLY) {
     builder.AddMenuItem(
         ui::ImageModel(), u"Clear when you close Chrome",
         base::BindRepeating(&SiteDataRowView::OnClearOnExitMenuItemClicked,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        ui::DialogModelMenuItem::Params().SetId(kClearOnExitMenuItem));
   }
 
   dialog_model_ =
@@ -185,13 +206,17 @@ void SiteDataRowView::OnMenuClosed() {
 }
 
 void SiteDataRowView::OnDeleteMenuItemClicked(int event_flags) {
-  // TODO(crbug.com/1344787): Delete the stored data.
+  DCHECK_NE(setting_, CONTENT_SETTING_BLOCK);
+  delete_callback_.Run(origin_);
+
+  // Notify the event before hiding, the element has to be visible when event
+  // happens.
+  NotifyMenuItemClicked(this);
+
   // Hiding the view instead of trying to delete makes the lifecycle management
   // easier. All the related items to the dialog have the same lifecycle and are
   // created when dialog is shown and are deleted when the dialog is destroyed.
-  DCHECK_NE(setting_, CONTENT_SETTING_BLOCK);
   SetVisible(false);
-  delete_callback_.Run(origin_);
 }
 
 void SiteDataRowView::OnBlockMenuItemClicked(int event_flags) {
@@ -216,4 +241,5 @@ void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
   is_fully_partitioned_ = false;
   state_label_->SetVisible(true);
   state_label_->SetText(GetSettingStateString(setting_, is_fully_partitioned_));
+  NotifyMenuItemClicked(this);
 }

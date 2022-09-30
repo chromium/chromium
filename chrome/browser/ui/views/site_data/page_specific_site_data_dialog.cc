@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
+#include <string>
 
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -43,6 +44,7 @@ struct PageSpecificSiteDataDialogSection {
   std::u16string title;
   std::u16string subtitle;
   std::vector<PageSpecificSiteDataDialogSite> sites;
+  ui::ElementIdentifier identifier;
 };
 
 int GetContentSettingRowOrder(ContentSetting setting) {
@@ -98,10 +100,12 @@ std::vector<PageSpecificSiteDataDialogSection> GetSections(
   PageSpecificSiteDataDialogSection first_party_section;
   first_party_section.title = u"From this site";
   first_party_section.subtitle = u"From this site subtitle";
+  first_party_section.identifier = kPageSpecificSiteDataDialogFirstPartySection;
 
   PageSpecificSiteDataDialogSection third_party_section;
   third_party_section.title = u"From other site";
   third_party_section.subtitle = u"From other site subtitle";
+  third_party_section.identifier = kPageSpecificSiteDataDialogThirdPartySection;
 
   for (const auto& site : all_sites) {
     if (GetEtldPlusOne(site.origin) == eltd_current_origin) {
@@ -350,7 +354,7 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
               &PageSpecificSiteDataDialogModelDelegate::SetContentException,
               base::Unretained(delegate))));
       row_view->SetProperty(views::kElementIdentifierKey,
-                            kPageSpecificSiteDataDialogRowForTesting);
+                            kPageSpecificSiteDataDialogRow);
     }
 
     empty_state_label_ = AddChildView(std::make_unique<views::Label>(
@@ -358,6 +362,8 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
             IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_EMPTY_STATE_LABEL),
         views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
     empty_state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    empty_state_label_->SetProperty(views::kElementIdentifierKey,
+                                    kPageSpecificSiteDataDialogEmptyStateLabel);
 
     // Set insets to match with other views in the dialog.
     auto dialog_insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
@@ -390,7 +396,11 @@ class PageSpecificSiteDataSectionView : public views::BoxLayoutView {
 
 }  // namespace
 
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRowForTesting);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRow);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogFirstPartySection);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogThirdPartySection);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogEmptyStateLabel);
+
 // static
 views::Widget* ShowPageSpecificSiteDataDialog(
     content::WebContents* web_contents) {
@@ -425,7 +435,8 @@ views::Widget* ShowPageSpecificSiteDataDialog(
         section.title);
     builder.AddCustomField(
         CreateCustomField(std::make_unique<PageSpecificSiteDataSectionView>(
-            section.sites, delegate)));
+            section.sites, delegate)),
+        section.identifier);
   }
 
   // If there were no sections shown, show a label that explains an empty state.

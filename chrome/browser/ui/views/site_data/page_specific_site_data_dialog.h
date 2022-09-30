@@ -15,7 +15,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRowForTesting);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogRow);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogFirstPartySection);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogThirdPartySection);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kPageSpecificSiteDataDialogEmptyStateLabel);
 
 views::Widget* ShowPageSpecificSiteDataDialog(
     content::WebContents* web_contents);

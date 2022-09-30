@@ -229,8 +229,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   ui::ElementContext context =
       views::ElementTrackerViews::GetContextForWidget(dialog);
 
-  auto* view =
-      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
   ClickDeleteMenuItem(row_view);
@@ -281,8 +280,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, DeleteMenuItem) {
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
-  auto* view =
-      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   EXPECT_TRUE(row_view->GetVisible());
   ClickButton(row_view->menu_button_for_testing());
@@ -318,8 +316,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, BlockMenuItem) {
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
-  auto* view =
-      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
@@ -357,8 +354,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest, AllowMenuItem) {
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
-  auto* view =
-      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.
@@ -407,8 +403,7 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
       kCookiesDialogHistogramName,
       static_cast<int>(PageSpecificSiteDataDialogAction::kDialogOpened), 1);
 
-  auto* view =
-      GetViewByIdentifier(context, kPageSpecificSiteDataDialogRowForTesting);
+  auto* view = GetViewByIdentifier(context, kPageSpecificSiteDataDialogRow);
   auto* row_view = static_cast<SiteDataRowView*>(view);
   // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
   // returns true. It's not actually visible because it has size 0.

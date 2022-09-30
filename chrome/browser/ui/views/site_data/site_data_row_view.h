@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_SITE_DATA_SITE_DATA_ROW_VIEW_H_
 
 #include "components/content_settings/core/common/content_settings.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
 
@@ -30,6 +33,8 @@ namespace url {
 class Origin;
 }  // namespace url
 
+DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kSiteRowMenuItemClicked);
+
 // The view that represents a site that has acesss to the data or was blocked
 // from accessing the data in the context of the currently visited website. The
 // view is used as a row in the site data dialog. It contains a favicon (with a
@@ -47,6 +52,13 @@ class SiteDataRowView : public views::View {
           create_exception_callback);
 
   ~SiteDataRowView() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMenuButton);
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearOnExitMenuItem);
 
   views::Label* state_label_for_testing() { return state_label_; }
   views::ImageButton* menu_button_for_testing() { return menu_button_; }

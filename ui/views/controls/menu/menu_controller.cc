@@ -1776,6 +1776,10 @@ void MenuController::Accept(MenuItemView* item, int event_flags) {
       views::ElementTrackerViews::GetInstance()->NotifyViewActivated(id, item);
   }
 
+  // EndPopupFocusOverride before closing the menu, the focus should move on
+  // after closing the menu.
+  item->GetViewAccessibility().EndPopupFocusOverride();
+
   // Setting `result_` now means that a future Cancel() call will include that
   // `result_` in its delegate notification, and thus the clicked command will
   // still be executed even if the menu is canceled during the close animation.
