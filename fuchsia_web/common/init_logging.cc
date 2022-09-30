@@ -20,7 +20,8 @@ constexpr char kLogFile[] = "log-file";
 bool InitLoggingFromCommandLine(const base::CommandLine& command_line) {
   logging::LoggingSettings settings;
   if (command_line.GetSwitchValueASCII(kEnableLogging) == "stderr") {
-    settings.logging_dest = logging::LOG_TO_STDERR;
+    settings.logging_dest =
+        logging::LOG_TO_STDERR | logging::LOG_TO_SYSTEM_DEBUG_LOG;
   } else {
     settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   }

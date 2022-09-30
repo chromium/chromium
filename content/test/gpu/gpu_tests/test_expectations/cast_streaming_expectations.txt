@@ -61,5 +61,3 @@
 # tags: [ dawn-backend-validation dawn-no-backend-validation ]
 # results: [ Failure RetryOnFailure Skip Slow ]
 # END TAG HEADER
-
-crbug.com/1368754 [ fuchsia ] CastStreaming_VP8_1Frame [ Failure ]

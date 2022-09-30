@@ -253,6 +253,7 @@ int main(int argc, char** argv) {
   scoped_refptr<media::DecoderBuffer> video_decoder_buffer =
       video_helper.GetNextBuffer();
   video_decoder_buffer->set_timestamp(base::TimeDelta());
+  video_decoder_buffer->set_is_key_frame(true);
   sender.SendVideoBuffer(video_decoder_buffer);
 
   run_loop.Run();
