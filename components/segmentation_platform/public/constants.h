@@ -48,6 +48,10 @@ const char kShoppingUserUmaName[] = "ShoppingUser";
 const char kContextualPageActionsKey[] = "contextual_page_actions";
 const char kContextualPageActionsUmaName[] = "ContextualPageActions";
 
+// Determine search users of the browser app.
+const char kSearchUserKey[] = "search_user";
+const char kSearchUserUmaName[] = "SearchUser";
+
 // Determine power users of the browser app.
 const char kPowerUserKey[] = "power_user";
 const char kPowerUserUmaName[] = "PowerUser";

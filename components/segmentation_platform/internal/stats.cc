@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -43,7 +44,8 @@ enum class SegmentationModel {
   kFeedUserSegment = 17,
   kContextualPageActionPriceTracking = 18,
   kChromeStartAndroidV2 = 22,
-  kMaxValue = kChromeStartAndroidV2,
+  kSearchUserSegment = 23,
+  kMaxValue = kSearchUserSegment,
 };
 
 AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
@@ -76,7 +78,8 @@ bool IsBooleanSegment(const std::string& segmentation_key) {
          segmentation_key == kCrossDeviceUserKey ||
          segmentation_key == kFrequentFeatureUserKey ||
          segmentation_key == kIntentionalUserKey ||
-         segmentation_key == kResumeHeavyUserKey;
+         segmentation_key == kResumeHeavyUserKey ||
+         segmentation_key == kSearchUserKey;
 }
 
 BooleanSegmentSwitch GetBooleanSegmentSwitch(SegmentId new_selection,
@@ -175,6 +178,8 @@ SegmentationModel OptimizationTargetToSegmentationModel(SegmentId segment_id) {
       return SegmentationModel::kContextualPageActionPriceTracking;
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2:
       return SegmentationModel::kChromeStartAndroidV2;
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
+      return SegmentationModel::kSearchUserSegment;
     default:
       return SegmentationModel::kUnknown;
   }
@@ -258,11 +263,16 @@ void RecordModelScore(SegmentId segment_id, float score) {
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT:
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER:
     case SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
-      // Assumes all models return score between 0 and 1. This is true for all
-      // the models we have currently.
+      // This block assumes all models return score between 0 and 1.
       base::UmaHistogramPercentage("SegmentationPlatform.ModelScore." +
                                        SegmentIdToHistogramVariant(segment_id),
                                    score * 100);
+      break;
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
+      // This block assumes all models return score between 0 and 100.
+      base::UmaHistogramPercentage("SegmentationPlatform.ModelScore." +
+                                       SegmentIdToHistogramVariant(segment_id),
+                                   base::ClampRound(score));
       break;
     default:
       break;

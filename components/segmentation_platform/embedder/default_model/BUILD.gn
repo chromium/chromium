@@ -20,6 +20,8 @@ static_library("default_model") {
     "query_tiles_model.h",
     "resume_heavy_user_model.cc",
     "resume_heavy_user_model.h",
+    "search_user_model.cc",
+    "search_user_model.h",
     "shopping_user_model.cc",
     "shopping_user_model.h",
   ]
@@ -46,6 +48,7 @@ source_set("unit_tests") {
     "price_tracking_action_model_unittest.cc",
     "query_tiles_model_unittest.cc",
     "resume_heavy_user_model_unittest.cc",
+    "search_user_model_unittest.cc",
     "shopping_user_model_unittest.cc",
   ]
 
@@ -55,6 +58,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public/proto",
     "//testing/gtest",
   ]
 }

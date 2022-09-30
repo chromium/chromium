@@ -53,6 +53,7 @@ chromium-metrics-reviews@google.com.
       summary="Segmentation: Feed usage in Chrome"/>
   <variant name="SegmentationNewTab" summary="Segmentation: New tab page user"/>
   <variant name="SegmentationQueryTiles" summary="Query tiles"/>
+  <variant name="SegmentationSearchUser" summary="Segmentation: Search user"/>
   <variant name="SegmentationShare" summary="Segmentation: Share user"/>
   <variant name="SegmentationShoppingUser"
       summary="Segmentation: Shopping user"/>

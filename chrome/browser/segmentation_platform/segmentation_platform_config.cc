@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/embedder/default_model/resume_heavy_user_model.h"
+#include "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #include "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #include "components/segmentation_platform/internal/config_parser.h"
 #include "components/segmentation_platform/public/config.h"
@@ -56,6 +57,9 @@ constexpr int kChromeLowUserEngagementSelectionTTLDays = 7;
 
 constexpr int kFeedUserSegmentSelectionTTLDays = 14;
 constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
+
+constexpr int kSearchUserSegmentSelectionTTLDays = 7;
+constexpr int kSearchUserSegmentUnknownSelectionTTLDays = 7;
 
 constexpr int kShoppingUserDefaultSelectionTTLDays = 7;
 constexpr int kShoppingUserDefaultUnknownSelectionTTLDays = 7;
@@ -318,6 +322,38 @@ std::unique_ptr<Config> GetConfigForFeedSegments() {
   return config;
 }
 
+bool IsSearchUserModelEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kSegmentationPlatformSearchUser);
+}
+
+std::unique_ptr<ModelProvider> GetSearchUserDefaultModel() {
+  if (!base::GetFieldTrialParamByFeatureAsBool(
+          features::kSegmentationPlatformSearchUser, kDefaultModelEnabledParam,
+          true)) {
+    return nullptr;
+  }
+  return std::make_unique<SearchUserModel>();
+}
+
+std::unique_ptr<Config> GetConfigForSearchUserModel() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kSearchUserKey;
+  config->segmentation_uma_name = kSearchUserUmaName;
+  config->AddSegmentId(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER,
+                       GetSearchUserDefaultModel());
+  config->segment_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kSegmentationPlatformSearchUser,
+          "segment_selection_ttl_days", kSearchUserSegmentSelectionTTLDays));
+  config->unknown_selection_ttl =
+      base::Days(base::GetFieldTrialParamByFeatureAsInt(
+          features::kSegmentationPlatformSearchUser,
+          "unknown_selection_ttl_days",
+          kSearchUserSegmentUnknownSelectionTTLDays));
+  return config;
+}
+
 std::unique_ptr<ModelProvider> GetShoppingUserDefaultModel() {
   if (!base::GetFieldTrialParamByFeatureAsBool(
           features::kShoppingUserSegmentFeature, kDefaultModelEnabledParam,
@@ -393,6 +429,9 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
     configs.emplace_back(GetConfigForPowerUser());
   }
 #endif
+  if (IsSearchUserModelEnabled()) {
+    configs.emplace_back(GetConfigForSearchUserModel());
+  }
   if (IsLowEngagementFeatureEnabled()) {
     configs.emplace_back(GetConfigForChromeLowUserEngagement());
   }
@@ -477,6 +516,9 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   }
   if (segment_id == SegmentId::CROSS_DEVICE_USER_SEGMENT) {
     group_name = CrossDeviceUserSegment::GetSubsegmentName(subsegment_rank);
+  }
+  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER) {
+    group_name = SearchUserModel::GetSubsegmentName(subsegment_rank);
   }
 
   if (!group_name) {

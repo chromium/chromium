@@ -24,6 +24,7 @@ PriceTrackingActionModelTest.*
 PriceTrackingInputDelegateTest.*
 QueryTilesModelTest.*
 ResumeHeavyUserModelTest.*
+SearchUserModelTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformDummyUkmManagerTest.*
 SegmentationPlatformServiceImplEmptyConfigTest.*

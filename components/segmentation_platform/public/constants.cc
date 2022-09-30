@@ -30,6 +30,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kShoppingUserUmaName;
   } else if (segmentation_key == kContextualPageActionsKey) {
     return kContextualPageActionsUmaName;
+  } else if (segmentation_key == kSearchUserKey) {
+    return kSearchUserUmaName;
   } else if (segmentation_key == kPowerUserKey) {
     return kPowerUserUmaName;
   } else if (segmentation_key == kCrossDeviceUserKey) {
@@ -76,6 +78,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
     case proto::SegmentId::
         OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING:
       return "ContextualPageActionPriceTracking";
+    case proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
+      return "SearchUserSegment";
     case proto::SegmentId::POWER_USER_SEGMENT:
       return "PowerUserSegment";
     case proto::SegmentId::CROSS_DEVICE_USER_SEGMENT:

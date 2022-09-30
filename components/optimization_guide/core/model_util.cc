@@ -79,6 +79,8 @@ std::string GetStringNameForOptimizationTarget(
       return "GeolocationPermissions";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2:
       return "SegmentationChromeStartAndroidV2";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
+      return "SegmentationSearchUser";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.

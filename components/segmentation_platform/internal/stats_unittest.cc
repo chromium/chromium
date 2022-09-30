@@ -168,5 +168,31 @@ TEST(StatsTest, TrainingDataCollectionEvent) {
                 "SegmentationPlatform.TrainingDataCollectionEvents.Share", 0));
 }
 
+TEST(StatsTest, RecordModelScore) {
+  base::HistogramTester tester;
+  // Test Adaptive Toolbar special case which records both using a unique
+  // histogram name, and the default histogram name. Both results are multiplied
+  // by 100.
+  stats::RecordModelScore(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
+                          0.13);
+  EXPECT_EQ(1,
+            tester.GetBucketCount(
+                "SegmentationPlatform.AdaptiveToolbar.ModelScore.Voice", 13));
+  EXPECT_EQ(1,
+            tester.GetBucketCount("SegmentationPlatform.ModelScore.Voice", 13));
+
+  // Test default case of multiplying result by 100.
+  stats::RecordModelScore(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES, 0.19);
+  EXPECT_EQ(1, tester.GetBucketCount(
+                   "SegmentationPlatform.ModelScore.QueryTiles", 19));
+
+  // Test segments that uses rank as scores, which should be recorded as-is.
+  stats::RecordModelScore(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER, 75);
+  EXPECT_EQ(1, tester.GetBucketCount(
+                   "SegmentationPlatform.ModelScore.SearchUserSegment", 75));
+}
+
 }  // namespace stats
 }  // namespace segmentation_platform
