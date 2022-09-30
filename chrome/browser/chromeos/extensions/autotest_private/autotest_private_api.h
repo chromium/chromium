@@ -802,6 +802,9 @@ class AutotestPrivateSendAssistantTextQueryFunction : public ExtensionFunction {
   // time. We will respond with an error.
   void Timeout();
 
+  // Convert session_manager::SessionState to string for error logging.
+  std::string ToString(session_manager::SessionState session_state);
+
   std::unique_ptr<AssistantInteractionHelper> interaction_helper_;
   base::OneShotTimer timeout_timer_;
 };

@@ -169,6 +169,8 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/update_client/update_client_errors.h"
@@ -3453,6 +3455,17 @@ AutotestPrivateSendAssistantTextQueryFunction::Run() {
         "Assistant not allowed - state: %d", allowed_state)));
   }
 
+  session_manager::SessionState session_state =
+      session_manager::SessionManager::Get()->session_state();
+  if (session_state != session_manager::SessionState::ACTIVE) {
+    // tast side code matches with this error string, i.e. update both if you
+    // change this.
+    return RespondNow(
+        Error("Session state must be ACTIVE to send a text query. Session "
+              "state was *",
+              ToString(session_state)));
+  }
+
   interaction_helper_->Init(
       base::BindOnce(&AutotestPrivateSendAssistantTextQueryFunction::
                          OnInteractionFinishedCallback,
@@ -3492,6 +3505,28 @@ void AutotestPrivateSendAssistantTextQueryFunction::Timeout() {
 
   // Reset to unsubscribe OnInteractionFinishedCallback().
   interaction_helper_.reset();
+}
+
+std::string AutotestPrivateSendAssistantTextQueryFunction::ToString(
+    session_manager::SessionState session_state) {
+  switch (session_state) {
+    case session_manager::SessionState::UNKNOWN:
+      return "UNKNOWN";
+    case session_manager::SessionState::OOBE:
+      return "OOBE";
+    case session_manager::SessionState::LOGIN_PRIMARY:
+      return "LOGIN_PRIMARY";
+    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
+      return "LOGGED_IN_NOT_ACTIVE";
+    case session_manager::SessionState::ACTIVE:
+      return "ACTIVE";
+    case session_manager::SessionState::LOCKED:
+      return "LOCKED";
+    case session_manager::SessionState::LOGIN_SECONDARY:
+      return "LOGIN_SECONDARY";
+    case session_manager::SessionState::RMA:
+      return "RMA";
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
