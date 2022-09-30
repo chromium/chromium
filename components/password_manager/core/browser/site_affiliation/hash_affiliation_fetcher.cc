@@ -64,22 +64,24 @@ void HashAffiliationFetcher::StartRequest(
             " Chrome can obtain information about affiliated and grouped "
             " websites as well as link to directly change password using this "
             " request. Chrome sends only hash prefixes of the websites. "
-          trigger: "After triggering change password action"
+          trigger: "Whenever a new password added or one day passed after last"
+            " request for existing passwords. Another trigger is a change "
+            " password action in settings."
           data:
-            "Hash prefixes of websites URLs on which user's credentials were "
-            "compromised."
+            "Hash prefixes of websites URLs or package name for android apps."
           destination: GOOGLE_OWNED_SERVICE
         }
         policy {
           cookies_allowed: NO
           setting:
-            "This feature is used as a substitute for affiliation fetcher "
-            "that sends full facet URLs in a plain form. If the standard "
-            "affiliation fetcher cannot be used for privacy reasons then this "
-            "request is made as an alternative solution."
+            "This feature is used to facilitate password manager filling "
+            "experience by allowing users to fill passwords between "
+            "affiliated sites and apps, or when user needs to get a direct"
+            "change password URL. Furthermore only deleting all passwords will "
+            "turn this feature off."
           policy_exception_justification:
-            "Not implemented. This request has no limitation as it is intended "
-            "to be used when sync is turned off or passphrase is used. "
+            "Not implemented. Sending only hash prefixes to the server allows "
+            "to preserve users' privacy. "
         })");
 
   // Prepare the payload based on |facet_uris| and |request_info|.
