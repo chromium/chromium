@@ -34,12 +34,12 @@ import java.util.Random;
  */
 public class FREMobileIdentityConsistencyFieldTrial {
     private static final Object LOCK = new Object();
-    private static final String ENABLED_GROUP = "Enabled7";
+    private static final String ENABLED_GROUP = "Enabled8";
     @VisibleForTesting
-    public static final String DISABLED_GROUP = "Disabled7";
+    public static final String DISABLED_GROUP = "Disabled8";
     private static final String DEFAULT_GROUP = "Default";
     @VisibleForTesting
-    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog7";
+    public static final String OLD_FRE_WITH_UMA_DIALOG_GROUP = "OldFreWithUmaDialog8";
 
     /**
      * Shows the new flow with separate sign-in and sync pages. Uses the new initialization logic
@@ -47,20 +47,20 @@ public class FREMobileIdentityConsistencyFieldTrial {
      * buttons on the welcome screen.
      */
     @VisibleForTesting
-    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew7";
+    public static final String INITIALIZATION_FLOW_NEW_GROUP = "InitializationFlowNew8";
     /**
      * Shows the new flow with separate sign-in and sync pages. Uses the old initialization logic
      * in which continue/dismiss buttons on the welcome screen are shown after native is
      * initialized. This group is used to check the effect of the delay introduced by the native
      * initialization.
      */
-    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld7";
+    public static final String INITIALIZATION_FLOW_OLD_GROUP = "InitializationFlowOld8";
     /**
      * Shows the flow without the sign-in page but with UMA controls in a dialog.
      * This group is used as control for {@link #INITIALIZATION_FLOW_NEW_GROUP} and
      * {@link #INITIALIZATION_FLOW_OLD_GROUP}.
      */
-    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl7";
+    private static final String INITIALIZATION_FLOW_CONTROL_GROUP = "InitializationFlowControl8";
 
     /**
      * The group variation values should be consecutive starting from zero. WELCOME_TO_CHROME acts
