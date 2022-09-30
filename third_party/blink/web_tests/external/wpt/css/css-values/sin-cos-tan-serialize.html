@@ -39,6 +39,8 @@ var test_map = {
     "tan(0.78539816)"                                  :"calc(1)",
     "tan(0.78539816rad)"                               :"calc(1)",
     "tan(0.125turn)"                                   :"calc(1)",
+    "tan(90deg)"                                       :"calc(infinity)",
+    "tan(-90deg)"                                      :"calc(-infinity)",
     "calc(sin(30deg) + cos(60deg) + tan(45deg))"       :"calc(2)",
     "calc(sin(infinity))"                              :"calc(NaN)",
     "calc(cos(infinity))"                              :"calc(NaN)",
