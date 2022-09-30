@@ -175,11 +175,12 @@ GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email) {
     if (email.empty())
       return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
 
+    user_manager::KnownUser known_user(g_browser_process->local_state());
     // If there's a populated email, we must check first that this user is using
-    // SAML in order to decide whether to do the redirect.
-    const user_manager::User* user = user_manager::UserManager::Get()->FindUser(
-        user_manager::known_user::GetAccountId(email, std::string() /* id */,
-                                               AccountType::UNKNOWN));
+    // SAML in order to decide whether to show the interstitial page.
+    const user_manager::User* user =
+        user_manager::UserManager::Get()->FindUser(known_user.GetAccountId(
+            email, std::string() /* id */, AccountType::UNKNOWN));
 
     if (user && user->using_saml())
       return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
@@ -684,10 +685,11 @@ void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
   if (ShouldCheckUserTypeBeforeAllowing())
     return;
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   if (LoginDisplayHost::default_host() &&
       !LoginDisplayHost::default_host()->IsUserAllowlisted(
-          user_manager::known_user::GetAccountId(
-              user_email, std::string() /* id */, AccountType::UNKNOWN),
+          known_user.GetAccountId(user_email, std::string() /* id */,
+                                  AccountType::UNKNOWN),
           absl::nullopt)) {
     ShowAllowlistCheckFailedError();
   }
@@ -747,8 +749,9 @@ AccountId GaiaScreenHandler::GetAccountId(
   const std::string canonicalized_email =
       gaia::CanonicalizeEmail(gaia::SanitizeEmail(authenticated_email));
 
-  const AccountId account_id = user_manager::known_user::GetAccountId(
-      authenticated_email, id, account_type);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id =
+      known_user.GetAccountId(authenticated_email, id, account_type);
 
   if (account_id.GetUserEmail() != canonicalized_email) {
     LOG(WARNING) << "Existing user '" << account_id.GetUserEmail()
@@ -1005,7 +1008,8 @@ void GaiaScreenHandler::HandleOnFatalError(int error_code,
 }
 
 void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
-  const AccountId account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id = known_user.GetAccountId(
       email, /*id=*/std::string(), AccountType::UNKNOWN);
   if (account_id == user_manager::UserManager::Get()->GetOwnerAccountId()) {
     // Shows powerwash UI if the user is device owner.
