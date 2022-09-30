@@ -589,6 +589,17 @@ void SimpleFeature::set_session_types(
   session_types_ = types;
 }
 
+void SimpleFeature::set_disallow_for_service_workers(bool disallow) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsFSPInServiceWorkers) &&
+      disallow &&
+      (name() == "fileSystemProvider" ||
+       name() == "fileSystemProviderInternal")) {
+    return;
+  }
+  disallow_for_service_workers_ = disallow;
+}
+
 void SimpleFeature::set_matches(
     std::initializer_list<const char* const> matches) {
   matches_.ClearPatterns();
