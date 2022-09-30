@@ -2179,17 +2179,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     if (!cached_field->IsFocusable() && result.fields[i].is_autofilled)
       AutofillMetrics::LogHiddenOrPresentationalSelectFieldsFilled();
   }
-  LOG_AF(buffer) << CTag{"table"};
 
   autofilled_form_signatures_.push_front(form_structure->FormSignatureAsStr());
   // Only remember the last few forms that we've seen, both to avoid false
   // positives and to avoid wasting memory.
   if (autofilled_form_signatures_.size() > kMaxRecentFormSignaturesToRemember)
     autofilled_form_signatures_.pop_back();
-
-  LOG_AF(log_manager()) << LoggingScope::kFilling
-                        << LogMessage::kSendFillingData << Br{}
-                        << std::move(buffer);
 
   auto field_types = base::MakeFlatMap<FieldGlobalId, ServerFieldType>(
       *form_structure, {}, [](const auto& field) {
@@ -2198,6 +2193,28 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       });
   std::vector<FieldGlobalId> safe_fields = driver()->FillOrPreviewForm(
       query_id, action, result, field.origin, field_types);
+
+  // Report the fields that were not filled due to the iframe security policy.
+  for (FieldGlobalId field_global_id : newly_filled_fields) {
+    if (base::Contains(safe_fields, field_global_id)) {
+      // A safe field was filled.
+      continue;
+    }
+    // Find and report index of fields that were not filled.
+    auto it = base::ranges::find(result.fields, field_global_id,
+                                 &FormFieldData::global_id);
+    if (it != result.fields.end()) {
+      size_t index = it - result.fields.begin();
+      std::string field_number = base::StringPrintf("Field %zu", index);
+      LOG_AF(buffer) << Tr{} << field_number
+                     << "Actually did not fill field because of the iframe "
+                        "security policy.";
+    }
+  }
+  LOG_AF(buffer) << CTag{"table"};
+  LOG_AF(log_manager()) << LoggingScope::kFilling
+                        << LogMessage::kSendFillingData << Br{}
+                        << std::move(buffer);
 
   // Call OnDidFillSuggestion() to log the metrics.
   if (action == mojom::RendererFormDataAction::kFill && !is_refill) {
