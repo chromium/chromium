@@ -101,7 +101,7 @@ suite('InputMethodOptionsPage', function() {
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     const options = optionsPage.shadowRoot.querySelectorAll('.list-item');
     assertTrue(!!options);
-    assertEquals(options.length, 8);
+    assertEquals(options.length, 9);
     assertEquals(
         options[0].querySelector('.start').textContent.trim(),
         'Auto-correction');
@@ -115,14 +115,27 @@ suite('InputMethodOptionsPage', function() {
             .value['xkb:us::eng']['physicalKeyboardAutoCorrectionLevel'],
         1);
 
+    assertTrue(options[1].querySelector('.start').textContent.includes(
+        'Show accent marks and special characters'));
+    const diacriticsToggleButton = options[1].querySelector('cr-toggle');
+    assertEquals(diacriticsToggleButton.checked, true);
+    diacriticsToggleButton.click();
+    await waitAfterNextRender(diacriticsToggleButton);
+    assertEquals(diacriticsToggleButton.checked, false);
     assertEquals(
-        options[1].querySelector('.start').textContent.trim(),
+        optionsPage.getPref(PREFS_KEY)
+            .value['xkb:us::eng']
+                  ['physicalKeyboardEnableDiacriticsOnLongpress'],
+        false);
+
+    assertEquals(
+        options[2].querySelector('.start').textContent.trim(),
         'Sound on keypress');
-    const toggleButton = options[1].querySelector('cr-toggle');
-    assertEquals(toggleButton.checked, false);
-    toggleButton.click();
-    await waitAfterNextRender(toggleButton);
-    assertEquals(toggleButton.checked, true);
+    const soundToggleButton = options[2].querySelector('cr-toggle');
+    assertEquals(soundToggleButton.checked, false);
+    soundToggleButton.click();
+    await waitAfterNextRender(soundToggleButton);
+    assertEquals(soundToggleButton.checked, true);
     assertEquals(
         optionsPage.getPref(PREFS_KEY)
             .value['xkb:us::eng']['enableSoundOnKeypress'],

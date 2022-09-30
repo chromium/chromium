@@ -28,6 +28,9 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
     return {
       enabled: [
         'chromeos::features::kEnableHostnameSetting',
+        // TODO(b/217560706): Remove this explicit enabled flag when rollout
+        // completed.
+        'chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress',
       ],
     };
   }
