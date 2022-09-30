@@ -416,6 +416,9 @@ ci.builder(
     cores = 4,
     os = os.MAC_DEFAULT,
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -481,6 +484,9 @@ ci.builder(
     cores = 12,
     os = os.MAC_DEFAULT,
     tree_closing = True,
+    goma_backend = None,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(

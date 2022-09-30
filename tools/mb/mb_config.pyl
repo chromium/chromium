@@ -64,9 +64,9 @@
       'linux-archive-dbg': 'debug_bot_reclient',
       'linux-archive-rel': 'release_bot_reclient',
       'linux-official': 'official_optimize_reclient',
-      'mac-archive-dbg': 'debug_bot',
+      'mac-archive-dbg': 'debug_bot_reclient',
       'mac-archive-rel': 'release_bot_mac_strip_minimal_symbols_reclient',
-      'mac-arm64-archive-dbg': 'debug_bot_arm64',
+      'mac-arm64-archive-dbg': 'debug_bot_arm64_reclient',
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
       'mac-official': 'official_optimize_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
@@ -384,7 +384,7 @@
       'Mac Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'Mac Builder Next': 'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols_reclient',
-      'Mac deterministic (dbg)': 'debug_bot',
+      'Mac deterministic (dbg)': 'debug_bot_reclient',
       'Mac deterministic (reclient shadow)': 'release_bot_mac_strip_minimal_symbols_no_nacl_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64_reclient',
       'VR Linux': 'vr_release_bot_reclient',
@@ -2497,8 +2497,8 @@
       'debug_bot',
     ],
 
-    'debug_bot_arm64': [
-      'debug_bot', 'arm64',
+    'debug_bot_arm64_reclient': [
+      'debug_bot_reclient', 'arm64',
     ],
 
     'debug_bot_blink': [
