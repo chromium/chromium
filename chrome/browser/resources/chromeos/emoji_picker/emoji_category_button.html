@@ -18,12 +18,16 @@
     --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
     background-color: var(--cros-highlight-color);
   }
+
+  #category-button.category-button-primary {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+  }
 </style>
 
 
 <cr-icon-button
   id="category-button"
-  class$="[[_className(active)]]"
+  class$="[[_className(active, searchActive)]]"
   iron-icon="[[icon]]"
   on-click="handleClick"
   aria-label="[[name]]"

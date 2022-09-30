@@ -27,6 +27,8 @@ export class EmojiCategoryButton extends PolymerElement {
       icon: {type: String, readonly: true},
       /** @type {!boolean} */
       active: {type: Boolean, value: false},
+      /** @type {!boolean} */
+      searchActive: {type: Boolean, value: false},
     };
   }
 
@@ -39,7 +41,10 @@ export class EmojiCategoryButton extends PolymerElement {
         createCustomEvent(CATEGORY_BUTTON_CLICK, {categoryName: this.name}));
   }
 
-  _className(active) {
+  _className(active, searchActive) {
+    if (searchActive) {
+      return 'category-button-primary';
+    }
     return active ? 'category-button-active' : '';
   }
 }
