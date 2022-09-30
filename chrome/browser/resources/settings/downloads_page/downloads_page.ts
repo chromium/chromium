@@ -14,7 +14,7 @@ import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared.css.js';
 
-import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -7,7 +7,7 @@
  * and settings search results.
  */
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import 'chrome://resources/js/cr/ui/focus_row.js';
+import 'chrome://resources/js/focus_row.js';
 import 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../../settings_shared.css.js';

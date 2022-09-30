@@ -15,8 +15,8 @@ import './strings.m.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {FocusGrid} from 'chrome://resources/js/cr/ui/focus_grid.js';
-import {FocusRow} from 'chrome://resources/js/cr/ui/focus_row.js';
+import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
+import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

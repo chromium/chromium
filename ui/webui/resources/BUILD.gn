@@ -197,12 +197,12 @@ ts_library("library") {
                "js/assert_ts.ts",
                "js/color_utils.ts",
                "js/custom_element.ts",
-               "js/cr/ui/drag_wrapper.ts",
-               "js/cr/ui/focus_grid.ts",
-               "js/cr/ui/focus_row.ts",
-               "js/cr/ui/focus_outline_manager.ts",
-               "js/cr/ui/keyboard_shortcut_list.ts",
-               "js/cr/ui/store_ts.ts",
+               "js/drag_wrapper.ts",
+               "js/focus_grid.ts",
+               "js/focus_row.ts",
+               "js/focus_outline_manager.ts",
+               "js/keyboard_shortcut_list.ts",
+               "js/store_ts.ts",
              ]
 
   if (include_polymer) {
@@ -213,8 +213,8 @@ ts_library("library") {
       "cr_components/managed_dialog/managed_dialog.ts",
       "cr_components/managed_footnote/managed_footnote.html.ts",
       "cr_components/managed_footnote/managed_footnote.ts",
-      "js/cr/ui/focus_row_mixin.ts",
-      "js/cr/ui/focus_without_ink.ts",
+      "js/focus_row_mixin.ts",
+      "js/focus_without_ink.ts",
       "js/search_highlight_utils.ts",
     ]
   }

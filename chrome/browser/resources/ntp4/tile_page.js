@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent, isMac} from 'chrome://resources/js/cr.m.js';
 import {toCssPx} from 'chrome://resources/js/cr/ui.js';
-import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
+import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {$, isRTL} from 'chrome://resources/js/util.js';

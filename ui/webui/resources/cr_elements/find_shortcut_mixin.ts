@@ -6,7 +6,7 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 import {assert, assertNotReached} from '../js/assert.js';
 import {isMac} from '../js/cr.m.js';
-import {KeyboardShortcutList} from '../js/cr/ui/keyboard_shortcut_list.js';
+import {KeyboardShortcutList} from '../js/keyboard_shortcut_list.js';
 import {isTextInputElement} from '../js/util.js';
 
 /**

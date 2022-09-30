@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './customize_shortcuts.html.js';

@@ -14,7 +14,7 @@ import '../cr_shared_vars.css.js';
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.js';
+import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 
 import {getTemplate} from './cr_button.html.js';
 

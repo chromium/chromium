@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DragWrapper} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
+import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {getCardSlider} from './new_tab.js';

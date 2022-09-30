@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Action, DeferredAction} from 'chrome://resources/js/cr/ui/store_ts.js';
+import {Action, DeferredAction} from 'chrome://resources/js/store_ts.js';
 import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Store} from './store.js';

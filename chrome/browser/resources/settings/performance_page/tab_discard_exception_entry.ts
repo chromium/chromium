@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import '../settings_shared.css.js';
 
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {FocusRowMixin} from 'chrome://resources/js/cr/ui/focus_row_mixin.js';
+import {FocusRowMixin} from 'chrome://resources/js/focus_row_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';

@@ -27,7 +27,6 @@ group("preprocess") {
   public_deps = [
     ":preprocess_src",
     ":preprocess_src_ts",
-    "cr/ui:preprocess",
   ]
   if (include_polymer) {
     public_deps += [ "browser_command:build_ts" ]
@@ -44,8 +43,21 @@ preprocess_if_expr("preprocess_src_ts") {
     "assert_ts.ts",
     "color_utils.ts",
     "custom_element.ts",
+    "drag_wrapper.ts",
+    "focus_grid.ts",
+    "focus_outline_manager.ts",
+    "focus_row.ts",
+    "keyboard_shortcut_list.ts",
     "search_highlight_utils.ts",
+    "store_ts.ts",
   ]
+
+  if (include_polymer) {
+    in_files += [
+      "focus_row_mixin.ts",
+      "focus_without_ink.ts",
+    ]
+  }
 }
 
 preprocess_if_expr("preprocess_src") {

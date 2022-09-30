@@ -21,7 +21,7 @@ import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.js';
 import {CrLazyRenderElement} from '../../cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {CrToastElement} from '../../cr_elements/cr_toast/cr_toast.js';
 import {assert} from '../../js/assert_ts.js';
-import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.js';
+import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';

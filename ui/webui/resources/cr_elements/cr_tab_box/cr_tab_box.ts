@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../../js/assert_ts.js';
-import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.js';
+import {FocusOutlineManager} from '../../js/focus_outline_manager.js';
 import {CustomElement} from '../../js/custom_element.js';
 
 import {getTemplate} from './cr_tab_box.html.js';

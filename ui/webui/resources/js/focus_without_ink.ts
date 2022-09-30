@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {isIOS} from 'chrome://resources/js/cr.m.js';
+import {assert} from './assert_ts.js';
+import {isIOS} from './cr.m.js';
 // clang-format on
 
 
