@@ -314,11 +314,9 @@ class OzonePlatformWayland : public OzonePlatform,
       // These properties are set when GetPlatformRuntimeProperties is called on
       // the browser process side.
       properties.supports_server_side_window_decorations =
-          override_supports_ssd_for_test == SupportsSsdForTest::kNotSet
-              ? (connection_->xdg_decoration_manager_v1() != nullptr)
-              : (override_supports_ssd_for_test == SupportsSsdForTest::kNo
-                     ? false
-                     : true);
+          (connection_->xdg_decoration_manager_v1() != nullptr &&
+          override_supports_ssd_for_test == SupportsSsdForTest::kNotSet) ||
+          override_supports_ssd_for_test == SupportsSsdForTest::kYes;
       properties.supports_overlays =
           ui::IsWaylandOverlayDelegationEnabled() && connection_->viewporter();
       properties.supports_non_backed_solid_color_buffers =
