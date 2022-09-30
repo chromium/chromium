@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 /**
  * @fileoverview This class acts as the persistent store for all static data
  * about commands.
@@ -304,14 +303,11 @@ export const CommandCategory = {
  * @type {Object<!Command, {
  *                  announce: boolean,
  *                  category: (undefined|!CommandCategory),
- *                  findNext: (undefined|string),
  *                  msgId: (undefined|string),
  *                  allowEvents: (undefined|boolean),
  *                  denySignedOut: (undefined|boolean)}>}
  *  announce: Whether to call finishNavCommand and announce the current
  *            position after the command is done.
- *  findNext: The id from the map above if this command is used for
- *            finding next/previous of something.
  *  category: The command's category.
  *  msgId: The message resource describing the command.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
@@ -702,236 +698,192 @@ CommandStore.CMD_ALLOWLIST = {
     category: CommandCategory.OVERVIEW,
   },
 
-  [Command.NEXT_ARTICLE]: {findNext: 'article'},
+  [Command.NEXT_ARTICLE]: {},
 
   [Command.NEXT_BUTTON]: {
-    findNext: 'button',
     msgId: 'next_button',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_CHECKBOX]: {
-    findNext: 'checkbox',
     msgId: 'next_checkbox',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_COMBO_BOX]: {
-    findNext: 'combobox',
     msgId: 'next_combo_box',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.NEXT_CONTROL]: {findNext: 'control'},
+  [Command.NEXT_CONTROL]: {},
   [Command.NEXT_EDIT_TEXT]: {
-    findNext: 'editText',
     msgId: 'next_edit_text',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_FORM_FIELD]: {
-    findNext: 'formField',
     msgId: 'next_form_field',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_GRAPHIC]: {
-    findNext: 'graphic',
     msgId: 'next_graphic',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING]: {
-    findNext: 'heading',
     msgId: 'next_heading',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING_1]: {
-    findNext: 'heading1',
     msgId: 'next_heading1',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING_2]: {
-    findNext: 'heading2',
     msgId: 'next_heading2',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING_3]: {
-    findNext: 'heading3',
     msgId: 'next_heading3',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING_4]: {
-    findNext: 'heading4',
     msgId: 'next_heading4',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING_5]: {
-    findNext: 'heading5',
     msgId: 'next_heading5',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_HEADING_6]: {
-    findNext: 'heading6',
     msgId: 'next_heading6',
     category: CommandCategory.JUMP_COMMANDS,
   },
 
   [Command.NEXT_LANDMARK]: {
-    findNext: 'landmark',
     msgId: 'next_landmark',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_LINK]: {
-    findNext: 'link',
     msgId: 'next_link',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_LIST]: {
-    findNext: 'list',
     msgId: 'next_list',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_LIST_ITEM]: {
-    findNext: 'listItem',
     msgId: 'next_list_item',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_MATH]: {
-    findNext: 'math',
     msgId: 'next_math',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_MEDIA]: {
-    findNext: 'media',
     msgId: 'next_media',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_RADIO]: {
-    findNext: 'radio',
     msgId: 'next_radio',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.NEXT_SECTION]: {findNext: 'section'},
-  [Command.NEXT_SLIDER]: {findNext: 'slider'},
+  [Command.NEXT_SECTION]: {},
+  [Command.NEXT_SLIDER]: {},
   [Command.NEXT_TABLE]: {
-    findNext: 'table',
     msgId: 'next_table',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.NEXT_VISITED_LINK]: {
-    findNext: 'visitedLink',
     msgId: 'next_visited_link',
     category: CommandCategory.JUMP_COMMANDS,
   },
 
 
-  [Command.PREVIOUS_ARTICLE]: {findNext: 'article'},
+  [Command.PREVIOUS_ARTICLE]: {},
 
   [Command.PREVIOUS_BUTTON]: {
-    findNext: 'button',
     msgId: 'previous_button',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_CHECKBOX]: {
-    findNext: 'checkbox',
     msgId: 'previous_checkbox',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_COMBO_BOX]: {
-    findNext: 'combobox',
     msgId: 'previous_combo_box',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.PREVIOUS_CONTROL]: {findNext: 'control'},
+  [Command.PREVIOUS_CONTROL]: {},
   [Command.PREVIOUS_EDIT_TEXT]: {
-    findNext: 'editText',
     msgId: 'previous_edit_text',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_FORM_FIELD]: {
-    findNext: 'formField',
     msgId: 'previous_form_field',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_GRAPHIC]: {
-    findNext: 'graphic',
     msgId: 'previous_graphic',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING]: {
-    findNext: 'heading',
     msgId: 'previous_heading',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING_1]: {
-    findNext: 'heading1',
     msgId: 'previous_heading1',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING_2]: {
-    findNext: 'heading2',
     msgId: 'previous_heading2',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING_3]: {
-    findNext: 'heading3',
     msgId: 'previous_heading3',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING_4]: {
-    findNext: 'heading4',
     msgId: 'previous_heading4',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING_5]: {
-    findNext: 'heading5',
     msgId: 'previous_heading5',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_HEADING_6]: {
-    findNext: 'heading6',
     msgId: 'previous_heading6',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_LANDMARK]: {
-    findNext: 'landmark',
     msgId: 'previous_landmark',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_LINK]: {
-    findNext: 'link',
     msgId: 'previous_link',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_LIST]: {
-    findNext: 'list',
     msgId: 'previous_list',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_LIST_ITEM]: {
-    findNext: 'listItem',
     msgId: 'previous_list_item',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_MATH]: {
-    findNext: 'math',
     msgId: 'previous_math',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_MEDIA]: {
-    findNext: 'media',
     msgId: 'previous_media',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_RADIO]: {
-    findNext: 'radio',
     msgId: 'previous_radio',
     category: CommandCategory.JUMP_COMMANDS,
   },
-  [Command.PREVIOUS_SECTION]: {findNext: 'section'},
-  [Command.PREVIOUS_SLIDER]: {findNext: 'slider'},
+  [Command.PREVIOUS_SECTION]: {},
+  [Command.PREVIOUS_SLIDER]: {},
   [Command.PREVIOUS_TABLE]: {
-    findNext: 'table',
     msgId: 'previous_table',
     category: CommandCategory.JUMP_COMMANDS,
   },
   [Command.PREVIOUS_VISITED_LINK]: {
-    findNext: 'visitedLink',
     msgId: 'previous_visited_link',
     category: CommandCategory.JUMP_COMMANDS,
   },
