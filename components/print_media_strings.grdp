@@ -173,9 +173,53 @@
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope DL''">
       Envelope DL
     </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B0_1030X1456MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B0''">
+      JIS B0
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B1_728X1030MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B1''">
+      JIS B1
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B2_515X728MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B2''">
+      JIS B2
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B3_364X515MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B3''">
+      JIS B3
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B4_257X364MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B4''">
+      JIS B4
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B5_182X257MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B5''">
+      JIS B5
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B6_128X182MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B6''">
+      JIS B6
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B7_91X128MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B7''">
+      JIS B7
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B8_64X91MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B8''">
+      JIS B8
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B9_45X64MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B9''">
+      JIS B9
+    </message>
+    <message name="PRINT_PREVIEW_MEDIA_JIS_B10_32X45MM"
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B10''">
+      JIS B10
+    </message>
     <message name="PRINT_PREVIEW_MEDIA_JIS_EXEC_216X330MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Exec''">
-      Exec
+             desc="Media size shown to user in print preview for media ``JIS Exec''.  JIS is an acronym and Exec is the name of the paper size.">
+      JIS Exec
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_CHOU2_111_1X146MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chou 2''">
@@ -194,8 +238,8 @@
       Envelope Chou 40
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_HAGAKI_100X148MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Hagaki (Postcard)''">
-      Hagaki (Postcard)
+             desc="In Title Case: Media size shown to user in print preview for media ``Hagaki Postcard''">
+      Hagaki Postcard
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_KAHU_240X322_1MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Kahu''">
@@ -230,8 +274,8 @@
       Envelope Kaku 8
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_OUFUKU_148X200MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Oufuku Hagaki (Postcard)''">
-      Oufuku Hagaki (Postcard)
+             desc="In Title Case: Media size shown to user in print preview for media ``Oufuku Hagaki Postcard''">
+      Oufuku Hagaki Postcard
     </message>
     <message name="PRINT_PREVIEW_MEDIA_JPN_YOU4_105X235MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope You 4''">
@@ -450,8 +494,8 @@
       3.5x5
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_DAI_PA_KAI_275X395MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Dai-Pa-Kai''">
-      Dai-Pa-Kai
+             desc="In Title Case: Media size shown to user in print preview for media ``275 x 395 mm''">
+      275 x 395 mm
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_FOLIO_SP_215X315MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Folio-Sp''">
@@ -466,16 +510,16 @@
       Envelope Italian
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_JUURO_KU_KAI_198X275MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Juuro-Ku-Kai''">
-      Juuro-Ku-Kai
+             desc="In Title Case: Media size shown to user in print preview for media ``198 x 275 mm''">
+      198 x 275 mm
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_LARGE_PHOTO_200X300"
              desc="In Title Case: Media size shown to user in print preview for media ``Large-Photo''">
       Large-Photo
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_PA_KAI_267X389MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Pa-Kai''">
-      Pa-Kai
+             desc="In Title Case: Media size shown to user in print preview for media ``267 x 389 mm''">
+      267 x 389 mm
     </message>
     <message name="PRINT_PREVIEW_MEDIA_OM_POSTFIX_114X229MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Postfix''">
@@ -490,8 +534,8 @@
       Envelope Chinese #10
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_16K_146X215MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc-16K''">
-      Prc-16K
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``PRC 16K''.  PRC is an acronym and 16K is a paper size.">
+      PRC 16K
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_1_102X165MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #1''">
@@ -502,8 +546,8 @@
       Envelope Chinese #2
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_32K_97X151MM"
-             desc="In Title Case: Media size shown to user in print preview for media ``Prc-32K''">
-      Prc-32K
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``PRC 32K''.  PRC is an acronym and 32K is a paper size.">
+      PRC 32K
     </message>
     <message name="PRINT_PREVIEW_MEDIA_PRC_3_125X176MM"
              desc="In Title Case: Media size shown to user in print preview for media ``Envelope Chinese #3''">
@@ -530,60 +574,12 @@
       Envelope Chinese #8
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ROC_16K_7_75X10_75IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Roc-16K''">
-      Roc-16K
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``ROC 16K''.  ROC is an acronym and 16K is a paper size.">
+      ROC 16K
     </message>
     <message name="PRINT_PREVIEW_MEDIA_ROC_8K_10_75X15_5IN"
-             desc="In Title Case: Media size shown to user in print preview for media ``Roc-8K''">
-      Roc-8K
-    </message>
-
-    <!-- Manually curated media names (not specified by PWG 5101.1-2002) -->
-
-    <!-- JIS B* -->
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B0_1030X1456MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B0''">
-      JIS B0
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B1_728X1030MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B1''">
-      JIS B1
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B2_515X728MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B2''">
-      JIS B2
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B3_364X515MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B3''">
-      JIS B3
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B4_257X364MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B4''">
-      JIS B4
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B5_182X257MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B5''">
-      JIS B5
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B6_128X182MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B6''">
-      JIS B6
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B7_91X128MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B7''">
-      JIS B7
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B8_64X91MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B8''">
-      JIS B8
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B9_45X64MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B9''">
-      JIS B9
-    </message>
-    <message name="PRINT_PREVIEW_MEDIA_JIS_B10_32X45MM"
-             desc="In ALL CAPS: Media size shown to user in print preview for media ``JIS B10''">
-      JIS B10
+             desc="In ALL CAPS: Media size shown to user in print preview for media ``ROC 8K''.  ROC is an acronym and 8K is a paper size.">
+      ROC 8K
     </message>
   </if>
 </grit-part>
