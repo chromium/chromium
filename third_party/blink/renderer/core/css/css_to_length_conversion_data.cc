@@ -262,8 +262,6 @@ float CSSToLengthConversionData::LineHeight() const {
   const ComputedStyle* style = lh_style_ ? lh_style_ : style_;
   if (!style)
     return 0;
-  // TODO(crbug.com/937104): Needs test coverage for glyph relative unit
-  // invalidation.
   if (style_) {
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
     const_cast<ComputedStyle*>(style_)->SetHasLineHeightRelativeUnits();
