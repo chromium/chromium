@@ -393,6 +393,36 @@ export function shareDataPageTestSuite() {
     assertFalse(request.includeScreenshot);
   });
 
+  /**
+   * Test that when the send button is clicked, an on-continue is fired.
+   * Case 5: Send performance trace id.
+   */
+  test('SendPerformanceTraceId', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    getElement('#performanceTraceCheckbox').checked = true;
+
+    const report = (await clickSendAndWait(page)).report;
+
+    assertEquals(fakeFeedbackContext.traceId, report.feedbackContext.traceId);
+  });
+
+  /**
+   * Test that when the send button is clicked, an on-continue is fired.
+   * Case 6: Don't send performance trace id.
+   */
+  test('DontSendPerformanceTraceId', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    getElement('#performanceTraceCheckbox').checked = false;
+
+    const report = (await clickSendAndWait(page)).report;
+
+    assertEquals(0, report.feedbackContext.traceId);
+  });
+
   // Test that the send button will be disabled once clicked.
   test('DisableSendButtonAfterClick', async () => {
     await initializePage();

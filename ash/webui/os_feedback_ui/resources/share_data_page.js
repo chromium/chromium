@@ -323,6 +323,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       report.sendBluetoothLogs = false;
     }
 
+    if (this.getElement_('#performanceTraceCheckbox').checked) {
+      report.feedbackContext.traceId = this.feedbackContext.traceId;
+    } else {
+      report.feedbackContext.traceId = 0;
+    }
+
     return report;
   }
 

@@ -80,6 +80,7 @@ constexpr char kFeedbackUserConsentGrantedValue[] = "true";
 constexpr char kFeedbackUserConsentDeniedValue[] = "false";
 constexpr char kFeedbackCategoryTag[] = "BluetoothReportWithLogs";
 const std::u16string kDescription = u"This is a fake description";
+constexpr int kPerformanceTraceId = 1;
 
 constexpr char kFakeKey[] = "fake key";
 constexpr char kFakeValue[] = "fake value";
@@ -343,6 +344,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetPerformanceTraceId) {
 // - sentBluetoothLog flag is set true.
 // - category_tag is set to "BluetoothReportWithLogs".
 // - User is logged in with internal google account.
+// - Performance trace id is present.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedIncludeSysLogsAndScreenshot) {
   ReportPtr report = Report::New();
@@ -355,6 +357,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->feedback_context->category_tag = kFeedbackCategoryTag;
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
+  report->feedback_context->trace_id = kPerformanceTraceId;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/false,
@@ -381,6 +384,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
   // Verify category_tag is marked as BluetoothReportWithLogs in the report.
   EXPECT_EQ(kFeedbackCategoryTag, feedback_data->category_tag());
+  EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -392,6 +396,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - sentBluetoothLog flag is set false.
 // - category_tag is set to a fake value.
 // - User is logged in with internal google account.
+// - Performance trace id is present.
 IN_PROC_BROWSER_TEST_F(
     ChromeOsFeedbackDelegateTest,
     FeedbackDataPopulatedIncludeSysLogsAndScreenshotAndFakeCategoryTag) {
@@ -405,6 +410,7 @@ IN_PROC_BROWSER_TEST_F(
   report->feedback_context->category_tag = kFakeCategoryTag;
   report->include_system_logs_and_histograms = true;
   report->feedback_context->is_internal_account = true;
+  report->feedback_context->trace_id = kPerformanceTraceId;
   const FeedbackParams expected_params{/*is_internal_email=*/true,
                                        /*load_system_info=*/true,
                                        /*send_tab_titles=*/false,
@@ -431,6 +437,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(kFakeExtraDiagnosticsValue, extra_diagnostics->second);
   // Verify category_tag is marked as a fake category tag in the report.
   EXPECT_EQ(kFakeCategoryTag, feedback_data->category_tag());
+  EXPECT_EQ(kPerformanceTraceId, feedback_data->trace_id());
 }
 
 // Test that feedback params and data are populated with correct data before
@@ -442,6 +449,7 @@ IN_PROC_BROWSER_TEST_F(
 // - category_tag is not set to "BluetoothReportWithLogs".
 // - Empty string Extra Diagnostics provided.
 // - User is not logged in with an internal google account.
+// - Performance trace id is absent (set to zero).
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        FeedbackDataPopulatedNotIncludeSysLogsOrScreenshot) {
   ReportPtr report = Report::New();
@@ -455,6 +463,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   report->send_bluetooth_logs = false;
   report->feedback_context->is_internal_account = false;
   report->include_system_logs_and_histograms = false;
+  report->feedback_context->trace_id = 0;
   const FeedbackParams expected_params{/*is_internal_email=*/false,
                                        /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
@@ -480,6 +489,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
   EXPECT_EQ(feedback_data->sys_info()->end(), extra_diagnostics);
   // Verify category_tag is not marked as BluetoothReportWithLogs.
   EXPECT_NE(kFeedbackCategoryTag, feedback_data->category_tag());
+  EXPECT_EQ(0, feedback_data->trace_id());
 }
 
 // Test GetScreenshot returns correct data when there is a screenshot.
