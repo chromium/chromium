@@ -993,8 +993,17 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   }
 
   if (current_frame_header.show_existing_frame) {
-    // TODO(stevecho): Verify and update the algorithm for
-    // refreshing reference frames pool if needed.
+    scoped_refptr<MmapedBuffer> repeated_frame_buffer =
+        ref_frames_[current_frame_header.frame_to_show];
+
+    size = CAPTURE_queue_->display_size();
+    ConvertMM21ToYUV(y_plane, u_plane, v_plane, size,
+                     static_cast<char*>(
+                         repeated_frame_buffer->mmaped_planes()[0].start_addr),
+                     static_cast<char*>(
+                         repeated_frame_buffer->mmaped_planes()[1].start_addr),
+                     CAPTURE_queue_->coded_size());
+
     return VideoDecoder::kOk;
   }
 
