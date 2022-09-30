@@ -61,6 +61,27 @@ std::string GetTestFileNameString(TestUuidId uuid_id) {
                             GetTestUuid(uuid_id).AsLowercaseString().c_str());
 }
 
+std::string GetTestSaveDeskFileNameString(TestUuidId uuid_id) {
+  return base::StringPrintf("%s.saveddesk",
+                            GetTestUuid(uuid_id).AsLowercaseString().c_str());
+}
+
+std::string GetTestTemplateJSONData() {
+  return "{\"version\":1,\"uuid\":\"" +
+         GetTestUuid(TestUuidId(1)).AsLowercaseString() +
+         "\",\"name\":\""
+         "Saved Desk Template 1"
+         "\",\"created_time_usec\":\"1633535632\",\"updated_time_usec\": "
+         "\"1633535632\",\"desk\":{\"apps\":[{\"window_"
+         "bound\":{\"left\":0,\"top\":1,\"height\":121,\"width\":120},\"window_"
+         "state\":\"NORMAL\",\"z_index\":1,\"app_type\":\"BROWSER\",\"tabs\":[{"
+         "\"url\":\"https://"
+         "example.com\",\"title\":\"Example\"},{\"url\":\"https://"
+         "example.com/"
+         "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
+         "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}";
+}
+
 std::string GetPolicyWithOneTemplate() {
   return "[{\"version\":1,\"uuid\":\"" +
          GetTestUuid(TestUuidId(9)).AsLowercaseString() +
@@ -107,6 +128,17 @@ void WriteJunkData(const base::FilePath& temp_dir) {
   EXPECT_TRUE(base::WriteFile(full_path, "This is not valid template data."));
 }
 
+void WriteIncorrectlyNamedData(const base::FilePath& temp_dir) {
+  base::FilePath saved_desk_path = temp_dir.Append("saveddesk");
+  base::CreateDirectory(saved_desk_path);
+  base::FilePath wrong_filename_full_path =
+      saved_desk_path.Append(GetTestSaveDeskFileNameString(TestUuidId(2)));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  EXPECT_TRUE(
+      base::WriteFile(wrong_filename_full_path, GetTestTemplateJSONData()));
+}
+
 // Make test template with ID containing the index. Defaults to desk template
 // type if a type is not specified.
 std::unique_ptr<ash::DeskTemplate> MakeTestDeskTemplate(
@@ -148,6 +180,7 @@ std::unique_ptr<ash::DeskTemplate> MakeTestSaveAndRecallDesk(
   entry->set_desk_restore_data(std::make_unique<app_restore::RestoreData>());
   return entry;
 }
+
 }  // namespace
 
 // TODO(crbug:1320940): Clean up tests to move on from std::string.
@@ -492,6 +525,48 @@ TEST_F(LocalDeskDataManagerTest,
 
   auto result = data_manager_->GetEntryByUUID(GetTestUuid(TestUuidId(1)));
   EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, result.status);
+}
+
+TEST_F(LocalDeskDataManagerTest,
+       CanRenameSavedDeskTemplateIfFilenameDoesNotMatchUUID) {
+  // Initialize new local temp directory
+  base::ScopedTempDir local_temp_dir_;
+  EXPECT_TRUE(local_temp_dir_.CreateUniqueTempDir());
+
+  // Pre-write file into directory for correcting
+  auto task_runner = task_environment_.GetMainThreadTaskRunner();
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&WriteIncorrectlyNamedData,
+                                                  local_temp_dir_.GetPath()));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(base::PathExists(
+      local_temp_dir_.GetPath()
+          .Append("saveddesk")
+          .Append(GetTestSaveDeskFileNameString(TestUuidId(2)))));
+  EXPECT_FALSE(base::PathExists(
+      local_temp_dir_.GetPath()
+          .Append("saveddesk")
+          .Append(GetTestSaveDeskFileNameString(TestUuidId(1)))));
+
+  // Initialize temp data manager
+  std::unique_ptr<LocalDeskDataManager> temp_data_manager_;
+  temp_data_manager_ = std::make_unique<LocalDeskDataManager>(
+      local_temp_dir_.GetPath(), account_id_);
+  task_environment_.RunUntilIdle();
+
+  // Retrieve entry from test directory
+  auto result = temp_data_manager_->GetEntryByUUID(GetTestUuid(TestUuidId(1)));
+  EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, result.status);
+  EXPECT_EQ(result.entry->uuid(), GetTestUuid(TestUuidId(1)));
+  EXPECT_EQ(temp_data_manager_->GetEntryCount(), 1u);
+  EXPECT_TRUE(base::PathExists(
+      local_temp_dir_.GetPath()
+          .Append("saveddesk")
+          .Append(GetTestSaveDeskFileNameString(TestUuidId(1)))));
+  EXPECT_FALSE(base::PathExists(
+      local_temp_dir_.GetPath()
+          .Append("saveddesk")
+          .Append(GetTestSaveDeskFileNameString(TestUuidId(2)))));
 }
 
 TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
