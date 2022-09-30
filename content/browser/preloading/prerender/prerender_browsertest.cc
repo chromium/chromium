@@ -244,6 +244,10 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     prerender_helper_->AddPrerenderAsync(prerendering_url);
   }
 
+  void AddMultiplePrerenderAsync(const std::vector<GURL>& prerendering_urls) {
+    prerender_helper_->AddMultiplePrerenderAsync(prerendering_urls);
+  }
+
   bool AddTestUtilJS(RenderFrameHost* host) {
     bool success = false;
     std::string js = R"(
@@ -3833,20 +3837,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   SequentialPrerenderObserver observer(*web_contents(), prerender_urls[2]);
 
   // Insert 3 URLs into the speculation rules at the same time.
-  ASSERT_TRUE(
-      ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-             JsReplace(
-                 R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2, $3]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                 prerender_urls[0], prerender_urls[1], prerender_urls[2])));
+  AddMultiplePrerenderAsync(prerender_urls);
 
   // Wait for DidFinishNavigation on the last URL.
   observer.WaitForTargetNavigationFinished();
@@ -3907,19 +3898,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 
   // Insert 3 URLs into the speculation rules at the same time. The first
   // prerender should start immediately, and the other two requests enqueued.
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2, $3]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                         kPrerender1, kPrerender2, kPrerender3)));
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2, kPrerender3});
 
   registry_observer.WaitForTrigger(kPrerender3);
   test::PrerenderHostObserver prerender3_observer(*web_contents(),
@@ -3984,19 +3963,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Insert 3 URLs into the speculation rules at the same time. The first
   // prerender should start immediately.
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2, $3]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                         kPrerender1, kPrerender2, kPrerender3)));
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2, kPrerender3});
 
   // Stop the second prerendering initial navigation.
   response2.WaitForRequest();
@@ -4041,19 +4008,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                         kPrerender1, kPrerender2)));
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
 
   registry_observer.WaitForTrigger(kPrerender2);
   test::PrerenderHostObserver prerender2_observer(*web_contents(),
@@ -4101,20 +4056,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 4 URLs into the speculation rules at the same time.
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2, $3, $4]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                         prerender_urls[0], prerender_urls[1],
-                         prerender_urls[2], prerender_urls[3])));
+  AddMultiplePrerenderAsync(prerender_urls);
 
   // Stop the first prerendering initial navigation.
   response.WaitForRequest();
@@ -4147,19 +4089,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Insert 2 URLs into the speculation rules at the same time.
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                         kPrerender1, kPrerender2)));
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
 
   // Stop the first prerender's initial navigation.
   prerender1_response.WaitForRequest();
@@ -4226,19 +4156,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
   // Insert 2 URLs into the speculation rules at the same time.
-  ASSERT_TRUE(ExecJs(web_contents_impl()->GetPrimaryMainFrame(),
-                     JsReplace(
-                         R"(
-                  const sc = document.createElement('script');
-                  sc.type = 'speculationrules';
-                  sc.textContent = JSON.stringify({
-                    prerender: [
-                      {source: "list", urls: [$1, $2]}
-                    ]
-                  });
-                  document.head.appendChild(sc);
-                  )",
-                         kPrerender1, kPrerender2)));
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
 
   registry_observer.WaitForTrigger(kPrerender2);
   test::PrerenderHostObserver prerender2_observer(*web_contents(),
