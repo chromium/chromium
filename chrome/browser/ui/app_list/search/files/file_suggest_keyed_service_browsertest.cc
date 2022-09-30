@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
     EXPECT_TRUE(fetched_data.has_value());
     EXPECT_EQ(1u, fetched_data->size());
     EXPECT_EQ(absolute_file_path1, fetched_data->at(0).file_path);
-    EXPECT_EQ("prediction reason 1", *fetched_data->at(0).prediction_reason);
+    EXPECT_EQ(u"prediction reason 1", *fetched_data->at(0).prediction_reason);
     tester.ExpectBucketCount("Ash.Search.DriveFileSuggestDataValidation.Status",
                              /*sample=*/DriveSuggestValidationStatus::kOk,
                              /*expected_count=*/1);
@@ -187,9 +187,9 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
     EXPECT_TRUE(fetched_data.has_value());
     EXPECT_EQ(2u, fetched_data->size());
     EXPECT_EQ(absolute_file_path1, fetched_data->at(0).file_path);
-    EXPECT_EQ("prediction reason 1", *fetched_data->at(0).prediction_reason);
+    EXPECT_EQ(u"prediction reason 1", *fetched_data->at(0).prediction_reason);
     EXPECT_EQ(absolute_file_path2, fetched_data->at(1).file_path);
-    EXPECT_EQ("prediction reason 2", *fetched_data->at(1).prediction_reason);
+    EXPECT_EQ(u"prediction reason 2", *fetched_data->at(1).prediction_reason);
   }
 }
 

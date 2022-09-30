@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
@@ -23,6 +24,7 @@ FileSuggestKeyedServiceFactory::FileSuggestKeyedServiceFactory()
           "FileSuggestKeyedService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(drive::DriveIntegrationServiceFactory::GetInstance());
+  DependsOn(file_manager::file_tasks::FileTasksNotifierFactory::GetInstance());
 }
 
 FileSuggestKeyedServiceFactory::~FileSuggestKeyedServiceFactory() = default;

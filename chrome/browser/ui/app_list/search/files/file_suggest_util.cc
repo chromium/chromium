@@ -30,11 +30,13 @@ std::string GetPrefixFromSuggestionType(FileSuggestionType type) {
 FileSuggestData::FileSuggestData(
     FileSuggestionType new_type,
     const base::FilePath& new_file_path,
-    const absl::optional<std::string>& new_prediction_reason)
+    const absl::optional<std::u16string>& new_prediction_reason,
+    absl::optional<float> new_score)
     : type(new_type),
       file_path(new_file_path),
       id(GetPrefixFromSuggestionType(type) + file_path.value()),
-      prediction_reason(new_prediction_reason) {}
+      prediction_reason(new_prediction_reason),
+      score(new_score) {}
 
 FileSuggestData::FileSuggestData(FileSuggestData&&) = default;
 

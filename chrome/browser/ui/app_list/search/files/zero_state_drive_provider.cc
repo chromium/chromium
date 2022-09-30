@@ -213,11 +213,11 @@ void ZeroStateDriveProvider::SetSearchResults(
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const std::string& result_id,
     const base::FilePath& filepath,
-    const absl::optional<std::string>& prediction_reason,
+    const absl::optional<std::u16string>& prediction_reason,
     const float relevance) {
   absl::optional<std::u16string> details;
   if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
-    details = base::UTF8ToUTF16(prediction_reason.value());
+    details = prediction_reason.value();
 
   auto result = std::make_unique<FileResult>(
       result_id, filepath, details,
@@ -234,10 +234,8 @@ void ZeroStateDriveProvider::MaybeUpdateCache() {
 }
 
 void ZeroStateDriveProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
-  if (type != FileSuggestionType::kDriveFile)
-    return;
-
-  StartZeroState();
+  if (type == FileSuggestionType::kDriveFile)
+    StartZeroState();
 }
 
 }  // namespace app_list

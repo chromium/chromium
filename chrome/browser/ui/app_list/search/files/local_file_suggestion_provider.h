@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_LOCAL_FILE_SUGGESTION_PROVIDER_H_
 
 #include "base/callback_list.h"
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -25,6 +26,12 @@ class LocalFileSuggestionProvider
     : public FileSuggestionProvider,
       public file_manager::file_tasks::FileTasksObserver {
  public:
+  struct LocalFileData {
+    float score;
+    base::FilePath path;
+    base::File::Info info;
+  };
+
   LocalFileSuggestionProvider(
       Profile* profile,
       base::RepeatingCallback<void(FileSuggestionType)> notify_update_callback);
@@ -38,6 +45,46 @@ class LocalFileSuggestionProvider
 
   // file_manager::file_tasks::FileTaskObserver:
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
+
+  // Returns true if there is pending fetch on file suggestions.
+  bool HasPendingLocalSuggestionFetchForTest() const;
+
+  // Returns true if the MrfuCache is initialized.
+  bool IsInitializedForTest() const;
+
+ private:
+  void OnProtoInitialized(ReadStatus status);
+  void OnValidationComplete(std::pair<std::vector<LocalFileData>,
+                                      std::vector<base::FilePath>> results);
+
+  const Profile* profile_;
+
+  // Any file not modified at least as recently as `max_last_modified_time_` ago
+  // will be filtered out of results.
+  const base::TimeDelta max_last_modified_time_;
+
+  const base::FilePath downloads_path_;
+
+  std::unique_ptr<MrfuCache> files_ranker_;
+
+  // After a file is opened, if this timer is not running, we set it to run for
+  // a brief delay and then call `NotifySuggestionUpdate()`. This debounces file
+  // open events to prevent us from calling it many times instantly when many
+  // files are opened at once.
+  base::OneShotTimer queued_notification_;
+
+  // Callbacks awaiting validation completion. This prevents issues in the event
+  // that multiple clients request results simultaneously.
+  base::OnceCallbackList<GetSuggestFileDataCallback::RunType>
+      on_validation_complete_callback_list_;
+
+  base::ScopedObservation<file_manager::file_tasks::FileTasksNotifier,
+                          file_manager::file_tasks::FileTasksObserver>
+      file_tasks_observer_{this};
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<LocalFileSuggestionProvider> weak_factory_{this};
 };
 
 }  // namespace app_list

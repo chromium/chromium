@@ -74,7 +74,7 @@ class ZeroStateDriveProvider : public SearchProvider,
   std::unique_ptr<FileResult> MakeListResult(
       const std::string& result_id,
       const base::FilePath& filepath,
-      const absl::optional<std::string>& prediction_reason,
+      const absl::optional<std::u16string>& prediction_reason,
       const float relevance);
 
   // Requests an update from the ItemSuggestCache, but only if the call is long

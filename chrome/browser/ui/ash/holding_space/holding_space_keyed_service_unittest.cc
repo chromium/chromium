@@ -2989,7 +2989,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       app_list::FileSuggestionType::kDriveFile,
       /*suggestions=*/{{app_list::FileSuggestionType::kDriveFile, file_path_1,
-                        /*new_prediction_reason=*/absl::nullopt}});
+                        /*new_prediction_reason=*/absl::nullopt,
+                        /*new_score=*/absl::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3008,36 +3009,24 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   EXPECT_EQ(expected,
             GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
 
+  // TODO(https://crbug.com/1369418): Add local file suggestions to this
+  // test.
+
   const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
-
-  // Update local file suggestions then check the model.
-  GetFileSuggestKeyedService()->SetSuggestionsForType(
-      app_list::FileSuggestionType::kLocalFile,
-      /*suggestions=*/{{app_list::FileSuggestionType::kLocalFile, file_path_2,
-                        /*new_prediction_reason=*/absl::nullopt}});
-  task_environment()->FastForwardBy(base::Seconds(1));
-  if (suggestion_feature_enabled) {
-    expected = std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>(
-        {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2},
-         {HoldingSpaceItem::Type::kDriveSuggestion, file_path_1}});
-  }
-  EXPECT_EQ(expected,
-            GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
-
-  const base::FilePath file_path_3 = mount_point()->CreateArbitraryFile();
 
   // Update drive file suggestions again then check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       app_list::FileSuggestionType::kDriveFile,
       {{app_list::FileSuggestionType::kDriveFile, file_path_1,
-        /*new_prediction_reason=*/absl::nullopt},
-       {app_list::FileSuggestionType::kDriveFile, file_path_3,
-        /*new_prediction_reason=*/absl::nullopt}});
+        /*new_prediction_reason=*/absl::nullopt,
+        /*new_score=*/absl::nullopt},
+       {app_list::FileSuggestionType::kDriveFile, file_path_2,
+        /*new_prediction_reason=*/absl::nullopt,
+        /*new_score=*/absl::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
   if (suggestion_feature_enabled) {
     expected = std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>(
-        {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2},
-         {HoldingSpaceItem::Type::kDriveSuggestion, file_path_3},
+        {{HoldingSpaceItem::Type::kDriveSuggestion, file_path_2},
          {HoldingSpaceItem::Type::kDriveSuggestion, file_path_1}});
   }
   EXPECT_EQ(expected,
@@ -3051,20 +3040,10 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   // Drive file suggestions should be removed from the model if the feature is
   // enabled.
   if (suggestion_feature_enabled) {
-    expected = std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>(
-        {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2}});
+    expected =
+        std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>({});
   }
 
-  EXPECT_EQ(expected,
-            GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
-
-  // Update local file suggestions with an empty array.
-  GetFileSuggestKeyedService()->SetSuggestionsForType(
-      app_list::FileSuggestionType::kLocalFile, /*suggestions=*/{});
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  // There should not be any suggestion in the model.
-  expected.clear();
   EXPECT_EQ(expected,
             GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
 }

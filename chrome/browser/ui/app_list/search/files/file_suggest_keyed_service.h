@@ -87,6 +87,10 @@ class FileSuggestKeyedService : public KeyedService {
     return drive_file_suggestion_provider_.get();
   }
 
+  LocalFileSuggestionProvider* local_file_suggestion_provider_for_test() {
+    return local_file_suggestion_provider_.get();
+  }
+
  protected:
   // Called whenever a suggestion provider updates.
   void OnSuggestionProviderUpdated(FileSuggestionType type);

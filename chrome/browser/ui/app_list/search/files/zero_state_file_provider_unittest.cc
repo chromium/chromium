@@ -15,8 +15,12 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/files/local_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,20 +46,23 @@ class ZeroStateFileProviderTest : public testing::Test {
     app_list_color_provider_ =
         std::make_unique<ash::TestAppListColorProvider>();
 
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    profile_ = std::make_unique<TestingProfile>(temp_dir_.GetPath());
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(testing_profile_manager_->SetUp());
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        "primary_profile@test", {});
 
     // The downloads directory depends on whether it is inside or outside
     // chromeos. So this needs to be in scope before |provider_| and
     // |downloads_folder_|.
     base::test::ScopedRunningOnChromeOS running_on_chromeos;
 
-    auto provider = std::make_unique<ZeroStateFileProvider>(profile_.get());
+    auto provider = std::make_unique<ZeroStateFileProvider>(profile_);
     provider_ = provider.get();
     search_controller_.AddProvider(0, std::move(provider));
 
     downloads_folder_ =
-        file_manager::util::GetDownloadsFolderForProfile(profile_.get());
+        file_manager::util::GetDownloadsFolderForProfile(profile_);
     ASSERT_TRUE(base::CreateDirectory(downloads_folder_));
 
     Wait();
@@ -100,7 +107,8 @@ class ZeroStateFileProviderTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  std::unique_ptr<Profile> profile_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  TestingProfile* profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_folder_;
 
@@ -121,9 +129,12 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
   WriteFile(Path("exists_3.pdf"));
 
   // Results are only added if they have been opened at least once.
-  provider_->OnFilesOpened({OpenEvent(Path("exists_1.txt")),
-                            OpenEvent(Path("exists_2.png")),
-                            OpenEvent(Path("nonexistent.txt"))});
+
+  auto* keyed_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
+  keyed_service->local_file_suggestion_provider_for_test()->OnFilesOpened(
+      {OpenEvent(Path("exists_1.txt")), OpenEvent(Path("exists_2.png")),
+       OpenEvent(Path("nonexistent.txt"))});
 
   StartZeroStateSearch();
   Wait();
@@ -138,7 +149,9 @@ TEST_F(ZeroStateFileProviderTest, OldFilesNotReturned) {
   auto now = base::Time::Now();
   base::TouchFile(Path("old.png"), now, now - base::Days(8));
 
-  provider_->OnFilesOpened(
+  auto* keyed_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
+  keyed_service->local_file_suggestion_provider_for_test()->OnFilesOpened(
       {OpenEvent(Path("new.txt")), OpenEvent(Path("old.png"))});
 
   StartZeroStateSearch();
@@ -153,10 +166,13 @@ TEST_F(ZeroStateFileProviderTest, FilterScreenshots) {
   WriteFile(DownloadsPath("NotScreenshot.png"));
   WriteFile(DownloadsPath("Screenshot123.png"));
 
-  provider_->OnFilesOpened({OpenEvent(Path("ScreenshotNonDownload.png")),
-                            OpenEvent(DownloadsPath("ScreenshotNonPng.jpg")),
-                            OpenEvent(DownloadsPath("NotScreenshot.png")),
-                            OpenEvent(DownloadsPath("Screenshot123.png"))});
+  auto* keyed_service =
+      FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
+  keyed_service->local_file_suggestion_provider_for_test()->OnFilesOpened(
+      {OpenEvent(Path("ScreenshotNonDownload.png")),
+       OpenEvent(DownloadsPath("ScreenshotNonPng.jpg")),
+       OpenEvent(DownloadsPath("NotScreenshot.png")),
+       OpenEvent(DownloadsPath("Screenshot123.png"))});
 
   StartZeroStateSearch();
   Wait();

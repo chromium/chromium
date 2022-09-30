@@ -41,7 +41,8 @@ enum class FileSuggestionType {
 struct FileSuggestData {
   FileSuggestData(FileSuggestionType new_type,
                   const base::FilePath& new_file_path,
-                  const absl::optional<std::string>& new_prediction_reason);
+                  const absl::optional<std::u16string>& new_prediction_reason,
+                  absl::optional<float> new_score);
   FileSuggestData(FileSuggestData&&);
   FileSuggestData(const FileSuggestData&);
   FileSuggestData& operator=(const FileSuggestData&);
@@ -57,7 +58,10 @@ struct FileSuggestData {
   std::string id;
 
   // The reason why the file is suggested.
-  absl::optional<std::string> prediction_reason;
+  absl::optional<std::u16string> prediction_reason;
+
+  // Only has a value when `type` == `FileSuggestionType::kLocalFile`.
+  absl::optional<float> score;
 };
 
 }  // namespace app_list

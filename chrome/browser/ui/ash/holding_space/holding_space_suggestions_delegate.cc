@@ -37,14 +37,17 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
       app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
           profile()));
 
-  // TODO(https://crbug.com/1352515): also refresh local file suggestion items
+  // TODO(https://crbug.com/1369418): also refresh local file suggestion items
   // when local file suggestions are supported by the service.
   MaybeFetchSuggestions(app_list::FileSuggestionType::kDriveFile);
 }
 
 void HoldingSpaceSuggestionsDelegate::OnFileSuggestionUpdated(
     app_list::FileSuggestionType type) {
-  MaybeFetchSuggestions(type);
+  // TODO(https://crbug.com/1369418): Fix local file suggestions behavior and
+  // remove this if.
+  if (type == app_list::FileSuggestionType::kDriveFile)
+    MaybeFetchSuggestions(type);
 }
 
 void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(

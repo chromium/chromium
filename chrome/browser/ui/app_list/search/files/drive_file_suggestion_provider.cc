@@ -8,6 +8,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -209,10 +210,14 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
     if (!path_or_error->is_path())
       continue;
 
+    absl::optional<std::u16string> reason;
+    if (raw_suggest_results[index].prediction_reason)
+      reason = base::UTF8ToUTF16(
+          raw_suggest_results[index].prediction_reason.value());
     suggest_results.emplace_back(
         FileSuggestionType::kDriveFile,
-        ReparentToDriveMount(path_or_error->get_path(), drive_service_),
-        raw_suggest_results[index].prediction_reason);
+        ReparentToDriveMount(path_or_error->get_path(), drive_service_), reason,
+        /*score=*/absl::nullopt);
   }
 
   // Validation fails on each file, so return early.

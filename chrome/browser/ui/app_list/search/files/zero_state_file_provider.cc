@@ -17,19 +17,16 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/app_list/search/files/justifications.h"
-#include "chrome/browser/ui/app_list/search/ranking/util.h"
-#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +38,6 @@ namespace {
 
 constexpr char kSchema[] = "zero_state_file://";
 constexpr size_t kMaxLocalFiles = 10u;
-constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
 // Screenshots are identified as files that match ScreenshotXXX.png in the
 // Downloads folder.
@@ -49,40 +45,6 @@ bool IsScreenshot(const base::FilePath& path,
                   const base::FilePath& downloads_path) {
   return path.DirName() == downloads_path && path.Extension() == ".png" &&
          path.BaseName().value().rfind("Screenshot", 0) == 0;
-}
-
-// Given the output of MrfuCache::GetAll, partition files into valid and invalid
-// files. Valid files are files that:
-// - Exist on-disk
-// - Have been modified in the last |max_last_modified_time| days
-// - Are not screenshots.
-ZeroStateFileProvider::ValidAndInvalidResults ValidateFiles(
-    const std::vector<std::pair<std::string, float>>& ranker_results,
-    const base::TimeDelta& max_last_modified_time,
-    const base::FilePath& downloads_path) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  std::vector<ZeroStateFileProvider::FileInfo> valid_results;
-  std::vector<base::FilePath> invalid_results;
-  const base::Time now = base::Time::Now();
-  for (const auto& path_score : ranker_results) {
-    // We use FilePath::FromUTF8Unsafe to decode the filepath string. As per its
-    // documentation, this is a safe use of the function because
-    // ZeroStateFileProvider is only used on ChromeOS, for which filepaths are
-    // UTF8.
-    const auto& path = base::FilePath::FromUTF8Unsafe(path_score.first);
-    base::File::Info info;
-    if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
-        (now - info.last_modified <= max_last_modified_time) &&
-        !IsScreenshot(path, downloads_path)) {
-      valid_results.emplace_back(path, path_score.second, info.last_accessed,
-                                 info.last_modified);
-    } else {
-      invalid_results.emplace_back(path);
-    }
-  }
-  return {valid_results, invalid_results};
 }
 
 // TODO(crbug.com/1258415): This exists to reroute results depending on which
@@ -99,58 +61,15 @@ bool IsDriveDisabled(Profile* profile) {
 
 }  // namespace
 
-ZeroStateFileProvider::FileInfo::FileInfo(const base::FilePath& path,
-                                          float score,
-                                          const base::Time& last_accessed,
-                                          const base::Time& last_modified)
-    : path(path),
-      score(score),
-      last_accessed(last_accessed),
-      last_modified(last_modified) {}
-
-ZeroStateFileProvider::FileInfo::~FileInfo() = default;
-
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
     : profile_(profile),
       thumbnail_loader_(profile),
-      max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
-          ash::features::kProductivityLauncher,
-          "max_last_modified_time",
-          8))),
+      file_suggest_service_(
+          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)),
       downloads_path_(
           file_manager::util::GetDownloadsFolderForProfile(profile)) {
   DCHECK(profile_);
-  task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  auto* notifier =
-      file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile_);
-
-  if (notifier) {
-    file_tasks_observer_.Observe(notifier);
-
-    MrfuCache::Params params;
-    // 5 consecutive clicks to get a new file to a score of 0.8, and 10 clicks
-    // on other files to reduce its score by half.
-    params.half_life = 10.0f;
-    params.boost_factor = 5.0f;
-    MrfuCache::Proto proto(
-        RankerStateDirectory(profile).AppendASCII("zero_state_local_files.pb"),
-        kSaveDelay);
-    proto.RegisterOnRead(base::BindOnce(
-        &ZeroStateFileProvider::OnProtoInitialized, base::Unretained(this)));
-    files_ranker_ = std::make_unique<MrfuCache>(std::move(proto), params);
-  }
-}
-
-void ZeroStateFileProvider::OnProtoInitialized(ReadStatus status) {
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_, downloads_path_),
-      base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
-                     weak_factory_.GetWeakPtr()));
+  file_suggest_service_observation_.Observe(file_suggest_service_);
 }
 
 ZeroStateFileProvider::~ZeroStateFileProvider() = default;
@@ -173,46 +92,44 @@ void ZeroStateFileProvider::StartZeroState() {
 
   // Despite this being for zero-state _local_ files only, we disable all
   // results in the Continue section if Drive is disabled.
-  if (!files_ranker_ || IsDriveDisabled(profile_)) {
+  if (IsDriveDisabled(profile_)) {
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_, downloads_path_),
-      base::BindOnce(&ZeroStateFileProvider::SetSearchResults,
+  file_suggest_service_->GetSuggestFileData(
+      FileSuggestionType::kLocalFile,
+      base::BindOnce(&ZeroStateFileProvider::OnSuggestFileDataFetched,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ZeroStateFileProvider::SetSearchResults(ValidAndInvalidResults results) {
-  // Delete invalid results from the ranker.
-  for (const base::FilePath& path : results.second)
-    files_ranker_->Delete(path.value());
+void ZeroStateFileProvider::OnSuggestFileDataFetched(
+    const absl::optional<std::vector<FileSuggestData>>& suggest_results) {
+  if (suggest_results)
+    SetSearchResults(*suggest_results);
+}
 
-  // Sort valid results high-to-low by score.
-  auto& valid_results = results.first;
-  std::sort(valid_results.begin(), valid_results.end(),
-            [](const auto& a, const auto& b) { return a.score > b.score; });
-
+void ZeroStateFileProvider::SetSearchResults(
+    const std::vector<FileSuggestData>& results) {
   // Use valid results for search results.
   SearchProvider::Results new_results;
-  for (size_t i = 0; i < std::min(valid_results.size(), kMaxLocalFiles); ++i) {
-    const auto& filepath = valid_results[i].path;
-    const double score = valid_results[i].score;
-    const absl::optional<std::u16string> details = GetJustificationString(
-        valid_results[i].last_accessed, valid_results[i].last_modified);
-    auto result = std::make_unique<FileResult>(
-        /*id=*/kSchema + filepath.value(), filepath, details,
-        ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
-        std::u16string(), FileResult::Type::kFile, profile_);
-    // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
-    // enabled. We should implement new thumbnail logic for Continue results if
-    // necessary.
-    if (result->display_type() == ash::SearchResultDisplayType::kList) {
-      result->RequestThumbnail(&thumbnail_loader_);
+  for (size_t i = 0; i < std::min(results.size(), kMaxLocalFiles); ++i) {
+    const auto& filepath = results[i].file_path;
+    if (!IsScreenshot(filepath, downloads_path_)) {
+      DCHECK(results[i].score.has_value());
+      auto result = std::make_unique<FileResult>(
+          /*id=*/kSchema + filepath.value(), filepath,
+          results[i].prediction_reason,
+          ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(),
+          results[i].score.value(), std::u16string(), FileResult::Type::kFile,
+          profile_);
+      // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher
+      // is enabled. We should implement new thumbnail logic for Continue
+      // results if necessary.
+      if (result->display_type() == ash::SearchResultDisplayType::kList) {
+        result->RequestThumbnail(&thumbnail_loader_);
+      }
+      new_results.push_back(std::move(result));
     }
-    new_results.push_back(std::move(result));
   }
 
   if (app_list_features::IsForceShowContinueSectionEnabled())
@@ -221,31 +138,6 @@ void ZeroStateFileProvider::SetSearchResults(ValidAndInvalidResults results) {
   UMA_HISTOGRAM_TIMES("Apps.AppList.ZeroStateFileProvider.Latency",
                       base::TimeTicks::Now() - query_start_time_);
   SwapResults(&new_results);
-}
-
-void ZeroStateFileProvider::OnFilesOpened(
-    const std::vector<FileOpenEvent>& file_opens) {
-  if (!files_ranker_)
-    return;
-
-  const auto& profile_path = profile_->GetPath();
-  for (const auto& file_open : file_opens) {
-    // Filter out file opens if:
-    // 1. The open event is not a kLaunch or a kOpen.
-    if (file_open.open_type != FileTasksObserver::OpenType::kLaunch &&
-        file_open.open_type != FileTasksObserver::OpenType::kOpen) {
-      continue;
-    }
-
-    // 2. The open relates to a Drive file, which is handled by another
-    // provider. Filter this out by checking if the file resides in the user's
-    // cryptohome.
-    if (!profile_path.AppendRelativePath(file_open.path, nullptr)) {
-      continue;
-    }
-
-    files_ranker_->Use(file_open.path.value());
-  }
 }
 
 void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
@@ -259,6 +151,11 @@ void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
         ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
         FileResult::Type::kFile, profile_));
   }
+}
+
+void ZeroStateFileProvider::OnFileSuggestionUpdated(FileSuggestionType type) {
+  if (type == FileSuggestionType::kLocalFile)
+    StartZeroState();
 }
 
 }  // namespace app_list

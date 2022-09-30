@@ -18,11 +18,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
-#include "chrome/browser/ui/app_list/search/util/mrfu_cache.h"
-#include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -31,23 +29,8 @@ namespace app_list {
 // ZeroStateFileProvider recommends local files from a cache. Files are added to
 // the cache whenever they are opened.
 class ZeroStateFileProvider : public SearchProvider,
-                              file_manager::file_tasks::FileTasksObserver {
+                              FileSuggestKeyedService::Observer {
  public:
-  struct FileInfo {
-    base::FilePath path;
-    float score;
-    base::Time last_accessed;
-    base::Time last_modified;
-
-    FileInfo(const base::FilePath& path,
-             float score,
-             const base::Time& last_accessed,
-             const base::Time& last_modified);
-    ~FileInfo();
-  };
-  using ValidAndInvalidResults =
-      std::pair<std::vector<FileInfo>, std::vector<base::FilePath>>;
-
   explicit ZeroStateFileProvider(Profile* profile);
 
   ZeroStateFileProvider(const ZeroStateFileProvider&) = delete;
@@ -61,44 +44,37 @@ class ZeroStateFileProvider : public SearchProvider,
   ash::AppListSearchResultType ResultType() const override;
   bool ShouldBlockZeroState() const override;
 
-  // file_manager::file_tasks::FileTaskObserver:
-  void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
-
  private:
-  // Takes a pair of vectors: <valid paths, invalid paths>, converts the valid
-  // paths to FileResults and sets them as this provider's results. The invalid
-  // paths are removed from the model.
-  void SetSearchResults(ValidAndInvalidResults results);
+  // Called when file suggestion data are fetched from the service.
+  void OnSuggestFileDataFetched(
+      const absl::optional<std::vector<FileSuggestData>>& suggest_results);
+
+  // Builds the search results from file suggestions then publishes the results.
+  void SetSearchResults(const std::vector<FileSuggestData>& suggest_results);
 
   // TODO(crbug.com/1349618): Remove this once the Continue tast test does not
   // rely on it.
   void AppendFakeSearchResults(Results* results);
 
-  void OnProtoInitialized(ReadStatus status);
+  // FileSuggestKeyedService::Observer:
+  void OnFileSuggestionUpdated(FileSuggestionType type) override;
 
   // The reference to profile to get ZeroStateFileProvider service.
   Profile* const profile_;
 
   ash::ThumbnailLoader thumbnail_loader_;
 
-  // The ranking model used to produce local file results for searches with an
-  // empty query.
-  std::unique_ptr<MrfuCache> files_ranker_;
+  const base::raw_ptr<FileSuggestKeyedService> file_suggest_service_;
 
   base::TimeTicks query_start_time_;
-
-  // A file needs to have been modified more recently than this to be considered
-  // valid.
-  const base::TimeDelta max_last_modified_time_;
 
   // Path to the downloads folder for this profile.
   const base::FilePath downloads_path_;
 
-  base::ScopedObservation<file_manager::file_tasks::FileTasksNotifier,
-                          file_manager::file_tasks::FileTasksObserver>
-      file_tasks_observer_{this};
+  base::ScopedObservation<FileSuggestKeyedService,
+                          FileSuggestKeyedService::Observer>
+      file_suggest_service_observation_{this};
 
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<ZeroStateFileProvider> weak_factory_{this};
 };
 

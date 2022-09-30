@@ -105,9 +105,11 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, SuggestionRemoval) {
   file_suggest_service_->SetSuggestionsForType(
       /*type=*/FileSuggestionType::kDriveFile,
       /*suggestions=*/{{FileSuggestionType::kDriveFile, path1,
-                        /*new_prediction_reason=*/absl::nullopt},
+                        /*new_prediction_reason=*/absl::nullopt,
+                        /*new_score=*/absl::nullopt},
                        {FileSuggestionType::kDriveFile, path2,
-                        /*new_prediction_reason=*/absl::nullopt}});
+                        /*new_prediction_reason=*/absl::nullopt,
+                        /*new_score=*/absl::nullopt}});
 
   absl::optional<std::vector<FileSuggestData>> suggestions =
       GetSuggestionsForType(FileSuggestionType::kDriveFile);
@@ -131,9 +133,11 @@ TEST_F(FileSuggestKeyedServiceRemoveTest, SuggestionRemoval) {
   file_suggest_service_->SetSuggestionsForType(
       /*type=*/FileSuggestionType::kLocalFile,
       /*suggestions=*/{{FileSuggestionType::kLocalFile, path3,
-                        /*new_prediction_reason=*/absl::nullopt},
+                        /*new_prediction_reason=*/absl::nullopt,
+                        /*new_score=*/absl::nullopt},
                        {FileSuggestionType::kLocalFile, path4,
-                        /*new_prediction_reason=*/absl::nullopt}});
+                        /*new_prediction_reason=*/absl::nullopt,
+                        /*new_score=*/absl::nullopt}});
   suggestions = GetSuggestionsForType(FileSuggestionType::kLocalFile);
   EXPECT_EQ(2u, suggestions->size());
   EXPECT_EQ("file3", suggestions->at(0).file_path.value());

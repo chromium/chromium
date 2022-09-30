@@ -98,10 +98,10 @@ void FileSuggestKeyedService::RemoveObserver(Observer* observer) {
 }
 
 bool FileSuggestKeyedService::HasPendingSuggestionFetchForTest() const {
-  // TODO(https://crbug.com/1352516): modify this code when local file
-  // suggestions are supported.
   return drive_file_suggestion_provider_
-      ->HasPendingDriveSuggestionFetchForTest();
+             ->HasPendingDriveSuggestionFetchForTest() ||
+         local_file_suggestion_provider_
+             ->HasPendingLocalSuggestionFetchForTest();
 }
 
 void FileSuggestKeyedService::OnSuggestionProviderUpdated(
@@ -111,9 +111,8 @@ void FileSuggestKeyedService::OnSuggestionProviderUpdated(
 }
 
 bool FileSuggestKeyedService::IsReadyForTest() const {
-  // TODO(https://crbug.com/1352515): check whether local file suggestions are
-  // ready when local file suggestions are supported by the service.
-  return proto_.initialized();
+  return local_file_suggestion_provider_->IsInitializedForTest() &&
+         proto_.initialized();
 }
 
 void FileSuggestKeyedService::FilterRemovedSuggestions(
@@ -142,7 +141,7 @@ void FileSuggestKeyedService::OnRemovedSuggestionProtoReady(
     ReadStatus read_status) {
   OnSuggestionProviderUpdated(FileSuggestionType::kDriveFile);
 
-  // TODO(https://crbug.com/1352515): check whether local file suggestions are
+  // TODO(https://crbug.com/1369418): check whether local file suggestions are
   // ready when local file suggestions are supported by the service.
   OnSuggestionProviderUpdated(FileSuggestionType::kLocalFile);
 }
