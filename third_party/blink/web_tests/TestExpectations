@@ -6828,7 +6828,6 @@ crbug.com/1339538 [ Mac ] fast/frames/002.html [ Failure Pass ]
 crbug.com/1339538 [ Linux ] fast/frames/002.html [ Failure Pass ]
 crbug.com/1339538 [ Win10.20h2 ] fast/frames/002.html [ Failure Pass ]
 crbug.com/1097040 media/controls/overflow-menu-always-visible.html [ Failure Pass ]
-crbug.com/1342526 external/wpt/dom/events/non-cancelable-when-passive/non-passive-wheel-event-listener-on-body.html [ Failure Pass ]
 
 # Sheriff 2022-07-08
 crbug.com/1180274 virtual/plz-dedicated-worker/http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Skip ]
@@ -6837,7 +6836,6 @@ crbug.com/1180274 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 
 # Sheriff 2022-07-12
 crbug.com/1343674 editing/deleting/460938.html [ Failure Pass ]
-crbug.com/1343664 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-document.html [ Failure Pass ]
 
 # Disable test to land a MSE change. Spec change (MSE PR#306) is still pending,
 # and once landed, this line can be removed.
@@ -6854,7 +6852,6 @@ crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 
 # Sheriff 2022-07-13
 crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
-crbug.com/1344175 [ Mac12 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-root.html [ Failure Pass ]
 
 # Sheriff 2022-07-15
 crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
@@ -6864,12 +6861,6 @@ crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripti
 crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Skip ]
 crbug.com/1345235 external/wpt/content-security-policy/style-src/stylehash-basic-blocked.sub.html [ Skip ]
 crbug.com/1334674 [ Mac11 ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]
-
-# Sheriff 2022-07-21
-crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Failure Pass ]
-
-# Sheriff 2022-07-25
-crbug.com/1343935 [ Mac10.15 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-body.html [ Failure Pass ]
 
 # Sheriff 2022-07-26
 crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-links.html [ Skip ]
