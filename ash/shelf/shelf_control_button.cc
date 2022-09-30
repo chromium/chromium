@@ -82,7 +82,7 @@ gfx::Size ShelfControlButton::CalculatePreferredSize() const {
 
 void ShelfControlButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetAccessibleName());
+  node_data->SetNameChecked(GetAccessibleName());
 }
 
 void ShelfControlButton::PaintButtonContents(gfx::Canvas* canvas) {
