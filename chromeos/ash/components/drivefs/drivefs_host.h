@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/drivefs/drivefs_auth.h"
 #include "chromeos/ash/components/drivefs/drivefs_session.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/account_id/account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -107,6 +108,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   base::FilePath GetDataPath() const;
 
   mojom::DriveFs* GetDriveFsInterface() const;
+
+  SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path) const;
 
   // Starts DriveFs search query and returns whether it will be
   // performed localy or remotely. Assumes DriveFS to be mounted.

@@ -85,6 +85,7 @@ source_set("unit_tests") {
   deps = [
     ":drivefs",
     ":test_support",
+    "//ash/constants",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/disks:test_support",

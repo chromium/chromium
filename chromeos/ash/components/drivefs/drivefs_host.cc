@@ -51,7 +51,8 @@ class DriveFsHost::MountState : public DriveFsSession,
                        host->delegate_->GetMyFilesPath(),
                        host->GetDefaultMountDirName(),
                        host->mount_observer_),
-        host_(host) {
+        host_(host),
+        sync_status_tracker_(std::make_unique<SyncStatusTracker>()) {
     token_fetch_attempted_ =
         bool{host->account_token_delegate_->GetCachedAccessToken()};
     search_ = std::make_unique<DriveFsSearch>(
@@ -102,6 +103,15 @@ class DriveFsHost::MountState : public DriveFsSession,
     return search_->PerformSearch(std::move(query), std::move(callback));
   }
 
+  SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path) {
+    base::FilePath absolutePath = host_->GetMountPath();
+    if (!base::FilePath("/").AppendRelativePath(drive_path, &absolutePath)) {
+      LOG(ERROR) << "Failed to make path relative to drive root";
+      return SyncStatus::kNotFound;
+    }
+    return sync_status_tracker_->GetSyncStatusForPath(absolutePath);
+  }
+
  private:
   // mojom::DriveFsDelegate:
   void GetAccessToken(const std::string& client_id,
@@ -115,6 +125,35 @@ class DriveFsHost::MountState : public DriveFsSession,
   }
 
   void OnSyncingStatusUpdate(mojom::SyncingStatusPtr status) override {
+    if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+      // Keep track of the syncing paths.
+      for (const mojom::ItemEventPtr& event : status->item_events) {
+        base::FilePath path = host_->GetMountPath();
+        if (!base::FilePath("/").AppendRelativePath(base::FilePath(event->path),
+                                                    &path)) {
+          LOG(ERROR) << "Failed to make path relative to drive root";
+          continue;
+        }
+        switch (event->state) {
+          case mojom::ItemEvent::State::kQueued:
+          case mojom::ItemEvent::State::kInProgress:
+            sync_status_tracker_->AddSyncStatusForPath(path,
+                                                       SyncStatus::kInProgress);
+            break;
+          case mojom::ItemEvent::State::kFailed:
+            sync_status_tracker_->AddSyncStatusForPath(path,
+                                                       SyncStatus::kError);
+            break;
+          case mojom::ItemEvent::State::kCompleted:
+            // TODO(msalomao): Post a delayed task to remove the path.
+            sync_status_tracker_->RemovePath(path);
+            break;
+          default:
+            break;
+        }
+      }
+    }
+
     for (auto& observer : host_->observers_) {
       observer.OnSyncingStatusUpdate(*status);
     }
@@ -239,6 +278,7 @@ class DriveFsHost::MountState : public DriveFsSession,
 
   std::unique_ptr<DriveFsSearch> search_;
   std::unique_ptr<DriveFsHttpClient> http_client_;
+  std::unique_ptr<SyncStatusTracker> sync_status_tracker_ = nullptr;
 
   bool token_fetch_attempted_ = false;
   bool team_drives_fetched_ = false;
@@ -318,6 +358,14 @@ mojom::DriveFs* DriveFsHost::GetDriveFsInterface() const {
     return nullptr;
   }
   return mount_state_->drivefs_interface();
+}
+
+SyncStatus DriveFsHost::GetSyncStatusForPath(
+    const base::FilePath& drive_path) const {
+  if (!mount_state_) {
+    return SyncStatus::kNotFound;
+  }
+  return mount_state_->GetSyncStatusForPath(drive_path);
 }
 
 mojom::QueryParameters::QuerySource DriveFsHost::PerformSearch(
