@@ -59,7 +59,7 @@ class NGGridLineResolver {
   const NamedGridLinesMap& ExplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
-  const ComputedGridTrackList& ComputedGridTrackList(
+  const blink::ComputedGridTrackList& ComputedGridTrackList(
       GridTrackSizingDirection track_direction) const;
 
   GridSpan ResolveGridPositionAgainstOppositePosition(

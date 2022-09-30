@@ -252,7 +252,7 @@ const NamedGridLinesMap& NGGridLineResolver::ExplicitNamedLinesMap(
   return ComputedGridTrackList(track_direction).named_grid_lines;
 }
 
-const ComputedGridTrackList& NGGridLineResolver::ComputedGridTrackList(
+const blink::ComputedGridTrackList& NGGridLineResolver::ComputedGridTrackList(
     GridTrackSizingDirection track_direction) const {
   // TODO(kschmi): Refactor so this isn't necessary when
   // `is_subgrid_line_resolver_`.
