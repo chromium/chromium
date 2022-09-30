@@ -16198,7 +16198,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable sticky keys',
+        },
+        {
+          'value': False,
+          'caption': 'Disable sticky keys',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 561,
       'caption': '''Enable sticky keys''',
       'tags': [],
@@ -16217,7 +16232,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable select to speak',
+        },
+        {
+          'value': False,
+          'caption': 'Disable select to speak',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 573,
       'caption': '''Enable select to speak''',
       'tags': [],
@@ -16242,7 +16272,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable dictation',
+        },
+        {
+          'value': False,
+          'caption': 'Disable dictation',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 592,
       'caption': '''Enable the dictation accessibility feature''',
       'tags': [],
@@ -16267,7 +16312,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable keyboard focus highlighting',
+        },
+        {
+          'value': False,
+          'caption': 'Disable keyboard focus highlighting',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 593,
       'caption': '''Enable the keyboard focus highlighting accessibility feature''',
       'tags': [],
@@ -16294,7 +16354,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable cursor highlight',
+        },
+        {
+          'value': False,
+          'caption': 'Disable cursor highlight',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 594,
       'caption': '''Enable the cursor highlight accessibility feature''',
       'tags': [],
@@ -16321,7 +16396,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable caret highlight',
+        },
+        {
+          'value': False,
+          'caption': 'Disable caret highlight',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 595,
       'caption': '''Enable the caret highlight accessibility feature''',
       'tags': [],
@@ -16348,7 +16438,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable mono audio',
+        },
+        {
+          'value': False,
+          'caption': 'Disable mono audio',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 596,
       'caption': '''Enable the mono audio accessibility feature''',
       'tags': [],
@@ -16375,7 +16480,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable auto-click',
+        },
+        {
+          'value': False,
+          'caption': 'Disable auto-click',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 597,
       'caption': '''Enable the autoclick accessibility feature''',
       'tags': [],
@@ -16402,6 +16522,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Treat top-row keys as function keys, but allow user to change',
+        },
+        {
+          'value': False,
+          'caption': 'Treat top-row keys as media keys, but allow user to change',
+        },
+      ],
       'example_value': True,
       'id': 260,
       'caption': '''Media keys default to function keys''',
@@ -16459,7 +16589,22 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable large cursor on the login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable large cursor on the login screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 215,
       'caption': '''Set default state of the large cursor on the login screen''',
       'tags': [],
