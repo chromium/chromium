@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/import/csv_password.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -22,58 +23,6 @@ TEST(CSVPasswordSequenceTest, Constructions) {
 
   CSVPasswordSequence seq2(std::move(seq1));
   EXPECT_NE(seq2.begin(), seq2.end());
-}
-
-TEST(CSVPasswordSequenceTest, HeaderOnly) {
-  static constexpr char kHeader[] =
-      "Display Name,Login,Secret Question,Password,URL,Timestamp";
-  CSVPasswordSequence seq(kHeader);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
-}
-
-TEST(CSVPasswordSequenceTest, AllowSpacesInHeaderField) {
-  static constexpr char kHeader[] =
-      " Display Name ,  Login,Secret Question ,  Password,  URL,  Timestamp ";
-  CSVPasswordSequence seq(kHeader);
-  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
-}
-
-TEST(CSVPasswordSequenceTest, MissingColumns) {
-  static constexpr char kNoUrlCol[] =
-      "Display Name,Login,Secret Question,Password,x,Timestamp\n"
-      ":),Bob,ABCD!,odd,https://example.org,132\n";
-  CSVPasswordSequence seq(kNoUrlCol);
-  EXPECT_EQ(CSVPassword::Status::kSemanticError, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
-}
-
-TEST(CSVPasswordSequenceTest, DuplicatedColumns) {
-  // Leave out URL but use both "UserName" and "Login". That way the username
-  // column is duplicated while the overall number of interesting columns
-  // matches the number of labels.
-  static constexpr char kBothUsernameAndLogin[] =
-      "UserName,Login,Secret Question,Password,Timestamp\n"
-      ":),Bob,ABCD!,odd,132\n";
-  CSVPasswordSequence seq(kBothUsernameAndLogin);
-  EXPECT_EQ(CSVPassword::Status::kSemanticError, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
-}
-
-TEST(CSVPasswordSequenceTest, Empty) {
-  CSVPasswordSequence seq((std::string()));
-  EXPECT_EQ(CSVPassword::Status::kSyntaxError, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
-}
-
-TEST(CSVPasswordSequenceTest, InvalidCSVHeader) {
-  static constexpr char kQuotes[] =
-      "Display Name,Login,Secret Question,Password,URL,Timestamp,\"\n"
-      ":),Bob,ABCD!,odd,https://example.org,132\n";
-  CSVPasswordSequence seq(kQuotes);
-  EXPECT_EQ(CSVPassword::Status::kSyntaxError, seq.result());
-  EXPECT_EQ(seq.begin(), seq.end());
 }
 
 TEST(CSVPasswordSequenceTest, SkipsEmptyLines) {
@@ -132,5 +81,56 @@ TEST(CSVPasswordSequenceTest, MissingEolAtEof) {
   EXPECT_EQ("l", pwd.GetUsername());
   EXPECT_EQ("p", pwd.GetPassword());
 }
+
+struct HeaderTestCase {
+  std::string test_name;
+  // Input.
+  std::string csv;
+  // Expected.
+  CSVPassword::Status status;
+};
+
+using CSVPasswordSequenceCompatibilityTest =
+    ::testing::TestWithParam<HeaderTestCase>;
+
+TEST_P(CSVPasswordSequenceCompatibilityTest, HeaderParsedWithStatus) {
+  const HeaderTestCase& test_case = GetParam();
+  SCOPED_TRACE(test_case.test_name);
+
+  const CSVPasswordSequence seq(test_case.csv);
+  EXPECT_EQ(test_case.status, seq.result());
+  EXPECT_EQ(seq.begin(), seq.end());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CSVPasswordSequenceCompatibilityTest,
+    testing::ValuesIn<HeaderTestCase>(
+        {{"Default", "url,username,password", CSVPassword::Status::kOK},
+         {"Uppercase", "URL,USERNAME,PASSWORD", CSVPassword::Status::kOK},
+         {"Quoted", "\"url\",\"username\",\"password\"",
+          CSVPassword::Status::kOK},
+         {"Variation #1", "website,user,password", CSVPassword::Status::kOK},
+         {"Variation #2", "origin,login,password", CSVPassword::Status::kOK},
+         {"Variation #3", "hostname,account,password",
+          CSVPassword::Status::kOK},
+         {"Variation #4", "login_uri,login_username,login_password",
+          CSVPassword::Status::kOK},
+         {"Allow spaces in header",
+          " Display Name ,  Login,Secret Question ,  Password,  URL,  "
+          "Timestamp   ",
+          CSVPassword::Status::kOK},
+         // Leave out URL but use both "UserName" and "Login". That way the
+         // username column is duplicated while the overall number of
+         // interesting columns matches the number of labels.
+         {"Duplicated columns",
+          "UserName,Login,Secret Question,Password,Timestamp\n",
+          CSVPassword::Status::kSemanticError},
+         {"Missing columns", ":),Bob,ABCD!,odd,https://example.org,132\n",
+          CSVPassword::Status::kSemanticError},
+         {"Empty", "", CSVPassword::Status::kSyntaxError},
+         {"Unmatched quote",
+          "Display Name,Login,Secret Question,Password,URL,Timestamp,\"\n",
+          CSVPassword::Status::kSyntaxError}}));
 
 }  // namespace password_manager
