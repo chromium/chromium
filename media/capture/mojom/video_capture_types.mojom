@@ -274,7 +274,8 @@ enum VideoCaptureFrameDropReason {
   kResolutionAdapterFrameRateIsHigherThanRequested,
   kResolutionAdapterHasNoCallbacks,
   kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame,
-  kRendererSinkFrameDelivererIsNotStarted
+  kRendererSinkFrameDelivererIsNotStarted,
+  [MinVersion=1] kCropVersionNotCurrent
 };
 
 [Stable]

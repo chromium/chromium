@@ -235,6 +235,7 @@ MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(
       await_next_key_frame_(false),
       crop_version_(crop_version) {
   DCHECK(io_task_runner_.get());
+  DCHECK(main_render_task_runner_);
 }
 
 MediaStreamVideoTrack::FrameDeliverer::~FrameDeliverer() {
@@ -450,9 +451,21 @@ void MediaStreamVideoTrack::FrameDeliverer::DeliverFrameOnIO(
     std::vector<scoped_refptr<media::VideoFrame>> scaled_video_frames,
     base::TimeTicks estimated_capture_time) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
-  DCHECK_EQ(frame->metadata().crop_version, crop_version_);
 
-  if (!enabled_ && main_render_task_runner_ && emit_frame_drop_events_) {
+  // TODO(crbug.com/1369085): Understand why we sometimes see old crop versions.
+  if (frame->metadata().crop_version != crop_version_) {
+    // TODO(crbug.com/964947): A weak ptr instance of MediaStreamVideoTrack is
+    // passed to FrameDeliverer in order to avoid the re-binding the instance of
+    // a WTF::CrossThreadFunction.
+    PostCrossThreadTask(
+        *main_render_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(
+            &MediaStreamVideoTrack::OnFrameDropped, media_stream_video_track_,
+            media::VideoCaptureFrameDropReason::kCropVersionNotCurrent));
+    return;
+  }
+
+  if (!enabled_ && emit_frame_drop_events_) {
     emit_frame_drop_events_ = false;
 
     // TODO(crbug.com/964947): A weak ptr instance of MediaStreamVideoTrack is

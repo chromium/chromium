@@ -100372,6 +100372,7 @@ Full version information for the fingerprint enum values:
   <int value="25"
       label="kVideoTrackFrameDelivererNotEnabledReplacingWithBlackFrame"/>
   <int value="26" label="kRendererSinkFrameDelivererIsNotStarted"/>
+  <int value="27" label="kCropVersionNotCurrent"/>
 </enum>
 
 <enum name="VideoCaptureServiceEvent">

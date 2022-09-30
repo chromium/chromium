@@ -1474,6 +1474,8 @@ EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kRendererSinkFrameDelivererIsNotStarted:
       return media::mojom::VideoCaptureFrameDropReason::
           kRendererSinkFrameDelivererIsNotStarted;
+    case media::VideoCaptureFrameDropReason::kCropVersionNotCurrent:
+      return media::mojom::VideoCaptureFrameDropReason::kCropVersionNotCurrent;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureFrameDropReason::kNone;
@@ -1608,6 +1610,9 @@ bool EnumTraits<media::mojom::VideoCaptureFrameDropReason,
         kRendererSinkFrameDelivererIsNotStarted:
       *output = media::VideoCaptureFrameDropReason::
           kRendererSinkFrameDelivererIsNotStarted;
+      return true;
+    case media::mojom::VideoCaptureFrameDropReason::kCropVersionNotCurrent:
+      *output = media::VideoCaptureFrameDropReason::kCropVersionNotCurrent;
       return true;
   }
   NOTREACHED();

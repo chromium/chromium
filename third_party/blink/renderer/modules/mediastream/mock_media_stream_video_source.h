@@ -37,6 +37,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
                     uint32_t,
                     base::OnceCallback<void(media::mojom::CropRequestResult)>));
   MOCK_METHOD0(GetNextCropVersion, absl::optional<uint32_t>());
+  MOCK_METHOD(uint32_t, GetCropVersion, (), (const, override));
 
   // Simulate that the underlying source start successfully.
   void StartMockedSource();
@@ -48,15 +49,21 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   // or FailToStartMockedSource has not been called.
   bool SourceHasAttemptedToStart() { return attempted_to_start_; }
 
-  // Delivers |frame| to all registered tracks on the IO thread. Its up to the
+  // Delivers |frame| to all registered tracks on the IO thread. It's up to the
   // caller to make sure MockMediaStreamVideoSource is not destroyed before the
   // frame has been delivered.
   void DeliverVideoFrame(scoped_refptr<media::VideoFrame> frame);
 
-  // Delivers |frame| to all registered encoded sinks on the IO thread. Its up
+  // Delivers |frame| to all registered encoded sinks on the IO thread. It's up
   // to the caller to make sure MockMediaStreamVideoSource is not destroyed
   // before the frame has been delivered.
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame);
+
+  // Send |crop_version| to all registered tracks on the IO thread. It's up to
+  // the caller to keep MockMediaStreamVideoSource alive until the
+  // crop_version_callback (registered with MediaStreamVideoSource::AddTrack)
+  // has completed.
+  void DeliverNewCropVersion(uint32_t crop_version);
 
   const media::VideoCaptureFormat& start_format() const { return format_; }
   int max_requested_height() const { return max_requested_height_; }
@@ -108,6 +115,7 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   bool is_suspended_ = false;
   blink::VideoCaptureDeliverFrameCB frame_callback_;
   EncodedVideoFrameCB encoded_frame_callback_;
+  VideoCaptureCropVersionCB crop_version_callback_;
 
   base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
 };
