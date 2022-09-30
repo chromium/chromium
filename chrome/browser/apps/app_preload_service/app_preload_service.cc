@@ -69,7 +69,7 @@ void AppPreloadService::RegisterProfilePrefs(
 void AppPreloadService::StartAppInstallationForFirstLogin(
     DeviceInfo device_info) {
   server_connector_->GetAppsForFirstLogin(
-      std::move(device_info),
+      device_info, profile_->GetURLLoaderFactory(),
       base::BindOnce(&AppPreloadService::OnGetAppsForFirstLoginCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

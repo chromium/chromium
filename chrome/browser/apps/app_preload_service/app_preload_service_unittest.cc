@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
+
 #include <algorithm>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
@@ -15,6 +17,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +29,9 @@ static constexpr char kFirstLoginFlowCompletedKey[] =
 
 static constexpr char kApsStateManager[] =
     "apps.app_preload_service.state_manager";
+
+static constexpr char kServerUrl[] =
+    "http://localhost:9876/v1/app_provisioning/apps";
 
 const base::Value::Dict& GetStateManager(Profile* profile) {
   return profile->GetPrefs()->GetDict(kApsStateManager);
@@ -55,10 +62,16 @@ class AppPreloadServiceTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetSharedURLLoaderFactory(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &url_loader_factory_));
+    profile_ = profile_builder.Build();
   }
 
   Profile* GetProfile() { return profile_.get(); }
+
+  network::TestURLLoaderFactory url_loader_factory_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -98,6 +111,9 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
+  // TODO: flesh out the response as response processing code is added.
+  url_loader_factory_.AddResponse(kServerUrl, "empty content");
+
   auto flow_completed =
       GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);
   // Since we're creating a new profile with no saved state, we expect the

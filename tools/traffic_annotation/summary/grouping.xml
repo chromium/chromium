@@ -262,6 +262,10 @@ after discussions on the right group.
       <annotation id="cryptohome_recovery_fetch_epoch"/>
       <annotation id="cryptohome_recovery_fetch_recovery_response"/>
       <annotation id="supervised_user_favicon_request"/>
+      <annotation id="nearby_share_update_device"/>
+      <annotation id="nearby_share_contacts"/>
+      <annotation id="nearby_share_list_public_certificates"/>
+      <annotation id="app_preload_service"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
