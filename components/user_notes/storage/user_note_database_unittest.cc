@@ -4,13 +4,13 @@
 
 #include "components/user_notes/storage/user_note_database.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "components/user_notes/model/user_note_model_test_utils.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -243,7 +243,7 @@ TEST_F(UserNoteDatabaseTest, GetNotesById) {
   EXPECT_EQ(3u, notes.size());
 
   for (std::unique_ptr<UserNote>& note : notes) {
-    const auto& vector_it = std::find(ids.begin(), ids.end(), note->id());
+    const auto& vector_it = base::ranges::find(ids, note->id());
     EXPECT_NE(vector_it, ids.end());
     EXPECT_NE(id_set.find(note->id()), id_set.end());
     int i = vector_it - ids.begin();

@@ -4,6 +4,7 @@
 
 #include "components/cast_streaming/public/config_conversions.h"
 
+#include "base/containers/contains.h"
 #include "media/base/media_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,9 +61,7 @@ void ValidateVideoConfig(const openscreen::cast::VideoCaptureConfig& config,
   EXPECT_EQ(config.target_playout_delay, expected.target_playout_delay);
   ASSERT_EQ(config.resolutions.size(), expected.resolutions.size());
   for (const auto& resolution : config.resolutions) {
-    EXPECT_TRUE(std::find(expected.resolutions.begin(),
-                          expected.resolutions.end(),
-                          resolution) != expected.resolutions.end());
+    EXPECT_TRUE(base::Contains(expected.resolutions, resolution));
   }
 }
 

@@ -4,9 +4,8 @@
 
 #include "components/ntp_snippets/category_rankers/fake_category_ranker.h"
 
-#include <algorithm>
-
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 
 namespace ntp_snippets {
 
@@ -18,8 +17,8 @@ bool FakeCategoryRanker::Compare(Category left, Category right) const {
   DCHECK(base::Contains(categories_, left));
   DCHECK(base::Contains(categories_, right));
 
-  return std::find(categories_.begin(), categories_.end(), left) <
-         std::find(categories_.begin(), categories_.end(), right);
+  return base::ranges::find(categories_, left) <
+         base::ranges::find(categories_, right);
 }
 
 void FakeCategoryRanker::ClearHistory(base::Time begin, base::Time end) {

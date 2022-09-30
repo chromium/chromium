@@ -4,8 +4,7 @@
 
 #include "components/permissions/bluetooth_scanning_prompt_controller.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -126,8 +125,7 @@ void BluetoothScanningPromptController::AddOrUpdateDevice(
       ++device_name_counts_[device_name_for_display];
     }
 
-    auto device_id_it =
-        std::find(device_ids_.begin(), device_ids_.end(), device_id);
+    auto device_id_it = base::ranges::find(device_ids_, device_id);
 
     DCHECK(device_id_it != device_ids_.end());
     if (view())

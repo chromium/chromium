@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -452,8 +453,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
           quic::ParsedQuicVersionVector obsolete_versions =
               net::ObsoleteQuicVersions();
           for (const quic::ParsedQuicVersion& version : supported_versions) {
-            if (std::find(obsolete_versions.begin(), obsolete_versions.end(),
-                          version) == obsolete_versions.end()) {
+            if (!base::Contains(obsolete_versions, version)) {
               filtered_versions.push_back(version);
             }
           }

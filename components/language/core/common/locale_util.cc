@@ -6,16 +6,15 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
 
 std::pair<base::StringPiece, base::StringPiece> SplitIntoMainAndTail(
     base::StringPiece locale) {
-  size_t hyphen_pos = static_cast<size_t>(
-      std::find(locale.begin(), locale.end(), '-') - locale.begin());
+  size_t hyphen_pos =
+      static_cast<size_t>(base::ranges::find(locale, '-') - locale.begin());
   return std::make_pair(locale.substr(0U, hyphen_pos),
                         locale.substr(hyphen_pos));
 }

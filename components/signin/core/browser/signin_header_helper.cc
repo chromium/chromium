@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -98,8 +99,7 @@ void RequestAdapter::SetExtraHeaderByName(const std::string& name,
                                           const std::string& value) {
   modified_headers_->SetHeader(name, value);
 
-  auto it =
-      std::find(headers_to_remove_->begin(), headers_to_remove_->end(), name);
+  auto it = base::ranges::find(*headers_to_remove_, name);
   if (it != headers_to_remove_->end())
     headers_to_remove_->erase(it);
 }

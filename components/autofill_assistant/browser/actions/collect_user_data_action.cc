@@ -4,7 +4,6 @@
 
 #include "components/autofill_assistant/browser/actions/collect_user_data_action.h"
 
-#include <algorithm>
 #include <array>
 #include <set>
 #include <string>
@@ -14,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
@@ -1678,12 +1678,10 @@ void CollectUserDataAction::UpdateUserDataFromProto(
       // Note: If the incoming card did not set a network GetPaymentRequestData
       // will fall back to "generic".
       if (!collect_user_data_options_->supported_basic_card_networks.empty() &&
-          std::find(
-              collect_user_data_options_->supported_basic_card_networks.begin(),
-              collect_user_data_options_->supported_basic_card_networks.end(),
+          !base::Contains(
+              collect_user_data_options_->supported_basic_card_networks,
               autofill::data_util::GetPaymentRequestData(credit_card->network())
-                  .basic_card_issuer_network) ==
-              collect_user_data_options_->supported_basic_card_networks.end()) {
+                  .basic_card_issuer_network)) {
         continue;
       }
 
@@ -1859,12 +1857,10 @@ void CollectUserDataAction::UpdatePersonalDataManagerCards(
   for (const auto* card : personal_data_manager->GetCreditCardsToSuggest(
            /* include_server_cards= */ true)) {
     if (!collect_user_data_options_->supported_basic_card_networks.empty() &&
-        std::find(
-            collect_user_data_options_->supported_basic_card_networks.begin(),
-            collect_user_data_options_->supported_basic_card_networks.end(),
+        !base::Contains(
+            collect_user_data_options_->supported_basic_card_networks,
             autofill::data_util::GetPaymentRequestData(card->network())
-                .basic_card_issuer_network) ==
-            collect_user_data_options_->supported_basic_card_networks.end()) {
+                .basic_card_issuer_network)) {
       continue;
     }
 

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -20,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -334,7 +334,7 @@ WebInputElement FindUsernameElementPrecedingPasswordElement(
     elements = password_element.Form().GetFormControlElements().ReleaseVector();
   }
 
-  auto iter = std::find(elements.begin(), elements.end(), password_element);
+  auto iter = base::ranges::find(elements, password_element);
   if (iter == elements.end())
     return WebInputElement();
 

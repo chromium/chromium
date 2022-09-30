@@ -4,10 +4,10 @@
 
 #include "components/metrics/call_stack_profile_metadata.h"
 
-#include <algorithm>
 #include <tuple>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,9 +30,9 @@ void ExpectMetadataApplied(
   const std::string index_info =
       base::StrCat({"at sample_index ", base::NumberToString(sample_index),
                     ", metadata_index ", base::NumberToString(metadata_index)});
-  const int name_hash_index = std::find(name_hashes.begin(), name_hashes.end(),
-                                        expected_item.name_hash) -
-                              name_hashes.begin();
+  const int name_hash_index =
+      base::ranges::find(name_hashes, expected_item.name_hash) -
+      name_hashes.begin();
   ASSERT_NE(name_hash_index, name_hashes.size()) << index_info;
 
   ASSERT_LT(sample_index, samples.size()) << index_info;
@@ -60,9 +60,9 @@ void ExpectMetadataUnapplied(
   const std::string index_info =
       base::StrCat({"at sample_index ", base::NumberToString(sample_index),
                     ", metadata_index ", base::NumberToString(metadata_index)});
-  const int name_hash_index = std::find(name_hashes.begin(), name_hashes.end(),
-                                        expected_item.name_hash) -
-                              name_hashes.begin();
+  const int name_hash_index =
+      base::ranges::find(name_hashes, expected_item.name_hash) -
+      name_hashes.begin();
   ASSERT_NE(name_hash_index, name_hashes.size()) << index_info;
 
   ASSERT_LT(sample_index, samples.size()) << index_info;

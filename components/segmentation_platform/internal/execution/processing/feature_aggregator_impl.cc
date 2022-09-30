@@ -4,10 +4,10 @@
 
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -282,10 +282,7 @@ void FeatureAggregatorImpl::FilterEnumSamples(
 
   auto new_end = std::remove_if(
       samples.begin(), samples.end(), [&accepted_enum_ids](Sample sample) {
-        auto found =
-            std::find(accepted_enum_ids.begin(), accepted_enum_ids.end(),
-                      sample.second) != accepted_enum_ids.end();
-        return !found;
+        return !base::Contains(accepted_enum_ids, sample.second);
       });
   samples.erase(new_end, samples.end());
 }

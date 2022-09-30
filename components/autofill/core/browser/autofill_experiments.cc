@@ -4,13 +4,14 @@
 
 #include "components/autofill/core/browser/autofill_experiments.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -202,9 +203,7 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
   bool using_supported_additional_domain =
       base::FeatureList::IsEnabled(
           features::kAutofillUpstreamAllowAdditionalEmailDomains) &&
-      std::find(std::begin(kSupportedAdditionalDomains),
-                std::end(kSupportedAdditionalDomains),
-                domain_first_segment) != std::end(kSupportedAdditionalDomains);
+      base::Contains(kSupportedAdditionalDomains, domain_first_segment);
   // Otherwise, restrict credit card upload only to Google Accounts with
   // @googlemail, @gmail, @google, or @chromium domains.
   // example.com is on the list because ChromeOS tests rely on using this. That
@@ -234,8 +233,7 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
 
   std::string country_code = base::ToUpperASCII(user_country);
   auto* const* country_iter =
-      std::find(std::begin(kAutofillUpstreamLaunchedCountries),
-                std::end(kAutofillUpstreamLaunchedCountries), country_code);
+      base::ranges::find(kAutofillUpstreamLaunchedCountries, country_code);
   if (country_iter == std::end(kAutofillUpstreamLaunchedCountries)) {
     // |country_code| was not found in the list of launched countries.
     autofill_metrics::LogCardUploadEnabledMetric(

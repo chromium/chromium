@@ -19,6 +19,7 @@
 #import "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
@@ -1536,8 +1537,7 @@ void NativeWidgetNSWindowBridge::RedispatchKeyEvent(
 
 void NativeWidgetNSWindowBridge::RemoveChildWindow(
     NativeWidgetNSWindowBridge* child) {
-  auto location =
-      std::find(child_windows_.begin(), child_windows_.end(), child);
+  auto location = base::ranges::find(child_windows_, child);
   DCHECK(location != child_windows_.end());
   child_windows_.erase(location);
 

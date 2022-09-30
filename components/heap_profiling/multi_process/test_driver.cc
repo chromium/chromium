@@ -4,7 +4,6 @@
 
 #include "components/heap_profiling/multi_process/test_driver.h"
 
-#include <algorithm>
 #include <memory>
 #include <string>
 
@@ -751,8 +750,7 @@ void TestDriver::WaitForProfilingToStartForBrowserUIThread() {
     Supervisor::GetInstance()->GetProfiledPids(std::move(callback));
     run_loop.Run();
 
-    if (std::find(profiled_pids.begin(), profiled_pids.end(),
-                  base::GetCurrentProcId()) != profiled_pids.end()) {
+    if (base::Contains(profiled_pids, base::GetCurrentProcId())) {
       break;
     }
   }

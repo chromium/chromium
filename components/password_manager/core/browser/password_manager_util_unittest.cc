@@ -10,6 +10,8 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -562,8 +564,8 @@ TEST(PasswordManagerUtil, FindBestMatches) {
                   test_case.expected_best_matches_indices.find(username));
         size_t expected_index =
             test_case.expected_best_matches_indices.at(username);
-        size_t actual_index = std::distance(
-            matches.begin(), std::find(matches.begin(), matches.end(), match));
+        size_t actual_index =
+            std::distance(matches.begin(), base::ranges::find(matches, match));
         EXPECT_EQ(expected_index, actual_index);
       }
     }
@@ -613,14 +615,10 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
                   &best_matches, &preferred_match);
   // |profile_form1| is filtered out because it's the same as |account_form1|.
   EXPECT_EQ(best_matches.size(), 3U);
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form1),
-            best_matches.end());
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &account_form2),
-            best_matches.end());
-  EXPECT_EQ(std::find(best_matches.begin(), best_matches.end(), &profile_form1),
-            best_matches.end());
-  EXPECT_NE(std::find(best_matches.begin(), best_matches.end(), &profile_form2),
-            best_matches.end());
+  EXPECT_TRUE(base::Contains(best_matches, &account_form1));
+  EXPECT_TRUE(base::Contains(best_matches, &account_form2));
+  EXPECT_FALSE(base::Contains(best_matches, &profile_form1));
+  EXPECT_TRUE(base::Contains(best_matches, &profile_form2));
 }
 
 TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsername) {

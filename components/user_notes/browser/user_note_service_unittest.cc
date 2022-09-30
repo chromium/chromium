@@ -4,10 +4,10 @@
 
 #include "components/user_notes/browser/user_note_service.h"
 
-#include <algorithm>
 #include <memory>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/unguessable_token.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "components/user_notes/browser/frame_user_note_changes.h"
@@ -880,14 +880,10 @@ TEST_F(UserNoteServiceTest, OnNoteMetadataFetched) {
   // immediately verified.
   const UserNoteStorage::IdSet& fetched_ids = storage_->requested_model_ids();
   EXPECT_EQ(fetched_ids.size(), 4u);
-  EXPECT_NE(std::find(fetched_ids.begin(), fetched_ids.end(), note_ids_[0]),
-            fetched_ids.end());
-  EXPECT_NE(std::find(fetched_ids.begin(), fetched_ids.end(), note_ids_[2]),
-            fetched_ids.end());
-  EXPECT_NE(std::find(fetched_ids.begin(), fetched_ids.end(), note_ids_[4]),
-            fetched_ids.end());
-  EXPECT_NE(std::find(fetched_ids.begin(), fetched_ids.end(), note_ids_[5]),
-            fetched_ids.end());
+  EXPECT_TRUE(base::Contains(fetched_ids, note_ids_[0]));
+  EXPECT_TRUE(base::Contains(fetched_ids, note_ids_[2]));
+  EXPECT_TRUE(base::Contains(fetched_ids, note_ids_[4]));
+  EXPECT_TRUE(base::Contains(fetched_ids, note_ids_[5]));
 
   const UserNoteService::IdSet& computed_new_notes =
       mock_service_->computed_new_notes();
@@ -1009,12 +1005,8 @@ TEST_F(UserNoteServiceTest, OnNoteModelsFetched) {
   // immediately verified.
   const IdList& changes_applied = mock_service_->changes_applied();
   EXPECT_EQ(changes_applied.size(), 2u);
-  EXPECT_NE(
-      std::find(changes_applied.begin(), changes_applied.end(), change1_id),
-      changes_applied.end());
-  EXPECT_NE(
-      std::find(changes_applied.begin(), changes_applied.end(), change2_id),
-      changes_applied.end());
+  EXPECT_TRUE(base::Contains(changes_applied, change1_id));
+  EXPECT_TRUE(base::Contains(changes_applied, change2_id));
 
   EXPECT_EQ(ModelMapSize(), 5u);
   EXPECT_EQ(CreationMapSize(), 0u);

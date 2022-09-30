@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -975,8 +976,7 @@ void CompositorFrameSinkSupport::AttachCaptureClient(
 
 void CompositorFrameSinkSupport::DetachCaptureClient(
     CapturableFrameSink::Client* client) {
-  const auto it =
-      std::find(capture_clients_.begin(), capture_clients_.end(), client);
+  const auto it = base::ranges::find(capture_clients_, client);
   if (it != capture_clients_.end())
     capture_clients_.erase(it);
   if (client->IsVideoCaptureStarted())

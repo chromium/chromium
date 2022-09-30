@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
@@ -86,10 +88,8 @@ class ContentSuggestionsServiceTest : public testing::Test {
   // returned by the service for the given |category|.
   void ExpectThatSuggestionsAre(Category category, std::vector<int> numbers) {
     std::vector<Category> categories = service()->GetCategories();
-    auto category_position =
-        std::find(categories.begin(), categories.end(), category);
     if (!numbers.empty()) {
-      EXPECT_NE(categories.end(), category_position);
+      EXPECT_TRUE(base::Contains(categories, category));
     }
 
     for (const auto& suggestion :
@@ -97,7 +97,7 @@ class ContentSuggestionsServiceTest : public testing::Test {
       std::string id_within_category = suggestion.id().id_within_category();
       int id;
       ASSERT_TRUE(base::StringToInt(id_within_category, &id));
-      auto number_position = std::find(numbers.begin(), numbers.end(), id);
+      auto number_position = base::ranges::find(numbers, id);
       if (number_position == numbers.end()) {
         ADD_FAILURE() << "Unexpected suggestion with ID " << id;
       } else {

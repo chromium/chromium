@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <limits>
 #include <map>
 #include <memory>
@@ -2972,9 +2971,7 @@ bool BrowserAutofillManager::ShouldShowVirtualCardOption(
   // If merchant is not allowed, return false.
   std::vector<std::string> allowed_merchants =
       client()->GetAllowedMerchantsForVirtualCards();
-  if (std::find(allowed_merchants.begin(), allowed_merchants.end(),
-                form_structure->source_url().spec()) ==
-      allowed_merchants.end()) {
+  if (!base::Contains(allowed_merchants, form_structure->source_url().spec())) {
     return false;
   }
 

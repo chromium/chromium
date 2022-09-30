@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -299,7 +300,7 @@ void InferUsernameField(
     WebElement control(label.CorrespondingControl());
     if (!control.IsNull() && control.IsFormControlElement()) {
       WebFormControlElement form_control(control.To<WebFormControlElement>());
-      auto found = std::find(inputs.begin(), inputs.end(), form_control);
+      auto found = base::ranges::find(inputs, form_control);
       if (found != inputs.end()) {
         std::string label_content(
             base::UTF16ToUTF8(form_util::FindChildText(label)));

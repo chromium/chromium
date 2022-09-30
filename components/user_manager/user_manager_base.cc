@@ -5,6 +5,7 @@
 #include "components/user_manager/user_manager_base.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <set>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1122,8 +1124,7 @@ void UserManagerBase::SetLRUUser(User* user) {
                              user->GetAccountId().GetUserEmail());
   GetLocalState()->CommitPendingWrite();
 
-  UserList::iterator it =
-      std::find(lru_logged_in_users_.begin(), lru_logged_in_users_.end(), user);
+  UserList::iterator it = base::ranges::find(lru_logged_in_users_, user);
   if (it != lru_logged_in_users_.end())
     lru_logged_in_users_.erase(it);
   lru_logged_in_users_.insert(lru_logged_in_users_.begin(), user);

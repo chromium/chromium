@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/votes_uploader.h"
 
 #include <ctype.h>
-#include <algorithm>
+
 #include <iostream>
 #include <utility>
 
@@ -183,8 +183,7 @@ bool IsUppercaseLetter(int c) {
 // Checks if a supplied character |c| is a special symbol.
 // Special symbols are defined by the string |kSpecialSymbols|.
 bool IsSpecialSymbol(int c) {
-  return std::find(std::begin(kSpecialSymbols), std::end(kSpecialSymbols), c) !=
-         std::end(kSpecialSymbols);
+  return base::Contains(kSpecialSymbols, c);
 }
 
 // Returns a uniformly distributed random symbol from the set of random symbols

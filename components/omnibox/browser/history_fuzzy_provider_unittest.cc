@@ -4,10 +4,10 @@
 
 #include "components/omnibox/browser/history_fuzzy_provider.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -21,8 +21,7 @@ struct TestCase {
 
 template <typename Container, typename Item>
 void SwapRemoveElement(Container& container, const Item& item) {
-  typename Container::iterator it =
-      std::find(container.begin(), container.end(), item);
+  typename Container::iterator it = base::ranges::find(container, item);
   if (it == container.end()) {
     return;
   }

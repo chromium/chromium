@@ -4,15 +4,16 @@
 
 #include "components/performance_manager/graph/graph_impl.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -39,8 +40,7 @@ void AddObserverImpl(std::vector<NodeObserverType*>* observers,
                      NodeObserverType* observer) {
   DCHECK(observers);
   DCHECK(observer);
-  auto it = std::find(observers->begin(), observers->end(), observer);
-  DCHECK(it == observers->end());
+  DCHECK(!base::Contains(*observers, observer));
   observers->push_back(observer);
 }
 
@@ -50,12 +50,11 @@ void RemoveObserverImpl(std::vector<NodeObserverType*>* observers,
   DCHECK(observers);
   DCHECK(observer);
   // We expect to find the observer in the array.
-  auto it = std::find(observers->begin(), observers->end(), observer);
+  auto it = base::ranges::find(*observers, observer);
   DCHECK(it != observers->end());
   observers->erase(it);
   // There should only have been one copy of the observer.
-  it = std::find(observers->begin(), observers->end(), observer);
-  DCHECK(it == observers->end());
+  DCHECK(!base::Contains(*observers, observer));
 }
 
 class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {

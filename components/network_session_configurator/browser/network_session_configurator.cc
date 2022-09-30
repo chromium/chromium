@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
@@ -489,8 +490,7 @@ quic::ParsedQuicVersionVector GetQuicVersions(
         net::ObsoleteQuicVersions();
     bool found_obsolete_version = false;
     for (const quic::ParsedQuicVersion& version : trial_versions) {
-      if (std::find(obsolete_versions.begin(), obsolete_versions.end(),
-                    version) == obsolete_versions.end()) {
+      if (!base::Contains(obsolete_versions, version)) {
         filtered_versions.push_back(version);
       } else {
         found_obsolete_version = true;

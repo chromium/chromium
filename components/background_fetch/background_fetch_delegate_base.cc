@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/background_fetch/job_details.h"
@@ -423,10 +424,8 @@ bool BackgroundFetchDelegateBase::IsGuidOutstanding(
   if (job_details_iter == job_details_map_.end())
     return false;
 
-  const std::vector<std::string>& outstanding_guids =
-      job_details_iter->second.fetch_description->outstanding_guids;
-  return std::find(outstanding_guids.begin(), outstanding_guids.end(), guid) !=
-         outstanding_guids.end();
+  return base::Contains(
+      job_details_iter->second.fetch_description->outstanding_guids, guid);
 }
 
 void BackgroundFetchDelegateBase::RestartPausedDownload(

@@ -4,6 +4,8 @@
 
 #include "components/link_header_util/link_header_util.h"
 
+#include <algorithm>
+
 #include "base/strings/string_util.h"
 #include "net/http/http_util.h"
 

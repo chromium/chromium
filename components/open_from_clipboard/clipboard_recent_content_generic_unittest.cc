@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -71,8 +72,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
   void SetUp() override {
     // Make sure "chrome" as standard scheme for non chrome embedder.
     std::vector<std::string> standard_schemes = url::GetStandardSchemes();
-    if (std::find(standard_schemes.begin(), standard_schemes.end(),
-                  kChromeUIScheme) == standard_schemes.end()) {
+    if (!base::Contains(standard_schemes, kChromeUIScheme)) {
       url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
     }
 

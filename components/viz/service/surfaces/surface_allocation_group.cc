@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
@@ -40,7 +41,7 @@ void SurfaceAllocationGroup::RegisterSurface(Surface* surface) {
 }
 
 void SurfaceAllocationGroup::UnregisterSurface(Surface* surface) {
-  auto it = std::find(surfaces_.begin(), surfaces_.end(), surface);
+  auto it = base::ranges::find(surfaces_, surface);
   DCHECK(it != surfaces_.end());
   surfaces_.erase(it);
   MaybeMarkForDestruction();

@@ -4,6 +4,7 @@
 
 #include "components/ui_devtools/views/ui_element_with_metadata.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -109,8 +110,7 @@ bool UIElementWithMetaData::SetPropertiesFromString(const std::string& text) {
     // based on the allowed values specified in the metadata.
     auto valid_values = member->GetValidValues();
     if (!valid_values.empty() &&
-        std::find(valid_values.begin(), valid_values.end(),
-                  base::UTF8ToUTF16(property_value)) == valid_values.end()) {
+        !base::Contains(valid_values, base::UTF8ToUTF16(property_value))) {
       // Ignore the value.
       continue;
     }

@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/time/clock.h"
 #include "components/ntp_snippets/features.h"
@@ -872,8 +873,7 @@ RemoteSuggestionsSchedulerImpl::GetEnabledTriggerTypes() {
 
   std::set<TriggerType> enabled_types;
   for (const auto& token : tokens) {
-    auto* const* it = std::find(std::begin(kTriggerTypeNames),
-                                std::end(kTriggerTypeNames), token);
+    auto* const* it = base::ranges::find(kTriggerTypeNames, token);
     if (it == std::end(kTriggerTypeNames)) {
       DLOG(WARNING) << "Failed to parse variation param "
                     << kTriggerTypesParamName << " with string value "

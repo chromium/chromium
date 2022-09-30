@@ -4,7 +4,6 @@
 
 #include "components/autofill/content/renderer/password_generation_agent.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -13,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
@@ -55,8 +55,7 @@ using Logger = ::autofill::SavePasswordProgressLogger;
 FieldRendererId FindConfirmationPasswordFieldId(
     const std::vector<WebFormControlElement>& control_elements,
     const WebFormControlElement& new_password) {
-  auto iter =
-      std::find(control_elements.begin(), control_elements.end(), new_password);
+  auto iter = base::ranges::find(control_elements, new_password);
 
   if (iter == control_elements.end())
     return FieldRendererId();

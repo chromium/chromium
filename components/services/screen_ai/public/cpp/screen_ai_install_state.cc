@@ -4,9 +4,8 @@
 
 #include "components/services/screen_ai/public/cpp/screen_ai_install_state.h"
 
-#include <algorithm>
-
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 
 namespace screen_ai {
 
@@ -28,7 +27,7 @@ void ScreenAIInstallState::AddObserver(
 
 void ScreenAIInstallState::RemoveObserver(
     ScreenAIInstallState::Observer* observer) {
-  auto pos = std::find(observers_.begin(), observers_.end(), observer);
+  auto pos = base::ranges::find(observers_, observer);
   if (pos != observers_.end())
     observers_.erase(pos);
 }

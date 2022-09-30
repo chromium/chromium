@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/renderer/js_communication.h"
 #include "content/public/renderer/render_frame.h"
@@ -242,7 +243,7 @@ void JsBinding::RemoveEventListener(gin::Arguments* args) {
     return;
   }
 
-  auto iter = std::find(listeners_.begin(), listeners_.end(), listener);
+  auto iter = base::ranges::find(listeners_, listener);
   if (iter == listeners_.end())
     return;
 

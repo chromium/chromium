@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "components/autofill_assistant/browser/script_parameters.h"
 
@@ -107,8 +108,7 @@ bool TriggerContext::HasExperimentId(const std::string& experiment_id) const {
   std::vector<std::string> experiments = base::SplitString(
       experiment_ids_, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
-  return std::find(experiments.begin(), experiments.end(), experiment_id) !=
-         experiments.end();
+  return base::Contains(experiments, experiment_id);
 }
 
 bool TriggerContext::GetCCT() const {

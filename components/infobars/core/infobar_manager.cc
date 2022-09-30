@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "components/infobars/core/infobar.h"
 
 namespace infobars {
@@ -71,7 +72,7 @@ InfoBar* InfoBarManager::ReplaceInfoBar(InfoBar* old_infobar,
   DCHECK(old_infobar);
   DCHECK(new_infobar);
 
-  auto i(std::find(infobars_.begin(), infobars_.end(), old_infobar));
+  auto i = base::ranges::find(infobars_, old_infobar);
   DCHECK(i != infobars_.end());
 
   InfoBar* new_infobar_ptr = new_infobar.release();
@@ -124,7 +125,7 @@ void InfoBarManager::OnNavigation(
 void InfoBarManager::RemoveInfoBarInternal(InfoBar* infobar, bool animate) {
   DCHECK(infobar);
 
-  auto i(std::find(infobars_.begin(), infobars_.end(), infobar));
+  auto i = base::ranges::find(infobars_, infobar);
   // TODO(crbug.com/): Temporarily a CHECK instead of a DCHECK CHECK() in order
   // to help diagnose suspected memory smashing caused by invalid call of this
   // method happening in production code on iOS.

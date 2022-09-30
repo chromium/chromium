@@ -4,8 +4,7 @@
 
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 
-#include <algorithm>
-
+#include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -33,8 +32,7 @@ void PowerBookmarkService::AddDataProvider(
 
 void PowerBookmarkService::RemoveDataProvider(
     PowerBookmarkDataProvider* data_provider) {
-  auto it =
-      std::find(data_providers_.begin(), data_providers_.end(), data_provider);
+  auto it = base::ranges::find(data_providers_, data_provider);
   if (it != data_providers_.end())
     data_providers_.erase(it);
 }

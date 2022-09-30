@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <cstring>
 #include <map>
 #include <memory>
@@ -11,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
@@ -666,8 +666,7 @@ class BaseAccountReconcilorTestTable : public AccountReconcilorTest {
       for (Cookie& cookie : cookies_after_reconcile) {
         if (base::Contains(gaia_ids, cookie.gaia_id)) {
           cookie.is_valid = true;
-          gaia_ids.erase(
-              std::find(gaia_ids.begin(), gaia_ids.end(), cookie.gaia_id));
+          gaia_ids.erase(base::ranges::find(gaia_ids, cookie.gaia_id));
         } else {
           DCHECK(!cookie.is_valid);
         }

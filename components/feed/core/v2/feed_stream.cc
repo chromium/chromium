@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -677,9 +678,7 @@ void FeedStream::UploadActionsComplete(UploadActionsTask::Result result) {
 }
 
 bool FeedStream::WasUrlRecentlyNavigatedFromFeed(const GURL& url) {
-  return std::find(recent_feed_navigations_.begin(),
-                   recent_feed_navigations_.end(),
-                   url) != recent_feed_navigations_.end();
+  return base::Contains(recent_feed_navigations_, url);
 }
 
 void FeedStream::InvalidateContentCacheFor(StreamKind stream_kind) {
