@@ -102,17 +102,13 @@
   if (self.sceneState.startupHadExternalIntent)
     return NO;
 
-  // (6) The app isn't launching after a crash.
-  if (self.sceneState.appState.postCrashLaunch)
-    return NO;
-
   // Additional, sensible checks to add to minimize user annoyance:
 
-  // (7) The user isn't currently signing in.
+  // (6) The user isn't currently signing in.
   if (self.sceneState.signinInProgress)
     return NO;
 
-  // (8) The user isn't currently looking at a modal overlay.
+  // (7) The user isn't currently looking at a modal overlay.
   if (self.sceneState.presentingModalOverlay)
     return NO;
 

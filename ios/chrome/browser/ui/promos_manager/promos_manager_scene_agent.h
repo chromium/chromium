@@ -19,8 +19,7 @@
 // (2) the scene is in the foreground,
 // (3) there is no UI blocker,
 // (4) the app isn't shutting down,
-// (5) there are no launch intents, and
-// (6) the last session wasn't a crash.
+// (5) there are no launch intents.
 //
 // There are 3 events that can trigger a promo:
 //
