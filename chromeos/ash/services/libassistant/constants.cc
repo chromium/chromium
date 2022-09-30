@@ -32,6 +32,9 @@ const base::FilePath::CharType kLibAssistantV2DlcPath[] =
 const base::FilePath::CharType kAssistantBaseDirPath[] =
     FILE_PATH_LITERAL(ASSISTANT_TEMP_DIR ASSISTANT_DIR_STRING);
 
+const base::FilePath::CharType kLibAssistantSocketPath[] =
+    FILE_PATH_LITERAL(ASSISTANT_TEMP_DIR);
+
 const char kLibAssistantDlcRootPath[] = "";
 
 const base::FilePath::CharType kLibAssistantV1DlcPath[] =

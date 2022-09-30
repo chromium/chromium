@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
@@ -106,6 +107,16 @@ void LibassistantLoaderImpl::LoadBlocking(const std::string& root_path) {
   // Since we are not in the main thread, we can call the blocking method.
   DCHECK(!entry_point_);
 
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // If the gRPC socket files exist, libassistant gRPC server could not start
+  // because the binding to the new socket files will fail, with error message
+  // that the files already exist.
+  // This cleanup is only needed for running the sandbox on gLinux.
+  // On a real device, these files will be cleaned up on the OS side when Chrome
+  // starts.
+  DVLOG(3) << "Clean up temporary libassistant directory.";
+  base::DeletePathRecursively(base::FilePath(kLibAssistantSocketPath));
+#endif
   base::FilePath path = GetLibassisantPath(root_path);
   base::ScopedNativeLibrary library = base::ScopedNativeLibrary(path);
   OnLibraryLoaded(std::move(library));
@@ -133,7 +144,7 @@ void LibassistantLoaderImpl::InstallDlc(LoadCallback callback) {
     return;
   }
 
-  DVLOG(1) << "Installing libassistant.so from DLC";
+  DVLOG(3) << "Installing libassistant.so from DLC";
   dlcservice::InstallRequest install_request;
   install_request.set_id(kLibassistantDlcId);
   client->Install(install_request,
