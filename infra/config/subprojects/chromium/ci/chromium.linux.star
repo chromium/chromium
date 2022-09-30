@@ -472,4 +472,5 @@ ci.builder(
         short_name = "gcc",
     ),
     reclient_instance = None,
+    os = os.LINUX_FOCAL,
 )
