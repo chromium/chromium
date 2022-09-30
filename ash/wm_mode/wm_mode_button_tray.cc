@@ -4,14 +4,19 @@
 
 #include "ash/wm_mode/wm_mode_button_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "ui/base/models/image_model.h"
+#include "ui/events/event.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -25,7 +30,7 @@ bool ShouldButtonBeVisible() {
 }  // namespace
 
 WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kWmMode),
       image_view_(tray_container()->AddChildView(
           std::make_unique<views::ImageView>())) {
   image_view_->SetTooltipText(GetAccessibleNameForTray());

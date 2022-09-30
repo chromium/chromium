@@ -114,13 +114,13 @@ void StatusAreaWidget::Initialize() {
       AddTrayButton(std::make_unique<HoldingSpaceTray>(shelf_));
   logout_button_tray_ =
       AddTrayButton(std::make_unique<LogoutButtonTray>(shelf_));
-  dictation_button_tray_ =
-      AddTrayButton(std::make_unique<DictationButtonTray>(shelf_));
-  select_to_speak_tray_ =
-      AddTrayButton(std::make_unique<SelectToSpeakTray>(shelf_));
+  dictation_button_tray_ = AddTrayButton(std::make_unique<DictationButtonTray>(
+      shelf_, TrayBackgroundViewCatalogName::kDictationStatusArea));
+  select_to_speak_tray_ = AddTrayButton(std::make_unique<SelectToSpeakTray>(
+      shelf_, TrayBackgroundViewCatalogName::kSelectToSpeakStatusArea));
   ime_menu_tray_ = AddTrayButton(std::make_unique<ImeMenuTray>(shelf_));
-  virtual_keyboard_tray_ =
-      AddTrayButton(std::make_unique<VirtualKeyboardTray>(shelf_));
+  virtual_keyboard_tray_ = AddTrayButton(std::make_unique<VirtualKeyboardTray>(
+      shelf_, TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea));
   stop_recording_button_tray_ =
       AddTrayButton(std::make_unique<StopRecordingButtonTray>(shelf_));
 
@@ -259,15 +259,40 @@ void StatusAreaWidget::UpdateCollapseState() {
 void StatusAreaWidget::LogVisiblePodCountMetric() {
   int visible_pod_count = 0;
   for (auto* tray_button : tray_buttons_) {
-    if (tray_button == overflow_button_tray_ ||
-        tray_button == overview_button_tray_ ||
-        tray_button == unified_system_tray_ || tray_button == date_tray_ ||
-        tray_button == notification_center_tray_ ||
-        !tray_button->GetVisible()) {
-      continue;
-    }
+    switch (tray_button->catalog_name()) {
+      case TrayBackgroundViewCatalogName::kUnifiedSystem:
+      case TrayBackgroundViewCatalogName::kStatusAreaOverflowButton:
+      case TrayBackgroundViewCatalogName::kDateTray:
+      case TrayBackgroundViewCatalogName::kNotificationCenter:
+        // These pods always show, ignore them.
+        continue;
 
-    visible_pod_count += 1;
+      case TrayBackgroundViewCatalogName::kSelectToSpeakAccessibilityWindow:
+      case TrayBackgroundViewCatalogName::kDictationAccesibilityWindow:
+      case TrayBackgroundViewCatalogName::kVirtualKeyboardAccessibilityWindow:
+        // These pods show in an unrelated menu.
+        continue;
+
+      case TrayBackgroundViewCatalogName::kOverview:
+      case TrayBackgroundViewCatalogName::kTestCatalogName:
+      case TrayBackgroundViewCatalogName::kImeMenu:
+      case TrayBackgroundViewCatalogName::kHoldingSpace:
+      case TrayBackgroundViewCatalogName::kScreenCaptureStopRecording:
+      case TrayBackgroundViewCatalogName::kProjectorAnnotation:
+      case TrayBackgroundViewCatalogName::kDictationStatusArea:
+      case TrayBackgroundViewCatalogName::kSelectToSpeakStatusArea:
+      case TrayBackgroundViewCatalogName::kEche:
+      case TrayBackgroundViewCatalogName::kMediaPlayer:
+      case TrayBackgroundViewCatalogName::kPalette:
+      case TrayBackgroundViewCatalogName::kPhoneHub:
+      case TrayBackgroundViewCatalogName::kLogoutButton:
+      case TrayBackgroundViewCatalogName::kVirtualKeyboardStatusArea:
+      case TrayBackgroundViewCatalogName::kWmMode:
+        if (!tray_button->GetVisible())
+          continue;
+        visible_pod_count += 1;
+        break;
+    }
   }
 
   if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {

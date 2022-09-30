@@ -5,6 +5,7 @@
 #include "ash/system/media/media_tray.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
@@ -199,7 +200,8 @@ void MediaTray::PinButton::ButtonPressed() {
           : IDS_ASH_GLOBAL_MEDIA_CONTROLS_UNPINNED_BUTTON_TOOLTIP_TEXT));
 }
 
-MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
+MediaTray::MediaTray(Shelf* shelf)
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kMediaPlayer) {
   if (MediaNotificationProvider::Get())
     MediaNotificationProvider::Get()->AddObserver(this);
 

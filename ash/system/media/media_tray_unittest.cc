@@ -4,6 +4,7 @@
 
 #include "ash/system/media/media_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/media/media_notification_provider.h"
@@ -67,7 +68,9 @@ class MockMediaNotificationProvider : public MediaNotificationProvider {
 // Mock tray button used to test media tray bubble's anchor update.
 class MockTrayBackgroundView : public ash::TrayBackgroundView {
  public:
-  MockTrayBackgroundView(Shelf* shelf) : TrayBackgroundView(shelf) {
+  explicit MockTrayBackgroundView(Shelf* shelf)
+      : TrayBackgroundView(shelf,
+                           TrayBackgroundViewCatalogName::kTestCatalogName) {
     SetSize(kMockTraySize);
   }
 

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -18,7 +19,9 @@
 namespace ash {
 
 NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
-    : TrayBackgroundView(shelf, RoundedCornerBehavior::kStartRounded) {
+    : TrayBackgroundView(shelf,
+                         TrayBackgroundViewCatalogName::kNotificationCenter,
+                         RoundedCornerBehavior::kStartRounded) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
   set_use_bounce_in_animation(false);
 

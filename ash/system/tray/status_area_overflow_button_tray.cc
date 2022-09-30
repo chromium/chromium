@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/status_area_overflow_button_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
@@ -91,7 +92,10 @@ void StatusAreaOverflowButtonTray::IconView::UpdateRotation() {
 }
 
 StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), icon_(new IconView()) {
+    : TrayBackgroundView(
+          shelf,
+          TrayBackgroundViewCatalogName::kStatusAreaOverflowButton),
+      icon_(new IconView()) {
   tray_container()->AddChildView(icon_);
   set_use_bounce_in_animation(false);
 }

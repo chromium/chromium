@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -29,6 +30,8 @@
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -215,11 +218,14 @@ class TrayBackgroundView::TrayBackgroundViewSessionChangeHandler
 ////////////////////////////////////////////////////////////////////////////////
 // TrayBackgroundView
 
-TrayBackgroundView::TrayBackgroundView(Shelf* shelf,
-                                       RoundedCornerBehavior corner_behavior)
+TrayBackgroundView::TrayBackgroundView(
+    Shelf* shelf,
+    TrayBackgroundViewCatalogName catalog_name,
+    RoundedCornerBehavior corner_behavior)
     // Note the ink drop style is ignored.
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       shelf_(shelf),
+      catalog_name_(catalog_name),
       tray_container_(new TrayContainer(shelf, this)),
       is_active_(false),
       separator_visible_(true),
@@ -263,6 +269,11 @@ TrayBackgroundView::TrayBackgroundView(Shelf* shelf,
   views::View::SetVisible(false);
 }
 
+void TrayBackgroundView::SetPressedCallback(
+    base::RepeatingCallback<void(const ui::Event& event)> pressed_callback) {
+  pressed_callback_ = std::move(pressed_callback);
+}
+
 TrayBackgroundView::~TrayBackgroundView() {
   Shell::Get()->system_tray_model()->virtual_keyboard()->RemoveObserver(this);
   widget_observer_.reset();
@@ -290,7 +301,12 @@ void TrayBackgroundView::InitializeBubbleAnimations(
 void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
   if (visible_preferred_ == visible_preferred)
     return;
+
   visible_preferred_ = visible_preferred;
+  base::UmaHistogramEnumeration(
+      visible_preferred_ ? "Ash.StatusArea.TrayBackgroundView.Shown"
+                         : "Ash.StatusArea.TrayBackgroundView.Hidden",
+      catalog_name_);
   StartVisibilityAnimation(GetEffectiveVisibility());
 
   // We need to update which trays overflow after showing or hiding a tray.
@@ -763,6 +779,14 @@ gfx::Rect TrayBackgroundView::GetBackgroundBounds() const {
 }
 
 bool TrayBackgroundView::PerformAction(const ui::Event& event) {
+  base::UmaHistogramEnumeration("Ash.StatusArea.TrayBackgroundView.Pressed",
+                                catalog_name_);
+  // `pressed_callback_` can be provided to override default press handling.
+  if (pressed_callback_) {
+    pressed_callback_.Run(event);
+    return true;
+  }
+
   if (GetBubbleWidget())
     CloseBubble();
   else

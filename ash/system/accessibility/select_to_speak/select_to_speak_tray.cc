@@ -5,6 +5,7 @@
 #include "ash/system/accessibility/select_to_speak/select_to_speak_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -51,8 +52,9 @@ gfx::ImageSkia GetImageOnCurrentSelectToSpeakStatus() {
 
 }  // namespace
 
-SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), icon_(new views::ImageView()) {
+SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
+                                     TrayBackgroundViewCatalogName catalog_name)
+    : TrayBackgroundView(shelf, catalog_name), icon_(new views::ImageView()) {
   const gfx::ImageSkia inactive_image = gfx::CreateVectorIcon(
       kSystemTraySelectToSpeakNewuiIcon,
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));

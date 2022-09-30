@@ -5,6 +5,7 @@
 #include "ash/system/overview/overview_button_tray.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -76,7 +77,7 @@ bool ShouldButtonBeVisible() {
 constexpr base::TimeDelta OverviewButtonTray::kDoubleTapThresholdMs;
 
 OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kOverview),
       icon_(new views::ImageView()),
       scoped_session_observer_(this) {
   const gfx::ImageSkia image = GetIconImage();

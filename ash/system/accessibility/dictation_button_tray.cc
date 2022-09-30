@@ -6,6 +6,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -46,8 +47,10 @@ gfx::ImageSkia GetIconImage(bool active, bool enabled) {
 
 }  // namespace
 
-DictationButtonTray::DictationButtonTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+DictationButtonTray::DictationButtonTray(
+    Shelf* shelf,
+    TrayBackgroundViewCatalogName catalog_name)
+    : TrayBackgroundView(shelf, catalog_name),
       icon_(new views::ImageView()),
       download_progress_(0) {
   Shell* shell = Shell::Get();

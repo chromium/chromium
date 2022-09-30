@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_VIRTUAL_KEYBOARD_VIRTUAL_KEYBOARD_TRAY_H_
 
 #include "ash/accessibility/accessibility_observer.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
@@ -24,7 +25,7 @@ class VirtualKeyboardTray : public TrayBackgroundView,
                             public ShellObserver,
                             public SessionObserver {
  public:
-  explicit VirtualKeyboardTray(Shelf* shelf);
+  VirtualKeyboardTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
 
   VirtualKeyboardTray(const VirtualKeyboardTray&) = delete;
   VirtualKeyboardTray& operator=(const VirtualKeyboardTray&) = delete;

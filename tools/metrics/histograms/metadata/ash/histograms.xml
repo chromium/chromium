@@ -4333,6 +4333,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.StatusArea.TrayBackgroundView.{State}"
+    enum="TrayBackgroundViewCatalogName" expires_after="2023-01-19">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Logged when: Hidden: a TrayBackgroundView's preferred visibility is set to
+    false. Shown: a TrayBackgroundView's preferred visibility is set to true.
+    Pressed: Logged when a TrayBackgroundView is activated, either showing a
+    bubble or handling a custom action.
+  </summary>
+  <token key="State">
+    <variant name="Hidden"/>
+    <variant name="Pressed"/>
+    <variant name="Shown"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.StatusArea.TrayItemView.Hide" units="%"
     expires_after="2023-03-26">
   <owner>leandre@chromium.org</owner>

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/ui/projector_color_button.h"
 #include "ash/public/cpp/projector/annotator_tool.h"
@@ -94,7 +95,8 @@ const gfx::VectorIcon& GetIconForTool(ProjectorTool tool, SkColor color) {
 }  // namespace
 
 ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(shelf,
+                         TrayBackgroundViewCatalogName::kProjectorAnnotation),
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       pen_view_(nullptr) {

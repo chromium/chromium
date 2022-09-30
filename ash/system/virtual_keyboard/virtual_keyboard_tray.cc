@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -38,8 +39,12 @@ gfx::ImageSkia GetIconImage() {
 
 }  // namespace
 
-VirtualKeyboardTray::VirtualKeyboardTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), icon_(new views::ImageView), shelf_(shelf) {
+VirtualKeyboardTray::VirtualKeyboardTray(
+    Shelf* shelf,
+    TrayBackgroundViewCatalogName catalog_name)
+    : TrayBackgroundView(shelf, catalog_name),
+      icon_(new views::ImageView),
+      shelf_(shelf) {
   const gfx::ImageSkia image = GetIconImage();
   icon_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD));

@@ -8,6 +8,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -32,7 +33,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
                                        public SessionObserver,
                                        public ui::InputMethodObserver {
  public:
-  explicit DictationButtonTray(Shelf* shelf);
+  DictationButtonTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
 
   DictationButtonTray(const DictationButtonTray&) = delete;
   DictationButtonTray& operator=(const DictationButtonTray&) = delete;

@@ -10,3 +10,6 @@ per-file notifier_catalogs.h=kradtke@chromium.org
 per-file quick_settings_catalogs.h=set noparent
 per-file quick_settings_catalogs.h=file://ash/system/OWNERS
 per-file quick_settings_catalogs.h=jiamingc@chromium.org
+per-file tray_background_view_catalog.h=set noparent
+per-file tray_background_view_catalog.h=file://ash/system/OWNERS
+per-file tray_background_view_catalog.h=newcomer@chromium.org

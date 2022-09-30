@@ -8,7 +8,18 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 
+namespace ui {
+class Event;
+}
+
+namespace views {
+class ImageView;
+}
+
 namespace ash {
+
+class Shelf;
+class TrayBubbleView;
 
 // Defines a shelf tray button that is used to toggle WM Mode on and off.
 class WmModeButtonTray : public TrayBackgroundView, public SessionObserver {

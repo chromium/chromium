@@ -5,6 +5,7 @@
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -322,7 +323,7 @@ END_METADATA
 }  // namespace
 
 ImeMenuTray::ImeMenuTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kImeMenu),
       ime_controller_(Shell::Get()->ime_controller()),
       label_(nullptr),
       image_view_(nullptr),

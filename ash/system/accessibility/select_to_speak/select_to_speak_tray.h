@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ui/views/controls/image_view.h"
@@ -22,7 +23,7 @@ class ASH_EXPORT SelectToSpeakTray : public TrayBackgroundView,
                                      public AccessibilityObserver,
                                      public SessionObserver {
  public:
-  explicit SelectToSpeakTray(Shelf* shelf);
+  SelectToSpeakTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
 
   SelectToSpeakTray(const SelectToSpeakTray&) = delete;
   SelectToSpeakTray& operator=(const SelectToSpeakTray&) = delete;

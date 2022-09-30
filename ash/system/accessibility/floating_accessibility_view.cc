@@ -133,11 +133,16 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
   std::unique_ptr<views::View> feature_buttons_container =
       CreateButtonRowContainer(kPanelPositionButtonPadding);
   dictation_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<DictationButtonTray>(shelf));
+      std::make_unique<DictationButtonTray>(
+          shelf, TrayBackgroundViewCatalogName::kDictationAccesibilityWindow));
   select_to_speak_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<SelectToSpeakTray>(shelf));
+      std::make_unique<SelectToSpeakTray>(
+          shelf,
+          TrayBackgroundViewCatalogName::kSelectToSpeakAccessibilityWindow));
   virtual_keyboard_button_ = feature_buttons_container->AddChildView(
-      std::make_unique<VirtualKeyboardTray>(shelf));
+      std::make_unique<VirtualKeyboardTray>(
+          shelf,
+          TrayBackgroundViewCatalogName::kVirtualKeyboardAccessibilityWindow));
 
   // It will be visible again as soon as any of the children becomes visible.
   feature_buttons_container->SetVisible(false);

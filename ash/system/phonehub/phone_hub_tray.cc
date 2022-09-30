@@ -9,6 +9,7 @@
 #include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/components/phonehub/phone_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -55,7 +56,8 @@ constexpr auto kBubblePadding =
 }  // namespace
 
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
-    : TrayBackgroundView(shelf), ui_controller_(new PhoneHubUiController()) {
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPhoneHub),
+      ui_controller_(new PhoneHubUiController()) {
   observed_phone_hub_ui_controller_.Observe(ui_controller_.get());
   observed_session_.Observe(Shell::Get()->session_controller());
 

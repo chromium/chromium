@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ash_web_view.h"
@@ -175,7 +176,7 @@ void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 EcheTray::EcheTray(Shelf* shelf)
-    : TrayBackgroundView(shelf),
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kEche),
       icon_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       event_interceptor_(std::make_unique<EventInterceptor>(this)) {

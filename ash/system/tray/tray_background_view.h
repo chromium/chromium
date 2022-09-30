@@ -8,16 +8,19 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shelf/shelf_background_animator_observer.h"
 #include "ash/system/model/virtual_keyboard_model.h"
 #include "ash/system/tray/actionable_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/user/login_status.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace ui {
+class Event;
 enum MenuSourceType;
 }  // namespace ui
 
@@ -51,10 +54,15 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   };
 
   TrayBackgroundView(Shelf* shelf,
+                     TrayBackgroundViewCatalogName catalog_name,
                      RoundedCornerBehavior corner_behavior = kAllRounded);
   TrayBackgroundView(const TrayBackgroundView&) = delete;
   TrayBackgroundView& operator=(const TrayBackgroundView&) = delete;
   ~TrayBackgroundView() override;
+
+  // Overrides default button press handling in `PerformAction()`.
+  void SetPressedCallback(
+      base::RepeatingCallback<void(const ui::Event& event)> pressed_callback);
 
   // Called after the tray has been added to the widget containing it.
   virtual void Initialize();
@@ -143,6 +151,7 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   TrayContainer* tray_container() const { return tray_container_; }
   TrayEventFilter* tray_event_filter() { return tray_event_filter_.get(); }
   Shelf* shelf() { return shelf_; }
+  TrayBackgroundViewCatalogName catalog_name() const { return catalog_name_; }
 
   // Updates the visibility of this tray's separator.
   void set_separator_visibility(bool visible) { separator_visible_ = visible; }
@@ -274,6 +283,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // The shelf containing the system tray for this view.
   Shelf* shelf_;
 
+  // The catalog name, used to record metrics on feature integrations.
+  TrayBackgroundViewCatalogName catalog_name_;
+
   // Convenience pointer to the contents view.
   TrayContainer* tray_container_;
 
@@ -305,6 +317,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // The shape of this tray which is only applied to the horizontal tray.
   // Defaults to `kAllRounded`.
   RoundedCornerBehavior corner_behavior_;
+
+  // Called instead of the default `PerformAction()`.
+  base::RepeatingCallback<void(const ui::Event& event)> pressed_callback_;
 
   std::unique_ptr<TrayWidgetObserver> widget_observer_;
   std::unique_ptr<TrayEventFilter> tray_event_filter_;

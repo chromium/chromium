@@ -7,7 +7,14 @@
 
 #include "ash/system/tray/tray_background_view.h"
 
+namespace views {
+class ImageView;
+}
+
 namespace ash {
+
+class Shelf;
+class TrayBubbleView;
 
 // Status area tray which is visible when a video is being recorded using
 // capture mode. Tapping this tray will stop recording. This tray does not
@@ -19,8 +26,8 @@ class StopRecordingButtonTray : public TrayBackgroundView {
   StopRecordingButtonTray& operator=(const StopRecordingButtonTray&) = delete;
   ~StopRecordingButtonTray() override;
 
+ private:
   // TrayBackgroundView:
-  bool PerformAction(const ui::Event& event) override;
   void ClickedOutsideBubble() override {}
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override {}

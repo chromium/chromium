@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/date_tray.h"
 
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/clock_model.h"
@@ -21,7 +22,9 @@
 namespace ash {
 
 DateTray::DateTray(Shelf* shelf, UnifiedSystemTray* tray)
-    : TrayBackgroundView(shelf, TrayBackgroundView::kStartRounded),
+    : TrayBackgroundView(shelf,
+                         TrayBackgroundViewCatalogName::kDateTray,
+                         TrayBackgroundView::kStartRounded),
       time_view_(tray_container()->AddChildView(
           std::make_unique<TimeTrayItemView>(shelf, TimeView::Type::kDate))),
       unified_system_tray_(tray) {
