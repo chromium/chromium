@@ -371,6 +371,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Անջատե՞լ սարքը</translation>
 <translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
+<translation id="3139382871451988441">Անջատել տեսախցիկն օգտագործելու թույլտվությունը։</translation>
 <translation id="3139942575505304791">Աշխատասեղան 1</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
 <translation id="3151786313568798007">Էկրանի դիրքը</translation>
@@ -647,6 +648,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox-ը միացված է</translation>
 <translation id="4665114317261903604">Միացնել/անջատել «Չանհանգստացնել» ռեժիմը։ <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Անջատեք տեսախցիկն օգտագործելու թույլտվությունն այս սարքում՝ բոլոր տեսախցիկները մշտապես արգելափակելու համար։</translation>
 <translation id="4667099493359681081">Ներբեռնում՝ <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
@@ -665,6 +667,7 @@
 <translation id="4776917500594043016">Գաղտնաբառ <ph name="USER_EMAIL_ADDRESS" />-ի համար</translation>
 <translation id="4777825441726637019">Play Խանութ</translation>
 <translation id="4778095205580009397">Google Օգնականը հասանելի չէ դեմո աշխատաշրջանում։</translation>
+<translation id="4789348252524569426">Չհաջողվեց տեղադրել խոսքի ֆայլերը։ Ձեր սարքը թարմացման կարիք ունի։ Վերագործարկեք սարքը և նորից փորձեք։</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Անջատել</translation>
 <translation id="4814539958450445987">Մուտքի էկրան</translation>
@@ -1143,6 +1146,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> հավելվածը ներկայումս օգտագործում է ձեր խոսափողը</translation>
 <translation id="7561982940498449837">Փակել ընտրացանկը</translation>
 <translation id="7564874036684306347">Պատուհանների տեղափոխումն այլ աշխատասեղան կարող է անսպասելի արդյունքներ ունենալ: Հետագա ծանուցումները, պատուհանները և երկխոսությունները կարող են տրոհվել աշխատասեղանների միջև:</translation>
+<translation id="7567076708801803118">Անջատե՞լ տեսախցիկն օգտագործելու թույլտվությունն այս սարքում</translation>
 <translation id="7569509451529460200">Բրայլյան գրատիպն ու ChromeVox-ը միացված են</translation>
 <translation id="7573585051776738856">Ակտիվ պատուհանն ամրացված է աջ կողմում։</translation>
 <translation id="7579778809502851308">Էկրանի լուսանկարում</translation>

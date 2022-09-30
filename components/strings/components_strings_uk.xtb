@@ -1250,6 +1250,7 @@
 <translation id="4277028893293644418">Скинути пароль</translation>
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="4282346679996504092">Сповіщення для цього товару вимкнено, а закладку вилучено</translation>
+<translation id="4285498937028063278">Відкріпити</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Цю картку збережено у вашому обліковому записі Google}one{Ці картки збережено у вашому обліковому записі Google}few{Ці картки збережено у вашому обліковому записі Google}many{Ці картки збережено у вашому обліковому записі Google}other{Ці картки збережено у вашому обліковому записі Google}}</translation>
 <translation id="4287885627794386150">Доступно в пробній версії, але не активовано</translation>
 <translation id="4297502707443874121">Ескіз для сторінки <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2030,6 +2031,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />перевірити конфігурацію проксі-сервера, брандмауера та DNS-сервера<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Двічі скріпити ліворуч</translation>
+<translation id="6370022303958842211">Дії, пов’язані з доступом на пристрої, як-от входи (зокрема причини невдалих спроб входу), виходи, блокування й розблокування</translation>
 <translation id="6374865374745447009">керування вікнами</translation>
 <translation id="6377268785556383139">1 результат для запиту "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2434,6 +2436,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />дізнатися більше<ph name="END_LINK" /> про цю проблему.</translation>
 <translation id="7455133967321480974">Використовувати глобальне налаштування за умовчанням (Блокувати)</translation>
 <translation id="7460618730930299168">Дані відрізняються від вибраних. Продовжити?</translation>
+<translation id="7461924472993315131">Закріпити</translation>
 <translation id="7463075493919226237">Австралійський футбол</translation>
 <translation id="7469935732330206581">Форма незахищена</translation>
 <translation id="7473891865547856676">Ні, дякую</translation>

@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">স্বীকার করুন ও চালিয়ে যান</translation>
 <translation id="110724200315609752">এই উইন্ডো থেকে পাল্টে খুলে রাখা উইন্ডোতে যান</translation>
 <translation id="1112015203684611006">প্রিন্ট ব্যর্থ হয়েছে।</translation>
-<translation id="1118569444314402022">আপনাকে আবার স্বাগত জানাই, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">নতুন ট্যাব তৈরি করুন।</translation>
 <translation id="1126809382673880764">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। তবে Gmail এবং Search-এর মতো অন্যান্য Google পরিষেবায়, যেখানে উপলভ্য সেখানে আপনি এখনও 'Safe Browsing'-এর সুরক্ষা পাবেন।</translation>
 <translation id="1135212215217513471">iOS-এর জন্য Chrome ইনস্টল করুন</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">মেনু বন্ধ করুন</translation>
 <translation id="1358214951266274152">আপনার কপি করা লিঙ্কে যান</translation>
 <translation id="1360432990279830238">সাইন-আউট করে সিঙ্ক বন্ধ করবেন?</translation>
+<translation id="1363028406613469049">ট্র্যাক</translation>
 <translation id="1375321115329958930">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="1377255359165588604">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="1377321085342047638">কার্ড নম্বর</translation>
@@ -82,6 +82,7 @@
 <translation id="152234381334907219">কখনও সংরক্ষিত হয়নি</translation>
 <translation id="1523341279170789507">সকল কুকিজ মঞ্জুর করুন</translation>
 <translation id="1524563461097350801">না থাক</translation>
+<translation id="1531836666020185856">বৈশিষ্ট্যযুক্ত</translation>
 <translation id="1535268707340844072">আপনার বর্তমান সেটিংসের জন্য হয়ত কিছু সাইট সঠিকভাবে কাজ করছে না। সব সাইটের জন্য কুকি ম্যানেজ করতে, <ph name="BEGIN_LINK" />কুকি সেটিংস<ph name="END_LINK" /> দেখুন।</translation>
 <translation id="1540800554400757039">ঠিকানা ১</translation>
 <translation id="1545749641540134597">QR কোড স্ক্যান করুন</translation>
@@ -197,6 +198,7 @@
 <translation id="2647269890314209800">কুকিগুলি ব্যবহার করা হচ্ছে</translation>
 <translation id="2648803196158606475">’পড়া হয়েছে’ মুছুন</translation>
 <translation id="2653659639078652383">জমা দিন</translation>
+<translation id="2671426118752779020">আপনার iPhone-এর অন্যান্য অ্যাপে Google পাসওয়ার্ড ম্যানেজারে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন।</translation>
 <translation id="2690858294534178585">ক্যামেরা ব্যবহার করা হচ্ছে</translation>
 <translation id="2691653761409724435">অফলাইনে উপলব্ধ নেই</translation>
 <translation id="2695507686909505111">পৃষ্ঠা অনুবাদ করা হয়ে গেছে</translation>
@@ -206,6 +208,7 @@
 <translation id="2704491540504985681">ডাউনলোড</translation>
 <translation id="2704606927547763573">প্রতিলিপি করা হয়েছে</translation>
 <translation id="2709516037105925701">স্বয়ংপূরণ</translation>
+<translation id="271033894570825754">নতুন</translation>
 <translation id="2712127207578915686">ফাইল খুলতে অক্ষম</translation>
 <translation id="2718352093833049315">শুধুমাত্র ওয়াই-ফাই এ</translation>
 <translation id="2747003861858887689">পূর্ববর্তী ফিল্ড</translation>
@@ -262,6 +265,7 @@
 <translation id="3103603146121354983">পাসওয়ার্ড অটোফিল করা</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
 <translation id="3131206671572504478">সব ব্লক করুন</translation>
 <translation id="313283613037595347">নতুন ছদ্মবেশী ট্যাব তৈরি করুন।</translation>
 <translation id="3153862085237805241">কার্ড সেভ করুন</translation>
@@ -332,7 +336,6 @@
 <translation id="3709582977625132201">'পড়া হয়নি' হিসেবে চিহ্নিত করুন</translation>
 <translation id="371230970611282515">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি অনুমান করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="37207012422556617">জনপ্রিয় সার্চ</translation>
-<translation id="3726360487031500941">আপনার অ্যাকাউন্ট <ph name="USER_NAME" />-এ আবার সাইন-ইন করুন</translation>
 <translation id="3740397331642243698">এটি ইনপুট করা ইউআরএলগুলিকে Google Chrome-এ, 'ছদ্মবেশী' মোডে খোলে।</translation>
 <translation id="3762232513783804601">আপনার iPad-এর জন্য তৈরি করা হয়েছে</translation>
 <translation id="3771033907050503522">ছদ্মবেশী ট্যাবগুলি</translation>
@@ -504,6 +507,7 @@
 <translation id="509789154667432072">বুকমার্ক যোগ করুন</translation>
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
+<translation id="5119391094379141756">Chrome বেছে নিন</translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="5140288047769711648">Chrome আপনার জন্য এই পাসওয়ার্ড মনে রাখবে। আপনাকে এটি মনে রাখতে হবে না।</translation>
 <translation id="5149188072385105201">পাসওয়ার্ড যোগ করুন...</translation>
@@ -628,6 +632,7 @@
 <translation id="6149061208933997199">পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="6152406514676263192">আপনার আগ্রহের উপর ভিত্তি করে সবচেয়ে প্রাসঙ্গিক কন্টেন্টের জন্য সিঙ্ক করুন।</translation>
 <translation id="6159839020698489198">ঐচ্ছিক</translation>
+<translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6177442314419606057">Chrome-এ সার্চ করুন</translation>
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
@@ -875,6 +880,7 @@
 <translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="804225253087497565">আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK" />সার্চ ইতিহাস<ph name="END_LINK" /> এবং <ph name="BEGIN_LINK" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় সেগুলি মুছে দিতে পারেন।</translation>
 <translation id="804427445359061970">আপনি অন্যান্য ডিভাইস থেকে নিজের ট্যাবগুলি এখানে দেখতে পাবেন</translation>
+<translation id="8048728378294435881">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন</translation>
 <translation id="8059533439631660104">বিভাগটি সঙ্কুচন করে।</translation>
 <translation id="8065292699993359127">Chrome-এ 'ছদ্মবেশী' মোডে ইউআরএল খুলুন</translation>
 <translation id="806745655614357130">আমার ডেটা আলাদা রাখুন</translation>
@@ -978,6 +984,7 @@
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
 <translation id="8985320356172329008">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> হল আপনার সার্চ ইঞ্জিনের নাম। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সেটির নির্দেশাবলী দেখুন।</translation>
+<translation id="9008201768610948239">উপেক্ষা করুন</translation>
 <translation id="9034759925968272072">আপনাকে Google অ্যাকাউন্ট থেকে সাইন-আউট করা হবে না। আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-এ থাকতে পারে।</translation>
 <translation id="9037965129289936994">প্রকৃত রূপ দেখান</translation>
 <translation id="9039373489628511875">ব্যান্ডউইথ</translation>

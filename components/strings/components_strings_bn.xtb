@@ -1251,6 +1251,7 @@
 <translation id="4277028893293644418">পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
 <translation id="4282346679996504092">এই প্রোডাক্টের জন্য বিজ্ঞপ্তি বন্ধ করে বুকমার্ক সরানো হয়েছে</translation>
+<translation id="4285498937028063278">আনপিন</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{এই কার্ডটি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}one{এই কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}other{এই কার্ডগুলি আপনার Google অ্যাকাউন্টে সেভ করা হয়েছে}}</translation>
 <translation id="4287885627794386150">ট্রায়াল করা যেতে পারে কিন্তু অ্যাক্টিভ নেই</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> পৃষ্ঠার থাম্বনেল</translation>
@@ -2435,6 +2436,7 @@
 <translation id="7451311239929941790">এই সমস্যা সম্পর্কে <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" />।</translation>
 <translation id="7455133967321480974">বিশ্বব্যাপী ডিফল্ট ব্যবহার করুন (অবরোধ করুন)</translation>
 <translation id="7460618730930299168">আপনি যা বেছে নিয়েছেন তার থেকে স্ক্রিনিংটি আলাদা। এগিয়ে যাবেন?</translation>
+<translation id="7461924472993315131">পিন</translation>
 <translation id="7463075493919226237">অস্ট্রেলিয়ান ফুটবল</translation>
 <translation id="7469935732330206581">ফর্ম নিরাপদ নয়</translation>
 <translation id="7473891865547856676">না থাক</translation>

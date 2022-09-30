@@ -53,7 +53,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2384373936468275798">Chromium OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="2396765026452590966">Laiendus „<ph name="EXTENSION_NAME" />” muutis seda, milline leht kuvatakse Chromiumi käivitamisel.</translation>
-<translation id="2400844369696905771">Kui see on sisse lülitatud, võtab Chromium mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. See võimaldab teie arvuti ressursse muude ülesannete jaoks kasutada ja aitab Chromiumil kiiresti töötada. Passiivsed vahelehed kuvatakse tühjana ja laaditakse automaatselt uuesti, kui nendel klõpsate. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium vajab selle saidi puhul kaamera ja mikrofoni kasutamise luba</translation>
 <translation id="2483889755041906834">Chromiumis</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -144,7 +143,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4285930937574705105">Installimine ebaõnnestus tundmatu vea tõttu. Kui Chromium praegu töötab, siis sulgege see ja proovige uuesti.</translation>
 <translation id="4304713468139749426">Paroolihaldur</translation>
 <translation id="4334294535648607276">Allalaadimine on lõpule viidud.</translation>
-<translation id="437317747729858884">Selleks et brauser kiiremaks muuta, võtab Chromium mälu tagasi vahelehtedelt, mida te ei kasuta.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> nõuab, et loete enne selle seadme kasutamist läbi järgmised teenusetingimused ja nõustute nendega. Need tingimused ei laienda, muuda ega piira Chromium OS-i tingimusi.</translation>
 <translation id="4407044323746248786">Kas väljuda Chromiumist ikkagi?</translation>
 <translation id="4415566066719264597">Luba Chromiumil taustal töötada</translation>
@@ -315,7 +313,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7872446069773932638">Allalaadimine … <ph name="SECONDS" /> sekund(it) on jäänud</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame automaatselt huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chromiumil arvesse võtta.</translation>
 <translation id="7937630085815544518">Olite Chromiumisse sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
-<translation id="7947085610734123927">Chromium lülitas mälusäästja sisse</translation>
 <translation id="7975919845073681630">See on Chromiumi sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
 <translation id="7997934263947464652">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chromium soovitab neid ainult järgmisest poest installida: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kui annate Chromiumile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
@@ -336,7 +333,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8453117565092476964">Installeri arhiiv on rikutud või kehtetu. Laadige Chromium uuesti alla.</translation>
 <translation id="8463672209299734063">Valikuline. Aidake Chromium OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
 <translation id="8493179195440786826">Chromium on aegunud</translation>
-<translation id="8522220489792889625">Vajaduse korral võtab Chromium mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. Saate seda menüüs Seaded alati muuta.</translation>
 <translation id="8550334526674375523">See tööprofiil on teie isiklikust profiilist täielikult eraldi.</translation>
 <translation id="8558383651099478961">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
 <translation id="8561285221328166383">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.12.</translation>

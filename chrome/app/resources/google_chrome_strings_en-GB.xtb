@@ -61,7 +61,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2094648590148273905">Chrome OS Flex terms</translation>
 <translation id="2094919256425865063">Quit Chrome anyway?</translation>
 <translation id="2106831557840787829">Chrome OS Flex is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">When on, Chrome reclaims memory from tabs that you aren't actively using. This frees up your computer's resources for other tasks and keeps Chrome speedy. Inactive tabs appear empty and automatically reload when you click them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /> or <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">This will delete <ph name="ITEMS_COUNT" /> items from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relaunch to Update &amp;Chrome</translation>
 <translation id="2123055963409958220">Help make Chrome better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
@@ -230,7 +229,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5386244825306882791">It also controls what page is shown when you start Chrome or search from the Omnibox.</translation>
 <translation id="5394833366792865639">Share a Chrome tab</translation>
 <translation id="5412485296464121825">Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
-<translation id="5416870378730196769">Chrome turned on Memory Saver</translation>
 <translation id="5430073640787465221">Your preferences file is corrupt or invalid.
 
 Google Chrome is unable to recover your settings.</translation>
@@ -283,7 +281,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6735387454586646204">Chrome OS Flex system</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
-<translation id="6756581345161130259">As needed, Chrome reclaims memory from tabs that you aren't actively using. You can change this at any time in settings.</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
 <translation id="6785872064505734160">Google Assistant in Chrome can complete actions across websites for you</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
@@ -331,7 +328,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7649070708921625228">Help</translation>
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="7655455401911432608">Your browsing history, a record of sites that you've visited using Chrome on this device.</translation>
-<translation id="7726773885101561560">To make your browsing faster, Chrome reclaims memory from tabs that you aren't using.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7777080907402804672">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>

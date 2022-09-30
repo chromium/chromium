@@ -1254,6 +1254,7 @@
 <translation id="4277028893293644418">Ресетујте лозинку</translation>
 <translation id="4278390842282768270">Дозвољено</translation>
 <translation id="4282346679996504092">Обавештења за овај производ су искључена, а обележивач је уклоњен</translation>
+<translation id="4285498937028063278">Откачи</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ова картица је сачувана на Google налогу}one{Ове картице су сачуване на Google налогу}few{Ове картице су сачуване на Google налогу}other{Ове картице су сачуване на Google налогу}}</translation>
 <translation id="4287885627794386150">Испуњава услове за пробу, али није активно</translation>
 <translation id="4297502707443874121">Сличица за <ph name="THUMBNAIL_PAGE" />. страницу</translation>
@@ -2440,6 +2441,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да сазнате више<ph name="END_LINK" /> о овом проблему.</translation>
 <translation id="7455133967321480974">Користи глобалну подразумевану вредност (Блокирај)</translation>
 <translation id="7460618730930299168">Приказ се разликује од онога што сте изабрали. Желите ли да наставите?</translation>
+<translation id="7461924472993315131">Закачи</translation>
 <translation id="7463075493919226237">Аустралијски фудбал</translation>
 <translation id="7469935732330206581">Образац није безбедан</translation>
 <translation id="7473891865547856676">Не, хвала</translation>

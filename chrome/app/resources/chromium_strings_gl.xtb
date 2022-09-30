@@ -55,7 +55,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2384373936468275798">Chromium OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="2396765026452590966">A extensión "<ph name="EXTENSION_NAME" />" cambiou a páxina que se mostra ao iniciar Chromium.</translation>
-<translation id="2400844369696905771">Se activas esta opción, Chromium recuperará a memoria das pestanas que non esteas a usar de maneira activa. Deste xeito libéranse os recursos do ordenador para outras tarefas e mantense a rapidez de Chromium. As pestanas inactivas móstranse baleiras e volven cargar automaticamente ao facer clic nelas. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="2483889755041906834">En Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -146,7 +145,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="4285930937574705105">Non se puido efectuar a instalación debido a un erro non especificado. Se se está executando Chromium actualmente, péchao e téntao de novo.</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4334294535648607276">Descarga completa.</translation>
-<translation id="437317747729858884">Para que a navegación sexa máis rápida, Chromium recuperará a memoria das pestanas que non esteas a usar.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> require que leas e aceptes as seguintes Condicións de servizo antes de utilizar este dispositivo. Estas condicións non amplían, modifican nin limitan as de Chromium OS.</translation>
 <translation id="4407044323746248786">Queres saír de Chromium de todas formas?</translation>
 <translation id="4415566066719264597">Deixar que Chromium se execute en segundo plano</translation>
@@ -317,7 +315,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7872446069773932638">Descargando… Tempo restante: <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Para protexer a túa privacidade, eliminamos automaticamente os teus intereses cuxa antigüidade sexa superior a 4 semanas. Algúns poderían volver incluírse na lista ao seguires navegando. Se o prefires, podes quitar os intereses que non queiras que teña en conta Chromium.</translation>
 <translation id="7937630085815544518">Iniciaches sesión en Chromium como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
-<translation id="7947085610734123927">Chromium activou o aforro de memoria</translation>
 <translation id="7975919845073681630">Esta é unha instalación secundaria de Chromium e non se pode converter no teu navegador predeterminado.</translation>
 <translation id="7997934263947464652">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Unha vez que Chromium teña acceso, os sitios web poderán solicitalo tamén.</translation>
@@ -338,7 +335,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8453117565092476964">O arquivo do instalador está danado ou non é válido. Volve descargar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: Axuda a mellorar as funcións e o rendemento de Chromium OS enviando automaticamente datos de uso e diagnóstico a Google.</translation>
 <translation id="8493179195440786826">Chromium está desactualizado</translation>
-<translation id="8522220489792889625">Chromium recuperará, segundo sexa necesario, a memoria das pestanas que non esteas a usar de maneira activa. Podes cambiar esta opción en calquera momento en Configuración.</translation>
 <translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8558383651099478961">O teu pai ou nai desactivou esta opción en Chromium: Permisos para sitios, aplicacións e extensións. Non está permitido engadir esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten macOS 10.12.</translation>

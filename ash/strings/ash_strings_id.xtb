@@ -371,6 +371,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Matikan perangkat?</translation>
 <translation id="3126069444801937830">Mulai ulang untuk memperbarui</translation>
+<translation id="3139382871451988441">Nonaktifkan akses kamera.</translation>
 <translation id="3139942575505304791">Halaman kerja 1</translation>
 <translation id="315116470104423982">Data seluler</translation>
 <translation id="3151786313568798007">Orientasi</translation>
@@ -647,6 +648,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox diaktifkan</translation>
 <translation id="4665114317261903604">Alihkan mode Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Nonaktifkan akses kamera di perangkat ini untuk memblokir semua kamera sepanjang waktu.</translation>
 <translation id="4667099493359681081">Mendownload <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Rak di bagian bawah</translation>
 <translation id="4696813013609194136">Buka kunci perangkat dengan kode orang tua</translation>
@@ -665,6 +667,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="4776917500594043016">Sandi untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Asisten Google tidak tersedia dalam sesi demo.</translation>
+<translation id="4789348252524569426">Tidak dapat menginstal file ucapan. Perangkat perlu diupdate. Mulai ulang perangkat lalu coba lagi.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Putuskan koneksi</translation>
 <translation id="4814539958450445987">Layar Login</translation>
@@ -1144,6 +1147,7 @@ Baru diinstal</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan mikrofon Anda</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
 <translation id="7564874036684306347">Memindahkan jendela ke desktop lain dapat mengakibatkan perilaku tak terduga. Notifikasi, jendela, dan dialog berikutnya dapat terpisah antardesktop.</translation>
+<translation id="7567076708801803118">Ingin menonaktifkan akses kamera di perangkat ini?</translation>
 <translation id="7569509451529460200">Braille dan ChromeVox diaktifkan</translation>
 <translation id="7573585051776738856">Jendela yang aktif dikaitkan di kanan.</translation>
 <translation id="7579778809502851308">Screenshot</translation>

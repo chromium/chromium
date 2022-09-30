@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Адносны</translation>
 <translation id="3223287115535306850">Круцёлка запуску праграмы</translation>
+<translation id="3223425961342298674">Выкарыстанне геаданых забаронена</translation>
 <translation id="3225347164936328585">Апладысменты</translation>
 <translation id="3225919329040284222">Сервер падаў сертыфікат, які не адпавядае ўбудаваным патрабаванням. Гэтыя патрабаванні ўключаны ў мэтах вашай бяспекі – ім адпавядаюць надзейныя вэб-сайты з высокім узроўнем бяспекі.</translation>
 <translation id="3226128629678568754">Каб паўторна адправіць неабходныя для загрузкі старонкі даныя, націсніце кнопку перазагрузкі.</translation>
@@ -1184,6 +1185,7 @@
 <translation id="4127575959421463246">Шукаеце эксперыментальныя параметры ChromeOS? Наведайце старонку</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{яшчэ 1 фрагмент даных}one{яшчэ # фрагмент даных}few{яшчэ # фрагменты даных}many{яшчэ # фрагментаў даных}other{яшчэ # фрагмента даных}}</translation>
 <translation id="4130226655945681476">Праверыць сеткавыя кабелі, мадэм і маршрутызатар</translation>
+<translation id="4132448310531350254">У спісе "<ph name="POLICY_IDS_LIST" />" праграм зададзена некалькі апрацоўшчыкаў для файлаў з пашырэннем "<ph name="FILE_EXTENSION" />".</translation>
 <translation id="4134123981501319574">Стварыць дакумент</translation>
 <translation id="413544239732274901">Даведацца больш</translation>
 <translation id="4142935452406587478">Латок 10</translation>
@@ -1206,6 +1208,7 @@
 <translation id="4194250254487269611">Не ўдаецца захаваць даныя вашай крэдытнай карткі</translation>
 <translation id="4196861286325780578">&amp;Узнавіць перамяшчэнне</translation>
 <translation id="4202554117186904723">Пяты рулон</translation>
+<translation id="4203769790323223880">Выкарыстанне камеры забаронена</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Праверыць канфігурацыю брандмаўэра і антывіруса.<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Вялікі</translation>
 <translation id="4210602799576081649">Тэрмін дзеяння кода спраўджання скончыўся. Запытайце новы код.</translation>
@@ -1232,6 +1235,7 @@
     &lt;p&gt;Калі закончыце, не забудзьце зноў уключыць антывірус.&lt;/p&gt;
     &lt;h4&gt;Крок 5. Звярніцеся па дапамогу&lt;/h4&gt;
     &lt;p&gt;Калі праблему вырашыць не ўдалося, звярніцеся да ўладальніка вэб-сайта.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Выкарыстанне мікрафона забаронена</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку сеткі<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Сайт можа запытваць дазвол на выкарыстанне і перамяшчэнне камеры</translation>
 <translation id="4235360514405112390">Сапраўдны</translation>
@@ -1249,6 +1253,7 @@
 <translation id="4277028893293644418">Скінуць пароль</translation>
 <translation id="4278390842282768270">Дазволена</translation>
 <translation id="4282346679996504092">Абвесткі пра гэты прадукт выключаны, а закладка выдалена</translation>
+<translation id="4285498937028063278">Адмацаваць</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Гэта картка захавана ў вашым Уліковым запісе Google}one{Гэтыя карткі захаваны ў вашым Уліковым запісе Google}few{Гэтыя карткі захаваны ў вашым Уліковым запісе Google}many{Гэтыя карткі захаваны ў вашым Уліковым запісе Google}other{Гэтыя карткі захаваны ў вашым Уліковым запісе Google}}</translation>
 <translation id="4287885627794386150">Пробная версія функцыі можа выкарыстоўвацца, але яшчэ не актывавана</translation>
 <translation id="4297502707443874121">Мініяцюра старонкі <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1602,6 +1607,7 @@
 <translation id="5177076414499237632">Даведацца пра крыніцу і тэму гэтай старонкі</translation>
 <translation id="5179510805599951267">Мова старонкі – не <ph name="ORIGINAL_LANGUAGE" />? Паведаміце пра памылку</translation>
 <translation id="518639307526414276">Тавары і корм для хатніх жывёл</translation>
+<translation id="5190072300954988691">Выкарыстанне камеры і мікрафона забаронена</translation>
 <translation id="5190835502935405962">Панэль закладак</translation>
 <translation id="5191315092027169558">Вашым профілем кіруе <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> запытвае дазвол на спампоўку некалькіх файлаў</translation>
@@ -1622,6 +1628,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Адхіліць</translation>
+<translation id="5239623327352565343">Выкарыстанне геаданых дазволена</translation>
 <translation id="5242889659037569123">Багаж і турыстычныя аксесуары</translation>
 <translation id="5250209940322997802">"Падключыцца да сеткі"</translation>
 <translation id="52517543715119994">Даведацца больш пра функцыі Chrome</translation>
@@ -2435,6 +2442,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /> пра гэту праблему.</translation>
 <translation id="7455133967321480974">Выкарыстоўваць глабальныя стандартныя налады (заблакіраваць)</translation>
 <translation id="7460618730930299168">Паказана не тое, што выбіралі вы. Працягнуць?</translation>
+<translation id="7461924472993315131">PIN-код</translation>
 <translation id="7463075493919226237">Аўстралійскі футбол</translation>
 <translation id="7469935732330206581">Форма не з'яўляецца бяспечнай.</translation>
 <translation id="7473891865547856676">Не, дзякуй</translation>
@@ -2498,6 +2506,7 @@
 <translation id="7581199239021537589">Зрух відарыса па восі Y, бок 2</translation>
 <translation id="7582602800368606489">Хутка стварыць новую падзею ў Google Календары</translation>
 <translation id="7583969447617676942">Юрыдычныя паслугі</translation>
+<translation id="7586676035079382730">Апавяшчэнні забаронены</translation>
 <translation id="7591288787774558753">Абагуліць канфідэнцыяльнае змесціва?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> запытвае дазвол выкарыстоўваць файлы cookie і даныя сайта <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертыфікат сервера парушае абмежаванні для імён.</translation>
@@ -3050,6 +3059,7 @@
 <translation id="9131119348384879525">Зняць канфідэнцыяльнае змесціва?</translation>
 <translation id="9136861683332321024">Люксавыя аўтамабілі</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
+<translation id="9138037198177304356">Апавяшчэнні дазволены</translation>
 <translation id="9139318394846604261">Шопінг</translation>
 <translation id="9141013498910525015">Кіраваць адрасамі</translation>
 <translation id="9144951720726881238">Заканчэнне тэрміну дзеяння:</translation>

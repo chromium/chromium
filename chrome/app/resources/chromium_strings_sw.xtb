@@ -55,7 +55,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2384373936468275798">Mfumo wa Uendeshaji wa Chromium haukusawazisha data yako kwa sababu maelezo ya kuingia katika akaunti yako yamepitwa na wakati.</translation>
 <translation id="2396765026452590966">Kiendelezi hiki "<ph name="EXTENSION_NAME" />" kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chromium.</translation>
-<translation id="2400844369696905771">Ukiwasha mipangilio hii, Chromium hurejesha hifadhi ya vichupo ambavyo huendelei kutumia. Hatua hii hufuta nyenzo katika kompyuta yako na kuongeza nafasi kwa ajili ya shughuli zingine na kuifanya Chromium kufanya kazi kwa kasi. Vichupo visivyotumika huonekana vitupu na hupakia kiotomatiki unapovibofya. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium inahitaji ruhusa ya kufikia kamera na maikrofoni kwa ajili ya tovuti hii</translation>
 <translation id="2483889755041906834">Katika Chromium</translation>
 <translation id="2485422356828889247">Ondoa</translation>
@@ -146,7 +145,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="4285930937574705105">Usanidi umeshindwa kwa sababu ya hitilafu isiyojulikana. Ikiwa Chromium inaendesha sasa, tafadhali ifunge na ujaribu tena.</translation>
 <translation id="4304713468139749426">Kidhibiti cha Manenosiri</translation>
 <translation id="4334294535648607276">Upakuaji umekamilika.</translation>
-<translation id="437317747729858884">Ili uweze kuvinjari kwa kasi, Chromium hurejesha hifadhi ya vichupo ambavyo hutumii.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> inahitaji usome na ukubali Sheria na Masharti yafuatayo kabla ya kutumia kifaa hiki. Masharti haya hayapanui, hayarekebishi wala hayapunguzi Sheria na Masharti ya Mfumo wa Uendeshaji wa Chromium.</translation>
 <translation id="4407044323746248786">Ungependa kufunga Chromium?</translation>
 <translation id="4415566066719264597">Ruhusu Chromium itumike Chinichini</translation>
@@ -318,7 +316,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="7872446069773932638">Inapakua... Zimesalia sekunde <ph name="SECONDS" /></translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Ili kulinda faragha yako, tunafuta kiotomatiki mambo yanayokuvutia ambayo yamehifadhiwa kwa zaidi ya wiki nne. Kadiri unavyoendelea kuvinjari, jambo linalokuvutia linaweza kuonekana tena kwenye orodha. Au unaweza kuondoa mambo yanayokuvutia ambayo usingependa Chromium iyazingatie.</translation>
 <translation id="7937630085815544518">Uliingia kwenye Chromium kama <ph name="USER_EMAIL_ADDRESS" />. Tafadhali tumia akaunti hiyo hiyo kuingia tena.</translation>
-<translation id="7947085610734123927">Chromium imewasha Mipangilio ya Kuhifadhi Kumbukumbu</translation>
 <translation id="7975919845073681630">Huu ni usakinishaji wa pili wa Chromium, na haiwezi kufanywa kuwa kivinjari chako chaguomsingi.</translation>
 <translation id="7997934263947464652">Viendelezi, programu na mandhari kutoka kwenye vyanzo visivyojulikana vinaweza kuathiri kifaa chako. Chromium inapendekeza usakinishaji kutoka <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> tu</translation>
 <translation id="8013436988911883588">Chromium itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.</translation>
@@ -339,7 +336,6 @@ Chromium haiwezi kufufua mipangilio yako.</translation>
 <translation id="8453117565092476964">Kumbukumbu ya kisakinishi imeharibika au ni batili. Tafadhali pakua Chromium tena.</translation>
 <translation id="8463672209299734063">Si lazima: Tusaidie kuboresha utendaji na vipengele vya Mfumo wa Uendeshaji wa Chromium kwa kutuma kiotomatiki data ya matumizi na uchunguzi kwa Google.</translation>
 <translation id="8493179195440786826">Chromium Imepitwa na Wakati</translation>
-<translation id="8522220489792889625">Kulingana na mahitaji, Chromium hurejesha hifadhi ya vichupo ambavyo huendelei kutumia. Unaweza kubadilisha hali hii wakati wowote katika mipangilio.</translation>
 <translation id="8550334526674375523">Wasifu huu wa kazini ni tofauti kabisa na wasifu wako wa binafsi.</translation>
 <translation id="8558383651099478961">Mzazi wako amezima "Ruhusa za tovuti, programu na viendelezi" kwenye Chromium. Huruhusiwi kuweka <ph name="EXTENSION_TYPE_PARAMETER" /> hii.</translation>
 <translation id="8561285221328166383">Ili upate masasisho ya Chromium ya hapo baadaye, utahitaji toleo la macOS 10.13 au toleo jipya zaidi. Kompyuta hii inatumia macOS 10.12.</translation>

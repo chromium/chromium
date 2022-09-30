@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Харьцангуй</translation>
 <translation id="3223287115535306850">Апп эхлүүлэх дүрс тэмдэг</translation>
+<translation id="3223425961342298674">Байршлыг зөвшөөрөөгүй</translation>
 <translation id="3225347164936328585">Алга ташиж буй</translation>
 <translation id="3225919329040284222">Серверөөс өгсөн гэрчилгээ нь өгөгдсөн хүлээлттэй таарахгүй байна. Эдгээр хүлээлтүүдийг таныг хамгаалахын тулд тодорхой, аюулгүйн өндөр зэрэглэлийн 
 вэбсайтуудад оруулж өгдөг.</translation>
@@ -1186,6 +1187,7 @@
 <translation id="4127575959421463246">ChromeOS дарцгуудыг хайж байна уу? Зочлох</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 бусад}other{# бусад}}</translation>
 <translation id="4130226655945681476">Сүлжээний кабель, модем болон чиглүүлэгчийг шалгаж байна</translation>
+<translation id="4132448310531350254">Аппуудын "<ph name="POLICY_IDS_LIST" />"-с file_extension "<ph name="FILE_EXTENSION" />"-н хуулбар хариуцагчдыг лавласан</translation>
 <translation id="4134123981501319574">Документ үүсгэх</translation>
 <translation id="413544239732274901">Дэлгэрэнгүй үзэх</translation>
 <translation id="4142935452406587478">Гарах цаасны тавиур 10</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4194250254487269611">Таны картыг яг одоо хадгалах боломжгүй байна</translation>
 <translation id="4196861286325780578">&amp; Зөөвөрлөх үйлдлийг дахин хийх</translation>
 <translation id="4202554117186904723">Тав дахь хуйлмал</translation>
+<translation id="4203769790323223880">Камерыг зөвшөөрөөгүй</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Галт хана болон вирусын эсрэг оновчилгоог шалгаж байна<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Том</translation>
 <translation id="4210602799576081649">Баталгаажуулах кодын хугацаа дууссан. Шинэ код хүснэ үү</translation>
@@ -1234,6 +1237,7 @@
     &lt;p&gt;Дууссаныхаа дараа вирусийн эсрэг программаа буцааж асаана уу.&lt;/p&gt;
     &lt;h4&gt;Алхам 5: Нэмэлт тусламж авах&lt;/h4&gt;
     &lt;p&gt;Хэрэв та тус алдааг харсаар байвал вебсайтын эзэмшигчтэй холбогдоно уу.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Микрофоныг зөвшөөрөөгүй</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Сүлжээний оношилгоог ажиллуулж үзнэ үү<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Таны камерыг ашиглах болон хөдөлгөхийг хүсэх боломжтой</translation>
 <translation id="4235360514405112390">Хүчинтэй</translation>
@@ -1251,6 +1255,7 @@
 <translation id="4277028893293644418">Нууц үгийг шинэчлэх</translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
 <translation id="4282346679996504092">Энэ бүтээгдэхүүний сэрэмжлүүлгийг унтраасан бөгөөд хавчуургыг хассан</translation>
+<translation id="4285498937028063278">Сонголтоос гаргах</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Энэ картыг таны Google Бүртгэлд хадгаллаа}other{Эдгээр картыг таны Google Бүртгэлд хадгаллаа}}</translation>
 <translation id="4287885627794386150">Туршилтын эрхтэй хэдий ч идэвхгүй байна</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> хуудасны өнгөц зураг</translation>
@@ -1604,6 +1609,7 @@
 <translation id="5177076414499237632">Энэ хуудасны эх сурвалж болон сэдвийн талаар мэдэж авах</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> хэлээр байхгүй байна уу? Энэ алдааг мэдэгдэнэ үү.</translation>
 <translation id="518639307526414276">Тэжээвэр амьтны хоол, арчилгааны хэрэгсэл</translation>
+<translation id="5190072300954988691">Камер болон микрофоныг зөвшөөрөөгүй</translation>
 <translation id="5190835502935405962">Хайлтын жагсаалтын цонх</translation>
 <translation id="5191315092027169558">Таны профайлыг <ph name="DOMAIN" /> удирддаг</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> хэд хэдэн файл татах хүсэлтэй байна</translation>
@@ -1624,6 +1630,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
+<translation id="5239623327352565343">Байршлыг зөвшөөрсөн</translation>
 <translation id="5242889659037569123">Ачаа тээш, аяллын хэрэгсэл</translation>
 <translation id="5250209940322997802">"Сүлжээнд холбогдох"</translation>
 <translation id="52517543715119994">Chrome-н онцлогуудын талаар мэдэж аваарай</translation>
@@ -2435,6 +2442,7 @@
 <translation id="7451311239929941790">Уг асуудлын талаар <ph name="BEGIN_LINK" />Дэлгэрэнгүй үзэж байна<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">Олон нийтээр хэрэглэдэг сонголтыг сонго (Блок)</translation>
 <translation id="7460618730930299168">Дэлгэрэнгүй нь таны сонгосноос өөр байна. Үргэлжлүүлэх үү?</translation>
+<translation id="7461924472993315131">Pin</translation>
 <translation id="7463075493919226237">Австрали хөл бөмбөг</translation>
 <translation id="7469935732330206581">Маягт аюултай байна.</translation>
 <translation id="7473891865547856676">Үгүй, баярлалаа</translation>
@@ -2498,6 +2506,7 @@
 <translation id="7581199239021537589">Хуудасны ар тал дээр Y тэнхлэгийн дагуу зураг шилжүүлэх</translation>
 <translation id="7582602800368606489">Google Календарьт шинэ үйл явдал шуурхай үүсгээрэй</translation>
 <translation id="7583969447617676942">Хууль эрх зүйн үйлчилгээ</translation>
+<translation id="7586676035079382730">Мэдэгдлийг зөвшөөрөөгүй</translation>
 <translation id="7591288787774558753">Нууцлалтай контентыг хуваалцах уу?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> нь <ph name="TOP_LEVEL_URL" /> дээрх күүки болон сайтын өгөгдлийг ашиглах хүсэлтэй байна</translation>
 <translation id="7592362899630581445">Серверийн сертификат нь нэрийн хязгаарлалтыг зөрчсөн байна.</translation>
@@ -3050,6 +3059,7 @@
 <translation id="9131119348384879525">Нууцлалтай контентын зургийг авах уу?</translation>
 <translation id="9136861683332321024">Тансаг зэрэглэлийн тээврийн хэрэгсэл</translation>
 <translation id="9137013805542155359">Эх хувийг харуулах</translation>
+<translation id="9138037198177304356">Мэдэгдлийг зөвшөөрсөн</translation>
 <translation id="9139318394846604261">Дэлгүүр</translation>
 <translation id="9141013498910525015">Хаяг удирдах</translation>
 <translation id="9144951720726881238">Хүчинтэй хугацаа:</translation>

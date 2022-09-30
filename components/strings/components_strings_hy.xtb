@@ -1250,6 +1250,7 @@
 <translation id="4277028893293644418">Փոխել գաղտնաբառը</translation>
 <translation id="4278390842282768270">Թույլատրված է</translation>
 <translation id="4282346679996504092">Այս ապրանքի մասին ծանուցումներն անջատված են, իսկ էջանիշը հեռացվել է</translation>
+<translation id="4285498937028063278">Ապամրացնել</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Քարտը պահվեց ձեր Google հաշվում}one{Քարտը պահվեց ձեր Google հաշվում}other{Քարտերը պահվեցին ձեր Google հաշվում}}</translation>
 <translation id="4287885627794386150">Փորձնական գործառույթը հասանելի է, սակայն ակտիվացված չէ</translation>
 <translation id="4297502707443874121">Էջ <ph name="THUMBNAIL_PAGE" />-ի մանրապատկեր</translation>
@@ -2031,6 +2032,7 @@
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի, հրապատի և ապահով DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Երկու ամրակ ձախ կողմում</translation>
+<translation id="6370022303958842211">Սարք մուտք գործելու գործողությունները, օր․՝ մուտքերը (ներառյալ չհաջողված մուտքերի ձախողման պատճառները), ելքերը, կողպումներն ու ապակողպումները</translation>
 <translation id="6374865374745447009">պատուհանների կառավարում</translation>
 <translation id="6377268785556383139">«<ph name="SEARCH_TEXT" />»-ի որոնման 1 արդյունք</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2435,6 +2437,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Իմացեք ավելին<ph name="END_LINK" /> այս խնդրի մասին:</translation>
 <translation id="7455133967321480974">Օգտագործել համընդհանուր կանխադրվածը (Արգելափակել)</translation>
 <translation id="7460618730930299168">Այս աշխատաշրջանի կարգավորումները տարբերվում են ձեր ընտրած աշխատաշրջանի կարգավորումներից: Շարունակե՞լ</translation>
+<translation id="7461924472993315131">Ամրացնել</translation>
 <translation id="7463075493919226237">Ավստրալիական ֆուտբոլ</translation>
 <translation id="7469935732330206581">Ձևն ապահով չէ</translation>
 <translation id="7473891865547856676">Ոչ</translation>

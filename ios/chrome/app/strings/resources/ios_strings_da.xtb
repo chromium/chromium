@@ -23,7 +23,6 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1104948393051856124">Acceptér og fortsæt</translation>
 <translation id="110724200315609752">Skift til åbent vindue</translation>
 <translation id="1112015203684611006">Udskrift mislykkedes.</translation>
-<translation id="1118569444314402022">Velkommen tilbage, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Opret ny fane.</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1135212215217513471">Hent Chrome til iOS</translation>
@@ -61,6 +60,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1340643665687018190">Luk menu</translation>
 <translation id="1358214951266274152">Gå til link, du har kopieret</translation>
 <translation id="1360432990279830238">Log ud, og deaktiver synkronisering?</translation>
+<translation id="1363028406613469049">Spor</translation>
 <translation id="1375321115329958930">Gemte adgangskoder</translation>
 <translation id="1377255359165588604">Synkroniseringen fungerer ikke.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
@@ -82,6 +82,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="152234381334907219">Gemmes aldrig</translation>
 <translation id="1523341279170789507">Tillad alle cookies</translation>
 <translation id="1524563461097350801">Nej tak</translation>
+<translation id="1531836666020185856">Fremhævede</translation>
 <translation id="1535268707340844072">Din aktuelle indstilling kan medføre, at nogle websites går ned. Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
@@ -197,6 +198,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2647269890314209800">Cookies i brug</translation>
 <translation id="2648803196158606475">Slet læste</translation>
 <translation id="2653659639078652383">Send</translation>
+<translation id="2671426118752779020">Du kan bruge de adgangskoder, du har gemt i Google Adgangskodeadministrator, i andre apps på din iPhone.</translation>
 <translation id="2690858294534178585">Kameraet er i brug</translation>
 <translation id="2691653761409724435">Ikke tilgængelig offline</translation>
 <translation id="2695507686909505111">Siden blev oversat</translation>
@@ -206,6 +208,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2704491540504985681">Downloads</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2709516037105925701">AutoFyld</translation>
+<translation id="271033894570825754">Nyt</translation>
 <translation id="2712127207578915686">Filen kan ikke åbnes</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
@@ -262,6 +265,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3103603146121354983">Adgangskoder via Autofyld</translation>
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Historik m.m.</translation>
 <translation id="3131206671572504478">Bloker alle</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
 <translation id="3153862085237805241">Gem kortet</translation>
@@ -332,7 +336,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3709582977625132201">Markér som ulæst</translation>
 <translation id="371230970611282515">Forudser og advarer dig om skadelige hændelser, før de opstår.</translation>
 <translation id="37207012422556617">Populære søgninger</translation>
-<translation id="3726360487031500941">Log ind på din konto, <ph name="USER_NAME" />, igen</translation>
 <translation id="3740397331642243698">Åbner de angivne webadresser i Google Chrome i inkognito.</translation>
 <translation id="3762232513783804601">Udviklet til din iPad</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -504,6 +507,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="509789154667432072">Tilføj et bogmærke</translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5118764316110575523">Fra</translation>
+<translation id="5119391094379141756">Vælg Chrome</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5140288047769711648">Chrome husker adgangskoden for dig. Du behøver ikke at huske den.</translation>
 <translation id="5149188072385105201">Tilføj adgangskode…</translation>
@@ -627,6 +631,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6149061208933997199">Brug adgangskoden</translation>
 <translation id="6152406514676263192">Synkroniser for at få det mest relevante indhold baseret på dine interesser.</translation>
 <translation id="6159839020698489198">valgfrit</translation>
+<translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6177442314419606057">Søg i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sidst synkroniseret: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8032569120109842252">Følger</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Søgehistorik<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />andre former for aktivitet<ph name="END_LINK" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="804427445359061970">Her kan du se dine faner fra andre enheder</translation>
+<translation id="8048728378294435881">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed</translation>
 <translation id="8059533439631660104">Skjuler sektionen.</translation>
 <translation id="8065292699993359127">Åbn webadresser i Chrome i inkognito</translation>
 <translation id="806745655614357130">Hold mine data adskilt</translation>
@@ -977,6 +983,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8981454092730389528">Aktivitetsadministration på Google</translation>
 <translation id="8985320356172329008">Du er logget ind på Google som</translation>
 <translation id="9000089900434778519">Dine standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis det er relevant.</translation>
+<translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039373489628511875">Båndbredde</translation>

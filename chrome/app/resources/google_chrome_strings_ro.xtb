@@ -57,7 +57,6 @@
 <translation id="2094648590148273905">Condițiile pentru sistemul de operare Chrome Flex</translation>
 <translation id="2094919256425865063">Ieși din Chrome oricum?</translation>
 <translation id="2106831557840787829">Sistemul de operare Chrome Flex este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Când opțiunea este activată, Chrome revendică memoria din filele pe care nu le folosești în mod activ. Acțiunea eliberează resursele computerului pentru alte activități și menține viteza ridicată a browserului Chrome. Filele inactive se afișează goale și se reîncarcă automat când dai clic pe ele. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> sau <ph name="BEGIN_LINK_2" />trimite feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Astfel, se vor șterge <ph name="ITEMS_COUNT" /> elemente de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuie la îmbunătățirea browserului Chrome raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
@@ -224,7 +223,6 @@
 <translation id="5386244825306882791">Stabilește și ce pagină se afișează când porniți Chrome sau când căutați din caseta polivalentă.</translation>
 <translation id="5394833366792865639">Arată o filă Chrome</translation>
 <translation id="5412485296464121825">Site-urile pot stoca informații în Chrome despre interesele tale. De exemplu, dacă accesezi un site ca să cumperi pantofi pentru un maraton, site-ul poate defini interesul tău drept maraton. Mai târziu, dacă accesezi alt site ca să te înscrii într-o cursă, acel site îți poate afișa un anunț pentru pantofi de alergare pe baza intereselor tale.</translation>
-<translation id="5416870378730196769">Chrome a activat Economisirea memoriei</translation>
 <translation id="5430073640787465221">Fișierul dvs. de preferințe este fie deteriorat, fie nevalid. Google Chrome nu poate recupera setările dvs.</translation>
 <translation id="5524761631371622910">În versiunile de încercare și dacă Chrome te-a inclus în mod aleatoriu într-o versiune de încercare activă, istoricul tău de navigare influențează anunțurile pe care le vezi și categoriile de interese estimate de mai jos. Pentru a-ți proteja confidențialitatea, Chrome șterge categoriile de interese în permanență, în fiecare lună.</translation>
 <translation id="556024056938947818">Google Chrome încearcă să afișeze parolele.</translation>
@@ -275,7 +273,6 @@
 <translation id="6735387454586646204">Sistemul de operare Chrome Flex</translation>
 <translation id="6739177684496155661">Continui cu un profil Chrome nou?</translation>
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
-<translation id="6756581345161130259">După cum este necesar, Chrome revendică memoria din filele pe care nu le folosești în mod activ. Poți modifica oricând opțiunea din Setări.</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
 <translation id="6785872064505734160">În Chrome, Asistentul Google poate să realizeze pentru tine acțiuni pe site-uri</translation>
 <translation id="683440813066116847">Regula de intrare pentru Google Chrome Canary pentru a permite traficul mDNS.</translation>
@@ -323,7 +320,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7651907282515937834">Sigla Chrome Enterprise</translation>
 <translation id="7655455401911432608">istoricul tău de navigare, o evidență a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv;</translation>
-<translation id="7726773885101561560">Pentru a face navigarea mai rapidă, Chrome revendică memoria din filele pe care nu le folosești.</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7761834446675418963">Dați clic pe numele dvs. pentru a deschide Chrome și a începe să navigați.</translation>
 <translation id="7777080907402804672">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google. Poți dezactiva această opțiune oricând din setări.</translation>

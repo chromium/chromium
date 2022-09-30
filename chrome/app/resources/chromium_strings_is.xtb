@@ -55,7 +55,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2384373936468275798">ChromiumOS gat ekki samstillt gögnin vegna þess að innskráningarupplýsingar reikningsins þíns eru úreltar.</translation>
 <translation id="2396765026452590966">Viðbótin „<ph name="EXTENSION_NAME" />“ hefur breytt því hvaða síða birtist þegar þú ræsir Chromium.</translation>
-<translation id="2400844369696905771">Þegar kveikt er á þessu endurheimtir Chromium minni úr flipum sem eru ekki í virkri notkun. Þetta losar um gagnarými tölvunnar fyrir önnur verkefni og viðheldur hraða Chromium. Óvirkir flipar virðast auðir og endurhlaðast sjálfkrafa þegar þú smellir á þá. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium verður að fá leyfi fyrir myndavél og hljóðnema fyrir þetta vefsvæði</translation>
 <translation id="2483889755041906834">í Chromium</translation>
 <translation id="2485422356828889247">Fjarlægja</translation>
@@ -146,7 +145,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="4285930937574705105">Uppsetning mistókst vegna ótilgreindrar villu. Ef Chromium er í gangi eins og er skaltu loka því og reyna aftur.</translation>
 <translation id="4304713468139749426">Aðgangsorðastjórnun</translation>
 <translation id="4334294535648607276">Niðurhali lokið.</translation>
-<translation id="437317747729858884">Chromium endurheimtir minni úr flipum sem eru ekki í notkun til að auka hraða vefskoðunar.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> krefst þess að þú lesir og samþykkir eftirfarandi þjónustuskilmála áður en þú notar þetta tæki. Þessir skilmálar auka ekki við, breyta eða takmarka skilmála ChromiumOS.</translation>
 <translation id="4407044323746248786">Viltu samt loka Chromium?</translation>
 <translation id="4415566066719264597">Leyfa Chromium að keyra í bakgrunni</translation>
@@ -318,7 +316,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7872446069773932638">Sækir... <ph name="SECONDS" /> sek. eftir</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Svona geturðu stjórnað gögnunum þínum:<ph name="END_BOLD" /> Til að gæta persónuverndar þinnar eyðum við áhugasviðunum þínum sem eru eldri en 4 vikna sjálfkrafa. Áhugasvið kann að birtast aftur á listanum þegar þú heldur áfram að vafra. Þú getur einnig fjarlægt áhugasvið sem þú vilt ekki að Chromium taki tillit til.</translation>
 <translation id="7937630085815544518">Þú varst skráð(ur) inn í Chromium sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
-<translation id="7947085610734123927">Chromium kveikti á minnissparnaði</translation>
 <translation id="7975919845073681630">Þetta er aukaleg uppsetning á Chromium sem ekki er hægt að gera að sjálfgefnum vafra.</translation>
 <translation id="7997934263947464652">Viðbætur, forrit og þemu frá óþekktum uppruna geta skaðað tækið þitt. Chromium mælir með að sækja slíkar skrár aðeins í <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Þegar Chromium hefur aðgang munu vefsvæði geta beðið þig um aðgang.</translation>
@@ -339,7 +336,6 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="8453117565092476964">Uppsetningarsafnskráin er skemmd eða ógild. Sæktu Chromium aftur.</translation>
 <translation id="8463672209299734063">Valfrjálst: Hjálpa til við að bæta eiginleika og afköst ChromiumOS með því að senda greiningar- og notkunargögn sjálfkrafa til Google.</translation>
 <translation id="8493179195440786826">Chromium er úrelt</translation>
-<translation id="8522220489792889625">Chromium endurheimtir minni úr flipum sem eru ekki í virkri notkun eftir þörfum. Þú getur breytt þessu hvenær sem er í stillingunum.</translation>
 <translation id="8550334526674375523">Þessi vinnuprófíll er algjörlega aðskilinn þínum eigin prófíl.</translation>
 <translation id="8558383651099478961">Foreldrar þínir hafa slökkt á „Heimildum fyrir vefsvæði, forrit og viðbætur" fyrir Chromium. Ekki er leyfilegt að bæta við þessu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Til að fá frekari uppfærslur á Chromium þarftu macOS 10.13 eða nýrri útgáfu. Þessi tölva notar macOS 10.12.</translation>

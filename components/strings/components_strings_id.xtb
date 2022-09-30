@@ -1249,6 +1249,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4277028893293644418">Reset sandi</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
 <translation id="4282346679996504092">Notifikasi untuk produk ini telah dinonaktifkan dan bookmark dihapus</translation>
+<translation id="4285498937028063278">Lepaskan</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kartu ini telah disimpan di Akun Google Anda}other{Kartu-kartu ini telah disimpan di Akun Google Anda}}</translation>
 <translation id="4287885627794386150">Memenuhi syarat untuk uji coba tetapi tidak aktif</translation>
 <translation id="4297502707443874121">Thumbnail untuk halaman <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2029,6 +2030,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Memeriksa proxy, firewall, dan konfigurasi DNS Aman<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dua jepretan di kiri</translation>
+<translation id="6370022303958842211">Tindakan akses perangkat seperti login (termasuk alasan login yang gagal), logout, kunci, dan buka kunci</translation>
 <translation id="6374865374745447009">pengelolaan jendela</translation>
 <translation id="6377268785556383139">1 hasil untuk '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2431,6 +2433,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /> tentang masalah ini.</translation>
 <translation id="7455133967321480974">Gunakan default global (Cekal)</translation>
 <translation id="7460618730930299168">Penyaringan ini berbeda dengan yang telah Anda pilih. Lanjutkan?</translation>
+<translation id="7461924472993315131">Sematkan</translation>
 <translation id="7463075493919226237">Sepak bola Australia</translation>
 <translation id="7469935732330206581">Formulir tidak aman</translation>
 <translation id="7473891865547856676">Lain Kali</translation>

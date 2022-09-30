@@ -1868,10 +1868,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée, aucune invite ne s'affiche à ce sujet, et la capture audio n'est possible que si l'URL concernée figure dans la liste AudioCaptureAllowedUrls.
 
       Remarque : Cette règle concerne toutes les entrées audio (pas seulement le micro intégré).</translation>
-<translation id="2822539450620588684">À partir de la version M107, toutes les méthodes <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> seront appelées de manière synchrone.
-      Jusqu'à la version M110, cette règle réactive l'appel asynchrone des méthodes <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
-      Si cette règle est activée, les méthodes <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> sont appelées de manière asynchrone.
-      Si elle est désactivée ou n'est pas configurée, toutes les méthodes <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> sont appelées de manière synchrone.</translation>
 <translation id="2823870601012066791">Emplacement du registre Windows pour les clients <ph name="PRODUCT_OS_NAME" /> :</translation>
 <translation id="2824715612115726353">Activer le mode navigation privée</translation>
 <translation id="282870810415075521">Autoriser JavaScript à utiliser le JIT sur ces sites</translation>
@@ -2036,12 +2032,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si cette règle est désactivée ou qu'elle n'est pas configurée, la clé du fichier manifeste <ph name="REQUIRED_PLATFORM_VERSION" /> est ignorée et la mise à jour automatique s'effectue normalement.
 
       Avertissement : Ne déléguez pas le contrôle de la version <ph name="PRODUCT_OS_NAME" /> à une application kiosque, car l'appareil risquerait de ne pas recevoir les mises à jour logicielles ni les correctifs de sécurité essentiels. Si vous déléguez le contrôle de la version <ph name="PRODUCT_OS_NAME" />, vous exposez les utilisateurs à des risques.</translation>
-<translation id="299519952839316970">Cette règle étant obsolète, elle sera supprimée dans la version 88 de <ph name="PRODUCT_OS_NAME" />. Les sessions publiques ne sont plus acceptées. Veuillez utiliser à la place la règle <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> pour configurer des sessions Invité gérées.
-      Si cette règle est définie sur "False", les sessions Invité gérées se déroulent comme indiqué sur la page https://support.google.com/chrome/a/answer/3017014 ("sessions publiques" standards).
-
-      Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les sessions Invitée gérées se déroulent comme des "sessions gérées", ce qui lève bon nombre des restrictions en vigueur pour les "sessions publiques" standards.
-
-      Si cette règle est définie, l'utilisateur ne peut pas la modifier ni l'ignorer.</translation>
 <translation id="2999597974578784672">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à activer des cookies.
 
           Si cette règle n'est pas configurée, la valeur par défaut globale est utilisée pour tous les sites à partir de la règle <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> si celle-ci est définie ou, à défaut, à partir de la configuration personnelle de l'utilisateur.

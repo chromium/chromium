@@ -55,7 +55,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2384373936468275798">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2396765026452590966">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you start Chromium.</translation>
-<translation id="2400844369696905771">When on, Chromium reclaims memory from tabs that you aren't actively using. This frees up your computer's resources for other tasks and keeps Chromium speedy. Inactive tabs appear empty and automatically reload when you click them. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -146,7 +145,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4285930937574705105">Installation failed due to unspecified error. If Google Chrome is currently running, please close it and try again.</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334294535648607276">Download complete.</translation>
-<translation id="437317747729858884">To make your browsing faster, Chromium reclaims memory from tabs that you aren't using.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS terms.</translation>
 <translation id="4407044323746248786">Exit Chromium anyway?</translation>
 <translation id="4415566066719264597">Let Chromium Run in the Background</translation>
@@ -317,7 +315,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7872446069773932638">Downloading… <ph name="SECONDS" /> second(s) remaining</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chromium to consider.</translation>
 <translation id="7937630085815544518">You were signed in to Chromium as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
-<translation id="7947085610734123927">Chromium turned on Memory Saver</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
 <translation id="7997934263947464652">Extensions, apps and themes from unknown sources can harm your device. Chromium recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Once Chromium has access, websites will be able to ask you for access.</translation>
@@ -338,7 +335,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8453117565092476964">The installer archive is corrupted or invalid. Please download Chromium again.</translation>
 <translation id="8463672209299734063">Optional: Help improve Chromium OS features and performance by automatically sending diagnostic and usage data to Google.</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
-<translation id="8522220489792889625">As needed, Chromium reclaims memory from tabs that you aren't actively using. You can change this at any time in settings.</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8558383651099478961">Your parent has turned off 'Permissions for sites, apps and extensions' for Chromium. Adding this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
 <translation id="8561285221328166383">To get future Chromium updates, you'll need macOS 10.13 or later. This computer is using macOS 10.12.</translation>

@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">Nemojte iskopčati ovaj vanjski uređaj ili isključiti računar dok traje ažuriranje firmvera. Ovaj prozor možete minimizirati. Ovo ažuriranje može potrajati nekoliko minuta. Moguće je da za to vrijeme vanjski uređaj neće funkcionirati.</translation>
 <translation id="3486220673238053218">definicija</translation>
 <translation id="3488065109653206955">Djelimično aktivirano</translation>
+<translation id="3510890413042482857">Šalji <ph name="BEGIN_LINK1" />podatke o praćenju izvedbe<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ažuriranje ChromeOS-a</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="3532980081107202182">Preostalo je oko <ph name="MIN_REMAINING" /> min</translation>

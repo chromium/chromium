@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
+<translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Teljesítménykövetési adatok<ph name="END_LINK1" /> elküldése</translation>
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
 <translation id="3527036260304016759">Sikertelen – Ismeretlen hiba</translation>
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>

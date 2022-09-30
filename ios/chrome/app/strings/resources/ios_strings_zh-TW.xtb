@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">接受並繼續</translation>
 <translation id="110724200315609752">切換至已開啟的視窗</translation>
 <translation id="1112015203684611006">列印失敗。</translation>
-<translation id="1118569444314402022">歡迎回來，<ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
 <translation id="1135212215217513471">取得 Chrome iOS 版</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">關閉選單</translation>
 <translation id="1358214951266274152">前往你複製的連結</translation>
 <translation id="1360432990279830238">要登出並關閉同步處理功能嗎？</translation>
+<translation id="1363028406613469049">追蹤</translation>
 <translation id="1375321115329958930">已儲存的密碼</translation>
 <translation id="1377255359165588604">同步處理功能已停止運作。</translation>
 <translation id="1377321085342047638">卡號</translation>
@@ -82,6 +82,7 @@
 <translation id="152234381334907219">永不儲存</translation>
 <translation id="1523341279170789507">允許所有 Cookie</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
+<translation id="1531836666020185856">精選內容</translation>
 <translation id="1535268707340844072">你目前的設定可能會導致某些網站無法正常運作。如要管理所有網站的 Cookie，請參閱 <ph name="BEGIN_LINK" />Cookie 設定<ph name="END_LINK" />。</translation>
 <translation id="1540800554400757039">地址 1</translation>
 <translation id="1545749641540134597">掃描 QR 圖碼</translation>
@@ -197,6 +198,7 @@
 <translation id="2647269890314209800">使用中的 Cookie</translation>
 <translation id="2648803196158606475">刪除已讀取的項目</translation>
 <translation id="2653659639078652383">提交</translation>
+<translation id="2671426118752779020">你可以在 iPhone 上的其他應用程式，使用儲存至 Google 密碼管理員的密碼。</translation>
 <translation id="2690858294534178585">相機正在使用中</translation>
 <translation id="2691653761409724435">無法離線使用</translation>
 <translation id="2695507686909505111">已翻譯網頁</translation>
@@ -206,6 +208,7 @@
 <translation id="2704491540504985681">下載內容</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2709516037105925701">自動填入</translation>
+<translation id="271033894570825754">全新</translation>
 <translation id="2712127207578915686">無法開啟檔案</translation>
 <translation id="2718352093833049315">僅限連上 Wi-Fi 網路時</translation>
 <translation id="2747003861858887689">上一個欄位</translation>
@@ -262,6 +265,7 @@
 <translation id="3103603146121354983">自動填入密碼</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">歷史記錄和其他資料</translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
 <translation id="3153862085237805241">儲存卡片</translation>
@@ -332,7 +336,6 @@
 <translation id="3709582977625132201">標示為未讀取</translation>
 <translation id="371230970611282515">可預測不安全事件，並在這類事件發生前顯示警告訊息。</translation>
 <translation id="37207012422556617">熱門搜尋</translation>
-<translation id="3726360487031500941">請再次登入你的帳戶 (<ph name="USER_NAME" />)</translation>
 <translation id="3740397331642243698">在 Google Chrome 無痕模式中開啟輸入的網址。</translation>
 <translation id="3762232513783804601">專為 iPad 量身打造</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -504,6 +507,7 @@
 <translation id="509789154667432072">新增書籤</translation>
 <translation id="5118713593561876160">興趣喜好</translation>
 <translation id="5118764316110575523">關閉</translation>
+<translation id="5119391094379141756">選取 [Chrome]</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="5140288047769711648">Chrome 會為你儲存這組密碼，因此你不必記住密碼。</translation>
 <translation id="5149188072385105201">新增密碼…</translation>
@@ -627,6 +631,7 @@
 <translation id="6149061208933997199">使用密碼</translation>
 <translation id="6152406514676263192">系統會根據你的興趣同步處理最相關的內容。</translation>
 <translation id="6159839020698489198">選填</translation>
+<translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6177442314419606057">在 Chrome 中搜尋</translation>
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步處理時間：<ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="804225253087497565">在你登入後，<ph name="BEGIN_LINK" />搜尋記錄<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至你的 Google 帳戶。你隨時可以刪除這些內容。</translation>
 <translation id="804427445359061970">這裡會顯示你在其他裝置上查看的分頁</translation>
+<translation id="8048728378294435881">備份資料即可在任何裝置上使用</translation>
 <translation id="8059533439631660104">收合這個專區。</translation>
 <translation id="8065292699993359127">在 Chrome 無痕模式中開啟網址</translation>
 <translation id="806745655614357130">分開保留我的資料</translation>
@@ -977,6 +983,7 @@
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
 <translation id="9000089900434778519">你的搜尋引擎是 <ph name="DSE_NAME" />。如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
+<translation id="9008201768610948239">略過</translation>
 <translation id="9034759925968272072">您並不會因此登出 Google 帳戶，不過帳戶中可能仍保留了其他類型的瀏覽記錄 (可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 查詢)。</translation>
 <translation id="9037965129289936994">顯示原文</translation>
 <translation id="9039373489628511875">頻寬</translation>

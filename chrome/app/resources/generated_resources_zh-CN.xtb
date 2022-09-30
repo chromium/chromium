@@ -344,7 +344,6 @@
 <translation id="1327272175893960498">Kerberos 票据</translation>
 <translation id="1327495825214193325">要启用 ADB 调试，您必须重启此<ph name="DEVICE_TYPE" />。要停用它，则必须将此设备恢复出厂设置。</translation>
 <translation id="1327794256477341646">所有需要使用您的位置信息的功能都将无法正常运行</translation>
-<translation id="1329191040029425999">请确保您的设备已更新到最新版本，然后重试</translation>
 <translation id="1331977651797684645">是我本人。</translation>
 <translation id="1333489022424033687">请清除您设备上存储的其他网站的数据，否则 <ph name="ORIGIN" /> 上的某些功能可能无法正常运行</translation>
 <translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
@@ -1285,7 +1284,6 @@
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
 <translation id="2183570493397356669">已停用“继续”按钮</translation>
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
-<translation id="2186206192313702726">Google 智能镜头</translation>
 <translation id="2186711480981247270">收到了另一设备分享的页面</translation>
 <translation id="2187675480456493911">已与您帐号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
@@ -1347,7 +1345,6 @@
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2242687258748107519">文件信息</translation>
-<translation id="2245296100676446525">开启同步功能后，您便可在此设备上以及任何其他保持同步的位置获取您的书签、密码、历史记录等信息。</translation>
 <translation id="2245603955208828424">使用箭头键可在各项内容之间逐字母移动</translation>
 <translation id="2246129643805925002">您的 <ph name="DEVICE_TYPE" /> 会自动在后台更新，以便为您提供最新的功能和安全性方面的改进。您可在“设置”中查看更新偏好设置。</translation>
 <translation id="2246549592927364792">要从 Google 获取图片说明吗？</translation>
@@ -1530,7 +1527,6 @@
 <translation id="2381499968174336913">已分享的标签页的预览视图</translation>
 <translation id="2381756643783702095">发送前先询问（推荐）</translation>
 <translation id="2383825469508278924">更改键盘按键映射、功能键等设置</translation>
-<translation id="2386202302581016807">设备的可用存储空间不足，无法完成安装</translation>
 <translation id="2387052489799050037">转到主屏幕</translation>
 <translation id="2387602571959163792">“<ph name="DESK_NAME" />”（当前）</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -2241,7 +2237,6 @@
 <translation id="3031557471081358569">选择要导入的内容：</translation>
 <translation id="3032204772252313646">自动字幕</translation>
 <translation id="3033348223765101500">控制您的数据</translation>
-<translation id="3034627908241330765">另一项 Steam 安装正在运行。请等待其完成，然后再重新执行安装。</translation>
 <translation id="3036327949511794916">退还此 <ph name="DEVICE_TYPE" /> 的截止日期已过。</translation>
 <translation id="3036546437875325427">启用 Flash</translation>
 <translation id="3037754279345160234">无法对加入网域的配置进行解析，请与您的管理员联系。</translation>
@@ -2254,7 +2249,6 @@
 <translation id="3046178388369461825">Linux 磁盘空间严重不足</translation>
 <translation id="3046910703532196514">网页，全部</translation>
 <translation id="304747341537320566">语音引擎</translation>
-<translation id="3048051495640130973">您可在设置中控制省电模式的开启时间</translation>
 <translation id="3048336643003835855">来自供应商 <ph name="VENDOR_ID" /> 的 HID 设备</translation>
 <translation id="3048917188684939573">投放和设备日志</translation>
 <translation id="3051250416341590778">显示屏上的内容大小</translation>
@@ -2298,7 +2292,6 @@
 <translation id="3090819949319990166">无法将外部 crx 文件复制到 <ph name="TEMP_CRX_FILE" />。</translation>
 <translation id="3090871774332213558">“<ph name="DEVICE_NAME" />”已配对</translation>
 <translation id="3093714882666365141">不允许网站安装付款处理程序</translation>
-<translation id="3093958632721393232">仅在电池电量不足时开启</translation>
 <translation id="3094141017404513551">这会将您的浏览数据与 <ph name="EXISTING_USER" /> 的浏览数据分隔开来</translation>
 <translation id="3095871294753148861">书签、密码和其他浏览器数据会与主帐号同步。</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{关闭了 1 个可能有害的扩展程序。您也可移除它。}other{关闭了 {NUM_EXTENSIONS} 个可能有害的扩展程序。您也可移除它们。}}</translation>
@@ -2346,7 +2339,6 @@
 <translation id="3142562627629111859">新建组</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="3143754809889689516">从头播放</translation>
-<translation id="3143937294861726703">内存节省程序已开启</translation>
 <translation id="3144647712221361880">以其他身份打开链接</translation>
 <translation id="3149510190863420837">Chrome 应用</translation>
 <translation id="3150693969729403281">立即进行安全检查</translation>
@@ -2505,8 +2497,6 @@
 <translation id="3315442055907669208">进入阅读器模式</translation>
 <translation id="3317459757438853210">双面</translation>
 <translation id="3317678681329786349">已禁止使用摄像头和麦克风</translation>
-<translation id="3320620783302968370">如果问题仍然存在，请尝试重启设备
-    错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="3320630259304269485">安全浏览（保护您免受危险网站的侵害）和其他安全设置</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{此数据包含敏感或危险内容。请移除此内容，然后重试。}=1{这个文件包含敏感或危险内容。请移除此内容，然后重试。}other{这些文件包含敏感或危险内容。请移除此内容，然后重试。}}</translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
@@ -2662,7 +2652,6 @@
 <translation id="3462311546193741693">会致使您从大多数网站退出。但您的 Google 帐号仍会保持登录状态，以便清除您的已同步数据。</translation>
 <translation id="3462413494201477527">要取消帐号设置吗？</translation>
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
-<translation id="3463015289462934089">请确保您的设备已连接到互联网。</translation>
 <translation id="3464145797867108663">添加工作资料</translation>
 <translation id="346431825526753">此帐号是由 <ph name="CUSTODIAN_EMAIL" /> 管理的未成年人帐号。</translation>
 <translation id="346546413339447252">获取<ph name="MERCHANT_NAME_1" />和<ph name="MERCHANT_NAME_2" />等商家的折扣</translation>
@@ -3545,7 +3534,6 @@
     <ph name="BEGIN_PARAGRAPH2" />您随时可在孩子的 Chrome 操作系统设备设置中开始或停止发送这些报告。如果您是网域管理员，则可在管理控制台中更改这一设置。<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />即使您关闭这项功能，设备仍能发送基本服务（例如系统更新和安全服务）所需的信息。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">此页面可修改文件</translation>
-<translation id="4302577930366020750">请重启您的设备，然后即可使用 Steam</translation>
 <translation id="4303079906735388947">为您的安全密钥设置一个新 PIN 码</translation>
 <translation id="4304713468139749426">密码管理器</translation>
 <translation id="4305402730127028764">复制到“<ph name="DEVICE_NAME" />”</translation>
@@ -3675,7 +3663,6 @@
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
-<translation id="4429239357082509581">Steam 没有权限，无法运行</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4430369329743628066">已添加书签</translation>
 <translation id="4430422687972614133">启用虚拟卡</translation>
@@ -3943,8 +3930,6 @@
 <translation id="4675828034887792601">创建用于搜索网站的快捷字词，以及管理您的搜索引擎</translation>
 <translation id="4676595058027112862">Phone Hub，了解详情</translation>
 <translation id="4677772697204437347">GPU内存</translation>
-<translation id="4677970983462111944">系统不允许在此设备上安装 Steam。请与您的管理员联系以请求权限
-    错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="467823995058589466">摄像头未开启</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
@@ -4261,7 +4246,6 @@
 <translation id="49896407730300355">逆时针旋转(&amp;O)</translation>
 <translation id="4989966318180235467">检查背景页(&amp;B)</translation>
 <translation id="4991420928586866460">将顶行键设置为功能键</translation>
-<translation id="4991858732577603540">请在几分钟后重新运行 Steam</translation>
 <translation id="4992458225095111526">确认 Powerwash 操作</translation>
 <translation id="4992473555164495036">您的管理员限制了可用的输入法。</translation>
 <translation id="4994754230098574403">正在设置</translation>
@@ -4727,7 +4711,6 @@
 <translation id="5463275305984126951"><ph name="LOCATION" /> 的索引</translation>
 <translation id="5463450804024056231">注册接收 <ph name="DEVICE_TYPE" /> 电子邮件</translation>
 <translation id="5463625433003343978">正在查找设备…</translation>
-<translation id="5463845647891602726">如需增加可用空间，请从设备中删除文件</translation>
 <translation id="5463856536939868464">包含隐藏书签的菜单</translation>
 <translation id="5464660706533281090">未成年用户无法更改此设置。</translation>
 <translation id="5466374726908360271">粘贴并搜索“<ph name="SEARCH_TERMS" />”</translation>
@@ -5093,6 +5076,7 @@
 <translation id="5812674658566766066">全部展开</translation>
 <translation id="5815645614496570556">X.400 地址</translation>
 <translation id="5816434091619127343">所请求的打印机更改会导致打印机不可用。</translation>
+<translation id="581659025233126501">开启同步功能</translation>
 <translation id="5817069030404929329">将此设备上存储的密码移至您的 Google 帐号中？</translation>
 <translation id="5817918615728894473">配对</translation>
 <translation id="5821565227679781414">创建快捷方式</translation>
@@ -5270,7 +5254,6 @@
 <translation id="5975792506968920132">电池充电百分比</translation>
 <translation id="5976160379964388480">其他</translation>
 <translation id="5978277834170881274">使用基本拼写检查(&amp;U)</translation>
-<translation id="5978395054855988504">省电模式已开启</translation>
 <translation id="5978493744931296692">您的管理员已停用其他个人资料</translation>
 <translation id="5979084224081478209">检查密码</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{您重新开启了 1 个可能有害的扩展程序}other{您重新开启了 {NUM_EXTENSIONS} 个可能有害的扩展程序}}</translation>
@@ -7250,7 +7233,6 @@
 <translation id="7870790288828963061">找不到自助服务终端应用的更高版本，因此没有要更新的内容。请拔下 U 盘。</translation>
 <translation id="7871049986386271121">始终在该网站上</translation>
 <translation id="7871109039747854576">用 <ph name="COMMA" /> 键和 <ph name="PERIOD" /> 键在候选字词列表中翻页</translation>
-<translation id="7872494313446521576">点击即可允许“<ph name="EXTENSIONS_REQUESTING_ACCESS" />”访问 <ph name="ORIGIN" />：</translation>
 <translation id="787268756490971083">已关闭</translation>
 <translation id="7872758299142009420">嵌套的群组过多：<ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome 背景</translation>
@@ -7665,7 +7647,6 @@
 <translation id="8248381369318572865">使用您的麦克风并分析您的语音</translation>
 <translation id="8248887045858762645">Chrome 小窍门</translation>
 <translation id="8249048954461686687">OEM文件夹</translation>
-<translation id="8249239468199142122">省电模式</translation>
 <translation id="8249615410597138718">发送到您的设备</translation>
 <translation id="8250210000648910632">可用的存储空间不足</translation>
 <translation id="8251441930213048644">立即刷新</translation>
@@ -7869,7 +7850,6 @@
 <translation id="8440630305826533614">Linux 应用</translation>
 <translation id="844063558976952706">始终在该网站上</translation>
 <translation id="8441313165929432954">启用/停用网络共享</translation>
-<translation id="8443795068008423036">请确保您的设备已更新到最新版本，然后重试</translation>
 <translation id="8443986842926457191">网址长度超出了 2048 个字符（上限）</translation>
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8447409163267621480">必须以 Ctrl 键或 Alt 键开头</translation>
@@ -8200,7 +8180,6 @@
 <translation id="8763927697961133303">USB 设备</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">自动为所有用户更新 Chrome</translation>
-<translation id="8769901904650373714">Steam 安装出现问题</translation>
 <translation id="8770406935328356739">扩展程序根目录</translation>
 <translation id="8771300903067484968">已将初始页背景重置为默认背景。</translation>
 <translation id="8773302562181397928">保存<ph name="PRINTER_NAME" /></translation>
@@ -8685,7 +8664,7 @@
 <translation id="932508678520956232">无法开始打印。</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{这个文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}other{这些文件中的部分文件太大，无法进行安全检查。您只能上传不超过 50 MB 的文件。}}</translation>
 <translation id="93343527085570547">如要依法提出内容更改请求，请前往<ph name="BEGIN_LINK1" />法律帮助页面<ph name="END_LINK1" />。系统可能会将部分帐号和系统信息发送给 Google。我们会根据<ph name="BEGIN_LINK2" />隐私权政策<ph name="END_LINK2" />和<ph name="BEGIN_LINK3" />服务条款<ph name="END_LINK3" />使用您提供的信息，以解决技术问题并改进服务。</translation>
-<translation id="93393615658292258">仅限密码</translation>
+<translation id="93393615658292258">密码</translation>
 <translation id="934244546219308557">为此组命名</translation>
 <translation id="934503638756687833">如有必要，此处未列出的内容也会被移除。请参阅 Chrome 隐私权政策白皮书，详细了解&lt;a href="<ph name="URL" />"&gt;垃圾软件防护&lt;/a&gt;。</translation>
 <translation id="93480724622239549">问题或错误</translation>
@@ -8716,7 +8695,6 @@
 <translation id="964286338916298286">您的 IT 管理员已禁止您的设备享用 Chrome 附赠的好礼。</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{应用}other{应用}}</translation>
 <translation id="964790508619473209">屏幕排列方式</translation>
-<translation id="965175368833098333">内存节省程序可以从闲置的标签页回收内存。这样可释放计算机的资源以用于执行其他任务。</translation>
 <translation id="965211523698323809">通过您的<ph name="DEVICE_TYPE" />收发短信。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
 <translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>

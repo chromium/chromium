@@ -1254,6 +1254,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4277028893293644418">Resetuj hasło</translation>
 <translation id="4278390842282768270">Dopuszczone</translation>
 <translation id="4282346679996504092">Alerty dotyczące tego produktu zostały wyłączone, a zakładka usunięta</translation>
+<translation id="4285498937028063278">Odepnij</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ta karta została zapisana na Twoim koncie Google}few{Te karty zostały zapisane na Twoim koncie Google}many{Te karty zostały zapisane na Twoim koncie Google}other{Te karty zostały zapisane na Twoim koncie Google}}</translation>
 <translation id="4287885627794386150">Kwalifikuje się do wersji próbnej, ale nie jest ona aktywna</translation>
 <translation id="4297502707443874121">Miniatura strony <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2441,6 +2442,7 @@ Dodatkowe informacje:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o tym problemie.</translation>
 <translation id="7455133967321480974">Użyj globalnej wartości domyślnej (Blokuj)</translation>
 <translation id="7460618730930299168">Godziny seansów są inne niż wybrane przez Ciebie. Czy chcesz kontynuować?</translation>
+<translation id="7461924472993315131">Przypnij</translation>
 <translation id="7463075493919226237">Futbol australijski</translation>
 <translation id="7469935732330206581">Formularz nie jest bezpieczny</translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>

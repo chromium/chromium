@@ -371,6 +371,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Выключить устройство?</translation>
 <translation id="3126069444801937830">Перезагрузите, чтобы обновить</translation>
+<translation id="3139382871451988441">Запретить доступ к камерам</translation>
 <translation id="3139942575505304791">Рабочий стол 1</translation>
 <translation id="315116470104423982">Мобильное подключение</translation>
 <translation id="3151786313568798007">Ориентация</translation>
@@ -647,6 +648,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Функция ChromeVox включена</translation>
 <translation id="4665114317261903604">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Запретите доступ к камерам на этом устройстве, чтобы заблокировать все камеры.</translation>
 <translation id="4667099493359681081">Скачивание файла <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Временное хранилище размещено в нижней части экрана</translation>
 <translation id="4696813013609194136">Требуется родительский код доступа</translation>
@@ -665,6 +667,7 @@
 <translation id="4776917500594043016">Пароль для адреса электронной почты <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4778095205580009397">Google Ассистент в демонстрационном сеансе недоступен</translation>
+<translation id="4789348252524569426">Невозможно установить файлы для распознавания речи. Обновите операционную систему и перезапустите устройство, затем повторите попытку.</translation>
 <translation id="479989351350248267">поиск</translation>
 <translation id="4804818685124855865">Отключиться</translation>
 <translation id="4814539958450445987">Экран входа</translation>
@@ -1144,6 +1147,7 @@
 <translation id="7557816257942363084">Сейчас использует микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
 <translation id="7564874036684306347">При переносе окон на другой рабочий стол иногда возникают ошибки. Уведомления и диалоговые окна могут появляться на разных рабочих столах.</translation>
+<translation id="7567076708801803118">Запретить доступ к камерам на этом устройстве?</translation>
 <translation id="7569509451529460200">Шрифт Брайля и функция ChromeVox включены</translation>
 <translation id="7573585051776738856">Активное окно прикреплено справа.</translation>
 <translation id="7579778809502851308">Запись экрана</translation>

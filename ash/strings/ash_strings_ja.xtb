@@ -225,6 +225,7 @@
 <translation id="2227179592712503583">候補を削除</translation>
 <translation id="225680501294068881">デバイスをスキャンしています...</translation>
 <translation id="2257486738914982088"><ph name="FILENAME" /> のダウンロード中にエラーが発生しました</translation>
+<translation id="2258734398699965611">候補のファイル</translation>
 <translation id="2268130516524549846">Bluetooth オフ</translation>
 <translation id="2268813581635650749">すべてログアウト</translation>
 <translation id="2269016722240250274">アプリケーションがマイクを使用しています</translation>
@@ -900,6 +901,7 @@
 <translation id="6099678161144790572">過去 1 か月以内に編集したファイル</translation>
 <translation id="6103838137565245112">システム</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" />の音声ファイルをダウンロードしました</translation>
+<translation id="6116825164611323644">このデバイスでは、カメラへのアクセスが無効になっています。</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> のダウンロードの確認</translation>
 <translation id="612734058257491180">Google アシスタントは、ゲスト セッションではご利用いただけません。</translation>
@@ -1160,6 +1162,7 @@
 <translation id="7633755430369750696">ニアバイシェア設定を表示します。</translation>
 <translation id="7634648064048557203">カメラは右下にスナップされています</translation>
 <translation id="7641938616688887143">録画</translation>
+<translation id="7642106959537987271">色反転モード</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" /> の設定を開きます、<ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" />（所有者）</translation>
 <translation id="7647488630410863958">デバイスのロックを解除して通知を確認してください</translation>
@@ -1265,6 +1268,7 @@
 <translation id="8209010265547628927">リセット</translation>
 <translation id="8214996719228530800">Canary チャンネル</translation>
 <translation id="8219451629189078428">この間は Chromebook の電源をオンにしておく必要があります。充電器またはアダプタのケーブルが、Chromebook とコンセントの両方にしっかりと接続されていることを確認してください。また、Chromebook の電源をオフにしないでください。</translation>
+<translation id="8230305195727960608">色反転モード</translation>
 <translation id="8236042855478648955">休憩の時間です</translation>
 <translation id="8246282815785366524">ようこそ、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、電池残量 <ph name="BATTERY_STATUS" /></translation>
@@ -1351,6 +1355,7 @@
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
 <translation id="8735678380411481005">キーボードのバックライトの色</translation>
 <translation id="8735953464173050365">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています</translation>
+<translation id="8752416742247198423">カメラへのアクセスを有効にすれば、カメラへのアクセス権限を持つアプリやウェブページが、デバイスに接続されているカメラを使用できるようになります。</translation>
 <translation id="8755498163081687682">本人確認: <ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="875593634123171288">VPN 設定を表示</translation>
 <translation id="8759408218731716181">マルチログインを設定できません</translation>
@@ -1365,6 +1370,7 @@
 <translation id="8819728065740986820">アダプティブ充電がオンになっています</translation>
 <translation id="8825863694328519386">左側からスワイプすると前の画面に戻ります</translation>
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
+<translation id="8834657930627018205">カメラへのアクセスを有効にする</translation>
 <translation id="8841375032071747811">戻るボタン</translation>
 <translation id="8843682306134542540">画面の向きの固定を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>
@@ -1391,6 +1397,7 @@
 <translation id="8982906748181120328">周辺ユーザーによる検出</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> を使用しています</translation>
+<translation id="8991617137207906966">色反転モードをオンにしました。オフにするには Ctrl+検索+H キーをもう一度押します。</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
 <translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
@@ -1439,6 +1446,7 @@
 <translation id="921989828232331238">保護者の方がこのデバイスを終日ロックしています</translation>
 <translation id="9220525904950070496">アカウントを削除</translation>
 <translation id="923686485342484400">ログアウトするには、Ctrl Shift Q を 2 回押します。</translation>
+<translation id="92580429198593979">色反転のキーボード ショートカットを押しました。オンにしますか？</translation>
 <translation id="925832987464884575">プレビューを非表示</translation>
 <translation id="937214777182567951"><ph name="MANAGER" /> が今すぐ <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
 <translation id="938963181863597773">カレンダーに予定は入ってる？</translation>

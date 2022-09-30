@@ -1250,6 +1250,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4277028893293644418">Tilbakestill passordet</translation>
 <translation id="4278390842282768270">Tillatt</translation>
 <translation id="4282346679996504092">Varsler for dette produktet er slått av, og bokmerket er fjernet</translation>
+<translation id="4285498937028063278">Løsne</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Dette kortet er lagret i Google-kontoen din}other{Disse kortene er lagret i Google-kontoen din}}</translation>
 <translation id="4287885627794386150">Kvalifisert for utprøving, men ikke aktiv</translation>
 <translation id="4297502707443874121">Miniatyrbilde for side <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2434,6 +2435,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om dette problemet.</translation>
 <translation id="7455133967321480974">Bruk global standardinnstilling (Blokkér)</translation>
 <translation id="7460618730930299168">Fremvisningen er forskjellig fra den du har valgt. Vil du fortsette?</translation>
+<translation id="7461924472993315131">Fest</translation>
 <translation id="7463075493919226237">Australsk fotball</translation>
 <translation id="7469935732330206581">Skjemaet er ikke sikkert</translation>
 <translation id="7473891865547856676">Nei takk</translation>

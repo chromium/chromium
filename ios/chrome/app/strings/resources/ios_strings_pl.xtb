@@ -23,7 +23,6 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1104948393051856124">Zaakceptuj i kontynuuj</translation>
 <translation id="110724200315609752">Przełącz na otwarte okno</translation>
 <translation id="1112015203684611006">Drukowanie nie udało się.</translation>
-<translation id="1118569444314402022">Witamy z powrotem, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Utwórz nową kartę.</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1135212215217513471">Pobierz Chrome na iOS</translation>
@@ -61,6 +60,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1340643665687018190">Zamknij menu</translation>
 <translation id="1358214951266274152">Otwórz skopiowany link</translation>
 <translation id="1360432990279830238">Wylogować i wyłączyć synchronizację?</translation>
+<translation id="1363028406613469049">Utwór</translation>
 <translation id="1375321115329958930">Zapisane hasła</translation>
 <translation id="1377255359165588604">Synchronizacja przestała działać.</translation>
 <translation id="1377321085342047638">Numer karty</translation>
@@ -82,6 +82,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="152234381334907219">Nigdy nie zapisane</translation>
 <translation id="1523341279170789507">Zezwalaj na wszystkie pliki cookie</translation>
 <translation id="1524563461097350801">Nie, dziękuję</translation>
+<translation id="1531836666020185856">Polecane</translation>
 <translation id="1535268707340844072">Twoje obecne ustawienie może powodować problemy w niektórych witrynach. Aby zarządzać plikami cookie we wszystkich witrynach, sprawdź <ph name="BEGIN_LINK" />Ustawienia plików cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="1545749641540134597">Zeskanuj kod QR</translation>
@@ -197,6 +198,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2647269890314209800">Pliki cookie w użyciu</translation>
 <translation id="2648803196158606475">Usuń przeczytane</translation>
 <translation id="2653659639078652383">Prześlij</translation>
+<translation id="2671426118752779020">Haseł zapisanych w menedżerze haseł Google możesz używać w innych aplikacjach na iPhonie.</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
 <translation id="2691653761409724435">Niedostępne offline</translation>
 <translation id="2695507686909505111">Strona została przetłumaczona</translation>
@@ -206,6 +208,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2704491540504985681">Pobrane</translation>
 <translation id="2704606927547763573">Skopiowane</translation>
 <translation id="2709516037105925701">Autouzupełnianie</translation>
+<translation id="271033894570825754">Nowy</translation>
 <translation id="2712127207578915686">Nie można otworzyć pliku</translation>
 <translation id="2718352093833049315">Tylko przez Wi-Fi</translation>
 <translation id="2747003861858887689">Poprzednie pole</translation>
@@ -262,6 +265,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3103603146121354983">Automatycznie uzupełniaj hasła</translation>
 <translation id="3112556859945124369">Oznacz…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Historia i inne elementy</translation>
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
@@ -332,7 +336,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3709582977625132201">Oznacz jako nieprzeczytane</translation>
 <translation id="371230970611282515">Przewiduje niebezpieczne zdarzenia i ostrzega Cię przed nimi, zanim nastąpią.</translation>
 <translation id="37207012422556617">Wyszukiwania zyskujące popularność</translation>
-<translation id="3726360487031500941">Zaloguj się ponownie na konto <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Otwiera wpisane adresy URL w Google Chrome w trybie incognito.</translation>
 <translation id="3762232513783804601">Dla Twojego iPada</translation>
 <translation id="3771033907050503522">Karty incognito</translation>
@@ -504,6 +507,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="509789154667432072">Dodaj zakładkę</translation>
 <translation id="5118713593561876160">Zainteresowania</translation>
 <translation id="5118764316110575523">Wyłączono</translation>
+<translation id="5119391094379141756">Wybierz Chrome.</translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
 <translation id="5140288047769711648">Chrome będzie pamiętać to hasło za Ciebie. Nie musisz go zapamiętywać.</translation>
 <translation id="5149188072385105201">Dodaj hasło…</translation>
@@ -627,6 +631,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6149061208933997199">Użyj hasła</translation>
 <translation id="6152406514676263192">Włącz synchronizację, aby wyświetlały się treści najlepiej pasujące do Twoich zainteresowań.</translation>
 <translation id="6159839020698489198">opcjonalnie</translation>
+<translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6177442314419606057">Szukaj w Chrome</translation>
 <translation id="6184086493125982861">Pokaż karty</translation>
 <translation id="6187302354554850004">Ostatnia synchronizacja: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8032569120109842252">Obserwujesz</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historia wyszukiwania<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />inne formy aktywności<ph name="END_LINK" /> mogą być zapisywane na Twoim koncie Google, gdy się zalogujesz. W każdej chwili możesz je usunąć.</translation>
 <translation id="804427445359061970">Znajdziesz tu swoje karty z innych urządzeń</translation>
+<translation id="8048728378294435881">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu</translation>
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8065292699993359127">Otwórz adresy URL w Chrome w trybie incognito</translation>
 <translation id="806745655614357130">Przechowuj dane oddzielnie</translation>
@@ -977,6 +983,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>
 <translation id="8985320356172329008">Jesteś zalogowany w Google jako</translation>
 <translation id="9000089900434778519">Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
+<translation id="9008201768610948239">Ignoruj</translation>
 <translation id="9034759925968272072">Nie spowoduje to wylogowania z konta Google. Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Pokaż tekst oryginalny</translation>
 <translation id="9039373489628511875">Przepustowość</translation>

@@ -236,6 +236,7 @@
 <translation id="2298170939937364391">‏הגדלה של כל המסך הופעלה. כדי להשבית אותה יש להקיש שוב על Ctrl+Search+M.</translation>
 <translation id="2302092602801625023">‏החשבון הזה מנוהל באמצעות Family Link</translation>
 <translation id="2303600792989757991">החלפת סקירת חלון</translation>
+<translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: צילומי מסך אחרונים, הורדות וקבצים מוצמדים</translation>
 <translation id="2318576281648121272">היום <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , קטגוריה של תוצאות חיפוש</translation>
 <translation id="2322173485024759474">אות אחת אחורה</translation>
@@ -370,6 +371,7 @@
 <translation id="3105990244222795498">‏<ph name="DEVICE_NAME" />‏ (Bluetooth)</translation>
 <translation id="3120421559657122717">לכבות את המכשיר?</translation>
 <translation id="3126069444801937830">הפעלה מחדש כדי לעדכן</translation>
+<translation id="3139382871451988441">השבתת הגישה למצלמה.</translation>
 <translation id="3139942575505304791">שולחן עבודה 1</translation>
 <translation id="315116470104423982">נתוני נייד</translation>
 <translation id="3151786313568798007">כיוון</translation>
@@ -646,6 +648,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">‏ChromeVox הופעל</translation>
 <translation id="4665114317261903604">החלפת מצב 'נא לא להפריע'. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">כדי לחסום את כל המצלמות כל הזמן, צריך להשבית את הגישה למצלמה במכשיר הזה.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> בהורדה</translation>
 <translation id="4690510401873698237">המדף בחלק התחתון</translation>
 <translation id="4696813013609194136">ביטול נעילת המכשיר באמצעות קוד הורה</translation>
@@ -664,6 +667,7 @@
 <translation id="4776917500594043016">סיסמה עבור <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">‏חנות Play</translation>
 <translation id="4778095205580009397">‏Google Assistant לא זמינה בסשן הדגמה.</translation>
+<translation id="4789348252524569426">לא ניתן להתקין את קובצי זיהוי הדיבור. צריך לעדכן את המכשיר. כדאי להפעיל מחדש את המכשיר ולנסות שוב.</translation>
 <translation id="479989351350248267">Search</translation>
 <translation id="4804818685124855865">ניתוק</translation>
 <translation id="4814539958450445987">מסך הכניסה</translation>
@@ -1145,6 +1149,7 @@
 <translation id="7564874036684306347">העברת חלונות לשולחן עבודה אחר עלולה לגרום להתנהגות בלתי צפויה.
 
 ייתכן שהודעות, חלונות ותיבות דו-שיח יתפצלו בהמשך בין שולחנות עבודה.</translation>
+<translation id="7567076708801803118">רוצה להשבית את הגישה למצלמה במכשיר הזה?</translation>
 <translation id="7569509451529460200">‏כתב ברייל ו-ChromeVox מופעלים</translation>
 <translation id="7573585051776738856">החלון הפעיל מוצמד לצד שמאל.</translation>
 <translation id="7579778809502851308">צילום מסך</translation>
@@ -1159,6 +1164,7 @@
 <translation id="7633755430369750696">הצגה של הרשאות שיתוף בקרבת מקום.</translation>
 <translation id="7634648064048557203">המצלמה מוצמדת לפינה השמאלית התחתונה</translation>
 <translation id="7641938616688887143">הקלטה</translation>
+<translation id="7642106959537987271">מצב היפוך צבעים</translation>
 <translation id="7642647758716480637">פתיחת ההגדרות של <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (בעלים)</translation>
 <translation id="7647488630410863958">יש לבטל את נעילת המכשיר כדי להציג את ההודעות</translation>
@@ -1264,6 +1270,7 @@
 <translation id="8209010265547628927">איפוס</translation>
 <translation id="8214996719228530800">‏ערוץ Canary</translation>
 <translation id="8219451629189078428">‏בפרק הזמן הזה, יש להקפיד להשאיר את ה-Chromebook פועל ומחובר לחשמל. יש לוודא שהכבלים של המטען או של המתאם מחוברים כראוי אל ה-Chromebook ואל שקע החשמל. אין לכבות את ה-Chromebook.</translation>
+<translation id="8230305195727960608">מצב היפוך צבעים</translation>
 <translation id="8236042855478648955">הגיע הזמן להפסקה</translation>
 <translation id="8246282815785366524">שמחים שחזרת, <ph name="GIVEN_NAME" /></translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" />, סוללת הטלפון <ph name="BATTERY_STATUS" /></translation>
@@ -1392,6 +1399,7 @@
 <translation id="8982906748181120328">גישה בסביבה</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">מקלדת בשימוש: <ph name="IME_NAME" /></translation>
+<translation id="8991617137207906966">‏מצב היפוך הצבעים מופעל. יש להקיש שוב על Ctrl+Search+H כדי להשבית אותו.</translation>
 <translation id="899350903320462459">יש לבטל את נעילת המכשיר כ-<ph name="LOGIN_ID" /> על מנת לבצע את פעולת ההודעה</translation>
 <translation id="9000771174482730261">ניהול האחסון</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים עבור Family Link.</translation>
@@ -1442,6 +1450,7 @@
 <translation id="921989828232331238">הורה נעל את המכשיר שלך להיום</translation>
 <translation id="9220525904950070496">הסרת חשבון</translation>
 <translation id="923686485342484400">‏יש להקיש פעמיים על Control Shift Q כדי לצאת.</translation>
+<translation id="92580429198593979">הקשת על מקש הקיצור להיפוך צבעים. רוצה להפעיל אותו?</translation>
 <translation id="925832987464884575">הסתרה של תצוגות מקדימות</translation>
 <translation id="937214777182567951">בהתאם לדרישה של <ph name="MANAGER" />, עליך לעדכן את ה-<ph name="DEVICE_TYPE" /> באופן מיידי</translation>
 <translation id="938963181863597773">אירועים קרובים ביומן שלי</translation>

@@ -349,7 +349,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1327272175893960498">Kerberos tickets</translation>
 <translation id="1327495825214193325">To enable ADB debugging, a restart of this <ph name="DEVICE_TYPE" /> is required. Disabling it requires a reset to factory settings.</translation>
 <translation id="1327794256477341646">Features that need your location won't work</translation>
-<translation id="1329191040029425999">Ensure that your device is up to date and please try again</translation>
 <translation id="1331977651797684645">This was me.</translation>
 <translation id="1333489022424033687">Some features on <ph name="ORIGIN" /> might not work until you clear data that other sites have stored on your device</translation>
 <translation id="1333965224356556482">Don't allow sites to see your location</translation>
@@ -1309,7 +1308,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2182058453334755893">Copied to your Clipboard</translation>
 <translation id="2183570493397356669">Continue button disabled</translation>
 <translation id="2184515124301515068">Let Chrome choose when sites can play sound (recommended)</translation>
-<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Page shared from another device</translation>
 <translation id="2187675480456493911">Synced with other devices on your account. Settings modified by other users will not be synced. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Server Certificate Import Error</translation>
@@ -1371,7 +1369,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2241053333139545397">Read and change your data on a number of websites</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2242687258748107519">File Info</translation>
-<translation id="2245296100676446525">Turn on sync to get your bookmarks, passwords, history and more on this device and anywhere else that you're syncing.</translation>
 <translation id="2245603955208828424">Use the arrow keys to move through items letter by letter</translation>
 <translation id="2246129643805925002">Your <ph name="DEVICE_TYPE" /> updates automatically in the background to give you the latest features and security improvements. You can review update preferences in Settings.</translation>
 <translation id="2246549592927364792">Get image descriptions from Google?</translation>
@@ -1557,7 +1554,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2381499968174336913">Preview of shared tab</translation>
 <translation id="2381756643783702095">Ask before sending (recommended)</translation>
 <translation id="2383825469508278924">Change keyboard key mapping, function keys and more</translation>
-<translation id="2386202302581016807">Your available device storage is too low to finish setup</translation>
 <translation id="2387052489799050037">Go home</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (current)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -2269,7 +2265,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3031557471081358569">Select items to be imported:</translation>
 <translation id="3032204772252313646">Auto captions</translation>
 <translation id="3033348223765101500">Control your data</translation>
-<translation id="3034627908241330765">Another Steam setup is running. Please wait for it to complete before running setup again.</translation>
 <translation id="3036327949511794916">The deadline to return this <ph name="DEVICE_TYPE" /> has passed.</translation>
 <translation id="3036546437875325427">Enable Flash</translation>
 <translation id="3037754279345160234">Can't parse the configuration to join domain. Please contact your administrator.</translation>
@@ -2282,7 +2277,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3046178388369461825">Linux disk space critically low</translation>
 <translation id="3046910703532196514">Web Page, Complete</translation>
 <translation id="304747341537320566">Speech engines</translation>
-<translation id="3048051495640130973">You can control when Battery Saver turns on in settings</translation>
 <translation id="3048336643003835855">HID devices from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Cast and device logs</translation>
 <translation id="3051250416341590778">Display size</translation>
@@ -2326,7 +2320,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3090819949319990166">Can't copy external crx file to <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" paired</translation>
 <translation id="3093714882666365141">Don't allow sites to install payment handlers</translation>
-<translation id="3093958632721393232">Turn on only when my battery is low</translation>
 <translation id="3094141017404513551">This will separate your browsing from <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Bookmarks, passwords and other browser data are synced with the primary account.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potentially harmful extension is off. You can also remove it.}other{{NUM_EXTENSIONS} potentially harmful extensions are off. You can also remove them.}}</translation>
@@ -2374,7 +2367,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3142562627629111859">New Group</translation>
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3143754809889689516">Play from the beginning</translation>
-<translation id="3143937294861726703">Memory saver is on</translation>
 <translation id="3144647712221361880">Open link as</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
 <translation id="3150693969729403281">Run safety check now</translation>
@@ -2533,8 +2525,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3315442055907669208">Enter reader mode</translation>
 <translation id="3317459757438853210">Two-sided</translation>
 <translation id="3317678681329786349">Camera and microphone blocked</translation>
-<translation id="3320620783302968370">If the problem persists, try restarting your device
-    Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">Safe Browsing (protection from dangerous sites) and other security settings</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{This data has sensitive or dangerous content. Remove this content and try again.}=1{This file has sensitive or dangerous content. Remove this content and try again.}other{These files have sensitive or dangerous content. Remove this content and try again.}}</translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
@@ -2690,7 +2680,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3462311546193741693">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be cleared.</translation>
 <translation id="3462413494201477527">Cancel account setup?</translation>
 <translation id="346298925039590474">This mobile network will be available to all users on this device</translation>
-<translation id="3463015289462934089">Please ensure that your device is connected to the Internet.</translation>
 <translation id="3464145797867108663">Add work profile</translation>
 <translation id="346431825526753">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Get discounts for <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> and more</translation>
@@ -3575,7 +3564,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="BEGIN_PARAGRAPH2" />You can start or stop allowing these reports at any time in your child's Chrome OS device settings. If you're a domain administrator, you can change this setting in the Admin console.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">This page is allowed to edit files</translation>
-<translation id="4302577930366020750">Please restart your device to use Steam</translation>
 <translation id="4303079906735388947">Set up a new PIN for your security key</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4305402730127028764">Copy to <ph name="DEVICE_NAME" /></translation>
@@ -3707,7 +3695,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
 <translation id="4427365070557649936">Verifying confirmation code…</translation>
 <translation id="4429163740524851942">Physical keyboard layout</translation>
-<translation id="4429239357082509581">Steam does not have permission to run</translation>
 <translation id="4430019312045809116">volume</translation>
 <translation id="4430369329743628066">Bookmark added</translation>
 <translation id="4430422687972614133">Turn on virtual card</translation>
@@ -3976,8 +3963,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4675828034887792601">Create shortcuts for searching sites and manage your search engine</translation>
 <translation id="4676595058027112862">Phone Hub, learn more</translation>
 <translation id="4677772697204437347">GPU memory</translation>
-<translation id="4677970983462111944">Steam isn't allowed on this device. Contact your administrator to get permission
-    Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">Camera is turned off</translation>
 <translation id="4680105648806843642">Sound was muted on this page</translation>
 <translation id="4681453295291708042">Disable Nearby Share</translation>
@@ -4294,7 +4279,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="49896407730300355">Rotate a&amp;nti-clockwise</translation>
 <translation id="4989966318180235467">Inspect &amp;background page</translation>
 <translation id="4991420928586866460">Treat top-row keys as function keys</translation>
-<translation id="4991858732577603540">Please wait a few minutes and run Steam again</translation>
 <translation id="4992458225095111526">Confirm Powerwash</translation>
 <translation id="4992473555164495036">Your administrator has limited the available input methods.</translation>
 <translation id="4994754230098574403">Setting up</translation>
@@ -4762,7 +4746,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5463275305984126951">Index of <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Sign up for <ph name="DEVICE_TYPE" /> emails</translation>
 <translation id="5463625433003343978">Finding devices…</translation>
-<translation id="5463845647891602726">To increase free space, delete files from your device</translation>
 <translation id="5463856536939868464">Menu containing hidden bookmarks</translation>
 <translation id="5464660706533281090">This setting can't be changed by a child user.</translation>
 <translation id="5466374726908360271">Paste and search for '<ph name="SEARCH_TERMS" />'</translation>
@@ -5130,6 +5113,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5812674658566766066">Expand all</translation>
 <translation id="5815645614496570556">X.400 Address</translation>
 <translation id="5816434091619127343">Requested printer changes would make the printer unusable.</translation>
+<translation id="581659025233126501">Turn On Sync</translation>
 <translation id="5817069030404929329">Move passwords from this device to your Google Account?</translation>
 <translation id="5817918615728894473">Pair</translation>
 <translation id="5821565227679781414">Create Shortcut</translation>
@@ -5308,7 +5292,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5975792506968920132">Battery Charge Percentage</translation>
 <translation id="5976160379964388480">Others</translation>
 <translation id="5978277834170881274">Use basic spell check</translation>
-<translation id="5978395054855988504">Battery Saver is on</translation>
 <translation id="5978493744931296692">Your administrator has disabled other profiles</translation>
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{You turned 1 potentially harmful extension back on}other{You turned {NUM_EXTENSIONS} potentially harmful extensions back on}}</translation>
@@ -7289,7 +7272,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7870790288828963061">No Kiosk apps with newer version found. Nothing to update. Please remove the USB stick.</translation>
 <translation id="7871049986386271121">Always on this site</translation>
 <translation id="7871109039747854576">Use <ph name="COMMA" /> and <ph name="PERIOD" /> keys to page a candidate list</translation>
-<translation id="7872494313446521576">Click to allow '<ph name="EXTENSIONS_REQUESTING_ACCESS" />' on <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Off</translation>
 <translation id="7872758299142009420">Too many nested groups: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome backgrounds</translation>
@@ -7705,7 +7687,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8248381369318572865">Access your microphone and analyse your speech</translation>
 <translation id="8248887045858762645">Chrome tip</translation>
 <translation id="8249048954461686687">OEM folder</translation>
-<translation id="8249239468199142122">Battery Saver</translation>
 <translation id="8249615410597138718">Send to Your Devices</translation>
 <translation id="8250210000648910632">Out of storage space</translation>
 <translation id="8251441930213048644">Refresh now</translation>
@@ -7909,7 +7890,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8440630305826533614">Linux apps</translation>
 <translation id="844063558976952706">Always on this site</translation>
 <translation id="8441313165929432954">Enable/disable tethering</translation>
-<translation id="8443795068008423036">Please ensure that your device is up to date and try again</translation>
 <translation id="8443986842926457191">URL is more than 2048 characters</translation>
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8447409163267621480">Include either Ctrl or Alt</translation>
@@ -8240,7 +8220,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8763927697961133303">USB device</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Automatically update Chrome for all users</translation>
-<translation id="8769901904650373714">There was a problem with Steam setup</translation>
 <translation id="8770406935328356739">Extension root directory</translation>
 <translation id="8771300903067484968">Start page background has been reset to the default background.</translation>
 <translation id="8773302562181397928">Save <ph name="PRINTER_NAME" /></translation>
@@ -8756,7 +8735,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="964286338916298286">Your IT administrator has disabled Chrome Goodies for your device.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Application}other{Applications}}</translation>
 <translation id="964790508619473209">Screen arrangement</translation>
-<translation id="965175368833098333">Memory Saver can reclaim memory from inactive tabs. This frees up your computer's resources for other tasks.</translation>
 <translation id="965211523698323809">Send and receive text messages from your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Report an issue with Google Cast</translation>
 <translation id="967398046773905967">Do not allow any sites to access HID devices</translation>

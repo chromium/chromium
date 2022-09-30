@@ -371,6 +371,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Vai izslēgt ierīci?</translation>
 <translation id="3126069444801937830">Restartēt, lai atjauninātu</translation>
+<translation id="3139382871451988441">Izslēgt piekļuvi kamerai</translation>
 <translation id="3139942575505304791">1. galds</translation>
 <translation id="315116470104423982">Mobilie dati</translation>
 <translation id="3151786313568798007">Orientācija</translation>
@@ -647,6 +648,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox iespējots</translation>
 <translation id="4665114317261903604">Pārslēgt režīmu “Netraucēt”. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Lai vienmēr bloķētu visas kameras, izslēdziet piekļuvi kamerai šajā ierīcē.</translation>
 <translation id="4667099493359681081">Notiek faila <ph name="FILENAME" /> lejupielāde</translation>
 <translation id="4690510401873698237">Plaukts tiek rādīts apakšā</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
@@ -665,6 +667,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4776917500594043016">Parole e-pasta adresei <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play veikals</translation>
 <translation id="4778095205580009397">Google asistents nav pieejams demonstrācijas sesijā.</translation>
+<translation id="4789348252524569426">Nevar instalēt runas failus. Jums ir jāatjaunina ierīce. Restartējiet ierīci un mēģiniet vēlreiz.</translation>
 <translation id="479989351350248267">meklēt</translation>
 <translation id="4804818685124855865">Atvienot</translation>
 <translation id="4814539958450445987">Pierakstīšanās ekrāns</translation>
@@ -1144,6 +1147,7 @@ Jauna instalācija</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> pašlaik izmanto jūsu mikrofonu.</translation>
 <translation id="7561982940498449837">Aizvērt izvēlni</translation>
 <translation id="7564874036684306347">Logu pārvietošana uz citu darbvirsmu var izraisīt neparedzētu darbību. Turpmākie paziņojumi, logi un dialoglodziņi var tikt sadalīti pa darbvirsmām.</translation>
+<translation id="7567076708801803118">Vai vēlaties izslēgt piekļuvi kamerai šajā ierīcē?</translation>
 <translation id="7569509451529460200">Braila raksts un ChromeVox ir iespējoti</translation>
 <translation id="7573585051776738856">Aktīvais logs ir dokots labajā pusē.</translation>
 <translation id="7579778809502851308">Veidot ekrānuzņēmumu</translation>

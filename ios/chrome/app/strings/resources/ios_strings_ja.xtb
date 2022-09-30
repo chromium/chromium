@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">同意して続行</translation>
 <translation id="110724200315609752">開いているウィンドウに切り替え</translation>
 <translation id="1112015203684611006">印刷できませんでした。</translation>
-<translation id="1118569444314402022">ようこそ、<ph name="USER_NAME" /> さん</translation>
 <translation id="1125564390852150847">新しいタブを作成。</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="1135212215217513471">Chrome for iOS をダウンロード</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">メニューを閉じる</translation>
 <translation id="1358214951266274152">コピーしたリンクに移動</translation>
 <translation id="1360432990279830238">ログアウトして同期をオフにしますか？</translation>
+<translation id="1363028406613469049">トラック</translation>
 <translation id="1375321115329958930">保存したパスワード</translation>
 <translation id="1377255359165588604">同期機能が動作を停止しました。</translation>
 <translation id="1377321085342047638">カード番号</translation>
@@ -82,6 +82,7 @@
 <translation id="152234381334907219">常に保存しない</translation>
 <translation id="1523341279170789507">Cookie をすべて受け入れる</translation>
 <translation id="1524563461097350801">自動チェックアウトしない</translation>
+<translation id="1531836666020185856">おすすめ</translation>
 <translation id="1535268707340844072">現在の設定によって一部のサイトが影響を受ける可能性があります。すべてのサイトの Cookie を管理するには、<ph name="BEGIN_LINK" />Cookie の設定<ph name="END_LINK" />をご覧ください。</translation>
 <translation id="1540800554400757039">住所1行目</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
@@ -197,6 +198,7 @@
 <translation id="2647269890314209800">使用中の Cookie</translation>
 <translation id="2648803196158606475">既読を削除</translation>
 <translation id="2653659639078652383">送信</translation>
+<translation id="2671426118752779020">他のアプリや iPhone で Google パスワード マネージャに保存したパスワードを使用できます。</translation>
 <translation id="2690858294534178585">カメラが使用中です</translation>
 <translation id="2691653761409724435">オフラインで使用不可</translation>
 <translation id="2695507686909505111">ページが翻訳されました</translation>
@@ -206,6 +208,7 @@
 <translation id="2704491540504985681">ダウンロード</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2709516037105925701">自動入力</translation>
+<translation id="271033894570825754">新しいファイル</translation>
 <translation id="2712127207578915686">ファイルを開けません</translation>
 <translation id="2718352093833049315">Wi-Fi接続時のみ</translation>
 <translation id="2747003861858887689">前の項目</translation>
@@ -262,6 +265,7 @@
 <translation id="3103603146121354983">パスワードの自動入力</translation>
 <translation id="3112556859945124369">マーク...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">履歴、その他</translation>
 <translation id="3131206671572504478">すべてブロック</translation>
 <translation id="313283613037595347">新しいシークレット タブを作成します。</translation>
 <translation id="3153862085237805241">カードを保存</translation>
@@ -332,7 +336,6 @@
 <translation id="3709582977625132201">未読にする</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
 <translation id="37207012422556617">話題の検索キーワード</translation>
-<translation id="3726360487031500941">アカウント <ph name="USER_NAME" /> にもう一度ログインしてください</translation>
 <translation id="3740397331642243698">入力された URL を Google Chrome のシークレット モードで開きます。</translation>
 <translation id="3762232513783804601">iPad 向けの設計</translation>
 <translation id="3771033907050503522">シークレットタブ</translation>
@@ -424,6 +427,7 @@
 <translation id="4536418791685807335">もう一度ログインしてみてください。</translation>
 <translation id="4540780316273593836">エラーが発生しました</translation>
 <translation id="457386861538956877">その他...</translation>
+<translation id="4588014171431912783">同期の設定は前回のバックアップに基づいて復元されます。<ph name="BEGIN_LINK" />同期できるアイテムを確認する<ph name="END_LINK" /></translation>
 <translation id="4592368184551360546">キーボード</translation>
 <translation id="4606247758155004938">お使いのブラウザは組織によって管理されています。</translation>
 <translation id="461440297010471931">Google 検索エンジンを使用</translation>
@@ -503,6 +507,7 @@
 <translation id="509789154667432072">ブックマークを追加する</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5118764316110575523">オフ</translation>
+<translation id="5119391094379141756">[Chrome] を選択する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5140288047769711648">このパスワードは Chrome で保存され、次回から自動入力されます。</translation>
 <translation id="5149188072385105201">パスワードを追加...</translation>
@@ -626,6 +631,7 @@
 <translation id="6149061208933997199">パスワードを使用</translation>
 <translation id="6152406514676263192">同期すると、興味や関心と最も関連性の高いコンテンツが表示されます。</translation>
 <translation id="6159839020698489198">任意</translation>
+<translation id="6165508094623778733">詳細</translation>
 <translation id="6177442314419606057">Chrome で検索</translation>
 <translation id="6184086493125982861">タブを表示</translation>
 <translation id="6187302354554850004">最終同期: <ph name="LAST_USED_TIME" /></translation>
@@ -703,6 +709,7 @@
 <translation id="661266467055912436">すべてのウェブユーザーの安全性を高めます。</translation>
 <translation id="6620279676667515405">キャンセル</translation>
 <translation id="6624219055418309072">シークレット モードでブロック</translation>
+<translation id="6625830436658400045">同期の設定は前回のバックアップに基づいて復元されます。同期する項目はいつでも [<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で選択できます。</translation>
 <translation id="6628106477656132239">無効な有効期限</translation>
 <translation id="6634432609054530164">シークレット モードは組織によって無効にされています</translation>
 <translation id="6638511529934826365">テキストを拡大…</translation>
@@ -871,6 +878,7 @@
 <translation id="8032569120109842252">フォロー中</translation>
 <translation id="804225253087497565">ログイン中は Google アカウントに<ph name="BEGIN_LINK" />検索履歴<ph name="END_LINK" />や<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。これらのデータはいつでも削除できます。</translation>
 <translation id="804427445359061970">他のデバイスで開いたタブはここに表示されます</translation>
+<translation id="8048728378294435881">データをバックアップして、他のデバイスで使用</translation>
 <translation id="8059533439631660104">セクションを折りたたみます。</translation>
 <translation id="8065292699993359127">URL を Chrome のシークレット モードで開く</translation>
 <translation id="806745655614357130">データを別に保持する</translation>
@@ -974,6 +982,7 @@
 <translation id="8981454092730389528">Google アクティビティ管理</translation>
 <translation id="8985320356172329008">Google にログイン済みのユーザー</translation>
 <translation id="9000089900434778519">検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
+<translation id="9008201768610948239">無視する</translation>
 <translation id="9034759925968272072">Google アカウントへのログイン状態は維持されます。Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>
 <translation id="9037965129289936994">原文のページを表示</translation>
 <translation id="9039373489628511875">帯域幅</translation>

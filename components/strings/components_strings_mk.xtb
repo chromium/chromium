@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">Сино</translation>
 <translation id="3218181027817787318">Релативна</translation>
 <translation id="3223287115535306850">Анимирана икона за стартување апликација</translation>
+<translation id="3223425961342298674">Локацијата не е дозволена</translation>
 <translation id="3225347164936328585">Ракоплескање</translation>
 <translation id="3225919329040284222">Серверот претстави сертификат што не се совпаѓа со вградените очекувања. Овие очекувања се вклучени за сигурни веб-локации со голема сигурност за да бидете заштитени.</translation>
 <translation id="3226128629678568754">Притиснете го копчето за повторно вчитување за повторно да се испратат потребните податоци за вчитување на страницата.</translation>
@@ -1185,6 +1186,7 @@
 <translation id="4127575959421463246">Барате ознаки за ChromeOS? Оди</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 друга}one{# друга}other{# други}}</translation>
 <translation id="4130226655945681476">Да ги проверите мрежните кабли, модемот и рутерот</translation>
+<translation id="4132448310531350254">Дупликат ракувачи за наставка на датотека „<ph name="FILE_EXTENSION" />“ како референца од апликациите „<ph name="POLICY_IDS_LIST" />“.</translation>
 <translation id="4134123981501319574">Создај документ</translation>
 <translation id="413544239732274901">Дознајте повеќе</translation>
 <translation id="4142935452406587478">Фиока 10</translation>
@@ -1207,6 +1209,7 @@
 <translation id="4194250254487269611">Вашата картичка не може да се зачува во моментов</translation>
 <translation id="4196861286325780578">&amp;Повтори преместување</translation>
 <translation id="4202554117186904723">Петта ролна</translation>
+<translation id="4203769790323223880">Камерата не е дозволена</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Да ги проверите заштитниот ѕид и антивирусните конфигурации<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Голем</translation>
 <translation id="4210602799576081649">Кодот за потврда истече, побарајте нов код</translation>
@@ -1233,6 +1236,7 @@
     &lt;p&gt;Запомнете повторно да ја вклучите програмата за антивирус кога ќе завршите.&lt;/p&gt;
     &lt;h4&gt;Чекор 5: добијте дополнителна помош&lt;/h4&gt;
     &lt;p&gt;Ако сѐ уште ја гледате грешкава, контактирајте со сопственикот на веб-сајтот.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Микрофонот не е дозволен</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Обидете се да извршите дијагностика на мрежата<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Може да прашува за да ја користи и преместува камерата</translation>
 <translation id="4235360514405112390">Важечки</translation>
@@ -1250,6 +1254,7 @@
 <translation id="4277028893293644418">Ресетирај ја лозинката</translation>
 <translation id="4278390842282768270">Дозволено</translation>
 <translation id="4282346679996504092">Известувањата за овој производ се исклучени, а обележувачот е отстранет</translation>
+<translation id="4285498937028063278">Откачи</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Картичкава е зачувана во вашата сметка на Google}one{Картичкиве се зачувани во вашата сметка на Google}other{Картичкиве се зачувани во вашата сметка на Google}}</translation>
 <translation id="4287885627794386150">Подобно за пробен период, но не е активно</translation>
 <translation id="4297502707443874121">Сликичка за страницата <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1603,6 +1608,7 @@
 <translation id="5177076414499237632">Дознајте за изворот и темата на страницава</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Пријави ја грешката.</translation>
 <translation id="518639307526414276">Храна и производи за миленичиња</translation>
+<translation id="5190072300954988691">Камерата и микрофонот не се дозволени</translation>
 <translation id="5190835502935405962">Лента со обележувачи</translation>
 <translation id="5191315092027169558">Со вашиот профил управува <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> сака да преземе повеќе датотеки</translation>
@@ -1623,6 +1629,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Отфрли</translation>
+<translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5242889659037569123">Додатоци за багаж и патување</translation>
 <translation id="5250209940322997802">„Поврзете се на мрежата“</translation>
 <translation id="52517543715119994">Дознајте за функциите на Chrome</translation>
@@ -2435,6 +2442,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да дознаете повеќе<ph name="END_LINK" /> за овој проблем.</translation>
 <translation id="7455133967321480974">Користи глобален стандард (Блокирај)</translation>
 <translation id="7460618730930299168">Времето на прикажување е различно од она што го одбравте. Дали сакате да продолжите?</translation>
+<translation id="7461924472993315131">Закачи</translation>
 <translation id="7463075493919226237">Австралиски фудбал</translation>
 <translation id="7469935732330206581">Формуларот не е безбеден</translation>
 <translation id="7473891865547856676">Не, фала</translation>
@@ -2498,6 +2506,7 @@
 <translation id="7581199239021537589">Промена на страната 2 на сликата Y</translation>
 <translation id="7582602800368606489">Набрзина создајте нов настан во „Календар на Google“</translation>
 <translation id="7583969447617676942">Правни услуги</translation>
+<translation id="7586676035079382730">Известувањата не се дозволени</translation>
 <translation id="7591288787774558753">Да се споделат доверливи содржини?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> сака да користи колачиња и податоци за сајтот на <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертификатот на серверот ги нарушува ограничувањата на името.</translation>
@@ -3050,6 +3059,7 @@
 <translation id="9131119348384879525">Да се снимат доверливи содржини?</translation>
 <translation id="9136861683332321024">Луксузни возила</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
+<translation id="9138037198177304356">Известувањата се дозволени</translation>
 <translation id="9139318394846604261">Купување</translation>
 <translation id="9141013498910525015">Управувајте со адресите</translation>
 <translation id="9144951720726881238">Датум на истекување:</translation>

@@ -371,6 +371,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Құрылғы өшірілсін бе?</translation>
 <translation id="3126069444801937830">Жаңарту үшін қайта іске қосу</translation>
+<translation id="3139382871451988441">Камера пайдалану рұқсатын өшіру.</translation>
 <translation id="3139942575505304791">1-ші жұмыс үстелі</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
 <translation id="3151786313568798007">Бағдары</translation>
@@ -647,6 +648,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox қосылды</translation>
 <translation id="4665114317261903604">Мазаламау режиміне ауысыңыз. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Барлық камера үнемі өшіп тұруы үшін, құрылғыдағы камераны пайдалану рұқсатын өшіріңіз.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> жүктеп алынуда</translation>
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
@@ -665,6 +667,7 @@
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> құпия сөзі</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant демо сеанста қолжетімді емес.</translation>
+<translation id="4789348252524569426">Дыбыс тану файлдарын орнату мүмкін емес. Құрылғыны жаңарту қажет. Құрылғыны өшіріп қосып, әрекетті қайталаңыз.</translation>
 <translation id="479989351350248267">іздеу</translation>
 <translation id="4804818685124855865">Ажырату</translation>
 <translation id="4814539958450445987">Аккаунтқа кіру экраны</translation>
@@ -1144,6 +1147,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> қолданбасы микрофонды камераны пайдаланып жатыр.</translation>
 <translation id="7561982940498449837">Мәзірді жабу</translation>
 <translation id="7564874036684306347">Терезелерді басқа жұмыс үстеліне ауыстырғанда, күтпеген қате шығуы мүмкін. Хабарландырулар, терезелер мен диалогтік терезелер түрлі жұмыс үстелдерінде көрсетілуі ықтимал.</translation>
+<translation id="7567076708801803118">Осы құрылғыдағы камераны пайдалану рұқсатын өшіргіңіз келе ме?</translation>
 <translation id="7569509451529460200">Брайль және ChromeVox қосулы</translation>
 <translation id="7573585051776738856">Белсенді терезе оң жаққа бекітілген.</translation>
 <translation id="7579778809502851308">Экран суреті</translation>

@@ -84,7 +84,7 @@
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
 <translation id="2692299144678073135">Permitir que os sites relacionados se lembrem de si nos sites</translation>
 <translation id="2704606927547763573">Copiado</translation>
-<translation id="2713106313042589954">Desativar câmara</translation>
+<translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2717722538473713889">Endereços de email</translation>
 <translation id="2750481671343847896">Os sites podem mostrar pedidos de início de sessão de serviços de identidade.</translation>
 <translation id="2785051990912111074">Esta opção limpa os cookies de <ph name="WEBSITE" /></translation>
@@ -375,6 +375,7 @@
 <translation id="8751914237388039244">Selecionar uma imagem</translation>
 <translation id="8801436777607969138">Bloqueie JavaScript num site específico.</translation>
 <translation id="8816026460808729765">Impedir que os sites acedam aos sensores</translation>
+<translation id="8823559166155093873">Bloquear cookies</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8903921497873541725">Ampliar</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>

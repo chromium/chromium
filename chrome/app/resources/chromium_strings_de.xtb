@@ -53,7 +53,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2384373936468275798">Chromium OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="2396765026452590966">Die beim Start von Chromium angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
-<translation id="2400844369696905771">Wenn diese Option aktiviert ist, gibt Chromium den für Tabs genutzten Arbeitsspeicher wieder frei, wenn du sie gerade nicht aktiv verwendest. Dadurch werden die Ressourcen deines Computers für andere Aufgaben frei und Chromium wird schneller. Inaktive Tabs erscheinen leer und werden automatisch aktualisiert, wenn du sie anklickst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
@@ -144,7 +143,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4285930937574705105">Die Installation konnte aufgrund eines undefinierten Fehlers nicht abgeschlossen werden. Falls Chromium derzeit ausgeführt wird, schließe es bitte und versuche es erneut.</translation>
 <translation id="4304713468139749426">Passwortmanager</translation>
 <translation id="4334294535648607276">Download abgeschlossen.</translation>
-<translation id="437317747729858884">Um das Surfen zu beschleunigen, verwendet Chromium Arbeitsspeicher von nicht genutzten Tabs.</translation>
 <translation id="439358628917130594">Für <ph name="MANAGER" /> ist erforderlich, dass du vor der Verwendung dieses Geräts die folgenden Nutzungsbedingungen akzeptierst. Durch diese Nutzungsbedingungen werden die Chromium OS-Nutzungsbedingungen nicht erweitert, geändert oder eingeschränkt.</translation>
 <translation id="4407044323746248786">Chromium trotzdem beenden?</translation>
 <translation id="4415566066719264597">Chromium im Hintergrund ausführen</translation>
@@ -315,7 +313,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7872446069773932638">Wird heruntergeladen… Noch <ph name="SECONDS" /> Sekunde(n)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chromium nicht berücksichtigen soll.</translation>
 <translation id="7937630085815544518">Du warst in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
-<translation id="7947085610734123927">Chromium hat den Arbeitsspeichersparmodus aktiviert</translation>
 <translation id="7975919845073681630">Dies ist eine Zweitinstallation, daher kann Chromium nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="7997934263947464652">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chromium empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="8013436988911883588">Sobald Chromium Zugriff hat, können Websites dich um Zugriff bitten.</translation>
@@ -336,7 +333,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8453117565092476964">Das Installationsarchiv ist beschädigt oder ungültig. Bitte lade Chromium erneut herunter.</translation>
 <translation id="8463672209299734063">Optional: Diagnose- und Nutzungsdaten automatisch an Google senden, um die Funktionen und die Leistung von Chromium OS zu verbessern.</translation>
 <translation id="8493179195440786826">Chromium ist veraltet.</translation>
-<translation id="8522220489792889625">Bei Bedarf gibt Chromium den für Tabs genutzten Arbeitsspeicher wieder frei, wenn du sie gerade nicht aktiv verwendest. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="8550334526674375523">Dieses Arbeitsprofil wird getrennt von deinem persönlichen Profil verwaltet.</translation>
 <translation id="8558383651099478961">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chromium deaktiviert. Das Hinzufügen dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
 <translation id="8561285221328166383">Du benötigst macOS 10.13 oder höher, um zukünftige Chromium-Updates zu erhalten. Auf diesem Computer wird macOS 10.12 ausgeführt.</translation>

@@ -59,7 +59,6 @@
 <translation id="2094648590148273905">Chrome OS Flex noteikumi</translation>
 <translation id="2094919256425865063">Vai tik un tā aizvērt pārlūku Chrome?</translation>
 <translation id="2106831557840787829">Chrome OS Flex, kā arī <ph name="BEGIN_LINK_LINUX_OSS" />Linux izstrādes vides<ph name="END_LINK_LINUX_OSS" /> darbību nodrošina papildu <ph name="BEGIN_LINK_CROS_OSS" />atklātā pirmkoda programmatūra<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="2112742052114331084">Kad šis iestatījums ir ieslēgts, Chrome atgūst atmiņas lietojumu no cilnēm, kuras aktīvi neizmantojat. Tādējādi tiek atbrīvoti datora resursi citiem uzdevumiem un tiek nodrošināta ātra Chrome darbība. Neaktīvās cilnes tiek rādītas tukšas un tiek automātiski atkārtoti ielādētas, kad uz tām noklikšķināt. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> vai <ph name="BEGIN_LINK_2" />nosūtiet atsauksmes<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">Veicot šo darbību, no šīs ierīces tiks dzēsts(-i) <ph name="ITEMS_COUNT" /> vienums(-i). Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="2123055963409958220">Palīdziet uzlabot pārlūku Chrome, ziņojot par <ph name="BEGIN_LINK" />pašreizējiem iestatījumiem<ph name="END_LINK" />.</translation>
@@ -228,7 +227,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5386244825306882791">Tas nosaka arī to, kāda lapa tiks rādīta, kad atvērsiet pārlūku Chrome vai meklēsiet, izmantojot universālo lodziņu.</translation>
 <translation id="5394833366792865639">Chrome cilnes kopīgošana</translation>
 <translation id="5412485296464121825">Vietnes pārlūkā Chrome var glabāt informāciju par jūsu interesēm. Piemēram, ja apmeklējat kādu vietni, lai iegādātos apavus maratona skriešanai, vietne var noteikt, ka interesējaties par maratonu skriešanu. Ja vēlāk apmeklēsiet citu vietni, lai reģistrētos sacensībām, šajā vietnē var tikt rādīta skriešanas apavu reklāma, pamatojoties uz jūsu interesēm.</translation>
-<translation id="5416870378730196769">Pārlūkā Chrome tika ieslēgta atmiņas taupīšana</translation>
 <translation id="5430073640787465221">Jūsu preferenču fails ir bojāts vai nederīgs. Google Chrome nespēj atkopt jūsu iestatījumus.</translation>
 <translation id="5524761631371622910">Ja izmēģināšana ir ieslēgta un jūs esat iesaistīts aktīvā izmēģinājumā pārlūkā Chrome, jūsu pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chrome katru mēnesi pakāpeniski dzēš jūsu intereses.</translation>
 <translation id="556024056938947818">Google Chrome mēģina rādīt paroles.</translation>
@@ -279,7 +277,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6735387454586646204">Chrome OS Flex sistēma</translation>
 <translation id="6739177684496155661">Vai turpināt jaunā Chrome profilā?</translation>
 <translation id="6750954913813541382">Lai labotu pareizrakstības kļūdas, Chrome nosūta jūsu pārlūkprogrammā ievadīto tekstu Google serveriem</translation>
-<translation id="6756581345161130259">Chrome pēc vajadzības atgūst atmiņas lietojumu no cilnēm, kuras jūs aktīvi neizmantojat. Iestatījumos varat jebkurā laikā to mainīt.</translation>
 <translation id="677276454032249905">Vai tik un tā aizvērt pārlūku Chrome?</translation>
 <translation id="6785872064505734160">Google asistents pārlūkprogrammā Chrome var veikt darbības vietnēs jūsu vārdā.</translation>
 <translation id="683440813066116847">Ienākošo savienojumu kārtula pārlūkam Google Chrome Canary, lai atļautu mDNS datplūsmu.</translation>
@@ -327,7 +324,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotips</translation>
 <translation id="7655455401911432608">Jūsu pārlūkošanas vēsture, kurā tiek reģistrētas vietnes, ko šajā ierīcē apmeklējat ar pārlūku Chrome.</translation>
-<translation id="7726773885101561560">Lai paātrinātu pārlūkošanu, Chrome atgūst atmiņas lietojumu no cilnēm, kuras neizmantojat.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
 <translation id="7761834446675418963">Noklikšķiniet uz sava vārda, lai atvērtu pārlūku Chrome un sāktu pārlūkošanu.</translation>
 <translation id="7777080907402804672">Ja attēlam nav vērtīga apraksta, pārlūks Chrome mēģinās jums tādu nodrošināt. Lai izveidotu aprakstus, attēli tiek nosūtīti uzņēmumam Google. Jebkurā brīdī iestatījumos varat izslēgt šo iespēju.</translation>

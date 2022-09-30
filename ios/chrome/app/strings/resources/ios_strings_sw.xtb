@@ -23,7 +23,6 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1104948393051856124">Kubali na Uendelee</translation>
 <translation id="110724200315609752">Nenda kwenye Dirisha Lililofunguka</translation>
 <translation id="1112015203684611006">Imeshindwa kuchapisha.</translation>
-<translation id="1118569444314402022">Karibu tena, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Unda kichupo kipya</translation>
 <translation id="1126809382673880764">Haikulindi dhidi ya tovuti, viendelezi na faili hatari zinazopakuliwa. Bado utapata ulinzi wa kipengele cha Kuvinjari Salama, kinapopatikana, katika huduma nyingine za Google kama vile Gmail na Tafuta na Google.</translation>
 <translation id="1135212215217513471">Pata Chrome inayotumika kwenye iOS</translation>
@@ -61,6 +60,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="1340643665687018190">Funga Menyu</translation>
 <translation id="1358214951266274152">Fungua Kiungo Ulichonakili</translation>
 <translation id="1360432990279830238">Utaondoka na uzime usawazishaji?</translation>
+<translation id="1363028406613469049">Wimbo</translation>
 <translation id="1375321115329958930">Manenosiri Yaliyohifadhiwa</translation>
 <translation id="1377255359165588604">Usawazishaji umeacha kufanya kazi.</translation>
 <translation id="1377321085342047638">Nambari ya Kadi</translation>
@@ -82,6 +82,7 @@ Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo
 <translation id="152234381334907219">Hayatahifadhiwa Kamwe</translation>
 <translation id="1523341279170789507">Ruhusu Vidakuzi Vyote</translation>
 <translation id="1524563461097350801">Hapana</translation>
+<translation id="1531836666020185856">Zilizoangaziwa</translation>
 <translation id="1535268707340844072">Huenda mipangilio yako ya sasa ikasababisha baadhi ya tovuti zisifanye kazi vizuri. Ili udhibiti vidakuzi vya tovuti zote, angalia <ph name="BEGIN_LINK" />Mipangilio ya Vidakuzi<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Anwani ya 1</translation>
 <translation id="1545749641540134597">Changanua Msimbo wa QR</translation>
@@ -197,6 +198,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2647269890314209800">Vidakuzi Vinavyotumika</translation>
 <translation id="2648803196158606475">Futa Zilizosomwa</translation>
 <translation id="2653659639078652383">Wasilisha</translation>
+<translation id="2671426118752779020">Unaweza kutumia manenosiri uliyohifadhi kwenye Kidhibiti cha Manenosiri cha Google katika programu zingine kwenye iPhone yako.</translation>
 <translation id="2690858294534178585">Kamera inatumika</translation>
 <translation id="2691653761409724435">Haipatikani nje ya mtandao</translation>
 <translation id="2695507686909505111">Ukurasa Umetafsiriwa</translation>
@@ -206,6 +208,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2704491540504985681">Vipakuliwa</translation>
 <translation id="2704606927547763573">Imenakiliwa</translation>
 <translation id="2709516037105925701">Kujaza Kiotomatiki</translation>
+<translation id="271033894570825754">Mpya</translation>
 <translation id="2712127207578915686">Imeshindwa kufungua faili</translation>
 <translation id="2718352093833049315">Kwenye Wi-Fi pekee</translation>
 <translation id="2747003861858887689">Sehemu iliyotangulia</translation>
@@ -262,6 +265,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3103603146121354983">Jaza Manenosiri kiotomatiki</translation>
 <translation id="3112556859945124369">Tia alama…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Angalia Maudhui Unayoweza Kusawazisha<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Historia na zaidi</translation>
 <translation id="3131206671572504478">Zuia Vyote</translation>
 <translation id="313283613037595347">Fungua kichupo fiche kipya.</translation>
 <translation id="3153862085237805241">Hifadhi Kadi</translation>
@@ -332,7 +336,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3709582977625132201">Tia Alama Kuwa Hujasoma</translation>
 <translation id="371230970611282515">Hutabiri na kukuonya kuhusu matukio hatari yanapotendeka.</translation>
 <translation id="37207012422556617">Hoja za Utafutaji zinazovuma</translation>
-<translation id="3726360487031500941">Ingia tena katika akaunti yako ya <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Hufungua URL zilizowekwa kwenye Google Chrome katika Hali Fiche.</translation>
 <translation id="3762232513783804601">Imeundwa kwa ajili ya iPad Yako</translation>
 <translation id="3771033907050503522">Vichupo Fiche</translation>
@@ -504,6 +507,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="509789154667432072">Weka Alamisho</translation>
 <translation id="5118713593561876160">Mambo yanayokuvutia</translation>
 <translation id="5118764316110575523">Imezimwa</translation>
+<translation id="5119391094379141756">Chagua Chrome</translation>
 <translation id="5132942445612118989">Sawazisha historia, manenosiri na mambo yako mengine kwenye vifaa vyote</translation>
 <translation id="5140288047769711648">Chrome itakumbuka nenosiri hili kwa niaba yako. Huhitaji kulikumbuka.</translation>
 <translation id="5149188072385105201">Weka Nenosiri...</translation>
@@ -627,6 +631,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6149061208933997199">Tumia Nenosiri</translation>
 <translation id="6152406514676263192">Sawazisha ili uone maudhui yanayokufaa zaidi kulingana na mambo yanayokuvutia.</translation>
 <translation id="6159839020698489198">si lazima</translation>
+<translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6177442314419606057">Tafuta katika Chrome</translation>
 <translation id="6184086493125982861">Onyesha Vichupo</translation>
 <translation id="6187302354554850004">Ilisawazishwa mara ya mwisho: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8032569120109842252">Unafuatilia</translation>
 <translation id="804225253087497565">Huenda <ph name="BEGIN_LINK" />historia ya mambo uliyotafuta<ph name="END_LINK" /> na <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
 <translation id="804427445359061970">Utapata vichupo vyako kwenye vifaa vingine hapa</translation>
+<translation id="8048728378294435881">Hifadhi nakala ya data yako ili uitumie kwenye kifaa chochote.</translation>
 <translation id="8059533439631660104">Hukunja sehemu.</translation>
 <translation id="8065292699993359127">Fungua URL kwenye Chrome katika Hali Fiche</translation>
 <translation id="806745655614357130">Weka data yangu katika sehemu tofauti</translation>
@@ -977,6 +983,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8981454092730389528">Vidhibiti vya Shughuli za Google</translation>
 <translation id="8985320356172329008">Umeingia katika Google ukitumia</translation>
 <translation id="9000089900434778519">Mtambo wako wa kutafuta ni <ph name="DSE_NAME" />. Angalia maagizo ya mtambo huo wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta historia ya mambo uliyotafuta.</translation>
+<translation id="9008201768610948239">Puuza</translation>
 <translation id="9034759925968272072">Hutaondolewa katika Akaunti yako ya Google. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Onyesha Asili</translation>
 <translation id="9039373489628511875">Kipimo data</translation>

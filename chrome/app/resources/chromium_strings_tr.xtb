@@ -53,7 +53,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2384373936468275798">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" uzantısı, Chromium'u başlattığınızda gösterilen sayfayı değiştirdi.</translation>
-<translation id="2400844369696905771">Bu ayar etkinleştirildiğinde Chromium, aktif olarak kullanmadığınız sekmelerdeki belleği geri kazanır. Böylece, bilgisayarınızın kaynaklarında diğer görevler için yer açılır ve Chromium hızlı çalışmaya devam eder. Aktif olmayan sekmeler boş görünür ve bunları tıkladığınızda otomatik olarak yeniden yüklenir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Bu site için Chromium'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="2483889755041906834">Chromium'da</translation>
 <translation id="2485422356828889247">Kaldır</translation>
@@ -142,7 +141,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="4285930937574705105">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Chromium şu anda çalışır durumdaysa kapatıp yeniden deneyin.</translation>
 <translation id="4304713468139749426">Şifre Yöneticisi</translation>
 <translation id="4334294535648607276">İndirme işlemi tamamlandı.</translation>
-<translation id="437317747729858884">Chromium, internette daha hızlı gezinmenizi sağlamak için kullanmadığınız sekmelerdeki belleği geri kazanır.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" />, bu cihazı kullanmadan önce aşağıdaki Hizmet Şartları'nı okuyup kabul etmenizi zorunlu tutmaktadır. Bu şartlar, ChromiumOS Şartları'nın kapsamını genişletmez, değiştirmez veya sınırlamaz.</translation>
 <translation id="4407044323746248786">Yine de Chromium'dan çıkılsın mı?</translation>
 <translation id="4415566066719264597">Chromium'un Arka Planda Çalışmasına İzin Ver</translation>
@@ -313,7 +311,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7872446069773932638">İndiriliyor... <ph name="SECONDS" /> saniye kaldı</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Dilerseniz Chromium'un dikkate almasını istemediğiniz ilgi alanlarını kaldırabilirsiniz.</translation>
 <translation id="7937630085815544518">Chromium'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
-<translation id="7947085610734123927">Chromium, Bellek Tasarrufu'nu etkinleştirdi</translation>
 <translation id="7975919845073681630">Bu, Chromium'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
 <translation id="7997934263947464652">Bilinmeyen kaynaklardan gelen uzantılar, uygulamalar ve temalar cihazınıza zarar verebilir. Chromium bunların yalnızca <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> kaynağından yüklenmesini önerir.</translation>
 <translation id="8013436988911883588">Chromium erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
@@ -334,7 +331,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8453117565092476964">Yükleyici arşivi bozuk veya geçersiz. Lütfen Chromium'u yeniden indirin.</translation>
 <translation id="8463672209299734063">İsteğe bağlı: Teşhis ve kullanım verilerini Google'a otomatik olarak göndererek ChromiumOS özelliklerini ve performansını iyileştirmeye yardımcı olun.</translation>
 <translation id="8493179195440786826">Chromium Sürümü Eski</translation>
-<translation id="8522220489792889625">Chromium, aktif olarak kullanmadığınız sekmelerdeki belleği gerektiğinde geri kazanır. İstediğiniz zaman bunu Ayarlar'dan değiştirebilirsiniz.</translation>
 <translation id="8550334526674375523">Bu iş profili, kişisel profilinizden tamamen ayrıdır.</translation>
 <translation id="8558383651099478961">Ebeveyniniz, Chromium'a yönelik "Siteler, uygulamalar ve uzantılar için izinler"i kapattı. Bu <ph name="EXTENSION_TYPE_PARAMETER" /> uzantısını eklemeye izin verilmiyor.</translation>
 <translation id="8561285221328166383">Gelecekteki Chromium güncellemelerini almak için macOS 10.13 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar macOS 10.12 kullanıyor.</translation>

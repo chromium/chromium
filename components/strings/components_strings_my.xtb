@@ -848,6 +848,7 @@
 <translation id="3216313131063488104">ဘလူးတေးဂီတ</translation>
 <translation id="3218181027817787318">အလိုက်သင့်</translation>
 <translation id="3223287115535306850">အက်ပ်ဖွင့်နေကြောင်းပြသော လည်နေသည့်သင်္ကေတ</translation>
+<translation id="3223425961342298674">တည်နေရာ ခွင့်ပြုမထားပါ</translation>
 <translation id="3225347164936328585">လက်ခုပ်တီးခြင်း</translation>
 <translation id="3225919329040284222">ဆာဗာက ပြသခဲ့သည့် လက်မှတ်မှာ တပ်ဆင်ထားသည့် မျှော်လင့်ချက်များနှင့် မတိုက်ဆိုင်ပါ။ ယင်း မျှော်လင့်ချက်များမှာ သင့်ကို ကာကွယ်ပေးရန် အတွက် အဆင့်မြင့် လုံခြုံမှု ရှိကြသည့် ဝက်ဘ်ဆိုက်များကို ရည်ရွယ် ထည့်သွင်းထားပါသည်။</translation>
 <translation id="3226128629678568754">စာမျက်နှာကိုဖွင့်ရန် လိုအပ်သည့်အချက်အလက်များအား ပြန်လည်တင်ပြရန် ပြန်ဖွင့်ခလုတ်ကို နှိပ်ပါ။</translation>
@@ -1185,6 +1186,7 @@
 <translation id="4127575959421463246">ChromeOS အလံပြခြင်းများကို ရှာနေပါသလား။ ဝင်ကြည့်ရန်</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{အခြား ၁ ခု}other{အခြား # ခု}}</translation>
 <translation id="4130226655945681476">ကွန်ရက် ကြိုးများ၊ မော်ဒင်နှင့် ရောက်တားကို စစ်ဆေးနေသည်</translation>
+<translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />” အက်ပ်များမှ ညွှန်းထားသော file_extension “<ph name="FILE_EXTENSION" />” အတွက် စီမံသူများ ထပ်နေသည်။</translation>
 <translation id="4134123981501319574">Doc ပြုလုပ်ရန်</translation>
 <translation id="413544239732274901">ပိုမိုလေ့လာရန်</translation>
 <translation id="4142935452406587478">ဗန်း ၁၀</translation>
@@ -1207,6 +1209,7 @@
 <translation id="4194250254487269611">သင့်ကတ်ကို ယခု သိမ်း၍မရပါ</translation>
 <translation id="4196861286325780578">&amp;ရွေ့ရှားမှုကို ပြန်လုပ်ရန်</translation>
 <translation id="4202554117186904723">ငါးခုမြောက်အလိပ်</translation>
+<translation id="4203769790323223880">ကင်မရာ ခွင့်ပြုမထားပါ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />firewall နှင့်ဗိုင်းရပ်စ်တိုက်ဖျက်ရေး ပြင်ဆင်သတ်မှတ်မှုများကို စစ်ဆေးနေသည်<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">ကြီးမား</translation>
 <translation id="4210602799576081649">စိစစ်ခြင်းကုဒ် သက်တမ်းကုန်သွားပြီ။ ကုဒ်အသစ် တောင်းဆိုပါ</translation>
@@ -1234,6 +1237,7 @@
     &lt;p&gt;ပြီးသွားသည့်အခါ သင်၏ ဗိုင်းရပ်စ်ကာကွယ်ရေး ပရိုဂရမ်ကို ပြန်ဖွင့်ရန် မမေ့ပါနှင့်။&lt;/p&gt;
     &lt;h4&gt;အဆင့် ၅− နောက်ထပ် အကူအညီများ ရယူရန်&lt;/h4&gt;
     &lt;p&gt;ဤအမှားအယွင်းကို တွေ့နေရဆဲဖြစ်လျှင် ဝဘ်ဆိုက်ပိုင်ရှင်ကို ဆက်သွယ်ပါ။&lt;/p&gt;</translation>
+<translation id="4223404254440398437">မိုက်ခရိုဖုန်း ခွင့်ပြုမထားပါ</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ကွန်ရက်ပြဿနာရှာဖွေမှု ပြုလုပ်ကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="4230204356098880324">သင့်ကင်မရာကို သုံးရန်နှင့် ရွှေ့ရန် ခွင့်တောင်းနိုင်သည်</translation>
 <translation id="4235360514405112390">မှန်ကန်သည်</translation>
@@ -1251,6 +1255,7 @@
 <translation id="4277028893293644418">စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
 <translation id="4282346679996504092">ဤထုတ်ကုန်အတွက် သတိပေးချက်များကို ပိတ်ထားပြီး လိပ်စာကို ဖယ်ရှားထားသည်</translation>
+<translation id="4285498937028063278">ပင်ဖြုတ်ရန်</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ဤကတ်ကို သင်၏ Google အကောင့်တွင် သိမ်းပြီးပါပြီ}other{ဤကတ်များကို သင်၏ Google အကောင့်တွင် သိမ်းပြီးပါပြီ}}</translation>
 <translation id="4287885627794386150">အစမ်းသုံးရန် အကျုံးဝင်သော်လည်း သုံးမနေပါ</translation>
 <translation id="4297502707443874121">စာမျက်နှာ <ph name="THUMBNAIL_PAGE" /> အတွက် ပုံသေး</translation>
@@ -1604,6 +1609,7 @@
 <translation id="5177076414499237632">ဤစာမျက်နှာရင်းမြစ်နှင့် ခေါင်းစဉ်အကြောင်း လေ့လာရန်</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />တွင် မရှိဘူးလား? ဤမှားယွင်းချက်ကို အစီရင်ခံမည်။</translation>
 <translation id="518639307526414276">တိရစ္ဆာန်အစာနှင့် ပြုစုရေး ပစ္စည်းများ</translation>
+<translation id="5190072300954988691">ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုမထားပါ</translation>
 <translation id="5190835502935405962">စာညှပ် ဘား</translation>
 <translation id="5191315092027169558">သင့်ပရိုဖိုင်ကို <ph name="DOMAIN" /> က စီမံသည်</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> က ဖိုင်အများအပြားကို ​ဒေါင်းလုဒ်လုပ်လိုသည်</translation>
@@ -1624,6 +1630,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">၁၂x၁၉</translation>
 <translation id="5234764350956374838">ပယ်ရန်</translation>
+<translation id="5239623327352565343">တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="5242889659037569123">ခရီးဆောင်အိတ်နှင့် ခရီးသွားဆက်စပ်ပစ္စည်းများ</translation>
 <translation id="5250209940322997802">"ကွန်ရက်သို့ ချိတ်ဆက်ရန်"</translation>
 <translation id="52517543715119994">Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန်</translation>
@@ -2436,6 +2443,7 @@
 <translation id="7451311239929941790">ဤပြဿနာအကြောင်း <ph name="BEGIN_LINK" />ပိုမိုလေ့လာပါ<ph name="END_LINK" />။</translation>
 <translation id="7455133967321480974">အထွေထွေ ပုံသေကို သုံးရန် (ပိတ်ဆို့ရန်)</translation>
 <translation id="7460618730930299168">ဤစစ်ထုတ်မှုက သင်ရွေးထားသည့်အရာနှင့် မတူပါ။ ရှေ့ဆက်လိုပါသလား။</translation>
+<translation id="7461924472993315131">ပင်နံပါတ်</translation>
 <translation id="7463075493919226237">ဩစတြေးလျ ဘောလုံး</translation>
 <translation id="7469935732330206581">ဖောင်က မလုံခြုံပါ</translation>
 <translation id="7473891865547856676">မလိုပါ</translation>
@@ -2499,6 +2507,7 @@
 <translation id="7581199239021537589">ဘေး ၂ ပုံ ဒေါင်လိုက် အရွှေ့</translation>
 <translation id="7582602800368606489">Google Calendar တွင် အစီအစဉ်အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="7583969447617676942">ဥပဒေဆိုင်ရာဝန်ဆောင်မှုလုပ်ငန်းများ</translation>
+<translation id="7586676035079382730">အကြောင်းကြားချက်များ ခွင့်ပြုမထားပါ</translation>
 <translation id="7591288787774558753">လျှို့ဝှက်အကြောင်းအရာကို မျှဝေမလား။</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> က <ph name="TOP_LEVEL_URL" /> တွင် ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများ အသုံးပြုလိုသည်</translation>
 <translation id="7592362899630581445">ဆာဗာ၏ အသိမှတ်ပြုလက်မှတ် သည် အမည်ကန့်သတ်ချက် ကျော်လွန်နေပါသည်။</translation>
@@ -3052,6 +3061,7 @@
 <translation id="9131119348384879525">လျှို့ဝှက်အကြောင်းအရာကို ရိုက်ကူးမလား။</translation>
 <translation id="9136861683332321024">ဇိမ်ခံယာဉ်များ</translation>
 <translation id="9137013805542155359">မူရင်းအား ပြ</translation>
+<translation id="9138037198177304356">အကြောင်းကြားချက်များ ခွင့်ပြုထားသည်</translation>
 <translation id="9139318394846604261">စျေးဝယ်ခြင်း</translation>
 <translation id="9141013498910525015">လိပ်စာများ စီမံရန်</translation>
 <translation id="9144951720726881238">သက်တမ်းကုန်ဆုံးရက်-</translation>

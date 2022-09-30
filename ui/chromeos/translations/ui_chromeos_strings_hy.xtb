@@ -173,6 +173,7 @@
 <translation id="2500392669976258912">գուջարատերեն (հնչյունային)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Որոնել</translation>
+<translation id="252641322760726369">Սեղմեք որևէ ֆայլի վրա և պահեք, ապա սեղմեք <ph name="ICON" /> և ընտրեք «<ph name="PIN_COMMAND" />»։</translation>
 <translation id="2534460670861217804">Ապահով HTTP պրոքսի սերվեր</translation>
 <translation id="2541377937973966830">Այս պանակի բովանդակությունը հասանելի է միայն կարդալու համար։ Որոշ գործողություններ չեն աջակցվում։</translation>
 <translation id="2542049655219295786">Google աղյուսակ</translation>
@@ -343,6 +344,7 @@
 <translation id="4092890906744441904">իռլանդերեն</translation>
 <translation id="4124935795427217608">Միաեղջյուր</translation>
 <translation id="4131235941541910880">Ոչ պետքական ֆայլերը տեղափոխեք աղբարկղ</translation>
+<translation id="4153015322587141338">Ֆայլերը դարակում արագ բացելու համար մկնիկի աջ կոճակով սեղմեք ֆայլի վրա և ընտրեք «<ph name="PIN_COMMAND" />»։</translation>
 <translation id="4157569377477607576">Ադմինիստրատորը խորհուրդ չի տալիս՝</translation>
 <translation id="4159731583141908892">Տեղափոխվեց <ph name="FILE_NAME" /> տարր։</translation>
 <translation id="4176286497474237543">Դատարկել աղբարկղը</translation>

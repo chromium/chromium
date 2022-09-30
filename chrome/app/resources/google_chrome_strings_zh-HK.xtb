@@ -61,7 +61,6 @@
 <translation id="2094648590148273905">ChromeOS Flex 條款</translation>
 <translation id="2094919256425865063">仍要退出 Chrome 嗎？</translation>
 <translation id="2106831557840787829">ChromeOS Flex 的開發全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />協助才得以面世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
-<translation id="2112742052114331084">啟用此設定後，Chrome 會回收目前未使用的分頁記憶體。這樣做可釋出電腦的資源來處理其他工作，並維持 Chrome 的運作速度。已停用的分頁會顯示為空白，並會在您按一下分頁後自動重新載入內容。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />或<ph name="BEGIN_LINK_2" />提供意見<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">這會刪除此裝置上的 <ph name="ITEMS_COUNT" /> 個項目。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
@@ -230,7 +229,6 @@
 <translation id="5386244825306882791">這個擴充功能也會控管 Chrome 啟動時或您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="5394833366792865639">分享 Chrome 分頁</translation>
 <translation id="5412485296464121825">網站可將您的興趣相關資料儲存在 Chrome 中。例如，如果您瀏覽某個網站想購買適合馬拉松的跑步鞋，網站可能會判斷您的興趣為跑馬拉松。如果您日後瀏覽其他網站報名參加比賽，該網站就可以根據您的興趣向您顯示跑步鞋的廣告。</translation>
-<translation id="5416870378730196769">Chrome 已開啟「節省記憶體」模式</translation>
 <translation id="5430073640787465221">您的偏好設定檔已損毀或無效。
 
 Google Chrome 無法復原您的設定。</translation>
@@ -283,7 +281,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6735387454586646204">ChromeOS Flex 系統</translation>
 <translation id="6739177684496155661">要透過新的 Chrome 設定檔繼續瀏覽嗎？</translation>
 <translation id="6750954913813541382">Chrome 會將您在瀏覽器中輸入的文字傳送至 Google，以修正拼字錯誤</translation>
-<translation id="6756581345161130259">如有需要，Chrome 會回收目前未使用的分頁記憶體。您可隨時在設定中變更此設定。</translation>
 <translation id="677276454032249905">仍要結束 Chrome 嗎？</translation>
 <translation id="6785872064505734160">Chrome 的「Google 助理」可助您完成各網站的操作</translation>
 <translation id="683440813066116847">允許 mDNS 流量的 Google Chrome Canary 輸入規則。</translation>
@@ -331,7 +328,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7651907282515937834">Chrome 企業標誌</translation>
 <translation id="7655455401911432608">您的瀏覽記錄，亦即您在此裝置上使用 Chrome 瀏覽過的網站記錄。</translation>
-<translation id="7726773885101561560">為提升瀏覽速度，Chrome 會從目前未使用的分頁回收記憶體。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7761834446675418963">按一下您的名稱即可開啟 Chrome 並開始瀏覽。</translation>
 <translation id="7777080907402804672">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。您可以隨時在設定中關閉此功能。</translation>

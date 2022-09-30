@@ -62,7 +62,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2094648590148273905">Smluvní podmínky systému ChromeOS Flex</translation>
 <translation id="2094919256425865063">Přesto Chrome ukončit?</translation>
 <translation id="2106831557840787829">Systém ChromeOS Flex by nemohl existovat bez dalšího <ph name="BEGIN_LINK_CROS_OSS" />open source softwaru<ph name="END_LINK_CROS_OSS" />, jako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostředí Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Když je tato možnost zapnutá, Chrome bude využívat paměť z karet, které aktivně nepoužíváte. Uvolní se tak zdroje vašeho počítače k dalším úkolům a prohlížeč Chrome zůstane rychlý. Neaktivní karty se zobrazují prázdné a po kliknutí se automaticky znovu načtou. Můžete si přečíst <ph name="BEGIN_LINK" />další informace<ph name="END_LINK" /> nebo <ph name="BEGIN_LINK_2" />odeslat zpětnou vazbu<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">Ze zařízení bude smazán následující počet položek: <ph name="ITEMS_COUNT" />. Budete-li chtít své údaje později načíst, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Znovu spustit a aktualizovat &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozte s vylepšováním prohlížeče Chrome tím, že nahlásíte <ph name="BEGIN_LINK" />aktuální nastavení<ph name="END_LINK" /></translation>
@@ -231,7 +230,6 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="5386244825306882791">Také řídí, která stránka se zobrazí, když spustíte Chrome nebo budete vyhledávat v omniboxu.</translation>
 <translation id="5394833366792865639">Sdílet kartu prohlížeče Chrome</translation>
 <translation id="5412485296464121825">Weby mohou v prohlížeči Chrome ukládat informace o vašich zájmech. Např. když navštívíte web, kde se prodávají boty na maraton, web může definovat váš zájem jako běhání maratonů. Když později navštívíte jiný web s registrací na závod, může se vám na něm na základě vašich zájmů zobrazit reklama na boty na běhání.</translation>
-<translation id="5416870378730196769">Chrome zapnul Spořič paměti</translation>
 <translation id="5430073640787465221">Soubor nastavení je poškozený nebo neplatný.
 
 Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
@@ -284,7 +282,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6735387454586646204">Systém ChromeOS Flex</translation>
 <translation id="6739177684496155661">Pokračovat v novém profilu Chrome?</translation>
 <translation id="6750954913813541382">Text zadaný v prohlížeči odesílá Chrome kvůli opravě pravopisných chyb do Googlu</translation>
-<translation id="6756581345161130259">Chrome podle potřeby znovu využívá paměť obsazenou kartami, které aktivně nepoužíváte. Tuto volbu můžete v nastavení kdykoli změnit.</translation>
 <translation id="677276454032249905">Přesto Chrome ukončit?</translation>
 <translation id="6785872064505734160">Asistent Google v Chromu může na webech provádět různé akce za vás</translation>
 <translation id="683440813066116847">Pravidlo příchozího provozu pro aplikaci Google Chrome Canary, které povolí provoz mDNS.</translation>
@@ -332,7 +329,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>
-<translation id="7726773885101561560">Aby procházení webu bylo rychlejší, využívá prohlížeč Chrome paměť obsazenou kartami, které nepoužíváte.</translation>
 <translation id="7747138024166251722">Instalační soubor nemohl vytvořit dočasný adresář. Zkontrolujte prosím volné místo na disku a povolení instalovat software.</translation>
 <translation id="7761834446675418963">Chcete-li otevřít Chrome a začít procházet Internet, klikněte na svoje jméno.</translation>
 <translation id="7777080907402804672">Pokud obrázek nemá užitečný popis, Chrome se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>

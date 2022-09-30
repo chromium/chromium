@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Passer à l'affichage sous forme de liste</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fichiers sélectionnés</translation>
+<translation id="2383454254762599978">Déplacer vers la corbeille</translation>
 <translation id="2387458720915042159">Type de connexion de mandataire</translation>
 <translation id="2389832672041313158">Birman (Myanmar)</translation>
 <translation id="2392369802118427583">Activer</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Accéder à drive.google.com...</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="3556731189587832921">Anglais (É.-U.) avec clavier international (PC)</translation>
+<translation id="3557414470514932909">Déplacement de <ph name="FILE_NAME" /> vers la corbeille en cours…</translation>
 <translation id="3567221313191587603">Sélectionnez un fichier et activez le commutateur <ph name="OFFLINE_CHECKBOX_NAME" /> pour accéder à vos fichiers hors ligne.</translation>
 <translation id="357479282490346887">Lituanien</translation>
 <translation id="3587482841069643663">Tous</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bangla (phonétique)</translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4017788180641807848">Anglais (É.-U.) avec clavier Workman</translation>
+<translation id="4019998208269143058">Épingler à l'accès rapide aux fichiers</translation>
 <translation id="4040753847560036377">Clé personnelle de déblocage incorrecte</translation>
 <translation id="4057991113334098539">Activation en cours…</translation>
 <translation id="4092890906744441904">Irlandais</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">La politique de l'administrateur ne recommande pas :</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> déplacé.</translation>
 <translation id="4176286497474237543">Vider la corbeille maintenant</translation>
+<translation id="4179621117429069925">Cet élément se trouve dans la corbeille</translation>
 <translation id="4186579485882418952">Activer le mode hors ligne</translation>
 <translation id="4193154014135846272">Document Google</translation>
 <translation id="4197674956721858839">Sélection pour fichier ZIP</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Certificat d'authentification rejeté à distance.</translation>
 <translation id="4394214039309501350">Lien externe</translation>
 <translation id="4394980935660306080">Plus tôt cette semaine</translation>
+<translation id="4398096759193130964">Restaurez les éléments ou faites-les glisser vers un nouveau dossier en dehors de la corbeille</translation>
 <translation id="4401287888955153199">Tout extraire</translation>
 <translation id="4410695710508688828">Échec de l'opération d'extraction. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Créer un raccourci vers vos fichiers</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi avec clavier InScript</translation>
 <translation id="4801956050125744859">Garder les deux</translation>
 <translation id="4804827417948292437">Avocat</translation>
+<translation id="4805966553127040832">Restauration de <ph name="COUNT" /> éléments en cours…</translation>
 <translation id="4823651846660089135">L'appareil est en lecture seule</translation>
 <translation id="4826849268470072925">Tamoul (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> éléments sélectionnés</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Football</translation>
 <translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> restauré</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Utilisez un nom contenant au maximum <ph name="MAX_LENGTH" /> caractères</translation>
 <translation id="4973970068702235170">Échec de compression au format .zip en raison d'une erreur inattendue : <ph name="ERROR_MESSAGE" /></translation>
@@ -553,6 +560,7 @@
 <translation id="5691596662111998220">Oups, le fichier <ph name="FILE_NAME" /> n'existe plus.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, déverrouiller</translation>
 <translation id="5700087501958648444">Renseignements sur le fichier audio</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> déplacé vers la corbeille</translation>
 <translation id="5724172041621205163">Thaï avec clavier Pattachote</translation>
 <translation id="5756666464756035725">QWERTY hongrois</translation>
 <translation id="5763377084591234761">Allemand (Suisse)</translation>
@@ -623,6 +631,7 @@
 <translation id="6320212353742551423">Archive <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Signe de la main</translation>
 <translation id="6327785803543103246">Découverte automatique de mandataire Web</translation>
+<translation id="6337014272874260727">Annuler l'épinglage de l'accès rapide aux fichiers</translation>
 <translation id="6339145975392024142">Américain international (PC)</translation>
 <translation id="6346310558342052870">Accès limité</translation>
 <translation id="6356685157277930264">Fenêtre de commentaires pour Fichiers</translation>
@@ -663,6 +672,7 @@
 <translation id="6751256176799620176">1 dossier sélectionné</translation>
 <translation id="6755827872271341378">Appareil Chrome OS Flex</translation>
 <translation id="6790428901817661496">Jouer</translation>
+<translation id="6794539005637808366">Restaurez l'élément ou faites-le glisser vers un nouveau dossier en dehors de la corbeille</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Gérer le partage Linux</translation>
 <translation id="6806796368146926706">Alphanumérique avec clavier japonais</translation>
@@ -699,6 +709,7 @@
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6989942356279143254">Suédois</translation>
 <translation id="6990081529015358884">Vous avez utilisé tout l'espace de stockage.</translation>
+<translation id="6993826899923627728">Ces éléments se trouvent dans la corbeille</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> dossiers sélectionnés</translation>
 <translation id="7008426324576352165">Votre organisation a besoin de plus d'espace de stockage pour terminer le téléversement.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -744,6 +755,7 @@
 <translation id="7408870451288633753">Tchèque</translation>
 <translation id="7417453074306512035">Clavier éthiopien</translation>
 <translation id="7417705661718309329">Carte Google</translation>
+<translation id="7419668828140929293">Restauration de « <ph name="FILENAME" /> » en cours…</translation>
 <translation id="7458955835361612701">Aucune image récente</translation>
 <translation id="7460898608667578234">Ukrainien</translation>
 <translation id="7469894403370665791">Se connecter automatiquement à ce réseau</translation>
@@ -772,6 +784,7 @@
 <translation id="7655441028674523381">Accéder facilement à Google Photos</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> éléments déplacés vers la corbeille</translation>
 <translation id="7693909743393669729">Le formatage d'un disque entraîne la suppression de toutes les données qu'il contient et de toutes ses partitions, y compris les partitions invisibles. Cette action est irréversible.</translation>
 <translation id="7695430100978772476">Impossible de formater <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Impossible de vider la corbeille.</translation>
@@ -786,6 +799,7 @@
 <translation id="7760449188139285140">Chinois (Wubi)</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7774365994322694683">Oiseau</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> éléments restaurés</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7788080748068240085">Pour enregistrer le fichier <ph name="FILE_NAME" /> hors connexion, vous devez libérer <ph name="TOTAL_FILE_SIZE" /> d'espace supplémentaire :<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Annulez l'épinglage des fichiers auxquels vous n'avez plus besoin d'accéder hors connexion.<ph name="MARKUP_3" />
@@ -966,6 +980,7 @@
 <translation id="947144732524271678">Vous avez sélectionné une plage de <ph name="ENTRY_COUNT" /> entrées, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">La politique de l'administrateur empêche :</translation>
 <translation id="965477715979482472">Anglais (Afrique du Sud)</translation>
+<translation id="976666271385981812">Déplacement de <ph name="NUMBER_OF_ITEMS" /> éléments vers la corbeille en cours…</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="988685240266037636">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Voulez-vous le remplacer?</translation>
 <translation id="992401651319295351">Il vous reste <ph name="RETRIES" /> tentatives. Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas configuré un nouveau NIP.</translation>

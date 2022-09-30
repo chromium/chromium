@@ -1250,6 +1250,7 @@
 <translation id="4277028893293644418">بازنشانی گذرواژه</translation>
 <translation id="4278390842282768270">مجاز است</translation>
 <translation id="4282346679996504092">هشدارهای این محصول خاموش شد و نشانک آن حذف شد</translation>
+<translation id="4285498937028063278">برداشتن سنجاق</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏این کارت در حساب Google ذخیره شده است}one{‏این کارت‌ها در حساب Google ذخیره شده‌اند}other{‏این کارت‌ها در حساب Google ذخیره شده‌اند}}</translation>
 <translation id="4287885627794386150">برای دوره آزمایشی واجدشرایط هستید، اما فعال نیست</translation>
 <translation id="4297502707443874121">تصویر کوچک صفحه <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2435,6 +2436,7 @@
 <translation id="7451311239929941790">درباره این مشکل <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">استفاده از پیش‌فرض جهانی (مسدود)</translation>
 <translation id="7460618730930299168">فیلم در حال نمایش با آنچه انتخاب کرده‌اید متفاوت است. ادامه می‌دهید؟</translation>
+<translation id="7461924472993315131">پین</translation>
 <translation id="7463075493919226237">فوتبال استرالیایی</translation>
 <translation id="7469935732330206581">فرم ایمن نیست</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>

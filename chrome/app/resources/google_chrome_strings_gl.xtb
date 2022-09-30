@@ -61,7 +61,6 @@
 <translation id="2094648590148273905">Condicións de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Queres saír de Chrome de todas formas?</translation>
 <translation id="2106831557840787829">Chrome OS Flex é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Se activas esta opción, Chrome recuperará a memoria das pestanas que non esteas a usar de maneira activa. Deste xeito libéranse os recursos do ordenador para outras tarefas e mantense a rapidez de Chrome. As pestanas inactivas aparecen baleiras e volven cargar automaticamente ao facer clic nelas. Consulta <ph name="BEGIN_LINK" />máis información<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envía os teus comentarios<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Esta acción eliminará <ph name="ITEMS_COUNT" /> elementos deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chrome</translation>
@@ -230,7 +229,6 @@
 <translation id="5386244825306882791">Tamén controla a páxina que se mostra ao iniciar Chrome ou ao realizar unha busca desde Omnibox.</translation>
 <translation id="5394833366792865639">Compartir unha pestana de Chrome</translation>
 <translation id="5412485296464121825">Os sitios poden almacenar con Chrome información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
-<translation id="5416870378730196769">Chrome activou o aforro de memoria</translation>
 <translation id="5430073640787465221">O teu ficheiro de preferencias está danado ou non é válido.
 
 Google Chrome non pode recuperar a túa configuración.</translation>
@@ -283,7 +281,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6735387454586646204">Sistema Chrome OS Flex</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
-<translation id="6756581345161130259">Chrome recuperará, segundo sexa necesario, a memoria das pestanas que non esteas a usar de maneira activa. Podes cambiar esta opción en calquera momento en Configuración.</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
 <translation id="6785872064505734160">O Asistente de Google en Chrome pode completar accións por ti nos sitios web</translation>
 <translation id="683440813066116847">Regra de entrada para Google Chrome Canary para permitir tráfico mDNS.</translation>
@@ -331,7 +328,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7649070708921625228">Axuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">O teu historial de navegación e un rexistro dos sitios que visitases usando Chrome neste dispositivo.</translation>
-<translation id="7726773885101561560">Para que a navegación sexa máis rápida, Chrome recuperará a memoria das pestanas que non esteas a usar.</translation>
 <translation id="7747138024166251722">O programa de instalación non puido crear un directorio temporal. Comproba se hai espazo libre no disco e se tes autorización para instalar o software.</translation>
 <translation id="7761834446675418963">Fai clic no teu nome para abrir Chrome e comezar a navegar.</translation>
 <translation id="7777080907402804672">Se unha imaxe non ten unha descrición útil, Chrome tentará proporcionarche unha. Para crear descricións, envíanse imaxes a Google. Podes desactivar esta función na configuración cando queiras.</translation>

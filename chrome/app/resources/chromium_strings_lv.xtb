@@ -53,7 +53,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2384373936468275798">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="2396765026452590966">Paplašinājums “<ph name="EXTENSION_NAME" />” mainīja iestatījumu, kura lapa tiek parādīta, palaižot pārlūku Chromium.</translation>
-<translation id="2400844369696905771">Kad šis iestatījums ir ieslēgts, Chromium atgūst atmiņas lietojumu no cilnēm, kuras aktīvi neizmantojat. Tādējādi tiek atbrīvoti datora resursi citiem uzdevumiem un tiek nodrošināta ātra Chromium darbība. Neaktīvās cilnes tiek rādītas tukšas un tiek automātiski atkārtoti ielādētas, kad uz tām noklikšķināt. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="2401032172288869980">Pārlūkam Chromium ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
 <translation id="2483889755041906834">Pārlūkā Chromium</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -144,7 +143,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="4285930937574705105">Instalācija neizdevās nenoteiktas kļūdas dēļ. Ja Chromium šobrīd darbojas, aizveriet to un mēģiniet vēlreiz.</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4334294535648607276">Lejupielāde pabeigta.</translation>
-<translation id="437317747729858884">Lai paātrinātu pārlūkošanu, Chromium atgūst atmiņas lietojumu no cilnēm, kuras neizmantojat.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> pieprasa, lai pirms šīs ierīces lietošanas jūs izlasītu tālāk sniegtos pakalpojumu sniegšanas noteikumus un piekristu tiem. Šie noteikumi nepaplašina, nepārveido un neierobežo operētājsistēmas Chromium OS noteikumus.</translation>
 <translation id="4407044323746248786">Vai tik un tā aizvērt pārlūku Chromium?</translation>
 <translation id="4415566066719264597">Ļaut pārlūkam Chromium darboties fonā</translation>
@@ -313,7 +311,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="7872446069773932638">Notiek lejupielāde... Atlikušais laiks: <ph name="SECONDS" /> sekunde(-es).</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Varat arī noņemt intereses, ja nevēlaties, lai Chromium tās apsvērtu.</translation>
 <translation id="7937630085815544518">Operētājsistēmā Chromium iepriekš pierakstījāties kā lietotājs <ph name="USER_EMAIL_ADDRESS" />. Lai pierakstītos vēlreiz, lūdzu, izmantojiet to pašu kontu.</translation>
-<translation id="7947085610734123927">Pārlūkā Chromium tika ieslēgta atmiņas taupīšana</translation>
 <translation id="7975919845073681630">Šī ir Chromium papildu instalācija, un to nevar izmantot kā noklusējuma pārlūku.</translation>
 <translation id="7997934263947464652">No nezināmiem avotiem iegūti paplašinājumi, lietotnes un motīvi var kaitēt ierīcei. Chromium komanda iesaka instalēt tos tikai no veikala <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Tiklīdz pārlūkam Chromium tiks sniegta piekļuve, vietnes varēs lūgt jums piekļuvi.</translation>
@@ -334,7 +331,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8453117565092476964">Instalēšanas programmas arhīvs ir bojāts vai nav derīgs. Lejupielādējiet Chromium vēlreiz.</translation>
 <translation id="8463672209299734063">Neobligāti: palīdziet uzlabot Chromium OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem diagnostikas un lietojuma datus.</translation>
 <translation id="8493179195440786826">Chromium versija ir novecojusi</translation>
-<translation id="8522220489792889625">Chromium pēc vajadzības atgūst atmiņas lietojumu no cilnēm, kuras jūs aktīvi neizmantojat. Iestatījumos varat jebkurā laikā to mainīt.</translation>
 <translation id="8550334526674375523">Šis darba profils ir pilnīgi nesaistīts ar jūsu personīgo profilu.</translation>
 <translation id="8558383651099478961">Viens no jūsu vecākiem ir izslēdzis “Atļaujas vietnēm, lietotnēm un paplašinājumiem” pārlūkam Chromium. Nav atļauts pievienot šo: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Lai saņemtu turpmākus Chromium atjauninājumus, ir nepieciešama operētājsistēma macOS 10.13 vai jaunāka versija. Šajā datorā tiek izmantota macOS 10.12. versija</translation>

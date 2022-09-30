@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">स्वीकार गर्नुहोस् र जारी राख्नुहोस्</translation>
 <translation id="110724200315609752">खुला विन्डोमा जानुहोस्</translation>
 <translation id="1112015203684611006">छाप्न सकिएन।</translation>
-<translation id="1118569444314402022">फेरि स्वागत छ, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">नयाँ ट्याब सिर्जना गर्नुहोस्।</translation>
 <translation id="1126809382673880764">तपाईंलाई जोखिमपूर्ण वेबसाइट, डाउनलोड वा एक्स्टेन्सनहरूविरुद्ध सुरक्षा प्रदान गर्दैन। उपलब्ध भएसम्म तपाईं अझै पनि Gmail र खोज जस्ता Google का अन्य सेवाहरूमा सुरक्षित ब्राउजिङको सुरक्षा प्राप्त गर्नु हुने छ।</translation>
 <translation id="1135212215217513471">Chrome को iOS संस्करण डाउनलोड गर्नुहोस्</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">बन्द मेनु</translation>
 <translation id="1358214951266274152">तपाईंले प्रतिलिपि गरेको लिंकमा जानुहोस्</translation>
 <translation id="1360432990279830238">साइन आउट गरी सिंक निष्क्रिय पार्ने हो?</translation>
+<translation id="1363028406613469049">ट्रयाक</translation>
 <translation id="1375321115329958930">सुरक्षित गरिएका पासवर्डहरू</translation>
 <translation id="1377255359165588604">सिंकले काम गर्न छोड्यो।</translation>
 <translation id="1377321085342047638">कार्ड नम्बर</translation>
@@ -197,6 +197,7 @@
 <translation id="2647269890314209800">प्रयोगमा रहेका कुकीहरू</translation>
 <translation id="2648803196158606475">पढिसकिएकोलाई मेट्नुहोस्</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
+<translation id="2671426118752779020">तपाईं आफूले Google पासवर्ड म्यानेजरमा सेभ गरेका पासवर्डहरू आफ्नो iPhone मा भएका अन्य एपमा प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2690858294534178585">क्यामेरा प्रयोग भइरहेको छ</translation>
 <translation id="2691653761409724435">अफलाइन उपलब्ध छैन</translation>
 <translation id="2695507686909505111">पृष्ठ अनुवाद गरियो</translation>
@@ -206,6 +207,7 @@
 <translation id="2704491540504985681">डाउनलोडहरू</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
 <translation id="2709516037105925701">स्वत:भर्नुहोस्</translation>
+<translation id="271033894570825754">नयाँ</translation>
 <translation id="2712127207578915686">फाइल खोल्न असमर्थ</translation>
 <translation id="2718352093833049315">Wi-Fi मा मात्र</translation>
 <translation id="2747003861858887689">अघिल्लो क्षेत्र</translation>
@@ -262,6 +264,7 @@
 <translation id="3103603146121354983">पासवर्डहरू स्वतः भर्नुहोस्</translation>
 <translation id="3112556859945124369">चिन्ह लगाउनुहोस्…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">इतिहास र अन्य डेटा</translation>
 <translation id="3131206671572504478">सबै ब्लक गर्नुहोस्</translation>
 <translation id="313283613037595347">नयाँ इन्कोग्निटो ट्याब बनाउनुहोस्।</translation>
 <translation id="3153862085237805241">कार्ड सेभ गर्नुहोस्</translation>
@@ -332,7 +335,6 @@
 <translation id="3709582977625132201">'नपढिएको' सामग्रीका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="371230970611282515">खतरनाक घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="37207012422556617">ट्रेन्डिङमा रहेका खोज</translation>
-<translation id="3726360487031500941">तपाईंको खाता <ph name="USER_NAME" /> मा फेरि साइन इन गर्नुहोस्</translation>
 <translation id="3740397331642243698">प्रविष्टि गरिएका URL हरू Google Chrome को इन्कोग्निटो मोडमा खोलिन्छ।</translation>
 <translation id="3762232513783804601">तपाईंको iPad का लागि बनाइएको</translation>
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
@@ -504,6 +506,7 @@
 <translation id="509789154667432072">बुकमार्क हाल्नुहोस्</translation>
 <translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5118764316110575523">निष्क्रिय छ</translation>
+<translation id="5119391094379141756">Chrome चयन गर्नुहोस्</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5140288047769711648">Chrome ले तपाईंका लागि यो पासवर्ड याद राख्ने छ। तपाईंले आफ्नो पासवर्ड सम्झिराख्नु पर्दैन।</translation>
 <translation id="5149188072385105201">पासवर्ड सेभ गर्नुहोस्...</translation>
@@ -627,6 +630,7 @@
 <translation id="6149061208933997199">पासवर्ड प्रयोग गर्नुहोस्</translation>
 <translation id="6152406514676263192">आफ्नो रुचिअनुसारका सबैभन्दा सान्दर्भिक सामग्री हेर्न सिंक गर्नुहोस्।</translation>
 <translation id="6159839020698489198">ऐच्छिक</translation>
+<translation id="6165508094623778733">थप जान्नुहोस्</translation>
 <translation id="6177442314419606057">Chrome मा खोज्नुहोस्</translation>
 <translation id="6184086493125982861">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="6187302354554850004">पछिल्लोपटक सिंक भएको: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +878,7 @@
 <translation id="8032569120109842252">फलो गरिरहेको</translation>
 <translation id="804225253087497565">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK" />खोजको इतिहास<ph name="END_LINK" /> र <ph name="BEGIN_LINK" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="804427445359061970">तपाईंका अन्य डिभाइसका ट्याबहरू यहाँ देखिने छन्</translation>
+<translation id="8048728378294435881">आफ्नो डेटा ब्याकअप गर्नुहोस् र जुनसुकै डिभाइसमा सो डेटा प्रयोग गर्नुहोस्</translation>
 <translation id="8059533439631660104">खण्ड संक्षिप्त गर्छ।</translation>
 <translation id="8065292699993359127">URL हरू Chrome को इन्कोग्निटो मोडमा खोल्नुहोस्</translation>
 <translation id="806745655614357130">मेरो डेटा अलग राख्नुहोस्</translation>
@@ -977,6 +982,7 @@
 <translation id="8981454092730389528">Google गतिविधि नियन्त्रणहरू</translation>
 <translation id="8985320356172329008">Google मा यस रूपमा साइन इन गरियो</translation>
 <translation id="9000089900434778519">तपाईंको डिफल्ट सर्च इन्जिन <ph name="DSE_NAME" /> हो। तपाईंको सर्च इन्जिनमा खोजको इतिहास मेटाउन मिल्छ भने खोज इतिहास मेटाउन सर्च इन्जिनले उपलब्ध गराएका निर्देशनहरू हेर्नुहोस्।</translation>
+<translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9034759925968272072">तपाईं आफ्नो Google खाताबाट साइन आउट हुनु हुने छैन। <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> मा रहेको तपाईंको Google खातामा अझै पनि ब्राउजिङको इतिहासका अन्य ढाँचाहरू उपलब्ध हुन सक्छन्।</translation>
 <translation id="9037965129289936994">मूल पाठ देखाउनुहोस्</translation>
 <translation id="9039373489628511875">व्याण्डविथ</translation>

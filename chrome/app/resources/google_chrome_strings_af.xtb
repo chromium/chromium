@@ -62,7 +62,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2094648590148273905">Chrome OS Flex-bepalings</translation>
 <translation id="2094919256425865063">Verlaat Chrome in elk geval?</translation>
 <translation id="2106831557840787829">Chrome OS Flex word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />, soos die geval ook is met die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Indien dit aan is, herwin Chrome geheue vanaf oortjies wat jy nie aktief gebruik nie. Dit maak jou rekenaar se hulpbronne beskikbaar vir ander take en hou Chrome vinnig. Onaktiewe oortjies kom leeg voor en herlaai outomaties wanneer jy hulle klik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />stuur terugvoer<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Dit sal <ph name="ITEMS_COUNT" /> items op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
 <translation id="2121284319307530122">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="2123055963409958220">Help om Chrome te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
@@ -231,7 +230,6 @@ Sommige kenmerke kan dalk onbeskikbaar wees. Spesifiseer 'n ander profielgids of
 <translation id="5386244825306882791">Dit beheer ook watter bladsy gewys word wanneer jy Chrome begin of soek vanuit die omnikassie.</translation>
 <translation id="5394833366792865639">Deel 'n Chrome-oortjie</translation>
 <translation id="5412485296464121825">Werwe kan inligting oor jou belangstellings in Chrome stoor. As jy byvoorbeeld ’n werf besoek om skoene vir ’n marathon te koop, kan die werf jou belangstelling definieer as iemand wat marathons hardloop. As jy later ’n ander werf besoek om vir ’n wedloop te registreer, kan daardie werf vir jou ’n advertensie vir drafskoene op grond van jou belangstellings wys.</translation>
-<translation id="5416870378730196769">Chrome het Geheuebespaarder aangeskakel</translation>
 <translation id="5430073640787465221">Jou voorkeurelêer is korrup of ongeldig.
 
 Google Chrome kan nie jou instellings terugstel nie.</translation>
@@ -284,7 +282,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6735387454586646204">Chrome OS Flex-stelsel</translation>
 <translation id="6739177684496155661">Gaan voort in 'n nuwe Chrome-profiel?</translation>
 <translation id="6750954913813541382">Chrome stuur die teks wat jy in die blaaier tik na Google om spelfoute reg te maak.</translation>
-<translation id="6756581345161130259">Indien dit nodig is, herwin Chrome geheue vanaf oortjies wat jy nie aktief gebruik nie. Jy kan dit enige tyd in Instellings verander.</translation>
 <translation id="677276454032249905">Verlaat Chrome in elk geval?</translation>
 <translation id="6785872064505734160">Google Assistent in Chrome kan vir jou handelinge op webwerwe voltooi</translation>
 <translation id="683440813066116847">Inkomende reël vir Google Chrome Kanarie om mDNS-verkeer toe te laat.</translation>
@@ -332,7 +329,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7651907282515937834">Chrome-onderneminglogo</translation>
 <translation id="7655455401911432608">Jou blaaigeskiedenis, ’n rekord van werwe wat jy besoek het deur Chrome op hierdie toestel te gebruik.</translation>
-<translation id="7726773885101561560">Chrome herwin geheue vanaf oortjies wat jy nie gebruik nie om jou vinniger te laat blaai.</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
 <translation id="7761834446675418963">Klik jou naam om Chrome oop te maak en te begin blaai.</translation>
 <translation id="7777080907402804672">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>

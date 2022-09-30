@@ -1879,10 +1879,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se le asigna el valor "Inhabilitada", se desactivarán los mensajes de solicitud de acceso y la captura de audio solo estará disponible para las URL incluidas en la lista AudioCaptureAllowedUrls.
 
       Nota: Esta política afecta a todas las entradas de audio, no solo al micrófono integrado.</translation>
-<translation id="2822539450620588684">A partir de la versión M107, todos los métodos de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> se invocarán de forma síncrona.
-      Hasta la versión M110, esta política vuelve a habilitar la invocación asíncrona de los métodos de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
-      Si se habilita la política, los métodos de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> se invocarán de forma asíncrona.
-      Si se inhabilita la política o no se establece, todos los métodos de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> se invocarán de forma síncrona.</translation>
 <translation id="2823870601012066791">Ubicación del registro de Windows para clientes de <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Habilitar modo Incógnito</translation>
 <translation id="282870810415075521">Permitir que JavaScript use JIT en estos sitios</translation>
@@ -2047,12 +2043,6 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
       Si se le asigna el valor "Disabled" o no se le asigna ninguno, la clave del archivo de manifiesto <ph name="REQUIRED_PLATFORM_VERSION" /> se ignorará y la actualización automática se realizará con normalidad.
 
       Advertencia: No delegues el control de la versión de <ph name="PRODUCT_OS_NAME" /> a una aplicación de kiosco, ya que podría impedir que el dispositivo reciba actualizaciones de software y correcciones de seguridad importantes. Si se delega el control de la versión de <ph name="PRODUCT_OS_NAME" />, se podría poner en riesgo a los usuarios.</translation>
-<translation id="299519952839316970">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 88 de <ph name="PRODUCT_OS_NAME" />. Ya no se admiten sesiones públicas. Usa <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> para configurar sesiones de invitado gestionadas.
-      Si se le asigna el valor "false" a esta política, las sesiones de invitado gestionadas funcionarán como se describe en la página https://support.google.com/chrome/a/answer/3017014, es decir, como una "sesión pública" estándar.
-
-      Si se le asigna el valor "true" o no se le asigna ningún valor, la sesión de invitado gestionada funcionará como una "sesión gestionada" y se eliminarán muchas de las restricciones de las "sesiones públicas" normales.
-
-      Si se asigna un valor a esta política, el usuario no podrá cambiarlo ni anularlo.</translation>
 <translation id="2999597974578784672">Permite definir una lista de patrones de URL donde se especifica qué sitios pueden establecer cookies.
 
           Si no se establece esta política, se usará en todos los sitios el valor general predeterminado especificado en la política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (si se ha definido) o en la configuración personal del usuario (en caso contrario).

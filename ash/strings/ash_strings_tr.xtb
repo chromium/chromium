@@ -371,6 +371,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Cihaz kapatılsın mı?</translation>
 <translation id="3126069444801937830">Güncellemek için yeniden başlat</translation>
+<translation id="3139382871451988441">Kamera erişimini kapat.</translation>
 <translation id="3139942575505304791">Çalışma Masası 1</translation>
 <translation id="315116470104423982">Mobil veriler</translation>
 <translation id="3151786313568798007">Yön</translation>
@@ -647,6 +648,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox etkinleştirildi</translation>
 <translation id="4665114317261903604">Rahatsız Etmeyin modunu aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Tüm kameraları her zaman engellemek için bu cihazda kamera erişimini kapatın.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> indiriliyor</translation>
 <translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
@@ -665,6 +667,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> için şifre</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Asistan, demo oturumunda kullanılamaz.</translation>
+<translation id="4789348252524569426">Konuşma dosyaları yüklenemiyor. Cihazınızın güncellenmesi gerekiyor. Cihazınızı yeniden başlatıp işlemi tekrar deneyin.</translation>
 <translation id="479989351350248267">ara</translation>
 <translation id="4804818685124855865">Bağlantıyı kes</translation>
 <translation id="4814539958450445987">Giriş Ekranı</translation>
@@ -1144,6 +1147,7 @@ Yeni yüklenmiş</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> şu anda mikrofonunuzu kullanıyor</translation>
 <translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="7564874036684306347">Pencereleri başka bir masaüstüne taşımak, beklenmeyen davranışlara neden olabilir. Pencereler taşındıktan sonra gelen bildirimler, pencereler ve iletişim kutuları masaüstleri arasında bölünebilir.</translation>
+<translation id="7567076708801803118">Bu cihazda kamera erişimini kapatmak istiyor musunuz?</translation>
 <translation id="7569509451529460200">Braille ve ChromeVox etkinleştirildi</translation>
 <translation id="7573585051776738856">Etkin pencere sağa sabitlendi.</translation>
 <translation id="7579778809502851308">Ekran görüntüsü</translation>

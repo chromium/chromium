@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1005794457625275818">ملفات تعريف الارتباط المسموح بها في <ph name="FPS_MEMBERS_COUNT" /> موقع إلكتروني ضمن مجموعة <ph name="FPS_OWNER" />، بما في ذلك <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">فتح على الإنترنت</translation>
 <translation id="1044891598689252897">ستعمل المواقع الإلكترونية بشكلٍ طبيعي.</translation>
 <translation id="1124090076051167250">سيؤدي هذا الإجراء إلى محو <ph name="DATASIZE" /> من البيانات وملفات تعريف الارتباط المُخزّنة من خلال المواقع الإلكترونية أو التطبيقات على الشاشة الرئيسية.</translation>
@@ -21,6 +22,7 @@
 <translation id="1426410128494586442">نعم</translation>
 <translation id="1446450296470737166">‏السماح بالتحكم الكامل لأجهزة MIDI</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
+<translation id="1633720957382884102">مواقع إلكترونية ذات صلة</translation>
 <translation id="1644574205037202324">السجل</translation>
 <translation id="1647582022260550163">هل تريد فعلاً إعادة ضبط الأذونات ومحو ملفات تعريف الارتباط وبيانات الموقع الإلكتروني؟</translation>
 <translation id="1660204651932907780">السماح للمواقع الإلكترونية بتشغيل الصوت (موصى به)</translation>
@@ -374,6 +376,7 @@
 <translation id="8751914237388039244">اختيار صورة</translation>
 <translation id="8801436777607969138">‏حظر JavaScript لموقع إلكتروني مُعيَّن.</translation>
 <translation id="8816026460808729765">يمكنك حظر المواقع الإلكترونية من الوصول إلى أجهزة الاستشعار.</translation>
+<translation id="8823559166155093873">حظر ملفات تعريف الارتباط</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8903921497873541725">تكبير</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

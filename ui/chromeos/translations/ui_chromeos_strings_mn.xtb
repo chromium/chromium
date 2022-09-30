@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Жагсаалтаар харах горим руу сэлгэх</translation>
 <translation id="2377590462528165447">Linux-тэй <ph name="NUMBER_OF_ITEMS" /> фолдер хуваалцсан байна</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файлууд сонгогдлоо</translation>
+<translation id="2383454254762599978">Хогийн сав руу зөөх</translation>
 <translation id="2387458720915042159">Прокси холболтын төрөл</translation>
 <translation id="2389832672041313158">Бирм/Мьянмар</translation>
 <translation id="2392369802118427583">Идэвхжүүлэх</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com руу очно уу...</translation>
 <translation id="3553048479571901246">Файлуудыг <ph name="APP_NAME" />-р нээхийн тулд эхлээд тэдгээрийг Windows-н файлын фолдерт хуулна уу.</translation>
 <translation id="3556731189587832921">Олон улсын компьютерын гартай англи (АНУ)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" />-г хогийн сав руу зөөж байна</translation>
 <translation id="3567221313191587603">Файлууддаа офлайнаар хандахын тулд файл сонгож, <ph name="OFFLINE_CHECKBOX_NAME" />-г асаана уу.</translation>
 <translation id="357479282490346887">Литви</translation>
 <translation id="3587482841069643663">Бүгд</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Бенгал авиа зүй</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4017788180641807848">Workman гартай англи (АНУ)</translation>
+<translation id="4019998208269143058">Шуурхай файлуудад бэхлэх</translation>
 <translation id="4040753847560036377">PUK буруу байна</translation>
 <translation id="4057991113334098539">Идэвхжүүлж байна...</translation>
 <translation id="4092890906744441904">Ирланд</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Администраторын бодлого дараахыг санал болгодоггүй:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" />-г зөөсөн.</translation>
 <translation id="4176286497474237543">Хогийн савыг одоо суллах</translation>
+<translation id="4179621117429069925">Энэ зүйл таны хогийн саванд байна</translation>
 <translation id="4186579485882418952">Офлайн горимыг идэвхжүүлэх</translation>
 <translation id="4193154014135846272">Google баримт бичиг</translation>
 <translation id="4197674956721858839">Зип сонголт</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Баталгаажуулах сертификатыг алсаас цуцалсан байна.</translation>
 <translation id="4394214039309501350">Гадаад холбоос</translation>
 <translation id="4394980935660306080">Энэ долоо хоногийн эхээр</translation>
+<translation id="4398096759193130964">Зүйлсийг сэргээх эсвэл тэдгээрийг хогийн савнаас гадагш шинэ фолдер луу чирнэ үү</translation>
 <translation id="4401287888955153199">Бүгдийг задлах</translation>
 <translation id="4410695710508688828">Задлах үйл ажиллагаа амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Файлууддаа товчлол үүсгэх</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">InScript гартай хинди</translation>
 <translation id="4801956050125744859">Хоёуланг нь хадгал</translation>
 <translation id="4804827417948292437">Авокадо</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> зүйлийг сэргээж байна</translation>
 <translation id="4823651846660089135">Төхөөрөмжийг зөвхөн унших боломжтой</translation>
 <translation id="4826849268470072925">Тамил ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> сонгогдсон зүйлс</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Хөл бөмбөг</translation>
 <translation id="4961158930123534723">1 фолдерыг Parallels Desktop-тай хуваалцсан</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" />-г сэргээсэн</translation>
 <translation id="4969785127455456148">Цомог</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> эсвэл үүнээс бага тэмдэгттэй нэр ашиглана уу</translation>
 <translation id="4973970068702235170">Дараах санамсаргүй алдаа гарсан тул zip хийж чадсангүй: <ph name="ERROR_MESSAGE" /></translation>
@@ -549,6 +556,7 @@
 <translation id="5691596662111998220">Өө өөө, <ph name="FILE_NAME" /> алга байна.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Түгжээг тайлах</translation>
 <translation id="5700087501958648444">Аудионы мэдээлэл</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" />-г хогийн сав руу зөөсөн</translation>
 <translation id="5724172041621205163">Pattachote гартай тай</translation>
 <translation id="5756666464756035725">Унгарын QWERTY</translation>
 <translation id="5763377084591234761">Герман (Швейцар)</translation>
@@ -619,6 +627,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-н архив</translation>
 <translation id="6321303798550928047">Даллаж байна</translation>
 <translation id="6327785803543103246">Веб прокси автоматаар илрүүлэх</translation>
+<translation id="6337014272874260727">Шуурхай файлуудаас бэхэлснийг болиулах</translation>
 <translation id="6339145975392024142">АНУ-н олон улсын (PC)</translation>
 <translation id="6346310558342052870">Хандалтыг хязгаарласан</translation>
 <translation id="6356685157277930264">Файлын мэдээллийн цонх</translation>
@@ -659,6 +668,7 @@
 <translation id="6751256176799620176">1 фолдер сонгосон</translation>
 <translation id="6755827872271341378">ChromeOS Flex төхөөрөмж</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
+<translation id="6794539005637808366">Зүйл сэргээх эсвэл үүнийг хогийн савнаас гадагш шинэ фолдер луу чирнэ үү</translation>
 <translation id="6795884519221689054">Хулсны баавгай</translation>
 <translation id="6806699711453372963">Linux-н хуваалцлыг удирдах</translation>
 <translation id="6806796368146926706">Япон гартай үсэг тоотой гар</translation>
@@ -695,6 +705,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Швед</translation>
 <translation id="6990081529015358884">Таны хангалттай зай алга байна.</translation>
+<translation id="6993826899923627728">Эдгээр зүйл таны хогийн саванд байна</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> файл сонгосон байна</translation>
 <translation id="7008426324576352165">Танай байгууллагад байршуулалтыг дуусгахад илүү их хадгалах сан шаардлагатай.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -740,6 +751,7 @@
 <translation id="7408870451288633753">Чех</translation>
 <translation id="7417453074306512035">Этиоп хэлний гар</translation>
 <translation id="7417705661718309329">Google-ийн газрын зураг</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />"-г сэргээж байна</translation>
 <translation id="7458955835361612701">Саяхны зураг байхгүй байна</translation>
 <translation id="7460898608667578234">Украйн</translation>
 <translation id="7469894403370665791">Автоматаар энэ сүлжээ рүү холбогдох</translation>
@@ -768,6 +780,7 @@
 <translation id="7655441028674523381">Google Зурагт хялбархан хандаарай</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7663224033570512922">Хинди</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хогийн сав руу зөөсөн</translation>
 <translation id="7693909743393669729">Драйвыг форматалснаар үүнд хадгалсан бүх өгөгдлийг устгах бөгөөд харагдахгүй байж болзошгүй хуваарилалтыг оруулаад одоо байгаа бүх хуваарилалтыг хасна. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />-г форматалж чадсангүй</translation>
 <translation id="76959938259365003">Хогийн савыг хоосолж чадсангүй.</translation>
@@ -782,6 +795,7 @@
 <translation id="7760449188139285140">Хятад вуби</translation>
 <translation id="7765158879357617694">Зөөх</translation>
 <translation id="7774365994322694683">Шувуу</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> зүйлийг сэргээсэн</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" оффлайныг хадгалахын тулд та  <ph name="MARKUP_1" />-аас нэмэлт <ph name="TOTAL_FILE_SIZE" />-ыг чөлөөлөх ёстой. 
 <ph name="MARKUP_2" /> Оффлайн руу нэвтрэхэд цаашид хэрэглэх шаардлагагүй файлуудыг гаргах <ph name="MARKUP_3" />
@@ -962,6 +976,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-с <ph name="TO_ENTRY_NAME" /> хүртэлх <ph name="ENTRY_COUNT" /> оролтын мужийг сонгосон.</translation>
 <translation id="954194396377670556">Администраторын бодлого дараахаас сэргийлнэ:</translation>
 <translation id="965477715979482472">Англи хэл (Өмнөд Африк)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> зүйлийг хогийн сав руу зөөж байна</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Та үүнийг солих уу?</translation>
 <translation id="992401651319295351">Танд <ph name="RETRIES" /> оролдлого үлдлээ. Та шинэ ПИН тохируулах хүртлээ энэ сүлжээг ашиглах боломжгүй байх болно.</translation>

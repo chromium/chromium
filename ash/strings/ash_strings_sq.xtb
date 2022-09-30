@@ -371,6 +371,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Të fiket pajisja?</translation>
 <translation id="3126069444801937830">Rifillo për të përditësuar</translation>
+<translation id="3139382871451988441">Çaktivizo qasjen te kamera</translation>
 <translation id="3139942575505304791">Tavolina e punës 1</translation>
 <translation id="315116470104423982">Të dhëna celulare</translation>
 <translation id="3151786313568798007">Orientimi</translation>
@@ -647,6 +648,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox është aktivizuar</translation>
 <translation id="4665114317261903604">Aktivizo/çaktivizo modalitetin "Mos shqetëso". <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Çaktivizo qasjen te kamera në këtë pajisje për të bllokuar të gjitha kamerat gjatë të gjithë kohës.</translation>
 <translation id="4667099493359681081">Po shkarkon <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Rafti në fund</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
@@ -665,6 +667,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4776917500594043016">Fjalëkalimi për <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Dyqani i Play</translation>
 <translation id="4778095205580009397">"Asistenti i Google" nuk ofrohet në një sesion demonstrimi.</translation>
+<translation id="4789348252524569426">Skedarët e ligjërimit nuk mund të instalohen. Pajisja jote ka nevojë që të përditësohet. Rinise pajisjen dhe provo përsëri.</translation>
 <translation id="479989351350248267">kërko</translation>
 <translation id="4804818685124855865">Shkëputu</translation>
 <translation id="4814539958450445987">Ekrani i identifikimit</translation>
@@ -1144,6 +1147,7 @@ Instalim i ri</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> po përdor aktualisht mikrofonin tënd</translation>
 <translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="7564874036684306347">Zhvendosja e dritareve te një desktop tjetër mund të shkaktojë një sjellje të papritur. Njoftimet pasuese, dritarja dhe dialogët mund të ndahen mes desktopëve.</translation>
+<translation id="7567076708801803118">Dëshiron që ta çaktivizosh qasjen te kamera në këtë pajisje?</translation>
 <translation id="7569509451529460200">Braille dhe ChromeVox janë aktivizuar</translation>
 <translation id="7573585051776738856">Dritarja aktive u pozicionua në të djathtë.</translation>
 <translation id="7579778809502851308">Regjistrimi i ekranit</translation>

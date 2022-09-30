@@ -846,6 +846,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativno</translation>
 <translation id="3223287115535306850">Ikona za učitavanje prilikom pokretanja aplikacije</translation>
+<translation id="3223425961342298674">Lokacija nije dopuštena</translation>
 <translation id="3225347164936328585">Pljesak</translation>
 <translation id="3225919329040284222">Poslužitelj je pokazao certifikat koji ne odgovara ugrađenim očekivanjima. Ta su očekivanja uključena za određene web-lokacije s visokim stupnjem sigurnosti radi vaše zaštite.</translation>
 <translation id="3226128629678568754">Pritisnite gumb za ponovno učitavanje da biste ponovo poslali podatke koji su potrebni za učitavanje stranice.</translation>
@@ -1184,6 +1185,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4127575959421463246">Tražite li oznake OS-a Chrome? Posjetite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 druga stavka}one{# druga stavka}few{# druge stavke}other{# drugih stavki}}</translation>
 <translation id="4130226655945681476">provjerite mrežne kabele, modem i usmjerivač</translation>
+<translation id="4132448310531350254">Duplicirani rukovatelji za datotečni nastavak <ph name="FILE_EXTENSION" /> navedeni u aplikacijama <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Izradite dokument</translation>
 <translation id="413544239732274901">Saznajte više</translation>
 <translation id="4142935452406587478">Ladica 10</translation>
@@ -1206,6 +1208,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4194250254487269611">Vaša se kartica trenutačno ne može spremiti</translation>
 <translation id="4196861286325780578">&amp;Ponovi premještanje</translation>
 <translation id="4202554117186904723">Peti kolut</translation>
+<translation id="4203769790323223880">Kamera nije dopuštena</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />provjerite vatrozid i konfiguraciju antivirusnog programa<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Velik</translation>
 <translation id="4210602799576081649">Kontrolni kôd je istekao, zatražite novi kôd</translation>
@@ -1232,6 +1235,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
     &lt;p&gt;Ne zaboravite ponovo uključiti antivirusni program kada završite.&lt;/p&gt;
     &lt;h4&gt;5. korak: potražite dodatnu pomoć&lt;/h4&gt;
     &lt;p&gt;Ako i dalje vidite pogrešku, obratite se vlasniku web-lokacije.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofon nije dopušten</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Pokušajte pokrenuti Mrežnu dijagnostiku<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Može tražiti dopuštenje za upotrebu i pomicanje kamere</translation>
 <translation id="4235360514405112390">Važeći</translation>
@@ -1249,6 +1253,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4277028893293644418">Poništi zaporku</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
 <translation id="4282346679996504092">Upozorenja za ovaj proizvod isključena su, a oznaka je uklonjena</translation>
+<translation id="4285498937028063278">Otkvači</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Ova je kartica spremljena na vašem Google računu}one{Ove su kartice spremljene na vašem Google računu}few{Ove su kartice spremljene na vašem Google računu}other{Ove su kartice spremljene na vašem Google računu}}</translation>
 <translation id="4287885627794386150">Ispunjava kriterije za probu, ali proba nije aktivna</translation>
 <translation id="4297502707443874121">Minijatura za stranicu <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1602,6 +1607,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5177076414499237632">Saznajte više o izvoru i temi ove stranice</translation>
 <translation id="5179510805599951267">Nije <ph name="ORIGINAL_LANGUAGE" /> jezik? Prijavite tu pogrešku</translation>
 <translation id="518639307526414276">Hrana za ljubimce i potrepštine za njegu ljubimaca</translation>
+<translation id="5190072300954988691">Kamera i mikrofon nisu dopušteni</translation>
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5191315092027169558">Vašim profilom upravlja <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi preuzeti više datoteka</translation>
@@ -1622,6 +1628,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Odbaci</translation>
+<translation id="5239623327352565343">Lokacija je dopuštena</translation>
 <translation id="5242889659037569123">Kovčezi i dodaci za putovanja</translation>
 <translation id="5250209940322997802">"Povezivanje s mrežom"</translation>
 <translation id="52517543715119994">Saznajte više o Chromeovim značajkama</translation>
@@ -2434,6 +2441,7 @@ Dodatne pojedinosti:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o tom problemu.</translation>
 <translation id="7455133967321480974">Upotrijebi globalnu zadanu vrijednost (blokiraj)</translation>
 <translation id="7460618730930299168">Projekcija se razlikuje od onog što ste odabrali. Želite li nastaviti?</translation>
+<translation id="7461924472993315131">Prikvači</translation>
 <translation id="7463075493919226237">Australski nogomet</translation>
 <translation id="7469935732330206581">Obrazac nije siguran</translation>
 <translation id="7473891865547856676">Ne, hvala</translation>
@@ -2497,6 +2505,7 @@ Dodatne pojedinosti:
 <translation id="7581199239021537589">Y-pomak 2. strane slike</translation>
 <translation id="7582602800368606489">Brzo izradite novi događaj u Google kalendaru</translation>
 <translation id="7583969447617676942">Pravne usluge</translation>
+<translation id="7586676035079382730">Obavijesti nisu dopuštene</translation>
 <translation id="7591288787774558753">Želite li podijeliti povjerljiv sadržaj?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> želi koristiti kolačiće i podatke web-lokacije na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikat poslužitelja krši ograničenja naziva.</translation>
@@ -3051,6 +3060,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9131119348384879525">Želite li snimiti povjerljiv sadržaj?</translation>
 <translation id="9136861683332321024">Luksuzna vozila</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
+<translation id="9138037198177304356">Obavijesti su dopuštene</translation>
 <translation id="9139318394846604261">Kupnja</translation>
 <translation id="9141013498910525015">Upravljanje adresama</translation>
 <translation id="9144951720726881238">Datum isteka:</translation>

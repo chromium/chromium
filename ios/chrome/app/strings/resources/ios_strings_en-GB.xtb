@@ -23,7 +23,6 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1104948393051856124">Accept &amp; Continue</translation>
 <translation id="110724200315609752">Switch to open window</translation>
 <translation id="1112015203684611006">Printing failed.</translation>
-<translation id="1118569444314402022">Welcome back, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1135212215217513471">Get Chrome for iOS</translation>
@@ -61,6 +60,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1340643665687018190">Close menu</translation>
 <translation id="1358214951266274152">Visit link that you copied</translation>
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
+<translation id="1363028406613469049">Track</translation>
 <translation id="1375321115329958930">Saved Passwords</translation>
 <translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card number</translation>
@@ -82,6 +82,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="152234381334907219">Never saved</translation>
 <translation id="1523341279170789507">Allow All Cookies</translation>
 <translation id="1524563461097350801">No, Thanks</translation>
+<translation id="1531836666020185856">Featured</translation>
 <translation id="1535268707340844072">Your current setting may cause some sites to break. To manage cookies for all sites, see <ph name="BEGIN_LINK" />Cookie settings<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -197,6 +198,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2647269890314209800">Cookies in Use</translation>
 <translation id="2648803196158606475">Delete Read</translation>
 <translation id="2653659639078652383">Submit</translation>
+<translation id="2671426118752779020">You can use the passwords that you saved to Google Password Manager in other apps on your iPhone.</translation>
 <translation id="2690858294534178585">Camera is in use</translation>
 <translation id="2691653761409724435">Not available offline</translation>
 <translation id="2695507686909505111">Page translated</translation>
@@ -206,6 +208,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2704491540504985681">Downloads</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2709516037105925701">Auto-fill</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Unable to Open File</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
 <translation id="2747003861858887689">Previous field</translation>
@@ -262,6 +265,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3103603146121354983">Auto-fill passwords</translation>
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">History and more</translation>
 <translation id="3131206671572504478">Block all</translation>
 <translation id="313283613037595347">Create new Incognito tab.</translation>
 <translation id="3153862085237805241">Save Card</translation>
@@ -332,7 +336,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3709582977625132201">Mark as unread</translation>
 <translation id="371230970611282515">Predicts and warns you about dangerous events before they happen.</translation>
 <translation id="37207012422556617">Trending searches</translation>
-<translation id="3726360487031500941">Sign in again to your account <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Opens the inputted URLs in Google Chrome in Incognito.</translation>
 <translation id="3762232513783804601">Built for your iPad</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
@@ -504,6 +507,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="509789154667432072">Add a bookmark</translation>
 <translation id="5118713593561876160">Interests</translation>
 <translation id="5118764316110575523">Off</translation>
+<translation id="5119391094379141756">Select Chrome</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5140288047769711648">Chrome will remember this password for you. You don't have to remember it.</translation>
 <translation id="5149188072385105201">Add password…</translation>
@@ -627,6 +631,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6149061208933997199">Use Password</translation>
 <translation id="6152406514676263192">Sync for the most relevant content based on your interests.</translation>
 <translation id="6159839020698489198">optional</translation>
+<translation id="6165508094623778733">Learn more</translation>
 <translation id="6177442314419606057">Search in Chrome</translation>
 <translation id="6184086493125982861">Show Tabs</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8032569120109842252">Following</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Search history<ph name="END_LINK" /> and <ph name="BEGIN_LINK" />other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.</translation>
 <translation id="804427445359061970">You'll find your tabs from other devices here</translation>
+<translation id="8048728378294435881">Back up your stuff and use it on any device</translation>
 <translation id="8059533439631660104">Collapses the section.</translation>
 <translation id="8065292699993359127">Open URLs in Chrome in Incognito</translation>
 <translation id="806745655614357130">Keep my data separate</translation>
@@ -977,6 +983,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8981454092730389528">Google Activity Controls</translation>
 <translation id="8985320356172329008">Signed In to Google as</translation>
 <translation id="9000089900434778519">Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>
+<translation id="9008201768610948239">Ignore</translation>
 <translation id="9034759925968272072">You won't be signed out of your Google Account. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Show Original</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

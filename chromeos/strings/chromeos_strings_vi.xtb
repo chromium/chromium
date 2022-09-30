@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">Khi chương trình cơ sở đang cập nhật, đừng rút thiết bị bên ngoài này ra hay tắt máy tính. Bạn có thể thu nhỏ cửa sổ này. Quá trình cập nhật có thể mất vài phút và thiết bị bên ngoài của bạn có thể không hoạt động được trong thời gian này.</translation>
 <translation id="3486220673238053218">định nghĩa</translation>
 <translation id="3488065109653206955">Được kích hoạt một phần</translation>
+<translation id="3510890413042482857">Gửi <ph name="BEGIN_LINK1" />dữ liệu theo dõi hiệu suất<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Bản cập nhật ChromeOS</translation>
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="3532980081107202182">Còn khoảng <ph name="MIN_REMAINING" /> phút nữa</translation>

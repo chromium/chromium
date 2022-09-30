@@ -371,6 +371,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth-a)</translation>
 <translation id="3120421559657122717">Gailua itzali nahi duzu?</translation>
 <translation id="3126069444801937830">Eguneratzeko, berrabiarazi</translation>
+<translation id="3139382871451988441">Desaktibatu kamera atzitzeko baimena.</translation>
 <translation id="3139942575505304791">1. lan-eremua</translation>
 <translation id="315116470104423982">Datu-konexioa</translation>
 <translation id="3151786313568798007">Orientazioa</translation>
@@ -648,6 +649,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Gaitu da ChromeVox</translation>
 <translation id="4665114317261903604">Gaitu/Desgaitu ez molestatzeko modua. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Desaktibatu gailu honetako kamera atzitzeko baimena kamera guztiak blokeatuta egon daitezen beti.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> deskargatzen</translation>
 <translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
@@ -666,6 +668,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> erabiltzaile-kontuko pasahitza</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google-ren Laguntzailea ez dago erabilgarri demo saioetan.</translation>
+<translation id="4789348252524569426">Ezin dira instalatu hizketa-fitxategiak. Gailua eguneratu behar da. Berrabiarazi gailua eta saiatu berriro.</translation>
 <translation id="479989351350248267">bilaketa</translation>
 <translation id="4804818685124855865">Deskonektatu</translation>
 <translation id="4814539958450445987">Saioa hasteko pantaila</translation>
@@ -1144,6 +1147,7 @@ Berriki instalatu da</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da une honetan</translation>
 <translation id="7561982940498449837">Itxi menua</translation>
 <translation id="7564874036684306347">Leihoak beste mahaigain batera eramaten badira, baliteke ustekabeko portaerak izatea. Aurrerantzeko jakinarazpenak, baliteke leihoak eta elkarrizketa-koadroak bi mahaigainen artean banatuta agertzea.</translation>
+<translation id="7567076708801803118">Gailu honetako kamera atzitzeko baimena desaktibatu nahi duzu?</translation>
 <translation id="7569509451529460200">Braillea eta ChromeVox gaituta daude</translation>
 <translation id="7573585051776738856">Eskuinean ainguratu da leiho aktiboa.</translation>
 <translation id="7579778809502851308">Pantaila-argazkia edo -bideoa</translation>

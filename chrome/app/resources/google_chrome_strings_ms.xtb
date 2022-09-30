@@ -58,7 +58,6 @@
 <translation id="2094648590148273905">Syarat Chrome OS Flex</translation>
 <translation id="2094919256425865063">Keluar daripada Chrome juga?</translation>
 <translation id="2106831557840787829">ChromeOS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" />tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Apabila dihidupkan, Chrome memulih guna memori daripada tab yang tidak digunakan secara aktif. Tindakan ini akan membebaskan sumber komputer anda untuk tugasan lain dan memastikan Chrome sentiasa pantas. Tab tidak aktif kelihatan kosong dan memuat semula secara automatik apabila anda mengkliknya. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /> atau <ph name="BEGIN_LINK_2" />hantar maklum balas<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Lancarkan Semula untuk Mengemas Kini &amp;Chrome</translation>
 <translation id="2123055963409958220">Bantu jadikan Chrome lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
@@ -225,7 +224,6 @@
 <translation id="5386244825306882791">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome atau membuat carian dari Kotak Omni.</translation>
 <translation id="5394833366792865639">Kongsi tab Chrome</translation>
 <translation id="5412485296464121825">Laman boleh menyimpan maklumat tentang minat anda menggunakan Chrome. Contohnya, jika anda melawat laman untuk membeli kasut untuk maraton, laman tersebut mungkin mentakrifkan minat anda sebagai larian maraton. Kemudian, jika anda melawati laman lain untuk mendaftar perlumbaan, laman tersebut boleh memaparkan kepada anda iklan kasut untuk berlari berdasarkan minat anda.</translation>
-<translation id="5416870378730196769">Chrome menghidupkan Penjimat Memori</translation>
 <translation id="5430073640787465221">Fail pilihan anda rosak atau tidak sah. Google Chrome tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="5524761631371622910">Semasa percubaan dihidupkan dan jika Chrome telah meletakkan anda secara rawak dalam percubaan aktif, sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara bergilir setiap bulan.</translation>
 <translation id="556024056938947818">Google Chrome sedang cuba memaparkan kata laluan.</translation>
@@ -276,7 +274,6 @@
 <translation id="6735387454586646204">Sistem Chrome OS Flex</translation>
 <translation id="6739177684496155661">Teruskan dalam profil Chrome baharu?</translation>
 <translation id="6750954913813541382">Untuk membetulkan kesalahan ejaan, Chrome akan menghantar teks yang anda taip dalam penyemak imbas kepada Google</translation>
-<translation id="6756581345161130259">Seperti yang diperlukan, Chrome menuntut semula memori daripada tab yang tidak digunakan secara aktif. Anda boleh menukar pilihan ini pada bila-bila masa dalam tetapan.</translation>
 <translation id="677276454032249905">Keluar daripada Chrome juga?</translation>
 <translation id="6785872064505734160">Google Assistant dalam Chrome boleh melengkapkan tindakan merentas laman web untuk anda</translation>
 <translation id="683440813066116847">Peraturan masuk bagi Google Chrome Canary untuk membenarkan trafik mDNS.</translation>
@@ -324,7 +321,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Sejarah penyemakan imbas anda, rekod laman yang anda lawati menggunakan Chrome pada peranti ini.</translation>
-<translation id="7726773885101561560">Untuk menjadikan penyemakan imbas anda lebih pantas, Chrome memulih guna memori daripada tab yang tidak digunakan.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>

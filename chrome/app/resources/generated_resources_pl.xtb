@@ -349,7 +349,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1327272175893960498">Bilety Kerberos</translation>
 <translation id="1327495825214193325">Aby włączyć debugowanie ADB, musisz ponownie uruchomić urządzenie <ph name="DEVICE_TYPE" />. W celu wyłączenia tej funkcji trzeba będzie przywrócić na urządzeniu ustawienia fabryczne.</translation>
 <translation id="1327794256477341646">Nie będą działać funkcje, które potrzebują lokalizacji</translation>
-<translation id="1329191040029425999">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
 <translation id="1331977651797684645">To ja.</translation>
 <translation id="1333489022424033687">Dopóki nie usuniesz danych zapisanych na Twoim urządzeniu przez inne strony, niektóre funkcje na stronie <ph name="ORIGIN" /> mogą nie działać</translation>
 <translation id="1333965224356556482">Nie zezwalaj witrynom na wyświetlanie lokalizacji</translation>
@@ -1295,7 +1294,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2182058453334755893">Skopiowano do schowka</translation>
 <translation id="2183570493397356669">Przycisk Dalej jest wyłączony</translation>
 <translation id="2184515124301515068">Niech Chrome decyduje, które strony mogą odtwarzać dźwięk (zalecane)</translation>
-<translation id="2186206192313702726">Obiektyw Google</translation>
 <translation id="2186711480981247270">Strona udostępniona z innego urządzenia</translation>
 <translation id="2187675480456493911">Sieć jest zsynchronizowana ze wszystkimi urządzeniami na Twoim koncie. Ustawienia zmienione przez innych użytkowników nie zostaną zsynchronizowane. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Błąd importowania certyfikatu serwera</translation>
@@ -1357,7 +1355,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2241053333139545397">Odczytywanie i modyfikowanie Twoich danych na wielu stronach</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2242687258748107519">Informacje o pliku</translation>
-<translation id="2245296100676446525">Włącz synchronizację, aby mieć dostęp do zakładek, haseł, historii i innych danych na tym urządzeniu i na pozostałych zsynchronizowanych urządzeniach.</translation>
 <translation id="2245603955208828424">Używaj klawiszy strzałek, aby przechodzić między elementami litera po literze</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> aktualizuje się automatycznie w tle, dzięki czemu możesz korzystać z najnowszych funkcji i ulepszeń zabezpieczeń. Ustawienia aktualizacji możesz sprawdzić w Ustawieniach.</translation>
 <translation id="2246549592927364792">Pobierać opisy obrazów z Google?</translation>
@@ -1529,7 +1526,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2381499968174336913">Podgląd udostępnionej karty</translation>
 <translation id="2381756643783702095">Pytaj przed wysłaniem (zalecane)</translation>
 <translation id="2383825469508278924">Tu możesz zmieniać mapowanie klawiszy, klawisze funkcyjne i inne ustawienia</translation>
-<translation id="2386202302581016807">Pamięć dostępna na urządzeniu jest niewystarczająca, aby dokończyć konfigurację</translation>
 <translation id="2387052489799050037">Powrót do ekranu głównego</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (teraz aktywne)</translation>
 <translation id="2389775852302560582">Adres IP</translation>
@@ -2241,7 +2237,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3031557471081358569">Wybierz elementy do zaimportowania:</translation>
 <translation id="3032204772252313646">Napisy automatyczne</translation>
 <translation id="3033348223765101500">Dane pod kontrolą</translation>
-<translation id="3034627908241330765">Aplikacja Steam jest teraz konfigurowana w innym procesie. Zanim uruchomisz kolejny, poczekaj, aż ten się zakończy.</translation>
 <translation id="3036327949511794916">Minął termin zwrotu urządzenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Włącz Flasha</translation>
 <translation id="3037754279345160234">Nie można przeanalizować konfiguracji dołączania do domeny. Skontaktuj się z administratorem.</translation>
@@ -2254,7 +2249,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3046178388369461825">Na dysku Linuksa już prawie nie ma miejsca</translation>
 <translation id="3046910703532196514">Strona internetowa, kompletna</translation>
 <translation id="304747341537320566">Mechanizmy syntezy mowy</translation>
-<translation id="3048051495640130973">W ustawieniach możesz określić, kiedy ma się włączać Oszczędzanie baterii</translation>
 <translation id="3048336643003835855">Urządzenie HID firmy <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Dzienniki przesyłania i urządzenia</translation>
 <translation id="3051250416341590778">Rozmiar wyświetlacza</translation>
@@ -2298,7 +2292,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3090819949319990166">Nie można skopiować zewnętrznego pliku CRX jako <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">Sparowano „<ph name="DEVICE_NAME" />”</translation>
 <translation id="3093714882666365141">Nie zezwalaj witrynom na instalowanie modułów do obsługi płatności</translation>
-<translation id="3093958632721393232">Włączaj tylko wtedy, gdy bateria jest słaba</translation>
 <translation id="3094141017404513551">Spowoduje to oddzielenie Twoich danych przeglądania od danych użytkownika <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Zakładki, hasła i inne dane przeglądarki są zsynchronizowane z kontem głównym.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 potencjalnie niebezpieczne rozszerzenie zostało wyłączone. Możesz je też usunąć.}few{{NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia zostały wyłączone. Możesz je też usunąć.}many{{NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń zostało wyłączonych. Możesz je też usunąć.}other{{NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia zostało wyłączone. Możesz je też usunąć.}}</translation>
@@ -2346,7 +2339,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3142562627629111859">Nowa grupa</translation>
 <translation id="3143515551205905069">Anuluj synchronizację</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
-<translation id="3143937294861726703">Oszczędzanie pamięci jest włączone</translation>
 <translation id="3144647712221361880">Otwórz link jako</translation>
 <translation id="3149510190863420837">Aplikacje Chrome</translation>
 <translation id="3150693969729403281">Wykonaj kontrolę zabezpieczeń teraz</translation>
@@ -2505,8 +2497,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3315442055907669208">Włącz tryb czytnika</translation>
 <translation id="3317459757438853210">Druk dwustronny</translation>
 <translation id="3317678681329786349">Zablokowano dostęp do kamery i mikrofonu</translation>
-<translation id="3320620783302968370">Jeśli problem będzie nadal występował, uruchom urządzenie ponownie
-Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">Bezpieczne przeglądanie (ochrona przed niebezpiecznymi stronami) i inne ustawienia zabezpieczeń</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Te dane zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}=1{Ten plik zawiera treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}few{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}many{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}other{Te pliki zawierają treści niebezpieczne lub treści o charakterze kontrowersyjnym. Usuń te treści i spróbuj jeszcze raz.}}</translation>
 <translation id="3323521181261657960">Bonus! Możesz dłużej korzystać z urządzenia</translation>
@@ -2662,7 +2652,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3462311546193741693">Spowoduje wylogowanie Cię z większości stron internetowych. Nie nastąpi wylogowanie z konta Google, więc będzie można wyczyścić zsynchronizowane dane.</translation>
 <translation id="3462413494201477527">Anulować konfigurowanie konta?</translation>
 <translation id="346298925039590474">Ta sieć komórkowa będzie dostępna dla wszystkich użytkowników urządzenia</translation>
-<translation id="3463015289462934089">Sprawdź, czy urządzenie jest połączone z internetem.</translation>
 <translation id="3464145797867108663">Dodaj profil służbowy</translation>
 <translation id="346431825526753">To jest konto dla dzieci, którym zarządza <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Korzystaj z rabatów u sprzedawców: <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> i innych</translation>
@@ -3547,7 +3536,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub zatrzymać w dowolnym momencie w ustawieniach używanego przez dziecko urządzenia z Chrome OS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Wyłączenie tej funkcji nie ogranicza wysyłania przez to urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu czy zabezpieczenia.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Ta strona ma zezwolenie na edytowanie plików</translation>
-<translation id="4302577930366020750">Aby użyć aplikacji Steam, uruchom urządzenie ponownie</translation>
 <translation id="4303079906735388947">Ustaw nowy kod PIN klucza bezpieczeństwa</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4305402730127028764">Skopiuj na: <ph name="DEVICE_NAME" /></translation>
@@ -3679,7 +3667,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
 <translation id="4427365070557649936">Sprawdzam kod potwierdzenia...</translation>
 <translation id="4429163740524851942">Układ klawiatury fizycznej</translation>
-<translation id="4429239357082509581">Steam nie ma uprawnień do uruchamiania</translation>
 <translation id="4430019312045809116">Głośność</translation>
 <translation id="4430369329743628066">Dodano zakładkę</translation>
 <translation id="4430422687972614133">Włącz kartę wirtualną</translation>
@@ -3947,8 +3934,6 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4675828034887792601">Tworzenie skrótów do wyszukiwania w witrynach i zarządzanie wyszukiwarkami</translation>
 <translation id="4676595058027112862">Sterowanie telefonem, Więcej informacji</translation>
 <translation id="4677772697204437347">Pamięć GPU</translation>
-<translation id="4677970983462111944">Aplikacja Steam jest niedozwolona na tym urządzeniu. Aby uzyskać pozwolenie, skontaktuj się z administratorem
-Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">Kamera jest wyłączona</translation>
 <translation id="4680105648806843642">Dźwięk na tej stronie został wyciszony</translation>
 <translation id="4681453295291708042">Wyłącz Udostępnianie w pobliżu</translation>
@@ -4265,7 +4250,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="49896407730300355">&amp;Obróć w lewo</translation>
 <translation id="4989966318180235467">Sprawdź &amp;stronę tła</translation>
 <translation id="4991420928586866460">Traktuj klawisze z górnego rzędu jak klawisze funkcyjne</translation>
-<translation id="4991858732577603540">Zaczekaj kilka minut, a potem uruchom aplikację Steam ponownie.</translation>
 <translation id="4992458225095111526">Potwierdzanie Powerwash</translation>
 <translation id="4992473555164495036">Administrator ograniczył dostępne metody wprowadzania.</translation>
 <translation id="4994754230098574403">Konfiguruję</translation>
@@ -4732,7 +4716,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5463275305984126951">Indeks – <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Zasubskrybuj e-maile na temat urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Szukam urządzeń...</translation>
-<translation id="5463845647891602726">Aby zwolnić miejsce, usuń pliki z urządzenia</translation>
 <translation id="5463856536939868464">Menu zawierające ukryte zakładki</translation>
 <translation id="5464660706533281090">Dziecko nie może zmienić tego ustawienia.</translation>
 <translation id="5466374726908360271">&amp;Wklej i wyszukaj „<ph name="SEARCH_TERMS" />”</translation>
@@ -5100,6 +5083,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5812674658566766066">Rozwiń wszystko</translation>
 <translation id="5815645614496570556">Adres X.400</translation>
 <translation id="5816434091619127343">Te zmiany uniemożliwiłyby korzystanie z drukarki.</translation>
+<translation id="581659025233126501">Włącz synchronizację</translation>
 <translation id="5817069030404929329">Czy przenieść hasła z tego urządzenia na konto Google?</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="5821565227679781414">Utwórz skrót</translation>
@@ -5278,7 +5262,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5975792506968920132">Procent naładowania akumulatora</translation>
 <translation id="5976160379964388480">Pozostałe</translation>
 <translation id="5978277834170881274">&amp;Używaj podstawowego sprawdzania pisowni</translation>
-<translation id="5978395054855988504">Oszczędzanie baterii jest włączone</translation>
 <translation id="5978493744931296692">Administrator wyłączył inne profile</translation>
 <translation id="5979084224081478209">Sprawdź hasła</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Ponownie włączono 1 potencjalnie niebezpieczne rozszerzenie}few{Ponownie włączono {NUM_EXTENSIONS} potencjalnie niebezpieczne rozszerzenia}many{Ponownie włączono {NUM_EXTENSIONS} potencjalnie niebezpiecznych rozszerzeń}other{Ponownie włączono {NUM_EXTENSIONS} potencjalnie niebezpiecznego rozszerzenia}}</translation>
@@ -7261,7 +7244,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7870790288828963061">Nie odnaleziono nowszej wersji aplikacji kiosku. Aktualizacja nie jest wymagana. Odłącz pamięć USB.</translation>
 <translation id="7871049986386271121">Zawsze w tej witrynie</translation>
 <translation id="7871109039747854576">Użyj znaków <ph name="COMMA" /> i <ph name="PERIOD" /> do przechodzenia między stronami listy kandydatów</translation>
-<translation id="7872494313446521576">Kliknij, aby zezwolić rozszerzeniu „<ph name="EXTENSIONS_REQUESTING_ACCESS" />” na stronie <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Wyłączono</translation>
 <translation id="7872758299142009420">Za dużo zagnieżdżonych grup: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Tła Chrome</translation>
@@ -7677,7 +7659,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8248381369318572865">Dostęp do mikrofonu i analizowanie Twojej mowy</translation>
 <translation id="8248887045858762645">Wskazówka dotycząca Chrome</translation>
 <translation id="8249048954461686687">Folder OEM</translation>
-<translation id="8249239468199142122">Oszczędzanie baterii</translation>
 <translation id="8249615410597138718">Wyślij na swoje urządzenia</translation>
 <translation id="8250210000648910632">Brak dostępnego miejsca</translation>
 <translation id="8251441930213048644">Odśwież teraz</translation>
@@ -7881,7 +7862,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8440630305826533614">Aplikacje na Linuksa</translation>
 <translation id="844063558976952706">Zawsze w tej witrynie</translation>
 <translation id="8441313165929432954">Włącz/wyłącz tethering</translation>
-<translation id="8443795068008423036">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
 <translation id="8443986842926457191">URL zawiera więcej niż 2048 znaków</translation>
 <translation id="8446884382197647889">Więcej informacji</translation>
 <translation id="8447409163267621480">Uwzględnij Ctrl lub Alt</translation>
@@ -8212,7 +8192,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8763927697961133303">Urządzenie USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Automatycznie aktualizuj Chrome u wszystkich użytkowników</translation>
-<translation id="8769901904650373714">Wystąpił problem z konfiguracją aplikacji Steam</translation>
 <translation id="8770406935328356739">Główny katalog rozszerzenia</translation>
 <translation id="8771300903067484968">Na stronie startowej zostało przywrócone domyślne tło.</translation>
 <translation id="8773302562181397928">Zapisz drukarkę <ph name="PRINTER_NAME" /></translation>
@@ -8727,7 +8706,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="964286338916298286">Twój administrator IT wyłączył możliwość korzystania z bonusów Chrome na tym urządzeniu.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplikacja}few{Aplikacje}many{Aplikacje}other{Aplikacje}}</translation>
 <translation id="964790508619473209">Rozmieszczanie ekranów</translation>
-<translation id="965175368833098333">Funkcja oszczędzania pamięci pozwala zwolnić pamięć używaną przez nieaktywne karty. Dzięki temu zyskujesz zasoby komputera na potrzeby innych zadań.</translation>
 <translation id="965211523698323809">Wysyłanie i odbieranie SMS-ów na urządzeniu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Zgłoś problem z Google Cast</translation>
 <translation id="967398046773905967">Nie zezwalaj żadnym stronom na dostęp do urządzeń HID</translation>

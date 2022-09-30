@@ -371,6 +371,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Vill du stänga av enheten?</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
+<translation id="3139382871451988441">Inaktivera kameraåtkomst.</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
 <translation id="3151786313568798007">Orientering</translation>
@@ -647,6 +648,7 @@ Anslut enheten till en strömkälla.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox har aktiverats</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Inaktivera kameraåtkomst på den här enheten om du vill blockera alla kameror hela tiden.</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> laddas ned</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
@@ -665,6 +667,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butik</translation>
 <translation id="4778095205580009397">Google-assistenten är inte tillgänglig i en demosession.</translation>
+<translation id="4789348252524569426">Det gick inte att installera ljudfiler. Enheten måste uppdateras. Starta om enheten och försök igen.</translation>
 <translation id="479989351350248267">sök</translation>
 <translation id="4804818685124855865">Koppla från</translation>
 <translation id="4814539958450445987">Inloggningsskärm</translation>
@@ -1144,6 +1147,7 @@ Nyligen installerad</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> använder just nu mikrofonen</translation>
 <translation id="7561982940498449837">Stäng meny</translation>
 <translation id="7564874036684306347">Om du flyttar fönster till ett annat skrivbord kan det leda till oväntat beteende. Efterföljande meddelanden, fönster och dialogrutor kan delas upp mellan skrivborden.</translation>
+<translation id="7567076708801803118">Vill du inaktivera kameraåtkomst på den här enheten?</translation>
 <translation id="7569509451529460200">Punktskrift och ChromeVox har aktiverats</translation>
 <translation id="7573585051776738856">Det aktiva fönstret har dockats till höger.</translation>
 <translation id="7579778809502851308">Skärmbild</translation>

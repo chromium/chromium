@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">Derbyn a Pharhau</translation>
 <translation id="110724200315609752">Newid i ffenestr sydd ar Agor</translation>
 <translation id="1112015203684611006">Wedi methu ag argraffu.</translation>
-<translation id="1118569444314402022">Croeso'n ôl, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
 <translation id="1135212215217513471">Cael Chrome ar gyfer iOS</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">Cau'r Ddewislen</translation>
 <translation id="1358214951266274152">Mynd i Ddolen y Gwnaethoch ei Chopïo</translation>
 <translation id="1360432990279830238">Allgofnodi a diffodd cysoni?</translation>
+<translation id="1363028406613469049">Olrhain</translation>
 <translation id="1375321115329958930">Cyfrineiriau a Gadwyd</translation>
 <translation id="1377255359165588604">Mae Cysoni wedi stopio gweithio.</translation>
 <translation id="1377321085342047638">Rhif y Cerdyn</translation>
@@ -197,6 +197,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2647269890314209800">Cwcis sy'n cael eu defnyddio</translation>
 <translation id="2648803196158606475">Clirio'r Rhestr Ddarllen</translation>
 <translation id="2653659639078652383">Danfon</translation>
+<translation id="2671426118752779020">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i Reolwr Cyfrineiriau Google mewn apiau eraill ar eich iPhone.</translation>
 <translation id="2690858294534178585">Mae'r camera'n cael ei ddefnyddio</translation>
 <translation id="2691653761409724435">Nid yw ar gael all-lein</translation>
 <translation id="2695507686909505111">Mae'r dudalen wedi'i chyfieithu</translation>
@@ -206,6 +207,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2704491540504985681">Lawrlwythiadau</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
 <translation id="2709516037105925701">Awtolenwi</translation>
+<translation id="271033894570825754">Newydd</translation>
 <translation id="2712127207578915686">Methu ag Agor y Ffeil</translation>
 <translation id="2718352093833049315">Dim ond ar Wi-Fi</translation>
 <translation id="2747003861858887689">Maes blaenorol</translation>
@@ -262,6 +264,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3103603146121354983">Awtolenwi Cyfrineiriau</translation>
 <translation id="3112556859945124369">Nodi…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Gweld Beth Allwch ei Gysoni<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Hanes a rhagor</translation>
 <translation id="3131206671572504478">Rhwystro Pob Un</translation>
 <translation id="313283613037595347">Creu tab Anhysbys newydd.</translation>
 <translation id="3153862085237805241">Cadw'r Cerdyn</translation>
@@ -332,7 +335,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3709582977625132201">Marcio ei fod Heb ei Ddarllen</translation>
 <translation id="371230970611282515">Mae'n rhagfynegi digwyddiadau peryglus ac yn eich rhybuddio amdanynt cyn iddynt ddigwydd.</translation>
 <translation id="37207012422556617">Chwiliadau Poblogaidd</translation>
-<translation id="3726360487031500941">Mewngofnodwch eto i'ch cyfrif <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Yn agor y cyfeiriadau URL a fewnbynnwyd yn Google Chrome yn y Modd Anhysbys.</translation>
 <translation id="3762232513783804601">Wedi'i Ddatblygu ar gyfer Eich iPad</translation>
 <translation id="3771033907050503522">Tabiau Anhysbys</translation>
@@ -504,6 +506,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="509789154667432072">Ychwanegu Nod Tudalen</translation>
 <translation id="5118713593561876160">Diddordebau</translation>
 <translation id="5118764316110575523">Diffodd</translation>
+<translation id="5119391094379141756">Dewiswch Chrome</translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
 <translation id="5140288047769711648">Bydd Chrome yn cofio'r cyfrinair hwn i chi. Nid oes rhaid i chi ei gofio.</translation>
 <translation id="5149188072385105201">Ychwanegu Cyfrinair...</translation>
@@ -627,6 +630,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6149061208933997199">Defnyddio'r Cyfrinair</translation>
 <translation id="6152406514676263192">Cysonwch i gael y cynnwys mwyaf perthnasol yn seiliedig ar eich diddordebau.</translation>
 <translation id="6159839020698489198">dewisol</translation>
+<translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6177442314419606057">Chwilio yn Chrome</translation>
 <translation id="6184086493125982861">Dangos Tabiau</translation>
 <translation id="6187302354554850004">Cysonwyd ddiwethaf: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +878,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8032569120109842252">Yn dilyn</translation>
 <translation id="804225253087497565">Gall <ph name="BEGIN_LINK" />Hanes chwilio<ph name="END_LINK" /> a <ph name="BEGIN_LINK" />mathau eraill o weithgarwch<ph name="END_LINK" /> gael eu cadw i'ch Cyfrif Google pan fyddwch wedi mewngofnodi. Gallwch eu dileu ar unrhyw adeg.</translation>
 <translation id="804427445359061970">Byddwch yn gweld eich tabiau o ddyfeisiau eraill yma</translation>
+<translation id="8048728378294435881">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais</translation>
 <translation id="8059533439631660104">Yn crebachu'r adran.</translation>
 <translation id="8065292699993359127">Agor cyfeiriadau URL yn Chrome yn Anhysbys</translation>
 <translation id="806745655614357130">Cadw fy nata ar wahân</translation>
@@ -977,6 +982,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8981454092730389528">Rheolaethau Gweithgarwch Google</translation>
 <translation id="8985320356172329008">Wedi mewngofnodi i Google fel</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> yw eich peiriant chwilio. Gweler ei gyfarwyddiadau ar gyfer dileu eich hanes chwilio, os yw'n berthnasol.</translation>
+<translation id="9008201768610948239">Anwybyddu</translation>
 <translation id="9034759925968272072">Ni fyddwch wedi'ch allgofnodi o'ch Cyfrif Google. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Dangos y Gwreiddiol</translation>
 <translation id="9039373489628511875">Lled band</translation>

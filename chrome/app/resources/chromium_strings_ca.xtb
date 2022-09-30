@@ -53,7 +53,6 @@
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2396765026452590966">L'extensió <ph name="EXTENSION_NAME" /> ha canviat la pàgina que es mostra quan inicieu Chromium.</translation>
-<translation id="2400844369696905771">Quan aquesta opció està activada, Chromium es reapropia de la memòria de les pestanyes que no estàs utilitzant activament. Així, s'alliberen els recursos de l'ordinador per a altres tasques i es manté l'agilitat de Chromium. Les pestanyes inactives es mostren buides i es tornen a carregar automàticament quan hi fas clic. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="2483889755041906834">A Chromium</translation>
 <translation id="2485422356828889247">Desinstal·la</translation>
@@ -144,7 +143,6 @@
 <translation id="4285930937574705105">S'ha produït un error no especificat durant la instal·lació. Si Chromium s'està executant en aquests moments, tanqueu-lo i torneu-ho a provar.</translation>
 <translation id="4304713468139749426">Gestor de contrasenyes</translation>
 <translation id="4334294535648607276">S'ha completat la baixada.</translation>
-<translation id="437317747729858884">Per agilitzar la navegació, Chromium es reapropia de la memòria de les pestanyes que no estàs utilitzant.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requereix que llegeixis i acceptis les condicions del servei següents abans d'utilitzar el dispositiu. Aquestes condicions no amplien, modifiquen ni limiten les condicions de Chromium OS.</translation>
 <translation id="4407044323746248786">Vols sortir de Chromium igualment?</translation>
 <translation id="4415566066719264597">Permet que Chromium s'executi en segon pla</translation>
@@ -316,7 +314,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7872446069773932638">S'està baixant… Queden <ph name="SECONDS" /> segons</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. També pots suprimir els interessos que no vulguis que Chromium tingui en compte.</translation>
 <translation id="7937630085815544518">Teníeu la sessió iniciada a Chromium com a <ph name="USER_EMAIL_ADDRESS" />. Utilitzeu el mateix compte per tornar a iniciar-hi la sessió.</translation>
-<translation id="7947085610734123927">Chromium ha activat l'estalvi de memòria</translation>
 <translation id="7975919845073681630">Aquesta és una instal·lació secundària de Chromium i no pot definir-se com a navegador predeterminat.</translation>
 <translation id="7997934263947464652">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chromium recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Un cop Chromium tingui accés, els llocs web et podran demanar accés.</translation>
@@ -337,7 +334,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8453117565092476964">L'arxiu d'instal·lació està malmès o no és vàlid. Torneu a baixar Chromium.</translation>
 <translation id="8463672209299734063">Opcional: ajuda a millorar les funcions i el rendiment de Chromium OS enviant automàticament dades de diagnòstic i d'ús a Google.</translation>
 <translation id="8493179195440786826">Chromium no està actualitzat</translation>
-<translation id="8522220489792889625">Quan és necessari, Chromium es reapropia de la memòria de les pestanyes que no estàs utilitzant activament. Pots canviar aquesta opció en qualsevol moment a la configuració.</translation>
 <translation id="8550334526674375523">Aquest perfil de treball és completament independent del teu perfil personal.</translation>
 <translation id="8558383651099478961">Els teus pares han desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium. No es permet afegir aquesta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Per obtenir actualitzacions de Chromium en un futur, necessitaràs macOS 10.13 o una versió posterior. Aquest ordinador utilitza macOS 10.12.</translation>

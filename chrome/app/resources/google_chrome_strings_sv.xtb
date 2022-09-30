@@ -62,7 +62,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2094648590148273905">Villkor för ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vill du avsluta Chrome ändå?</translation>
 <translation id="2106831557840787829">ChromeOS Flex fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Om aktiverat återtar Chrome minne från flikar som du inte använder aktivt. Då frigörs datorns resurser för andra uppgifter så Chrome fungerar så snabbt som möjligt. Inaktiva flikar verkar tomma och läses in automatiskt när du klickar på dem. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> eller <ph name="BEGIN_LINK_2" />skicka feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="2121284319307530122">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjälp oss att förbättra Chrome genom att rapportera <ph name="BEGIN_LINK" />dina aktuella inställningar<ph name="END_LINK" /></translation>
@@ -231,7 +230,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="5386244825306882791">Det styr också vilken sida som visas när du startar Chrome eller söker i adressfältet.</translation>
 <translation id="5394833366792865639">Dela en flik i Chrome</translation>
 <translation id="5412485296464121825">Webbplatser kan lagra information om dina intressen med Chrome. Om du till exempel besöker en webbplats för att köpa skor till ett maraton kanske webbplatsen anger att du är intresserad av att springa maraton. Om du sedan besöker en annan webbplats för att registrera dig för ett lopp kan webbplatsen visa en annons för löparskor utifrån dina intressen.</translation>
-<translation id="5416870378730196769">Chrome har aktiverat minnessparläget</translation>
 <translation id="5430073640787465221">Inställningsfilen är skadad eller ogiltig.
 
 Google Chrome kan inte återställa dina inställningar.</translation>
@@ -284,7 +282,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6739177684496155661">Vill du fortsätta i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">Text som du skriver i webbläsaren Chrome skickas till Google för att kontrollera stavningen</translation>
-<translation id="6756581345161130259">Om det behövs återtar Chrome minne från flikar som du inte använder aktivt. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="677276454032249905">Vill du avsluta Chrome ändå?</translation>
 <translation id="6785872064505734160">Google-assistenten i Chrome kan slutföra åtgärder åt dig på webbplatser</translation>
 <translation id="683440813066116847">Regel som tillåter inkommande mDNS-trafik för Google Chrome Canary.</translation>
@@ -332,7 +329,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7651907282515937834">Logotyp för Chrome Enterprise</translation>
 <translation id="7655455401911432608">Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
-<translation id="7726773885101561560">Chrome återtar minne från flikar som du inte använder så att du kan surfa snabbare.</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
 <translation id="7761834446675418963">Öppna Chrome genom att klicka på ditt namn och börja surfa.</translation>
 <translation id="7777080907402804672">Om en bild inte har någon användbar beskrivning görs ett försök att beskriva den åt dig i Chrome. Bilderna skickas till Google så att beskrivningen kan genereras. Du kan när som helst inaktivera den här inställningen.</translation>

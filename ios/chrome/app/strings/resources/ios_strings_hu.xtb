@@ -23,7 +23,6 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1104948393051856124">Elfogadás és folytatás</translation>
 <translation id="110724200315609752">Váltás megnyitott ablakra</translation>
 <translation id="1112015203684611006">A nyomtatás sikertelen.</translation>
-<translation id="1118569444314402022">Üdvözöljük ismét, kedves <ph name="USER_NAME" />!</translation>
 <translation id="1125564390852150847">Új lap létrehozása.</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
 <translation id="1135212215217513471">A Chrome letöltése iOS rendszerhez</translation>
@@ -61,6 +60,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1340643665687018190">Menü bezárása</translation>
 <translation id="1358214951266274152">A vágólapra másolt link megnyitása</translation>
 <translation id="1360432990279830238">Kijelentkezik, és kikapcsolja a szinkronizálást?</translation>
+<translation id="1363028406613469049">Szám</translation>
 <translation id="1375321115329958930">Mentett jelszavak</translation>
 <translation id="1377255359165588604">A szinkronizálás leállt.</translation>
 <translation id="1377321085342047638">Kártyaszám</translation>
@@ -82,6 +82,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="152234381334907219">Soha nem került mentésre</translation>
 <translation id="1523341279170789507">Összes cookie engedélyezése</translation>
 <translation id="1524563461097350801">Köszönöm, nem</translation>
+<translation id="1531836666020185856">Kiemelt</translation>
 <translation id="1535268707340844072">Jelenlegi beállításai miatt előfordulhat, hogy egyes webhelyek nem működnek megfelelően. A <ph name="BEGIN_LINK" />Cookie-beállításokban<ph name="END_LINK" /> kezelheti a webhelyek cookie-jait.</translation>
 <translation id="1540800554400757039">Cím 1. sora</translation>
 <translation id="1545749641540134597">QR-kód beolvasása</translation>
@@ -197,6 +198,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2647269890314209800">Használatban lévő cookie-k</translation>
 <translation id="2648803196158606475">Olvasottak törlése</translation>
 <translation id="2653659639078652383">Küldés</translation>
+<translation id="2671426118752779020">A Google Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPhone eszközén.</translation>
 <translation id="2690858294534178585">A kamera épp használatban van</translation>
 <translation id="2691653761409724435">Nem érhető el offline</translation>
 <translation id="2695507686909505111">Oldal lefordítva</translation>
@@ -206,6 +208,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2704491540504985681">Letöltések</translation>
 <translation id="2704606927547763573">Másolt</translation>
 <translation id="2709516037105925701">Automatikus kitöltés</translation>
+<translation id="271033894570825754">Új</translation>
 <translation id="2712127207578915686">A fájl nem nyitható meg</translation>
 <translation id="2718352093833049315">Csak Wi-Fi-n</translation>
 <translation id="2747003861858887689">Előző mező</translation>
@@ -262,6 +265,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3103603146121354983">Jelszavak automatikus kitöltése</translation>
 <translation id="3112556859945124369">Megjelölés…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Tekintse át, hogy mit szinkronizálhat<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Előzmények és egyebek</translation>
 <translation id="3131206671572504478">Összes letiltása</translation>
 <translation id="313283613037595347">Új inkognitó lap létrehozása</translation>
 <translation id="3153862085237805241">Kártya mentése</translation>
@@ -332,7 +336,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3709582977625132201">Megjelölés olvasatlanként</translation>
 <translation id="371230970611282515">Előrejelzi a veszélyes eseményeket, és figyelmezteti Önt rájuk még a bekövetkezésük előtt.</translation>
 <translation id="37207012422556617">Felkapott keresések</translation>
-<translation id="3726360487031500941">Jelentkezzen be újra a fiókjába (<ph name="USER_NAME" />)</translation>
 <translation id="3740397331642243698">A megadott URL-eket a Google Chrome böngészőben, inkognitó módban nyitja meg.</translation>
 <translation id="3762232513783804601">iPadhez készült</translation>
 <translation id="3771033907050503522">Inkognitó lapok</translation>
@@ -504,6 +507,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="509789154667432072">Könyvjelző hozzáadása</translation>
 <translation id="5118713593561876160">Érdeklődési körök</translation>
 <translation id="5118764316110575523">Ki</translation>
+<translation id="5119391094379141756">Válassza ki a Chrome böngészőt.</translation>
 <translation id="5132942445612118989">Jelszavak, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
 <translation id="5140288047769711648">A Chrome megjegyzi ezt a jelszót, így Önnek nem kell észben tartania.</translation>
 <translation id="5149188072385105201">Jelszó hozzáadása…</translation>
@@ -627,6 +631,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6149061208933997199">Jelszó használata</translation>
 <translation id="6152406514676263192">Szinkronizáljon, ha az érdeklődési körei alapján leginkább lényeges tartalmakat szeretné látni.</translation>
 <translation id="6159839020698489198">nem kötelező</translation>
+<translation id="6165508094623778733">További információ</translation>
 <translation id="6177442314419606057">Keresés a Chrome-ban</translation>
 <translation id="6184086493125982861">Lapok megjelenítése</translation>
 <translation id="6187302354554850004">Utolsó szinkron.: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8032569120109842252">Követve</translation>
 <translation id="804225253087497565">Amikor be van jelentkezve, a <ph name="BEGIN_LINK" />keresési előzményeket<ph name="END_LINK" /> és <ph name="BEGIN_LINK" />más tevékenységtípusokat<ph name="END_LINK" /> a rendszer elmentheti az Ön Google-fiókjába. Bármikor törölheti őket.</translation>
 <translation id="804427445359061970">Itt láthatja majd a többi eszközéről származó lapokat</translation>
+<translation id="8048728378294435881">Biztonsági másolatot készíthet adatairól, és bármely eszközön használatja őket.</translation>
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
 <translation id="8065292699993359127">URL-ek megnyitása a Chrome-ban inkognitó módban</translation>
 <translation id="806745655614357130">Maradjanak elkülönítve az adataim</translation>
@@ -977,6 +983,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8981454092730389528">Google Tevékenységvezérlők</translation>
 <translation id="8985320356172329008">Bejelentkezve a Google rendszerébe mint</translation>
 <translation id="9000089900434778519">Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
+<translation id="9008201768610948239">Mellőzés</translation>
 <translation id="9034759925968272072">A rendszer nem jelentkezteti ki Google-fiókjából. Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> címen.</translation>
 <translation id="9037965129289936994">Eredeti megjelenítése</translation>
 <translation id="9039373489628511875">Sávszélesség</translation>

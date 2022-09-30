@@ -344,7 +344,6 @@
 <translation id="1327272175893960498">ตั๋ว Kerberos</translation>
 <translation id="1327495825214193325">หากต้องการเปิดใช้การแก้ไขข้อบกพร่อง ADB คุณต้องรีสตาร์ท <ph name="DEVICE_TYPE" /> เครื่องนี้ และต้องรีเซ็ตเป็นค่าเริ่มต้นจึงจะปิดใช้ได้</translation>
 <translation id="1327794256477341646">ฟีเจอร์ที่ต้องใช้ตำแหน่งของคุณจะไม่ทำงาน</translation>
-<translation id="1329191040029425999">โปรดตรวจสอบว่าอุปกรณ์เป็นเวอร์ชันล่าสุด แล้วลองอีกครั้ง</translation>
 <translation id="1331977651797684645">นี่คือฉันเอง</translation>
 <translation id="1333489022424033687">ฟีเจอร์บางอย่างใน <ph name="ORIGIN" /> อาจไม่ทำงานจนกว่าคุณจะล้างข้อมูลที่เว็บไซต์อื่นๆ จัดเก็บไว้ในอุปกรณ์ของคุณ</translation>
 <translation id="1333965224356556482">ไม่อนุญาตให้เว็บไซต์ดูตำแหน่งของคุณ</translation>
@@ -1291,7 +1290,6 @@
 <translation id="2180620921879609685">บล็อกเนื้อหาในหน้าใดก็ได้</translation>
 <translation id="2182058453334755893">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="2184515124301515068">ให้ Chrome เลือกว่าเว็บไซต์จะเล่นเสียงได้เมื่อใด (แนะนำ)</translation>
-<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">หน้าเว็บที่แชร์จากอุปกรณ์อื่น</translation>
 <translation id="2187675480456493911">ซิงค์กับอุปกรณ์อื่นในบัญชีของคุณแล้ว ระบบจะไม่ซิงค์การตั้งค่าที่ผู้ใช้คนอื่นๆ แก้ไข <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ข้อผิดพลาดในการนำเข้าใบรับรองเซิร์ฟเวอร์</translation>
@@ -1353,7 +1351,6 @@
 <translation id="2241053333139545397">อ่านและเปลี่ยนแปลงข้อมูลของคุณในหลายเว็บไซต์</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2242687258748107519">ข้อมูลไฟล์</translation>
-<translation id="2245296100676446525">เปิดการซิงค์เพื่อดูบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์นี้รวมถึงทุกที่ที่ซิงค์อยู่</translation>
 <translation id="2245603955208828424">ใช้แป้นลูกศรเพื่อเลื่อนผ่านรายการต่างๆ ทีละตัวอักษร</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> จะอัปเดตอัตโนมัติในเบื้องหลังเพื่อให้คุณได้ใช้ฟีเจอร์ล่าสุดและปรับปรุงความปลอดภัย คุณตรวจสอบค่ากำหนดการอัปเดตได้ในการตั้งค่า</translation>
 <translation id="2246549592927364792">รับคำอธิบายรูปภาพจาก Google ไหม</translation>
@@ -1536,7 +1533,6 @@
 <translation id="2381499968174336913">ตัวอย่างแท็บที่แชร์</translation>
 <translation id="2381756643783702095">ถามก่อนที่จะส่ง (แนะนำ)</translation>
 <translation id="2383825469508278924">เปลี่ยนการแมปแป้นบนแป้นพิมพ์ แป้นฟังก์ชัน และอื่นๆ</translation>
-<translation id="2386202302581016807">อุปกรณ์มีพื้นที่เก็บข้อมูลน้อยเกินกว่าจะตั้งค่าให้เสร็จสิ้นได้</translation>
 <translation id="2387052489799050037">ไปที่หน้าจอหลัก</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (ปัจจุบัน)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -2248,7 +2244,6 @@
 <translation id="3031557471081358569">เลือกรายการที่จะนำเข้าต่อไปนี้:</translation>
 <translation id="3032204772252313646">คําบรรยายอัตโนมัติ</translation>
 <translation id="3033348223765101500">ควบคุมข้อมูลของคุณ</translation>
-<translation id="3034627908241330765">กำลังตั้งค่า Steam อีกรายการ โปรดรอให้ตั้งค่าเสร็จก่อนจึงค่อยเรียกใช้การตั้งค่าอีกครั้ง</translation>
 <translation id="3036327949511794916">เลยกำหนดเวลาส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้แล้ว</translation>
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3037754279345160234">แยกวิเคราะห์การกำหนดค่าเพื่อเข้าร่วมโดเมนไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
@@ -2261,7 +2256,6 @@
 <translation id="3046178388369461825">พื้นที่ดิสก์ Linux เกือบเต็มแล้ว</translation>
 <translation id="3046910703532196514">หน้าเว็บ ทั้งหมด</translation>
 <translation id="304747341537320566">เครื่องมืออ่านออกเสียง</translation>
-<translation id="3048051495640130973">คุณควบคุมว่าจะเปิดโหมดประหยัดแบตเตอรี่เมื่อใดได้ในการตั้งค่า</translation>
 <translation id="3048336643003835855">อุปกรณ์ HID จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">บันทึกการแคสต์และอุปกรณ์</translation>
 <translation id="3051250416341590778">ขนาดการแสดงผล</translation>
@@ -2305,7 +2299,6 @@
 <translation id="3090819949319990166">ไม่สามารถคัดลอกไฟล์ crx ภายนอกไปยัง <ph name="TEMP_CRX_FILE" /></translation>
 <translation id="3090871774332213558">จับคู่ "<ph name="DEVICE_NAME" />" แล้ว</translation>
 <translation id="3093714882666365141">ไม่อนุญาตให้เว็บไซต์ติดตั้งเครื่องจัดการการชำระเงิน</translation>
-<translation id="3093958632721393232">เปิดเฉพาะเมื่อแบตเตอรี่เหลือน้อย</translation>
 <translation id="3094141017404513551">การดำเนินการนี้จะแยกการท่องเว็บของคุณออกจาก <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ในเบราว์เซอร์จะซิงค์กับบัญชีหลัก</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{ระบบปิดส่วนขยายที่อาจเป็นอันตรายไป 1 รายการ คุณจะนำส่วนขยายนี้ออกก็ได้}other{ระบบปิดส่วนขยายที่อาจเป็นอันตรายไป {NUM_EXTENSIONS} รายการ คุณจะนำส่วนขยายเหล่านี้ออกก็ได้}}</translation>
@@ -2353,7 +2346,6 @@
 <translation id="3142562627629111859">กลุ่มใหม่</translation>
 <translation id="3143515551205905069">ยกเลิกการซิงค์</translation>
 <translation id="3143754809889689516">เริ่มเล่นตั้งแต่ต้น</translation>
-<translation id="3143937294861726703">เปิดการประหยัดหน่วยความจําอยู่</translation>
 <translation id="3144647712221361880">เปิดลิงก์ในฐานะ</translation>
 <translation id="3149510190863420837">แอป Chrome</translation>
 <translation id="3150693969729403281">เรียกใช้การตรวจสอบความปลอดภัยเลย</translation>
@@ -2512,8 +2504,6 @@
 <translation id="3315442055907669208">เข้าสู่โหมดผู้อ่าน</translation>
 <translation id="3317459757438853210">สองด้าน</translation>
 <translation id="3317678681329786349">บล็อกกล้องถ่ายรูปและไมโครโฟน</translation>
-<translation id="3320620783302968370">หากยังคงประสบปัญหานี้อยู่ ให้ลองรีสตาร์ทอุปกรณ์
-    รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="3320630259304269485">Google Safe Browsing (การปกป้องจากเว็บไซต์ที่เป็นอันตราย) และการตั้งค่าด้านความปลอดภัยอื่นๆ</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{ข้อมูลนี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย นำเนื้อหานี้ออกแล้วลองอีกครั้ง}=1{ไฟล์นี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย นำเนื้อหานี้ออกแล้วลองอีกครั้ง}other{ไฟล์เหล่านี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย นำเนื้อหานี้ออกแล้วลองอีกครั้ง}}</translation>
 <translation id="3323521181261657960">พิเศษสุด คุณได้เวลาอยู่หน้าจอเพิ่มขึ้น</translation>
@@ -2669,7 +2659,6 @@
 <translation id="3462311546193741693">นำคุณออกจากระบบของเว็บไซต์ส่วนใหญ่ แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่เพื่อให้ล้างข้อมูลที่ซิงค์ได้</translation>
 <translation id="3462413494201477527">ยกเลิกการสร้างบัญชีใช่ไหม</translation>
 <translation id="346298925039590474">เครือข่ายมือถือนี้จะพร้อมใช้งานสำหรับผู้ใช้ทุกคนในอุปกรณ์นี้</translation>
-<translation id="3463015289462934089">โปรดตรวจสอบว่าอุปกรณ์เชื่อมต่ออินเทอร์เน็ตแล้ว</translation>
 <translation id="3464145797867108663">เพิ่มโปรไฟล์งาน</translation>
 <translation id="346431825526753">นี่เป็นบัญชีสำหรับเด็กที่จัดการโดย <ph name="CUSTODIAN_EMAIL" /></translation>
 <translation id="346546413339447252">รับส่วนลดสำหรับ <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> และอื่นๆ</translation>
@@ -3553,7 +3542,6 @@
     <ph name="BEGIN_PARAGRAPH2" />คุณเริ่มหรือหยุดการอนุญาตรายงานเหล่านี้ได้ทุกเมื่อในการตั้งค่าอุปกรณ์ Chrome OS ของบุตรหลาน หากเป็นผู้ดูแลระบบโดเมน คุณเปลี่ยนการตั้งค่านี้ได้ในคอนโซลผู้ดูแลระบบ<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />การปิดฟีเจอร์นี้จะไม่ส่งผลต่อความสามารถของอุปกรณ์ในการส่งข้อมูลที่จำเป็นต่อบริการสำคัญ เช่น การอัปเดตระบบและการรักษาความปลอดภัย<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">หน้านี้ได้รับอนุญาตให้แก้ไขไฟล์</translation>
-<translation id="4302577930366020750">โปรดรีสตาร์ทอุปกรณ์เพื่อใช้ Steam</translation>
 <translation id="4303079906735388947">ตั้งค่า PIN ใหม่สำหรับคีย์ความปลอดภัย</translation>
 <translation id="4304713468139749426">เครื่องมือจัดการรหัสผ่าน</translation>
 <translation id="4305402730127028764">คัดลอกไปยัง <ph name="DEVICE_NAME" /></translation>
@@ -3685,7 +3673,6 @@
 <translation id="4427306783828095590">การปกป้องที่ปรับปรุงแล้วทำได้มากกว่าบล็อกฟิชชิงและมัลแวร์</translation>
 <translation id="4427365070557649936">กำลังตรวจสอบรหัสยืนยัน...</translation>
 <translation id="4429163740524851942">รูปแบบแป้นพิมพ์จริง</translation>
-<translation id="4429239357082509581">Steam ไม่ได้รับอนุญาตให้ทำงาน</translation>
 <translation id="4430019312045809116">ระดับเสียง</translation>
 <translation id="4430369329743628066">เพิ่มบุ๊กมาร์กแล้ว</translation>
 <translation id="4430422687972614133">เปิดใช้บัตรเสมือน</translation>
@@ -3953,8 +3940,6 @@
 <translation id="4675828034887792601">สร้างทางลัดสำหรับค้นหาเว็บไซต์และจัดการเครื่องมือค้นหา</translation>
 <translation id="4676595058027112862">ฮับโทรศัพท์ ดูข้อมูลเพิ่มเติม</translation>
 <translation id="4677772697204437347">หน่วยความจำ GPU</translation>
-<translation id="4677970983462111944">ไม่อนุญาตให้ใช้ Steam ในอุปกรณ์นี้ ติดต่อผู้ดูแลระบบเพื่อขอสิทธิ์
-    รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="467823995058589466">กล้องปิดอยู่</translation>
 <translation id="4680105648806843642">หน้านี้ปิดเสียงอยู่</translation>
 <translation id="4681453295291708042">ปิดใช้การแชร์ใกล้เคียง</translation>
@@ -4271,7 +4256,6 @@
 <translation id="49896407730300355">หมุน&amp;ทวนเข็มนาฬิกา</translation>
 <translation id="4989966318180235467">ตรวจสอบ&amp;หน้าพื้นหลัง</translation>
 <translation id="4991420928586866460">ใช้แป้นแถวบนสุดเป็นแป้นฟังก์ชัน</translation>
-<translation id="4991858732577603540">โปรดรอสักครู่แล้วเรียกใช้ Steam อีกครั้ง</translation>
 <translation id="4992458225095111526">ยืนยัน Powerwash</translation>
 <translation id="4992473555164495036">ผู้ดูแลระบบจำกัดวิธีการป้อนข้อมูลที่ใช้ได้เอาไว้</translation>
 <translation id="4994754230098574403">กำลังตั้งค่า</translation>
@@ -4737,7 +4721,6 @@
 <translation id="5463275305984126951">ดัชนีของ <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">ลงชื่อสมัครรับอีเมลเกี่ยวกับ <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">กำลังค้นหาอุปกรณ์...</translation>
-<translation id="5463845647891602726">หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากอุปกรณ์</translation>
 <translation id="5463856536939868464">เมนูมีบุ๊กมาร์กซ่อนอยู่</translation>
 <translation id="5464660706533281090">ผู้ใช้ที่เป็นเด็กจะเปลี่ยนแปลงการตั้งค่านี้ไม่ได้</translation>
 <translation id="5466374726908360271">ว&amp;างและค้นหา “<ph name="SEARCH_TERMS" />”</translation>
@@ -5103,6 +5086,7 @@
 <translation id="5812674658566766066">ขยายทั้งหมด</translation>
 <translation id="5815645614496570556">ที่อยู่ X.400</translation>
 <translation id="5816434091619127343">การเปลี่ยนแปลงเครื่องพิมพ์ที่ขอจะทำให้เครื่องพิมพ์ใช้ไม่ได้</translation>
+<translation id="581659025233126501">เปิดการซิงค์</translation>
 <translation id="5817069030404929329">ย้ายรหัสผ่านจากอุปกรณ์นี้ไปไว้ในบัญชี Google ไหม</translation>
 <translation id="5817918615728894473">จับคู่</translation>
 <translation id="5821565227679781414">สร้างทางลัด</translation>
@@ -5280,7 +5264,6 @@
 <translation id="5975792506968920132">เปอร์เซ็นต์การชาร์จแบตเตอรี่</translation>
 <translation id="5976160379964388480">อื่นๆ</translation>
 <translation id="5978277834170881274">&amp;ใช้ฟีเจอร์ตรวจตัวสะกดพื้นฐาน</translation>
-<translation id="5978395054855988504">โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="5978493744931296692">ผู้ดูแลระบบปิดใช้โปรไฟล์อื่นๆ</translation>
 <translation id="5979084224081478209">ตรวจสอบรหัสผ่าน</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{คุณได้เปิดส่วนขยายที่อาจเป็นอันตราย 1 รายการขึ้นมาอีกครั้ง}other{คุณได้เปิดส่วนขยายที่อาจเป็นอันตราย {NUM_EXTENSIONS} รายการขึ้นมาอีกครั้ง}}</translation>
@@ -7259,7 +7242,6 @@
 <translation id="7870790288828963061">ไม่พบแอปคีออสก์เวอร์ชันใหม่กว่า ไม่มีรายการที่จะอัปเดต โปรดนำ USB สติ๊กออก</translation>
 <translation id="7871049986386271121">ตลอดเวลาในเว็บไซต์นี้</translation>
 <translation id="7871109039747854576">ใช้คีย์ <ph name="COMMA" /> และ <ph name="PERIOD" /> เพื่อสร้างหน้ารายการตัวเลือก</translation>
-<translation id="7872494313446521576">คลิกเพื่ออนุญาต "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" บน <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">ปิด</translation>
 <translation id="7872758299142009420">มีกลุ่มที่ฝังอยู่มากเกินไป: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">พื้นหลัง Chrome</translation>
@@ -7674,7 +7656,6 @@
 <translation id="8248381369318572865">เข้าถึงไมโครโฟนและวิเคราะห์คำพูด</translation>
 <translation id="8248887045858762645">เคล็ดลับสำหรับ Chrome</translation>
 <translation id="8249048954461686687">โฟลเดอร์ OEM</translation>
-<translation id="8249239468199142122">ประหยัดแบตเตอรี่</translation>
 <translation id="8249615410597138718">ส่งไปยังอุปกรณ์</translation>
 <translation id="8250210000648910632">พื้นที่เก็บข้อมูลไม่พอ</translation>
 <translation id="8251441930213048644">รีเฟรชเลย</translation>
@@ -7878,7 +7859,6 @@
 <translation id="8440630305826533614">แอป Linux</translation>
 <translation id="844063558976952706">ทำงานบนไซต์นี้เสมอ</translation>
 <translation id="8441313165929432954">เปิด/ปิดการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
-<translation id="8443795068008423036">โปรดตรวจสอบว่าอุปกรณ์เป็นเวอร์ชันล่าสุด แล้วลองอีกครั้ง</translation>
 <translation id="8443986842926457191">URL มีจำนวนอักขระมากกว่า 2,048 ตัว</translation>
 <translation id="8446884382197647889">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="8447409163267621480">รวมปุ่ม Ctrl หรือ Alt</translation>
@@ -8209,7 +8189,6 @@
 <translation id="8763927697961133303">อุปกรณ์ USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">อัปเดต Chrome สำหรับผู้ใช้ทุกคนโดยอัตโนมัติ</translation>
-<translation id="8769901904650373714">เกิดปัญหาในการตั้งค่า Steam</translation>
 <translation id="8770406935328356739">ไดเรกทอรีหลักของส่วนขยาย</translation>
 <translation id="8771300903067484968">มีการรีเซ็ตพื้นหลังของหน้าเริ่มต้นเป็นพื้นหลังเริ่มต้น</translation>
 <translation id="8773302562181397928">บันทึก <ph name="PRINTER_NAME" /></translation>
@@ -8725,7 +8704,6 @@
 <translation id="964286338916298286">ผู้ดูแลระบบไอทีได้ปิดการใช้สินค้าจาก Chrome ในอุปกรณ์ของคุณ</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{แอปพลิเคชัน}other{แอปพลิเคชัน}}</translation>
 <translation id="964790508619473209">การจัดตำแหน่งหน้าจอ</translation>
-<translation id="965175368833098333">โหมดประหยัดหน่วยความจำจะเรียกคืนหน่วยความจำจากแท็บที่ไม่ได้ใช้งานได้ ซึ่งช่วยให้คอมพิวเตอร์มีทรัพยากรสำหรับงานอื่นๆ มากขึ้น</translation>
 <translation id="965211523698323809">ส่งและรับ SMS จาก <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">รายงานปัญหาเกี่ยวกับ Google Cast</translation>
 <translation id="967398046773905967">ไม่อนุญาตให้เว็บไซต์ใดก็ตามเข้าถึงอุปกรณ์ HID</translation>

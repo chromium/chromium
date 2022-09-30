@@ -843,6 +843,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatief</translation>
 <translation id="3223287115535306850">Trilling bij app-lancering</translation>
+<translation id="3223425961342298674">Locatie niet toegestaan</translation>
 <translation id="3225347164936328585">Applaus</translation>
 <translation id="3225919329040284222">De server heeft een certificaat gepresenteerd dat niet overeenkomt met de ingebouwde verwachtingen. Deze verwachtingen zijn opgenomen voor bepaalde websites om je te beschermen.</translation>
 <translation id="3226128629678568754">Klik op de knop 'Opnieuw laden' om de gegevens opnieuw te verzenden die nodig zijn om de pagina te laden.</translation>
@@ -1180,6 +1181,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4127575959421463246">Zoek je de Chrome OS-flags? Ga naar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
 <translation id="4130226655945681476">Controleer de netwerkkabels, modem en router</translation>
+<translation id="4132448310531350254">Dubbele handlers voor bestandsextensie <ph name="FILE_EXTENSION" /> waarnaar wordt verwezen door apps <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Document maken</translation>
 <translation id="413544239732274901">Meer informatie</translation>
 <translation id="4142935452406587478">Lade 10</translation>
@@ -1202,6 +1204,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4194250254487269611">Je kaart kan op dit moment niet worden opgeslagen</translation>
 <translation id="4196861286325780578">&amp;Opnieuw verplaatsen</translation>
 <translation id="4202554117186904723">5e rol</translation>
+<translation id="4203769790323223880">Camera niet toegestaan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controleer firewall- en antivirusconfiguraties<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4210602799576081649">De verificatiecode is verlopen. Vraag een nieuwe code aan.</translation>
@@ -1228,6 +1231,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
     &lt;p&gt;Vergeet niet je antivirussoftware weer aan te zetten zodra je klaar bent.&lt;/p&gt;
     &lt;h4&gt;Stap 5: Vraag extra support&lt;/h4&gt;
     &lt;p&gt;Als de fout nog steeds wordt weergegeven, neem je contact op met de eigenaar van de website.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Microfoon niet toegestaan</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Voer Netwerkcontrole uit<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Kan vragen of deze site je camera mag gebruiken en bewegen</translation>
 <translation id="4235360514405112390">Geldig</translation>
@@ -1245,6 +1249,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4277028893293644418">Wachtwoord opnieuw instellen</translation>
 <translation id="4278390842282768270">Toegestaan</translation>
 <translation id="4282346679996504092">Meldingen voor dit product zijn uitgezet en de bookmark is verwijderd</translation>
+<translation id="4285498937028063278">Losmaken</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Deze pas is opgeslagen in je Google-account}other{Deze passen zijn opgeslagen in je Google-account}}</translation>
 <translation id="4287885627794386150">Komt in aanmerking voor proef maar is niet actief</translation>
 <translation id="4297502707443874121">Miniatuur voor pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1598,6 +1603,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5177076414499237632">Meer informatie over de bron en het onderwerp van deze pagina</translation>
 <translation id="5179510805599951267">Niet in het <ph name="ORIGINAL_LANGUAGE" />? Deze fout melden</translation>
 <translation id="518639307526414276">Voeding en benodigdheden voor huisdieren</translation>
+<translation id="5190072300954988691">Camera en microfoon niet toegestaan</translation>
 <translation id="5190835502935405962">Bookmarkbalk</translation>
 <translation id="5191315092027169558">Je profiel wordt beheerd door <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wil meerdere bestanden downloaden</translation>
@@ -1618,6 +1624,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Sluiten</translation>
+<translation id="5239623327352565343">Locatie toegestaan</translation>
 <translation id="5242889659037569123">Koffers en reisaccessoires</translation>
 <translation id="5250209940322997802">'Verbinding maken met netwerk'</translation>
 <translation id="52517543715119994">Meer informatie over Chrome-functies</translation>
@@ -2429,6 +2436,7 @@ Aanvullende informatie:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> over dit probleem.</translation>
 <translation id="7455133967321480974">Algemene standaardinstelling gebruiken (Blokkeren)</translation>
 <translation id="7460618730930299168">De screening verschilt van wat je hebt geselecteerd. Doorgaan?</translation>
+<translation id="7461924472993315131">Vastzetten</translation>
 <translation id="7463075493919226237">Australian football</translation>
 <translation id="7469935732330206581">Formulier is niet beveiligd</translation>
 <translation id="7473891865547856676">Nee, bedankt</translation>
@@ -2492,6 +2500,7 @@ Aanvullende informatie:
 <translation id="7581199239021537589">Beeldverschuiving Y van zijde 2</translation>
 <translation id="7582602800368606489">Snel een nieuwe afspraak in Google Agenda maken</translation>
 <translation id="7583969447617676942">Juridische dienstverlening</translation>
+<translation id="7586676035079382730">Meldingen niet toegestaan</translation>
 <translation id="7591288787774558753">Vertrouwelijke content delen?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wil cookies en sitegegevens gebruiken op <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Het certificaat van de server is in strijd met naambeperkingen.</translation>
@@ -3044,6 +3053,7 @@ Aanvullende informatie:
 <translation id="9131119348384879525">Vertrouwelijke content vastleggen?</translation>
 <translation id="9136861683332321024">Luxe voertuigen</translation>
 <translation id="9137013805542155359">Origineel bekijken</translation>
+<translation id="9138037198177304356">Meldingen toegestaan</translation>
 <translation id="9139318394846604261">Winkelen</translation>
 <translation id="9141013498910525015">Adressen beheren</translation>
 <translation id="9144951720726881238">Vervaldatum:</translation>

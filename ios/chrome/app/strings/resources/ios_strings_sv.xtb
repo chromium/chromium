@@ -23,7 +23,6 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1104948393051856124">Godkänn och fortsätt</translation>
 <translation id="110724200315609752">Byt till Öppet fönster</translation>
 <translation id="1112015203684611006">Utskriftsfel.</translation>
-<translation id="1118569444314402022">Välkommen tillbaka, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Skapa en ny flik.</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1135212215217513471">Ladda ned Chrome för iOS</translation>
@@ -61,6 +60,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1340643665687018190">Stäng menyn</translation>
 <translation id="1358214951266274152">Besök den kopierade länken</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
+<translation id="1363028406613469049">Spår</translation>
 <translation id="1375321115329958930">Sparade lösenord</translation>
 <translation id="1377255359165588604">Synkronisering har slutat fungera.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
@@ -82,6 +82,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="152234381334907219">Aldrig sparat</translation>
 <translation id="1523341279170789507">Tillåt alla cookies</translation>
 <translation id="1524563461097350801">Nej tack</translation>
+<translation id="1531836666020185856">Utvalda</translation>
 <translation id="1535268707340844072">Vissa webbplatser kanske inte fungerar med dina nuvarande inställningar. Du kan hantera cookies för alla webbplatser i <ph name="BEGIN_LINK" />Cookie-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
@@ -197,6 +198,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2647269890314209800">Cookies är aktiverade</translation>
 <translation id="2648803196158606475">Radera lästa</translation>
 <translation id="2653659639078652383">Skicka</translation>
+<translation id="2671426118752779020">Du kan använda lösenorden som sparats med Google Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="2690858294534178585">Kameran används</translation>
 <translation id="2691653761409724435">Ej tillgänglig offline</translation>
 <translation id="2695507686909505111">Sidan har översatts</translation>
@@ -206,6 +208,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2704491540504985681">Nedladdningar</translation>
 <translation id="2704606927547763573">Kopierat</translation>
 <translation id="2709516037105925701">Autofyll</translation>
+<translation id="271033894570825754">Ny</translation>
 <translation id="2712127207578915686">Det gick inte att öppna filen</translation>
 <translation id="2718352093833049315">Endast på wifi</translation>
 <translation id="2747003861858887689">Föregående fält</translation>
@@ -262,6 +265,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3103603146121354983">Fyll i lösenord automatiskt</translation>
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Historik med mera</translation>
 <translation id="3131206671572504478">Blockera alla</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
 <translation id="3153862085237805241">Spara kortet</translation>
@@ -332,7 +336,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3709582977625132201">Markera som oläst</translation>
 <translation id="371230970611282515">Förutser och varnar dig om farliga händelser innan de inträffar.</translation>
 <translation id="37207012422556617">Populära sökningar</translation>
-<translation id="3726360487031500941">Logga in igen på ditt konto, <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Öppnar de angivna webbadresserna i Google Chrome i inkognitoläge.</translation>
 <translation id="3762232513783804601">Byggd för iPad</translation>
 <translation id="3771033907050503522">Inkognitoflikar</translation>
@@ -504,6 +507,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="509789154667432072">Lägg till ett bokmärke</translation>
 <translation id="5118713593561876160">Intressen</translation>
 <translation id="5118764316110575523">Av</translation>
+<translation id="5119391094379141756">Välj Chrome</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5140288047769711648">Lösenordet sparas åt dig i Chrome. Du behöver inte komma ihåg det.</translation>
 <translation id="5149188072385105201">Lägg till lösenord …</translation>
@@ -627,6 +631,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6149061208933997199">Använd lösenordet</translation>
 <translation id="6152406514676263192">Synkronisera för att se det mest relevanta innehållet baserat på dina intressen.</translation>
 <translation id="6159839020698489198">valfritt</translation>
+<translation id="6165508094623778733">Läs mer</translation>
 <translation id="6177442314419606057">Sök i Chrome</translation>
 <translation id="6184086493125982861">Visa flikar</translation>
 <translation id="6187302354554850004">Synkroniserades senast: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8032569120109842252">Följer</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Sökhistorik<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />annan aktivitet<ph name="END_LINK" /> kan sparas i Google-kontot när du är inloggad. Du kan radera den när du vill.</translation>
 <translation id="804427445359061970">Flikar från andra enheter visas här</translation>
+<translation id="8048728378294435881">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8059533439631660104">Komprimera avsnittet.</translation>
 <translation id="8065292699993359127">Öppna webbadresser i Chrome i inkognitoläge</translation>
 <translation id="806745655614357130">Håll min data separat</translation>
@@ -977,6 +983,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8981454092730389528">Googles aktivitetsinställningar</translation>
 <translation id="8985320356172329008">Inloggad på Google som</translation>
 <translation id="9000089900434778519">Din sökmotor är <ph name="DSE_NAME" />. Läs anvisningarna för att radera sökhistoriken om tillämpligt.</translation>
+<translation id="9008201768610948239">Ignorera</translation>
 <translation id="9034759925968272072">Du loggas inte ut från Google-kontot. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Visa original</translation>
 <translation id="9039373489628511875">Bandbredd</translation>

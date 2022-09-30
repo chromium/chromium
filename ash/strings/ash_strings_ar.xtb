@@ -226,6 +226,7 @@
 <translation id="2227179592712503583">إزالة الاقتراح</translation>
 <translation id="225680501294068881">جارٍ البحث عن أجهزة...</translation>
 <translation id="2257486738914982088">حدث خطأ أثناء تنزيل الملف <ph name="FILENAME" />.</translation>
+<translation id="2258734398699965611">الملفات المقترَحة</translation>
 <translation id="2268130516524549846">تم إيقاف البلوتوث</translation>
 <translation id="2268813581635650749">خروج من كل الحسابات</translation>
 <translation id="2269016722240250274">أحد التطبيقات يستخدم الميكروفون.</translation>
@@ -903,6 +904,7 @@
 <translation id="6099678161144790572">تم تعديله الشهر الماضي.</translation>
 <translation id="6103838137565245112">النظام</translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
+<translation id="6116825164611323644">خيار الوصول إلى الكاميرا غير مفعَّل على هذا الجهاز</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">تأكيد تنزيل <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
@@ -1353,6 +1355,7 @@
 <translation id="8734991477317290293">قد تحاول لوحة المفاتيح سرقة ضغطات المفاتيح.</translation>
 <translation id="8735678380411481005">لون الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="8735953464173050365">عرض إعدادات لوحة المفاتيح. تم اختيار <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8752416742247198423">يجب تفعيل خيار الوصول إلى الكاميرا للسماح للتطبيقات وصفحات الويب التي لديها إذن وصول إلى الكاميرا باستخدام الكاميرات المتصلة بهذا الجهاز.</translation>
 <translation id="8755498163081687682">إثبات هويتك: يريد النطاق <ph name="ORIGIN_NAME" /> تأكيد هويتك.</translation>
 <translation id="875593634123171288">‏عرض إعدادات الشبكة الظاهرية الخاصة (VPN)</translation>
 <translation id="8759408218731716181">يتعذر إعداد الدخول المتعدد</translation>
@@ -1367,6 +1370,7 @@
 <translation id="8819728065740986820">ميزة "الشحن التكيُّفي" مفعّلة</translation>
 <translation id="8825863694328519386">التمرير السريع من اليسار للرجوع</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
+<translation id="8834657930627018205">تفعيل خيار الوصول إلى الكاميرا</translation>
 <translation id="8841375032071747811">زر الرجوع</translation>
 <translation id="8843682306134542540">تبديل قفل التدوير. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Search+Esc</translation>

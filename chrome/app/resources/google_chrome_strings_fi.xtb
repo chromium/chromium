@@ -58,7 +58,6 @@
 <translation id="2094648590148273905">ChromeOS Flexin ehdot</translation>
 <translation id="2094919256425865063">Suljetaanko Chrome silti?</translation>
 <translation id="2106831557840787829">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee ChromeOS Flexiä, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Kun asetus on päällä, Chrome vapauttaa muistia välilehdiltä, joita et käytä aktiivisesti. Näin tietokoneesi resurssit vapautuvat muihin tehtäviin ja Chrome pysyy nopeana. Ei-aktiiviset välilehdet näyttävät tyhjiltä ja latautuvat automaattisesti uudelleen, kun klikkaat niitä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /> tai <ph name="BEGIN_LINK_2" />lähetä palautetta<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> kohdetta poistetaan pysyvästi tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="2123055963409958220">Auta parantamaan Chromea ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
@@ -225,7 +224,6 @@
 <translation id="5386244825306882791">Määrittää myös Chromen ja omnibox-hakujen aloitussivun.</translation>
 <translation id="5394833366792865639">Jaa Chrome-välilehti</translation>
 <translation id="5412485296464121825">Sivustot voivat tallentaa Chromeen tietoja kiinnostuksen kohteistasi. Jos esimerkiksi käyt sivustolla, koska haluat ostaa kengät maratonia varten, sivusto voi määritellä maratonjuoksun sinua kiinnostavaksi aiheeksi. Jos myöhemmin käyt toisella sivustolla, jolla ilmoittaudut juoksukilpailuun, kyseinen sivusto voi näyttää sinulle mainoksen juoksukengistä kiinnostuksen kohteidesi perusteella.</translation>
-<translation id="5416870378730196769">Chrome on laittanut muistinsäästön päälle</translation>
 <translation id="5430073640787465221">Asetustiedostosi on virheellinen. Google Chrome ei voi palauttaa asetuksiasi.</translation>
 <translation id="5524761631371622910">Jos Chrome on sijoittanut sinut aktiiviseen kokeiluun satunnaisesti, selaushistoriasi vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiin kokeilujen aikana. Yksityisyytesi suojaamiseksi Chrome poistaa kiinnostuksen kohteesi kuukausittain.</translation>
 <translation id="556024056938947818">Google Chrome yrittää näyttää salasanoja.</translation>
@@ -276,7 +274,6 @@
 <translation id="6735387454586646204">ChromeOS Flexin järjestelmä</translation>
 <translation id="6739177684496155661">Jatketaanko uudessa Chrome-profiilissa?</translation>
 <translation id="6750954913813541382">Chrome lähettää selaimeen kirjoittamasi tekstin Googlelle kirjoitusvirheiden korjaamiseksi</translation>
-<translation id="6756581345161130259">Chrome vapauttaa tarvittaessa muistia välilehdiltä, joita et käytä aktiivisesti. Voit muuttaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="677276454032249905">Suljetaanko Chrome silti?</translation>
 <translation id="6785872064505734160">Chromen Google Assistant voi tehdä puolestasi verkkotoimia eri sivustoilla</translation>
 <translation id="683440813066116847">Google Chrome Canaryn saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
@@ -324,7 +321,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7649070708921625228">Ohje</translation>
 <translation id="7651907282515937834">Chrome Enterprise ‑logo</translation>
 <translation id="7655455401911432608">Selaushistoriaasi eli tietoa sivuista, jotka olet avannut Chromessa tällä laitteella</translation>
-<translation id="7726773885101561560">Nopeuttaakseen selaamista Chrome vapauttaa muistia välilehdiltä, joita et käytä.</translation>
 <translation id="7747138024166251722">Asennusohjelma ei pystynyt luomaan väliaikaista hakemistoa. Tarkista, että käytettävissä on riittävästi levytilaa ja että sinulla on oikeus asentaa ohjelmia.</translation>
 <translation id="7761834446675418963">Avaa Chrome klikkaamalla nimeäsi ja aloita selaaminen.</translation>
 <translation id="7777080907402804672">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten. Voit milloin tahansa poistaa tämän käytöstä asetuksissa.</translation>

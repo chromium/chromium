@@ -61,7 +61,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2094648590148273905">ChromeOS Flex-en baldintzak</translation>
 <translation id="2094919256425865063">Chrome-tik irten nahi duzu hala ere?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker garatu ahal izan dugu ChromeOS Flex; esate baterako, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
-<translation id="2112742052114331084">Aktibatuta dagoenean, aktiboki erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chrome-k, behar den moduan. Horrela, ordenagailuaren baliabideak libre geratzen dira beste zeregin batzuetarako, eta Chrome-k abiadura egokian funtzionatzen jarraitzen du. Inaktibo dauden fitxak hutsik agertzen dira eta automatikoki kargatzen dira berriro sakatzen dituzunean. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> edo <ph name="BEGIN_LINK_2" />bidali oharrak<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Gailuko <ph name="ITEMS_COUNT" /> elementu ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
 <translation id="2121284319307530122">Abiaraz ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="2123055963409958220">Lagundu Chrome hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
@@ -230,7 +229,6 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 <translation id="5386244825306882791">Chrome hastean edo Omnibox bidez bilatzean erakutsiko den orria ere kontrolatzen du.</translation>
 <translation id="5394833366792865639">Partekatu Chrome-ko fitxa bat</translation>
 <translation id="5412485296464121825">Webguneek zure interesei buruzko informazioa gorde dezakete Chrome-n; esaterako, webgune batera joaten bazara maratoi baterako oinetakoak erostera, baliteke webgune horrek "maratoiak" definitzea interes gisa. Ondorioz, beranduago beste webgune batera joaten bazara lasterketa batean izena emateko, litekeena da webgune horrek lasterketetarako oinetakoekin erlazionatutako iragarki bat erakustea zure interesetan oinarrituta.</translation>
-<translation id="5416870378730196769">Chrome-k Memoria-aurreztailea aktibatu du</translation>
 <translation id="5430073640787465221">Hobespenen fitxategia hondatuta dago edo ez du balio.
 
 Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
@@ -283,7 +281,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6735387454586646204">ChromeOS Flex sistema</translation>
 <translation id="6739177684496155661">Chrome-eko beste profil batean egin nahi duzu aurrera?</translation>
 <translation id="6750954913813541382">Ortografia-akatsak konpontzeko, Chrome-k Google-ri bidaltzen dio arakatzailean idazten duzun testua</translation>
-<translation id="6756581345161130259">Aktiboki erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chrome-k, behar den moduan. Ezarpenetan alda dezakezu aukera hori.</translation>
 <translation id="677276454032249905">Chrome-tik irten nahi duzu hala ere?</translation>
 <translation id="6785872064505734160">Webguneetan ekintzak egin ditzake Chrome-ko Google-ren Laguntzailea zerbitzuak</translation>
 <translation id="683440813066116847">Google Chrome Canary kanalean mDNS trafikoa baimentzeko sarrera-araua.</translation>
@@ -331,7 +328,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotipoa</translation>
 <translation id="7655455401911432608">Zure arakatze-historia eta gailu hau erabili bitartean Chrome-ren bidez bisitatutako webguneen erregistro bat.</translation>
-<translation id="7726773885101561560">Bizkorrago arakatze aldera, erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chrome-k.</translation>
 <translation id="7747138024166251722">Instalatzaileak ezin izan du sortu behin behineko direktoriorik. Softwarea instalatzeko, egiaztatu diskoan duzun espazio librea eta baimena.</translation>
 <translation id="7761834446675418963">Sakatu zure izena Chrome irekitzeko eta arakatzen hasteko.</translation>
 <translation id="7777080907402804672">Irudiren batek ez badu azalpen lagungarririk, halako bat lortzen ahaleginduko da Chrome. Azalpen horiek sortzeko, irudiak Google-ri bidaltzen zaizkio. Aukera hori desaktibatu nahi baduzu, joan ezarpenetara.</translation>

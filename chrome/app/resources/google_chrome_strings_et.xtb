@@ -59,7 +59,6 @@
 <translation id="2094648590148273905">Chrome OS Flexi tingimused</translation>
 <translation id="2094919256425865063">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="2106831557840787829">Chrome OS Flexi ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
-<translation id="2112742052114331084">Kui see on sisse lülitatud, võtab Chrome mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. See võimaldab teie arvuti ressursse muude ülesannete jaoks kasutada ja aitab Chrome'il kiiresti töötada. Passiivsed vahelehed kuvatakse tühjana ja laaditakse automaatselt uuesti, kui nendel klõpsate. <ph name="BEGIN_LINK" />Lugege lisateavet<ph name="END_LINK" /> või <ph name="BEGIN_LINK_2" />saatke tagasisidet<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">See kustutab sellest seadmest <ph name="ITEMS_COUNT" /> üksust. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Taaskäivitage &amp;Chrome'i värskendamiseks</translation>
 <translation id="2123055963409958220">Aidake Chrome paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>
@@ -228,7 +227,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5386244825306882791">Lisaks juhib Chrome'i käivitamisel kuvatavat lehte või omnikastikese otsingut.</translation>
 <translation id="5394833366792865639">Chrome’i vahelehe jagamine</translation>
 <translation id="5412485296464121825">Saidid võivad talletada Chrome'i teavet teie huvide kohta. Näiteks kui külastate saiti, et osta maratoni jooksmiseks jalatseid, võib sait määratleda teie huviks maratonijooksu. Kui külastate hiljem jooksule registreerumiseks muud saiti, võib see sait näidata teile teie huvide alusel jooksujalatsite reklaami.</translation>
-<translation id="5416870378730196769">Chrome lülitas mälusäästja sisse</translation>
 <translation id="5430073640787465221">Teie eelistuste fail on rikutud või kehtetu. Google Chrome ei saa teie seadeid taastada.</translation>
 <translation id="5524761631371622910">Kui katsed on sisse lülitatud ja Chrome on teid juhuslikkuse alusel lisanud aktiivsesse katsesse, mõjutab teie sirvimisajalugu teile esitatavaid reklaame ja allolevaid prognoositud huvisid. Teie privaatsuse kaitsmiseks kustutab Chrome teie huvisid jooksvalt iga kuu.</translation>
 <translation id="556024056938947818">Google Chrome püüab näidata paroole.</translation>
@@ -279,7 +277,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6735387454586646204">Chrome OS Flexi süsteem</translation>
 <translation id="6739177684496155661">Kas jätkata uuel Chrome'i profiilil?</translation>
 <translation id="6750954913813541382">Õigekirjavigade parandamiseks saadab Chrome brauseris sisestatava teksti Google'ile</translation>
-<translation id="6756581345161130259">Vajaduse korral võtab Chrome mälu tagasi vahelehtedelt, mida te aktiivselt ei kasuta. Saate seda menüüs Seaded alati muuta.</translation>
 <translation id="677276454032249905">Kas väljuda Chrome'ist ikkagi?</translation>
 <translation id="6785872064505734160">Google'i assistent Chrome'is saab veebisaitidel teie eest toiminguid teha</translation>
 <translation id="683440813066116847">Sissetuleku reegel Google Chrome Canaryle mDNS-liikluse lubamiseks.</translation>
@@ -327,7 +324,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7651907282515937834">Chrome Enterprise'i logo</translation>
 <translation id="7655455401911432608">Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
-<translation id="7726773885101561560">Selleks et brauser kiiremaks muuta, võtab Chrome mälu tagasi vahelehtedelt, mida te ei kasuta.</translation>
 <translation id="7747138024166251722">Installija ei suutnud luua ajutist kataloogi. Palun kontrollige vaba kettaruumi ja tarkvara installimise loa olemasolu.</translation>
 <translation id="7761834446675418963">Chrome'i avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
 <translation id="7777080907402804672">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile. Võite selle seadetes igal ajal välja lülitada.</translation>

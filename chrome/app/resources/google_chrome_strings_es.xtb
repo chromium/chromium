@@ -62,7 +62,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2094648590148273905">Términos de ChromeOS Flex</translation>
 <translation id="2094919256425865063">¿Quieres cerrar Chrome de todas formas?</translation>
 <translation id="2106831557840787829">ChromeOS Flex se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Si se activa esta opción, Chrome recuperará la memoria de las pestañas que no estés usando activamente. De esta forma, se liberarán recursos de tu ordenador para otras tareas y Chrome podrá seguir ejecutándose con rapidez. Las pestañas inactivas se mostrarán vacías y se volverán a cargar automáticamente cuando hagas clic en ellas. <ph name="BEGIN_LINK" />Consulta más información<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />envíanos comentarios<ph name="END_LINK_2" />.</translation>
 <translation id="2120620239521071941">Se eliminarán <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Para recuperar tus datos en otro momento, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Genera un informe de la <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudar a mejorar Chrome</translation>
@@ -231,7 +230,6 @@ Puede que algunas funciones no estén disponibles. Especifica otro directorio de
 <translation id="5386244825306882791">También controla qué página se muestra al iniciar Chrome o al hacer búsquedas desde el omnibox.</translation>
 <translation id="5394833366792865639">Compartir una pestaña de Chrome</translation>
 <translation id="5412485296464121825">Los sitios pueden almacenar información con Chrome sobre tus intereses. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Después, si visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
-<translation id="5416870378730196769">Chrome ha activado Ahorro de memoria</translation>
 <translation id="5430073640787465221">Tu archivo de preferencias está dañado o no es válido.
 
 Google Chrome no puede recuperar tu configuración.</translation>
@@ -284,7 +282,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6739177684496155661">¿Continuar en un nuevo perfil de Chrome?</translation>
 <translation id="6750954913813541382">Chrome envía a Google el texto que escribes en el navegador para corregir los errores ortográficos</translation>
-<translation id="6756581345161130259">Cuando es necesario, Chrome recupera la memoria de las pestañas que no estás usando activamente. Puedes cambiar esta opción en cualquier momento en la configuración.</translation>
 <translation id="677276454032249905">¿Quieres salir de Chrome de todas formas?</translation>
 <translation id="6785872064505734160">El Asistente de Google en Chrome puede realizar acciones por ti en sitios web.</translation>
 <translation id="683440813066116847">Regla entrante para que Google Chrome Canary permita tráfico mDNS.</translation>
@@ -332,7 +329,6 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">Tu historial de navegación, un registro de los sitios que has visitado usando Chrome en este dispositivo.</translation>
-<translation id="7726773885101561560">Para que la navegación sea más rápida, Chrome recupera la memoria de las pestañas que no estás usando.</translation>
 <translation id="7747138024166251722">El programa de instalación no ha podido crear un directorio temporal. Comprueba si hay espacio libre en el disco y si tienes autorización para instalar el software.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7777080907402804672">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>

@@ -1250,6 +1250,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4277028893293644418">Återställ lösenord</translation>
 <translation id="4278390842282768270">Tillåts</translation>
 <translation id="4282346679996504092">Aviseringar för den här produkten har inaktiverats och bokmärket har tagits bort</translation>
+<translation id="4285498937028063278">Lossa</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Det här kortet har sparats i ditt Google-konto}other{De här korten har sparats i ditt Google-konto}}</translation>
 <translation id="4287885627794386150">Behörig för provperiod, men inte aktiv</translation>
 <translation id="4297502707443874121">Miniatyr för sidan <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2030,6 +2031,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Kontrollerar proxy, brandvägg och säker DNS-konfiguration<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Två häftklamrar till vänster</translation>
+<translation id="6370022303958842211">Åtgärder för enhetsåtkomst, t.ex. inloggningar (inklusive misslyckade inloggningar), utloggningar, låsningar och upplåsningar</translation>
 <translation id="6374865374745447009">fönsterhantering</translation>
 <translation id="6377268785556383139">1 resultat för <ph name="SEARCH_TEXT" /></translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2434,6 +2436,7 @@ Mer information.
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />att läsa mer<ph name="END_LINK" /> om det här problemet.</translation>
 <translation id="7455133967321480974">Använd global standardinställning (Blockera)</translation>
 <translation id="7460618730930299168">Visningen skiljer sig från den du valde. Vill du fortsätta?</translation>
+<translation id="7461924472993315131">Fäst</translation>
 <translation id="7463075493919226237">Australisk fotboll</translation>
 <translation id="7469935732330206581">Formuläret är inte säkert</translation>
 <translation id="7473891865547856676">Nej tack</translation>

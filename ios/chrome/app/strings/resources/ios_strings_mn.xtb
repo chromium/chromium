@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">Хүлээн авах &amp; Үргэлжлүүлэх</translation>
 <translation id="110724200315609752">Нээлттэй цонх руу сэлгэх</translation>
 <translation id="1112015203684611006">Хэвлэж чадсангүй.</translation>
-<translation id="1118569444314402022">Дахин тавтай морилно уу, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Шинэ таб үүсгэнэ үү.</translation>
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
 <translation id="1135212215217513471">iOS-т зориулсан Chrome-г авах</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">Хаах цэс</translation>
 <translation id="1358214951266274152">Хуулсан холбоосондоо зочлох</translation>
 <translation id="1360432990279830238">Гараад синк хийхийг унтраах уу?</translation>
+<translation id="1363028406613469049">Бичлэг</translation>
 <translation id="1375321115329958930">Хадгалагдсан нууц үг</translation>
 <translation id="1377255359165588604">Синк ажиллахаа больсон байна.</translation>
 <translation id="1377321085342047638">Картын дугаар</translation>
@@ -197,6 +197,7 @@
 <translation id="2647269890314209800">Ашиглаж буй күүки</translation>
 <translation id="2648803196158606475">Уншсаныг устгах</translation>
 <translation id="2653659639078652383">Илгээх</translation>
+<translation id="2671426118752779020">Та Google-н Нууц үгний менежерт хадгалсан нууц үгнүүдээ iPhone дээрх бусад аппад ашиглах боломжтой.</translation>
 <translation id="2690858294534178585">Камерыг ашиглаж байна</translation>
 <translation id="2691653761409724435">Офлайн үед боломжгүй</translation>
 <translation id="2695507686909505111">Хуудсыг орчуулсан</translation>
@@ -206,6 +207,7 @@
 <translation id="2704491540504985681">Татаж авсан файлууд</translation>
 <translation id="2704606927547763573">Хуулсан</translation>
 <translation id="2709516037105925701">Автоматаар бөглөх</translation>
+<translation id="271033894570825754">Шинэ</translation>
 <translation id="2712127207578915686">Файлыг нээх боломжгүй байна</translation>
 <translation id="2718352093833049315">Зөвхөн Wi-Fi-аар</translation>
 <translation id="2747003861858887689">Өмнөх талбар</translation>
@@ -262,6 +264,7 @@
 <translation id="3103603146121354983">Автоматаар бөглөх нууц үгнүүд</translation>
 <translation id="3112556859945124369">Тэмдэглэх...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Та юу синк хийх боломжтойгоо хараарай<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Түүх болон бусад</translation>
 <translation id="3131206671572504478">Бүх күүкийг блоклосон</translation>
 <translation id="313283613037595347">Шинэ Нууцлалтай таб үүсгэх</translation>
 <translation id="3153862085237805241">Картыг хадгалах</translation>
@@ -332,7 +335,6 @@
 <translation id="3709582977625132201">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="371230970611282515">Аюултай үйл явдлын тухай урьдчилан таамаглаж, тохиолдохоос нь өмнө танд анхааруулга өгдөг.</translation>
 <translation id="37207012422556617">Тренд болж буй хайлт</translation>
-<translation id="3726360487031500941"><ph name="USER_NAME" /> бүртгэлдээ дахин нэвтэрнэ үү</translation>
 <translation id="3740397331642243698">Оруулсан URL-г Google Chrome дээр нууцлалтайгаар нээдэг.</translation>
 <translation id="3762232513783804601">Таны iPad-д зориулан бүтээсэн</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
@@ -503,6 +505,7 @@
 <translation id="509789154667432072">Хавчуурга нэмэх</translation>
 <translation id="5118713593561876160">Сонирхол</translation>
 <translation id="5118764316110575523">Унтраалттай</translation>
+<translation id="5119391094379141756">Chrome-г сонгоно уу</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
 <translation id="5140288047769711648">Chrome энэ нууц үгийг танд зориулан цээжлэх болно. Та үүнийг цээжлэх шаардлагагүй.</translation>
 <translation id="5149188072385105201">Нууц үг нэмэх...</translation>
@@ -626,6 +629,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6149061208933997199">Нууц үг ашиглах</translation>
 <translation id="6152406514676263192">Таны сонирхолд тулгуурласан хамгийн хамааралтай контент харахын тулд синк хийнэ үү.</translation>
 <translation id="6159839020698489198">заавал биш</translation>
+<translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6177442314419606057">Chrome-с хайх</translation>
 <translation id="6184086493125982861">Цонхнуудыг харуул</translation>
 <translation id="6187302354554850004">Хамгийн сүүлд синк хийсэн: <ph name="LAST_USED_TIME" /></translation>
@@ -873,6 +877,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="804225253087497565">Таныг нэвтэрсэн үед <ph name="BEGIN_LINK" />хайлтын түүх<ph name="END_LINK" /> болон <ph name="BEGIN_LINK" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.</translation>
 <translation id="804427445359061970">Та бусад төхөөрөмжийн табаа эндээс олох болно</translation>
+<translation id="8048728378294435881">Зүйлсээ хуулбарлаж, үүнийг дурын төхөөрөмж дээр ашиглана уу</translation>
 <translation id="8059533439631660104">Хэсгийг хураалаа.</translation>
 <translation id="8065292699993359127">URL-г Chrome дээр Нууцлалтайгаар нээх</translation>
 <translation id="806745655614357130">Миний өгөгдлийг тусад нь байлгах</translation>
@@ -976,6 +981,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8981454092730389528">Google-н Ашиглалтын удирдлага</translation>
 <translation id="8985320356172329008">Google-д дараахаар нэвтэрсэн</translation>
 <translation id="9000089900434778519">Таны хайлтын систем <ph name="DSE_NAME" /> байна. Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд үүний зааварчилгааг харна уу.</translation>
+<translation id="9008201768610948239">Алгас</translation>
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9039373489628511875">Мессежийн өргөн</translation>

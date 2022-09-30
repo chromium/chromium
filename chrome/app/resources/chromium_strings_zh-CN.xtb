@@ -53,7 +53,6 @@
 <translation id="2359808026110333948">继续</translation>
 <translation id="2384373936468275798">由于您的帐号登录详细信息已过期，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />”扩展程序更改了 Chromium 启动后系统显示的页面。</translation>
-<translation id="2400844369696905771">开启此设置后，Chromium 会从您目前未主动使用的标签页回收内存。这样可释放计算机的资源以用于执行其他任务，并使 Chromium 保持快速运行。闲置的标签页会显示为空白，在您点击后才会自动重新加载。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
 <translation id="2483889755041906834">在 Chromium 中</translation>
 <translation id="2485422356828889247">卸载</translation>
@@ -144,7 +143,6 @@
 <translation id="4285930937574705105">未知错误导致安装失败。如果 Chromium 正在运行，请将其关闭，然后重试。</translation>
 <translation id="4304713468139749426">密码管理器</translation>
 <translation id="4334294535648607276">下载完毕。</translation>
-<translation id="437317747729858884">为了让您享受更快速的浏览体验，Chromium 会从您目前未使用的标签页回收内存。</translation>
 <translation id="439358628917130594">根据 <ph name="MANAGER" /> 的要求，您必须先阅读并接受以下《服务条款》才能使用此设备。这些条款不会扩展、修改或限制 Chromium 操作系统条款。</translation>
 <translation id="4407044323746248786">仍要退出 Chromium？</translation>
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
@@ -315,7 +313,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7872446069773932638">正在下载…还需 <ph name="SECONDS" /> 秒</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chromium 考虑范围的兴趣。</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
-<translation id="7947085610734123927">Chromium 已开启内存节省程序</translation>
 <translation id="7975919845073681630">这是 Chromium 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
 <translation id="7997934263947464652">来源不明的扩展程序、应用和主题可能会危害您的设备。Chromium 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="8013436988911883588">一旦 Chromium 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
@@ -336,7 +333,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>
 <translation id="8463672209299734063">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 Chromium 操作系统的功能和性能。</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
-<translation id="8522220489792889625">Chromium 会酌情从您目前未主动使用的标签页回收内存。您随时可在“设置”中更改此设置。</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8558383651099478961">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法添加该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8561285221328166383">若要接收后续 Chromium 更新，您需使用 macOS 10.13 或更高版本。该计算机目前使用的是 macOS 10.12。</translation>

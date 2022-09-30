@@ -1846,10 +1846,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene disattivato, le richieste vengono disabilitate e l'acquisizione audio è disponibile solo per gli URL configurati nell'elenco AudioCaptureAllowedUrls.
 
       Nota: il criterio si applica a tutte le uscite audio (non solo al microfono integrato).</translation>
-<translation id="2822539450620588684">A partire dalla versione M107, tutti i metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> verranno richiamati in modo sincrono.
-      Fino alla versione M110, questo criterio riattiva la chiamata asincrona dei metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
-      Se il criterio viene impostato su Attivato, i metodi <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vengono richiamati in modo asincrono.
-      Se il criterio viene impostato su Disattivato o se non viene configurato, tutti i metodi di <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vengono richiamati in modo sincrono.</translation>
 <translation id="2823870601012066791">Posizione del Registro di sistema di Windows per client <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Attiva modalità di navigazione in incognito</translation>
 <translation id="282870810415075521">Consenti a JavaScript di utilizzare JIT su questi siti</translation>
@@ -2014,12 +2010,6 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Se il criterio viene impostato su Disattivato o se non viene configurato, la chiave manifest <ph name="REQUIRED_PLATFORM_VERSION" /> viene ignorata e l'aggiornamento automatico viene eseguito normalmente.
 
       Avviso: non delegare il controllo della versione di <ph name="PRODUCT_OS_NAME" /> a un'app kiosk, poiché potrebbe impedire al dispositivo di ricevere gli aggiornamenti del software e correzioni fondamentali per la sicurezza. La delega del controllo della versione di <ph name="PRODUCT_OS_NAME" /> potrebbe esporre gli utenti a dei rischi.</translation>
-<translation id="299519952839316970">Tieni presente che questo criterio è deprecato e verrà rimosso nella versione 88 di <ph name="PRODUCT_OS_NAME" />. Le sessioni pubbliche non sono più supportate. Utilizza invece <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> per configurare le sessioni Ospite gestite.
-      Se il criterio è impostato su False, le sessioni Ospite gestite si comporteranno come documentato all'indirizzo https://support.google.com/chrome/a/answer/3017014, la "Sessione pubblica" standard.
-
-      Se il criterio è impostato su True o non viene impostato, le sessioni Ospite gestite assumeranno il comportamento "Sessione gestita" che revoca molte delle restrizioni poste nelle "Sessioni pubbliche" normali.
-
-      Se questo criterio viene impostato, l'utente non può modificarlo o ignorarlo.</translation>
 <translation id="2999597974578784672">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
 
           Se questo criterio non viene impostato, per tutti i siti viene usato il valore predefinito globale del criterio <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" />, se impostato o, se il criterio non è impostato, il valore della configurazione personale dell'utente.

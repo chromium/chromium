@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Váltás listanézetre</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappa megosztva a Linux rendszerrel</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fájl kiválasztva</translation>
+<translation id="2383454254762599978">Áthelyezés a kukába</translation>
 <translation id="2387458720915042159">Proxykapcsolat típusa</translation>
 <translation id="2389832672041313158">burmai (Mianmar)</translation>
 <translation id="2392369802118427583">Aktiválás</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Ugrás ide: drive.google.com...</translation>
 <translation id="3553048479571901246">Fájlok <ph name="APP_NAME" /> alkalmazással való megnyitásához először másolja be őket a Windows-fájlok mappába.</translation>
 <translation id="3556731189587832921">angol (USA) billentyűzet nemzetközi PC kiosztással</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> áthelyezése a kukába</translation>
 <translation id="3567221313191587603">Válassza ki a kívánt fájlt, és kattintson a(z) <ph name="OFFLINE_CHECKBOX_NAME" /> melletti jelölőnégyzetre a fájlok offline hozzáféréséhez.</translation>
 <translation id="357479282490346887">litván</translation>
 <translation id="3587482841069643663">Mind</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">bengáli, fonetikus</translation>
 <translation id="4002066346123236978">Cím</translation>
 <translation id="4017788180641807848">angol (USA) billentyűzet Workman kiosztással</translation>
+<translation id="4019998208269143058">Kitűzés a gyorsfájlok közé</translation>
 <translation id="4040753847560036377">Helytelen PUK-kód</translation>
 <translation id="4057991113334098539">Aktiválás...</translation>
 <translation id="4092890906744441904">ír</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">A rendszergazda által beállított házirend nem javasolja a következőket:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> áthelyezve.</translation>
 <translation id="4176286497474237543">Kuka ürítése most</translation>
+<translation id="4179621117429069925">Az elem a kukában van</translation>
 <translation id="4186579485882418952">Offline hozzáférés engedélyezése</translation>
 <translation id="4193154014135846272">Google-dokumentum</translation>
 <translation id="4197674956721858839">Tömörítendő fájlok kijelölése</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">A hitelesítési tanúsítvány távolról elutasítva</translation>
 <translation id="4394214039309501350">Külső link</translation>
 <translation id="4394980935660306080">Korábban ezen a héten</translation>
+<translation id="4398096759193130964">Visszaállíthatja az elemeket, vagy áthúzhatja őket egy új, kukán kívüli mappába</translation>
 <translation id="4401287888955153199">Összes kibontása</translation>
 <translation id="4410695710508688828">A kinyerési művelet nem sikerült. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Létrehozhat parancsikont a fájlokhoz</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi InScript kiosztással</translation>
 <translation id="4801956050125744859">Mindkettő megtartása</translation>
 <translation id="4804827417948292437">Avokádó</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> elem visszaállítása</translation>
 <translation id="4823651846660089135">Az eszköz csak olvasható</translation>
 <translation id="4826849268470072925">tamil, ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elem kiválasztva</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Záporvirág</translation>
 <translation id="4943368462779413526">Focilabda</translation>
 <translation id="4961158930123534723">1 mappa megosztva a Parallels Desktoppal</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> visszaállítva</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Olyan nevet adjon meg, amely legfeljebb <ph name="MAX_LENGTH" /> karakter hosszú</translation>
 <translation id="4973970068702235170">A tömörítés váratlan hiba miatt nem sikerült: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Hoppá! A(z) <ph name="FILE_NAME" /> már nem létezik.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, zárolás feloldása</translation>
 <translation id="5700087501958648444">Audiofájl adatai</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> áthelyezve a kukába</translation>
 <translation id="5724172041621205163">thai, pattachote-billentyűzettel</translation>
 <translation id="5756666464756035725">Magyar QWERTY</translation>
 <translation id="5763377084591234761">német (Svájc)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-archívum</translation>
 <translation id="6321303798550928047">Integetés</translation>
 <translation id="6327785803543103246">Webproxy automatikus észlelése</translation>
+<translation id="6337014272874260727">A gyorsfájlok között való kitűzés megszüntetése</translation>
 <translation id="6339145975392024142">Amerikai nemzetközi (PC)</translation>
 <translation id="6346310558342052870">Korlátozott hozzáférés</translation>
 <translation id="6356685157277930264">Fájlokkal kapcsolatos visszajelzésre vonatkozó ablak</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 mappa kiválasztva</translation>
 <translation id="6755827872271341378">ChromeOS Flex-eszköz</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
+<translation id="6794539005637808366">Visszaállíthatja az elemet, vagy áthúzhatja egy új, kukán kívüli mappába</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linuxos megosztás kezelése</translation>
 <translation id="6806796368146926706">alfanumerikus, japán billentyűzettel</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">svéd</translation>
 <translation id="6990081529015358884">Elfogyott a hely</translation>
+<translation id="6993826899923627728">Ezek az elemek a kukában vannak</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> kiválasztott mappa</translation>
 <translation id="7008426324576352165">Szervezetének további tárhelyre van szüksége a feltöltés befejezéséhez.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">cseh</translation>
 <translation id="7417453074306512035">Etióp billentyűzet</translation>
 <translation id="7417705661718309329">Google-térkép</translation>
+<translation id="7419668828140929293">„<ph name="FILENAME" />” visszaállítása</translation>
 <translation id="7458955835361612701">Nincsenek új képek</translation>
 <translation id="7460898608667578234">ukrán</translation>
 <translation id="7469894403370665791">Automatikus kapcsolódás ehhez a hálózathoz</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Egyszerűen hozzáférhet a Google Fotókhoz</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezve a kukába</translation>
 <translation id="7693909743393669729">A meghajtó formázásával minden rajta tárolt adat, és ezzel együtt az összes meglévő partíció is törlődik (többek között az esetlegesen nem láthatók is). A művelet nem vonható vissza.</translation>
 <translation id="7695430100978772476">Nem sikerült a(z) <ph name="DRIVE_NAME" /> formázása</translation>
 <translation id="76959938259365003">Nem sikerült kiüríteni a kukát.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">kínai, vubi</translation>
 <translation id="7765158879357617694">Áthelyezés</translation>
 <translation id="7774365994322694683">Madár</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> elem visszaállítva</translation>
 <translation id="7781829728241885113">Tegnap</translation>
 <translation id="7788080748068240085">A(z) „<ph name="FILE_NAME" />” offline mentéséhez fel kell szabadítania további <ph name="TOTAL_FILE_SIZE" /> helyet:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />szüntesse meg azoknak a fájloknak a rögzítését, amelyek offline elérésére már nincs szüksége<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> bejegyzést tartalmazó tartomány kijelölve <ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> között.</translation>
 <translation id="954194396377670556">A rendszergazda által beállított házirend megakadályozza a következőket:</translation>
 <translation id="965477715979482472">angol (Dél-Afrika)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> elem áthelyezése a kukába</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Már van „<ph name="FILE_NAME" />” nevű fájl. Lecseréli?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> próbálkozási lehetősége maradt. Addig nem tudja használni ezt a hálózatot, amíg új PIN-kódot nem állít be.</translation>

@@ -58,7 +58,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
 <translation id="2094919256425865063">Pretende fechar o Chrome mesmo assim?</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Quando a definição está ativada, o Chrome recupera a memória dos separadores que não está a usar ativamente. Esta ação liberta os recursos do computador para outras tarefas e mantém o Chrome rápido. Os separadores inativos aparecem vazios e são atualizados automaticamente quando clica nos mesmos. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envie feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Esta ação elimina <ph name="ITEMS_COUNT" /> itens deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome ao comunicar as <ph name="BEGIN_LINK" />definições atuais<ph name="END_LINK" /></translation>
@@ -225,7 +224,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5386244825306882791">Também controla a página apresentada quando inicia o Chrome ou pesquisa a partir da Caixa geral.</translation>
 <translation id="5394833366792865639">Partilhe um separador do Chrome</translation>
 <translation id="5412485296464121825">Os sites podem armazenar informações no Chrome sobre os seus interesses. Por exemplo, se visitar um site para comprar ténis para uma maratona, o site pode definir "correr maratonas" como o seu interesse. Posteriormente, se visitar um site diferente para se inscrever numa corrida, esse site pode mostrar-lhe um anúncio de ténis de corrida com base nos seus interesses.</translation>
-<translation id="5416870378730196769">O Chrome ativou a Poupança de memória</translation>
 <translation id="5430073640787465221">O ficheiro de preferências está danificado ou não é válido. O Google Chrome não consegue recuperar as suas definições.</translation>
 <translation id="5524761631371622910">Quando as avaliações estão ativadas, e se o Chrome tiver colocado o utilizador aleatoriamente numa avaliação ativa, o histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina os seus interesses todos os meses.</translation>
 <translation id="556024056938947818">O Google Chrome está a tentar mostrar palavras-passe.</translation>
@@ -276,7 +274,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6735387454586646204">Sistema do ChromeOS Flex</translation>
 <translation id="6739177684496155661">Pretende continuar num novo perfil do Chrome?</translation>
 <translation id="6750954913813541382">Para corrigir erros ortográficos, o Chrome envia o texto que escrever no navegador para a Google.</translation>
-<translation id="6756581345161130259">Conforme necessário, o Chrome recupera a memória dos separadores que não está a usar ativamente. Pode alterar esta definição em qualquer altura nas definições.</translation>
 <translation id="677276454032249905">Pretende sair do Chrome mesmo assim?</translation>
 <translation id="6785872064505734160">O Assistente Google no Chrome pode concluir ações em Websites por si.</translation>
 <translation id="683440813066116847">Regra de importação para o Google Chrome Canary permitir o tráfego mDNS.</translation>
@@ -324,7 +321,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logótipo do Chrome Enterprise</translation>
 <translation id="7655455401911432608">O seu histórico de navegação, um registo dos sites que visitou através do Chrome neste dispositivo.</translation>
-<translation id="7726773885101561560">Para tornar a sua navegação mais rápida, o Chrome recupera a memória dos separadores que não está a usar.</translation>
 <translation id="7747138024166251722">O programa de instalação não conseguiu criar um directório temporário. Verifique se há espaço livre no disco e permissão para a instalação do software.</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google. Pode desativar esta opção nas definições em qualquer altura.</translation>

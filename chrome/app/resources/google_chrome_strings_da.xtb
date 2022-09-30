@@ -58,7 +58,6 @@
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du slutte Chrome alligevel?</translation>
 <translation id="2106831557840787829">ChromeOS Flex leveres ved hjælp af ekstra <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Når indstillingen er aktiveret, bruger Chrome hukommelse fra faner, du ikke aktivt bruger. Dette frigør din computers ressourcer til andre opgaver og sørger for, at Chrome forbliver hurtigt. Inaktive faner fremstår som tomme og genindlæses automatisk, når du klikker på dem. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Denne handling sletter <ph name="ITEMS_COUNT" /> elementer på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Genstart og opdater &amp;Chrome</translation>
 <translation id="2123055963409958220">Vær med til at gøre Chrome bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
@@ -225,7 +224,6 @@
 <translation id="5386244825306882791">Den styrer også, hvilken side der vises, når du åbner Chrome eller søger via omnifeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5412485296464121825">Websites kan gemme oplysninger med Chrome om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
-<translation id="5416870378730196769">Chrome har aktiveret Hukommelsessparefunktion</translation>
 <translation id="5430073640787465221">Din præferencefil er beskadiget eller ugyldig. Google Chrome kan ikke gendanne dine præferencer.</translation>
 <translation id="5524761631371622910">Når prøver er aktiveret, og hvis Chrome har placeret dig tilfældigt i en aktiv prøve, vil din browserhistorik påvirke de annoncer, du ser, og de interesser, som er estimeret nedenfor. Af hensyn til beskyttelsen af dine personlige oplysninger sletter Chrome dine interesser en gang om måneden.</translation>
 <translation id="556024056938947818">Google Chrome forsøger at vise adgangskoder.</translation>
@@ -276,7 +274,6 @@
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6739177684496155661">Vil du fortsætte på en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">Chrome sender den tekst, du angiver i browseren, til Google for at rette stavefejl</translation>
-<translation id="6756581345161130259">Når det er nødvendigt, bruger Chrome hukommelse fra faner, du ikke aktivt bruger. Du kan altid ændre dette under Indstillinger.</translation>
 <translation id="677276454032249905">Vil du afslutte Chrome alligevel?</translation>
 <translation id="6785872064505734160">Google Assistent i Chrome kan udføre handlinger for dig på websites</translation>
 <translation id="683440813066116847">Indgående regel for Google Chrome Canary om at tillade mDNS-trafik.</translation>
@@ -324,7 +321,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="7655455401911432608">Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed</translation>
-<translation id="7726773885101561560">Chrome bruger hukommelse fra faner, du ikke bruger, for at give dig en hurtigere browseroplevelse.</translation>
 <translation id="7747138024166251722">Installationsprogrammet kunne ikke oprette en midlertidig mappe. Tjek, om der er tilstrækkelig diskplads, og om der er tilladelse til at installere software.</translation>
 <translation id="7761834446675418963">Klik på dit navn for at åbne Chrome og gå i gang med at browse.</translation>
 <translation id="7777080907402804672">Hvis et billede ikke har en brugbar beskrivelse, forsøger Chrome at angive en for dig. Billederne sendes til Google, så der kan oprettes beskrivelser. Du kan til enhver tid deaktivere denne funktion i indstillingerne.</translation>

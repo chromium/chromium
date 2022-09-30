@@ -23,7 +23,6 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1104948393051856124">Prano dhe vazhdo</translation>
 <translation id="110724200315609752">Kalo te dritarja e hapur</translation>
 <translation id="1112015203684611006">Printimi dështoi.</translation>
-<translation id="1118569444314402022">Mirë se u ktheve, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Krijo një skedë të re</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1135212215217513471">Merr Chrome për iOS</translation>
@@ -61,6 +60,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="1340643665687018190">Mbylle menynë</translation>
 <translation id="1358214951266274152">Vizito lidhjen që kopjove</translation>
 <translation id="1360432990279830238">Do të dalësh dhe çaktivizosh sinkronizimin?</translation>
+<translation id="1363028406613469049">Pjesa muzikore</translation>
 <translation id="1375321115329958930">Fjalëkalimet e ruajtura</translation>
 <translation id="1377255359165588604">"Sinkronizimi" ka ndaluar së funksionuari.</translation>
 <translation id="1377321085342047638">Numri i kartës</translation>
@@ -197,6 +197,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2647269890314209800">Kukit në përdorim</translation>
 <translation id="2648803196158606475">Fshi të lexuarat</translation>
 <translation id="2653659639078652383">Dërgoje</translation>
+<translation id="2671426118752779020">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve të Google" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="2690858294534178585">Kamera është në përdorim</translation>
 <translation id="2691653761409724435">Nuk mundësohet jashtë linje</translation>
 <translation id="2695507686909505111">Faqja u përkthye</translation>
@@ -206,6 +207,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2704491540504985681">Shkarkime</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2709516037105925701">Plotëso automatikisht</translation>
+<translation id="271033894570825754">E re</translation>
 <translation id="2712127207578915686">Skedari nuk mund të hapet</translation>
 <translation id="2718352093833049315">Vetëm me Wi-Fi</translation>
 <translation id="2747003861858887689">Fusha e mëparshme</translation>
@@ -262,6 +264,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3103603146121354983">Plotëso automatikisht fjalëkalimet</translation>
 <translation id="3112556859945124369">Shëno...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Shiko se çfarë mund të sinkronizosh<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Historiku etj.</translation>
 <translation id="3131206671572504478">Bllokoji të gjitha</translation>
 <translation id="313283613037595347">Krijo një skedë të re "të fshehtë".</translation>
 <translation id="3153862085237805241">Ruaj kartën</translation>
@@ -332,7 +335,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3709582977625132201">Shëno si të palexuar</translation>
 <translation id="371230970611282515">Parashikon dhe të paralajmëron rreth ngjarjeve të rrezikshme përpara se ato të ndodhin.</translation>
 <translation id="37207012422556617">Kërkimet në tendencë</translation>
-<translation id="3726360487031500941">Identifikohu përsëri në llogarinë tënde <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Hap URL-të e futura në Google Chrome në modalitetin "i fshehtë".</translation>
 <translation id="3762232513783804601">Krijuar për iPad tënd</translation>
 <translation id="3771033907050503522">Skedat "e fshehura"</translation>
@@ -504,6 +506,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="509789154667432072">Shto një faqeshënues</translation>
 <translation id="5118713593561876160">Interesat</translation>
 <translation id="5118764316110575523">Joaktiv</translation>
+<translation id="5119391094379141756">Zgjidh Chrome</translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5140288047769711648">Chrome do ta kujtojë këtë fjalëkalimin për ty. Nuk është e nevojshme ta mbash mend.</translation>
 <translation id="5149188072385105201">Shto fjalëkalimin...</translation>
@@ -627,6 +630,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6149061208933997199">Përdor fjalëkalimin</translation>
 <translation id="6152406514676263192">Sinkronizoje për përmbajtjet më të përshtatshme bazuar në interesat e tu.</translation>
 <translation id="6159839020698489198">opsionale</translation>
+<translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6177442314419606057">Kërko në Chrome</translation>
 <translation id="6184086493125982861">Trego skedat</translation>
 <translation id="6187302354554850004">Sinkronizimi i fundit: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +878,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8032569120109842252">Po ndjek</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Historiku i kërkimeve<ph name="END_LINK" /> dhe <ph name="BEGIN_LINK" />forma të tjera aktiviteti<ph name="END_LINK" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="804427445359061970">Këtu do të gjesh skedat e tua nga pajisjet e tjera</translation>
+<translation id="8048728378294435881">Rezervo gjërat e tua dhe përdori në çdo pajisje</translation>
 <translation id="8059533439631660104">Mbyll seksionin.</translation>
 <translation id="8065292699993359127">Hap URL-të në Chrome në modalitetin "i fshehtë"</translation>
 <translation id="806745655614357130">Mbaji më vete të dhënat e mia</translation>
@@ -977,6 +982,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8981454092730389528">Kontrollet e aktivitetit të Google</translation>
 <translation id="8985320356172329008">Je identifikuar në Google si</translation>
 <translation id="9000089900434778519">Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
+<translation id="9008201768610948239">Shpërfill</translation>
 <translation id="9034759925968272072">Nuk do të dalësh nga llogaria e Google. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>

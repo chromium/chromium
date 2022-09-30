@@ -57,7 +57,6 @@
 <translation id="2094648590148273905">ChromeOS Flex şartları</translation>
 <translation id="2094919256425865063">Yine de Chrome'dan çıkılsın mı?</translation>
 <translation id="2106831557840787829">ChromeOS Flex, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
-<translation id="2112742052114331084">Bu ayar etkinleştirildiğinde Chrome, aktif olarak kullanmadığınız sekmelerdeki belleği geri kazanır. Böylece, bilgisayarınızın kaynaklarında diğer görevler için yer açılır ve Chrome hızlı çalışmaya devam eder. Aktif olmayan sekmeler boş görünür ve bunları tıkladığınızda otomatik olarak yeniden yüklenir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" /> veya <ph name="BEGIN_LINK_2" />geri bildirim gönderin<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Bu işlem, <ph name="ITEMS_COUNT" /> öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="2121284319307530122">&amp;Chrome'u Güncellemek İçin Yeniden Başlat</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Mevcut ayarlarınızı<ph name="END_LINK" /> bildirerek Chrome'u daha iyi hale getirmemize yardımcı olun</translation>
@@ -226,7 +225,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5386244825306882791">Ayrıca, Chrome'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="5394833366792865639">Chrome sekmesi paylaşın</translation>
 <translation id="5412485296464121825">Siteler, ilgi alanlarınız hakkındaki bilgileri Chrome'da saklayabilir. Örneğin, maraton ayakkabısı satın almak için ziyaret ettiğiniz bir site, maraton koşmayı ilgi alanınız olarak tanımlayabilir. Daha sonra bir yarışa kaydolmak için farklı bir siteyi ziyaret ettiğinizde o site ilgi alanlarınıza dayalı olarak size koşu ayakkabısı reklamı gösterebilir.</translation>
-<translation id="5416870378730196769">Chrome, Bellek Tasarrufu'nu etkinleştirdi</translation>
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
 <translation id="5524761631371622910">Denemeler açıksa ve Chrome tarafından etkin bir denemeye rastgele yerleştirildiyseniz tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chrome, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler.</translation>
 <translation id="556024056938947818">Google Chrome şifreleri göstermeyi deniyor.</translation>
@@ -277,7 +275,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6735387454586646204">ChromeOS Flex Sistemi</translation>
 <translation id="6739177684496155661">Yeni bir Chrome profilinde devam edilsin mi?</translation>
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
-<translation id="6756581345161130259">Chrome, aktif olarak kullanmadığınız sekmelerdeki belleği gerektiğinde geri kazanır. İstediğiniz zaman bunu Ayarlar'dan değiştirebilirsiniz.</translation>
 <translation id="677276454032249905">Yine de Chrome'dan çıkılsın mı?</translation>
 <translation id="6785872064505734160">Chrome'daki Google Asistan sizin için web sitelerindeki işlemleri tamamlayabilir</translation>
 <translation id="683440813066116847">Google Chrome Canary'nin mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
@@ -325,7 +322,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7651907282515937834">Chrome Enterprise logosu</translation>
 <translation id="7655455401911432608">Tarama geçmişiniz, bu cihazda Chrome'u kullanarak ziyaret ettiğiniz sitelerin kaydı.</translation>
-<translation id="7726773885101561560">Chrome, internette daha hızlı gezinmenizi sağlamak için kullanmadığınız sekmelerdeki belleği geri kazanır.</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
 <translation id="7761834446675418963">Chrome'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
 <translation id="7777080907402804672">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>

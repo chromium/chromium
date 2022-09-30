@@ -58,7 +58,6 @@
 <translation id="2094648590148273905">Nutzungsbedingungen für Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome trotzdem beenden?</translation>
 <translation id="2106831557840787829">Chrome OS Flex und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
-<translation id="2112742052114331084">Wenn diese Option aktiviert ist, gibt Chrome den für Tabs genutzten Arbeitsspeicher wieder frei, wenn du sie gerade nicht aktiv verwendest. Dadurch werden die Ressourcen deines Computers für andere Aufgaben frei und Chrome wird schneller. Inaktive Tabs erscheinen leer und werden automatisch aktualisiert, wenn du sie anklickst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> oder <ph name="BEGIN_LINK_2" />Feedback senden<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="2121284319307530122">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Aktuelle Einstellungen<ph name="END_LINK" /> übermitteln und so helfen, Chrome zu verbessern</translation>
@@ -225,7 +224,6 @@
 <translation id="5386244825306882791">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="5394833366792865639">Chrome-Tab freigeben</translation>
 <translation id="5412485296464121825">Websites können Daten zu deinen Interessen bei Chrome speichern. Wenn du beispielsweise im Internet Schuhe für einen Marathon kaufst, definiert die Website möglicherweise Marathons als eines deiner Interessen. Wenn du dann später eine andere Website besuchst, um dich für ein Wettrennen anzumelden, kann dir auf Grundlage deiner Interessen Werbung zu Laufschuhen angezeigt werden.</translation>
-<translation id="5416870378730196769">Chrome hat den Arbeitsspeichersparmodus aktiviert</translation>
 <translation id="5430073640787465221">Deine Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="5524761631371622910">Wenn Tests aktiviert sind und Chrome dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome jeden Monat fortlaufend deine Interessen.</translation>
 <translation id="556024056938947818">Google Chrome versucht, Passwörter anzuzeigen.</translation>
@@ -276,7 +274,6 @@
 <translation id="6735387454586646204">Chrome OS Flex-System</translation>
 <translation id="6739177684496155661">Mit einem neuen Chrome-Profil fortfahren?</translation>
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
-<translation id="6756581345161130259">Bei Bedarf gibt Chrome den für Tabs genutzten Arbeitsspeicher wieder frei, wenn du sie gerade nicht aktiv verwendest. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
 <translation id="6785872064505734160">Google Assistant kann in Chrome Aktionen auf Websites für dich durchführen.</translation>
 <translation id="683440813066116847">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Canary</translation>
@@ -324,7 +321,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7651907282515937834">Logo von Chrome Enterprise</translation>
 <translation id="7655455401911432608">Dein Browserverlauf, das heißt eine Liste der von dir auf diesem Gerät in Chrome besuchten Websites.</translation>
-<translation id="7726773885101561560">Um das Surfen zu beschleunigen, verwendet Chrome Arbeitsspeicher von nicht genutzten Tabs.</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Du kannst dies jederzeit in den Einstellungen deaktivieren.</translation>

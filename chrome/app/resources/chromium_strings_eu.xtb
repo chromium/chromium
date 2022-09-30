@@ -55,7 +55,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2384373936468275798">Chromium OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="2396765026452590966"><ph name="EXTENSION_NAME" /> luzapenak aldatu egin du Chromium abiarazten duzunean agertzen den orria.</translation>
-<translation id="2400844369696905771">Aktibatuta dagoenean, aktiboki erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chromium-ek. Horrela, ordenagailuaren baliabideak libre geratzen dira beste zeregin batzuetarako, eta Chromium-ek abiadura egokian funtzionatzen jarraitzen du. Inaktibo dauden fitxak hutsik agertzen dira eta, haiek sakatzean, automatikoki kargatzen dira berriro. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium-ek kamera eta mikrofonoa atzitzeko baimenak behar ditu webgune honetan</translation>
 <translation id="2483889755041906834">Chromium-en</translation>
 <translation id="2485422356828889247">Desinstalatu</translation>
@@ -146,7 +145,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4285930937574705105">Instalazioak huts egin du zehaztu gabeko errore batengatik. Chromium abian bada, itxi eta ireki berriro.</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
 <translation id="4334294535648607276">Deskargatu da.</translation>
-<translation id="437317747729858884">Bizkorrago arakatze aldera, erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chromium-ek.</translation>
 <translation id="439358628917130594">Gailua erabili aurretik, <ph name="MANAGER" /> kudeatzaileak jarraian azalduko diren Zerbitzu-baldintzak irakurtzeko eta onartzeko eskatzen dizu. Baldintzok ez dituzte hedatuko, aldatuko edo mugatuko Chromium OS-ren Baldintzak.</translation>
 <translation id="4407044323746248786">Chromium-etik irten nahi duzu hala ere?</translation>
 <translation id="4415566066719264597">Onartu Chromium atzeko planoan abiaraztea</translation>
@@ -317,7 +315,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7872446069773932638">Deskargatzen… <ph name="SECONDS" /> segundo geratzen dira.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Zure pribatutasuna babesteko, lau aste baino gehiago dituzten interesak automatikoki ezabatzen ditugu. Arakatzen jarraitu ahala, baliteke interes bat berriro agertzea zerrendan. Bestela, Chromium-ek aintzat hartzea nahi ez duzun interesak ken ditzakezu.</translation>
 <translation id="7937630085815544518">Chromium-en <ph name="USER_EMAIL_ADDRESS" /> gisa hasi duzu saioa. Saioa berriro hasteko, erabili hasiera batean erabilitako kontu bera.</translation>
-<translation id="7947085610734123927">Chromium-ek Memoria-aurreztailea aktibatu du</translation>
 <translation id="7975919845073681630">Chromium-en bigarren mailako instalazio bat da hau; beraz, ezin duzu ezarri arakatzaile lehenetsi gisa.</translation>
 <translation id="7997934263947464652">Iturburu ezezagunetatik datozen luzapenek, aplikazioek eta gaiek gailua kalte dezakete. Halakoak <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zerbitzutik bakarrik instalatzea gomendatzen du Chromium-ek.</translation>
 <translation id="8013436988911883588">Chromium-ek sarbidea duenean, webguneek sarbidea eskatuko dizute.</translation>
@@ -338,7 +335,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8453117565092476964">Instalatzailearen artxiboa hondatuta dago edo baliogabea da. Deskargatu Chromium berriro.</translation>
 <translation id="8463672209299734063">Aukerakoa: lagundu Chromium OS-ren eginbideak eta errendimendua hobetzen Google-ri diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
 <translation id="8493179195440786826">Chromium zaharkituta dago</translation>
-<translation id="8522220489792889625">Aktiboki erabiltzen ari ez zaren fitxen memoria berreskuratzen du Chromium-ek, behar den moduan. Ezarpenetan alda dezakezu aukera hori.</translation>
 <translation id="8550334526674375523">Laneko profila eta profil pertsonala guztiz bereizita daude.</translation>
 <translation id="8558383651099478961">Zure gurasoak "Webguneen, aplikazioen eta luzapenen baimenak" desaktibatu ditu Chromium-en. Ezin da gehitu <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Etorkizunean Chromium-en eguneratzeak eskuratzeko, macOS 10.13 edo bertsio berriago bat beharko duzu. Ordenagailu hau macOS 10.12 erabiltzen ari da.</translation>

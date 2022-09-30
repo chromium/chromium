@@ -1250,6 +1250,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4277028893293644418">Restablecer contrasinal</translation>
 <translation id="4278390842282768270">Permitida</translation>
 <translation id="4282346679996504092">Desactiváronse as alertas para este produto e eliminouse o marcador</translation>
+<translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Esta tarxeta gardouse na túa Conta de Google}other{Estas tarxetas gardáronse na túa Conta de Google}}</translation>
 <translation id="4287885627794386150">Cumpre os requisitos para a proba, pero a técnica non está activa</translation>
 <translation id="4297502707443874121">Miniatura da páxina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2030,6 +2031,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Comprobar o proxy, o firewall e a configuración do DNS seguro<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Dúas grampas na parte esquerda</translation>
+<translation id="6370022303958842211">Accións de acceso ao dispositivo, como inicios de sesión (por exemplo, os motivos polo que non se puido iniciar sesión), peches de sesión, bloqueos e desbloqueos</translation>
 <translation id="6374865374745447009">xestión de ventás</translation>
 <translation id="6377268785556383139">1 resultado para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2434,6 +2436,7 @@ Detalles adicionais:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /> sobre este problema.</translation>
 <translation id="7455133967321480974">Utilizar valor predeterminado global (Bloquear)</translation>
 <translation id="7460618730930299168">O filtro é distinto do que seleccionaches. Queres continuar?</translation>
+<translation id="7461924472993315131">Marcar cun alfinete</translation>
 <translation id="7463075493919226237">Fútbol australiano</translation>
 <translation id="7469935732330206581">O formulario non é seguro</translation>
 <translation id="7473891865547856676">Non, grazas</translation>

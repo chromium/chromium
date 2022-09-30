@@ -217,6 +217,7 @@
       Als je het beleid niet instelt, is <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> (indien ingesteld) van toepassing op alle sites. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
+<translation id="1209096923317019235">Apps toewijzen als standaardhandlers voor gespecificeerde bestandsextensies</translation>
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
 <translation id="1212233008927724662">Lazy loading van WebUI voor inloggen uitzetten.</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
@@ -1831,10 +1832,6 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
       Als je het beleid niet toepast, worden prompts uitgezet en zijn audio-opnamen alleen beschikbaar voor URL's die zijn ingesteld in de lijst AudioCaptureAllowedUrls.
 
       Opmerking: Dit beleid is van invloed op alle audio-invoer (en niet alleen op de ingebouwde microfoon).</translation>
-<translation id="2822539450620588684">Vanaf M107 worden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden synchroon aangeroepen.
-      Tot M110 zorgt dit beleid dat asynchroon aanroepen van<ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden opnieuw wordt aangezet.
-      Als je dit beleid toepast, worden <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden asynchroon aangeroepen.
-      Als je dit beleid niet toepast of niet instelt, worden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-methoden synchroon aangeroepen.</translation>
 <translation id="2823870601012066791">Locatie van Windows-register voor <ph name="PRODUCT_OS_NAME" />-clients:</translation>
 <translation id="2824715612115726353">Incognito aanzetten</translation>
 <translation id="282870810415075521">Toestaan dat JavaScript op deze sites JIT gebruikt</translation>
@@ -1999,12 +1996,6 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
       Als je het beleid niet toepast of niet instelt, wordt de manifestsleutel <ph name="REQUIRED_PLATFORM_VERSION" /> genegeerd en verloopt de automatische update zoals gebruikelijk.
 
       Waarschuwing: Delegeer het beheer van de <ph name="PRODUCT_OS_NAME" />-versie niet aan een kiosk-app, omdat deze mogelijk voorkomt dat het apparaat software-updates en essentiële beveiligingsoplossingen ontvangt. Als je het beheer van de <ph name="PRODUCT_OS_NAME" />-versie delegeert, kan dit een risico opleveren voor gebruikers.</translation>
-<translation id="299519952839316970">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 88. Openbare sessies worden niet meer ondersteund. Gebruik <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> om beheerde gastsessies te configureren.
-      Als dit beleid is ingesteld op 'False', gedragen beheerde gastsessies zich zoals aangegeven in https://support.google.com/chrome/a/answer/3017014 - de standaard 'Openbare sessie'.
-
-      Als dit beleid is ingesteld op 'True' of niet is ingesteld, hanteren beheerde gastsessie het gedrag van een beheerde sessie, waardoor veel van de beperkingen voor reguliere openbare sessies komen te vervallen.
-
-      Als dit beleid is ingesteld, kan de gebruiker het niet wijzigen of overschrijven.</translation>
 <translation id="2999597974578784672">Hiermee kun je een lijst met URL-patronen opgeven van sites die cookies mogen instellen.
 
           Als je dit beleid niet instelt, wordt de algemene standaardwaarde gebruikt voor alle sites. Deze vind je in het beleid <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> (als dit is ingesteld) of in de persoonlijke configuratie van de gebruiker.
@@ -2357,6 +2348,15 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
       Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als de browser of het besturingssysteem crasht), worden de browsegegevens gewist wanneer het profiel weer wordt geladen.</translation>
 <translation id="3264793472749429012">Coderingen voor standaardzoekprovider</translation>
 <translation id="3273221114520206906">Standaardinstelling voor JavaScript</translation>
+<translation id="3282240846541032181">Met dit beleid kunnen beheerders apps opgeven die fungeren als standaardhandlers voor de betreffende bestandsextensies op <ph name="PRODUCT_OS_NAME" /> en die gebruikers niet kunnen wijzigen.
+      Voor alle bestandsextensies die niet in het beleid zijn opgegeven, kunnen gebruikers hun eigen standaardwaarden instellen met betrekking tot de gebruikelijke workflow.
+
+      Geef Chrome-apps op basis van hun ID op, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, en web-apps op basis van de URL die wordt gebruikt in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, zoals <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
+
+      Houd er rekening mee dat apps zichzelf MOETEN definiëren als bestandshandlers voor de gespecificeerde bestandsextensies in het manifest. Zo niet, dan kan dat beleidsitem niet worden toegepast (dat wil zeggen dat het beleid de bestaande app-mogelijkheden NIET uitbreidt).
+
+      Als je het beleid niet instelt, kan <ph name="PRODUCT_OS_NAME" /> standaardhandlers selecteren op basis van de interne logica.
+      </translation>
 <translation id="328347261792478720">De browser toont standaard media-aanbevelingen die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid niet toepast, ziet de gebruiker deze aanbevelingen niet. Als je dit beleid toepast of niet instelt, ziet de gebruiker de media-aanbevelingen.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
@@ -4184,6 +4184,35 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 <translation id="5330684698007383292"><ph name="PRODUCT_FRAME_NAME" /> toestaan de volgende soorten content te verwerken.</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" />-cloudbeleid krijgt voorrang op het platformbeleid.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
+<translation id="5357039649371478544">Hiermee stel je een lijst op met regels om datalekken op <ph name="PRODUCT_OS_NAME" /> te voorkomen.
+      Een datalek kan optreden als je gegevens kopieert en plakt, gegevens overdraagt, afdrukt, je scherm deelt of screenshots maakt, enzovoort.
+
+Elke regel bevat het volgende:
+- Een lijst met bronnen die zijn gedefinieerd als URL's. Alle gegevens in de bronnen worden beschouwd als vertrouwelijk en hierop worden de beperkingen toegepast.
+      - Een lijst met bestemmingen die zijn gedefinieerd als URL's of componenten, waarmee de vertrouwelijke gegevens wel of niet mogen worden gedeeld.
+      - Een lijst met beperkingen die op de gegevens van de bronnen moeten worden toegepast.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of er screenshots van de bronnen mogen worden gemaakt.
+      - Bepalen of er bronnen mogen worden afgedrukt.
+      - Bepalen of het privacyscherm moet worden gebruikt als er bronnen zichtbaar zijn.
+      - Bepalen of de bronnen het scherm mogen delen.
+      - Bestanden beheren die via een van de bronnen zijn gedownload wanneer ze worden overgezet naar de bestemming. Wordt ondersteund op <ph name="PRODUCT_OS_NAME" /> versie 108 en hoger.
+
+      Het beperkingsniveau kan worden ingesteld op BLOCK, ALLOW, REPORT of WARN.
+      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan. Als <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op True, wordt de geblokkeerde actie gemeld aan de beheerder.
+      - Als het beperkingsniveau is ingesteld op ALLOW, is de actie toegestaan.
+      - Als het beperkingsniveau is ingesteld op REPORT en <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op True, wordt de actie gemeld aan de beheerder.
+      - Als het beperkingsniveau is ingesteld op WARN, krijgt de gebruiker een waarschuwing en kan die ervoor kiezen door te gaan met de actie of deze te annuleren. Als <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> is ingesteld op True, wordt het tonen van de waarschuwing gemeld aan de beheerder. Doorgaan met de actie wordt ook gemeld.
+
+      Opmerkingen:
+- Met de beperking PRIVACY_SCREEN blokkeer je niet de mogelijkheid om het privacyscherm aan te zetten maar dwing je dit af als de beperkingsklasse is ingesteld op BLOCK.
+      - Bestemmingen mogen niet leeg zijn als een van de beperkingen CLIPBOARD of FILES is, maar ze maken geen verschil voor de overige beperkingen.
+      - De bestemmingen DRIVE en USB worden genegeerd voor de beperking CLIPBOARD.
+      - Gebruik een notatie voor de URL-patronen volgens deze indeling (https://www.chromium.org/administrators/url-blocklist-filter-format).
+
+Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</translation>
 <translation id="5362531528507578966">Hiermee wordt de standaardmodus voor afdrukken met achtergrondbeelden overschreven.</translation>
 <translation id="5365476955714838841">Opdrachtregelparameters voor de alternatieve browser.</translation>
 <translation id="5365946944967967336">Homepage-knop in de werkbalk tonen</translation>

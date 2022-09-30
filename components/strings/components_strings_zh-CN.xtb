@@ -1246,6 +1246,7 @@
 <translation id="4277028893293644418">重置密码</translation>
 <translation id="4278390842282768270">允许</translation>
 <translation id="4282346679996504092">针对此商品的提醒已被关闭，相应书签已被移除</translation>
+<translation id="4285498937028063278">取消固定</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{这张卡已保存到您的 Google 帐号中}other{这些卡已保存到您的 Google 帐号中}}</translation>
 <translation id="4287885627794386150">符合试用条件但处于无效状态</translation>
 <translation id="4297502707443874121">第 <ph name="THUMBNAIL_PAGE" /> 页的缩略图</translation>
@@ -2430,6 +2431,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />此问题。</translation>
 <translation id="7455133967321480974">使用全局默认设置（阻止）</translation>
 <translation id="7460618730930299168">此处显示的放映时间不同于您的选择。继续？</translation>
+<translation id="7461924472993315131">固定</translation>
 <translation id="7463075493919226237">澳式足球</translation>
 <translation id="7469935732330206581">表单不安全</translation>
 <translation id="7473891865547856676">不，谢谢</translation>

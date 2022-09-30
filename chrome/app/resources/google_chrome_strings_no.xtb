@@ -57,7 +57,6 @@
 <translation id="2094648590148273905">Vilkår for ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vil du avslutte Chrome likevel?</translation>
 <translation id="2106831557840787829">ChromeOS Flex er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Når denne innstillingen er på, gjenvinner Chrome minne fra faner du ikke bruker aktivt. Dette frigjør datamaskinens ressurser til andre oppgaver og sørger for at Chrome holder seg rask. Inaktive faner vises som tomme og lastes automatisk inn på nytt når du klikker på dem. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" />, eller <ph name="BEGIN_LINK_2" />send en tilbakemelding<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Dette sletter <ph name="ITEMS_COUNT" /> elementer fra denne enheten. For å hente dataene dine igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="2123055963409958220">Bidra til å gjøre Chrome bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
@@ -224,7 +223,6 @@
 <translation id="5386244825306882791">Den styrer også hvilken side som vises når du starter Chrome eller søker fra multifunksjonsfeltet.</translation>
 <translation id="5394833366792865639">Del en Chrome-fane</translation>
 <translation id="5412485296464121825">Nettsteder kan lagre informasjon om interessene dine i Chrome. Hvis du for eksempel besøker et nettsted for å kjøpe maratonsko, kan det hende nettstedet definerer interessen din som maratonløp. Hvis du senere besøker et annet nettsted for å melde deg på et løp, kan dette nettstedet vise deg en annonse for løpesko basert på interessene dine.</translation>
-<translation id="5416870378730196769">Chrome har slått på minnesparing</translation>
 <translation id="5430073640787465221">Innstillingsfilen er skadet eller ugyldig. Google Chrome kan ikke gjenopprette innstillingene dine.</translation>
 <translation id="5524761631371622910">Når prøveprosjekter er påslått, og hvis Chrome har plassert deg tilfeldig i et aktivt prøveprosjekt, påvirker nettleserloggen din annonsene du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine på rullerende basis hver måned.</translation>
 <translation id="556024056938947818">Google Chrome prøver å vise passord.</translation>
@@ -275,7 +273,6 @@
 <translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6739177684496155661">Vil du fortsette i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">For å rette stavefeil sender Chrome teksten du skriver inn i nettleseren, til Google</translation>
-<translation id="6756581345161130259">Ved behov tar Chrome tilbake minne fra faner du ikke bruker aktivt. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="677276454032249905">Vil du avslutte Chrome likevel?</translation>
 <translation id="6785872064505734160">Google-assistenten i Chrome kan utføre handlinger for deg på ulike nettsteder</translation>
 <translation id="683440813066116847">Regel om innkommende trafikk for Google Chrome Canary for å tillate mDNS-trafikk.</translation>
@@ -323,7 +320,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7649070708921625228">Hjelp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="7655455401911432608">Nettleserloggen din, som er en logg over nettsteder du har besøkt med Chrome på denne enheten.</translation>
-<translation id="7726773885101561560">For å gjøre surfingen din raskere tar Chrome tilbake minne fra faner du ikke bruker.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7761834446675418963">Klikk på navnet ditt for å åpne Chrome og starte surfingen.</translation>
 <translation id="7777080907402804672">Hvis et bilde ikke har noen nyttig beskrivelse, prøver Chrome å finne en til deg. For å opprette beskrivelser blir bilder sendt til Google. Du kan slå av dette i innstillingene når som helst.</translation>

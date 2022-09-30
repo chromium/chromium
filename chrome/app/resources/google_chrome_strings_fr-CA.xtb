@@ -61,7 +61,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2094648590148273905">Conditions de Chrome OS Flex</translation>
 <translation id="2094919256425865063">Quitter Chrome quand même?</translation>
 <translation id="2106831557840787829">Chrome OS Flex fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />, tout comme l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Lorsque cette option est activée, Chrome récupère la mémoire des onglets que vous n'utilisez pas activement. Cela libère les ressources de votre ordinateur pour d'autres tâches et maintient la rapidité de Chrome. Les onglets inactifs apparaissent vides et s'actualisent automatiquement lorsque vous cliquez dessus. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envoyer des commentaires<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Google Chrome en nous signalant les <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
@@ -230,7 +229,6 @@ Certaines fonctionnalités peuvent être inaccessibles. Veuillez spécifier un r
 <translation id="5386244825306882791">Elle règle également la page qui s'affiche lorsque vous démarrez Chrome ou faites une recherche dans l'omnibox.</translation>
 <translation id="5394833366792865639">Partager un onglet de Chrome</translation>
 <translation id="5412485296464121825">Les sites peuvent stocker des renseignements sur vos centres d'intérêt dans Chrome. Par exemple, si vous visitez un site pour acheter des chaussures pour un marathon, le site pourrait définir votre centre d'intérêt comme la course de marathons. Ultérieurement, si vous visitez un autre site pour vous inscrire à une course, celui-ci peut vous montrer une annonce pour des chaussures de course en fonction de vos centres d'intérêt.</translation>
-<translation id="5416870378730196769">Chrome a activé la fonctionnalité Économiseur de mémoire</translation>
 <translation id="5430073640787465221">Votre fichier des préférences est endommagé ou n'est pas valide. 
 
 Google Chrome ne peut pas récupérer vos paramètres.</translation>
@@ -283,7 +281,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6735387454586646204">Système Chrome OS Flex</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome?</translation>
 <translation id="6750954913813541382">Pour corriger les erreurs d'orthographe, Chrome envoie à Google le texte que vous tapez dans le navigateur</translation>
-<translation id="6756581345161130259">Au besoin, Chrome récupère la mémoire des onglets que vous n'utilisez pas activement. Vous pouvez changer cette option en tout temps dans les paramètres.</translation>
 <translation id="677276454032249905">Quitter Chrome quand même?</translation>
 <translation id="6785872064505734160">L'Assistant Google dans Chrome peut effectuer des actions dans différents sites Web pour vous</translation>
 <translation id="683440813066116847">Règle de trafic entrant pour Google Chrome Canary autorisant le trafic mDNS.</translation>
@@ -331,7 +328,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7651907282515937834">Logo de Chrome Enterprise</translation>
 <translation id="7655455401911432608">Votre historique de navigation, soit un enregistrement des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>
-<translation id="7726773885101561560">Pour rendre votre navigation plus rapide, Chrome récupère la mémoire des onglets que vous n'utilisez pas.</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7777080907402804672">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google. Vous pouvez désactiver cette option dans les paramètres à tout moment.</translation>

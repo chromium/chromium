@@ -1249,6 +1249,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4277028893293644418">Atiestatīt paroli</translation>
 <translation id="4278390842282768270">Atļauts</translation>
 <translation id="4282346679996504092">Paziņojumi par šo produktu ir izslēgti, un grāmatzīme ir noņemta.</translation>
+<translation id="4285498937028063278">Atspraust</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Šī karte tika saglabāta jūsu Google kontā}zero{Šīs kartes tika saglabātas jūsu Google kontā}one{Šīs kartes tika saglabātas jūsu Google kontā}other{Šīs kartes tika saglabātas jūsu Google kontā}}</translation>
 <translation id="4287885627794386150">Varat piedalīties izmēģinājumā, taču tas nav aktīvs</translation>
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
@@ -2029,6 +2030,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri, ugunsmūri un droša DNS servera konfigurāciju<ph name="END_LINK" />.</translation>
 <translation id="6366710531182496394">Divkāršs skavojums kreisajā pusē</translation>
+<translation id="6370022303958842211">Ierīces piekļuves darbības, piemēram, pieteikšanās (tostarp nesekmīgas pieteikšanās iemesli), atteikšanās, bloķēšana un atbloķēšana</translation>
 <translation id="6374865374745447009">logu pārvaldība</translation>
 <translation id="6377268785556383139">1 rezultāts vaicājumam “<ph name="SEARCH_TEXT" />”</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2433,6 +2435,7 @@ Papildu informācija:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /> par šo problēmu.</translation>
 <translation id="7455133967321480974">Izmantot globālo noklusējumu (Bloķēt)</translation>
 <translation id="7460618730930299168">Pārmeklēšana atšķiras no jūsu atlasītās. Vai vēlaties turpināt?</translation>
+<translation id="7461924472993315131">Piespraust</translation>
 <translation id="7463075493919226237">Austrāliešu futbols</translation>
 <translation id="7469935732330206581">Veidlapa nav droša</translation>
 <translation id="7473891865547856676">Nē, paldies!</translation>

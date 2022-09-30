@@ -62,7 +62,6 @@
 <translation id="2094648590148273905">ChromeOS Flex 약관</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
-<translation id="2112742052114331084">사용 설정하면 Chrome에서 사용자가 현재 사용하지 않는 탭의 메모리를 회수합니다. 이렇게 하면 다른 작업을 위해 컴퓨터 리소스를 확보하고 Chrome의 속도를 유지할 수 있습니다. 비활성 탭은 비어 있을 때 표시되며 클릭하면 자동으로 새로고침됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="2121284319307530122">다시 실행하여 Chrome 업데이트</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chrome 개선에 참여</translation>
@@ -231,7 +230,6 @@
 <translation id="5386244825306882791">또한 Chrome을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5394833366792865639">Chrome 탭 공유</translation>
 <translation id="5412485296464121825">사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
-<translation id="5416870378730196769">Chrome에서 메모리 절약 모드를 사용 설정했습니다.</translation>
 <translation id="5430073640787465221">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
@@ -284,7 +282,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6735387454586646204">ChromeOS Flex 시스템</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>
 <translation id="6750954913813541382">맞춤법 오류를 바로잡기 위해 Chrome에서 브라우저에 입력된 텍스트를 Google로 전송합니다.</translation>
-<translation id="6756581345161130259">필요한 경우 Chrome에서는 사용자가 현재 사용하지 않는 탭에서 메모리를 회수합니다. 언제든지 설정에서 변경할 수 있습니다.</translation>
 <translation id="677276454032249905">Chrome을 종료하시겠습니까?</translation>
 <translation id="6785872064505734160">Chrome의 Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
@@ -332,7 +329,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7649070708921625228">도움말</translation>
 <translation id="7651907282515937834">Chrome Enterprise 로고</translation>
 <translation id="7655455401911432608">이 기기에서 Chrome을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
-<translation id="7726773885101561560">탐색 속도를 높이기 위해 Chrome에서 사용자가 사용하지 않는 탭의 메모리를 회수합니다.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>

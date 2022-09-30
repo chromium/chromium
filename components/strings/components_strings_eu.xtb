@@ -1246,6 +1246,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4277028893293644418">Berrezarri pasahitza</translation>
 <translation id="4278390842282768270">Baimenduta</translation>
 <translation id="4282346679996504092">Desaktibatu dira produktuari buruzko alertak, eta kendu da haren laster-marka</translation>
+<translation id="4285498937028063278">Desainguratu</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Google-ko kontuan gorde da txartela}other{Google-ko kontuan gorde dira txartelak}}</translation>
 <translation id="4287885627794386150">Probaldirako egokia da, baina ez dago aktibo</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> orriaren irudi txikia</translation>
@@ -2025,6 +2026,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6361757823711327522">B7</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Proxya, suebakia eta DNS konfigurazioa egiaztatzen<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Bi grapa ezkerrean</translation>
+<translation id="6370022303958842211">Gailua atzitzeko ekintzak; esate baterako, saioa hasten saiatzea (huts egiten duenean barne), saioa amaitzea, gailua blokeatzea edo gailua desblokeatzea</translation>
 <translation id="6374865374745447009">leihoen kudeaketa</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" bilaketak emaitza bat du</translation>
 <translation id="6380497234672085559">A0</translation>
@@ -2429,6 +2431,7 @@ Xehetasun gehiago:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> arazoari buruz.</translation>
 <translation id="7455133967321480974">Erabili ezarpen lehenetsi orokorra (blokeatzea)</translation>
 <translation id="7460618730930299168">Bideoaren bistaratze-xehetasunak ez datoz bat hautatu dituzunekin. Aurrera egin nahi duzu?</translation>
+<translation id="7461924472993315131">Ainguratu</translation>
 <translation id="7463075493919226237">Futbol australiarra</translation>
 <translation id="7469935732330206581">Inprimakia ez da segurua</translation>
 <translation id="7473891865547856676">Ez, eskerrik asko</translation>

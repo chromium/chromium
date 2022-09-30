@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">બ્લૂઝ</translation>
 <translation id="3218181027817787318">સંબંધિત</translation>
 <translation id="3223287115535306850">ઍપ લૉન્ચ કરનારું થ્રોબર</translation>
+<translation id="3223425961342298674">લોકેશનની મંજૂરી નથી</translation>
 <translation id="3225347164936328585">તાળીઓ પાડવી</translation>
 <translation id="3225919329040284222">સર્વર એક પ્રમાણપત્ર પ્રસ્તુત કરે છે જે બિલ્ટ-ઇન અપેક્ષાઓ સાથે મેળ ખાતું નથી. આ અપેક્ષાઓમાં તમને સુરક્ષિત રાખવા માટે અમુક ચોક્કસ, ઉચ્ચ-સુરક્ષા વેબસાઇટ્સનો સમાવેશ થાય છે.</translation>
 <translation id="3226128629678568754">પેજને લોડ કરવા માટે જરૂરી ડેટા ફરીથી સબમિટ કરવા માટે ફરીથી લોડ કરો બટન દબાવો.</translation>
@@ -1185,6 +1186,7 @@
 <translation id="4127575959421463246">ChromeOS ફ્લૅગ શોધી રહ્યાં છો? મુલાકાત લો</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 અન્ય}one{# અન્ય}other{# અન્ય}}</translation>
 <translation id="4130226655945681476">નેટવર્ક કેબલ્સ, મૉડેમ અને રાઉટર તપાસીને</translation>
+<translation id="4132448310531350254">ઍપ "<ph name="POLICY_IDS_LIST" />" દ્વારા રેફરન્સ આપવામાં આવેલા file_extension "<ph name="FILE_EXTENSION" />" માટેના ડુપ્લિકેટ હૅન્ડલર.</translation>
 <translation id="4134123981501319574">દસ્તાવેજ બનાવો</translation>
 <translation id="413544239732274901">વધુ જાણો</translation>
 <translation id="4142935452406587478">ટ્રે 10</translation>
@@ -1207,6 +1209,7 @@
 <translation id="4194250254487269611">હમણાં જ તમારું કાર્ડ સાચવી શકાતું નથી</translation>
 <translation id="4196861286325780578">&amp;ખસેડવું ફરી કરો</translation>
 <translation id="4202554117186904723">પાંચમો રોલ</translation>
+<translation id="4203769790323223880">કૅમેરાની મંજૂરી નથી</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ફાયરવોલ અને એન્ટીવાઇરસ ગોઠવણી તપાસીને<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">મોટું</translation>
 <translation id="4210602799576081649">ચકાસણી કોડની સમયસીમા સમાપ્ત થઈ ગઈ છે, નવા કોડની વિનંતી કરો</translation>
@@ -1233,6 +1236,7 @@
     &lt;p&gt;તમારું કાર્ય સમાપ્ત થઈ ગયા પછી, તમારો ઍન્ટિવાયરસ પ્રોગ્રામ પાછો ચાલુ કરવાનું યાદ રાખો.&lt;/p&gt;
     &lt;h4&gt;પગલું 5: વધુ સહાય મેળવો&lt;/h4&gt;
     &lt;p&gt;જો હજુ તમને ભૂલ દેખાય, તો વેબસાઇટના માલિકનો સંપર્ક કરો.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">માઇક્રોફોનની મંજૂરી નથી</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />નેટવર્ક ડાયગ્નોસ્ટિક્સ ચલાવવાનો પ્રયાસ કરો<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">તમારા કૅમેરાનો ઉપયોગ કરવાનું અને તેને ખસેડવાનું પૂછી શકે છે</translation>
 <translation id="4235360514405112390">માન્યતા</translation>
@@ -1250,6 +1254,7 @@
 <translation id="4277028893293644418">પાસવર્ડ રીસેટ કરો</translation>
 <translation id="4278390842282768270">મંજૂર</translation>
 <translation id="4282346679996504092">આ પ્રોડક્ટ માટેના અલર્ટ બંધ કરવામાં આવ્યા છે અને બુકમાર્ક કાઢી નાખવામાં આવી છે</translation>
+<translation id="4285498937028063278">અનપિન કરો</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{આ કાર્ડને તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યું છે}one{આ કાર્ડને Google એકાઉન્ટમાં સાચવવામાં આવ્યાં છે}other{આ કાર્ડને Google એકાઉન્ટમાં સાચવવામાં આવ્યાં છે}}</translation>
 <translation id="4287885627794386150">અજમાયશ માટે યોગ્યતા ધરાવે છે, પણ સક્રિય નથી</translation>
 <translation id="4297502707443874121">પેજ <ph name="THUMBNAIL_PAGE" /> માટે થંબનેલ</translation>
@@ -1603,6 +1608,7 @@
 <translation id="5177076414499237632">આ પેજના સૉર્સ અને વિષય વિશે જાણો</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> માં નથી? આ ભૂલની જાણ કરો </translation>
 <translation id="518639307526414276">પાળેલાં પ્રાણીઓ અને તેમની સંભાળ સંબંધિત પ્રોડક્ટ</translation>
+<translation id="5190072300954988691">કૅમેરા અને માઇક્રોફોનની મંજૂરી નથી</translation>
 <translation id="5190835502935405962">બુકમાર્ક બાર</translation>
 <translation id="5191315092027169558">તમારી પ્રોફાઇલ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માગે છે</translation>
@@ -1623,6 +1629,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">કાઢી નાખો</translation>
+<translation id="5239623327352565343">લોકેશનની મંજૂરી છે</translation>
 <translation id="5242889659037569123">સામાન અને મુસાફરીની વસ્તુ</translation>
 <translation id="5250209940322997802">"નેટવર્ક સાથે કનેક્ટ કરો"</translation>
 <translation id="52517543715119994">Chromeની સુવિધાઓ વિશે જાણો</translation>
@@ -2435,6 +2442,7 @@
 <translation id="7451311239929941790">આ સમસ્યા વિશે <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" />.</translation>
 <translation id="7455133967321480974">વૈશ્વિક ડિફોલ્ટનો ઉપયોગ કરો (અવરોધિત કરો)</translation>
 <translation id="7460618730930299168">તમે પસંદ કર્યું તેનાથી સ્ક્રીનિંગ અલગ છે. ચાલુ રાખીએ?</translation>
+<translation id="7461924472993315131">પિન કરો</translation>
 <translation id="7463075493919226237">ઓસ્ટ્રેલિયન ફૂટબૉલ</translation>
 <translation id="7469935732330206581">ફોર્મ સુરક્ષિત નથી</translation>
 <translation id="7473891865547856676">નહીં આભાર</translation>
@@ -2498,6 +2506,7 @@
 <translation id="7581199239021537589">બાજુ 2 છબીને Y અક્ષ પર ખસેડો</translation>
 <translation id="7582602800368606489">Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવો</translation>
 <translation id="7583969447617676942">કાનૂની સેવાઓ</translation>
+<translation id="7586676035079382730">નોટિફિકેશનની મંજૂરી નથી</translation>
 <translation id="7591288787774558753">શું ગોપનીય કન્ટેન્ટ શેર કરીએ?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> પર કુકી અને સાઇટ ડેટાનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="7592362899630581445">સર્વરનું પ્રમાણપત્ર, નામ નિગ્રહોનું ઉલ્લંઘન કરે છે.</translation>
@@ -3050,6 +3059,7 @@
 <translation id="9131119348384879525">શું ગોપનીય કન્ટેન્ટ કૅપ્ચર કરીએ?</translation>
 <translation id="9136861683332321024">લક્ઝરી વાહનો</translation>
 <translation id="9137013805542155359">મૂળ બતાવો</translation>
+<translation id="9138037198177304356">નોટિફિકેશનની મંજૂરી છે</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ઍડ્રેસ મેનેજ કરો</translation>
 <translation id="9144951720726881238">સમાપ્તિ તારીખ:</translation>

@@ -53,7 +53,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2384373936468275798">ChromiumOS maʼlumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />” kengaytmasi Chromium ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
-<translation id="2400844369696905771">Yoniq boʻlsa, Chromium nofaol varaqlardan xotira oladi. Bu kompyuter resurslarini boshqa vazifalar uchun boʻshatadi va Chromium ishlashini tezlashtiradi. Nofaol varaqlar boʻsh chiqadi va ustiga bosilganda avtomatik qayta yuklanadi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="2483889755041906834">Chromium brauzerida</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -142,7 +141,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4285930937574705105">Noma’lum xatolik tufayli o‘rnatish amalga oshmadi. Agar hozirda Chromium ishlab turgan bo‘lsa, iltimos brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="4304713468139749426">Parollar menejeri</translation>
 <translation id="4334294535648607276">Yuklab olindi.</translation>
-<translation id="437317747729858884">Internetni tezroq kezishingiz uchun Chromium nofaol varaqlardan xotira oladi.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> bu qurilmadan foydalanishdan oldin quyidagi Xizmat shartlarini oʻqib, qabul qilishingizni talab qiladi. Bu shartlar Google ChromiumOS shartlarini kengaytirmaydi, oʻzgartirmaydi yoki cheklamaydi.</translation>
 <translation id="4407044323746248786">Chromium baribir yopilsinmi?</translation>
 <translation id="4415566066719264597">Chromium fonda ishlashiga ruxsat</translation>
@@ -314,7 +312,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7872446069773932638">Yuklab olinmoqda... <ph name="SECONDS" /> soniya qoldi.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Maxfliylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Yoki Chromium foydalanmasligini istasangiz, qiziqishlarni olib tashlashingiz mumkin.</translation>
 <translation id="7937630085815544518">Avvallari siz Chromium‘ga <ph name="USER_EMAIL_ADDRESS" /> hisobidan kirgandingiz. O‘sha hisobdan foydalanib yana qaytadan kiring.</translation>
-<translation id="7947085610734123927">Chromium tomonidan Xotirani tejash yoqildi</translation>
 <translation id="7975919845073681630">Chromium takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
 <translation id="7997934263947464652">Nomaʼlum manbalar kengaytmalari, ilovalari va mavzulari qurilmangizni zararlashi mumkin. Chromium ularni faqat <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> orqali oʻrnatishni tavsiya qiladi</translation>
 <translation id="8013436988911883588">Chromium saytlarga ulanganda sizdan ruxsat so‘raydi.</translation>
@@ -335,7 +332,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8453117565092476964">O‘rnatish dasturi arxivi shikastlangan. Chromium‘ni qaytadan yuklab oling.</translation>
 <translation id="8463672209299734063">Ixtiyoriy: Google serverlariga diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromiumOS tizimini takomillashtirishga yordam bering.</translation>
 <translation id="8493179195440786826">Chromium versiyasi eskirgan</translation>
-<translation id="8522220489792889625">Kerak boʻlganda Chromium nofaol varaqlardan xotira oladi. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin.</translation>
 <translation id="8550334526674375523">Bu ish profili shaxsiy profilingizdan butunlay ajratilgan.</translation>
 <translation id="8558383651099478961">Chromiumdagi “Sayt, ilova va kengaytmalarga ruxsat” ota-onangiz tomonidan faolsizlantirilgan. <ph name="EXTENSION_TYPE_PARAMETER" /> kiritilishi taqiqlangan.</translation>
 <translation id="8561285221328166383">Chromium yangilanishlari macOS 10.13 yoki undan yuqori versiyalarda ishlaydi. Bu kompyuterdagi versiya: macOS 10.12.</translation>

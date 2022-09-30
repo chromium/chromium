@@ -1851,10 +1851,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist diese Richtlinie deaktiviert, wird nie beim Nutzer nachgefragt und die Möglichkeit für Audioaufnahmen steht nur URLs in der Liste "AudioCaptureAllowedUrls" zur Verfügung.
 
       Hinweis: Die Richtlinie gilt für jegliche Form der Audioeingabe, nicht nur für das integrierte Mikrofon.</translation>
-<translation id="2822539450620588684">Ab M107 werden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-Methoden synchron aufgerufen.
-      Bis M110 wird mit dieser Richtlinie der asynchrone Aufruf von <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-Methoden wieder aktiviert.
-      Wenn diese Richtlinie aktiviert ist, werden <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-Methoden asynchron aufgerufen.
-      Ist sie deaktiviert oder nicht konfiguriert, werden alle <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />-Methoden synchron aufgerufen.</translation>
 <translation id="2823870601012066791">Windows-Registrierungspfad für <ph name="PRODUCT_OS_NAME" />-Clients:</translation>
 <translation id="2824715612115726353">Inkognitomodus aktivieren</translation>
 <translation id="282870810415075521">Verwendung von JIT durch JavaScript auf diesen Websites zulassen</translation>
@@ -2019,12 +2015,6 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird der Manifestschlüssel <ph name="REQUIRED_PLATFORM_VERSION" /> ignoriert und das automatische Update erfolgt wie gewohnt.
 
       Achtung: Es wird nicht empfohlen, die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version einer Kiosk-App zu überlassen, da das Gerät dann unter Umständen Softwareupdates und wichtige Sicherheitspatches nicht erhält. Wird die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version abgegeben, besteht eventuell ein Risiko für die Nutzer.</translation>
-<translation id="299519952839316970">Diese Richtlinie ist veraltet und wird in Version 88 von <ph name="PRODUCT_OS_NAME" /> entfernt. Öffentliche Sitzungen werden nicht mehr unterstützt. Verwende stattdessen <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> zum Konfigurieren verwalteter Gastsitzungen.
-      Wenn diese Richtlinie auf "False" festgelegt ist, verhalten sich verwaltete Gastsitzungen wie unter https://support.google.com/chrome/a/answer/3017014 beschrieben. Dieses Verhalten entspricht einer standardmäßigen öffentlichen Sitzung.
-
-      Ist die Richtlinie auf "True" gesetzt oder nicht festgelegt, verhält sich die verwaltete Gastsitzung wie eine verwaltete Sitzung, bei der viele der Einschränkungen aufgehoben sind, die bei regulären öffentlichen Sitzungen gelten.
-
-      Ist diese Richtlinie festgelegt, dann kann der Nutzer sie weder ändern noch überschreiben.</translation>
 <translation id="2999597974578784672">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, welche Websites Cookies setzen dürfen.
 
           Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Standardwert verwendet, entweder aus der Richtlinie <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" />, sofern diese konfiguriert ist, oder aus der persönlichen Konfiguration des Nutzers.

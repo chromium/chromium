@@ -344,7 +344,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1327272175893960498">Permissões Kerberos</translation>
 <translation id="1327495825214193325">Para ativar a depuração do adb, tem de reiniciar este <ph name="DEVICE_TYPE" />. A desativação requer a reposição das definições de fábrica.</translation>
 <translation id="1327794256477341646">As funcionalidades que precisam da sua localização não funcionam</translation>
-<translation id="1329191040029425999">Certifique-se de que o seu dispositivo está atualizado e tente novamente</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Algumas funcionalidades em <ph name="ORIGIN" /> poderão não funcionar até limpar os dados que outros sites armazenaram no seu dispositivo.</translation>
 <translation id="1333965224356556482">Não permitir que os sites vejam a sua localização</translation>
@@ -1292,7 +1291,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2182058453334755893">Copiado para a área de transferência.</translation>
 <translation id="2183570493397356669">Botão Continuar desativado</translation>
 <translation id="2184515124301515068">Permitir que o Chrome escolha quando os sites podem reproduzir som (recomendado)</translation>
-<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Página partilhada a partir de outro dispositivo</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As definições modificadas por outros utilizadores não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro na importação do certificado do servidor</translation>
@@ -1354,7 +1352,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2241053333139545397">Ler e alterar os seus dados em vários Sites</translation>
 <translation id="2241634353105152135">Apenas uma vez</translation>
 <translation id="2242687258748107519">Informação de ficheiro</translation>
-<translation id="2245296100676446525">Ative a sincronização para obter os seus marcadores, palavras-passe, histórico e muito mais neste dispositivo e em qualquer outro que esteja a sincronizar.</translation>
 <translation id="2245603955208828424">Use as teclas de seta para percorrer os itens letra a letra</translation>
 <translation id="2246129643805925002">O <ph name="DEVICE_TYPE" /> é atualizado automaticamente em segundo plano para lhe disponibilizar as funcionalidades e as melhorias de segurança mais recentes. Pode rever as preferências de atualização nas Definições.</translation>
 <translation id="2246549592927364792">Pretende obter descrições de imagens a partir do Google?</translation>
@@ -1537,7 +1534,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2381499968174336913">Pré-visualização do separador partilhado</translation>
 <translation id="2381756643783702095">Perguntar antes de enviar (recomendado)</translation>
 <translation id="2383825469508278924">Altere o mapeamento de teclas do teclado, as teclas de função e muito mais</translation>
-<translation id="2386202302581016807">O armazenamento do dispositivo disponível é insuficiente para concluir a configuração</translation>
 <translation id="2387052489799050037">Aceda à Página inicial</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (atual)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -1871,7 +1867,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="271033894570825754">Novo</translation>
 <translation id="2711073837061989559">Avaliações</translation>
 <translation id="2712173769900027643">Pedir autorização</translation>
-<translation id="2713106313042589954">Desativar câmara</translation>
+<translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2714393097308983682">Google Play Store</translation>
 <translation id="2715640894224696481">Pedido de chave de segurança</translation>
@@ -2250,7 +2246,6 @@ Pretende pará-lo?</translation>
 <translation id="3031557471081358569">Selecione os itens a importar:</translation>
 <translation id="3032204772252313646">Legendas automáticas</translation>
 <translation id="3033348223765101500">Controle os seus dados</translation>
-<translation id="3034627908241330765">Está a ser executada outra configuração do Steam. Aguarde que seja concluída antes de executar a configuração novamente.</translation>
 <translation id="3036327949511794916">O prazo para devolver este <ph name="DEVICE_TYPE" /> foi ultrapassado.</translation>
 <translation id="3036546437875325427">Ativar Flash</translation>
 <translation id="3037754279345160234">Não é possível analisar a configuração de associação do domínio. Contacte o administrador.</translation>
@@ -2263,7 +2258,6 @@ Pretende pará-lo?</translation>
 <translation id="3046178388369461825">Espaço em disco do Linux criticamente baixo</translation>
 <translation id="3046910703532196514">Página Web, Completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
-<translation id="3048051495640130973">Pode controlar quando a Poupança de bateria é ativada nas definições</translation>
 <translation id="3048336643003835855">Dispositivos HID do fornecedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Registos de transmissão e do dispositivo</translation>
 <translation id="3051250416341590778">Tamanho do ecrã</translation>
@@ -2307,7 +2301,6 @@ Pretende pará-lo?</translation>
 <translation id="3090819949319990166">Não é possível copiar o ficheiro crx externo para <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" sincronizado</translation>
 <translation id="3093714882666365141">Não permitir que os sites instalem controladores de pagamentos</translation>
-<translation id="3093958632721393232">Ativar apenas quando a bateria estiver fraca</translation>
 <translation id="3094141017404513551">Esta ação irá separar a sua navegação de <ph name="EXISTING_USER" />.</translation>
 <translation id="3095871294753148861">Os marcadores, as palavras-passe e outros dados do navegador são sincronizados com a conta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Foi desativada 1 extensão potencialmente prejudicial. Também a pode remover.}other{Foram desativadas {NUM_EXTENSIONS} extensões potencialmente prejudiciais. Também as pode remover.}}</translation>
@@ -2355,7 +2348,6 @@ Pretende pará-lo?</translation>
 <translation id="3142562627629111859">Novo grupo</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3143754809889689516">Reproduzir desde o início</translation>
-<translation id="3143937294861726703">A Poupança de memória está ativada</translation>
 <translation id="3144647712221361880">Abrir link como</translation>
 <translation id="3149510190863420837">Apps do Chrome</translation>
 <translation id="3150693969729403281">Executar verificação de segurança agora</translation>
@@ -2514,8 +2506,6 @@ Pretende pará-lo?</translation>
 <translation id="3315442055907669208">Entrar no modo de leitor</translation>
 <translation id="3317459757438853210">Frente e verso</translation>
 <translation id="3317678681329786349">Câmara e microfone bloqueados</translation>
-<translation id="3320620783302968370">Se o problema persistir, experimente reiniciar o dispositivo
-    Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">Navegação segura (proteção contra sites perigosos) e outras definições de segurança.</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estes dados têm conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}=1{Este ficheiro tem conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}other{Estes ficheiros têm conteúdo sensível ou perigoso. Remova este conteúdo e tente novamente.}}</translation>
 <translation id="3323521181261657960">Bónus! Tens mais tempo de utilização</translation>
@@ -2671,7 +2661,6 @@ Pretende pará-lo?</translation>
 <translation id="3462311546193741693">A sua sessão é terminada na maioria dos sites. Continua com sessão iniciada na sua Conta Google para poder limpar os dados sincronizados.</translation>
 <translation id="3462413494201477527">Pretende cancelar a configuração da conta?</translation>
 <translation id="346298925039590474">Esta rede móvel ficará acessível a todos os utilizadores neste dispositivo</translation>
-<translation id="3463015289462934089">Certifique-se de que o seu dispositivo está ligado à Internet.</translation>
 <translation id="3464145797867108663">Adicionar perfil de trabalho</translation>
 <translation id="346431825526753">Esta é uma conta para crianças gerida por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Obtenha descontos para <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e muito mais</translation>
@@ -3555,7 +3544,6 @@ Pretende pará-lo?</translation>
     <ph name="BEGIN_PARAGRAPH2" />Pode iniciar ou parar a autorização destes relatórios em qualquer altura nas definições do dispositivo Chrome OS da criança. Se for um administrador de domínio, pode alterar esta definição na consola do administrador.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />A desativação desta funcionalidade não afeta a capacidade de o dispositivo enviar as informações necessárias para serviços essenciais, como atualizações do sistema e segurança.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Esta página tem autorização para editar ficheiros</translation>
-<translation id="4302577930366020750">Reinicie o dispositivo para usar o Steam</translation>
 <translation id="4303079906735388947">Configure um novo PIN para a sua chave de segurança.</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
 <translation id="4305402730127028764">Copiar para <ph name="DEVICE_NAME" /></translation>
@@ -3687,7 +3675,6 @@ Pretende pará-lo?</translation>
 <translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
 <translation id="4427365070557649936">A validar o código de validação…</translation>
 <translation id="4429163740524851942">Esquema de teclado físico</translation>
-<translation id="4429239357082509581">O Steam não tem autorização para ser executado</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4430369329743628066">Marcador adicionado</translation>
 <translation id="4430422687972614133">Ativar cartão virtual</translation>
@@ -3955,8 +3942,6 @@ Pretende pará-lo?</translation>
 <translation id="4675828034887792601">Crie atalhos para pesquisar sites e gerir o seu motor de pesquisa</translation>
 <translation id="4676595058027112862">Phone Hub, saiba mais</translation>
 <translation id="4677772697204437347">Memória de GPU</translation>
-<translation id="4677970983462111944">O Steam não é permitido neste dispositivo. Contacte o seu administrador para obter autorização
-    Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">A câmara está desativada.</translation>
 <translation id="4680105648806843642">O som foi desativado nesta página.</translation>
 <translation id="4681453295291708042">Desativar a funcionalidade Partilhar na proximidade</translation>
@@ -4273,7 +4258,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="49896407730300355">Rodar para a &amp;esquerda</translation>
 <translation id="4989966318180235467">Inspecionar página de fundo</translation>
 <translation id="4991420928586866460">Tratar as teclas da linha superior como teclas de função</translation>
-<translation id="4991858732577603540">Aguarde alguns minutos e execute o Steam novamente</translation>
 <translation id="4992458225095111526">Confirmar Powerwash</translation>
 <translation id="4992473555164495036">O administrador limitou os métodos de introdução disponíveis.</translation>
 <translation id="4994754230098574403">A configurar…</translation>
@@ -4739,7 +4723,6 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Inscrever-se para receber emails sobre o <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">A localizar dispositivos…</translation>
-<translation id="5463845647891602726">Para aumentar o espaço livre, elimine ficheiros do dispositivo</translation>
 <translation id="5463856536939868464">Menu com marcadores ocultos</translation>
 <translation id="5464660706533281090">Esta definição não pode ser alterada por um utilizador secundário.</translation>
 <translation id="5466374726908360271">Co&amp;lar e pesquisar "<ph name="SEARCH_TERMS" />"</translation>
@@ -5108,6 +5091,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5812674658566766066">Expandir tudo</translation>
 <translation id="5815645614496570556">Endereço X.400</translation>
 <translation id="5816434091619127343">As alterações solicitadas à impressora deixariam-na inutilizável.</translation>
+<translation id="581659025233126501">Ativar sincronização</translation>
 <translation id="5817069030404929329">Pretende mover as palavras-passe deste dispositivo para a sua Conta Google?</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5821565227679781414">Criar Atalho</translation>
@@ -5286,7 +5270,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5975792506968920132">Percentagem de carga da bateria</translation>
 <translation id="5976160379964388480">Outros</translation>
 <translation id="5978277834170881274">&amp;Utilizar a verificação ortográfica básica</translation>
-<translation id="5978395054855988504">Poupança de bateria ativada</translation>
 <translation id="5978493744931296692">O seu administrador desativou outros perfis</translation>
 <translation id="5979084224081478209">Verificar palavras-passe</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Reativou 1 extensão potencialmente prejudicial.}other{Reativou {NUM_EXTENSIONS} extensões potencialmente prejudiciais.}}</translation>
@@ -7266,7 +7249,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7870790288828963061">Nenhuma aplicação do Quiosque encontrada com uma versão mais recente. Nada a atualizar. Remova a pen USB.</translation>
 <translation id="7871049986386271121">Sempre neste site</translation>
 <translation id="7871109039747854576">Utilizar as teclas <ph name="COMMA" /> e <ph name="PERIOD" /> para paginar uma lista de candidatos</translation>
-<translation id="7872494313446521576">Clique para permitir "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" em <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Desativado</translation>
 <translation id="7872758299142009420">Demasiados grupos aninhados: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Fundos do Chrome</translation>
@@ -7682,7 +7664,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8248381369318572865">Aceder ao microfone e analisar o seu discurso</translation>
 <translation id="8248887045858762645">Sugestão do Chrome</translation>
 <translation id="8249048954461686687">Pasta OEM</translation>
-<translation id="8249239468199142122">Poupança de bateria</translation>
 <translation id="8249615410597138718">Enviar para os seus dispositivos</translation>
 <translation id="8250210000648910632">Sem espaço de armazenamento</translation>
 <translation id="8251441930213048644">Atualizar agora</translation>
@@ -7886,7 +7867,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8440630305826533614">Apps para Linux</translation>
 <translation id="844063558976952706">Sempre neste Website</translation>
 <translation id="8441313165929432954">Ativar/desativar ligação (à Internet) via telemóvel</translation>
-<translation id="8443795068008423036">Certifique-se de que o seu dispositivo está atualizado e tente novamente</translation>
 <translation id="8443986842926457191">O URL contém mais de 2048 carateres</translation>
 <translation id="8446884382197647889">Saiba Mais</translation>
 <translation id="8447409163267621480">Inclua Ctrl ou Alt.</translation>
@@ -8217,7 +8197,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Atualizar automaticamente o Chrome para todos os utilizadores</translation>
-<translation id="8769901904650373714">Ocorreu um problema com a configuração do Steam</translation>
 <translation id="8770406935328356739">Diretório raiz da extensão</translation>
 <translation id="8771300903067484968">O fundo da página de inicio foi reposto para a predefinição.</translation>
 <translation id="8773302562181397928">Guardar <ph name="PRINTER_NAME" /></translation>
@@ -8733,7 +8712,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="964286338916298286">O gestor de TI desativou os Extras do Chrome para o dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicação}other{Aplicações}}</translation>
 <translation id="964790508619473209">Posicionamento do ecrã</translation>
-<translation id="965175368833098333">A Poupança de memória pode recuperar memória de separadores inativos. Esta ação liberta os recursos do computador para outras tarefas.</translation>
 <translation id="965211523698323809">Envie e receba mensagens de texto com o <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Comunicar um problema com o Google Cast</translation>
 <translation id="967398046773905967">Não permitir o acesso de sites a dispositivos HID</translation>

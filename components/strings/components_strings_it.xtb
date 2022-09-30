@@ -1247,6 +1247,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4277028893293644418">Reimposta password</translation>
 <translation id="4278390842282768270">Consenti</translation>
 <translation id="4282346679996504092">Gli avvisi per questo prodotto sono stati disattivati e il preferito è stato rimosso</translation>
+<translation id="4285498937028063278">Sblocca</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Questa carta è stata salvata nel tuo Account Google}other{Queste carte sono state salvate nel tuo Account Google}}</translation>
 <translation id="4287885627794386150">Funzionalità idonea per la prova, ma non attiva</translation>
 <translation id="4297502707443874121">Miniatura della pagina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2431,6 +2432,7 @@ Ulteriori dettagli:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Leggere ulteriori informazioni<ph name="END_LINK" /> sul problema.</translation>
 <translation id="7455133967321480974">Usa predefinita globale (Blocca)</translation>
 <translation id="7460618730930299168">I contenuti mostrati sono diversi da quelli che hai selezionato. Continuare?</translation>
+<translation id="7461924472993315131">Blocca</translation>
 <translation id="7463075493919226237">Football australiano</translation>
 <translation id="7469935732330206581">Modulo non sicuro</translation>
 <translation id="7473891865547856676">No grazie</translation>

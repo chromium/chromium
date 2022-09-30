@@ -57,7 +57,6 @@
 <translation id="2094648590148273905">ChromeOS Flex 利用規約</translation>
 <translation id="2094919256425865063">今すぐ Chrome を終了しますか？</translation>
 <translation id="2106831557840787829">ChromeOS Flex も <ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />も追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
-<translation id="2112742052114331084">オンにすると、使用していないタブのメモリが再利用されます。これにより、パソコンのリソースを他のタスクに解放して、Chrome を高速な状態に維持できます。使用していないタブは空白になり、クリックすると自動的に再読み込みされます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" />または<ph name="BEGIN_LINK_2" />フィードバックを送信<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">このデバイスから <ph name="ITEMS_COUNT" /> 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
 <translation id="2121284319307530122">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chrome の品質向上にご協力ください</translation>
@@ -270,10 +269,10 @@
 <translation id="6676384891291319759">インターネットにアクセス</translation>
 <translation id="6679975945624592337">Google Chrome をバックグラウンドで実行する</translation>
 <translation id="6696915334902295848">このサイトを利用するには、Chrome でマイクの使用を許可する必要があります</translation>
+<translation id="6718739135284199302">Chrome を高速化する</translation>
 <translation id="6735387454586646204">ChromeOS Flex システム</translation>
 <translation id="6739177684496155661">新しい Chrome プロファイルで続行しますか？</translation>
 <translation id="6750954913813541382">スペルミスを修正するために、ブラウザに入力したテキストが Chrome から Google に送信されます</translation>
-<translation id="6756581345161130259">Chrome では必要に応じて、使用していないタブのメモリが再利用されます。これは [設定] でいつでも変更できます。</translation>
 <translation id="677276454032249905">今すぐ Chrome を終了しますか？</translation>
 <translation id="6785872064505734160">Chrome の Google アシスタントは、ユーザーに代わってウェブサイトでの操作を完了できます</translation>
 <translation id="683440813066116847">mDNS トラフィックを許可する Google Chrome Canary のインバウンド ルールです。</translation>

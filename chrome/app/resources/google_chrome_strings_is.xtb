@@ -61,7 +61,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2094648590148273905">Skilmálar ChromeOS Flex</translation>
 <translation id="2094919256425865063">Viltu samt loka Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex á tilvist sína að þakka öðrum<ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" /> og það sama á við um <ph name="BEGIN_LINK_LINUX_OSS" />Linux-forritunarumhverfið<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Þegar kveikt er á þessu endurheimtir Chrome minni úr flipum sem eru ekki í virkri notkun. Þetta losar um gagnarými tölvunnar fyrir önnur verkefni og viðheldur hraða Chrome. Óvirkir flipar virðast auðir og endurhlaðast sjálfkrafa þegar þú smellir á þá. <ph name="BEGIN_LINK" />Kynntu þér þetta nánar<ph name="END_LINK" /> eða <ph name="BEGIN_LINK_2" />sendu ábendingu<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Þetta mun eyða <ph name="ITEMS_COUNT" /> atriðum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
 <translation id="2121284319307530122">Endurræstu til að uppfæra &amp;Chrome</translation>
 <translation id="2123055963409958220">Hjálpa til við að gera Google Chrome betra með því að tilkynna um <ph name="BEGIN_LINK" />núverandi stillingar<ph name="END_LINK" /></translation>
@@ -230,7 +229,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir. Tilgreindu aðra prófílmöpp
 <translation id="5386244825306882791">Þetta stýrir því einnig hvaða síða er birt þegar þú ræsir Chrome eða leitar úr veffangastikunni.</translation>
 <translation id="5394833366792865639">Deila Chrome flipa</translation>
 <translation id="5412485296464121825">Vefsvæði geta vistað upplýsingar um áhugasvið þín í Chrome. Ef þú heimsækir til dæmis vefsvæði til að kaupa skó fyrir maraþonhlaup kann vefsvæðið að skilgreina maraþonhlaup sem áhugasvið þitt. Ef þú heimsækir svo annað vefsvæði síðar meir til að skrá þig í hlaup getur viðkomandi vefsvæði birt þér auglýsingu um hlaupaskó í samræmi við áhugasvið þitt.</translation>
-<translation id="5416870378730196769">Chrome kveikti á minnissparnaði</translation>
 <translation id="5430073640787465221">Kjörstillingaskráin þín er skemmd eða ógild.
 
 Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
@@ -283,7 +281,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6735387454586646204">ChromeOS Flex kerfi</translation>
 <translation id="6739177684496155661">Halda áfram á nýjum Chrome prófíl?</translation>
 <translation id="6750954913813541382">Til að lagfæra stafsetningarvillur sendir Chrome textann sem þú skrifar í vafranum til Google</translation>
-<translation id="6756581345161130259">Chrome endurheimtir minni úr flipum sem eru ekki í virkri notkun eftir þörfum. Þú getur breytt þessu hvenær sem er í stillingunum.</translation>
 <translation id="677276454032249905">Viltu samt loka Chrome?</translation>
 <translation id="6785872064505734160">Google hjálparinn í Chrome getur lokið aðgerðum á ýmsum vefsíðum fyrir þig</translation>
 <translation id="683440813066116847">Regla á innleið til að láta Google Chrome Canary leyfa mDNS-umferð.</translation>
@@ -331,7 +328,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7651907282515937834">Lógó Chrome Enterprise</translation>
 <translation id="7655455401911432608">Vafraferillinn þinn, skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>
-<translation id="7726773885101561560">Chrome endurheimtir minni úr flipum sem eru ekki í notkun til að auka hraða vefskoðunar.</translation>
 <translation id="7747138024166251722">Uppsetningarforritið gat ekki búið til tímabundna möppu. Athugaðu laust diskpláss og heimildir fyrir uppsetningu hugbúnaðar.</translation>
 <translation id="7761834446675418963">Smelltu á nafnið þitt til að opna Chrome og byrja að vafra.</translation>
 <translation id="7777080907402804672">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google. Þú getur slökkt á þessu hvenær sem er í stillingunum.</translation>

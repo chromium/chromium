@@ -844,6 +844,7 @@
 <translation id="3216313131063488104">ବ୍ଲ୍ୟୁସ</translation>
 <translation id="3218181027817787318">ରିଲେଟିଭ୍</translation>
 <translation id="3223287115535306850">ଲଞ୍ଚ କରାଯାଉଥିବା ଆପର ଥ୍ରୋବର୍</translation>
+<translation id="3223425961342298674">ଲୋକେସନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="3225347164936328585">ତାଳି ମାରିବା</translation>
 <translation id="3225919329040284222">ସର୍ଭର୍ ଏକ ସାର୍ଟିଫିକେଟ୍‌କୁ ଉପସ୍ଥାପନ କରୁଛି, ଯାହା ବିଲ୍ଟ-ଇନ୍ ପ୍ରତ୍ୟାଶା ସହ ମେଳ ଖାଉନାହିଁ। ଏହି ପ୍ରତ୍ୟାଶାଗୁଡ଼ିକ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବାକୁ କିଛି ଉଚ୍ଚ ସୁରକ୍ଷା ଥିବା ୱେବ୍‍ସାଇଟ୍‍ଗୁଡ଼ିକ ପାଇଁ ଅନ୍ତର୍ଭୁକ୍ତ କରାଯାଇଛି।</translation>
 <translation id="3226128629678568754">ପୃଷ୍ଠା ଲୋଡ୍‌ କରିବାକୁ ଆବଶ୍ୟକ ହେଉଥିବା ଡାଟା ପୁଣି ଦାଖଲ କରିବାକୁ ରିଲୋଡ୍‌ ବଟନ୍‌ ଦବାନ୍ତୁ।</translation>
@@ -1182,6 +1183,7 @@
 <translation id="4127575959421463246">ChromeOS ଫ୍ଲାଗଗୁଡ଼ିକୁ ଖୋଜୁଛନ୍ତି କି? ଭିଜିଟ କରନ୍ତୁ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ଅନ୍ୟ}other{#ଟି ଅନ୍ୟ}}</translation>
 <translation id="4130226655945681476">ନେଟ୍‌ୱର୍କ କେବଲ୍‌, ମୋଡେମ୍‌ ଏବଂ ରାଉଟର୍‌ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
+<translation id="4132448310531350254">ଆପ୍ସ "<ph name="POLICY_IDS_LIST" />" ଦ୍ୱାରା ରେଫରେନ୍ସ କରାଯାଇଥିବା file_extension "<ph name="FILE_EXTENSION" />" ପାଇଁ ଡୁପ୍ଲିକେଟ ହେଣ୍ଡଲର।</translation>
 <translation id="4134123981501319574">ଡକ୍ୟୁମେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="413544239732274901">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="4142935452406587478">ଟ୍ରେ 10</translation>
@@ -1204,6 +1206,7 @@
 <translation id="4194250254487269611">ବର୍ତ୍ତମାନ ଆପଣଙ୍କର କାର୍ଡ ସେଭ୍ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4196861286325780578">&amp;ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟଟି ପୁଣିଥରେ କରନ୍ତୁ</translation>
 <translation id="4202554117186904723">ପଞ୍ଚମ ରୋଲ୍</translation>
+<translation id="4203769790323223880">କେମେରାକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ଫାୟାର୍‌ୱାଲ୍‌ ଏବଂ ଆଣ୍ଟିଭାଇରସ୍‌ କନ୍‌ଫିଗ୍‌ରେସନ୍‌ ଯାଞ୍ଚ ହେଉଛି<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">ବହୁତ୍</translation>
 <translation id="4210602799576081649">ଯାଞ୍ଚକରଣ କୋଡର ମିଆଦ ଶେଷ ହୋଇଯାଇଛି, ଏକ ନୂଆ କୋଡ ପାଇଁ ଅନୁରୋଧ କରନ୍ତୁ</translation>
@@ -1230,6 +1233,7 @@
     &lt;p&gt;ଆପଣଙ୍କର କାମ ସରିବା ପରେ ନିଜର ଆଣ୍ଟିଭାଇରସ୍ ପ୍ରୋଗ୍ରାମ୍‌କୁ ପୁଣିଥରେ ଚାଲୁ କରିବା ଭୁଲନ୍ତୁ ନାହିଁ।&lt;/p&gt;
     &lt;h4&gt;ଷ୍ଟେପ୍‌ 5: ଅତିରିକ୍ତ ସାହାଯ୍ୟ ପ୍ରାପ୍ତ କରନ୍ତୁ&lt;/h4&gt;
     &lt;p&gt;ଯଦି ଆପଣ ତଥାପି ଏହି ତ୍ରୁଟି ଦେଖନ୍ତି, ତେବେ ୱେବ୍‌ସାଇଟ୍ ମାଲିକଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ।&lt;/p&gt;</translation>
+<translation id="4223404254440398437">ମାଇକ୍ରୋଫୋନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ନେଟ୍‌ୱର୍କ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ ଚଳାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="4230204356098880324">ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରି ମୁଭ୍ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
 <translation id="4235360514405112390">ବୈଧ ଅଟେ</translation>
@@ -1247,6 +1251,7 @@
 <translation id="4277028893293644418">ପାସ୍‌ୱର୍ଡ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="4278390842282768270">ଅନୁମୋଦିତ</translation>
 <translation id="4282346679996504092">ଏହି ପ୍ରଡକ୍ଟ ପାଇଁ ଆଲର୍ଟଗୁଡ଼ିକୁ ବନ୍ଦ କରିଦିଆଯାଇଛି ଏବଂ ବୁକମାର୍କକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
+<translation id="4285498937028063278">ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{ଏହି କାର୍ଡ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରିଦିଆଯାଇଛି}other{ଏହି କାର୍ଡଗୁଡ଼ିକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରିଦିଆଯାଇଛି}}</translation>
 <translation id="4287885627794386150">ଟ୍ରାଏଲ୍ ପାଇଁ ଯୋଗ୍ୟ କିନ୍ତୁ ସକ୍ରିୟ ନୁହେଁ</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> ପୃଷ୍ଠା ପାଇଁ ଥମ୍ବନେଲ୍</translation>
@@ -1601,6 +1606,7 @@
 <translation id="5177076414499237632">ଏହି ପୃଷ୍ଠାର ସୋର୍ସ ଏବଂ ବିଷୟ ସମ୍ବନ୍ଧରେ ଜାଣନ୍ତୁ</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />ରେ ନାହିଁ? ଏହି ତ୍ରୁଟିକୁ ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="518639307526414276">ଗୃହପାଳିତ ପଶୁଙ୍କ ଖାଦ୍ୟ ଏବଂ ଯତ୍ନ ପାଇଁ ସାମଗ୍ରୀ</translation>
+<translation id="5190072300954988691">କେମେରା ଏବଂ ମାଇକ୍ରୋଫୋନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="5190835502935405962">ବୁକମାର୍କ ବାର୍</translation>
 <translation id="5191315092027169558">ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ଏକାଧିକ ଫାଇଲ୍ ଡାଉନ୍‌ଲୋଡ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
@@ -1621,6 +1627,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">ଖାରଜ କରନ୍ତୁ</translation>
+<translation id="5239623327352565343">ଲୋକେସନକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="5242889659037569123">ଲଗେଜ ଏବଂ ଭ୍ରମଣ ଆକସେସୋରୀଗୁଡ଼ିକ</translation>
 <translation id="5250209940322997802">"ନେଟ୍‌ୱର୍କରେ ସଂଯୋଗ କରନ୍ତୁ"</translation>
 <translation id="52517543715119994">Chrome ଫିଚରଗୁଡ଼ିକ ବିଷୟରେ ଜାଣନ୍ତୁ</translation>
@@ -2432,6 +2439,7 @@
 <translation id="7451311239929941790">ଏହି ସମସ୍ୟା ବିଷୟରେ <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="7455133967321480974">ବିଶ୍ୱବ୍ୟାପୀ ଡିଫଲ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ (ଅବରୋଧ କରନ୍ତୁ)</translation>
 <translation id="7460618730930299168">ଆପଣ ଚୟନ କରିଥିବା ସ୍କ୍ରିନିଂ ଠାରୁ ଏହା ଭିନ୍ନ ଅଟେ। ଜାରି ରଖିବେ କି?</translation>
+<translation id="7461924472993315131">ପିନ୍‍</translation>
 <translation id="7463075493919226237">ଅଷ୍ଟ୍ରେଲିଆନ ଫୁଟବଲ</translation>
 <translation id="7469935732330206581">ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="7473891865547856676">ନାହିଁ, ଧନ୍ୟବାଦ</translation>
@@ -2495,6 +2503,7 @@
 <translation id="7581199239021537589">ସାଇଡ୍ 2 ଇମେଜ୍ Y ସିଫ୍ଟ</translation>
 <translation id="7582602800368606489">Google Calendarରେ ଶୀଘ୍ର ଏକ ନୂଆ ଇଭେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7583969447617676942">ଆଇନ ସେବାଗୁଡ଼ିକ</translation>
+<translation id="7586676035079382730">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="7591288787774558753">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ ସେୟାର କରିବେ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" />ରେ <ph name="EMBEDDED_URL" /> କୁକୀଗୁଡ଼ିକ ଏବଂ ସାଇଟ୍ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="7592362899630581445">ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍ ନାମର କଟକଣାକୁ ଲଙ୍ଘନ କରେ।</translation>
@@ -2968,7 +2977,7 @@
 <translation id="8931333241327730545">ଆପଣ ନିଜର Google ଆକାଉଣ୍ଟରେ ଏହି କାର୍ଡକୁ ସେଭ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି କି?</translation>
 <translation id="8932102934695377596">ଆପଣଙ୍କର ଘଣ୍ଟାର ସମୟ ପଛରେ ଅଛି</translation>
 <translation id="893332455753468063">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
-<translation id="8942355029279167844">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର୍ <ph name="APP_NAME" />କୁ ଉତ୍ପାଦ ବ୍ୟବହାରର ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ସଂଗ୍ରହ କରିବାକୁ ଅନୁମତି ଦେଇଛନ୍ତି। ଅଧିକ ସୂଚନା ପାଇଁ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ଦେଖନ୍ତୁ।</translation>
+<translation id="8942355029279167844">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP_NAME" />କୁ ପ୍ରଡକ୍ଟ ବ୍ୟବହାରର ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଏଗ୍ନୋଷ୍ଟିକ୍ସ ଡାଟା ସଂଗ୍ରହ କରିବାକୁ ଅନୁମତି ଦେଇଛନ୍ତି। ଅଧିକ ସୂଚନା ପାଇଁ <ph name="BEGIN_LINK" />https://www.parallels.com/pcep<ph name="END_LINK" /> ଦେଖନ୍ତୁ।</translation>
 <translation id="8943282376843390568">ଲାଇମ୍‌</translation>
 <translation id="8951415078585015151">ଆଇନ ଏବଂ ସରକାର</translation>
 <translation id="8957210676456822347">କେପଟିଭ୍ ପୋର୍ଟାଲ ପ୍ରାଧିକରଣ</translation>
@@ -3047,6 +3056,7 @@
 <translation id="9131119348384879525">ଗୋପନୀୟ ବିଷୟବସ୍ତୁ କ୍ୟାପଚର କରିବେ?</translation>
 <translation id="9136861683332321024">ଆରାମଦାୟକ ଗାଡ଼ିଗୁଡ଼ିକ</translation>
 <translation id="9137013805542155359">ମୂଳ ଲେଖା ଦେଖାନ୍ତୁ</translation>
+<translation id="9138037198177304356">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ଠିକଣାଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="9144951720726881238">ମିଆଦ ଶେଷ ହେଉଥିବା ତାରିଖ:</translation>

@@ -173,6 +173,7 @@
 <translation id="2500392669976258912">Гуджарати, фонетический</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Сканировать</translation>
+<translation id="252641322760726369">Нажмите и удерживайте файл, затем нажмите на значок <ph name="ICON" /> и выберите "<ph name="PIN_COMMAND" />".</translation>
 <translation id="2534460670861217804">Безопасный HTTP-прокси</translation>
 <translation id="2541377937973966830">Содержимое этой папки доступно только для чтения. Некоторые действия не поддерживаются.</translation>
 <translation id="2542049655219295786">Таблица Google</translation>
@@ -343,6 +344,7 @@
 <translation id="4092890906744441904">Ирландский</translation>
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="4131235941541910880">Перемещайте ненужные объекты в корзину.</translation>
+<translation id="4153015322587141338">Нажмите на файл правой кнопкой мыши и выберите "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Не рекомендуется администратором:</translation>
 <translation id="4159731583141908892">Перемещено: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Очистить корзину</translation>

@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">સૂચિ દૃશ્ય પર સ્વિચ કરો</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર Linux સાથે શેર કર્યા</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ફાઇલ પસંદ કરી</translation>
+<translation id="2383454254762599978">ટ્રેશમાં ખસેડો</translation>
 <translation id="2387458720915042159">પ્રૉક્સી કનેક્શનનો પ્રકાર</translation>
 <translation id="2389832672041313158">બર્મીઝ/મ્યાનમાર</translation>
 <translation id="2392369802118427583">સક્રિય કરો</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com પર જાઓ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> વડે ફાઇલો ખોલવા માટે, પહેલા તેમને Windowsના ફાઇલ ફોલ્ડરમાં કૉપિ કરો.</translation>
 <translation id="3556731189587832921">અંગ્રેજી (યુએસ), આંતરરાષ્ટ્રીય PC કીબોર્ડ સાથે</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="3567221313191587603">ફાઇલ પસંદ કરો અને તમારી ફાઇલોને ઑફલાઇન ઍક્સેસ કરવા માટે, <ph name="OFFLINE_CHECKBOX_NAME" />ને ટૉગલ કરવાની સુવિધા ચાલુ કરો.</translation>
 <translation id="357479282490346887">લિથુનિયન</translation>
 <translation id="3587482841069643663">બધા</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">બંગાળી ફોનેટિક</translation>
 <translation id="4002066346123236978">શીર્ષક</translation>
 <translation id="4017788180641807848">અંગ્રેજી (યુએસ), વર્કમેન કીબોર્ડ સાથે</translation>
+<translation id="4019998208269143058">ફાઇલોના ઝડપી ઍક્સેસ પર પિન કરો</translation>
 <translation id="4040753847560036377">ખોટો PUK</translation>
 <translation id="4057991113334098539">સક્રિય કરી રહ્યું છે</translation>
 <translation id="4092890906744441904">આઇરિશ</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">ઍડમિનિસ્ટ્રેટર પૉલિસી આમ કરવાનો સુઝાવ આપતી નથી:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ખસેડી.</translation>
 <translation id="4176286497474237543">ટ્રેશને હમણાં ખાલી કરો</translation>
+<translation id="4179621117429069925">આ આઇટમ તમારા ટ્રેશમાં છે</translation>
 <translation id="4186579485882418952">ઑફલાઇન સુવિધા ચાલુ કરો</translation>
 <translation id="4193154014135846272">Google દસ્તાવેજ</translation>
 <translation id="4197674956721858839">ઝિપ પસંદગી</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">પ્રમાણીકરણ પ્રમાણપત્ર રિમોટલી નકારવામાં આવ્યું છે</translation>
 <translation id="4394214039309501350">બાહ્ય લિંક</translation>
 <translation id="4394980935660306080">આ અઠવાડિયાની શરૂઆતમાં</translation>
+<translation id="4398096759193130964">આઇટમ રિસ્ટોર કરો અથવા તેમને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો</translation>
 <translation id="4401287888955153199">બધું એક્સટ્રેક્ટ કરો</translation>
 <translation id="4410695710508688828">એક્સટ્રેક્ટ કરવામાં નિષ્ફ્ળ રહ્યાં. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">તમારી ફાઇલો માટે શૉર્ટકટ બનાવો</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">હિન્દી, ઇનસ્ક્રિપ્ટ કીબોર્ડ સાથે</translation>
 <translation id="4801956050125744859">બંનેને રાખો</translation>
 <translation id="4804827417948292437">એવોકેડો</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> આઇટમ રિસ્ટોર કરી રહ્યાં છીએ</translation>
 <translation id="4823651846660089135">ઉપકરણ ફક્ત વાંચવા માટે છે</translation>
 <translation id="4826849268470072925">તમિળ ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> આઇટમ્સ પસંદ કરી</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">સૂર્યમુખીનું ફૂલ</translation>
 <translation id="4943368462779413526">ફૂટબૉલ</translation>
 <translation id="4961158930123534723">Parallels ડેસ્કટૉપ સાથે 1 ફોલ્ડર શેર થયું</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> રિસ્ટોર કરી</translation>
 <translation id="4969785127455456148">આલ્બમ</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> કે તેથી ઓછા અક્ષરોનું હોય તેવા નામનો ઉપયોગ કરો</translation>
 <translation id="4973970068702235170">ઝિપ કરવાનું નિષ્ફળ, અનપેક્ષિત ભૂલ: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">ઊફ્ફ, <ph name="FILE_NAME" /> હવે અસ્તિત્વમાં નથી.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, અનલૉક કરો</translation>
 <translation id="5700087501958648444">ઑડિઓ માહિતી</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ટ્રેશમાં ખસેડી</translation>
 <translation id="5724172041621205163">થાઇ, Pattachote કીબોર્ડ સાથે</translation>
 <translation id="5756666464756035725">હંગેરિયન QWERTY</translation>
 <translation id="5763377084591234761">જર્મન (સ્વિટ્ઝર્લૅન્ડ)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> આર્કાઇવ</translation>
 <translation id="6321303798550928047">હાથ હલાવતું ચિહ્ન</translation>
 <translation id="6327785803543103246">વેબ પ્રૉક્સીની ઑટોમૅટિક ખોજ</translation>
+<translation id="6337014272874260727">ફાઇલોના ઝડપી ઍક્સેસમાંથી અનપિન કરો</translation>
 <translation id="6339145975392024142">US આંતરરાષ્ટ્રીય (PC)</translation>
 <translation id="6346310558342052870">ઍક્સેસ પ્રતિબંધિત</translation>
 <translation id="6356685157277930264">ફાઇલોનો પ્રતિસાદ આપતી વિન્ડો</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 ફોલ્ડર પસંદ કર્યું</translation>
 <translation id="6755827872271341378">ChromeOS Flex ડિવાઇસ</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
+<translation id="6794539005637808366">આઇટમ રિસ્ટોર કરો અથવા તેને ટ્રેશની બહાર કોઈ નવા ફોલ્ડર પર ખેંચો</translation>
 <translation id="6795884519221689054">પાંડા</translation>
 <translation id="6806699711453372963">Linux શેરિંગ મેનેજ કરો</translation>
 <translation id="6806796368146926706">આલ્ફાન્યૂમેરિક, જાપાનીઝ કીબોર્ડ સાથે</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">સ્વીડિશ</translation>
 <translation id="6990081529015358884">તમારી પાસે સ્થાન નથી</translation>
+<translation id="6993826899923627728">આ આઇટમ તમારા ટ્રેશમાં છે</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ફોલ્ડર્સ પસંદ કર્યા</translation>
 <translation id="7008426324576352165">અપલોડ પૂર્ણ કરવા માટે તમારી સંસ્થાને વધુ સ્ટોરેજની જરૂર છે.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">ચેક</translation>
 <translation id="7417453074306512035">ઇથિઓપિક કીબોર્ડ</translation>
 <translation id="7417705661718309329">Google નકશો</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" રિસ્ટોર કરી રહ્યાં છીએ</translation>
 <translation id="7458955835361612701">તાજેતરની કોઈ છબી નથી</translation>
 <translation id="7460898608667578234">યુક્રેનિયન</translation>
 <translation id="7469894403370665791">આ નેટવર્કમાં ઑટોમૅટિક રીતે કનેક્ટ કરો</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Google Photos સરળતાથી ઍક્સેસ કરો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7663224033570512922">હિન્દી</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ટ્રેશમાં ખસેડી</translation>
 <translation id="7693909743393669729">ડ્રાઇવને ફૉર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ભૂંસાઈ જશે અને કદાચ દેખાતા ન હોય તેવા વિભાગો સહિત હાલના બધા વિભાગો કાઢી નખાશે. આ ક્રિયા રદ કરી શકાતી નથી.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરી શક્યાં નથી</translation>
 <translation id="76959938259365003">ટ્રેશને ખાલી કરવામાં નિષ્ફળ રહ્યાં.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">ચાઇનીઝ વુબી</translation>
 <translation id="7765158879357617694">સ્થાન</translation>
 <translation id="7774365994322694683">પક્ષી</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> આઇટમ રિસ્ટોર કરી</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"ને ઑફલાઇન સાચવવા માટે તમારે વધુ <ph name="TOTAL_FILE_SIZE" /> સ્પેસ ખાલી કરવી જરૂરી છે:<ph name="MARKUP_1" /><ph name="MARKUP_2" />તમારે હવે ઑફલાઇન ઍક્સેસ કરવાની જરૂર ન હોય એવી ફાઇલોને અનપિન કરો<ph name="MARKUP_3" /><ph name="MARKUP_4" />તમારા ડાઉનલોડ ફોલ્ડરમાંથી ફાઇલો ડિલીટ કરો<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ઉપકરણને ફોર્મેટ કરો</translation>
@@ -963,6 +977,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> થી <ph name="TO_ENTRY_NAME" /> સુધીની <ph name="ENTRY_COUNT" /> એન્ટ્રીની શ્રેણી પસંદ કરી.</translation>
 <translation id="954194396377670556">ઍડમિનિસ્ટ્રેટર પૉલિસી આમ કરતા અટકાવે છે:</translation>
 <translation id="965477715979482472">અંગ્રેજી (દક્ષિણ આફ્રિકા)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> આઇટમ ટ્રેશમાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" નામની ફાઇલ પહેલાંથી અસ્તિત્વમાં છે. શું તમે તેને બદલવા માગો છો?</translation>
 <translation id="992401651319295351">તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે. જ્યાં સુધી તમે નવો પિન સેટઅપ નહીં કરો, ત્યાં સુધી તમે આ નેટવર્કનો ઉપયોગ કરી શકશો નહીં.</translation>

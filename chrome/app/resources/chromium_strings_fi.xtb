@@ -53,7 +53,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2384373936468275798">Chromium-käyttöjärjestelmä ei voi synkronoida tietoja, sillä tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="2396765026452590966">Laajennus <ph name="EXTENSION_NAME" /> on vaihtanut Chromiumin aloitussivun.</translation>
-<translation id="2400844369696905771">Kun asetus on päällä, Chromium vapauttaa muistia välilehdiltä, joita et käytä aktiivisesti. Näin tietokoneesi resurssit vapautuvat muihin tehtäviin ja Chromium pysyy nopeana. Ei-aktiiviset välilehdet näyttävät tyhjiltä ja latautuvat automaattisesti uudelleen, kun klikkaat niitä. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="2483889755041906834">Chromiumissa</translation>
 <translation id="2485422356828889247">Poista</translation>
@@ -144,7 +143,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="4285930937574705105">Asennus epäonnistui tuntemattoman virheen takia. Jos Chromium on tällä hetkellä käynnissä, sulje se ja yritä uudelleen.</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4334294535648607276">Lataus on valmis.</translation>
-<translation id="437317747729858884">Nopeuttaakseen selaamista Chromium vapauttaa muistia välilehdiltä, joita et käytä.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Chromium-käyttöjärjestelmän ehtoja.</translation>
 <translation id="4407044323746248786">Suljetaanko Chromium silti?</translation>
 <translation id="4415566066719264597">Jätä Chromium käyntiin taustalle</translation>
@@ -316,7 +314,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7872446069773932638">Ladataan… <ph name="SECONDS" /> sekuntia jäljellä</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Miten voit vaikuttaa dataasi:<ph name="END_BOLD" /> Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromiumin ottavan huomioon.</translation>
 <translation id="7937630085815544518">Chromiumiin kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
-<translation id="7947085610734123927">Chromium on laittanut muistinsäästön päälle</translation>
 <translation id="7975919845073681630">Tämä on Chromiumin toissijainen asennus, eikä sitä voi asettaa oletusselaimeksi.</translation>
 <translation id="7997934263947464652">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chromium suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kun Chromiumilla on käyttöoikeus, sivustot voivat pyytää sitä sinulta.</translation>
@@ -337,7 +334,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8453117565092476964">Asennusarkisto on virheellinen. Lataa Chromium uudelleen.</translation>
 <translation id="8463672209299734063">Valinnainen: Auta parantamaan Chromium-käyttöjärjestelmän ominaisuuksia ja suorituskykyä lähettämällä diagnostiikka- ja käyttödataa Googlelle automaattisesti.</translation>
 <translation id="8493179195440786826">Chromium on vanhentunut</translation>
-<translation id="8522220489792889625">Chromium vapauttaa tarvittaessa muistia välilehdiltä, joita et käytä aktiivisesti. Voit muuttaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8558383651099478961">Vanhempasi ovat laittaneet Chromiumin sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Lisäämistä (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
 <translation id="8561285221328166383">Jotta saat tulevia Chromiumin päivityksiä, sinulla on oltava macOS 10.13 tai uudempi. Tällä tietokoneella on macOS 10.12.</translation>

@@ -173,6 +173,7 @@
 <translation id="2500392669976258912">Гуджараті, фонетична розкладка</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Сканувати</translation>
+<translation id="252641322760726369">Натисніть і утримуйте файл, а потім натисніть значок <ph name="ICON" /> та виберіть команду "<ph name="PIN_COMMAND" />", щоб швидко відкривати цей файл на панелі запуску.</translation>
 <translation id="2534460670861217804">Захищений проксі-сервер HTTP</translation>
 <translation id="2541377937973966830">Вміст цієї папки можна лише переглядати. Деякі дії не підтримуються.</translation>
 <translation id="2542049655219295786">Таблиця Google</translation>
@@ -343,6 +344,7 @@
 <translation id="4092890906744441904">Ірландська</translation>
 <translation id="4124935795427217608">Єдиноріг</translation>
 <translation id="4131235941541910880">Перемістіть непотрібні файли в кошик</translation>
+<translation id="4153015322587141338">Натисніть файл правою кнопкою миші й виберіть команду "<ph name="PIN_COMMAND" />", щоб швидко відкривати його на панелі запуску.</translation>
 <translation id="4157569377477607576">Згідно з правилом адміністратора не рекомендовано:</translation>
 <translation id="4159731583141908892">Файл "<ph name="FILE_NAME" />" переміщено.</translation>
 <translation id="4176286497474237543">Очистити кошик зараз</translation>

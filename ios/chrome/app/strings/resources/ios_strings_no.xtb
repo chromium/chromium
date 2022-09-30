@@ -23,7 +23,6 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1104948393051856124">Godta og fortsett</translation>
 <translation id="110724200315609752">Bytt til åpent vindu</translation>
 <translation id="1112015203684611006">Utskriften mislyktes.</translation>
-<translation id="1118569444314402022">Velkommen tilbake, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Åpne en ny fane.</translation>
 <translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
 <translation id="1135212215217513471">Skaff deg Chrome for iOS</translation>
@@ -61,6 +60,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1340643665687018190">Lukk menyen</translation>
 <translation id="1358214951266274152">Besøk linken du kopierte</translation>
 <translation id="1360432990279830238">Vil du logge av og slå av synkronisering?</translation>
+<translation id="1363028406613469049">Spor</translation>
 <translation id="1375321115329958930">Lagrede passord</translation>
 <translation id="1377255359165588604">Synkroniseringen har sluttet å fungere.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
@@ -82,6 +82,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="152234381334907219">Aldri lagret</translation>
 <translation id="1523341279170789507">Tillat alle informasjonskapsler</translation>
 <translation id="1524563461097350801">Nei takk</translation>
+<translation id="1531836666020185856">Aktuelt</translation>
 <translation id="1535268707340844072">Den nåværende innstillingen kan medføre at noen nettsteder slutter å fungere. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger for informasjonskapsler<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
@@ -197,6 +198,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2647269890314209800">Informasjonskapsler som er i bruk</translation>
 <translation id="2648803196158606475">Slett leste</translation>
 <translation id="2653659639078652383">Send inn</translation>
+<translation id="2671426118752779020">Du kan bruke passordene du har lagret i Google Passordlagring, i andre apper på iPhonen din.</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2695507686909505111">Siden er oversatt</translation>
@@ -206,6 +208,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2704491540504985681">Nedlastinger</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2709516037105925701">Autofyll</translation>
+<translation id="271033894570825754">Ny</translation>
 <translation id="2712127207578915686">Kan ikke åpne filen</translation>
 <translation id="2718352093833049315">Bare når Wi-Fi er på</translation>
 <translation id="2747003861858887689">Forrige felt</translation>
@@ -262,6 +265,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3103603146121354983">Autofyll-passord</translation>
 <translation id="3112556859945124369">Merk…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Logg med mer</translation>
 <translation id="3131206671572504478">Blokkér alle</translation>
 <translation id="313283613037595347">Åpne ny inkognitofane.</translation>
 <translation id="3153862085237805241">Lagre kortet</translation>
@@ -332,7 +336,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3709582977625132201">Merk som ulest</translation>
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
 <translation id="37207012422556617">Søk på vei opp</translation>
-<translation id="3726360487031500941">Logg på kontoen din (<ph name="USER_NAME" />) igjen</translation>
 <translation id="3740397331642243698">Åpner de oppgitte nettadressene i Google Chrome i inkognitomodus.</translation>
 <translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3771033907050503522">Inkognitofaner</translation>
@@ -504,6 +507,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="509789154667432072">Legg til et bokmerke</translation>
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5118764316110575523">Av</translation>
+<translation id="5119391094379141756">Velg Chrome</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5140288047769711648">Chrome husker dette passordet for deg. Du trenger ikke å huske det selv.</translation>
 <translation id="5149188072385105201">Legg til et passord…</translation>
@@ -627,6 +631,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6149061208933997199">Bruk passord</translation>
 <translation id="6152406514676263192">Synkroniser for å få det mest relevante innholdet basert på interessene dine.</translation>
 <translation id="6159839020698489198">valgfritt</translation>
+<translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6177442314419606057">Søk i Chrome</translation>
 <translation id="6184086493125982861">Vis faner</translation>
 <translation id="6187302354554850004">Sist synkronisert: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8032569120109842252">Følger</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Søkeloggen<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />andre typer aktivitet<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.</translation>
 <translation id="804427445359061970">Her finner du fanene dine fra andre enheter</translation>
+<translation id="8048728378294435881">Sikkerhetskopier tingene dine og bruk dem på alle enheter</translation>
 <translation id="8059533439631660104">Skjuler delen.</translation>
 <translation id="8065292699993359127">Åpne nettadresser i Chrome i inkognitomodus</translation>
 <translation id="806745655614357130">Hold dataene mine adskilt</translation>
@@ -977,6 +983,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8981454092730389528">Google Aktivitetslagring</translation>
 <translation id="8985320356172329008">Logget på Google som</translation>
 <translation id="9000089900434778519">Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
+<translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Du blir ikke logget av Google-kontoen din, og det kan hende den har andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis original</translation>
 <translation id="9039373489628511875">Båndbredde</translation>

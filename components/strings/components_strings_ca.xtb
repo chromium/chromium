@@ -1250,6 +1250,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4277028893293644418">Restableix la contrasenya</translation>
 <translation id="4278390842282768270">Permès</translation>
 <translation id="4282346679996504092">Les alertes d'aquest producte s'han desactivat i l'adreça d'interès s'ha suprimit</translation>
+<translation id="4285498937028063278">No fixis</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Aquesta targeta s'ha desat al Compte de Google}other{Aquestes targetes s'han desat al Compte de Google}}</translation>
 <translation id="4287885627794386150">Apte per a la prova, però no actiu</translation>
 <translation id="4297502707443874121">Miniatura de la pàgina <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2435,6 +2436,7 @@ Detalls addicionals:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Obtenir més informació<ph name="END_LINK" /> sobre aquest problema</translation>
 <translation id="7455133967321480974">Utilitza l'opció predeterminada global (Bloqueja)</translation>
 <translation id="7460618730930299168">La projecció no és com havies seleccionat. Vols continuar?</translation>
+<translation id="7461924472993315131">Fixa</translation>
 <translation id="7463075493919226237">Futbol australià</translation>
 <translation id="7469935732330206581">El formulari no és segur</translation>
 <translation id="7473891865547856676">No, gràcies</translation>

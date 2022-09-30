@@ -61,7 +61,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2094648590148273905">Voorwaarden van Chrome OS Flex</translation>
 <translation id="2094919256425865063">Chrome toch sluiten?</translation>
 <translation id="2106831557840787829">Chrome OS Flex wordt mogelijke gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Als deze instelling aanstaat, claimt Chrome geheugen terug van tabbladen die je niet actief gebruikt. Zo worden de resources van je computer vrijgemaakt voor andere taken en blijft Chrome snel. Inactieve tabbladen worden leeg weergegeven en worden automatisch opnieuw geladen als je erop klikt. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /> of <ph name="BEGIN_LINK_2" />feedback sturen<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Hiermee worden <ph name="ITEMS_COUNT" /> items verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Opnieuw starten om &amp;Chrome te updaten</translation>
 <translation id="2123055963409958220">Help Chrome beter te maken door de <ph name="BEGIN_LINK" />huidige instellingen<ph name="END_LINK" /> te melden</translation>
@@ -230,7 +229,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5386244825306882791">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chrome start of vanuit de omnibox zoekt.</translation>
 <translation id="5394833366792865639">Een Chrome-tabblad delen</translation>
 <translation id="5412485296464121825">Sites kunnen informatie over je interesses in Chrome opslaan. Als je bijvoorbeeld een site bezoekt om schoenen voor een marathon te kopen, kan de site je interesse definiëren als 'deelname aan marathons'. Als je later een andere site bezoekt om je aan te melden voor een race, kan die site je een advertentie voor hardloopschoenen laten zien op basis van je interesses.</translation>
-<translation id="5416870378730196769">Chrome heeft geheugenbesparing aangezet</translation>
 <translation id="5430073640787465221">Je bestand met voorkeuren is beschadigd of ongeldig. Google Chrome kan je instellingen niet herstellen.</translation>
 <translation id="5524761631371622910">Tijdens actieve proeven en als Chrome je willekeurig in een actieve proef heeft geplaatst, heeft je browsegeschiedenis invloed op de advertenties die je te zien krijgt en de interesses zoals hieronder geschat. Ter bescherming van je privacy verwijdert Chrome je interesses elke maand op voortschrijdende basis.</translation>
 <translation id="556024056938947818">Google Chrome probeert wachtwoorden te bekijken.</translation>
@@ -281,7 +279,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6735387454586646204">Chrome OS Flex-systeem</translation>
 <translation id="6739177684496155661">Doorgaan met een nieuw Chrome-profiel?</translation>
 <translation id="6750954913813541382">Voor het verbeteren van spelfouten verzendt Chrome de tekst die je in de browser typt naar Google</translation>
-<translation id="6756581345161130259">Zo nodig claimt Chrome geheugen terug van tabbladen die je niet actief gebruikt. Je kunt dit altijd wijzigen in de instellingen.</translation>
 <translation id="677276454032249905">Chrome toch sluiten?</translation>
 <translation id="6785872064505734160">De Google Assistent in Chrome kan acties voor je voltooien op websites</translation>
 <translation id="683440813066116847">Inkomende regel zodat Google Chrome Canary mDNS-verkeer toestaat.</translation>
@@ -329,7 +326,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="7655455401911432608">Je browsegeschiedenis, een lijst van de sites die je via Chrome op dit apparaat hebt bezocht.</translation>
-<translation id="7726773885101561560">Chrome claimt geheugen terug van tabbladen die je niet gebruikt, zodat je sneller kunt browsen.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7761834446675418963">Klik op je naam om Chrome te openen en begin met surfen.</translation>
 <translation id="7777080907402804672">Als een afbeelding geen nuttige beschrijving bevat, probeert Chrome je er een te geven. Afbeeldingen worden naar Google gestuurd om beschrijvingen te maken. Je kunt dit op elk gewenst moment uitzetten in Instellingen.</translation>

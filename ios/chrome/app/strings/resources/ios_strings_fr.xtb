@@ -23,7 +23,6 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1104948393051856124">Accepter et continuer</translation>
 <translation id="110724200315609752">Passer à une autre fenêtre ouverte</translation>
 <translation id="1112015203684611006">Échec impr.</translation>
-<translation id="1118569444314402022">Bon retour parmi nous, <ph name="USER_NAME" /> !</translation>
 <translation id="1125564390852150847">Créer un onglet</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1135212215217513471">Télécharger Chrome pour iOS</translation>
@@ -61,6 +60,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="1340643665687018190">Fermer le menu</translation>
 <translation id="1358214951266274152">Consulter le lien copié</translation>
 <translation id="1360432990279830238">Se déconnecter et arrêter la synchro. ?</translation>
+<translation id="1363028406613469049">Titre</translation>
 <translation id="1375321115329958930">Mots de passe enregistrés</translation>
 <translation id="1377255359165588604">La synchronisation s'est arrêtée.</translation>
 <translation id="1377321085342047638">Numéro de carte</translation>
@@ -82,6 +82,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="152234381334907219">Jamais enregistrés</translation>
 <translation id="1523341279170789507">Autoriser tous les cookies</translation>
 <translation id="1524563461097350801">Non, merci</translation>
+<translation id="1531836666020185856">Extraits disponibles</translation>
 <translation id="1535268707340844072">Vos paramètres actuels peuvent perturber le bon fonctionnement de certains sites. Pour gérer les cookies de l'ensemble des sites, consultez la page <ph name="BEGIN_LINK" />Paramètres relatifs aux cookies<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Scanner le code QR</translation>
@@ -197,6 +198,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2647269890314209800">Cookies utilisés</translation>
 <translation id="2648803196158606475">Supprimer entrées lues</translation>
 <translation id="2653659639078652383">Envoyer</translation>
+<translation id="2671426118752779020">Vous pouvez utiliser les mots de passe enregistrés dans le Gestionnaire de mots de passe Google dans d'autres applis sur votre iPhone.</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
 <translation id="2695507686909505111">Page traduite</translation>
@@ -206,6 +208,7 @@ Ils ne peuvent pas non plus en utiliser pour voir votre activité de navigation 
 <translation id="2704491540504985681">Téléchargements</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2709516037105925701">Saisie automatique</translation>
+<translation id="271033894570825754">Nouveau</translation>
 <translation id="2712127207578915686">Impossible ouvrir fichier</translation>
 <translation id="2718352093833049315">Wi-Fi uniquement</translation>
 <translation id="2747003861858887689">Champ précédent</translation>
@@ -262,6 +265,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3103603146121354983">Saisir automatiquement les mots de passe</translation>
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Voir ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Historique et plus</translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Créer un onglet de navigation privée</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
@@ -332,7 +336,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3709582977625132201">Marquer comme non lu</translation>
 <translation id="371230970611282515">Il prédit les événements dangereux et vous en informe avant qu'ils ne surviennent.</translation>
 <translation id="37207012422556617">Recherches populaires</translation>
-<translation id="3726360487031500941">Reconnectez-vous à votre compte <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Ouvre les URL saisies dans Google Chrome en mode navigation privée.</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3771033907050503522">Ongl. navig. priv.</translation>
@@ -504,6 +507,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="509789154667432072">Ajouter un favori</translation>
 <translation id="5118713593561876160">Centres d'intérêt</translation>
 <translation id="5118764316110575523">Désactivé</translation>
+<translation id="5119391094379141756">Sélectionnez Chrome</translation>
 <translation id="5132942445612118989">Synchroniser vos mots de passe, votre historique et plus encore sur tous les appareils</translation>
 <translation id="5140288047769711648">Chrome mémorisera ce mot de passe pour vous. Vous n'avez donc pas besoin de le retenir.</translation>
 <translation id="5149188072385105201">Ajouter un mot de passe</translation>
@@ -627,6 +631,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6149061208933997199">Utiliser mot de passe</translation>
 <translation id="6152406514676263192">Activez la synchronisation pour bénéficier des contenus les plus pertinents en fonction de vos centres d'intérêt.</translation>
 <translation id="6159839020698489198">facultatif</translation>
+<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6177442314419606057">Effectuer une recherche dans Chrome</translation>
 <translation id="6184086493125982861">Afficher les onglets</translation>
 <translation id="6187302354554850004">Dernière synchro : <ph name="LAST_USED_TIME" /></translation>
@@ -875,6 +880,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8032569120109842252">Suivi</translation>
 <translation id="804225253087497565">L'<ph name="BEGIN_LINK" />historique des recherches<ph name="END_LINK" /> et d'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent être enregistrés dans votre compte Google lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.</translation>
 <translation id="804427445359061970">Les onglets ouverts sur d'autres appareils s'afficheront ici</translation>
+<translation id="8048728378294435881">Sauvegardez vos données et utilisez-les sur n'importe quel appareil</translation>
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8065292699993359127">Ouvrir les URL dans Chrome en mode navigation privée</translation>
 <translation id="806745655614357130">Conserver mes données à part</translation>
@@ -978,6 +984,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8981454092730389528">Commandes Google relatives à l'activité</translation>
 <translation id="8985320356172329008">Connecté à Google en tant que</translation>
 <translation id="9000089900434778519">Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
+<translation id="9008201768610948239">Ignorer</translation>
 <translation id="9034759925968272072">Vous ne serez pas déconnecté de votre compte Google. Celui-ci conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Afficher l'original</translation>
 <translation id="9039373489628511875">Bande passante</translation>

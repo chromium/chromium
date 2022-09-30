@@ -347,7 +347,6 @@
 <translation id="1327272175893960498">‏بلیت‌های Kerberos</translation>
 <translation id="1327495825214193325">‏برای فعال‌سازی اشکال‌زدایی ADB (پل اشکال‌زدایی android)، بازراه‌اندازی <ph name="DEVICE_TYPE" /> لازم است. برای غیرفعال کردن این تنظیم، باید به تنظیمات کارخانه بازنشانی کنید.</translation>
 <translation id="1327794256477341646">ویژگی‌هایی که به مکان شما نیاز دارند کار نخواهند کرد</translation>
-<translation id="1329191040029425999">لطفاً مطمئن شوید دستگاهتان به‌روز باشد و دوباره امتحان کنید</translation>
 <translation id="1331977651797684645">من بودم.</translation>
 <translation id="1333489022424033687">تا وقتی داده‌هایی را که سایت‌های دیگر در دستگاهتان ذخیره کرده‌اند پاک نکنید، ممکن است برخی از ویژگی‌ها در <ph name="ORIGIN" /> کار نکند.</translation>
 <translation id="1333965224356556482">به سایت‌ها اجازه داده نشود مکان شما را ببینند</translation>
@@ -1299,8 +1298,8 @@
 <translation id="2179416702468739594">درحال جستجوی نمایه‌های دردسترس. ممکن است درحین جستجو، اتصال شبکه تلفن همراه برای چند دقیقه قطع شود.</translation>
 <translation id="2180620921879609685">محتوای موجود در همه صفحه‌ها را مسدود کند</translation>
 <translation id="2182058453334755893">در بریده‌دان کپی شد</translation>
+<translation id="2183570493397356669">دکمه ادامه غیرفعال شد</translation>
 <translation id="2184515124301515068">‏Chrome انتخاب کند سایت‌ها چه موقع صدا پخش کنند (توصیه می‌شود)</translation>
-<translation id="2186206192313702726">‏لنز Google</translation>
 <translation id="2186711480981247270">صفحه از دستگاه دیگری هم‌رسانی شد</translation>
 <translation id="2187675480456493911">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. تنظیماتی که دیگر کاربران تغییر داده‌اند همگام‌سازی نخواهد شد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">خطای وارد کردن مجوز سرور</translation>
@@ -1362,7 +1361,6 @@
 <translation id="2241053333139545397">خواندن و تغییر داده‌هایتان در تعدادی از وب‌سایت‌ها</translation>
 <translation id="2241634353105152135">فقط یک بار</translation>
 <translation id="2242687258748107519">اطلاعات فایل</translation>
-<translation id="2245296100676446525">برای دریافت نشانک‌ها، گذرواژه‌ها، سابقه، و موارد دیگر در این دستگاه و هر جای دیگری که همگام‌سازی می‌کنید، همگام‌سازی را روشن کنید.</translation>
 <translation id="2245603955208828424">استفاده از کلیدهای جهت‌نما برای جابه‌جایی بین موارد به‌صورت حرف به حرف</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> به‌طور خودکار در پس‌زمینه به‌روزرسانی می‌شود تا جدیدترین ویژگی‌ها و بهبودهای امنیتی را دراختیارتان قرار دهد. می‌توانید اولویت‌های به‌روزرسانی را در «تنظیمات» مرور کنید.</translation>
 <translation id="2246549592927364792">‏توضیحات تصویر از Google دریافت شود؟</translation>
@@ -1548,7 +1546,6 @@
 <translation id="2381499968174336913">پیش‌نمای برگه هم‌رسانی‌شده</translation>
 <translation id="2381756643783702095">قبل از ارسال سؤال شود (توصیه می‌شود)</translation>
 <translation id="2383825469508278924">تغییر نگاشت کلیدهای صفحه‌کلید، کلیدهای عملکرد و غیره</translation>
-<translation id="2386202302581016807">فضای ذخیره‌سازی کنونی دستگاه برای تکمیل راه‌اندازی کافی نیست</translation>
 <translation id="2387052489799050037">رفتن به صفحه اصلی</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (فعلی)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -2260,7 +2257,6 @@
 <translation id="3031557471081358569">مواردی را برای وارد کردن انتخاب کنید:</translation>
 <translation id="3032204772252313646">زیرنویس خودکار</translation>
 <translation id="3033348223765101500">کنترل داده‌ها</translation>
-<translation id="3034627908241330765">‏راه‌اندازی Steam دیگری درحال اجرا است. قبل‌از اجرای دوباره راه‌اندازی، منتظر بمانید تا این راه‌اندازی تکمیل شود.</translation>
 <translation id="3036327949511794916">مهلت برگرداندن این <ph name="DEVICE_TYPE" /> گذشته است.</translation>
 <translation id="3036546437875325427">‏فعال کردن Flash</translation>
 <translation id="3037754279345160234">نمی‌توان پیکربندی پیوستن به دامنه را تجزیه کرد. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
@@ -2273,7 +2269,6 @@
 <translation id="3046178388369461825">‏فضای دیسک Linux بسیار کم است</translation>
 <translation id="3046910703532196514">صفحهٔ وب، کامل</translation>
 <translation id="304747341537320566">موتورهای گفتار</translation>
-<translation id="3048051495640130973">می‌توانید زمان روشن شدن «بهینه‌سازی باتری» را در تنظیمات کنترل کنید</translation>
 <translation id="3048336643003835855">‏دستگاه‌های HID از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">گزارش‌های پخش محتوا و دستگاه‌ها</translation>
 <translation id="3051250416341590778">اندازه نمایش</translation>
@@ -2317,7 +2312,6 @@
 <translation id="3090819949319990166">‏فایل خارجی crx در <ph name="TEMP_CRX_FILE" /> کپی نمی‌شود.</translation>
 <translation id="3090871774332213558">«<ph name="DEVICE_NAME" />» مرتبط شد</translation>
 <translation id="3093714882666365141">به سایت‌ها اجازه داده نشود کنترل‌كننده‌های پرداخت را نصب کنند</translation>
-<translation id="3093958632721393232">فقط زمانی که شارژ باتری کم است روشن شود</translation>
 <translation id="3094141017404513551">با این کار مرورتان از <ph name="EXISTING_USER" /> جدا خواهد شد</translation>
 <translation id="3095871294753148861">نشانک‌ها، گذرواژه‌ها، و دیگر داده‌های محصول مرور با حساب اصلی همگام‌سازی می‌شوند.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{۱ افزونه بالقوه مضر خاموش است. همچنین می‌توانید آن را حذف کنید.}one{{NUM_EXTENSIONS} افزونه بالقوه مضر خاموش است. همچنین می‌توانید آن‌ها را حذف کنید.}other{{NUM_EXTENSIONS} افزونه بالقوه مضر خاموش است. همچنین می‌توانید آن‌ها را حذف کنید.}}</translation>
@@ -2365,7 +2359,6 @@
 <translation id="3142562627629111859">گروه جدید</translation>
 <translation id="3143515551205905069">لغو همگام‌سازی</translation>
 <translation id="3143754809889689516">پخش از ابتدا</translation>
-<translation id="3143937294861726703">«بهینه‌سازی حافظه» روشن است</translation>
 <translation id="3144647712221361880">بازکردن پیوند به‌عنوان</translation>
 <translation id="3149510190863420837">‏برنامه‌های Chrome</translation>
 <translation id="3150693969729403281">همین‌حالا «بررسی ایمنی» اجرا شود</translation>
@@ -2524,8 +2517,6 @@
 <translation id="3315442055907669208">ورود به «حالت خواننده»</translation>
 <translation id="3317459757438853210">دو طرفه</translation>
 <translation id="3317678681329786349">دوربین و میکروفون مسدود شده‌اند</translation>
-<translation id="3320620783302968370">اگر مشکل برطرف نشد، دستگاه را بازراه‌اندازی کنید 
-    کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">«مرور ایمن» (محافظت در برابر سایت‌های خطرناک) و دیگر تنظیمات امنیتی</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{این داده محتوای حساس یا خطرناک دارد. این محتوا را حذف کنید و دوباره امتحان کنید.}=1{این فایل محتوای حساس یا خطرناک دارد. این محتوا را حذف کنید و دوباره امتحان کنید.}one{این فایل‌ها محتوای حساس یا خطرناک دارند. این محتوا را حذف کنید و دوباره امتحان کنید.}other{این فایل‌ها محتوای حساس یا خطرناک دارند. این محتوا را حذف کنید و دوباره امتحان کنید.}}</translation>
 <translation id="3323521181261657960">پاداش! وقت تماشای صفحه بیشتر شد</translation>
@@ -2681,7 +2672,6 @@
 <translation id="3462311546193741693">‏شما از سیستم بیشتر سایت‌ها خارج می‌کند. از حساب Google خارج نخواهید شد بنابراین می‌توانید داده‌های همگام‌سازی‌شده‌تان را پاک کنید.</translation>
 <translation id="3462413494201477527">راه‌اندازی حساب لغو شود؟</translation>
 <translation id="346298925039590474">این شبکه تلفن همراه دردسترس همه کاربرانی که از این دستگاه استفاده می‌کنند قرار خواهد گرفت</translation>
-<translation id="3463015289462934089">لطفاً مطمئن شوید دستگاهتان به اینترنت متصل باشد.</translation>
 <translation id="3464145797867108663">افزودن نمایه کاری</translation>
 <translation id="346431825526753">این یک حساب مخصوص بچه‌ها است که توسط <ph name="CUSTODIAN_EMAIL" /> مدیریت می‌شود.</translation>
 <translation id="346546413339447252">دریافت تخفیف از <ph name="MERCHANT_NAME_1" />، <ph name="MERCHANT_NAME_2" /> و فروشندگان بیشتر</translation>
@@ -3565,7 +3555,6 @@
     <ph name="BEGIN_PARAGRAPH2" />هرزمان خواستید می‌توانید مجاز کردن این گزارش‌ها را در تنظیمات دستگاه ChromeOS فرزندتان شروع یا متوقف کنید. اگر سرپرست دامنه هستید، می‌توانید این تنظیم را در «کنسول سرپرست» تغییر دهید.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />خاموش کردن این ویژگی بر توانایی این دستگاه در ارسال اطلاعات موردنیاز برای سرویس‌های ضروری، ازجمله امنیت و به‌روزرسانی‌های سیستم، تأثیر نمی‌گذارد.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">این صفحه مجاز به ویرایش فایل‌ها است</translation>
-<translation id="4302577930366020750">‏برای استفاده از Steam، لطفاً دستگاهتان را بازراه‌اندازی کنید</translation>
 <translation id="4303079906735388947">پین جدیدی برای کلید امنیتی‌تان تنظیم کنید</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="4305402730127028764">کپی در <ph name="DEVICE_NAME" /></translation>
@@ -3697,7 +3686,6 @@
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
 <translation id="4427365070557649936">درحال راستی‌آزمایی کد تأیید…</translation>
 <translation id="4429163740524851942">طرح‌بندی صفحه‌کلید فیزیکی</translation>
-<translation id="4429239357082509581">‏Steam اجازه لازم را برای اجرا شدن ندارد</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
 <translation id="4430369329743628066">نشانک اضافه شد</translation>
 <translation id="4430422687972614133">روشن کردن کارت مجازی</translation>
@@ -3966,8 +3954,6 @@
 <translation id="4675828034887792601">ایجاد میان‌بر برای جستجوی سایت‌ها و مدیریت موتور جستجو</translation>
 <translation id="4676595058027112862">«مرکز کنترل تلفن»، بیشتر بدانید</translation>
 <translation id="4677772697204437347">‏حافظه GPU</translation>
-<translation id="4677970983462111944">‏Steam در این دستگاه مجاز نیست. برای دریافت اجازه با سرپرستتان تماس بگیرید 
-    کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">دوربین خاموش شد</translation>
 <translation id="4680105648806843642">این صفحه بی‌صدا شده است</translation>
 <translation id="4681453295291708042">غیرفعال کردن «هم‌رسانی با اطراف»</translation>
@@ -4284,7 +4270,6 @@
 <translation id="49896407730300355">چرخاندن خلاف جهت ع&amp;قربه‌های ساعت</translation>
 <translation id="4989966318180235467">بازرسی صفحه &amp;پس‌زمینه</translation>
 <translation id="4991420928586866460">در نظر گرفتن کلیدهای ردیف بالا به عنوان کلیدهای عملکرد</translation>
-<translation id="4991858732577603540">‏لطفاً چند دقیقه صبر کنید و سپس Steam را دوباره اجرا کنید.</translation>
 <translation id="4992458225095111526">‏تأیید Powerwash</translation>
 <translation id="4992473555164495036">سرپرست سیستم روش‌های ورودی دردسترس را محدود کرده است.</translation>
 <translation id="4994754230098574403">درحال راه‌اندازی</translation>
@@ -4750,7 +4735,6 @@
 <translation id="5463275305984126951">شاخص <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">ثبت‌نام برای ایمیل‌های <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">درحال پیدا کردن دستگاه‌ها…</translation>
-<translation id="5463845647891602726">با حذف فایل‌ها از دستگاه، فضای آزاد را افزایش دهید</translation>
 <translation id="5463856536939868464">منوی دارای نشانک‌های مخفی</translation>
 <translation id="5464660706533281090">کاربر خردسال نمی‌تواند این تنظیم را تغییر دهد.</translation>
 <translation id="5466374726908360271">جای‌گذاری و جستجوی «<ph name="SEARCH_TERMS" />»</translation>
@@ -5118,6 +5102,7 @@
 <translation id="5812674658566766066">بزرگ کردن همه</translation>
 <translation id="5815645614496570556">‏آدرس X.400</translation>
 <translation id="5816434091619127343">تغییرات درخواستی باعث می‌شود چاپگر غیرقابل استفاده شود.</translation>
+<translation id="581659025233126501">روشن کردن همگام‌سازی</translation>
 <translation id="5817069030404929329">‏گذرواژه‌ها از این دستگاه به «حساب Google» شما منتقل شود؟</translation>
 <translation id="5817918615728894473">مرتبط‌سازی</translation>
 <translation id="5821565227679781414">ایجاد میان‌بر</translation>
@@ -5296,7 +5281,6 @@
 <translation id="5975792506968920132">درصد شارژ باتری</translation>
 <translation id="5976160379964388480">موارد دیگر</translation>
 <translation id="5978277834170881274">&amp;استفاده از غلط‌گیر املای پایه</translation>
-<translation id="5978395054855988504">«بهینه‌سازی باتری» روشن است</translation>
 <translation id="5978493744931296692">سرپرستتان نمایه‌های دیگر را غیرفعال کرده است</translation>
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{۱ افزونه بالقوه مضر را دوباره روشن کرده‌اید}one{{NUM_EXTENSIONS} افزونه بالقوه مضر را دوباره روشن کرده‌اید}other{{NUM_EXTENSIONS} افزونه بالقوه مضر را دوباره روشن کرده‌اید}}</translation>
@@ -7049,6 +7033,7 @@
 <translation id="7665082356120621510">اختصاص حجم دیسک</translation>
 <translation id="7665369617277396874">افزودن حساب</translation>
 <translation id="766635563210446220">گذرواژه‌ها وارد نشد. <ph name="FILENAME" /> را بررسی کنید و مطمئن شوید درست قالب‌بندی شده باشد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="7666531788977935712">دکمه ادامه فعال شد</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> را ظرف {NUM_WEEKS} هفته برگردانید}one{<ph name="DEVICE_TYPE" /> را ظرف {NUM_WEEKS} هفته برگردانید}other{<ph name="DEVICE_TYPE" /> را ظرف {NUM_WEEKS} هفته برگردانید}}</translation>
 <translation id="7668423670802040666">‏در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /></translation>
 <translation id="7668648754769651616">ویژگی‌های دسترس‌پذیری استفاده از دستگاه را راحت‌تر می‌کند. برای دسترسی به «تنظیمات فوری»، زمان را در پایین صفحه‌نمایش انتخاب کنید.</translation>
@@ -7276,7 +7261,6 @@
 <translation id="7870790288828963061">‏برنامه‌های کیوسکی با نسخه جدیدتر پیدا نشد. موردی برای به‌روزرسانی وجود ندارد. لطفاً فلش USB را خارج کنید.</translation>
 <translation id="7871049986386271121">همیشه در این سایت</translation>
 <translation id="7871109039747854576">استفاده از کلیدهای <ph name="COMMA" /> و <ph name="PERIOD" /> برای پی‌جویی فهرست کاندیداها</translation>
-<translation id="7872494313446521576">برای اجازه دادن به «<ph name="EXTENSIONS_REQUESTING_ACCESS" />» در <ph name="ORIGIN" /> کلیک کنید:</translation>
 <translation id="787268756490971083">خاموش</translation>
 <translation id="7872758299142009420">گروه‌های تودرتو خیلی زیاد هستند: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">‏پس‌زمینه‌های Chromebook</translation>
@@ -7692,7 +7676,6 @@
 <translation id="8248381369318572865">دسترسی به میکروفون شما و تجزیه‌وتحلیل گفتار شما</translation>
 <translation id="8248887045858762645">‏نکات Chrome</translation>
 <translation id="8249048954461686687">‏پوشه OEM</translation>
-<translation id="8249239468199142122">بهینه‌سازی باتری</translation>
 <translation id="8249615410597138718">ارسال به دستگاه‌هایتان</translation>
 <translation id="8250210000648910632">فضای ذخیره‌سازی پر شده است</translation>
 <translation id="8251441930213048644">بازآوری در همین لحظه</translation>
@@ -7896,7 +7879,6 @@
 <translation id="8440630305826533614">‏برنامه‌های Linux</translation>
 <translation id="844063558976952706">همیشه در این سایت</translation>
 <translation id="8441313165929432954">فعال/ غیرفعال کردن اشتراک‌گذاری اینترنت</translation>
-<translation id="8443795068008423036">لطفاً مطمئن شوید دستگاهتان به‌روز باشد و دوباره امتحان کنید</translation>
 <translation id="8443986842926457191">نشانی وب بیش‌از ۲۰۴۸ نویسه دارد</translation>
 <translation id="8446884382197647889">بیشتر بدانید</translation>
 <translation id="8447409163267621480">‏باید شامل Ctrl یا Alt باشد</translation>
@@ -8227,7 +8209,6 @@
 <translation id="8763927697961133303">‏دستگاه USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">‏به‌روزرسانی‌ خودکار Chrome برای همه کاربران</translation>
-<translation id="8769901904650373714">‏مشکلی در راه‌اندازی Steam پیش آمد</translation>
 <translation id="8770406935328356739">دایرکتوری ریشه افزونه:</translation>
 <translation id="8771300903067484968">پس‌زمینه صفحه شروع روی پس‌زمینه پیش‌فرض بازنشانی شده است.</translation>
 <translation id="8773302562181397928">ذخیره <ph name="PRINTER_NAME" /></translation>
@@ -8744,7 +8725,6 @@
 <translation id="964286338916298286">‏سرپرست فناوری اطلاعات شما Chrome Goodies را برای دستگاهتان غیرفعال کرده است.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{برنامه}one{برنامه}other{برنامه}}</translation>
 <translation id="964790508619473209">تنظیم صفحه‌نمایش</translation>
-<translation id="965175368833098333">«بهینه‌سازی حافظه» می‌تواند حافظه برگه‌های غیرفعال را بازپس‌گیرد. این کار منابع رایانه را برای وظایف دیگر آزاد می‌کند.</translation>
 <translation id="965211523698323809">ارسال و دریافت پیامک از <ph name="DEVICE_TYPE" /> شما. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏گزارش مشکل در Google Cast</translation>
 <translation id="967398046773905967">‏به هیچ سایتی اجازه دسترسی به دستگاه‌های HID داده نشود</translation>

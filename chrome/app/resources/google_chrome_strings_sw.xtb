@@ -62,7 +62,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2094648590148273905">Sheria na masharti ya ChromeOS Flex</translation>
 <translation id="2094919256425865063">Ungependa kufunga Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex imewezeshwa na <ph name="BEGIN_LINK_CROS_OSS" />programu huria<ph name="END_LINK_CROS_OSS" /> za ziada kama vile, <ph name="BEGIN_LINK_LINUX_OSS" />mazingira ya wasanidi programu wa Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Ukiwasha mipangilio hii, Chrome hurejesha hifadhi ya vichupo ambavyo huendelei kutumia. Hatua hii hufuta nyenzo katika kompyuta yako na kuongeza nafasi kwa ajili ya shughuli zingine na kuifanya Chrome kufanya kazi kwa kasi. Vichupo visivyotumika huonekana vitupu na hupakia kiotomatiki unapovibofya. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /> au <ph name="BEGIN_LINK_2" />tuma maoni<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Hatua hii itafuta vipengee <ph name="ITEMS_COUNT" /> kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
@@ -231,7 +230,6 @@ Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wa
 <translation id="5386244825306882791">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome au unapotafuta kutoka Sanduku Kuu.</translation>
 <translation id="5394833366792865639">Shiriki kichupo cha Chrome</translation>
 <translation id="5412485296464121825">Tovuti zinaweza kuhifadhi maelezo kuhusu mambo yanayokuvutia kwa kutumia Chrome. Kwa mfano, iwapo utatembelea tovuti ili kununua viatu kwa ajili ya kukimbia mbio za marathoni, tovuti hiyo huenda ikatambua kuwa moja ya mambo yanayokuvutia ni kukimbia mbio za marathoni. Baadaye, iwapo utatembelea tovuti tofauti ili kujisajili kwa ajili ya mbio, tovuti hiyo huenda ikakuonyesha tangazo la viatu vya kukimbilia kulingana na mambo yanayokuvutia.</translation>
-<translation id="5416870378730196769">Chrome imewasha Mipangilio ya Kuhifadhi Kumbukumbu</translation>
 <translation id="5430073640787465221">Faili yako ya mapendekezo imeharibika au ni batili.
 
 Google Chrome haiwezi kufufua mipangilio yako.</translation>
@@ -284,7 +282,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6735387454586646204">Mfumo wa ChromeOS Flex</translation>
 <translation id="6739177684496155661">Ungependa kutumia wasifu mpya kwenye Chrome?</translation>
 <translation id="6750954913813541382">Ili kurekebisha makosa ya tahajia, Chrome hutuma kwa Google maandishi unayoandika kwenye kivinjari</translation>
-<translation id="6756581345161130259">Kulingana na mahitaji, Chrome hurejesha hifadhi ya vichupo ambavyo huendelei kutumia. Unaweza kubadilisha hali hii wakati wowote katika mipangilio.</translation>
 <translation id="677276454032249905">Ungependa kufunga Chrome?</translation>
 <translation id="6785872064505734160">Programu ya Mratibu wa Google katika Chrome inaweza kukukamilishia vitendo kwenye tovuti</translation>
 <translation id="683440813066116847">Sheria ya ndani ya Google Chrome Canary ili kuruhusu trafiki ya mDNS.</translation>
@@ -332,7 +329,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="7649070708921625228">Usaidizi</translation>
 <translation id="7651907282515937834">Nembo ya Chrome Enterprise</translation>
 <translation id="7655455401911432608">Historia yako ya kuvinjari, kumbukumbu ya tovuti ulizozitembelea ukitumia Chrome kwenye kifaa hiki.</translation>
-<translation id="7726773885101561560">Ili uweze kuvinjari kwa kasi, Chrome hurejesha hifadhi ya vichupo ambavyo hutumii.</translation>
 <translation id="7747138024166251722">Kisakinishi hakikuweza kuunda saraka la muda. Tafadhali chunguza nafasi iliyo wazi kwenye diski na ruhusa ya kusakinisha programu.</translation>
 <translation id="7761834446675418963">Bofya jina lako ili ufungue Chrome na uanze kuvinjari.</translation>
 <translation id="7777080907402804672">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google. Unaweza kuzima mipangilio hii wakati wowote.</translation>

@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">Приемам и напред</translation>
 <translation id="110724200315609752">Превключване към отворения прозорец</translation>
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
-<translation id="1118569444314402022">Добре дошли отново, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Създаване на нов раздел.</translation>
 <translation id="1126809382673880764">Няма защита срещу опасни уебсайтове, изтеглени файлове и разширения. Пак ще получавате защита посредством Безопасно сърфиране в други услуги на Google, където функцията се поддържа – например Gmail и Търсене.</translation>
 <translation id="1135212215217513471">Изтегляне на Chrome за iOS</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">Затваряне на менюто</translation>
 <translation id="1358214951266274152">Посещаване на копираната връзка</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
+<translation id="1363028406613469049">Запис</translation>
 <translation id="1375321115329958930">Запазени пароли</translation>
 <translation id="1377255359165588604">Синхронизирането спря да работи.</translation>
 <translation id="1377321085342047638">№ на картата</translation>
@@ -82,6 +82,7 @@
 <translation id="152234381334907219">Незапазвани никога</translation>
 <translation id="1523341279170789507">Разрешаване на всички „бисквитки“</translation>
 <translation id="1524563461097350801">Не, благодаря</translation>
+<translation id="1531836666020185856">Представени</translation>
 <translation id="1535268707340844072">Текущата ви настройка може да доведе до проблеми в някои сайтове. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="BEGIN_LINK" />Настройки за „бисквитките“<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
@@ -197,6 +198,7 @@
 <translation id="2647269890314209800">„Бисквитки“, които се използват</translation>
 <translation id="2648803196158606475">Изтриване на прочетените</translation>
 <translation id="2653659639078652383">Изпращане</translation>
+<translation id="2671426118752779020">Можете да използвате паролите, които сте запазили в мениджъра на паролите в Google, в други приложения на вашия iPhone.</translation>
 <translation id="2690858294534178585">Камерата се използва</translation>
 <translation id="2691653761409724435">Не е налице офлайн</translation>
 <translation id="2695507686909505111">Страницата е преведена</translation>
@@ -206,6 +208,7 @@
 <translation id="2704491540504985681">Изтегляния</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2709516037105925701">Автоматично попълване</translation>
+<translation id="271033894570825754">Създаване</translation>
 <translation id="2712127207578915686">Файлът не може да се отвори</translation>
 <translation id="2718352093833049315">Само при Wi-Fi</translation>
 <translation id="2747003861858887689">Предишното поле</translation>
@@ -262,6 +265,7 @@
 <translation id="3103603146121354983">Автоматично попълване на пароли</translation>
 <translation id="3112556859945124369">Означаване…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">История и др.</translation>
 <translation id="3131206671572504478">Блокиране на всички</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3153862085237805241">Запазване на картата</translation>
@@ -332,7 +336,6 @@
 <translation id="3709582977625132201">Означав. като непрочетено</translation>
 <translation id="371230970611282515">Предвижда и ви предупреждава за опасни събития, преди да се случат.</translation>
 <translation id="37207012422556617">Набиращи популярност търсения</translation>
-<translation id="3726360487031500941">Влезте отново в профила си <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Въведените URL адреси се отварят в режим „инкогнито“ в Google Chrome.</translation>
 <translation id="3762232513783804601">Създаден за вашия iPad</translation>
 <translation id="3771033907050503522">Раздели „инкогнито“</translation>
@@ -504,6 +507,7 @@
 <translation id="509789154667432072">Добавяне на отметка</translation>
 <translation id="5118713593561876160">Интереси</translation>
 <translation id="5118764316110575523">Изкл.</translation>
+<translation id="5119391094379141756">Изберете Chrome.</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5140288047769711648">Chrome ще запамети тази парола. Няма нужда да я помните.</translation>
 <translation id="5149188072385105201">Добавяне на парола...</translation>
@@ -627,6 +631,7 @@
 <translation id="6149061208933997199">Ползване на паролата</translation>
 <translation id="6152406514676263192">Включете синхронизирането, за да виждате най-подходящото съдържание въз основа на интересите си.</translation>
 <translation id="6159839020698489198">незадължително</translation>
+<translation id="6165508094623778733">Научете повече</translation>
 <translation id="6177442314419606057">Търсене в Chrome</translation>
 <translation id="6184086493125982861">Показване на разделите</translation>
 <translation id="6187302354554850004">Последно синхр.: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@
 <translation id="8032569120109842252">Следено</translation>
 <translation id="804225253087497565">Възможно е <ph name="BEGIN_LINK" />историята на търсенията<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други видове активност<ph name="END_LINK" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="804427445359061970">Тук ще се показват разделите ви от други устройства</translation>
+<translation id="8048728378294435881">Създавайте резервни копия на нещата си и ги използвайте на всяко устройство</translation>
 <translation id="8059533439631660104">Свива секцията.</translation>
 <translation id="8065292699993359127">Отваряне на URL адресите в режим „инкогнито“ в Chrome</translation>
 <translation id="806745655614357130">Оставяне на данните отделно</translation>
@@ -977,6 +983,7 @@
 <translation id="8981454092730389528">Контроли за активността в Google</translation>
 <translation id="8985320356172329008">Влезли сте в Google като</translation>
 <translation id="9000089900434778519">Търсещата ви машина е <ph name="DSE_NAME" />. Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
+<translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9034759925968272072">Няма да излезете от профила си в Google. Възможно е в него да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показване на оригинала</translation>
 <translation id="9039373489628511875">Капацитет</translation>

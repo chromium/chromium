@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Chuyển sang chế độ xem danh sách</translation>
 <translation id="2377590462528165447">Đã chia sẻ <ph name="NUMBER_OF_ITEMS" /> thư mục với Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> tệp được chọn</translation>
+<translation id="2383454254762599978">Chuyển vào thùng rác</translation>
 <translation id="2387458720915042159">Loại kết nối proxy</translation>
 <translation id="2389832672041313158">Tiếng Miến Điện/Myanmar</translation>
 <translation id="2392369802118427583">Kích hoạt</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Truy cập drive.google.com...</translation>
 <translation id="3553048479571901246">Để mở tệp bằng <ph name="APP_NAME" />, trước tiên, hãy sao chép các tệp đó vào thư mục tệp Windows.</translation>
 <translation id="3556731189587832921">Tiếng Anh (Mỹ) bằng bàn phím quốc tế cho máy tính để bàn</translation>
+<translation id="3557414470514932909">Đang chuyển <ph name="FILE_NAME" /> vào thùng rác</translation>
 <translation id="3567221313191587603">Chọn một tệp và bật <ph name="OFFLINE_CHECKBOX_NAME" /> để dùng tệp khi không có mạng.</translation>
 <translation id="357479282490346887">Tiếng Lithuania</translation>
 <translation id="3587482841069643663">Tất cả</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Tiếng Bangla (phiên âm)</translation>
 <translation id="4002066346123236978">Tiêu đề</translation>
 <translation id="4017788180641807848">Tiếng Anh (Mỹ) bằng bàn phím Workman</translation>
+<translation id="4019998208269143058">Ghim vào tệp nhanh</translation>
 <translation id="4040753847560036377">Mã PUK không chính xác</translation>
 <translation id="4057991113334098539">Đang kích hoạt...</translation>
 <translation id="4092890906744441904">Tiếng Ireland</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Chính sách của quản trị viên không khuyến khích:</translation>
 <translation id="4159731583141908892">Đã di chuyển <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Dọn sạch thùng rác ngay</translation>
+<translation id="4179621117429069925">Mục này đang nằm trong thùng rác</translation>
 <translation id="4186579485882418952">Bật chế độ ngoại tuyến</translation>
 <translation id="4193154014135846272">Tài liệu Google</translation>
 <translation id="4197674956721858839">Chọn file nén zip</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Chứng chỉ xác thực bị từ chối từ xa</translation>
 <translation id="4394214039309501350">Đường liên kết ngoài</translation>
 <translation id="4394980935660306080">Đầu tuần này</translation>
+<translation id="4398096759193130964">Khôi phục hoặc kéo các mục này vào một thư mục mới bên ngoài thùng rác</translation>
 <translation id="4401287888955153199">Trích xuất tất cả</translation>
 <translation id="4410695710508688828">Thao tác trích xuất không thành công. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Tạo một lối tắt cho tệp của bạn</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Tiếng Hindi bằng bàn phím InScript</translation>
 <translation id="4801956050125744859">Giữ cả hai</translation>
 <translation id="4804827417948292437">Quả bơ</translation>
+<translation id="4805966553127040832">Đang khôi phục <ph name="COUNT" /> mục</translation>
 <translation id="4823651846660089135">Thiết bị chỉ đọc</translation>
 <translation id="4826849268470072925">Tiếng Tamil (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> mục được chọn</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Hoa Gazania</translation>
 <translation id="4943368462779413526">Bóng đá</translation>
 <translation id="4961158930123534723">Đã chia sẻ 1 thư mục với ứng dụng Parallels Desktop</translation>
+<translation id="496656650103537022">Đã khôi phục <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Hãy sử dụng tên có tối đa <ph name="MAX_LENGTH" /> ký tự</translation>
 <translation id="4973970068702235170">Không nén được, lỗi ngoài mong đợi: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Rất tiếc, <ph name="FILE_NAME" /> không tồn tại nữa.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Mở khóa</translation>
 <translation id="5700087501958648444">Thông tin về tệp âm thanh</translation>
+<translation id="5720028165859493293">Đã chuyển <ph name="FILE_NAME" /> vào thùng rác</translation>
 <translation id="5724172041621205163">Tiếng Thái bằng bàn phím Pattachote</translation>
 <translation id="5756666464756035725">QWERTY dành cho tiếng Hungary</translation>
 <translation id="5763377084591234761">Tiếng Đức (Thụy Sĩ)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Lưu trữ <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Vẫy tay</translation>
 <translation id="6327785803543103246">Tự động phát hiện proxy web</translation>
+<translation id="6337014272874260727">Bỏ ghim khỏi tệp nhanh</translation>
 <translation id="6339145975392024142">Bàn phím quốc tế Hoa Kỳ (PC)</translation>
 <translation id="6346310558342052870">Truy cập bị hạn chế</translation>
 <translation id="6356685157277930264">Cửa sổ phản hồi về tệp</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">Đã chọn 1 thư mục</translation>
 <translation id="6755827872271341378">Thiết bị ChromeOS Flex</translation>
 <translation id="6790428901817661496">Phát</translation>
+<translation id="6794539005637808366">Khôi phục hoặc kéo mục này vào một thư mục mới bên ngoài thùng rác</translation>
 <translation id="6795884519221689054">Gấu trúc</translation>
 <translation id="6806699711453372963">Quản lý chia sẻ với Linux</translation>
 <translation id="6806796368146926706">Chữ và số bằng bàn phím tiếng Nhật</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Tiếng Thụy Điển</translation>
 <translation id="6990081529015358884">Bạn đã hết dung lượng lưu trữ</translation>
+<translation id="6993826899923627728">Các mục này đang nằm trong thùng rác</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> thư mục đã được chọn</translation>
 <translation id="7008426324576352165">Tổ chức của bạn cần có thêm bộ nhớ để hoàn tất quá trình tải lên.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Tiếng Séc</translation>
 <translation id="7417453074306512035">Bàn phím tiếng Ethiopic</translation>
 <translation id="7417705661718309329">Bản đồ Google</translation>
+<translation id="7419668828140929293">Đang khôi phục "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">Không có hình ảnh nào gần đây</translation>
 <translation id="7460898608667578234">Tiếng Ukraina</translation>
 <translation id="7469894403370665791">Tự động kết nối vào mạng này</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Dễ dàng truy cập vào Google Photos</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7663224033570512922">Tiếng Hindi</translation>
+<translation id="7689532716264131859">Đã chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào thùng rác</translation>
 <translation id="7693909743393669729">Thao tác định dạng ổ đĩa sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đĩa đó, đồng thời xóa tất cả phân vùng hiện có, bao gồm cả những phân vùng có thể không hiển thị. Bạn không thể hủy thao tác này sau khi thực hiện.</translation>
 <translation id="7695430100978772476">Không định dạng được <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Không dọn sạch được thùng rác.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Tiếng Trung Ngũ bút</translation>
 <translation id="7765158879357617694">Di chuyển</translation>
 <translation id="7774365994322694683">Chim</translation>
+<translation id="7780322752056734036">Đã khôi phục <ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7788080748068240085">Để lưu "<ph name="FILE_NAME" />" ngoại tuyến, bạn phải giải phóng thêm <ph name="TOTAL_FILE_SIZE" /> dung lượng lưu trữ:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />bỏ ghim các tệp mà bạn không cần truy cập ngoại tuyến nữa<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Đã chọn một loạt <ph name="ENTRY_COUNT" /> mục từ <ph name="FROM_ENTRY_NAME" /> đến <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Chính sách của quản trị viên ngăn chặn:</translation>
 <translation id="965477715979482472">Tiếng Anh (Nam Phi)</translation>
+<translation id="976666271385981812">Đang chuyển <ph name="NUMBER_OF_ITEMS" /> mục vào thùng rác</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="988685240266037636">Một tệp có tên <ph name="FILE_NAME" /> đã tồn tại. Bạn có muốn thay thế tệp đó không?</translation>
 <translation id="992401651319295351">Bạn còn <ph name="RETRIES" /> lần nhập. Bạn sẽ không thể dùng mạng này cho đến khi thiết lập một mã PIN mới.</translation>

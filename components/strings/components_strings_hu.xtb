@@ -844,6 +844,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatív</translation>
 <translation id="3223287115535306850">Alkalmazásindító ikon</translation>
+<translation id="3223425961342298674">Helyadatok nem engedélyezettek</translation>
 <translation id="3225347164936328585">Taps</translation>
 <translation id="3225919329040284222">A szerver tanúsítványa nem felel meg a beépített elvárásoknak. Ezek a beépített elvárások bizonyos nagy biztonságú webhelyekre vonatkoznak az Ön védelme érdekében.</translation>
 <translation id="3226128629678568754">Nyomja meg a frissítés gombot az oldal betöltéséhez szükséges adatok újraküldéséhez.</translation>
@@ -1183,6 +1184,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4127575959421463246">A ChromeOS-jelzőket keresi? Keresse fel a következő oldalt:</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
 <translation id="4130226655945681476">A hálózati kábelek, a modem és a router ellenőrzése</translation>
+<translation id="4132448310531350254">A(z) „<ph name="POLICY_IDS_LIST" />” alkalmazások által hivatkozott „<ph name="FILE_EXTENSION" />” file_extension ismétlődő kezelői.</translation>
 <translation id="4134123981501319574">Dokumentum létrehozása</translation>
 <translation id="413544239732274901">További információ</translation>
 <translation id="4142935452406587478">10. tálca</translation>
@@ -1205,6 +1207,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4194250254487269611">A kártya jelenleg nem menthető</translation>
 <translation id="4196861286325780578">&amp;Áthelyezés újra</translation>
 <translation id="4202554117186904723">5. tekercs</translation>
+<translation id="4203769790323223880">Kamerahasználat nem engedélyezett</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />A tűzfal és a vírusirtó konfigurációjának ellenőrzése<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Nagy</translation>
 <translation id="4210602799576081649">Az ellenőrző kód lejárt, kérjen újat.</translation>
@@ -1231,6 +1234,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
     &lt;p&gt;Ne feledje el újra bekapcsolni a vírusirtó programot, ha elkészült.&lt;/p&gt;
     &lt;h4&gt;5. lépés: Vegyen igénybe külső segítséget&lt;/h4&gt;
     &lt;p&gt;Ha a hiba továbbra is fennáll, lépjen kapcsolatba a webhely tulajdonosával.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofonhasználat nem engedélyezett</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Próbálkozzon a Hálózati diagnosztika futtatásával<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Engedélyt kérhet a kamera használatára vagy mozgatására</translation>
 <translation id="4235360514405112390">Érvényes</translation>
@@ -1248,6 +1252,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4277028893293644418">Jelszó visszaállítása</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
 <translation id="4282346679996504092">Megtörtént a termékhez tartozó értesítések kikapcsolása és a könyvjelző eltávolítása</translation>
+<translation id="4285498937028063278">Rögzítés megszüntetése</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{A kártyát mentettük a Google-fiókjába.}other{Ezeket a kártyákat mentettük a Google-fiókjába.}}</translation>
 <translation id="4287885627794386150">Jogosult a próbaverzióra, de nem aktív</translation>
 <translation id="4297502707443874121">A(z) <ph name="THUMBNAIL_PAGE" /> oldal indexképe</translation>
@@ -1601,6 +1606,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5177076414499237632">További információ az oldal forrásáról és témájáról</translation>
 <translation id="5179510805599951267">Nem <ph name="ORIGINAL_LANGUAGE" /> nyelven van? Hiba bejelentése</translation>
 <translation id="518639307526414276">Kisállateledel és kisállatgondozási kellékek</translation>
+<translation id="5190072300954988691">A kamera- és a mikrofonhasználat nem engedélyezett</translation>
 <translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="5191315092027169558">Profilját a következő kezeli: <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422">A(z) <ph name="ORIGIN" /> több fájlt szeretne letölteni</translation>
@@ -1621,6 +1627,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Elvetés</translation>
+<translation id="5239623327352565343">Helyadatok engedélyezve</translation>
 <translation id="5242889659037569123">Poggyász és egyéb utazási kellékek</translation>
 <translation id="5250209940322997802">„Csatlakozás a hálózathoz”</translation>
 <translation id="52517543715119994">További információ a Chrome funkcióiról</translation>
@@ -2433,6 +2440,7 @@ További részletek:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />További információk megtekintése<ph name="END_LINK" /> a problémával kapcsolatban.</translation>
 <translation id="7455133967321480974">Globális alapértelmezés használata (Tiltás)</translation>
 <translation id="7460618730930299168">Az előzetes vetítés eltér az Ön által kijelölttől.  Folytatja?</translation>
+<translation id="7461924472993315131">Rögzítés</translation>
 <translation id="7463075493919226237">Ausztrál futball</translation>
 <translation id="7469935732330206581">Az űrlap nem biztonságos</translation>
 <translation id="7473891865547856676">Nem, köszönöm</translation>
@@ -2496,6 +2504,7 @@ További részletek:
 <translation id="7581199239021537589">2. oldali kép Y-eltolása</translation>
 <translation id="7582602800368606489">Új esemény gyors létrehozása a Google Naptár szolgáltatással</translation>
 <translation id="7583969447617676942">Jogi szolgáltatások</translation>
+<translation id="7586676035079382730">Értesítések nem engedélyezettek</translation>
 <translation id="7591288787774558753">Biztosan megosztja a bizalmas tartalmat?</translation>
 <translation id="7591636454931265313">A(z) <ph name="EMBEDDED_URL" /> cookie-kat és webhelyadatokat szeretne használni a következő webhelyen: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">A szervertanúsítvány sérti a névre vonatkozó megkötéseket.</translation>
@@ -3049,6 +3058,7 @@ További részletek:
 <translation id="9131119348384879525">Biztosan rögzíti a bizalmas tartalmat?</translation>
 <translation id="9136861683332321024">Luxusjárművek</translation>
 <translation id="9137013805542155359">Eredeti megjelenítése</translation>
+<translation id="9138037198177304356">Értesítések engedélyezve</translation>
 <translation id="9139318394846604261">Vásárlás</translation>
 <translation id="9141013498910525015">Címek kezelése</translation>
 <translation id="9144951720726881238">Lejárati dátum:</translation>

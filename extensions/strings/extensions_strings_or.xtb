@@ -14,9 +14,9 @@
 <translation id="2785530881066938471">ବିଷୟବସ୍ତୁ ସ୍କ୍ରିପ୍ଟ ପାଇଁ '<ph name="RELATIVE_PATH" />' ଫାଇଲ୍ ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ। ଏହା UTF-8ରେ ଏନ୍‌କୋଡ୍ କରାଯାଇ ନାହିଁ</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (ଏକ୍ସଟେନ୍‌ସନ୍ ID"<ph name="EXTENSION_ID" />") ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ଵାରା ବ୍ଲକ୍ କରିଦିଆଯାଇଛି। <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">ଏହି ପ୍ୟାକେଜ୍‌କୁ ଇନ୍‌ଷ୍ଟଲ୍ କରିପାରିଲା ନାହିଁ: '<ph name="ERROR_CODE" />'</translation>
-<translation id="3115238746683532089"><ph name="VENDOR_ID" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />) ବିକ୍ରେତାଙ୍କ ତରଫରୁ <ph name="PRODUCT_ID" /> ଅଜଣା ଉତ୍ପାଦ</translation>
+<translation id="3115238746683532089"><ph name="VENDOR_ID" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />) ବିକ୍ରେତାଙ୍କ ତରଫରୁ <ph name="PRODUCT_ID" /> ଅଜଣା ପ୍ରଡକ୍ଟ</translation>
 <translation id="3144135466825225871">crx ଫାଇଲ୍‍କୁ ପ୍ରତିସ୍ଥାପିତ କରିହେଲା ନାହିଁ। ଫାଇଲ୍‍ଟି ବ୍ୟବହାର କରାଯାଉଛି କି ନାହିଁ ତାହା ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
-<translation id="3163201441334626963">ଭେଣ୍ଡର <ph name="VENDOR_ID" />ରୁ ଅଜଣା ଉତ୍ପାଦ <ph name="PRODUCT_ID" /></translation>
+<translation id="3163201441334626963">ଭେଣ୍ଡର <ph name="VENDOR_ID" />ରୁ ଅଜଣା ପ୍ରଡକ୍ଟ <ph name="PRODUCT_ID" /></translation>
 <translation id="3302709122321372472">ବିଷୟବସ୍ତୁ ସ୍କ୍ରିପ୍ଟ ପାଇଁ '<ph name="RELATIVE_PATH" />' css ' ଲୋଡ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="3369521687965833290">ସଂପ୍ରସାରଣକୁ ଅନ୍‌ପ୍ୟାକ୍ କରିପାରିବେ ନାହିଁ।  କୌଣସି ଏକ୍ସଟେନ୍‍ସନ୍‌‌କୁ ସୁରକ୍ଷିତ ଭାବେ ଅନ୍‌ପ୍ୟାକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ୍ ଡିରେକ୍ଟରୀକୁ ଏକ ପଥ ରହିବା ଉଚିତ୍ ଯାହା ଏକ ଡ୍ରାଇଭ୍ ଅକ୍ଷରରୁ ଆରମ୍ବ ଏବଂ କୌଣସି ଜଂସନ୍, ମାଉଣ୍ଟ ପଏଣ୍ଟ, ବା ସିମ୍‌ଲିଙ୍କ୍ ନଥିବ।  ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ୍ ପାଇଁ ଏଭଳି କୌଣସି ରାସ୍ତା ନାହିଁ।</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
@@ -37,7 +37,7 @@
 <translation id="5456409301717116725">ଏହି ଏକ୍ସଟେସନ୍‌ରେ କୀ ଫାଇଲ୍ '<ph name="KEY_PATH" />' ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି। ସମ୍ଭବତଃ ଆପଣ ତାହା କରିବାକୁ ଚାହାଁନ୍ତି ନାହିଁ।</translation>
 <translation id="5486326529110362464">ବ୍ୟକ୍ତିଗତ କୀ ପାଇଁ ଇନ୍‍ପୁଟ୍ ମୂଲ୍ୟ ପୂର୍ବରୁ ରହିବା ଉଚିତ।</translation>
 <translation id="5972529113578162692">ଏହି ମେସିନ୍‌ର ବ୍ୟବସ୍ଥାପକ <ph name="EXTENSION_NAME" />ର ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବା ଆବଶ୍ୟକ କରୁଛନ୍ତି। ଏହାକୁ ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‍ କରାଯାଇପାରିବ ନାହିଁ</translation>
-<translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ତରଫରୁ ଅଜଣା ଉତ୍ପାଦ <ph name="PRODUCT_ID" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
+<translation id="6027032947578871493"><ph name="VENDOR_NAME" /> ତରଫରୁ ଅଜଣା ପ୍ରଡକ୍ଟ <ph name="PRODUCT_ID" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> ବିକ୍ରେତାଙ୍କ ତରଫରୁ <ph name="PRODUCT_NAME" /></translation>
 <translation id="6143635259298204954">ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ଅନ୍‌ପ୍ୟାକ୍ କରିହେବ ନାହିଁ।  ଗୋଟିଏ ଏକ୍ସଟେନ୍‌ସନ୍‌କୁ ସୁରକ୍ଷିତ ଭାବେ ଅନ୍‌ପ୍ୟାକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍ ଡିରେକ୍ଟୋରୀକୁ ଏକ ପାଥ୍ ଥିବା ନିହାତି ଦରକାର, ଯେଉଁଥିରେ ସିମ୍‌ଲିଙ୍କ୍ ନଥିବ।  ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍ ପାଇଁ ସେହିଭଳି କୌଣସି ପାଥ୍ ନାହିଁ।</translation>
 <translation id="6322279351188361895">ବ୍ୟକ୍ତିଗତ କୀ'କୁ ପଢ଼ିବାରେ ବିଫଳ ହେଲା।</translation>
@@ -48,7 +48,7 @@
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />ରୁ<ph name="VENDOR_NAME" /> (କ୍ରମିକ ସଂଖ୍ୟା <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">ମାଇମ୍‌ହ୍ୟାଣ୍ଡଲର୍: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">ଏହି ଏକ୍ସଟେନ୍‌ସନ୍ ସ୍ୱୟଂ ନିଜେ ବହୁତ ଥର ପୁନଃ ଲୋଡ୍ ହୋ‍ଇଛି।</translation>
-<translation id="7003844668372540529"><ph name="VENDOR_NAME" />ରୁ <ph name="PRODUCT_ID" /> ଅଜଣା ଉତ୍ପାଦ</translation>
+<translation id="7003844668372540529"><ph name="VENDOR_NAME" />ରୁ <ph name="PRODUCT_ID" /> ଅଜଣା ପ୍ରଡକ୍ଟ</translation>
 <translation id="7068383018033524534">ମାନିଫେଷ୍ଟ ଫାଇଲ୍ ଅବୈଧ ଅଟେ</translation>
 <translation id="7217838517480956708">ଏହି ମେସିନ୍‌ର ବ୍ୟବସ୍ଥାପକ <ph name="EXTENSION_NAME" />କୁ ଇନ୍‍ଷ୍ଟଲ୍ କରିବା ଆବଶ୍ୟକ କରୁଛନ୍ତି। ଏହାକୁ କଢ଼ାଯାଇପାରିବ ନାହିଁ କିମ୍ବା ସଂଶୋଧିତ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7612608473764576263">ବ୍ୟକ୍ତିଗତ କୀ ପାଇଁ ଇନ୍‌ପୁଟ୍‍ ମୂଲ୍ୟ ନିଶ୍ଚିତରୂପେ ଏକ ବୈଧ ଫର୍ମାଟ୍ ହେବା ଆବଶ୍ୟକ (PKCS#8- ଫର୍ମାଟ୍‌ PEM-ଏନକୋଡ୍ ହୋଇଥିବା RSA କୀ') ।</translation>

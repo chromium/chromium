@@ -23,7 +23,6 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1104948393051856124">Akzeptieren &amp; weiter</translation>
 <translation id="110724200315609752">Zu offenem Fenster wechseln</translation>
 <translation id="1112015203684611006">Fehler beim Drucken.</translation>
-<translation id="1118569444314402022">Willkommen zurück, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Neuen Tab erstellen.</translation>
 <translation id="1126809382673880764">Du wirst nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, bist du in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
 <translation id="1135212215217513471">Chrome für iOS herunterladen</translation>
@@ -61,6 +60,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1340643665687018190">Menü schließen</translation>
 <translation id="1358214951266274152">Kopierten Link aufrufen</translation>
 <translation id="1360432990279830238">Abmelden &amp; Synchronisierung deaktivieren?</translation>
+<translation id="1363028406613469049">Titel</translation>
 <translation id="1375321115329958930">Gespeicherte Passwörter</translation>
 <translation id="1377255359165588604">Die Synchronisierung funktioniert nicht mehr.</translation>
 <translation id="1377321085342047638">Kartennummer</translation>
@@ -82,6 +82,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="152234381334907219">Nie speichern für...</translation>
 <translation id="1523341279170789507">Alle Cookies zulassen</translation>
 <translation id="1524563461097350801">Nein danke</translation>
+<translation id="1531836666020185856">Vorgestellt</translation>
 <translation id="1535268707340844072">Deine aktuellen Einstellungen führen möglicherweise dazu, dass Websites nicht korrekt ausgeführt werden. Cookies für alle Websites kannst du in den <ph name="BEGIN_LINK" />Cookie-Einstellungen<ph name="END_LINK" /> verwalten.</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">QR-Code scannen</translation>
@@ -197,6 +198,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2647269890314209800">Verwendete Cookies</translation>
 <translation id="2648803196158606475">Gelesene löschen</translation>
 <translation id="2653659639078652383">Senden</translation>
+<translation id="2671426118752779020">Du kannst die im Passwortmanager von Google gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
 <translation id="2695507686909505111">Seite ist übersetzt</translation>
@@ -206,6 +208,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2704491540504985681">Downloads</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2709516037105925701">Automatisches Ausfüllen</translation>
+<translation id="271033894570825754">Neu</translation>
 <translation id="2712127207578915686">Fehler beim Öffnen der Datei</translation>
 <translation id="2718352093833049315">Nur bei WLAN</translation>
 <translation id="2747003861858887689">Vorheriges Feld</translation>
@@ -262,6 +265,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3103603146121354983">Passwörter automatisch ausfüllen lassen</translation>
 <translation id="3112556859945124369">Markieren…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Verlauf und mehr</translation>
 <translation id="3131206671572504478">Alle blockieren</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
 <translation id="3153862085237805241">Karte speichern</translation>
@@ -332,7 +336,6 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3709582977625132201">Als ungelesen markieren</translation>
 <translation id="371230970611282515">Erkennt schädliche Ereignisse im Voraus und warnt dich, bevor diese eintreten.</translation>
 <translation id="37207012422556617">Trends bei Suchanfragen</translation>
-<translation id="3726360487031500941">Melde dich wieder in deinem Konto <ph name="USER_NAME" /> an</translation>
 <translation id="3740397331642243698">Öffnet die eingegebenen URLs in Google Chrome im Inkognitomodus.</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
 <translation id="3771033907050503522">Inkognito-Tabs</translation>
@@ -504,6 +507,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="509789154667432072">Lesezeichen hinzufügen</translation>
 <translation id="5118713593561876160">Interessen</translation>
 <translation id="5118764316110575523">Aus</translation>
+<translation id="5119391094379141756">Wähle Chrome aus</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5140288047769711648">Chrome speichert dieses Passwort für dich. Du musst es dir nicht merken.</translation>
 <translation id="5149188072385105201">Passwort hinzufügen</translation>
@@ -627,6 +631,7 @@ Handoff muss auch im Abschnitt "Allgemein" deiner Einstellungen aktiviert sein u
 <translation id="6149061208933997199">Passwort verwenden</translation>
 <translation id="6152406514676263192">Aktiviere die Synchronisierung, um die relevantesten Inhalte zu erhalten, die deinen Interessen entsprechen.</translation>
 <translation id="6159839020698489198">optional</translation>
+<translation id="6165508094623778733">Weitere Informationen</translation>
 <translation id="6177442314419606057">Suche in Chrome</translation>
 <translation id="6184086493125982861">Tabs anzeigen</translation>
 <translation id="6187302354554850004">Letzte Synchr.: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8032569120109842252">Folge ich</translation>
 <translation id="804225253087497565">Der <ph name="BEGIN_LINK" />Suchverlauf<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />andere Arten von Aktivitäten<ph name="END_LINK" /> können in deinem Google-Konto gespeichert werden, wenn du angemeldet bist. Du kannst sie jederzeit löschen.</translation>
 <translation id="804427445359061970">Hier werden deine Tabs von anderen Geräten angezeigt</translation>
+<translation id="8048728378294435881">Möchtest du deine Daten sichern und auf jedem Gerät verwenden?</translation>
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8065292699993359127">URLs in Chrome im Inkognitomodus öffnen</translation>
 <translation id="806745655614357130">Daten getrennt halten</translation>
@@ -977,6 +983,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8981454092730389528">Google-Aktivitätseinstellungen</translation>
 <translation id="8985320356172329008">In Google angemeldet als</translation>
 <translation id="9000089900434778519">Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
+<translation id="9008201768610948239">Ignorieren</translation>
 <translation id="9034759925968272072">Du wirst nicht von deinem Google-Konto abgemeldet. Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> weitere Arten von Browserverlaufsdaten für dein Google-Konto.</translation>
 <translation id="9037965129289936994">Original anzeigen</translation>
 <translation id="9039373489628511875">Bandbreite</translation>

@@ -57,7 +57,6 @@
 <translation id="2094648590148273905">Warunki korzystania z ChromeOS Flex</translation>
 <translation id="2094919256425865063">Zamknąć Chrome mimo to?</translation>
 <translation id="2106831557840787829">Opracowanie ChromeOS Flex było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Gdy ta funkcja jest włączona, Chrome odzyskuje pamięć z kart, których aktywnie nie używasz. Powoduje to zwolnienie zasobów komputera na potrzeby innych zadań i przyspiesza działanie Chrome. Nieaktywne karty wyglądają na puste i automatycznie ładują się ponownie po kliknięciu. <ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> lub <ph name="BEGIN_LINK_2" />prześlij opinię<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Spowoduje to usunięcie <ph name="ITEMS_COUNT" /> elementów z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Uruchom ponownie, aby zaktualizować &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomóż udoskonalić Chrome, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
@@ -224,7 +223,6 @@
 <translation id="5386244825306882791">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chrome lub wyszukiwaniu w omniboksie.</translation>
 <translation id="5394833366792865639">Udostępnij kartę Chrome</translation>
 <translation id="5412485296464121825">W Chrome witryny mogą przechowywać informacje o Twoich zainteresowaniach. Na przykład jeśli odwiedzasz stronę internetową, żeby kupić buty na maraton, strona może zidentyfikować bieganie w maratonach jako Twoje zainteresowanie. Jeśli później odwiedzisz inną witrynę, żeby zapisać się na jakiś bieg, witryna ta może wyświetlić reklamę butów do biegania na podstawie Twoich zainteresowań.</translation>
-<translation id="5416870378730196769">Przeglądarka Chrome włączyła Oszczędzanie pamięci</translation>
 <translation id="5430073640787465221">Plik ustawień jest uszkodzony lub nieprawidłowy. Google Chrome nie może odzyskać ustawień.</translation>
 <translation id="5524761631371622910">Gdy testy są włączone i w wyniku losowego wyboru Chrome obejmuje Cię aktywny test, Twoja historia przeglądania wpływa na wyświetlane reklamy i oszacowane zainteresowania (patrz poniżej). Żeby chronić Twoją prywatność, Chrome co miesiąc automatycznie usuwa Twoje zainteresowania.</translation>
 <translation id="556024056938947818">Google Chrome próbuje pokazać hasła.</translation>
@@ -275,7 +273,6 @@
 <translation id="6735387454586646204">System ChromeOS Flex</translation>
 <translation id="6739177684496155661">Kontynuować w nowym profilu Chrome?</translation>
 <translation id="6750954913813541382">Aby poprawić błędy pisowni, Chrome wysyła do Google to, co wpisujesz w przeglądarce</translation>
-<translation id="6756581345161130259">W razie potrzeby Chrome odzyskuje pamięć z kart, których aktywnie nie używasz. Możesz to zmienić w dowolnym momencie w ustawieniach.</translation>
 <translation id="677276454032249905">Zamknąć Chrome mimo to?</translation>
 <translation id="6785872064505734160">Asystent Google w Chrome może wykonywać za Ciebie działania na różnych stronach internetowych</translation>
 <translation id="683440813066116847">Reguła dla ruchu przychodzącego w Google Chrome Canary zezwalająca na ruch mDNS.</translation>
@@ -323,7 +320,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7649070708921625228">Pomoc</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="7655455401911432608">Twoja historia przeglądania, czyli rejestr witryn, które odwiedzasz w Chrome na tym urządzeniu.</translation>
-<translation id="7726773885101561560">Aby przyspieszyć przeglądanie, Chrome odzyskuje pamięć z nieużywanych kart.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
 <translation id="7761834446675418963">Otwórz Chrome, klikając swoją nazwę, i rozpocznij przeglądanie.</translation>
 <translation id="7777080907402804672">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google. W każdej chwili możesz wyłączyć tę funkcję w ustawieniach.</translation>

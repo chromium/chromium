@@ -58,7 +58,6 @@
 <translation id="2094648590148273905">Uvjeti za ChromeOS Flex</translation>
 <translation id="2094919256425865063">Želite li ipak zatvoriti Chrome?</translation>
 <translation id="2106831557840787829">ChromeOS Flex omogućuje dodatni <ph name="BEGIN_LINK_CROS_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okruženje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Kada je to uključeno, Chrome vraća memoriju s kartica koje ne upotrebljavate aktivno. Time se resursi računala oslobađaju za druge zadatke i ubrzava se rad Chromea. Neaktivne kartice prikazuju se prazne i automatski se ponovno učitavaju kad ih kliknete. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> ili <ph name="BEGIN_LINK_2" />pošaljite povratne informacije<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Time će se izbrisati sljedeći broj stavki s uređaja: <ph name="ITEMS_COUNT" />. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Ponovno pokretanje radi ažuriranja &amp;Chromea</translation>
 <translation id="2123055963409958220">Pomognite poboljšati Chrome tako što ćete prijaviti <ph name="BEGIN_LINK" />trenutačne postavke<ph name="END_LINK" /></translation>
@@ -225,7 +224,6 @@
 <translation id="5386244825306882791">Upravlja i time koja se stranica prikazuje prilikom pokretanja Chromea ili pretraživanja putem višenamjenskog okvira.</translation>
 <translation id="5394833366792865639">Podijeli karticu Chrome</translation>
 <translation id="5412485296464121825">Web-lokacije mogu pohraniti informacije o vašim interesima u Chrome. Na primjer, ako posjetite neku web-lokaciju da biste kupili tenisice za maraton, ta web-lokacija može definirati vaš interes kao trčanje maratona. Ako poslije posjetite neku drugu web-lokaciju da biste se registrirali za utrku, ta vam web-lokacija može prikazati oglas za tenisice za trčanje na temelju vaših interesa.</translation>
-<translation id="5416870378730196769">Chrome je uključio štednju memorije</translation>
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
 <translation id="5524761631371622910">Tijekom eksperimenata i ako vas je Chrome nasumično rasporedio u aktivni eksperiment, vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chrome kontinuirano briše vaše interese svakog mjeseca.</translation>
 <translation id="556024056938947818">Google Chrome pokušava prikazati zaporke.</translation>
@@ -276,7 +274,6 @@
 <translation id="6735387454586646204">Sustav ChromeOS Flex</translation>
 <translation id="6739177684496155661">Želite li nastaviti na novom profilu u Chromeu?</translation>
 <translation id="6750954913813541382">Chrome šalje Googleu tekst koji utipkate u preglednik radi ispravljanja pravopisnih pogrešaka</translation>
-<translation id="6756581345161130259">Chrome prema potrebi vraća memoriju s kartica koje ne upotrebljavate aktivno. To uvijek možete promijeniti u postavkama.</translation>
 <translation id="677276454032249905">Želite li ipak zatvoriti Chrome?</translation>
 <translation id="6785872064505734160">Google asistent u Chromeu može dovršiti radnje u web-lokacijama za vas</translation>
 <translation id="683440813066116847">Ulazno pravilo kako bi Google Chrome Canary dopustio mDNS promet.</translation>
@@ -324,7 +321,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7651907282515937834">Logotip Chrome Enterprise</translation>
 <translation id="7655455401911432608">Vaša povijest pregledavanja, zapisnik web-lokacija koje ste posjetili u Chromeu na ovom uređaju.</translation>
-<translation id="7726773885101561560">Da bi vaše pregledavanje bilo brže, Chrome vraća memoriju s kartica koje ne upotrebljavate.</translation>
 <translation id="7747138024166251722">Program za instalaciju nije izradio privremeni direktorij. Provjerite ima li slobodnog prostora na disku i postoji li dopuštenje za instalaciju softvera.</translation>
 <translation id="7761834446675418963">Kliknite svoje ime da biste otvorili Chrome i počeli s pregledavanjem.</translation>
 <translation id="7777080907402804672">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu. To možete isključiti u bilo kojem trenutku u postavkama.</translation>

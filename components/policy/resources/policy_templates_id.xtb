@@ -1878,10 +1878,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif, permintaan izin akan dinonaktifkan dan perekaman audio hanya tersedia untuk URL yang ditentukan dalam daftar AudioCaptureAllowedUrls.
 
       Catatan: Kebijakan ini memengaruhi semua input audio (tidak hanya mikrofon bawaan).</translation>
-<translation id="2822539450620588684">Mulai M107, semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> akan dipanggil secara sinkron.
-      Hingga M110, kebijakan ini akan mengaktifkan kembali pemanggilan metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> asinkron.
-      Jika kebijakan ini disetel ke Aktif, metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> akan dipanggil secara asinkron.
-      Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> akan dipanggil secara sinkron.</translation>
 <translation id="2823870601012066791">Lokasi registry Windows untuk klien <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Aktifkan mode Samaran</translation>
 <translation id="282870810415075521">Mengizinkan JavaScript menggunakan JIT di situs ini</translation>
@@ -2046,12 +2042,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, kunci manifes <ph name="REQUIRED_PLATFORM_VERSION" /> akan diabaikan dan update otomatis akan berjalan seperti biasa.
 
       Peringatan: Jangan mendelegasikan kontrol versi <ph name="PRODUCT_OS_NAME" /> ke aplikasi kios, karena dapat mencegah perangkat menerima update software dan perbaikan keamanan penting. Mendelegasikan kontrol versi <ph name="PRODUCT_OS_NAME" /> dapat membahayakan pengguna.</translation>
-<translation id="299519952839316970">Harap diperhatikan, kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 88. Sesi publik tidak lagi didukung. Sebagai gantinya, gunakan <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> untuk mengonfigurasi sesi tamu terkelola.
-      Jika kebijakan ini ditetapkan ke salah (false), sesi tamu terkelola akan berperilaku seperti yang didokumentasikan di https://support.google.com/chrome/a/answer/3017014 - "Sesi Publik" standar.
-
-      Jika kebijakan ini ditetapkan ke benar (true) atau tidak ditetapkan, sesi tamu terkelola akan melakukan perilaku "Sesi Terkelola" yang menghilangkan banyak batasan yang berlaku untuk "Sesi Publik" reguler.
-
-      Jika kebijakan ini ditetapkan, pengguna tidak dapat mengubah atau menggantinya.</translation>
 <translation id="2999597974578784672">Memungkinkan Anda menetapkan daftar pola URL yang menentukan situs yang diizinkan untuk menyetel cookie.
 
           Jika kebijakan ini tidak disetel, nilai default global akan digunakan untuk semua situs, yaitu dari kebijakan <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> jika disetel atau dari konfigurasi pribadi pengguna jika kebijakan tersebut tidak disetel.

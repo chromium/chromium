@@ -173,6 +173,7 @@
 <translation id="2500392669976258912">Gudžaratu, fonētiskā</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Meklēt</translation>
+<translation id="252641322760726369">Pieskarieties failam un turiet to, pēc tam pieskarieties ikonai <ph name="ICON" /> un atlasiet opciju “<ph name="PIN_COMMAND" />”, lai varētu ātri piekļūt šim failam plauktā.</translation>
 <translation id="2534460670861217804">Drošs HTTP starpniekserveris</translation>
 <translation id="2541377937973966830">Šīs mapes saturs ir tikai lasāms. Noteiktas darbības netiek atbalstītas.</translation>
 <translation id="2542049655219295786">Google tabula</translation>
@@ -343,6 +344,7 @@
 <translation id="4092890906744441904">Īru</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4131235941541910880">Varat pārvietot nevajadzīgus vienumus uz atkritni</translation>
+<translation id="4153015322587141338">Noklikšķiniet ar peles labo pogu uz faila un atlasiet opciju “<ph name="PIN_COMMAND" />”, lai varētu ātri piekļūt šim failam plauktā.</translation>
 <translation id="4157569377477607576">Administratora politika nosaka, ka nav ieteicams:</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Iztukšot atkritni tūlīt</translation>

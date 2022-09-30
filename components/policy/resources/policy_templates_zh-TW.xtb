@@ -1825,10 +1825,6 @@
       如果將這項政策設為停用，系統就不會顯示提示，而且只有列在 AudioCaptureAllowedUrls 清單內的網址才能存取音訊擷取裝置。
 
       注意：這項政策不只影響內建麥克風，也會影響所有音訊輸出裝置。</translation>
-<translation id="2822539450620588684">自 M107 起，系統會同步叫用所有 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
-      在 M110 之前，這項政策會重新啟用非同步叫用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
-      如果將這項政策設為啟用，系統會以非同步方式叫用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
-      如果將這項政策設為停用或不予設定，系統會同步叫用所有 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。</translation>
 <translation id="2823870601012066791"><ph name="PRODUCT_OS_NAME" />用戶端的 Windows 登錄檔位置：</translation>
 <translation id="2824715612115726353">啟用無痕模式</translation>
 <translation id="282870810415075521">允許 JavaScript 在這些網站上使用 JIT</translation>
@@ -1993,12 +1989,6 @@
       如果將這項政策設為停用或不設定，系統會忽略 <ph name="REQUIRED_PLATFORM_VERSION" /> 資訊清單金鑰，且自動更新會照常運作。
 
       警告：請勿將 <ph name="PRODUCT_OS_NAME" />版本的控制權委派給資訊站應用程式，因為這項操作可能會讓裝置無法取得軟體更新和重大安全性修正項目。委派 <ph name="PRODUCT_OS_NAME" />版本的控制權可能會讓使用者面臨風險。</translation>
-<translation id="299519952839316970">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 88 版中移除。系統已不再支援公開工作階段。請改用 <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> 來設定受管理的訪客工作階段。
-      如果將這項政策設為 False，受管理的訪客工作階段運作模式會依照 https://support.google.com/chrome/a/answer/3017014 頁面所述的標準「公開工作階段」。
-
-      如果將這項政策設為 True 或未設定，受管理的訪客工作階段就會如同「受管理的工作階段」一般運作，比起一般的「公開工作階段」少了許多限制。
-
-      設定這項政策後，使用者即無法變更或覆寫。</translation>
 <translation id="2999597974578784672">你可以設定網址模式清單，用於指定可設定 Cookie 的網站。
 
           如果不設定這項政策，系統會根據 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 政策 (如有設定) 或使用者的個人設定，將全域預設值套用至所有網站。

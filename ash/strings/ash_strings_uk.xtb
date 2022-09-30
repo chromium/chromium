@@ -371,6 +371,7 @@
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Завершити роботу пристрою?</translation>
 <translation id="3126069444801937830">Перезапустіть, щоб оновити</translation>
+<translation id="3139382871451988441">Вимкнути доступ до камери.</translation>
 <translation id="3139942575505304791">Робочий стіл 1</translation>
 <translation id="315116470104423982">Мобільне передавання даних</translation>
 <translation id="3151786313568798007">Орієнтація</translation>
@@ -647,6 +648,7 @@
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox увімкнено</translation>
 <translation id="4665114317261903604">Увімкнути/вимкнути режим "Не турбувати". <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Вимкніть доступ до камери на цьому пристрої, щоб інші камери були постійно заблоковані.</translation>
 <translation id="4667099493359681081">Завантажується файл <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Полицю розміщено внизу</translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
@@ -665,6 +667,7 @@
 <translation id="4776917500594043016">Пароль користувача  <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Маркет</translation>
 <translation id="4778095205580009397">Google Асистент недоступний у демонстраційному сеансі.</translation>
+<translation id="4789348252524569426">Не вдається встановити файли для розпізнавання мовлення. Потрібно оновити пристрій. Перезапустіть пристрій і повторіть спробу.</translation>
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Від'єднатися</translation>
 <translation id="4814539958450445987">Екран входу</translation>
@@ -1144,6 +1147,7 @@
 <translation id="7557816257942363084">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7561982940498449837">Закрити меню</translation>
 <translation id="7564874036684306347">Переміщення вікон на інший робочий стіл може спричинити неочікувану поведінку. Нові сповіщення та вікна можуть розділятися між робочими столами.</translation>
+<translation id="7567076708801803118">Вимкнути доступ до камери на цьому пристрої?</translation>
 <translation id="7569509451529460200">Шрифт Брайля та ChromeVox увімкнено</translation>
 <translation id="7573585051776738856">Активне вікно закріплено праворуч.</translation>
 <translation id="7579778809502851308">Знімок екрана</translation>

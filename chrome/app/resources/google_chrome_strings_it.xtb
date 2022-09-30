@@ -57,7 +57,6 @@
 <translation id="2094648590148273905">Termini di Chrome OS Flex</translation>
 <translation id="2094919256425865063">Vuoi chiudere comunque Chrome?</translation>
 <translation id="2106831557840787829">La realizzazione di Chrome OS Flex è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Quando questa impostazione è attiva, Chrome recupera memoria dalle schede che non utilizzi attivamente. Questo consente di liberare risorse del computer da usare per altre attività e di fare in modo che Chrome sia sempre veloce. Le schede non attive appaiono vuote e vengono ricaricate automaticamente quando ci fai clic sopra. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /> o <ph name="BEGIN_LINK_2" />invia feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Verranno eliminati <ph name="ITEMS_COUNT" /> elementi da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Riavvia per aggiornare &amp;Chrome</translation>
 <translation id="2123055963409958220">Contribuisci a migliorare Chrome indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
@@ -224,7 +223,6 @@
 <translation id="5386244825306882791">Controlla anche la pagina visualizzata all'avvio di Chrome o quando esegui ricerche dalla Omnibox.</translation>
 <translation id="5394833366792865639">Condividi una scheda di Chrome</translation>
 <translation id="5412485296464121825">I siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
-<translation id="5416870378730196769">Chrome ha attivato la modalità Risparmio memoria</translation>
 <translation id="5430073640787465221">Il file delle preferenze è danneggiato o non valido. Google Chrome non è in grado di recuperare le impostazioni.</translation>
 <translation id="5524761631371622910">Quando sono attive le prove e se Chrome ti ha inserito in modo casuale in una prova attiva, la cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina i tuoi interessi ogni mese.</translation>
 <translation id="556024056938947818">Google Chrome sta cercando di visualizzare le password.</translation>
@@ -275,7 +273,6 @@
 <translation id="6735387454586646204">Sistema Chrome OS Flex</translation>
 <translation id="6739177684496155661">Vuoi continuare con un nuovo profilo Chrome?</translation>
 <translation id="6750954913813541382">Per correggere gli errori ortografici, Chrome invia a Google il testo che digiti nel browser</translation>
-<translation id="6756581345161130259">Se necessario, Chrome recupera memoria dalle schede che non utilizzi attivamente. Puoi modificare questa preferenza in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="677276454032249905">Vuoi uscire comunque da Chrome?</translation>
 <translation id="6785872064505734160">L'Assistente Google in Chrome può completare azioni per te su vari siti web</translation>
 <translation id="683440813066116847">Regola inbound per consentire il traffico mDNS in Google Chrome Canary.</translation>
@@ -323,7 +320,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7651907282515937834">Logo di Chrome Enterprise</translation>
 <translation id="7655455401911432608">La cronologia di navigazione, ossia un record dei siti visitati da Chrome sul dispositivo in uso.</translation>
-<translation id="7726773885101561560">Per velocizzare la navigazione, Chrome recupera memoria dalle schede che non utilizzi.</translation>
 <translation id="7747138024166251722">Il programma di installazione non ha creato una directory temporanea. Verifica di disporre di spazio libero sul disco e dell'autorizzazione per l'installazione del software.</translation>
 <translation id="7761834446675418963">Fai clic sul tuo nome per aprire Chrome e iniziare a navigare.</translation>
 <translation id="7777080907402804672">Se un'immagine è senza descrizione utile, Chrome proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>

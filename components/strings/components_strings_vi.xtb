@@ -846,6 +846,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3216313131063488104">Nhạc blue</translation>
 <translation id="3218181027817787318">Tương đối</translation>
 <translation id="3223287115535306850">Biểu tượng đang tải ứng dụng</translation>
+<translation id="3223425961342298674">Không cho phép truy cập thông tin vị trí</translation>
 <translation id="3225347164936328585">Vỗ tay</translation>
 <translation id="3225919329040284222">Máy chủ đưa ra chứng chỉ không khớp với kỳ vọng được tích hợp sẵn. Các kỳ vọng này có trong một số trang web nhất định, có tính bảo mật cao với mục đích bảo vệ bạn.</translation>
 <translation id="3226128629678568754">Nhấn nút tải lại để gửi lại các dữ liệu cần thiết để tải trang.</translation>
@@ -1185,6 +1186,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4127575959421463246">Bạn đang tìm kiếm cờ của Chrome OS? Truy cập</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 mục khác}other{# mục khác}}</translation>
 <translation id="4130226655945681476">Kiểm tra cáp mạng, modem và bộ định tuyến</translation>
+<translation id="4132448310531350254">Trình xử lý trùng lặp cho file_extension "<ph name="FILE_EXTENSION" />" được các ứng dụng "<ph name="POLICY_IDS_LIST" />" tham chiếu.</translation>
 <translation id="4134123981501319574">Tạo tài liệu</translation>
 <translation id="413544239732274901">Tìm hiểu thêm</translation>
 <translation id="4142935452406587478">Khay 10</translation>
@@ -1207,6 +1209,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4194250254487269611">Hệ thống không thể lưu thẻ của bạn vào lúc này</translation>
 <translation id="4196861286325780578">&amp;Làm lại di chuyển</translation>
 <translation id="4202554117186904723">Cuộn thứ năm</translation>
+<translation id="4203769790323223880">Không cho phép truy cập máy ảnh</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Kiểm tra tường lửa và cấu hình diệt vi-rút<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Lớn</translation>
 <translation id="4210602799576081649">Mã xác minh đã hết hạn, hãy yêu cầu mã mới</translation>
@@ -1233,6 +1236,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
     &lt;p&gt;Hãy nhớ bật lại chương trình diệt vi-rút khi đã hoàn tất.&lt;/p&gt;
     &lt;h4&gt;Bước 5: Yêu cầu trợ giúp thêm&lt;/h4&gt;
     &lt;p&gt;Nếu bạn vẫn gặp lỗi này, hãy liên hệ với chủ sở hữu trang web.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Không cho phép truy cập micrô</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Thử chạy Chẩn đoán mạng<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Trang web có thể yêu cầu dùng và di chuyển máy ảnh của bạn</translation>
 <translation id="4235360514405112390">Hợp lệ</translation>
@@ -1250,6 +1254,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4277028893293644418">Đặt lại mật khẩu</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
 <translation id="4282346679996504092">Thông báo về sản phẩm này đã bị tắt và dấu trang đã bị xoá</translation>
+<translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Đã lưu thẻ này vào Tài khoản Google của bạn}other{Đã lưu các thẻ này vào Tài khoản Google của bạn}}</translation>
 <translation id="4287885627794386150">Đủ điều kiện dùng thử nhưng chưa hoạt động</translation>
 <translation id="4297502707443874121">Hình thu nhỏ của trang <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1603,6 +1608,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5177076414499237632">Tìm hiểu về nguồn và chủ đề của trang này</translation>
 <translation id="5179510805599951267">Không ở <ph name="ORIGINAL_LANGUAGE" />? Báo cáo lỗi này</translation>
 <translation id="518639307526414276">Thức ăn cho thú cưng và đồ dùng chăm sóc thú cưng</translation>
+<translation id="5190072300954988691">Không cho phép truy cập máy ảnh và micrô</translation>
 <translation id="5190835502935405962">Thanh Dấu trang</translation>
 <translation id="5191315092027169558">Hồ sơ của bạn do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> muốn tải nhiều tệp xuống</translation>
@@ -1623,6 +1629,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
+<translation id="5239623327352565343">Cho phép truy cập thông tin vị trí</translation>
 <translation id="5242889659037569123">Hành lý và phụ kiện du lịch</translation>
 <translation id="5250209940322997802">"Kết nối với mạng"</translation>
 <translation id="52517543715119994">Tìm hiểu các tính năng của Chrome</translation>
@@ -2435,6 +2442,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về sự cố này.</translation>
 <translation id="7455133967321480974">Sử dụng giá trị mặc định chung (Chặn)</translation>
 <translation id="7460618730930299168">Màn hình khác với nội dung bạn đã chọn. Bạn có muốn tiếp tục không?</translation>
+<translation id="7461924472993315131">Ghim</translation>
 <translation id="7463075493919226237">Bóng bầu dục Úc</translation>
 <translation id="7469935732330206581">Biểu mẫu không an toàn</translation>
 <translation id="7473891865547856676">Không, cảm ơn</translation>
@@ -2498,6 +2506,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7581199239021537589">Trục Y của hình ảnh mặt 2</translation>
 <translation id="7582602800368606489">Tạo nhanh một sự kiện mới trong Lịch Google</translation>
 <translation id="7583969447617676942">Dịch vụ pháp lý</translation>
+<translation id="7586676035079382730">Không cho phép thông báo</translation>
 <translation id="7591288787774558753">Chia sẻ nội dung bảo mật?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> muốn sử dụng cookie và dữ liệu trang web trên <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Chứng chỉ của máy chủ vi phạm hạn chế tên.</translation>
@@ -3051,6 +3060,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9131119348384879525">Chụp nội dung bảo mật?</translation>
 <translation id="9136861683332321024">Xe hạng sang</translation>
 <translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
+<translation id="9138037198177304356">Cho phép thông báo</translation>
 <translation id="9139318394846604261">Mua sắm</translation>
 <translation id="9141013498910525015">Quản lý địa chỉ</translation>
 <translation id="9144951720726881238">Ngày hết hạn:</translation>

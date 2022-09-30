@@ -371,6 +371,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Queres apagar o dispositivo?</translation>
 <translation id="3126069444801937830">Reinicia para actualizar</translation>
+<translation id="3139382871451988441">Desactivar acceso ás cámaras.</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móbiles</translation>
 <translation id="3151786313568798007">Orientación</translation>
@@ -648,6 +649,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">Activouse ChromeVox</translation>
 <translation id="4665114317261903604">Activar/desactivar o modo Non molestar. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Para bloquear todas as cámaras continuamente, desactiva o acceso ás cámaras neste dispositivo.</translation>
 <translation id="4667099493359681081">Descargando <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">O estante está na parte inferior</translation>
 <translation id="4696813013609194136">Desbloquea o dispositivo co código parental</translation>
@@ -666,6 +668,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4776917500594043016">Contrasinal de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">O Asistente de Google non está dispoñible cando se utiliza unha sesión de demostración.</translation>
+<translation id="4789348252524569426">Non se puideron instalar os ficheiros de voz. Cómpre actualizar o teu dispositivo. Reinicia o dispositivo e téntao de novo.</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4804818685124855865">Desconectar</translation>
 <translation id="4814539958450445987">Pantalla de inicio de sesión</translation>
@@ -1145,6 +1148,7 @@ Nova instalación</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> está usando o micrófono nestes intres</translation>
 <translation id="7561982940498449837">Pechar menú</translation>
 <translation id="7564874036684306347">Ao mover as ventás a outro ordenador pódese provocar un comportamento inesperado. É posible que as notificacións, as ventás e os cadros de diálogo posteriores se dividan entre os ordenadores.</translation>
+<translation id="7567076708801803118">Queres desactivar o acceso ás cámaras neste dispositivo?</translation>
 <translation id="7569509451529460200">Activouse o braille e ChromeVox</translation>
 <translation id="7573585051776738856">Ventá activa fixada á dereita.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>

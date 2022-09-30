@@ -371,6 +371,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Je, ungependa kuzima kifaa?</translation>
 <translation id="3126069444801937830">Anzisha upya ili kusasisha</translation>
+<translation id="3139382871451988441">Zima ufikiaji wa kamera.</translation>
 <translation id="3139942575505304791">Eneokazi la 1</translation>
 <translation id="315116470104423982">Data ya mtandao wa simu</translation>
 <translation id="3151786313568798007">Mkao</translation>
@@ -647,6 +648,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox imewashwa</translation>
 <translation id="4665114317261903604">Washa/zima 'Usinisumbue'. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Zima ufikiaji wa kamera kwenye kifaa hiki ili uzuie kamera zote wakati wote.</translation>
 <translation id="4667099493359681081">Inapakua <ph name="FILENAME" /></translation>
 <translation id="4690510401873698237">Rafu iko upande wa chini</translation>
 <translation id="4696813013609194136">Fungua kifaa ukitumia msimbo wa mzazi</translation>
@@ -665,6 +667,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4776917500594043016">Nenosiri la <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Duka la Google Play</translation>
 <translation id="4778095205580009397">Programu ya Mratibu wa Google haipatikani katika kipindi cha onyesho.</translation>
+<translation id="4789348252524569426">Imeshindwa kusakinisha faili za matamshi. Unahitaji kusasisha kifaa chako. Zima kisha uwashe kifaa chako na ujaribu tena.</translation>
 <translation id="479989351350248267">tafuta</translation>
 <translation id="4804818685124855865">Tenganisha</translation>
 <translation id="4814539958450445987">Skrini ya Kuingia katika Akaunti</translation>
@@ -1145,6 +1148,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="7561982940498449837">Funga menyu</translation>
 <translation id="7564874036684306347">Hatua ya kuhamishia madirisha kwenye eneo-kazi lingine inaweza kusababisha utendaji usiotarajiwa. 
 Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</translation>
+<translation id="7567076708801803118">Ungependa kuzima ufikiaji wa kamera kwenye kifaa hiki?</translation>
 <translation id="7569509451529460200">Breli na ChromeVox zimewashwa</translation>
 <translation id="7573585051776738856">Dirisha linalotumika limepachikwa kulia.</translation>
 <translation id="7579778809502851308">Kurekodi skrini</translation>

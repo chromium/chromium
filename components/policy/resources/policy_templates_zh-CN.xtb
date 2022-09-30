@@ -1828,10 +1828,6 @@
       如果此政策已停用，系统将会关闭提示，而且只有 AudioCaptureAllowedUrls 列表中设置的网址可以使用录音设备。
 
       注意：此政策会影响所有录音设备（而不仅仅是内置麦克风）的音频输入。</translation>
-<translation id="2822539450620588684">从 M107 开始，所有 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法都将进行同步调用。
-      一直到 M110，此政策会重新启用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法的异步调用。
-      如果此政策已启用，系统会异步调用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。
-      如果此政策已停用或未设置，系统会同步调用所有 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 方法。</translation>
 <translation id="2823870601012066791"><ph name="PRODUCT_OS_NAME" />客户端的 Windows 注册表位置：</translation>
 <translation id="2824715612115726353">启用隐身模式</translation>
 <translation id="282870810415075521">允许 JavaScript 在这些网站上使用 JIT</translation>
@@ -1996,12 +1992,6 @@
       如果此政策已停用或未设置，<ph name="REQUIRED_PLATFORM_VERSION" /> 清单键便会被忽略，并且系统会按照常规流程进行自动更新。
 
       警告：不得将 <ph name="PRODUCT_OS_NAME" />的版本控制权委派给自助服务终端应用，否则这可能会阻止设备获取软件更新和重要的安全修补程序。委派 <ph name="PRODUCT_OS_NAME" /> 版本控制权可能会将用户置于风险之中。</translation>
-<translation id="299519952839316970">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 88 中移除。公用自助服务终端已不再受支持。请改用 <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> 来配置受管理访客会话。
-      如果此政策设为 false，受管理访客会话的行为将会与 https://support.google.com/chrome/a/answer/3017014 页面中所述的标准“公用自助服务终端”的行为一样。
-
-      如果此政策设为 true 或未设置，受管理访客会话的行为将会与“受管理自助服务终端”的行为相同，这会解除常规“公用自助服务终端”的众多限制。
-
-      如果您设置了此政策，用户将无法更改或覆盖它。</translation>
 <translation id="2999597974578784672">让您能够设置一系列网址格式，从而指定允许哪些网站设置 Cookie。
 
           如果您未设置此政策，那么，倘若 <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> 政策已设置，系统便会将它的全局默认值应用于所有网站，否则就会应用用户个人配置中的全局默认值。

@@ -213,6 +213,7 @@
       Se a política não tiver definição, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> será aplicada a todos os sites, se estiver definida. Caso contrário, a configuração pessoal do usuário será aplicada.
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).  <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="1209096923317019235">Atribui apps como gerenciadores padrão para as extensões de arquivo especificadas</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
 <translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
@@ -1871,10 +1872,6 @@ Web e PWAs. No momento, com suporte apenas no
       Se a política for definida como desativada as solicitações serão desativadas e a captura de áudio só estará disponível para URLs configurados na lista AudioCaptureAllowedUrls.
 
       Observação: a política afeta todos os tipos de entradas de áudio, não apenas o microfone integrado.</translation>
-<translation id="2822539450620588684">Da versão M107 em diante, todos os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira síncrona.
-      Até a versão M110, esta política reativa a invocação assíncrona de métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.
-      Se a política for ativada, os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira assíncrona.
-      Se for desativada ou deixada sem definição, todos os métodos <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> vão ser invocados de maneira síncrona.</translation>
 <translation id="2823870601012066791">Local de registro do Windows para clientes do <ph name="PRODUCT_OS_NAME" />:</translation>
 <translation id="2824715612115726353">Ativar o modo de navegação anônima</translation>
 <translation id="282870810415075521">Permitir o uso do JIT pelo JavaScript nestes sites</translation>
@@ -2039,12 +2036,6 @@ Web e PWAs. No momento, com suporte apenas no
       Definir a política como "Desativada" ou deixá-la sem definição faz com que a chave de manifesto <ph name="REQUIRED_PLATFORM_VERSION" /> seja ignorada e a atualização automática continue normalmente.
 
       Alerta: não delegue o controle da versão do <ph name="PRODUCT_OS_NAME" /> para um aplicativo de quiosque, porque isso pode impedir que o dispositivo receba atualizações de software e correções de segurança críticas. Delegar o controle da versão do <ph name="PRODUCT_OS_NAME" /> pode colocar os usuários em risco.</translation>
-<translation id="299519952839316970">Esta política está obsoleta e será removida na versão 88 do <ph name="PRODUCT_OS_NAME" />. Sessões públicas não são mais compatíveis. Use <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> para configurar sessões de visitante gerenciadas.
-      Se a política for definida como falsa, a sessão de visitante gerenciada funcionará conforme documentado em https://support.google.com/chrome/a/answer/3017014: uma "Sessão pública" padrão.
-
-      Se a política for definida como verdadeira ou não for definida, a sessão de visitante gerenciada funcionará como uma "Sessão gerenciada", sem muitas das restrições da "Sessão pública" comum.
-
-      Se esta política for definida, o usuário não poderá modificá-la ou substituí-la.</translation>
 <translation id="2999597974578784672">Permite definir uma lista com padrões de URL que especificam quais sites podem definir cookies.
 
           Se esta política não for definida, o valor padrão global será usado para todos os sites da política <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> caso ela esteja definida, ou da configuração pessoal do usuário.
@@ -2398,6 +2389,15 @@ Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EX
       Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o navegador ou o SO falhar), os dados de navegação serão excluídos da próxima vez que o perfil for carregado.</translation>
 <translation id="3264793472749429012">Codificações do provedor de pesquisa padrão</translation>
 <translation id="3273221114520206906">Configuração padrão do JavaScript</translation>
+<translation id="3282240846541032181">Esta política permite que os administradores especifiquem apps que funcionam como gerenciadores padrão das respectivas extensões de arquivo no <ph name="PRODUCT_OS_NAME" /> que os usuários não podem mudar.
+      Para todas as extensões de arquivo não especificadas na política, os usuários podem definir os próprios padrões do fluxo de trabalho comum.
+
+      Especifique apps do Chrome pelos IDs deles (como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />) e apps da Web pelo URL usado na <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />).
+
+      Os apps PRECISAM ser declarados no manifesto como gerenciadores de extensões de arquivo especificadas para que o item da política entre em vigor. A política NÃO amplia os recursos existentes do app.
+
+      Caso a política seja deixada sem definição, é possível que o <ph name="PRODUCT_OS_NAME" /> selecione gerenciadores padrão de acordo com a lógica interna.
+      </translation>
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
 <translation id="3284094172359247914">Controla o uso da API WebUSB</translation>
 <translation id="3288595667065905535">Liberar canal</translation>
@@ -4251,6 +4251,35 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="5330684698007383292">Permitir que o <ph name="PRODUCT_FRAME_NAME" /> trabalhe com os tipos de conteúdo a seguir</translation>
 <translation id="5331746669335642668">A política de nuvem do <ph name="PRODUCT_NAME" /> substitui a política da plataforma.</translation>
 <translation id="5346587320074666194">Bloquear acesso a sensores nesses sites</translation>
+<translation id="5357039649371478544">Configura uma lista de regras para evitar vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
+      Esses vazamentos podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela, entre outros.
+
+      Cada regra consiste no seguinte:
+      - Uma lista de origens definidas como URLs. Qualquer dado nas origens vai ser considerado como confidencial, e as restrições serão aplicadas a eles.
+      - Uma lista de destinos definidos como URLs ou componentes, em que os dados confidenciais vão ter permissão ou não para serem compartilhados.
+      - Uma lista de restrições a serem aplicadas aos dados das origens.
+
+      As regras podem ser aplicadas para controlar:
+      - os dados na área de transferência compartilhados entre as origens e os destinos;
+      - as capturas de telas de qualquer uma das origens;
+      - a impressão de qualquer uma das origens;
+      - a tela de privacidade quando qualquer uma das origens estiver visível;
+      - o compartilhamento de tela de qualquer uma das origens;
+      - os arquivos transferidos por download de qualquer uma das origens quando eles forem transferidos para o destino. Com suporte na versão 108 ou mais recente do <ph name="PRODUCT_OS_NAME" />.
+
+      O nível de restrição pode ser definido como BLOCK, ALLOW, REPORT ou WARN (bloquear, autorizar, denunciar ou alertar).
+      - Se a restrição for definida como BLOCK, a ação não vai ser autorizada. Se a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como verdadeira, a ação bloqueada vai ser denunciada para o administrador.
+      - Se a restrição for definida como ALLOW, a ação vai ser autorizada.
+      - Se a restrição for definida como REPORT e a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como verdadeira, a ação vai ser denunciada ao administrador.
+      - Se a restrição for definida como WARN, o usuário vai ser avisado e poderá escolher entre continuar ou cancelar a ação. Se a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> for definida como verdadeira, o alerta vai ser enviado ao administrador. Se o usuário continuar a ação, essa informação também vai ser enviada.
+
+      Observações:
+      - Restrições PRIVACY_SCREEN não bloqueiam a capacidade de ativar a tela de privacidade, mas forçam o uso dela quando a classe de restrição é definida como BLOCK.
+      - Os destinos não podem ficar vazios caso uma das restrições seja CLIPBOARD ou FILES, mas eles não afetam as outras restrições.
+      - Os destinos DRIVE e USB são ignorados para a restrição CLIPBOARD.
+      - Formate os padrões do URL da maneira descrita em https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Se a política não for definida, nenhuma restrição vai ser aplicada.</translation>
 <translation id="5362531528507578966">Modifica o modo de impressão de gráficos de segundo plano padrão.</translation>
 <translation id="5365476955714838841">Parâmetros de linha de comando para o navegador alternativo.</translation>
 <translation id="5365946944967967336">Exibir o botão da Página inicial na barra de ferramentas</translation>

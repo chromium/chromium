@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">Pendant la mise à jour du micrologiciel, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cette mise à jour peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="3486220673238053218">définition</translation>
 <translation id="3488065109653206955">Partiellement activé</translation>
+<translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="3532980081107202182">Il reste environ <ph name="MIN_REMAINING" /> minutes</translation>

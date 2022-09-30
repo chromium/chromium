@@ -23,7 +23,6 @@
 <translation id="1104948393051856124">Ընդունել և շարունակել</translation>
 <translation id="110724200315609752">Անցնել բացված պատուհան</translation>
 <translation id="1112015203684611006">Չհաջողվեց տպել:</translation>
-<translation id="1118569444314402022">Բարի վերադարձ, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Ստեղծել նոր ներդիր:</translation>
 <translation id="1126809382673880764">Չի պաշտպանում վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Անվտանգ դիտարկումը նախկինի պես կաշխատի Google-ի այլ ծառայություններում (եթե հասանելի է), օրինակ՝ Gmail-ում կամ Որոնման էջերում։</translation>
 <translation id="1135212215217513471">Տեղադրել iOS-ի համար Chrome-ը</translation>
@@ -61,6 +60,7 @@
 <translation id="1340643665687018190">Փակել ընտրացանկը</translation>
 <translation id="1358214951266274152">Անցեք ձեր պատճենաց հասցեով</translation>
 <translation id="1360432990279830238">Դուրս գրվե՞լ և անջատել համաժամացումը</translation>
+<translation id="1363028406613469049">Կատարում</translation>
 <translation id="1375321115329958930">Պահված գաղտնաբառեր</translation>
 <translation id="1377255359165588604">Չհաջողվեց համաժամացնել:</translation>
 <translation id="1377321085342047638">Քարտի համարը</translation>
@@ -197,6 +197,7 @@
 <translation id="2647269890314209800">Օգտագործվող քուքիներ</translation>
 <translation id="2648803196158606475">Ջնջել կարդացվածները</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
+<translation id="2671426118752779020">Դուք կարող եք Google Գաղտնաբառերի կառավարիչում պահված գաղտնաբառերն օգտագործել ձեր iPhone-ի այլ հավելվածներում։</translation>
 <translation id="2690858294534178585">Ֆոտոխցիկն օգտագործվում է</translation>
 <translation id="2691653761409724435">Հասանելի չէ անցանց ռեժիմում</translation>
 <translation id="2695507686909505111">Էջը թարգմանված է</translation>
@@ -206,6 +207,7 @@
 <translation id="2704491540504985681">Ներբեռնումներ</translation>
 <translation id="2704606927547763573">Պատճենվեց</translation>
 <translation id="2709516037105925701">Ինքնալցում</translation>
+<translation id="271033894570825754">New</translation>
 <translation id="2712127207578915686">Հնարավոր չէ բացել ֆայլը</translation>
 <translation id="2718352093833049315">Միայն Wi-Fi-ով</translation>
 <translation id="2747003861858887689">Նախորդ դաշտը</translation>
@@ -262,6 +264,7 @@
 <translation id="3103603146121354983">Գաղտնաբառերի ինքնալրացում</translation>
 <translation id="3112556859945124369">Նշել…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
+<translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
 <translation id="3131206671572504478">Բոլոր քուքիներն արգելափակված են</translation>
 <translation id="313283613037595347">Ստեղծել նոր ինկոգնիտո ներդիր</translation>
 <translation id="3153862085237805241">Պահել քարտը</translation>
@@ -332,7 +335,6 @@
 <translation id="3709582977625132201">Նշել որպես չկարդացված</translation>
 <translation id="371230970611282515">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
 <translation id="37207012422556617">Թրենդային որոնումներ</translation>
-<translation id="3726360487031500941">Նորից մուտք գործեք <ph name="USER_NAME" /> հաշիվ</translation>
 <translation id="3740397331642243698">Մուտքագրված URL-ները բացվում են Google Chrome-ի ինկոգնիտո ներդիրում։</translation>
 <translation id="3762232513783804601">Ստեղծված է հատուկ ձեր iPad-ի համար</translation>
 <translation id="3771033907050503522">Ինկոգնիտո ներդիրներ</translation>
@@ -504,6 +506,7 @@
 <translation id="509789154667432072">Ավելացնել էջանիշ</translation>
 <translation id="5118713593561876160">Հետաքրքրություններ</translation>
 <translation id="5118764316110575523">Անջատված է</translation>
+<translation id="5119391094379141756">Ընտրեք Chrome-ը։</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="5140288047769711648">Chrome-ը կպահի այս գաղտնաբառը ձեզ համար։ Կարիք չկա այն հիշելու։</translation>
 <translation id="5149188072385105201">Ավելացնել գաղտնաբառ…</translation>
@@ -627,6 +630,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6149061208933997199">Օգտագործել գաղտնաբառը</translation>
 <translation id="6152406514676263192">Միացրեք համաժամացումը՝ ձեր հետաքրքրություններին համապատասխան բովանդակություն տեսնելու համար։</translation>
 <translation id="6159839020698489198">կամընտիր</translation>
+<translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6177442314419606057">Որոնում Chrome-ում</translation>
 <translation id="6184086493125982861">Ցույց տալ ներդիրները</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +878,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8032569120109842252">Հետևում եք</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Որոնումների պատմությունը<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="804427445359061970">Այլ սարքերից ձեր ներդիրները ցուցադրվում են այստեղ</translation>
+<translation id="8048728378294435881">Պահուստավորեք ձեր տվյալները և օգտագործեք դրանք ցանկացած սարքում</translation>
 <translation id="8059533439631660104">Կոծկում է բաժինը:</translation>
 <translation id="8065292699993359127">Բացեք URL-ները Chrome-ի ինկոգնիտո ներդիրում</translation>
 <translation id="806745655614357130">Իմ տվյալները պահել առանձին</translation>
@@ -977,6 +982,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
 <translation id="8985320356172329008">Մուտք եք գործել Google որպես՝</translation>
 <translation id="9000089900434778519">Դուք օգտագործում եք <ph name="DSE_NAME" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
+<translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9034759925968272072">Դուք դուրս չեք գա ձեր Google հաշվից: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
 <translation id="9039373489628511875">Թողունակություն</translation>

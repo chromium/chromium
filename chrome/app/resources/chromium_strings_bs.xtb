@@ -55,7 +55,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2384373936468275798">ChromiumOS nije mogao sinhronizirati vaše podatke je su detalji za prijavu na vaš račun zastarjeli.</translation>
 <translation id="2396765026452590966">Ekstenzija "<ph name="EXTENSION_NAME" />" je promijenila stranicu koja se prikazuje prilikom pokretanja Chromiuma.</translation>
-<translation id="2400844369696905771">Kada je uključeno, Chromium preuzima memorijski prostor od kartica koje ne koristite aktivno. Time se oslobađaju izvori računara za druge zadatke i održava brzi rad Chromiuma. Neaktivne kartice izgledaju prazno i automatski se ponovo učitavaju kada kliknete na njih. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromiumu su za ovu web lokaciju potrebna odobrenja za kameru i mikrofon</translation>
 <translation id="2483889755041906834">U Chromiumu</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -146,7 +145,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4285930937574705105">Instalacija nije uspjela zbog neodređene greške. Ako je Chromium trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4304713468139749426">Upravitelj lozinki</translation>
 <translation id="4334294535648607276">Preuzimanje je dovršeno.</translation>
-<translation id="437317747729858884">Chromium preuzima memorijski prostor od kartica koje ne koristite.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje Uslova za ChromiumOS.</translation>
 <translation id="4407044323746248786">Želite li ipak zatvoriti Chromium?</translation>
 <translation id="4415566066719264597">Neka Chromium radi u pozadini</translation>
@@ -318,7 +316,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7872446069773932638">Preuzimanje… Preostalo je <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Da zaštitimo vašu privatnosti, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromiumu na razmatranje.</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti račun da se ponovo prijavite.</translation>
-<translation id="7947085610734123927">Chromium je uključio Uštedu memorije</translation>
 <translation id="7975919845073681630">Ovo je sekundarno instaliranje Chromiuma i stoga on ne može biti vaš zadani preglednik.</translation>
 <translation id="7997934263947464652">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, web lokacije će vam moći zatražiti pristup.</translation>
@@ -339,7 +336,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8453117565092476964">Arhiva alata za instaliranje je oštećena ili nevažeća. Ponovo preuzmite Chromium.</translation>
 <translation id="8463672209299734063">Nije obavezno: Pomozite nam da poboljšamo funkcije i performanse ChromiumOS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="8493179195440786826">Chromium nije ažuriran</translation>
-<translation id="8522220489792889625">Chromium po potrebi preuzima memorijski prostor od kartica koje ne koristite aktivno. Ovo možete promijeniti bilo kada u postavkama.</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
 <translation id="8558383651099478961">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium. Dodavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="8561285221328166383">Da primate buduća ažuriranja za Chromium, trebat će vam macOS 10.13 ili novija verzija. Ovaj računar koristi macOS 10.12.</translation>

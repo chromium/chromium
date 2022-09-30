@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Тизме көрүнүшүнө өтүү</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папка Linux аркылуу бөлүшүлдү</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> файл тандалды</translation>
+<translation id="2383454254762599978">Таштандыга ыргытуу</translation>
 <translation id="2387458720915042159">Проксинин туташуу түрү</translation>
 <translation id="2389832672041313158">Бирмача (Мьянма)</translation>
 <translation id="2392369802118427583">Жандыруу</translation>
@@ -173,6 +174,7 @@
 <translation id="2500392669976258912">Гужаратиче (фонетикалык)</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Скандоо</translation>
+<translation id="252641322760726369">Текчедеги файлдарды ыкчам ачуу үчүн файлды коё бербей басып туруп, <ph name="ICON" /> сүрөтчөсүн таптап, "<ph name="PIN_COMMAND" />" дегенди тандаңыз.</translation>
 <translation id="2534460670861217804">Коопсуз HTTP проксиси</translation>
 <translation id="2541377937973966830">Бул папкадагы мазмунду окуса гана болот. Айрым аракеттерге уруксат берилген эмес.</translation>
 <translation id="2542049655219295786">Google жадыбалы</translation>
@@ -287,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com дегенге өтүңүз…</translation>
 <translation id="3553048479571901246">Файлдарды <ph name="APP_NAME" /> колдонмосунда ачуу үчүн алгач аларды Windows папкасына көчүрүңүз.</translation>
 <translation id="3556731189587832921">Англисче (АКШ) жана жеке компьютерлер үчүн эл аралык баскычтоп</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> таштандыга ыргытылууда</translation>
 <translation id="3567221313191587603">Файлды тандап, оффлайнда колдонууга уруксат берүү үчүн <ph name="OFFLINE_CHECKBOX_NAME" /> кутучасын белгилеңиз.</translation>
 <translation id="357479282490346887">Литвача</translation>
 <translation id="3587482841069643663">Баары</translation>
@@ -338,14 +341,17 @@
 <translation id="3975895378829046965">Бенгаличе (фонетикалык)</translation>
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4017788180641807848">Англисче (АКШ) жана Workman баскычтобу</translation>
+<translation id="4019998208269143058">Ыкчам ачылуучу файлдарга кадап коюу</translation>
 <translation id="4040753847560036377">PUK туура эмес</translation>
 <translation id="4057991113334098539">Жандырылууда...</translation>
 <translation id="4092890906744441904">Ирландча</translation>
 <translation id="4124935795427217608">Жалгыз мүйүздүү ат</translation>
 <translation id="4131235941541910880">Керексиз нерселерди таштандыга салыңыз</translation>
+<translation id="4153015322587141338">Текчедеги файлдарды ыкчам ачуу үчүн курсорду файлдын үстүнө алып келип, оң баскычын чыкылдатып, "<ph name="PIN_COMMAND" />" дегенди тандаңыз.</translation>
 <translation id="4157569377477607576">Администратордун саясаты төмөнкүлөрдү сунуштабайт:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> жылдырылды.</translation>
 <translation id="4176286497474237543">Таштандыны азыр бошотуу</translation>
+<translation id="4179621117429069925">Элемент таштандыда</translation>
 <translation id="4186579485882418952">Оффлайн режимин иштетүү</translation>
 <translation id="4193154014135846272">Google документи</translation>
 <translation id="4197674956721858839">Кысуу тандоолору</translation>
@@ -375,6 +381,7 @@
 <translation id="4387004326333427325">Аныктыгын текшерүү тастыктамасы алыстан четке кагылды</translation>
 <translation id="4394214039309501350">Тышкы шилтеме</translation>
 <translation id="4394980935660306080">Мурунураак, ушул аптада</translation>
+<translation id="4398096759193130964">Бул нерселерди калыбына келтирип же таштандыда болбогон жаңы папкага сүйрөңүз</translation>
 <translation id="4401287888955153199">Баарын чыгаруу</translation>
 <translation id="4410695710508688828">Чыгаруу операциясы ишке ашкан жок. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Файлдарга өтүү үчүн ыкчам баскычты түзүү</translation>
@@ -430,6 +437,7 @@
 <translation id="4790766916287588578">Хиндиче (InScript баскычтобу)</translation>
 <translation id="4801956050125744859">Экөөнү тең калтыруу</translation>
 <translation id="4804827417948292437">Авокадо</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> нерсе калыбына келтирилүүдө</translation>
 <translation id="4823651846660089135">Түзмөк окуу үчүн гана уруксат берет</translation>
 <translation id="4826849268470072925">Тамилче (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> нерсе тандалды</translation>
@@ -448,6 +456,7 @@
 <translation id="4935975195727477204">Газания гүлү</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">1 папка Parallels Desktop менен бөлүшүлдү</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> калыбына келтирилди</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4973523518332075481">Аталышы <ph name="MAX_LENGTH" /> же андан аз символдон турушу керек</translation>
 <translation id="4973970068702235170">Кысылбай калды, күтүүсүз ката кетти: <ph name="ERROR_MESSAGE" /></translation>
@@ -549,6 +558,7 @@
 <translation id="5691596662111998220">Оой, <ph name="FILE_NAME" /> эми жок.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Кулпусун ачуу</translation>
 <translation id="5700087501958648444">Аудио файл тууралуу маалымат</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> таштандыга ыргытылды</translation>
 <translation id="5724172041621205163">Тайча (Pattachote баскычтобу)</translation>
 <translation id="5756666464756035725">Венгерче QWERTY</translation>
 <translation id="5763377084591234761">Немисче (Швейцария)</translation>
@@ -619,6 +629,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> форматындагы архив</translation>
 <translation id="6321303798550928047">Кол булгалоо</translation>
 <translation id="6327785803543103246">Веб проксини автоматтык түрдө табуу</translation>
+<translation id="6337014272874260727">Ыкчам ачылуучу файлдардан алып коюу</translation>
 <translation id="6339145975392024142">Эл аралык АКШ баскычтобу (жеке компьютер үчүн)</translation>
 <translation id="6346310558342052870">Кирүү мүмкүнчүлүгү чектелген</translation>
 <translation id="6356685157277930264">Files колдонмосу тууралуу пикирлер көрсөтүлгөн терезе</translation>
@@ -659,6 +670,7 @@
 <translation id="6751256176799620176">1 куржун тандалды</translation>
 <translation id="6755827872271341378">ChromeOS Flex түзмөгү</translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
+<translation id="6794539005637808366">Бул нерсени калыбына келтирип же таштандыда болбогон жаңы папкага сүйрөңүз</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Linux аркылуу бөлүшүүнү башкаруу</translation>
 <translation id="6806796368146926706">Cандар менен тамгалар (Жапон баскычтобу)</translation>
@@ -695,6 +707,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Шведче</translation>
 <translation id="6990081529015358884">Бош орун калбай калды</translation>
+<translation id="6993826899923627728">Бул нерселер таштандыда</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> куржун тандалды</translation>
 <translation id="7008426324576352165">Жүктөп берүүнү аягына чыгаруу үчүн уюмуңузга көбүрөөк сактагыч керек.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -740,6 +753,7 @@
 <translation id="7408870451288633753">Чехче</translation>
 <translation id="7417453074306512035">Эфиопчо баскычтоп</translation>
 <translation id="7417705661718309329">Google карта</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" калыбына келтирилүүдө</translation>
 <translation id="7458955835361612701">Жаңы сүрөттөр жок</translation>
 <translation id="7460898608667578234">Украинче</translation>
 <translation id="7469894403370665791">Бул тармакка автоматтык түрдө туташуу</translation>
@@ -768,6 +782,7 @@
 <translation id="7655441028674523381">Google Фотого тез өтүңүз</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7663224033570512922">Хиндиче</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> нерсе таштандыга ыргытылды</translation>
 <translation id="7693909743393669729">Дискти форматтасаңыз, анда сакталган бардык маалымат тазаланып, көзгө көрүнбөгөн бөлүмдөрдөн бери өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> форматталган жок</translation>
 <translation id="76959938259365003">Таштанды бошотулган жок.</translation>
@@ -782,6 +797,7 @@
 <translation id="7760449188139285140">Кытайча (Wubi)</translation>
 <translation id="7765158879357617694">Жылуу</translation>
 <translation id="7774365994322694683">Куш</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> нерсе калыбына келтирилди</translation>
 <translation id="7781829728241885113">Кечээ</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" офлайнда сактоо үчүн, кошумча <ph name="TOTAL_FILE_SIZE" /> орун бошотушуңуз керек:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />офлайн режиминде мындан ары керектелбей турган файлдарды чыгарып салыңыз<ph name="MARKUP_3" />
@@ -962,6 +978,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> ортосундагы <ph name="ENTRY_COUNT" /> пункт тандалды.</translation>
 <translation id="954194396377670556">Администратордун саясаты төмөнкүлөргө тыюу салат:</translation>
 <translation id="965477715979482472">Англисче (Түштүк Африка)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> нерсе таштандыга ыргытылууда</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" деген аталыштагы файл мурунтан эле бар. Аны алмаштыргыңыз келеби?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> жолу аракет кыла аласыз. Жаңы PIN код коймоюнча бул тармакты колдоно албайсыз.</translation>

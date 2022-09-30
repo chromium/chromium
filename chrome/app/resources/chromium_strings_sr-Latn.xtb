@@ -55,7 +55,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2384373936468275798">Chromium OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="2396765026452590966">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio stranicu koja se prikazuje kada pokrenete Chromium.</translation>
-<translation id="2400844369696905771">Kada je uključena, Chromium vraća memoriju sa kartica koje ne koristite aktivno. Time se oslobađaju resursi računara za druge zadatke i ubrzava se rad Chromium-a. Neaktivne kartice se prikazuju kao prazne i automatski se ponovo učitavaju kada kliknete na njih. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
 <translation id="2483889755041906834">U Chromium-u</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -146,7 +145,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="4285930937574705105">Instalacija nije uspela zbog neodređene greške. Ako je Chromium trenutno otvoren, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4304713468139749426">Menadžer lozinki</translation>
 <translation id="4334294535648607276">Preuzimanje je dovršeno.</translation>
-<translation id="437317747729858884">Da bi pregledanje bilo brže, Chromium vraća memoriju sa kartica koje ne koristite.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> zahteva da pročitate i prihvatite sledeće Uslove korišćenja usluge pre korišćenja ovog uređaja. Ovi uslovi ne proširuju, menjaju niti ograničavaju Uslove za Chromium OS.</translation>
 <translation id="4407044323746248786">Želite li ipak da zatvorite Chromium?</translation>
 <translation id="4415566066719264597">Neka Chromium radi u pozadini</translation>
@@ -318,7 +316,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7872446069773932638">Preuzima se... Još <ph name="SECONDS" /> sek</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete da upravljate podacima:<ph name="END_BOLD" /> Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Možete i da uklanjate interesovanja za koja ne želite da ih Chromium uzima u obzir.</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chromium kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
-<translation id="7947085610734123927">Chromium je uključio Uštedu memorije</translation>
 <translation id="7975919845073681630">Ovo je sekundarna instalacija Chromium-a pa ne možete da ga podesite kao podrazumevani pregledač.</translation>
 <translation id="7997934263947464652">Dodaci, aplikacije i teme iz nepoznatih izvora mogu da naškode uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, veb-sajtovi će moći da zatraže pristup.</translation>
@@ -339,7 +336,6 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8453117565092476964">Arhiva programa za instalaciju je oštećena ili nevažeća. Preuzmite Chromium ponovo.</translation>
 <translation id="8463672209299734063">Opcionalno: Automatski šaljite Google-u dijagnostiku i podatke o korišćenju da biste nam pomogli da poboljšamo funkcije i učinak Chromium OS-a.</translation>
 <translation id="8493179195440786826">Chromium je zastareo</translation>
-<translation id="8522220489792889625">Po potrebi, Chromium vraća memoriju sa kartica koje ne koristite aktivno. Ovo možete da promenite u svakom trenutku u podešavanjima.</translation>
 <translation id="8550334526674375523">Ovaj poslovni profil je potpuno odvojen od ličnog profila.</translation>
 <translation id="8558383651099478961">Roditelj je isključio Dozvole za sajtove, aplikacije i dodatke za Chromium. Dodavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="8561285221328166383">Da biste dobijali buduća Chromium ažuriranja, treba vam macOS 10.13 ili novija verzija. Ovaj računar koristi macOS 10.12.</translation>

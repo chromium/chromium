@@ -173,6 +173,7 @@
 <translation id="2500392669976258912">Gujaratar fonetikoa</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Bilatu</translation>
+<translation id="252641322760726369">Apaleko fitxategiak bizkor atzitzeko, eduki sakatuta fitxategi bat, sakatu <ph name="ICON" /> eta, ondoren, hautatu "<ph name="PIN_COMMAND" />".</translation>
 <translation id="2534460670861217804">HTTP proxy segurua</translation>
 <translation id="2541377937973966830">Karpeta honetako edukia irakurtzeko soilik da. Jarduera batzuk ez dira onartzen.</translation>
 <translation id="2542049655219295786">Google taula</translation>
@@ -343,6 +344,7 @@
 <translation id="4092890906744441904">Irlandarra</translation>
 <translation id="4124935795427217608">Adarbakarra</translation>
 <translation id="4131235941541910880">Eraman zaborrontzira behar ez dituzun elementuak</translation>
+<translation id="4153015322587141338">Apaleko fitxategiak bizkor atzitzeko, egin klik fitxategi batean eskuineko botoiarekin eta hautatu "<ph name="PIN_COMMAND" />".</translation>
 <translation id="4157569377477607576">Administratzailearen gidalerroek ez dituzte hauek gomendatzen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> mugitu da.</translation>
 <translation id="4176286497474237543">Hustu zaborrontzia</translation>

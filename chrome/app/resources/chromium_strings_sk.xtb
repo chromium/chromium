@@ -55,7 +55,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2384373936468275798">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="2396765026452590966">Rozšírenie „<ph name="EXTENSION_NAME" />“ zmenilo stránku, ktorá sa zobrazí pri spustení prehliadača Chromium.</translation>
-<translation id="2400844369696905771">Keď je táto možnosť zapnutá, Chromium bude uvoľňovať pamäť z kariet, ktoré aktívne nepoužívate. Týmto sa uvoľnia zdroje počítača pre ďalšie úlohy a Chromium bude fungovať rýchlejšie. Neaktívne karty sa budú zobrazovať prázdne a po kliknutí sa automaticky znova načítajú. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="2483889755041906834">V prehliadači Chromium</translation>
 <translation id="2485422356828889247">Odinštalovať</translation>
@@ -146,7 +145,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="4285930937574705105">Inštalácia zlyhala kvôli neurčenej chybe. Ak je prehliadač Chromium momentálne spustený, zatvorte ho a skúste znova.</translation>
 <translation id="4304713468139749426">Správca hesiel</translation>
 <translation id="4334294535648607276">Sťahovanie bolo dokončené.</translation>
-<translation id="437317747729858884">Chromium uvoľňuje pamäť z kariet, ktoré nepoužívate, čím zrýchľuje prehliadanie.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> vyžaduje, aby ste si pred používaním tohto zariadenia prečítali nasledujúce zmluvné podmienky a vyjadrili s nimi súhlas. Tieto zmluvné podmienky nerozširujú, neupravujú ani neobmedzujú zmluvné podmienky systému Chromium OS.</translation>
 <translation id="4407044323746248786">Chcete Chromium napriek tomu ukončiť?</translation>
 <translation id="4415566066719264597">Povoliť prehliadaču Chromium spustenie na pozadí</translation>
@@ -318,7 +316,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7872446069773932638">Sťahuje sa… Zostávajúci čas: <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> v rámci ochrany vášho súkromia automaticky odstraňujeme záujmy, ktoré sú staršie ako štyri týždne. Pri ďalšom prehliadaní sa v zozname môže znova zobraziť určitý záujem. Prípadne môžete odstrániť záujmy, ktoré nemá Chromium posudzovať.</translation>
 <translation id="7937630085815544518">Do prehliadača Chromium ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
-<translation id="7947085610734123927">Chromium zapol šetrič pamäte</translation>
 <translation id="7975919845073681630">Toto je sekundárna inštalácia prehliadača Chromium – nemôže byť nastavený ako váš predvolený prehliadač.</translation>
 <translation id="7997934263947464652">Rozšírenia, aplikácie a motívy z neznámych zdrojov môžu poškodiť vaše zariadenie. Chromium odporúča ich inštaláciu iba zo zdroja <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Keď Chromium získa prístup, weby vás budú môcť žiadať o prístup.</translation>
@@ -339,7 +336,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8453117565092476964">Archív inštalácie je poškodený alebo neplatný. Stiahnite prehliadač Chromium znova.</translation>
 <translation id="8463672209299734063">Nepovinné: Pomôžte zlepšovať funkcie a výkonnosť systému Chromium OS automatickým odosielaním diagnostík a údajov o využití Googlu</translation>
 <translation id="8493179195440786826">Prehliadač Chromium je zastaraný</translation>
-<translation id="8522220489792889625">Chromium bude podľa potreby uvoľňovať pamäť z kariet, ktoré aktívne nepoužívate. Túto možnosť môžete kedykoľvek zmeniť v nastaveniach.</translation>
 <translation id="8550334526674375523">Tento pracovný profil je úplne oddelený od vášho osobného.</translation>
 <translation id="8558383651099478961">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v prehliadači Chromium. Pridanie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) nie je povolené.</translation>
 <translation id="8561285221328166383">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 10.13 alebo novší. V tomto počítači používate macOS 10.12.</translation>

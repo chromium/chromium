@@ -173,6 +173,7 @@
 <translation id="2500392669976258912">Guxharatisht fonetike</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skano</translation>
+<translation id="252641322760726369">Prek dhe mbaj të shtypur një skedar, trokit te <ph name="ICON" /> dhe zgjidh "<ph name="PIN_COMMAND" />" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="2534460670861217804">Përfaqësuesi i sigurt i HTTP-së</translation>
 <translation id="2541377937973966830">Përmbajtjet e kësaj dosjeje janë vetëm për lexim. Disa aktivitete nuk mbështeten.</translation>
 <translation id="2542049655219295786">Tabela e Google</translation>
@@ -343,6 +344,7 @@
 <translation id="4092890906744441904">Irlandisht</translation>
 <translation id="4124935795427217608">Njëbrirësh</translation>
 <translation id="4131235941541910880">Zhvendosi artikujt që nuk të duhen te koshi.</translation>
+<translation id="4153015322587141338">Kliko me butonin djathtas te një skedar dhe zgjidh "<ph name="PIN_COMMAND" />" për qasje të shpejtë te skedarët e tu në raft.</translation>
 <translation id="4157569377477607576">Politika e administratorit nuk rekomandon:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> është zhvendosur.</translation>
 <translation id="4176286497474237543">Boshatise koshin tani</translation>

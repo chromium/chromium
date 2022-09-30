@@ -371,6 +371,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3120421559657122717">Éteindre l'appareil ?</translation>
 <translation id="3126069444801937830">Redémarrer pour mettre à jour</translation>
+<translation id="3139382871451988441">Désactiver l'accès à l'appareil photo.</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3151786313568798007">Orientation</translation>
@@ -647,6 +648,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <ph name="QUERY" /></translation>
 <translation id="4659419629803378708">ChromeVox activé</translation>
 <translation id="4665114317261903604">Activer/Désactiver le mode Ne pas déranger. <ph name="STATE_TEXT" /></translation>
+<translation id="4666082839192943839">Désactivez l'accès à l'appareil photo sur cet appareil pour bloquer tous les appareils photo en permanence.</translation>
 <translation id="4667099493359681081">Téléchargement du fichier <ph name="FILENAME" /> en cours</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
@@ -665,6 +667,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4776917500594043016">Mot de passe de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistant Google n'est pas disponible dans une session de démonstration.</translation>
+<translation id="4789348252524569426">Impossible d'installer les fichiers vocaux. Votre appareil doit être mis à jour. Redémarrez-le et réessayez.</translation>
 <translation id="479989351350248267">rechercher</translation>
 <translation id="4804818685124855865">Se déconnecter</translation>
 <translation id="4814539958450445987">Écran de connexion</translation>
@@ -1144,6 +1147,7 @@ Nouvelle installation</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> utilise actuellement votre micro</translation>
 <translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="7564874036684306347">Le déplacement de fenêtres vers un autre écran peut entraîner un comportement inattendu. Par exemple, les notifications, les fenêtres et les boîtes de dialogue peuvent s'afficher sur les deux écrans.</translation>
+<translation id="7567076708801803118">Voulez-vous désactiver l'accès à l'appareil photo sur cet appareil ?</translation>
 <translation id="7569509451529460200">Braille et ChromeVox activés</translation>
 <translation id="7573585051776738856">Fenêtre active épinglée à droite.</translation>
 <translation id="7579778809502851308">Capture d'écran</translation>

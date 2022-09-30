@@ -1247,6 +1247,7 @@
 <translation id="4277028893293644418">पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="4278390842282768270">अनुमति प्राप्त</translation>
 <translation id="4282346679996504092">यो उत्पादनका हकमा अलर्ट पठाउने सुविधा अफ गरिएको छ र बुकमार्क हटाइएको छ</translation>
+<translation id="4285498937028063278">अनपिन गर्नुहोस्</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{यो कार्डलाई तपाईंको Google खातामा सुरक्षित गरिएको छ।}other{यी कार्डहरूलाई तपाईंको Google खातामा सुरक्षित गरिएको छ}}</translation>
 <translation id="4287885627794386150">ट्रायल प्रयोग गर्न सकिन्छ तर यो सक्रिय छैन</translation>
 <translation id="4297502707443874121">पृष्ठ <ph name="THUMBNAIL_PAGE" /> को थम्बनेल</translation>
@@ -2432,6 +2433,7 @@
 <translation id="7451311239929941790">यस समस्या बारे <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="7455133967321480974">विश्वव्यापी डिफल्ट प्रयोग गर्नुहोस् (ब्लक)</translation>
 <translation id="7460618730930299168">यो स्क्रिनिङ तपाईंले चयन गर्नुभएको भन्दा फरक छ। जारी राख्ने हो?</translation>
+<translation id="7461924472993315131">पिन</translation>
 <translation id="7463075493919226237">अस्ट्रेलियाली फुटबल</translation>
 <translation id="7469935732330206581">यो फारम सुरक्षित छैन</translation>
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>

@@ -344,7 +344,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1327272175893960498">Tickets de Kerberos</translation>
 <translation id="1327495825214193325">Para habilitar la depuración ADB, es necesario reiniciar este <ph name="DEVICE_TYPE" />. Para inhabilitarla, es necesario restablecer la configuración de fábrica.</translation>
 <translation id="1327794256477341646">Las funciones que necesiten la ubicación no se podrán utilizar</translation>
-<translation id="1329191040029425999">Asegúrate de que tu dispositivo esté actualizado e inténtalo de nuevo</translation>
 <translation id="1331977651797684645">Es mi perfil</translation>
 <translation id="1333489022424033687">Es posible que algunas funciones de <ph name="ORIGIN" /> no estén disponibles si no borras los datos que otros sitios han almacenado en tu dispositivo</translation>
 <translation id="1333965224356556482">No permitir que los sitios vean tu ubicación</translation>
@@ -1290,8 +1289,8 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2179416702468739594">Buscando perfiles disponibles. Es posible que tu red móvil se desconecte durante unos minutos.</translation>
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2182058453334755893">Se ha copiado en tu portapapeles</translation>
+<translation id="2183570493397356669">Botón Continuar inhabilitado</translation>
 <translation id="2184515124301515068">Permitir que Chrome elija cuándo los sitios pueden reproducir sonidos (recomendado)</translation>
-<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. Los ajustes modificados por otros usuarios no se sincronizarán. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Error de importación del certificado de servidor</translation>
@@ -1353,7 +1352,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
 <translation id="2242687258748107519">Información del archivo</translation>
-<translation id="2245296100676446525">Activa la sincronización para acceder a tus marcadores, tus contraseñas, tu historial y otras opciones desde este dispositivo y desde cualquier otro dispositivo en el que tengas la sincronización activada.</translation>
 <translation id="2245603955208828424">Usa las teclas de flecha para desplazarte por los elementos letra por letra</translation>
 <translation id="2246129643805925002">Tu <ph name="DEVICE_TYPE" /> se actualiza automáticamente en segundo plano para que disfrutes de las últimas funciones y mejoras de seguridad. Puedes revisar tus preferencias de actualización en Configuración.</translation>
 <translation id="2246549592927364792">¿Quieres obtener descripciones de imágenes de Google?</translation>
@@ -1537,7 +1535,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2381499968174336913">Vista previa de pestaña compartida</translation>
 <translation id="2381756643783702095">Preguntar antes de enviar (recomendado)</translation>
 <translation id="2383825469508278924">Cambia la asignación de teclas del teclado, las teclas de función y más.</translation>
-<translation id="2386202302581016807">No hay suficiente almacenamiento disponible en tu dispositivo para completar la instalación</translation>
 <translation id="2387052489799050037">Ir a la pantalla de inicio</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (actual)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -2249,7 +2246,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3031557471081358569">Selecciona los elementos que quieres importar:</translation>
 <translation id="3032204772252313646">Subtítulos automáticos</translation>
 <translation id="3033348223765101500">Controla tus datos</translation>
-<translation id="3034627908241330765">Se está ejecutando otra instalación de Steam. Espera a que finalice para volver a ejecutar la instalación.</translation>
 <translation id="3036327949511794916">Se ha pasado el plazo para devolver este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3036546437875325427">Habilitar Flash</translation>
 <translation id="3037754279345160234">No se puede analizar la configuración para unirse al dominio. Ponte en contacto con el administrador.</translation>
@@ -2262,7 +2258,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3046178388369461825">Queda muy poco espacio en el disco de Linux</translation>
 <translation id="3046910703532196514">Página web (completa)</translation>
 <translation id="304747341537320566">Motores de voz</translation>
-<translation id="3048051495640130973">Puedes controlar cuándo se activa Ahorro de batería en la configuración</translation>
 <translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Registros de envío y del dispositivo</translation>
 <translation id="3051250416341590778">Tamaño de visualización</translation>
@@ -2306,7 +2301,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3090819949319990166">No se puede copiar el archivo crx externo en <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558"><ph name="DEVICE_NAME" /> vinculado</translation>
 <translation id="3093714882666365141">No permitir que los sitios instalen controladores de pago</translation>
-<translation id="3093958632721393232">Activar solo cuando quede poca batería</translation>
 <translation id="3094141017404513551">Esto separará tu navegación de la de <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Los marcadores, las contraseñas y otros datos del navegador están sincronizados con la cuenta principal.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{Se ha desactivado 1 extensión potencialmente dañina. También puedes quitarla.}other{Se han desactivado {NUM_EXTENSIONS} extensiones potencialmente dañinas. También puedes quitarlas.}}</translation>
@@ -2354,7 +2348,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3142562627629111859">Nuevo grupo</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="3143754809889689516">Reproducir desde el principio</translation>
-<translation id="3143937294861726703">Ahorro de memoria activado</translation>
 <translation id="3144647712221361880">Abrir enlace como</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3150693969729403281">Comprobar seguridad ahora</translation>
@@ -2513,8 +2506,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3315442055907669208">Activar modo de lectura</translation>
 <translation id="3317459757438853210">Doble cara</translation>
 <translation id="3317678681329786349">Cámara y micrófono bloqueados</translation>
-<translation id="3320620783302968370">Si el problema continúa, prueba a reiniciar tu dispositivo
-    Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">Navegación segura (protección frente a sitios peligrosos) y otros ajustes de seguridad</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Estos datos incluyen contenido sensible o peligroso. Elimina ese contenido e inténtalo de nuevo.}=1{Este archivo incluye contenido sensible o peligroso. Elimina ese contenido e inténtalo de nuevo.}other{Estos archivos incluyen contenido sensible o peligroso. Elimina ese contenido e inténtalo de nuevo.}}</translation>
 <translation id="3323521181261657960">¡Extra! Has conseguido más tiempo de pantalla</translation>
@@ -2670,7 +2661,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3462311546193741693">Se cerrará la sesión de la mayoría de los sitios. La sesión de tu cuenta de Google seguirá abierta para que los datos sincronizados se puedan borrar.</translation>
 <translation id="3462413494201477527">¿Quieres cancelar la configuración de la cuenta?</translation>
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
-<translation id="3463015289462934089">Asegúrate de que tu dispositivo esté conectado a Internet.</translation>
 <translation id="3464145797867108663">Añadir perfil de trabajo</translation>
 <translation id="346431825526753">Esta es una cuenta infantil administrada por <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Recibir descuentos de <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> y más</translation>
@@ -3553,7 +3543,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
     <ph name="BEGIN_PARAGRAPH2" />Puedes activar o desactivar que se generen estos informes en cualquier momento en los ajustes del dispositivo Chrome OS de tu hijo/a. Si eres el administrador de un dominio, puedes cambiar este ajuste en la consola de administración.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Aunque esta función esté desactivada, el dispositivo seguirá pudiendo enviar la información necesaria para realizar los servicios esenciales relacionados con, por ejemplo, las actualizaciones del sistema y la seguridad.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Esta página tiene permiso para editar archivos</translation>
-<translation id="4302577930366020750">Reinicia el dispositivo para usar Steam</translation>
 <translation id="4303079906735388947">Configura un nuevo PIN para tu llave de seguridad</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4305402730127028764">Copiar en <ph name="DEVICE_NAME" /></translation>
@@ -3685,7 +3674,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4427306783828095590">La protección mejorada es más eficaz para bloquear ataques de suplantación de identidad y software malicioso.</translation>
 <translation id="4427365070557649936">Verificando el código de confirmación...</translation>
 <translation id="4429163740524851942">Diseño de teclado físico</translation>
-<translation id="4429239357082509581">Steam no tiene permiso para ejecutarse</translation>
 <translation id="4430019312045809116">Volumen</translation>
 <translation id="4430369329743628066">Añadida a Marcadores</translation>
 <translation id="4430422687972614133">Activar tarjeta virtual</translation>
@@ -3953,8 +3941,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4675828034887792601">Crea accesos directos para buscar en sitios y gestionar tu buscador</translation>
 <translation id="4676595058027112862">Mi teléfono, Más información</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
-<translation id="4677970983462111944">Steam no está permitido en este dispositivo. Contacta con tu administrador para obtener permiso
-    Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">La cámara está desactivada</translation>
 <translation id="4680105648806843642">Se ha silenciado el sonido en esta página</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
@@ -4271,7 +4257,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="49896407730300355">Girar a la &amp;izquierda</translation>
 <translation id="4989966318180235467">Inspeccionar página &amp;en segundo plano</translation>
 <translation id="4991420928586866460">Tratar las teclas de la fila superior como teclas de función</translation>
-<translation id="4991858732577603540">Espera unos minutos y vuelve a ejecutar Steam</translation>
 <translation id="4992458225095111526">Confirmar Powerwash</translation>
 <translation id="4992473555164495036">Tu administrador ha limitado los métodos de introducción disponibles.</translation>
 <translation id="4994754230098574403">Se está configurando</translation>
@@ -4737,7 +4722,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5463275305984126951">Índice de <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Recibir correos sobre <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Buscando dispositivos...</translation>
-<translation id="5463845647891602726">Para liberar espacio, elimina archivos del dispositivo</translation>
 <translation id="5463856536939868464">Menú con marcadores ocultos</translation>
 <translation id="5464660706533281090">Los usuarios menores de edad no pueden cambiar este ajuste.</translation>
 <translation id="5466374726908360271">Pe&amp;gar y buscar "<ph name="SEARCH_TERMS" />"</translation>
@@ -5105,6 +5089,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5812674658566766066">Mostrar todo</translation>
 <translation id="5815645614496570556">Dirección X.400</translation>
 <translation id="5816434091619127343">Los cambios solicitados en la impresora harían que no se pudiera usar.</translation>
+<translation id="581659025233126501">Activar sincronización</translation>
 <translation id="5817069030404929329">¿Transferir contraseñas de este dispositivo a tu cuenta de Google?</translation>
 <translation id="5817918615728894473">Emparejar</translation>
 <translation id="5821565227679781414">Crear acceso directo</translation>
@@ -5283,7 +5268,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5975792506968920132">Porcentaje de carga de batería</translation>
 <translation id="5976160379964388480">Otros</translation>
 <translation id="5978277834170881274">&amp;Utilizar la revisión ortográfica básica</translation>
-<translation id="5978395054855988504">Ahorro de batería activado</translation>
 <translation id="5978493744931296692">Tu administrador ha inhabilitado otros perfiles</translation>
 <translation id="5979084224081478209">Comprobar contraseñas</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Has vuelto a activar 1 extensión potencialmente dañina}other{Has vuelto a activar {NUM_EXTENSIONS} extensiones potencialmente dañinas}}</translation>
@@ -7034,6 +7018,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7665082356120621510">Reservar tamaño</translation>
 <translation id="7665369617277396874">Añadir cuenta</translation>
 <translation id="766635563210446220">No se pueden importar las contraseñas. Revisa <ph name="FILENAME" /> y comprueba que tenga el formato correcto. <ph name="BEGIN_LINK" />Consulta más información<ph name="END_LINK" />.</translation>
+<translation id="7666531788977935712">Botón Continuar habilitado</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{Devuelve el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_WEEKS} semana}other{Devuelve el <ph name="DEVICE_TYPE" /> en el plazo de {NUM_WEEKS} semanas}}</translation>
 <translation id="7668423670802040666">En el gestor de contraseñas de Google de <ph name="ACCOUNT" /></translation>
 <translation id="7668648754769651616">Las funciones de accesibilidad hacen que tu dispositivo sea más fácil de usar. Para acceder a los ajustes rápidos, selecciona la hora en la parte inferior de la pantalla.</translation>
@@ -7262,7 +7247,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7870790288828963061">No se ha encontrado ninguna aplicación de kiosco con una versión más reciente. No hay nada que actualizar. Extrae el dispositivo USB.</translation>
 <translation id="7871049986386271121">Siempre en este sitio</translation>
 <translation id="7871109039747854576">Utilizar las teclas <ph name="COMMA" /> y <ph name="PERIOD" /> para mostrar la lista de caracteres disponibles</translation>
-<translation id="7872494313446521576">Haz clic para permitir "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" en <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Desactivado</translation>
 <translation id="7872758299142009420">Demasiados grupos anidados: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Fondos de Chrome</translation>
@@ -7678,7 +7662,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8248381369318572865">Acceder a tu micrófono y analizar lo que dices</translation>
 <translation id="8248887045858762645">Consejo de Chrome</translation>
 <translation id="8249048954461686687">Carpeta OEM</translation>
-<translation id="8249239468199142122">Ahorro de batería</translation>
 <translation id="8249615410597138718">Enviar a tus dispositivos</translation>
 <translation id="8250210000648910632">No queda espacio de almacenamiento</translation>
 <translation id="8251441930213048644">Renovar ahora</translation>
@@ -7882,7 +7865,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8440630305826533614">Aplicaciones de Linux</translation>
 <translation id="844063558976952706">Siempre en este sitio</translation>
 <translation id="8441313165929432954">Habilitar/Inhabilitar conexión compartida</translation>
-<translation id="8443795068008423036">Asegúrate de que tu dispositivo esté actualizado e inténtalo de nuevo</translation>
 <translation id="8443986842926457191">La URL contiene más de 2048 caracteres</translation>
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8447409163267621480">Incluye Ctrl o Alt</translation>
@@ -8213,7 +8195,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Actualizar Chrome automáticamente para todos los usuarios</translation>
-<translation id="8769901904650373714">No se ha podido instalar Steam</translation>
 <translation id="8770406935328356739">Directorio raíz de la extensión</translation>
 <translation id="8771300903067484968">El fondo de pantalla de la página de inicio se ha restablecido al fondo de pantalla predeterminado.</translation>
 <translation id="8773302562181397928">Guardar <ph name="PRINTER_NAME" /></translation>
@@ -8729,7 +8710,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="964286338916298286">Tu administrador de TI ha inhabilitado el contenido adicional de Chrome para tu dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Aplicación}other{Aplicaciones}}</translation>
 <translation id="964790508619473209">Disposición de la pantalla</translation>
-<translation id="965175368833098333">Ahorro de memoria puede recuperar la memoria de las pestañas inactivas. De esta forma, se liberarán recursos de tu ordenador para otras tareas.</translation>
 <translation id="965211523698323809">Envía y recibe mensajes de texto con tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar de un problema con Google Cast</translation>
 <translation id="967398046773905967">No permitir que ningún sitio web acceda a los dispositivos HID</translation>

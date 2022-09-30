@@ -58,7 +58,6 @@
 <translation id="2094648590148273905">Termos do ChromeOS Flex</translation>
 <translation id="2094919256425865063">Sair do Chrome mesmo assim?</translation>
 <translation id="2106831557840787829">A criação do ChromeOS Flex só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de desenvolvimento do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="2112742052114331084">Quando essa opção está ativada, o Chrome recupera a memória das guias que você não está usando ativamente. Isso libera os recursos do seu computador para outras tarefas e mantém a velocidade do Chrome. As guias inativas aparecem vazias e são atualizadas automaticamente quando você clica nelas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /> ou <ph name="BEGIN_LINK_2" />envie um feedback<ph name="END_LINK_2" /></translation>
 <translation id="2120620239521071941">Essa ação excluirá <ph name="ITEMS_COUNT" /> itens desse dispositivo. Para recuperar seus dados mais tarde, faça login no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="2123055963409958220">Ajude a melhorar o Chrome informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
@@ -225,7 +224,6 @@
 <translation id="5386244825306882791">Controla também qual página deve ser exibida quando você inicia o Chrome ou faz uma pesquisa na Omnibox.</translation>
 <translation id="5394833366792865639">Compartilhar uma guia do Chrome</translation>
 <translation id="5412485296464121825">Sites podem armazenar informações sobre seus interesses com o Chrome. Por exemplo, se você visitar um site para comprar sapatos de maratona, ele pode definir "maratonas" como um dos seus interesses. Depois, se você visitar outro site para se inscrever em uma maratona, esse site pode mostrar um anúncio de sapatos de corrida com base nos seus interesses.</translation>
-<translation id="5416870378730196769">O Chrome ativou a Economia de memória</translation>
 <translation id="5430073640787465221">Seu arquivo de preferências está corrompido ou é inválido. O Google Chrome não foi capaz de recuperar suas configurações.</translation>
 <translation id="5524761631371622910">Quando os testes estão ativados e se o Chrome colocou você aleatoriamente em um teste ativo, seu histórico de navegação vai afetar os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chrome exclui seus interesses mais antigos do que um mês.</translation>
 <translation id="556024056938947818">O Google Chrome está tentando mostrar senhas.</translation>
@@ -276,7 +274,6 @@
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6739177684496155661">Continuar em um novo perfil do Chrome?</translation>
 <translation id="6750954913813541382">Para corrigir erros de ortografia, o Chrome envia o texto digitado no navegador para o Google</translation>
-<translation id="6756581345161130259">Conforme necessário, o Chrome recupera a memória das guias que você não está usando ativamente. É possível mudar isso a qualquer momento nas configurações.</translation>
 <translation id="677276454032249905">Sair do Chrome mesmo assim?</translation>
 <translation id="6785872064505734160">O Google Assistente no Chrome pode concluir ações em sites para você</translation>
 <translation id="683440813066116847">Regra interna do Google Chrome Canary para permitir tráfego mDNS.</translation>
@@ -324,7 +321,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logotipo do Chrome Enterprise</translation>
 <translation id="7655455401911432608">Seu histórico de navegação, um registro de sites visitados usando o Chrome neste dispositivo.</translation>
-<translation id="7726773885101561560">Para deixar sua navegação mais rápida, o Chrome recupera a memória das guias que você não está usando.</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7777080907402804672">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>

@@ -53,7 +53,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2384373936468275798">O ChromiumOS não pôde sincronizar seus dados porque os detalhes de login da sua conta estão desatualizados.</translation>
 <translation id="2396765026452590966">A extensão "<ph name="EXTENSION_NAME" />" alterou a página que é exibida quando você inicia o Chromium.</translation>
-<translation id="2400844369696905771">Quando essa opção está ativada, o Chromium recupera a memória das guias que você não está usando ativamente. Isso libera os recursos do seu computador para outras tarefas e mantém a velocidade do Chromium. As guias inativas aparecem vazias e são atualizadas automaticamente quando você clica nelas. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2401032172288869980">O Chromium precisa da permissão de acesso ao microfone e à câmera para este site</translation>
 <translation id="2483889755041906834">No Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -142,7 +141,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="4285930937574705105">Ocorreu uma falha na instalação devido a um erro não especificado. Se o Chromium estiver sendo executado, feche-o e tente novamente.</translation>
 <translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="4334294535648607276">Download concluído</translation>
-<translation id="437317747729858884">Para deixar sua navegação mais rápida, o Chromium recupera a memória das guias que você não está usando.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requer que você leia e aceite os Termos de Serviço a seguir antes de usar o dispositivo. Esses termos não ampliam, modificam nem limitam os Termos do ChromiumOS.</translation>
 <translation id="4407044323746248786">Sair do Chromium mesmo assim?</translation>
 <translation id="4415566066719264597">Permitir a execução do Chromium em segundo plano</translation>
@@ -310,7 +308,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7872446069773932638">Fazendo o download… <ph name="SECONDS" /> segundo(s) restante(s)</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chromium considere.</translation>
 <translation id="7937630085815544518">Você estava conectado ao Chromium como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
-<translation id="7947085610734123927">O Chromium ativou a Economia de memória</translation>
 <translation id="7975919845073681630">Como esta é uma instalação secundária do Chromium, ele não pode se tornar seu navegador padrão.</translation>
 <translation id="7997934263947464652">Extensões, apps e temas de fontes desconhecidas podem danificar o dispositivo. O Chromium recomenda os instalar apenas pela <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os sites poderão solicitar acesso.</translation>
@@ -331,7 +328,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8453117565092476964">O arquivo de instalação está corrompido ou não é válido. Faça o download do Chromium novamente.</translation>
 <translation id="8463672209299734063">Opcional: ajude a melhorar os recursos e o desempenho do ChromiumOS enviando automaticamente dados de uso e diagnóstico ao Google.</translation>
 <translation id="8493179195440786826">O Chromium está desatualizado</translation>
-<translation id="8522220489792889625">Conforme necessário, o Chromium recupera a memória das guias que você não está usando ativamente. É possível mudar isso a qualquer momento nas configurações.</translation>
 <translation id="8550334526674375523">Este perfil de trabalho é completamente separado do seu perfil pessoal.</translation>
 <translation id="8558383651099478961">Seu pai/mãe desativou "Permissões para sites, apps e extensões" no Chromium. Não é permitido adicionar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8561285221328166383">Para receber as próximas atualizações do Chromium, você vai precisar do macOS 10.13 ou mais recente. Este computador está usando o macOS 10.12.</translation>

@@ -23,7 +23,6 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1104948393051856124">Terima &amp; Lanjutkan</translation>
 <translation id="110724200315609752">Alihkan ke Jendela yang Terbuka</translation>
 <translation id="1112015203684611006">Gagal mencetak.</translation>
-<translation id="1118569444314402022">Selamat datang kembali, <ph name="USER_NAME" /></translation>
 <translation id="1125564390852150847">Buat tab baru.</translation>
 <translation id="1126809382673880764">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Anda akan tetap mendapatkan perlindungan Safe Browsing, jika tersedia, di layanan Google lainnya, seperti Gmail dan Penelusuran.</translation>
 <translation id="1135212215217513471">Dapatkan Chrome untuk iOS</translation>
@@ -61,6 +60,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1340643665687018190">Tutup Menu</translation>
 <translation id="1358214951266274152">Buka Link yang Anda Salin</translation>
 <translation id="1360432990279830238">Logout dan nonaktifkan sinkronisasi?</translation>
+<translation id="1363028406613469049">Lacak</translation>
 <translation id="1375321115329958930">Sandi Tersimpan</translation>
 <translation id="1377255359165588604">Sinkronisasi berhenti berfungsi.</translation>
 <translation id="1377321085342047638">Nomor Kartu</translation>
@@ -82,6 +82,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="152234381334907219">Jangan Pernah Disimpan</translation>
 <translation id="1523341279170789507">Izinkan Semua Cookie</translation>
 <translation id="1524563461097350801">Lain Kali</translation>
+<translation id="1531836666020185856">Unggulan</translation>
 <translation id="1535268707340844072">Setelan Anda saat ini dapat menyebabkan kerusakan di beberapa situs. Untuk mengelola cookie semua situs, lihat <ph name="BEGIN_LINK" />Setelan Cookie<ph name="END_LINK" />.</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
 <translation id="1545749641540134597">Pindai Kode QR</translation>
@@ -197,6 +198,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2647269890314209800">Cookie yang Sedang Digunakan</translation>
 <translation id="2648803196158606475">Hapus yang Sudah Dibaca</translation>
 <translation id="2653659639078652383">Kirim</translation>
+<translation id="2671426118752779020">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi Google di aplikasi lain pada iPhone.</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia secara offline</translation>
 <translation id="2695507686909505111">Halaman Diterjemahkan</translation>
@@ -206,6 +208,7 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2704491540504985681">Download</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
+<translation id="271033894570825754">Baru</translation>
 <translation id="2712127207578915686">Tidak Dapat Membuka File</translation>
 <translation id="2718352093833049315">Hanya melalui Wi-Fi</translation>
 <translation id="2747003861858887689">Bidang sebelumnya</translation>
@@ -262,6 +265,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3103603146121354983">Isi Otomatis Sandi</translation>
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Lihat Apa Saja yang Dapat Anda Sinkronkan<ph name="END_LINK" />.</translation>
+<translation id="3130863904455712965">Histori dan lainnya</translation>
 <translation id="3131206671572504478">Blokir Semua</translation>
 <translation id="313283613037595347">Buat tab Samaran baru.</translation>
 <translation id="3153862085237805241">Simpan Kartu</translation>
@@ -332,7 +336,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3709582977625132201">Tandai sebagai Belum Dibaca</translation>
 <translation id="371230970611282515">Memperkirakan dan memberikan peringatan terkait peristiwa berbahaya sebelum terjadi.</translation>
 <translation id="37207012422556617">Penelusuran Trending</translation>
-<translation id="3726360487031500941">Login lagi ke akun <ph name="USER_NAME" /></translation>
 <translation id="3740397331642243698">Membuka URL yang diinput di Google Chrome dalam mode Samaran.</translation>
 <translation id="3762232513783804601">Dibuat untuk iPad Anda</translation>
 <translation id="3771033907050503522">Tab Samaran</translation>
@@ -504,6 +507,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="509789154667432072">Tambahkan Bookmark</translation>
 <translation id="5118713593561876160">Minat</translation>
 <translation id="5118764316110575523">Nonaktif</translation>
+<translation id="5119391094379141756">Pilih Chrome</translation>
 <translation id="5132942445612118989">Sinkronkan sandi, histori, dan lainnya di semua perangkat</translation>
 <translation id="5140288047769711648">Chrome akan mengingat sandi ini untuk Anda. Anda tidak perlu mengingatnya.</translation>
 <translation id="5149188072385105201">Tambahkan sandi ...</translation>
@@ -627,6 +631,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6149061208933997199">Gunakan Sandi</translation>
 <translation id="6152406514676263192">Sinkronkan untuk melihat konten yang paling relevan berdasarkan minat Anda.</translation>
 <translation id="6159839020698489198">opsional</translation>
+<translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6177442314419606057">Penelusuran di Chrome</translation>
 <translation id="6184086493125982861">Tampilkan Tab</translation>
 <translation id="6187302354554850004">Sinkron terakhir: <ph name="LAST_USED_TIME" /></translation>
@@ -874,6 +879,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="804225253087497565"><ph name="BEGIN_LINK" />Histori penelusuran<ph name="END_LINK" /> dan <ph name="BEGIN_LINK" />bentuk aktivitas lainnya<ph name="END_LINK" /> dapat disimpan di Akun Google Anda saat login. Anda dapat menghapusnya kapan saja.</translation>
 <translation id="804427445359061970">Tab Anda dari perangkat lain akan ditampilkan di sini</translation>
+<translation id="8048728378294435881">Cadangkan data Anda dan gunakan di perangkat mana pun</translation>
 <translation id="8059533439631660104">Ciutkan bagian.</translation>
 <translation id="8065292699993359127">Buka URL di Chrome dalam mode Samaran</translation>
 <translation id="806745655614357130">Tetap pisahkan data saya</translation>
@@ -977,6 +983,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8981454092730389528">Kontrol Aktivitas Google</translation>
 <translation id="8985320356172329008">Login ke Google sebagai</translation>
 <translation id="9000089900434778519">Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
+<translation id="9008201768610948239">Abaikan</translation>
 <translation id="9034759925968272072">Anda tidak akan dikeluarkan dari Akun Google. Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Tampilkan Halaman Asli</translation>
 <translation id="9039373489628511875">Bandwidth</translation>

@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">ଲିଷ୍ଟ ଭ୍ୟୁକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="2377590462528165447">Linux ସହ <ph name="NUMBER_OF_ITEMS" />ଟି ଫୋଲ୍ଡର୍‌ ସେୟାର୍‌ କରାଯାଇଛି</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" />ଟି ଫାଇଲ୍ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="2383454254762599978">ଟ୍ରାସକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="2387458720915042159">ପ୍ରକ୍ସି ସଂଯୋଗ ପ୍ରକାର</translation>
 <translation id="2389832672041313158">ବର୍ମିଜ୍/ମିଆଁମାର୍</translation>
 <translation id="2392369802118427583">ସକ୍ରିୟ କରନ୍ତୁ</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.comକୁ ଯାଆନ୍ତୁ …</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3556731189587832921">ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ଟ୍ରାସକୁ ମୁଭ କରାଯାଉଛି</translation>
 <translation id="3567221313191587603">ଏକ ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଆକ୍ସେସ୍ କରିବା ପାଇଁ <ph name="OFFLINE_CHECKBOX_NAME" />ର ଟୋଗଲ୍ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
 <translation id="3587482841069643663">ସମସ୍ତ</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">ବଙ୍ଗଳା ଫୋନେଟିକ୍</translation>
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4017788180641807848">ୱାର୍କମ୍ୟାନ୍ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="4019998208269143058">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକରେ ପିନ କରନ୍ତୁ</translation>
 <translation id="4040753847560036377">ଭୁଲ PUK</translation>
 <translation id="4057991113334098539">ସକ୍ରିୟ ହେଉଛି...</translation>
 <translation id="4092890906744441904">ଆଇରିଶ୍</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହା ସୁପାରିଶ କରେ ନାହିଁ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଇଛି।</translation>
 <translation id="4176286497474237543">ବର୍ତ୍ତମାନ ଟ୍ରାସକୁ ଖାଲି କରନ୍ତୁ</translation>
+<translation id="4179621117429069925">ଏହି ଆଇଟମ ଆପଣଙ୍କ ଟ୍ରାସରେ ଅଛି</translation>
 <translation id="4186579485882418952">ଅଫଲାଇନ୍ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4193154014135846272">Google ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="4197674956721858839">Zip ଚୟନ</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">ପ୍ରମାଣିକିକରଣ ସାର୍ଟିଫିକେଟ୍‌ ରିମୋଟ୍‍ ଭାବେ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="4394214039309501350">ଏକ୍ସଟର୍ନଲ୍ ଲିଙ୍କ୍</translation>
 <translation id="4394980935660306080">ଏହି ସପ୍ତାହର ଆରମ୍ଭରେ</translation>
+<translation id="4398096759193130964">ଆଇଟମଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରନ୍ତୁ କିମ୍ବା ଟ୍ରାସ ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ସେଗୁଡ଼ିକୁ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="4401287888955153199">ସବୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4410695710508688828">ଏକ୍ସଟ୍ରାକ୍ଟ କରିବା ଅପରେସନ ବିଫଳ ହୋଇଛି। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକ ପାଇଁ ଏକ ସର୍ଟକଟ୍ ତିଆରି କରନ୍ତୁ</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">ହିନ୍ଦୀ InScript କୀବୋର୍ଡ</translation>
 <translation id="4801956050125744859">ଉଭୟ ରଖନ୍ତୁ</translation>
 <translation id="4804827417948292437">ଆଭୋକାଡୋ</translation>
+<translation id="4805966553127040832"><ph name="COUNT" />ଟି ଆଇଟମକୁ ରିଷ୍ଟୋର କରାଯାଉଛି</translation>
 <translation id="4823651846660089135">ଡିଭାଇସ୍‌ କେବଳ ପଢ଼ିବା ପାଇଁ ଅଟେ</translation>
 <translation id="4826849268470072925">ତାମିଲ ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" />ଟି ଆଇଟମ୍ ଚୟନ କରାଯାଇଛି</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">ଗାଜାନିଆ ଫୁଲ</translation>
 <translation id="4943368462779413526">ଫୁଟ୍‍ବଲ୍‌</translation>
 <translation id="4961158930123534723">Parallels Desktop ସହ 1ଟି ଫୋଲ୍ଡର ସେୟାର୍ କରାଯାଇଛି</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" />କୁ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="4969785127455456148">ଆଲ୍‌ବମ୍</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> କିମ୍ବା ତା’ଠାରୁ କମ୍‌ ଅକ୍ଷରର ନାମ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4973970068702235170">ଜିପ୍ କରିବା ବିଫଳ ହେଲା, ଅପ୍ରତ୍ୟାଶିତ ତ୍ରୁଟି: <ph name="ERROR_MESSAGE" /></translation>
@@ -546,6 +553,7 @@
 <translation id="5691596662111998220">ଓହୋଃ, <ph name="FILE_NAME" /> ଏବେ ଆଉ ନାହିଁ।</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="5700087501958648444">ଅଡିଓ ସୂଚନା</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ଟ୍ରାସକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="5724172041621205163">ପାଟ୍ଟାଚୋଟେ କୀବୋର୍ଡ ସହ ଥାଇ</translation>
 <translation id="5756666464756035725">ହଙ୍ଗେରିଆନ୍ QWERTY</translation>
 <translation id="5763377084591234761">ଜର୍ମାନ (ସ୍ୱିଜରଲ୍ୟାଣ୍ଡ)</translation>
@@ -616,6 +624,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ଆର୍କାଇଭ</translation>
 <translation id="6321303798550928047">ହାତ ହଲାଇବା</translation>
 <translation id="6327785803543103246">ୱେବ୍ ପ୍ରକ୍ସି ଅଟୋଡିସ୍କୋଭରୀ</translation>
+<translation id="6337014272874260727">କ୍ୱିକ ଫାଇଲଗୁଡ଼ିକରୁ ଅନପିନ କରନ୍ତୁ</translation>
 <translation id="6339145975392024142">US ଆନ୍ତର୍ଜାତିକ (PC)</translation>
 <translation id="6346310558342052870">ଆକ୍ସେସ୍‍କୁ ପ୍ରତିବନ୍ଧିତ କରାଯାଇଛି</translation>
 <translation id="6356685157277930264">ଫାଇଲ୍ସ ଫିଡ୍‍ବ୍ୟାକ୍ ୱିଣ୍ଡୋ</translation>
@@ -656,6 +665,7 @@
 <translation id="6751256176799620176">1ଟି ଫୋଲ୍ଡର୍ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="6755827872271341378">ChromeOS Flex ଡିଭାଇସ</translation>
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
+<translation id="6794539005637808366">ଆଇଟମକୁ ରିଷ୍ଟୋର କରନ୍ତୁ କିମ୍ବା ଟ୍ରାସ ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଏହାକୁ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="6795884519221689054">ପାଣ୍ଡା</translation>
 <translation id="6806699711453372963">Linux ସେୟାରିଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="6806796368146926706">ଆଲ୍ଫାନ୍ୟୁମେରିକ୍, ଜାପାନିଜ କୀବୋର୍ଡ ସହିତ</translation>
@@ -692,6 +702,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ସ୍ୱେଡିସ</translation>
 <translation id="6990081529015358884">ଆପଣଙ୍କ ପାଖରେ ଥିବା ଜାଗା ସରିଯାଇଛି</translation>
+<translation id="6993826899923627728">ଏହି ଆଇଟମଗୁଡ଼ିକ ଆପଣଙ୍କ ଟ୍ରାସରେ ଅଛି</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ ବଛାଯାଇଛି</translation>
 <translation id="7008426324576352165">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଅଧିକ ଷ୍ଟୋରେଜ ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -737,6 +748,7 @@
 <translation id="7408870451288633753">ଚେକ୍</translation>
 <translation id="7417453074306512035">ଇଥିଓପିକ୍ କୀବୋର୍ଡ</translation>
 <translation id="7417705661718309329">Google ମ୍ୟାପ୍‌</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" ରିଷ୍ଟୋର କରାଯାଉଛି</translation>
 <translation id="7458955835361612701">ବର୍ତ୍ତମାନର କୌଣସି ଇମେଜ ନାହିଁ</translation>
 <translation id="7460898608667578234">ୟୁକ୍ରାନିଆନ୍</translation>
 <translation id="7469894403370665791">ସ୍ୱଚାଳିତ ଭାବେ ଏହି ନେଟ୍‍ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -765,6 +777,7 @@
 <translation id="7655441028674523381">Google Photosକୁ ସହଜରେ ଆକ୍ସେସ୍ କରନ୍ତୁ</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7663224033570512922">ହିନ୍ଦୀ</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ଟ୍ରାସକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="7693909743393669729">ଏକ ଡ୍ରାଇଭକୁ ଫର୍ମାଟ୍ କରିବା ଦ୍ୱାରା ସେଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଲିଭିଯିବ ଏବଂ ଦୃଶ୍ୟମାନ ହେଉନଥିବା ପାର୍ଟିସନଗୁଡ଼ିକ ସମେତ, ପୂର୍ବରୁ ଥିବା ସମସ୍ତ ପାର୍ଟିସନକୁ କାଢ଼ି ଦିଆଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="76959938259365003">ଟ୍ରାସକୁ ଖାଲି କରିବାରେ ବିଫଳ ହୋଇଛି।</translation>
@@ -779,6 +792,7 @@
 <translation id="7760449188139285140">ଚାଇନିଜ୍ ୟୁବି</translation>
 <translation id="7765158879357617694">ନିଅନ୍ତୁ</translation>
 <translation id="7774365994322694683">Bird</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="7781829728241885113">ଗତକଲି</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"କୁ ଅଫ୍‍ଲାଇନ୍‍‍ରେ ସେଭ୍ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ନିଶ୍ଚିତ ରୂପେ ଅତିରିକ୍ତ <ph name="TOTAL_FILE_SIZE" />ର ସ୍ଥାନ ଖାଲି କରିବାକୁ ହେବ:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ସେହି ଫାଇଲ୍‍ଗୁଡ଼ିକୁ ଅନ୍‍ପିନ୍ କରନ୍ତୁ ଯାହାକୁ ଆପଣ ଅଫ୍‍ଲାଇନ୍‍‍ରେ ଆଉ ଆକ୍ସେସ୍ କରିବାର ଆବଶ୍ୟକତା ନାହିଁ<ph name="MARKUP_3" />
@@ -959,6 +973,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
 <translation id="954194396377670556">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଏହାକୁ ପ୍ରତିରୋଧ କରେ:</translation>
 <translation id="965477715979482472">ଇଂରାଜୀ (ଦକ୍ଷିଣ ଆଫ୍ରିକା)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ ଟ୍ରାସକୁ ମୁଭ କରାଯାଉଛି</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="992401651319295351">ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି। ଆପଣ ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>

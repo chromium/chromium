@@ -347,7 +347,6 @@
 <translation id="1327272175893960498">Kerberos ਟਿਕਟਾਂ</translation>
 <translation id="1327495825214193325">ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਇੱਕ ਵਾਰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਇਸ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ ਫੈਕਟਰੀ ਸੈਟਿੰਗਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="1327794256477341646">ਜਿਹੜੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ ਤੁਹਾਡੀ ਟਿਕਾਣਾ ਜਾਣਕਾਰੀ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ ਉਹ ਕੰਮ ਨਹੀਂ ਕਰਨਗੀਆਂ</translation>
-<translation id="1329191040029425999">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ ਅਤੇ ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="1331977651797684645">ਇਹ ਮੈਂ ਸੀ।</translation>
 <translation id="1333489022424033687"><ph name="ORIGIN" /> ਦੀਆਂ ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਸ਼ਾਇਦ ਉਦੋਂ ਤੱਕ ਕੰਮ ਨਾ ਕਰਨ ਜਦੋਂ ਤੱਕ ਤੁਸੀਂ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਹੋਰਾਂ ਸਾਈਟਾਂ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਨਹੀਂ ਕਰਦੇ</translation>
 <translation id="1333965224356556482">ਸਾਈਟਾਂ ਨੂੰ ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -1305,7 +1304,6 @@
 <translation id="2182058453334755893">ਤੁਹਾਡੇ ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2183570493397356669">'ਜਾਰੀ ਰੱਖੋ' ਬਟਨ ਨੂੰ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2184515124301515068">Chrome ਨੂੰ ਚੁਣਨ ਦਿਓ ਕਿ ਸਾਈਟਾਂ ਕਦੋਂ ਧੁਨੀ ਚਲਾ ਸਕਦੀਆਂ ਹਨ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
-<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">ਪੰਨੇ ਨੂੰ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2187675480456493911">ਤੁਹਾਡੇ ਖਾਤੇ 'ਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਗਿਆ। ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਵੱਲੋਂ ਸੋਧੀਆਂ ਗਈਆਂ ਸੈਟਿੰਗਾਂ ਦਾ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ਸਰਵਰ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਆਯਾਤ ਗੜਬੜ</translation>
@@ -1367,7 +1365,6 @@
 <translation id="2241053333139545397">ਕੁਝ ਵੈਬਸਾਈਟਾਂ ਤੇ ਆਪਣਾ ਡਾਟਾ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="2241634353105152135">ਸਿਰਫ ਇੱਕ ਵਾਰ</translation>
 <translation id="2242687258748107519">ਫਾਈਲ ਜਾਣਕਾਰੀ</translation>
-<translation id="2245296100676446525">ਇਸ ਡੀਵਾਈਸ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਸਿੰਕ ਕੀਤੀ ਜਾ ਰਹੀ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਿੰਕ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2245603955208828424">ਆਈਟਮਾਂ ਵਿਚਾਲੇ ਇੱਕ ਤੋਂ ਦੂਜੇ ਅੱਖਰ ਤੱਕ ਜਾਣ ਲਈ ਤੀਰ ਕੁੰਜੀਆਂ ਵਰਤੋ</translation>
 <translation id="2246129643805925002">ਤੁਹਾਨੂੰ ਨਵੀਨਤਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦੇਣ ਅਤੇ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸੁਧਾਰ ਕਰਨ ਲਈ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਬੈਕਗ੍ਰਾਊਂਡ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਹੁੰਦੀ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਅੱਪਡੇਟ ਸੰਬੰਧੀ ਤਰਜੀਹਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2246549592927364792">ਕੀ Google ਤੋਂ ਚਿੱਤਰ ਵਰਣਨ ਪ੍ਰਾਪਤ ਕਰਨੇ ਹਨ?</translation>
@@ -1553,7 +1550,6 @@
 <translation id="2381499968174336913">ਸਾਂਝੀ ਕੀਤੀ ਟੈਬ ਦੀ ਪੂਰਵ-ਝਲਕ</translation>
 <translation id="2381756643783702095">ਭੇਜਣ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ (ਸਿਫ਼ਾਰਿਸ਼ ਕੀਤਾ)</translation>
 <translation id="2383825469508278924">ਕੀ-ਬੋਰਡ ਦੀਆਂ ਕੁੰਜੀਆਂ ਦੀ ਮੈਪਿੰਗ, ਫੰਕਸ਼ਨ ਕੁੰਜੀਆਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਬਦਲੋ</translation>
-<translation id="2386202302581016807">ਤੁਹਾਡੀ ਉਪਲਬਧ ਡੀਵਾਈਸ ਸਟੋਰੇਜ ਬਹੁਤ ਘੱਟ ਹੈ ਜਿਸ ਕਰਕੇ ਸੈੱਟਅੱਪ ਪੂਰਾ ਨਹੀਂ ਹੋ ਸਕਦਾ</translation>
 <translation id="2387052489799050037">ਹੋਮ 'ਤੇ ਜਾਓ</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (ਮੌਜੂਦਾ)</translation>
 <translation id="2389775852302560582">IP ਪਤਾ</translation>
@@ -2264,7 +2260,6 @@
 <translation id="3031557471081358569">ਆਯਾਤ ਕਰਨ ਲਈ ਆਈਟਮਾਂ ਚੁਣੋ:</translation>
 <translation id="3032204772252313646">ਸਵੈ ਸੁਰਖੀਆਂ</translation>
 <translation id="3033348223765101500">ਆਪਣਾ ਡਾਟਾ ਕੰਟਰੋਲ ਕਰੋ</translation>
-<translation id="3034627908241330765">ਕੋਈ ਹੋਰ Steam ਸੈੱਟਅੱਪ ਚੱਲ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਸੈੱਟਅੱਪ ਨੂੰ ਦੁਬਾਰਾ ਚਲਾਉਣ ਤੋਂ ਪਹਿਲਾਂ ਇਸਦੇ ਪੂਰਾ ਹੋਣ ਤੱਕ ਉਡੀਕ ਕਰੋ।</translation>
 <translation id="3036327949511794916">ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਵਾਪਸ ਕਰਨ ਦੀ ਸਮਾਂ-ਸੀਮਾ ਲੰਘ ਗਈ ਹੈ।</translation>
 <translation id="3036546437875325427">ਫਲੈਸ਼ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3037754279345160234">ਡੋਮੇਨ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਣ ਲਈ ਸੰਰੂਪਣ ਨੂੰ ਪਾਰਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -2277,7 +2272,6 @@
 <translation id="3046178388369461825">Linux ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਬਹੁਤ ਘੱਟ ਹੈ</translation>
 <translation id="3046910703532196514">ਵੈਬਸਫ਼ਾ, ਪੂਰਾ</translation>
 <translation id="304747341537320566">ਬੋਲੀ ਇੰਜਣ</translation>
-<translation id="3048051495640130973">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਜਾ ਕੇ ਇਹ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹੋ ਕਿ ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਕਦੋਂ ਚਾਲੂ ਹੋਵੇ</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> ਵਿਕਰੇਤਾ ਦੇ HID ਡੀਵਾਈਸ</translation>
 <translation id="3048917188684939573">ਕਾਸਟ ਅਤੇ ਡੀਵਾਈਸ ਲੌਗ</translation>
 <translation id="3051250416341590778">ਡਿਸਪਲੇ ਦਾ ਆਕਾਰ</translation>
@@ -2321,7 +2315,6 @@
 <translation id="3090819949319990166"><ph name="TEMP_CRX_FILE" /> 'ਤੇ ਬਾਹਰੀ crx ਫਾਈਲ ਨੂੰ ਕਾਪੀ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" ਪੇਅਰ ਕੀਤਾ</translation>
 <translation id="3093714882666365141">ਸਾਈਟਾਂ ਨੂੰ ਭੁਗਤਾਨ ਹੈਂਡਲਰ ਸਥਾਪਤ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
-<translation id="3093958632721393232">ਸਿਰਫ਼ ਉਦੋਂ ਚਾਲੂ ਕਰੋ ਜਦੋਂ ਮੇਰੀ ਬੈਟਰੀ ਘੱਟ ਹੋਵੇ</translation>
 <translation id="3094141017404513551">ਇਹ ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ <ph name="EXISTING_USER" /> ਤੋਂ ਵੱਖ ਕਰ ਦੇਵੇਗਾ</translation>
 <translation id="3095871294753148861">ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਬ੍ਰਾਊਜ਼ਰ ਡਾਟੇ ਦਾ ਮੁੱਖ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨ ਬੰਦ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਹਟਾ ਵੀ ਸਕਦੇ ਹੋ।}one{{NUM_EXTENSIONS} ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨ ਬੰਦ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ ਹਟਾ ਵੀ ਸਕਦੇ ਹੋ।}other{{NUM_EXTENSIONS} ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨਾਂ ਬੰਦ ਹਨ। ਤੁਸੀਂ ਇਹਨਾਂ ਨੂੰ ਹਟਾ ਵੀ ਸਕਦੇ ਹੋ।}}</translation>
@@ -2369,7 +2362,6 @@
 <translation id="3142562627629111859">ਨਵਾਂ ਗਰੁੱਪ</translation>
 <translation id="3143515551205905069">ਸਿੰਕ ਰੱਦ ਕਰੋ</translation>
 <translation id="3143754809889689516">ਸ਼ੁਰੂ ਤੋਂ ਚਲਾਓ</translation>
-<translation id="3143937294861726703">ਮੈਮੋਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="3144647712221361880">ਦੇ ਤੌਰ 'ਤੇ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="3149510190863420837">Chrome ਐਪਸ</translation>
 <translation id="3150693969729403281">ਹੁਣੇ ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਓ</translation>
@@ -2528,8 +2520,6 @@
 <translation id="3315442055907669208">ਰੀਡਰ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਵੋ</translation>
 <translation id="3317459757438853210">ਦੋ-ਪੱਖੀ</translation>
 <translation id="3317678681329786349">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਬਲਾਕ ਕੀਤੇ ਗਏ</translation>
-<translation id="3320620783302968370">ਜੇ ਸਮੱਸਿਆ ਬਣੀ ਰਹਿੰਦੀ ਹੈ, ਤਾਂ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰ ਕੇ ਦੇਖੋ
-    ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ (ਖਤਰਨਾਕ ਸਾਈਟਾਂ ਤੋਂ ਸੁਰੱਖਿਆ) ਅਤੇ ਹੋਰ ਸੁਰੱਖਿਆ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{ਇਸ ਡਾਟੇ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ। ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਹਟਾ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।}=1{ਇਸ ਫ਼ਾਈਲ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ। ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਹਟਾ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।}other{ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਵਿੱਚ ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਖਤਰਨਾਕ ਸਮੱਗਰੀ ਹੈ। ਇਸ ਸਮੱਗਰੀ ਨੂੰ ਹਟਾ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।}}</translation>
 <translation id="3323521181261657960">ਬੋਨਸ! ਤੁਹਾਡਾ ਸਕ੍ਰੀਨ ਸਮਾਂ ਵਧਾਇਆ ਗਿਆ</translation>
@@ -2685,7 +2675,6 @@
 <translation id="3462311546193741693">ਤੁਹਾਨੂੰ ਲਗਭਗ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਆਪਣੇ 'Google ਖਾਤੇ' 'ਤੇ ਸਾਈਨ-ਇਨ ਰਹੋਗੇ ਤਾਂ ਜੋ ਤੁਹਾਡਾ ਸਿੰਕ ਕੀਤਾ ਡਾਟਾ ਕਲੀਅਰ ਕੀਤਾ ਜਾ ਸਕੇ।</translation>
 <translation id="3462413494201477527">ਕੀ ਖਾਤਾ ਸੈੱਟਅੱਪ ਰੱਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="346298925039590474">ਇਹ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਇਸ ਡੀਵਾਈਸ ਦੇ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਉਪਲਬਧ ਰਹੇਗਾ</translation>
-<translation id="3463015289462934089">ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="3464145797867108663">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="346431825526753">ਇਹ <ph name="CUSTODIAN_EMAIL" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਬੱਚਿਆਂ ਦਾ ਇੱਕ ਖਾਤਾ ਹੈ।</translation>
 <translation id="346546413339447252"><ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> ਅਤੇ ਹੋਰਾਂ ਲਈ ਛੋਟਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -3569,7 +3558,6 @@
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਆਪਣੇ ਬੱਚੇ ਦੀਆਂ ChromeOS ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਦੀ ਆਗਿਆ ਦੇਣਾ ਸ਼ੁਰੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ। ਜੇ ਤੁਸੀਂ ਇੱਕ ਡੋਮੇਨ ਪ੍ਰਸ਼ਾਸਕ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਵਿੱਚ ਜਾ ਕੇ ਬਦਲ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਦੀਆਂ ਜ਼ਰੂਰੀ ਸੇਵਾਵਾਂ ਜਿਵੇਂ ਕਿ ਸਿਸਟਮ ਅੱਪਡੇਟ ਅਤੇ ਸੁਰੱਖਿਆ ਲਈ ਜ਼ਰੂਰੀ ਜਾਣਕਾਰੀ ਨੂੰ ਭੇਜਣ ਦੀ ਸਮਰੱਥਾ 'ਤੇ ਕੋਈ ਅਸਰ ਨਹੀਂ ਪੈਂਦਾ।<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">ਇਸ ਪੰਨੇ ਕੋਲ ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
-<translation id="4302577930366020750">ਕਿਰਪਾ ਕਰਕੇ Steam ਨੂੰ ਵਰਤਣ ਲਈ ਆਪਣੇ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="4303079906735388947">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਲਈ ਇੱਕ ਨਵਾਂ ਪਿੰਨ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="4304713468139749426">ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="4305402730127028764"><ph name="DEVICE_NAME" /> 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
@@ -3701,7 +3689,6 @@
 <translation id="4427306783828095590">ਧੋਖਾਧੜੀ ਅਤੇ ਮਾਲਵੇਅਰ ਨੂੰ ਬਲਾਕ ਕਰਨ ਵਾਸਤੇ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਹੋਰ ਵੱਧ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
 <translation id="4427365070557649936">ਤਸਦੀਕੀ ਕੋਡ ਦੀ ਪੁਸ਼ਟੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="4429163740524851942">ਭੌਤਿਕ ਕੀ-ਬੋਰਡ ਖਾਕਾ</translation>
-<translation id="4429239357082509581">Steam ਕੋਲ ਚਲਾਉਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4430019312045809116">ਵੌਲਿਊਮ</translation>
 <translation id="4430369329743628066">ਬੁੱਕਮਾਰਕ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4430422687972614133">ਆਭਾਸੀ ਕਾਰਡ ਚਾਲੂ ਕਰੋ</translation>
@@ -3970,8 +3957,6 @@
 <translation id="4675828034887792601">ਸਾਈਟਾਂ ਖੋਜਣ ਲਈ ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ ਅਤੇ ਆਪਣੇ ਖੋਜ ਇੰਜਣ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4676595058027112862">ਫ਼ੋਨ ਹੱਬ, ਹੋਰ ਜਾਣੋ</translation>
 <translation id="4677772697204437347">GPU ਮੈਮਰੀ</translation>
-<translation id="4677970983462111944">ਇਸ ਡੀਵਾਈਸ 'ਤੇ Steam ਨੂੰ ਆਗਿਆ ਨਹੀਂ ਹੈ। ਇਜਾਜ਼ਤ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ
-    ਗੜਬੜ ਕੋਡ: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">ਕੈਮਰਾ ਬੰਦ ਹੈ</translation>
 <translation id="4680105648806843642">ਇਸ ਪੰਨੇ 'ਤੇ ਧੁਨੀ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4681453295291708042">ਨਜ਼ਦੀਕੀ ਸਾਂਝ ਬੰਦ ਕਰੋ</translation>
@@ -4288,7 +4273,6 @@
 <translation id="49896407730300355">ਕਾ&amp;ਊਂਟਰਕਲੌਕਵਾਈਜ ਰੋਟੇਟ ਕਰੋ</translation>
 <translation id="4989966318180235467">ਜਾਂਚੋ&amp;ਪਿਛੋਕੜ ਸਫ਼ਾ</translation>
 <translation id="4991420928586866460">ਉੱਪਰਲੀ-ਕਤਾਰ ਦੀਆਂ ਕੁੰਜੀਆਂ ਨਾਲ ਫੰਕਸ਼ਨ ਕੁੰਜੀਆਂ ਦੇ ਤੌਰ ਤੇ ਵਿਵਹਾਰ ਕਰੋ</translation>
-<translation id="4991858732577603540">ਕਿਰਪਾ ਕਰਕੇ ਥੋੜ੍ਹੀ ਦੇਰ ਉਡੀਕ ਕਰੋ ਅਤੇ Steam ਨੂੰ ਦੁਬਾਰਾ ਚਲਾਓ</translation>
 <translation id="4992458225095111526">ਪਾਵਰਵਾਸ਼ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4992473555164495036">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਉਪਲਬਧ ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਨੂੰ ਸੀਮਤ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="4994754230098574403">ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -4754,7 +4738,6 @@
 <translation id="5463275305984126951"><ph name="LOCATION" /> ਦਾ ਇਨਬੌਕਸ</translation>
 <translation id="5463450804024056231"><ph name="DEVICE_TYPE" /> ਈਮੇਲਾਂ ਲਈ ਸਾਈਨ-ਅੱਪ ਕਰੋ</translation>
 <translation id="5463625433003343978">ਡੀਵਾਈਸ ਲੱਭੇ ਜਾ ਰਹੇ ਹਨ...</translation>
-<translation id="5463845647891602726">ਖਾਲੀ ਜਗ੍ਹਾ ਨੂੰ ਵਧਾਉਣ ਲਈ, ਡੀਵਾਈਸ ਵਿੱਚੋਂ ਫ਼ਾਈਲਾਂ ਮਿਟਾਓ</translation>
 <translation id="5463856536939868464">ਮੀਨੂ ਵਿੱਚ ਲੁਕਾਏ ਗਏ ਬੁੱਕਮਾਰਕ ਹਨ</translation>
 <translation id="5464660706533281090">ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬੱਚਾ ਬਦਲ ਨਹੀਂ ਸਕਦਾ।</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” ਪੇਸਟ ਕਰਕੇ ਖੋਜੋ</translation>
@@ -5122,6 +5105,7 @@
 <translation id="5812674658566766066">ਸਭ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="5815645614496570556">X.400 ਪਤਾ</translation>
 <translation id="5816434091619127343">ਬੇਨਤੀ ਕੀਤੇ ਪ੍ਰਿੰਟਰ ਬਦਲਾਵਾਂ ਨਾਲ ਪ੍ਰਿੰਟਰ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੇਗੀ।</translation>
+<translation id="581659025233126501">ਸਿੰਕ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5817069030404929329">ਕੀ ਪਾਸਵਰਡਾਂ ਨੂੰ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਉਣਾ ਹੈ?</translation>
 <translation id="5817918615728894473">ਜੋੜਾ</translation>
 <translation id="5821565227679781414">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ</translation>
@@ -5300,7 +5284,6 @@
 <translation id="5975792506968920132">ਬੈਟਰੀ ਚਾਰਜ ਪ੍ਰਤੀਸ਼ਤ</translation>
 <translation id="5976160379964388480">ਹੋਰ</translation>
 <translation id="5978277834170881274">&amp;ਮੂਲ ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਰਤੋ</translation>
-<translation id="5978395054855988504">ਬੈਟਰੀ ਸੇਵਰ ਚਾਲੂ ਹੈ</translation>
 <translation id="5978493744931296692">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਹੋਰ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਬੰਦ ਕੀਤਾ ਹੈ</translation>
 <translation id="5979084224081478209">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{ਤੁਸੀਂ 1 ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ}one{ਤੁਸੀਂ {NUM_EXTENSIONS} ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ}other{ਤੁਸੀਂ {NUM_EXTENSIONS} ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰ ਦਿੱਤਾ ਹੈ}}</translation>
@@ -7282,7 +7265,6 @@
 <translation id="7870790288828963061">ਨਵੇਂ ਵਰਜਨ ਵਾਲੀਆਂ ਕੋਈ ਕਿਓਸਕ ਐਪਾਂ ਨਹੀਂ ਮਿਲਿਆਂ। ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ। ਕਿਰਪਾ ਕਰਕੇ USB ਸਟਿੱਕ ਹਟਾਓ।</translation>
 <translation id="7871049986386271121">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮੇਸ਼ਾਂ</translation>
 <translation id="7871109039747854576">ਉਮੀਦਵਾਰ ਸੂਚੀ ਨੂੰ ਸਫ਼ਾਬੱਧ ਕਰਨ ਲਈ <ph name="COMMA" /> ਅਤੇ <ph name="PERIOD" /> ਕੁੰਜੀਆਂ ਵਰਤੋ</translation>
-<translation id="7872494313446521576"><ph name="ORIGIN" /> 'ਤੇ "<ph name="EXTENSIONS_REQUESTING_ACCESS" />"" ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ ਕਲਿੱਕ ਕਰੋ:</translation>
 <translation id="787268756490971083">ਬੰਦ</translation>
 <translation id="7872758299142009420">ਬਹੁਤ ਜ਼ਿਆਦਾ ਗਰੁੱਪ ਜੋੜੇ ਗਏ ਹਨ: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Chrome ਬੈਕਗ੍ਰਾਊਂਡਾਂ</translation>
@@ -7697,7 +7679,6 @@
 <translation id="8248381369318572865">ਆਪਣੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਤੱਕ ਪਹੁੰਚ ਕਰ ਕੇ ਆਪਣੀ ਬੋਲੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰੋ</translation>
 <translation id="8248887045858762645">Chrome ਲਈ ਨੁਕਤਾ</translation>
 <translation id="8249048954461686687">OEM ਫੋਲਡਰ</translation>
-<translation id="8249239468199142122">ਬੈਟਰੀ ਸੇਵਰ</translation>
 <translation id="8249615410597138718">ਆਪਣੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="8250210000648910632">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਭਰ ਗਈ ਹੈ</translation>
 <translation id="8251441930213048644">ਹੁਣੇ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
@@ -7901,7 +7882,6 @@
 <translation id="8440630305826533614">Linux ਐਪਾਂ</translation>
 <translation id="844063558976952706">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮੇਸ਼ਾਂ</translation>
 <translation id="8441313165929432954">ਟੈਦਰਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ/ਬੰਦ ਕਰੋ</translation>
-<translation id="8443795068008423036">ਕਿਰਪਾ ਕਰਕੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8443986842926457191">URL 2048 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਹੈ</translation>
 <translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8447409163267621480">ਜਾਂ ਤਾਂ Ctrl ਜਾਂ Alt ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -8232,7 +8212,6 @@
 <translation id="8763927697961133303">USB ਡੀਵਾਈਸ</translation>
 <translation id="8766796754185931010">ਕੋਟੋਇਰੀ</translation>
 <translation id="8767621466733104912">Chrome ਨੂੰ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੱਪਡੇਟ ਕਰੋ</translation>
-<translation id="8769901904650373714">Steam ਸੈੱਟਅੱਪ ਨਾਲ ਕੋਈ ਸਮੱਸਿਆ ਹੋ ਗਈ</translation>
 <translation id="8770406935328356739">ਐਕਸਟੈਂਸ਼ਨ ਰੂਟ ਡਾਇਰੈਕਟਰੀ</translation>
 <translation id="8771300903067484968">ਸ਼ੁਰੂਆਤੀ ਪੰਨੇ ਦੇ ਬੈਕਗ੍ਰਾਊਂਡ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬੈਕਗ੍ਰਾਊਂਡ ਵਜੋਂ ਰੀਸੈੱਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8773302562181397928"><ph name="PRINTER_NAME" /> ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -8749,7 +8728,6 @@
 <translation id="964286338916298286">ਤੁਹਾਡੇ IT ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਲਈ 'Chrome ਦੀਆਂ ਆਕਰਸ਼ਕ ਪੇਸ਼ਕਸ਼ਾਂ' ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{ਐਪਲੀਕੇਸ਼ਨ}one{ਐਪਲੀਕੇਸ਼ਨ}other{ਐਪਲੀਕੇਸ਼ਨਾਂ}}</translation>
 <translation id="964790508619473209">ਸਕ੍ਰੀਨ ਦਾ ਪ੍ਰਬੰਧ</translation>
-<translation id="965175368833098333">ਮੈਮੋਰੀ ਸੇਵਰ ਵੱਲੋਂ ਅਕਿਰਿਆਸ਼ੀਲ ਟੈਬਾਂ ਵਿੱਚੋਂ ਮੈਮੋਰੀ ਲਈ ਮੁੜ-ਦਾਅਵਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਹ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਦੇ ਸਰੋਤਾਂ ਨੂੰ ਹੋਰ ਕਾਰਜਾਂ ਲਈ ਖਾਲੀ ਕਰਦਾ ਹੈ।</translation>
 <translation id="965211523698323809">ਆਪਣੀ <ph name="DEVICE_TYPE" /> ਤੋਂ ਲਿਖਤ ਸੁਨੇਹੇ ਭੇਜੋ ਅਤੇ ਪ੍ਰਾਪਤ ਕਰੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast ਸੰਬੰਧੀ ਕਿਸੇ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="967398046773905967">ਕਿਸੇ ਵੀ ਸਾਈਟ ਨੂੰ HID ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਨਾ ਕਰਨ ਦਿਓ</translation>

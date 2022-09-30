@@ -859,6 +859,7 @@
 <translation id="3261488570342242926">تعرّف على البطاقات الافتراضية.</translation>
 <translation id="3264837738038045344">‏زر إدارة إعدادات Chrome: اضغط على مفتاح Enter للانتقال إلى إعدادات Chrome.</translation>
 <translation id="3266793032086590337">القيمة (المتعارضة)</translation>
+<translation id="3266972086368072861">{NUM_COOKIES,plural, =0{ما مِن مواقع إلكترونية محظورة، بما في ذلك المواقع الإلكترونية ذات الصلة}=1{موقع إلكتروني واحد محظور، بما في ذلك المواقع الإلكترونية ذات الصلة}two{موقعان إلكترونيان محظوران، بما في ذلك المواقع الإلكترونية ذات الصلة}few{# مواقع إلكترونية محظورة، بما في ذلك المواقع الإلكترونية ذات الصلة}many{# موقعًا إلكترونيًا محظورًا، بما في ذلك المواقع الإلكترونية ذات الصلة}other{# موقع إلكتروني محظور، بما في ذلك المواقع الإلكترونية ذات الصلة}}</translation>
 <translation id="3268451620468152448">علامات التبويب المفتوحة</translation>
 <translation id="3270156322180235608">سفر جوي</translation>
 <translation id="3270847123878663523">تراجع عن إعادة الت&amp;رتيب</translation>
@@ -957,6 +958,7 @@
 <translation id="3528171143076753409">شهادة الخادم غير موثوق فيها.</translation>
 <translation id="3528485271872257980">بني داكن</translation>
 <translation id="3530944546672790857">{COUNT,plural, =0{عنصر واحد على الأقل على الأجهزة المتزامنة}=1{عنصر واحد (1) (وأكثر على الأجهزة المتزامنة)}two{عنصران (#) (وأكثر على الأجهزة المتزامنة)}few{# عناصر (وأكثر على الأجهزة المتزامنة)}many{# عنصرًا (وأكثر على الأجهزة المتزامنة)}other{# عنصر (وأكثر على الأجهزة المتزامنة)}}</translation>
+<translation id="3531366304259615706">استخدام قفل الشاشة</translation>
 <translation id="3531780078352352885">أوراق المهمة</translation>
 <translation id="3532844647053365774">يريد <ph name="HOST" /> استخدام الميكروفون.</translation>
 <translation id="3533328374079021623">صندوق البريد الإلكتروني 5</translation>
@@ -1234,6 +1236,7 @@
 <translation id="4277028893293644418">إعادة ضبط كلمة المرور</translation>
 <translation id="4278390842282768270">منح الإذن</translation>
 <translation id="4282346679996504092">تم إيقاف التنبيهات لهذا المنتج وتمت إزالة الإشارة المرجعية من الصفحة.</translation>
+<translation id="4285498937028063278">إزالة تثبيت</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{‏تم حفظ هذه البطاقة في حسابك على Google}zero{‏تم حفظ هذه البطاقات في حسابك على Google}two{‏تم حفظ هاتين البطاقتين في حسابك على Google}few{‏تم حفظ هذه البطاقات في حسابك على Google}many{‏تم حفظ هذه البطاقات في حسابك على Google}other{‏تم حفظ هذه البطاقات في حسابك على Google}}</translation>
 <translation id="4287885627794386150">حسابك مؤهّل للحصول على إصدار تجريبي ولكنّه غير نشِط.</translation>
 <translation id="4297502707443874121">صورة مصغّرة لصفحة <ph name="THUMBNAIL_PAGE" /></translation>
@@ -1672,6 +1675,7 @@
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">المكدِّس 4</translation>
 <translation id="5421136146218899937">محو بيانات التصفّح...</translation>
+<translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ما مِن مواقع إلكترونية محظورة}=1{موقع إلكتروني واحد محظور}two{موقعان إلكترونيان محظوران}few{# مواقع إلكترونية محظورة}many{# موقعًا إلكترونيًا محظورًا}other{# موقع إلكتروني محظور}}</translation>
 <translation id="5426179911063097041">يريد موقع <ph name="SITE" /> إرسال إشعارات إليك.</translation>
 <translation id="5428105026674456456">الإسبانية</translation>
 <translation id="5430298929874300616">إزالة إشارة مرجعية</translation>
@@ -1777,6 +1781,7 @@
 <translation id="571510845185711675">أطباء بيطريون</translation>
 <translation id="5720705177508910913">المستخدم الحالي</translation>
 <translation id="5723287205918986743">المجال العسكري</translation>
+<translation id="5725567311035061582">إدارة ملفات تعريف الارتباط وبيانات الموقع الإلكتروني</translation>
 <translation id="5730040223043577876">‏يُوصي Chrome بإعادة تحديد كلمة المرور في حال إعادة استخدامها في مواقع إلكترونية أخرى.</translation>
 <translation id="5736165827969430182">معادن وتعدين</translation>
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{‏حفظ بطاقة واحدة في حسابك على Google}zero{‏حفظ بطاقات في حسابك على Google}two{‏حفظ بطاقتين في حسابك على Google}few{‏حفظ بطاقات في حسابك على Google}many{‏حفظ بطاقات في حسابك على Google}other{‏حفظ بطاقات في حسابك على Google}}</translation>
@@ -2354,6 +2359,7 @@
 <translation id="7372973238305370288">نتيجة البحث</translation>
 <translation id="7374461526650987610">معالجات البروتوكول</translation>
 <translation id="7374733840632556089">‏تحدث هذه المشكلة بسبب شهادة ثبّتها أنت أو ثبّتها مستخدم آخر على جهازك. من المعروف أن الشهادة تُستخدم لمراقبة الشبكات واعتراضها، ولا يثق Chrome بها. وعلى الرغم من وجود بعض الحالات المشروعة للمراقبة، كما هو الحال في شبكة المدرسة أو الشركة، يريد Chrome التأكد من أنك تدرك حدوث ذلك، حتى لو لم يكن بإمكانك إيقافه. يمكن أن تحدث عملية المراقبة في أي متصفّح أو تطبيق يصل إلى الويب.</translation>
+<translation id="7375532151824574023">{NUM_COOKIES,plural, =0{ما مِن مواقع إلكترونية مسموح بها}=1{موقع إلكتروني واحد مسموح به}two{موقعان إلكترونيان مسموح بهما}few{# مواقع إلكترونية مسموح بها}many{# موقعًا إلكترونيًا مسموحًا به}other{# موقع إلكتروني مسموح به}}</translation>
 <translation id="7375818412732305729">تم إرفاق ملف</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" />‏ - <ph name="FULL_DATE" /></translation>
 <translation id="7378594059915113390">عناصر التحكم في الوسائط</translation>
@@ -2396,6 +2402,7 @@
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول هذه المشكلة.</translation>
 <translation id="7455133967321480974">استخدام الإعداد التلقائي العمومي (حظر)</translation>
 <translation id="7460618730930299168">يختلف هذا الفحص عن اختيارك. هل تريد المتابعة؟</translation>
+<translation id="7461924472993315131">تثبيت</translation>
 <translation id="7463075493919226237">كرة القدم الأسترالية</translation>
 <translation id="7469935732330206581">النموذج غير آمن</translation>
 <translation id="7473891865547856676">لا، شكرًا</translation>
@@ -2622,6 +2629,7 @@
 <translation id="8055534648776115597">تعليم مهني وتعليم مستمر</translation>
 <translation id="8057711352706143257">لم يتم إعداد "<ph name="SOFTWARE_NAME" />" بشكل صحيح. يؤدي عادةً إلغاء تثبيت "<ph name="SOFTWARE_NAME" />" إلى إصلاح المشكلة. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">إنتاج غذائي</translation>
+<translation id="8066225060526005217">مُدارة بواسطة إعدادات ملفات تعريف الارتباط</translation>
 <translation id="8067872629359326442">‏لقد أدخلت للتو كلمة مرورك في موقع إلكتروني مريب. يمكن لـ Chromium مساعدتك. لتغيير كلمة مرورك وإشعار Google أن حسابك قد يكون معرّضًا للخطر، انقر على "حماية الحساب".</translation>
 <translation id="8070439594494267500">رمز التطبيق</translation>
 <translation id="8075736640322370409">‏إنشاء "جدول بيانات Google" جديد بسرعة</translation>
@@ -2713,6 +2721,7 @@
 <translation id="829335040383910391">الصوت</translation>
 <translation id="8294431847097064396">المصدر</translation>
 <translation id="8296205692406981542">منتزهات وحدائق عامة ومحلية</translation>
+<translation id="8297545700510100061">يتم استخدام ملفات تعريف الارتباط وبيانات الموقع الإلكتروني الأخرى لتذكُّر بيانات تسجيل دخولك أو تقديم إعلانات مخصّصة لك مثلاً. لإدارة ملفات تعريف الارتباط لجميع المواقع الإلكترونية، يمكنك الانتقال إلى <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">‏قد يتتطلب Wi-Fi الذي تستخدمه (<ph name="WIFI_NAME" />) زيارة <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="8299269255470343364">اليابانية</translation>
 <translation id="8303854710873047864">تم عرض قسم "<ph name="SECTION" />"</translation>

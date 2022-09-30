@@ -344,7 +344,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1327272175893960498">Richieste di Kerberos</translation>
 <translation id="1327495825214193325">Per attivare il debug ADB è necessario riavviare questo <ph name="DEVICE_TYPE" />. Per disattivarlo è necessario ripristinare le impostazioni di fabbrica.</translation>
 <translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
-<translation id="1329191040029425999">Assicurati che il dispositivo sia aggiornato e riprova</translation>
 <translation id="1331977651797684645">Ero io.</translation>
 <translation id="1333489022424033687">Alcune funzionalità sul sito <ph name="ORIGIN" /> potrebbero non funzionare se non cancelli i dati memorizzati da altri siti sul dispositivo</translation>
 <translation id="1333965224356556482">Non consentire ai siti di vedere la tua posizione</translation>
@@ -1292,7 +1291,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2182058453334755893">Copia negli appunti eseguita</translation>
 <translation id="2183570493397356669">Pulsante Continua non attivo</translation>
 <translation id="2184515124301515068">Consenti a Chrome di scegliere quando i siti possono riprodurre audio (opzione consigliata)</translation>
-<translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Pagina condivisa da un altro dispositivo</translation>
 <translation id="2187675480456493911">Sincronizzata con altri dispositivi sul tuo account. Le impostazioni modificate da altri utenti non verranno sincronizzate. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Errore di importazione del certificato del server</translation>
@@ -1354,7 +1352,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2241053333139545397">Leggere e modificare i tuoi dati su una serie di siti web</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2242687258748107519">Info sul file</translation>
-<translation id="2245296100676446525">Attiva la sincronizzazione per trovare i tuoi preferiti, le tue password, la tua cronologia e altro ancora su questo dispositivo e su qualsiasi altro dispositivo su cui esegui la sincronizzazione.</translation>
 <translation id="2245603955208828424">Usa i tasti freccia per spostarti tra gli elementi lettera per lettera</translation>
 <translation id="2246129643805925002">Il tuo <ph name="DEVICE_TYPE" /> si aggiorna automaticamente in background per offrirti le funzionalità e i miglioramenti della sicurezza più recenti. Puoi rivedere le preferenze relative agli aggiornamenti in Impostazioni.</translation>
 <translation id="2246549592927364792">Vuoi recuperare le descrizioni delle immagini da Google?</translation>
@@ -1537,7 +1534,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2381499968174336913">Anteprima della scheda condivisa</translation>
 <translation id="2381756643783702095">Chiedi prima di inviare (opzione consigliata)</translation>
 <translation id="2383825469508278924">Cambia la mappatura dei tasti della tastiera, dei tasti funzione e altro ancora</translation>
-<translation id="2386202302581016807">Lo spazio di archiviazione disponibile sul dispositivo non è sufficiente per completare la configurazione</translation>
 <translation id="2387052489799050037">Vai alla schermata Home</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (attuale)</translation>
 <translation id="2389775852302560582">IP</translation>
@@ -2249,7 +2245,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3031557471081358569">Seleziona elementi da importare:</translation>
 <translation id="3032204772252313646">Sottotitoli codificati automatici</translation>
 <translation id="3033348223765101500">Controlla i tuoi dati</translation>
-<translation id="3034627908241330765">È in corso un'altra configurazione di Steam. Attendi il completamento di questa operazione prima di ripetere la configurazione.</translation>
 <translation id="3036327949511794916">Il termine per la restituzione di questo <ph name="DEVICE_TYPE" /> è scaduto.</translation>
 <translation id="3036546437875325427">Abilita Flash</translation>
 <translation id="3037754279345160234">Impossibile analizzare la configurazione per l'aggiunta al dominio. Contatta l'amministratore.</translation>
@@ -2262,7 +2257,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3046178388369461825">Lo spazio sul disco Linux sta per esaurirsi</translation>
 <translation id="3046910703532196514">Pagina web, completa</translation>
 <translation id="304747341537320566">Motori di riconoscimento vocale</translation>
-<translation id="3048051495640130973">Puoi stabilire quando attivare Risparmio energetico nelle impostazioni</translation>
 <translation id="3048336643003835855">Dispositivi HID del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Log del dispositivo e della trasmissione</translation>
 <translation id="3051250416341590778">Dimensioni display</translation>
@@ -2306,7 +2300,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3090819949319990166">Impossibile copiare il file crx esterno su <ph name="TEMP_CRX_FILE" />.</translation>
 <translation id="3090871774332213558">"<ph name="DEVICE_NAME" />" accoppiato</translation>
 <translation id="3093714882666365141">Non consentire ai siti di installare gestori dei pagamenti</translation>
-<translation id="3093958632721393232">Attiva solo quando la batteria è in esaurimento</translation>
 <translation id="3094141017404513551">In questo modo la tua navigazione verrà separata da quella di <ph name="EXISTING_USER" /></translation>
 <translation id="3095871294753148861">Preferiti, password e altri dati di navigazione sono sincronizzati con l'account principale.</translation>
 <translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 estensione potenzialmente dannosa è stata disattivata. Puoi anche rimuoverla.}other{{NUM_EXTENSIONS} estensioni potenzialmente dannose sono state disattivate. Puoi anche rimuoverle.}}</translation>
@@ -2354,7 +2347,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3142562627629111859">Nuovo gruppo</translation>
 <translation id="3143515551205905069">Annulla sincronizzazione</translation>
 <translation id="3143754809889689516">Riproduci dall'inizio</translation>
-<translation id="3143937294861726703">Risparmio memoria attivo</translation>
 <translation id="3144647712221361880">Apri link come</translation>
 <translation id="3149510190863420837">Applicazioni Chrome</translation>
 <translation id="3150693969729403281">Esegui subito il controllo di sicurezza</translation>
@@ -2513,8 +2505,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3315442055907669208">Avvia modalità Reader</translation>
 <translation id="3317459757438853210">Fronte retro</translation>
 <translation id="3317678681329786349">Videocamera e microfono bloccati</translation>
-<translation id="3320620783302968370">Se il problema persiste, prova a riavviare il dispositivo 
-    Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="3320630259304269485">Impostazioni di Navigazione sicura (protezione da siti pericolosi) e altre impostazioni di sicurezza</translation>
 <translation id="3323295311852517824">{NUM_FILES,plural, =0{Questi dati includono contenuti sensibili o pericolosi. Rimuovi questi contenuti e riprova.}=1{Questo file include contenuti sensibili o pericolosi. Rimuovi questi contenuti e riprova.}other{Questi file includono contenuti sensibili o pericolosi. Rimuovi questi contenuti e riprova.}}</translation>
 <translation id="3323521181261657960">Premio! Hai più tempo di utilizzo</translation>
@@ -2670,7 +2660,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3462311546193741693">Verrai disconnesso dalla maggior parte dei siti, ma non dal tuo Account Google, quindi i dati sincronizzati possono essere cancellati.</translation>
 <translation id="3462413494201477527">Annullare la creazione dell'account?</translation>
 <translation id="346298925039590474">Questa rete mobile sarà disponibile per tutti gli utenti su questo dispositivo</translation>
-<translation id="3463015289462934089">Assicurati che il dispositivo sia connesso a Internet.</translation>
 <translation id="3464145797867108663">Aggiungi profilo di lavoro</translation>
 <translation id="346431825526753">Si tratta di un account di minori gestito da <ph name="CUSTODIAN_EMAIL" />.</translation>
 <translation id="346546413339447252">Ricevi sconti per <ph name="MERCHANT_NAME_1" />, <ph name="MERCHANT_NAME_2" /> e altri ancora</translation>
@@ -3554,7 +3543,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BEGIN_PARAGRAPH2" />Puoi attivare o disattivare l'invio di questi report in qualsiasi momento nelle impostazioni del dispositivo Chrome OS di tuo figlio. Se sei un amministratore di dominio, puoi modificare questa impostazione nella Console di amministrazione.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.<ph name="END_PARAGRAPH3" /></translation>
 <translation id="4301671483919369635">Questa pagina è autorizzata a modificare i file</translation>
-<translation id="4302577930366020750">Riavvia il dispositivo per usare Steam</translation>
 <translation id="4303079906735388947">Configura un nuovo PIN per il token di sicurezza</translation>
 <translation id="4304713468139749426">Gestione password</translation>
 <translation id="4305402730127028764">Copia su <ph name="DEVICE_NAME" /></translation>
@@ -3686,7 +3674,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="4427365070557649936">Verifica del codice di conferma in corso…</translation>
 <translation id="4429163740524851942">Layout tastiera fisica</translation>
-<translation id="4429239357082509581">Steam non dispone dell'autorizzazione per l'esecuzione</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4430369329743628066">Aggiunto ai preferiti</translation>
 <translation id="4430422687972614133">Attiva la carta virtuale</translation>
@@ -3954,8 +3941,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4675828034887792601">Crea scorciatoie per cercare nei siti e gestire i motori di ricerca</translation>
 <translation id="4676595058027112862">Phone Hub, scopri di più</translation>
 <translation id="4677772697204437347">Memoria GPU</translation>
-<translation id="4677970983462111944">L'app Steam non è consentita su questo dispositivo. Contatta l'amministratore per avere l'autorizzazione 
-    Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="467823995058589466">La fotocamera è disattivata</translation>
 <translation id="4680105648806843642">L'audio è stato disattivato in questa pagina</translation>
 <translation id="4681453295291708042">Disattiva Condivisione nelle vicinanze</translation>
@@ -4272,7 +4257,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="49896407730300355">Ruota in senso anti&amp;orario</translation>
 <translation id="4989966318180235467">Ispeziona pagina in &amp;background</translation>
 <translation id="4991420928586866460">Considera i tasti della fila superiore come tasti funzione</translation>
-<translation id="4991858732577603540">Attendi qualche minuto ed esegui di nuovo Steam</translation>
 <translation id="4992458225095111526">Conferma Powerwash</translation>
 <translation id="4992473555164495036">L'amministratore ha limitato i metodi di immissione disponibili.</translation>
 <translation id="4994754230098574403">Configurazione in corso</translation>
@@ -4738,7 +4722,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5463275305984126951">Indice di <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Registrati per ricevere email relative a <ph name="DEVICE_TYPE" /></translation>
 <translation id="5463625433003343978">Ricerca di dispositivi in corso…</translation>
-<translation id="5463845647891602726">Per aumentare lo spazio disponibile, elimina file dal dispositivo</translation>
 <translation id="5463856536939868464">Menu contenente i Preferiti nascosti</translation>
 <translation id="5464660706533281090">Questa impostazione non può essere cambiata da utenti che sono bambini o ragazzi.</translation>
 <translation id="5466374726908360271">I&amp;ncolla e cerca "<ph name="SEARCH_TERMS" />"</translation>
@@ -5104,6 +5087,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5812674658566766066">Espandi tutto</translation>
 <translation id="5815645614496570556">Indirizzo X.400</translation>
 <translation id="5816434091619127343">Le modifiche richieste renderebbero la stampante inutilizzabile.</translation>
+<translation id="581659025233126501">Attiva la sincronizzazione</translation>
 <translation id="5817069030404929329">Vuoi spostare le password da questo dispositivo al tuo Account Google?</translation>
 <translation id="5817918615728894473">Accoppia</translation>
 <translation id="5821565227679781414">Crea scorciatoia</translation>
@@ -5281,7 +5265,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5975792506968920132">Percentuale di carica della batteria</translation>
 <translation id="5976160379964388480">Altri</translation>
 <translation id="5978277834170881274">&amp;Usa controllo ortografico di base</translation>
-<translation id="5978395054855988504">Risparmio energetico attivo</translation>
 <translation id="5978493744931296692">L'amministratore ha disattivato altri profili</translation>
 <translation id="5979084224081478209">Controlla password</translation>
 <translation id="5979156418378918004">{NUM_EXTENSIONS,plural, =1{Hai riattivato 1 estensione potenzialmente dannosa}other{Hai riattivato {NUM_EXTENSIONS} estensioni potenzialmente dannose}}</translation>
@@ -7261,7 +7244,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7870790288828963061">Nessuna app kiosk con versione più recente trovata. Non c'è nulla da aggiornare. Rimuovi la chiavetta USB.</translation>
 <translation id="7871049986386271121">Sempre su questo sito</translation>
 <translation id="7871109039747854576">Utilizza i tasti <ph name="COMMA" /> e <ph name="PERIOD" /> per il paging di un elenco di candidati</translation>
-<translation id="7872494313446521576">Fai clic per consentire "<ph name="EXTENSIONS_REQUESTING_ACCESS" />" su <ph name="ORIGIN" />:</translation>
 <translation id="787268756490971083">Off</translation>
 <translation id="7872758299142009420">Troppi gruppi nidificati: <ph name="ERROR_LINE" /></translation>
 <translation id="7874257161694977650">Sfondi di Chrome</translation>
@@ -7677,7 +7659,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8248381369318572865">Accesso al microfono e analisi delle tue parole</translation>
 <translation id="8248887045858762645">Suggerimento per Chrome</translation>
 <translation id="8249048954461686687">Cartella OEM</translation>
-<translation id="8249239468199142122">Risparmio energetico</translation>
 <translation id="8249615410597138718">Invia ai tuoi dispositivi</translation>
 <translation id="8250210000648910632">Spazio di archiviazione esaurito</translation>
 <translation id="8251441930213048644">Aggiorna ora</translation>
@@ -7881,7 +7862,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8440630305826533614">App Linux</translation>
 <translation id="844063558976952706">Sempre su questo sito</translation>
 <translation id="8441313165929432954">Attiva/disattiva tethering</translation>
-<translation id="8443795068008423036">Assicurati che il dispositivo sia aggiornato e riprova</translation>
 <translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8446884382197647889">Scopri di più</translation>
 <translation id="8447409163267621480">Includi CTRL o ALT</translation>
@@ -8212,7 +8192,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8766796754185931010">Kotoeri</translation>
 <translation id="8767621466733104912">Aggiorna automaticamente Chrome per tutti gli utenti</translation>
-<translation id="8769901904650373714">Si è verificato un problema con la configurazione di Steam</translation>
 <translation id="8770406935328356739">Directory principale dell'estensione</translation>
 <translation id="8771300903067484968">Lo sfondo della pagina iniziale è stato reimpostato allo sfondo predefinito.</translation>
 <translation id="8773302562181397928">Salva <ph name="PRINTER_NAME" /></translation>
@@ -8728,7 +8707,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="964286338916298286">Il tuo amministratore IT ha disattivato i vantaggi offerti da Chrome per il tuo dispositivo.</translation>
 <translation id="964439421054175458">{NUM_APLLICATIONS,plural, =1{Applicazione}other{Applicazioni}}</translation>
 <translation id="964790508619473209">Disposizione dello schermo</translation>
-<translation id="965175368833098333">Il Risparmio memoria può recuperare la memoria dalle schede non attive. Questo consente di liberare risorse del computer da usare per altre attività.</translation>
 <translation id="965211523698323809">Invia e ricevi SMS da <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Segnala un problema con Google Cast</translation>
 <translation id="967398046773905967">Non consentire ai siti di accedere ai dispositivi HID</translation>

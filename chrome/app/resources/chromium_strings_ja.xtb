@@ -305,6 +305,7 @@
 <translation id="7689606757190482937">同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="7745317241717453663">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
+<translation id="7786760609782648049">Chromium を高速化する</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7828947555739565424">このアカウントの Chromium プロファイルは、このデバイスにすでに存在します</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
@@ -332,7 +333,6 @@
 <translation id="8453117565092476964">インストーラ アーカイブが壊れているか無効です。Chromium をダウンロードし直してください。</translation>
 <translation id="8463672209299734063">任意: 診断と使用状況のデータを Google に自動送信して、Chromium OS の機能とパフォーマンスの改善に協力する。</translation>
 <translation id="8493179195440786826">Chromium は古いバージョンです</translation>
-<translation id="8522220489792889625">Chromium では必要に応じて、使用していないタブのメモリが再利用されます。これは [設定] でいつでも変更できます。</translation>
 <translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8558383651099478961">保護者が Chromium の「サイト、アプリ、拡張機能の権限」をオフにしました。この <ph name="EXTENSION_TYPE_PARAMETER" /> を追加することはできません。</translation>
 <translation id="8561285221328166383">今後、Chromium のアップデートを受信するには、macOS 10.13 以降が必要となります。このコンピュータでは macOS 10.12 が実行されています。</translation>

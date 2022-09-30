@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">စာရင်းမြင်ကွင်းသို့ ပြောင်းရန်</translation>
 <translation id="2377590462528165447">Linux နှင့် ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခု မျှဝေထားသည်</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ဖိုင်များ ရွေးချယ်ထားသည်</translation>
+<translation id="2383454254762599978">အမှိုက်ပုံးသို့ ထည့်ရန်</translation>
 <translation id="2387458720915042159">ပရောက်စီ ချိတ်ဆက်မှု အမျိုးအစား</translation>
 <translation id="2389832672041313158">ဗမာ/မြန်မာ</translation>
 <translation id="2392369802118427583">စသုံးရန်</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com သို့သွားရန်...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာမိတ္တူကူးပါ။</translation>
 <translation id="3556731189587832921">နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့နေသည်</translation>
 <translation id="3567221313191587603">သင့်ဖိုင်များကို အော့ဖ်လိုင်း ကြည့်ရှုခွင့်ရရန် ဖိုင်တစ်ဖိုင်ရွေးပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ကိုဖွင့်ပိတ်လုပ်ပါ။</translation>
 <translation id="357479282490346887">လီသွေနီယံ</translation>
 <translation id="3587482841069643663">အားလုံး</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">ဘင်္ဂါလီ အသံထွက်</translation>
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4017788180641807848">Workman ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
+<translation id="4019998208269143058">အမြန်သုံးဖိုင်များတွင် ပင်ထိုးရန်</translation>
 <translation id="4040753847560036377">PUK မမှန်ပါ</translation>
 <translation id="4057991113334098539">စဖွင့်နေပါသည်…</translation>
 <translation id="4092890906744441904">အိုင်းရစ်ရှ်</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">စီမံခန့်ခွဲသူ မူဝါဒက အကြံမပြုပါ-</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ကို ရွှေ့ထားသည်။</translation>
 <translation id="4176286497474237543">အမှိုက်ပုံးကို ယခုရှင်းရန်</translation>
+<translation id="4179621117429069925">ဤဖိုင်သည် အမှိုက်ပုံးထဲတွင် ရှိသည်</translation>
 <translation id="4186579485882418952">အော့ဖ်လိုင်းသုံးရန်</translation>
 <translation id="4193154014135846272">Google စာရွက်စာတမ်း</translation>
 <translation id="4197674956721858839">ဇစ်ရွေးချက်မှု</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အဝေးမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
 <translation id="4394980935660306080">ဤရက်သတ္တပတ် အစောပိုင်း</translation>
+<translation id="4398096759193130964">ဖိုင်များပြန်ယူပါ (သို့) ၎င်းတို့ကို အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ</translation>
 <translation id="4401287888955153199">အားလုံးထုတ်ယူရန်</translation>
 <translation id="4410695710508688828">ထုတ်ယူ၍ မရပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">InScript ကီးဘုတ်ဖြင့် ဟင်ဒီ</translation>
 <translation id="4801956050125744859">နှစ်ခုစလုံးကို ထားရှိရန်</translation>
 <translation id="4804827417948292437">ထောပတ်သီး</translation>
+<translation id="4805966553127040832">ဖိုင် <ph name="COUNT" /> ဖိုင် ပြန်ယူနေသည်</translation>
 <translation id="4823651846660089135">စက်ပစ္စည်းကို ဖတ်ခွင့်သာရှိသည်</translation>
 <translation id="4826849268470072925">တမီးလ် ITRANS</translation>
 <translation id="4839847978919684242">အရာ <ph name="SELCTED_FILES_COUNT" />ခု ရွေးထား</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">ဂါဇာနီယာပန်း</translation>
 <translation id="4943368462779413526">ဘောလုံး</translation>
 <translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> ပြန်ယူပြီးပြီ</translation>
 <translation id="4969785127455456148">အယ်လ်ဘမ်</translation>
 <translation id="4973523518332075481">စကားလုံး <ph name="MAX_LENGTH" /> လုံးနှင့် အောက်ရှိသည့် အမည်ကို အသုံးပြုပါ</translation>
 <translation id="4973970068702235170">ဇစ်လုပ်၍ မရပါ၊ မမျှော်လင့်သည့် အမှား- <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +558,7 @@
 <translation id="5691596662111998220">အူးပ်စ်၊ <ph name="FILE_NAME" /> မှာ မရှိတော့ပါ။</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />၊ ဖွင့်ရန်</translation>
 <translation id="5700087501958648444">အသံအချက်အလက်</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ကို အမှိုက်ပုံးသို့ ရွှေ့လိုက်သည်</translation>
 <translation id="5724172041621205163">Pattachote ကီးဘုတ်ဖြင့် ထိုင်း</translation>
 <translation id="5756666464756035725">ဟန်ဂေရီ QWERTY</translation>
 <translation id="5763377084591234761">ဂျာမန် (ဆွစ်ဇာလန်)</translation>
@@ -621,6 +629,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> မှတ်တမ်း</translation>
 <translation id="6321303798550928047">လက်ဝှေ့ယမ်းနေသည်</translation>
 <translation id="6327785803543103246">ဝဘ်ပရောက်စီ အလိုအလျောက် ရှာဖွေမှု</translation>
+<translation id="6337014272874260727">အမြန်သုံးဖိုင်များမှ ပင်ဖြုတ်ရန်</translation>
 <translation id="6339145975392024142">ယူအက်စ် နိုင်ငံတကာ (PC)</translation>
 <translation id="6346310558342052870">အသုံးပြုခွင့်ကို ကန့်သတ်ထားသည်</translation>
 <translation id="6356685157277930264">ဖိုင်များ အကြံပြုချက်ဝင်းဒိုး</translation>
@@ -661,6 +670,7 @@
 <translation id="6751256176799620176">ဖိုင်တွဲ ၁ ခု ရွေးချယ်ထားသည်</translation>
 <translation id="6755827872271341378">ChromeOS Flex စက်</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
+<translation id="6794539005637808366">ဖိုင်ကို ပြန်ယူပါ (သို့) ၎င်းကို အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ</translation>
 <translation id="6795884519221689054">ပန်ဒါဝက်ဝံ</translation>
 <translation id="6806699711453372963">Linux မျှဝေခြင်းကို စီမံရန်</translation>
 <translation id="6806796368146926706">ဂျပန်ကီးဘုတ်ဖြင့် အက္ခရာနှင့် ကိန်းဂဏန်းများ</translation>
@@ -697,6 +707,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ဆွီဒင်</translation>
 <translation id="6990081529015358884">သင့်ဆီမှာ နေရာ ကုန်သွားပြီ</translation>
+<translation id="6993826899923627728">ဤဖိုင်များသည် အမှိုက်ပုံးထဲတွင် ရှိသည်</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ဖိုင်တွဲရွေးထား</translation>
 <translation id="7008426324576352165">အပ်လုဒ်ပြီးစီးနိုင်ရန် သင့်အဖွဲ့အစည်းက သိုလှောင်ခန်း ထပ်မံလိုအပ်ပါသည်။</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +753,7 @@
 <translation id="7408870451288633753">ချက်</translation>
 <translation id="7417453074306512035">အီသီယိုးပီးယား ကီးဘုတ်</translation>
 <translation id="7417705661718309329">Google မြေပုံ</translation>
+<translation id="7419668828140929293">“<ph name="FILENAME" />” ကို ပြန်ယူနေသည်</translation>
 <translation id="7458955835361612701">လတ်တလောပုံများ မရှိပါ</translation>
 <translation id="7460898608667578234">ယူကရိန်းနီးယန်း</translation>
 <translation id="7469894403370665791">ဒီကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ရန်</translation>
@@ -770,6 +782,7 @@
 <translation id="7655441028674523381">Google Photos ကို အလွယ်ဝင်ကြည့်ခြင်း</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7663224033570512922">ဟင်ဒီ</translation>
+<translation id="7689532716264131859">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို အမှိုက်ပုံးသို့ ရွှေ့လိုက်သည်</translation>
 <translation id="7693909743393669729">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းက ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်ပြီး မမြင်ရသောအကန့်ခွဲများ အပါအဝင် လက်ရှိအကန့်ခွဲများအားလုံးကို ဖယ်ရှားပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချ၍မရပါ</translation>
 <translation id="76959938259365003">အမှိုက်ပုံးရှင်း၍မရပါ။</translation>
@@ -784,6 +797,7 @@
 <translation id="7760449188139285140">တရုတ် ဝူဘီ</translation>
 <translation id="7765158879357617694">ရွှေ့ရန်</translation>
 <translation id="7774365994322694683">ငှက်</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> ဖိုင် ပြန်ယူပြီးပြီ</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" အား လိုင်းမဲ့အခြေနေတွင် သိမ်းရန် နောက်ထပ် <ph name="TOTAL_FILE_SIZE" /> နေရာအား ရှင်းလင်းရပါမည်:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />လိုင်းမဲ့အခြေနေတွင် သင်အသုံးမလိုတော့သည့် ဖိုင်များကို ချိတ်ဆက်မှု ဖြုတ်ပါ<ph name="MARKUP_3" />
@@ -964,6 +978,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> မှ<ph name="TO_ENTRY_NAME" /> သို့ ထည့်သွင်းမှု အပိုင်းအခြား <ph name="ENTRY_COUNT" /> ခု ကို ရွေးထားသည်။</translation>
 <translation id="954194396377670556">စီမံခန့်ခွဲသူ မူဝါဒက တားဆီးမှုများ-</translation>
 <translation id="965477715979482472">အင်္ဂလိပ် (တောင်အာဖရိက)</translation>
+<translation id="976666271385981812">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို အမှိုက်ပုံးသို့ ရွှေ့နေသည်</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" အမည်ဖြင့် ဖိုင်ရှိပြီးဖြစ်ပါသည်။ ၎င်းကို အစားထိုးလိုပါသလား။</translation>
 <translation id="992401651319295351">သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။ ပင်နံပါတ်အသစ် မသတ်မှတ်မချင်း ဤကွန်ရက်ကို သုံးနိုင်မည်မဟုတ်ပါ။</translation>
