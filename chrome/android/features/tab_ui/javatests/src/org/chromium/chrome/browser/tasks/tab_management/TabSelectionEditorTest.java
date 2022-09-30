@@ -15,6 +15,11 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_STRIP_IMPROVEMENTS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_TO_GTS_ANIMATION;
 
 import android.support.test.InstrumentationRegistry;
 import android.view.MenuItem;
@@ -23,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.core.view.MenuItemCompat;
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -78,12 +82,16 @@ import java.util.Map;
  * End-to-end test for TabSelectionEditor.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-@DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
+        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
+@EnableFeatures({TAB_GROUPS_ANDROID, GRID_TAB_SWITCHER_FOR_TABLETS + "<Study",
+        TAB_STRIP_IMPROVEMENTS, TAB_GROUPS_FOR_TABLETS})
+@DisableFeatures(TAB_TO_GTS_ANIMATION)
 @Batch(Batch.PER_CLASS)
 public class TabSelectionEditorTest {
+    private static final String TAB_GROUP_LAUNCH_POLISH_PARAMS =
+            "force-fieldtrial-params=Study.Group:enable_launch_polish/true";
+
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -767,7 +775,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    @DisableFeatures({TAB_GROUPS_ANDROID})
     public void testTabSelectionEditorLayoutCanBeGarbageCollected() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mTabSelectionEditorCoordinator.destroy();
@@ -906,7 +914,9 @@ public class TabSelectionEditorTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
-        Espresso.pressBack();
+        TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> mTabSelectionEditorController.handleBackPressed());
+        mRobot.resultRobot.verifyTabSelectionEditorIsHidden();
         TestThreadUtils.runOnUiThreadBlocking(() -> mTabSelectionEditorController.show(tabs));
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
     }

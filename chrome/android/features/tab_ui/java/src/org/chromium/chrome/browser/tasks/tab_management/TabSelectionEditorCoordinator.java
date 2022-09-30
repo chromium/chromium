@@ -207,8 +207,8 @@ class TabSelectionEditorCoordinator {
                     mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
 
             mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
-                    mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate,
-                    mTabSelectionEditorLayout.getToolbar(), displayGroups);
+                    mTabModelSelector, mTabListCoordinator, this::resetWithListOfTabs, mModel,
+                    mSelectionDelegate, mTabSelectionEditorLayout.getToolbar(), displayGroups);
         }
     }
 

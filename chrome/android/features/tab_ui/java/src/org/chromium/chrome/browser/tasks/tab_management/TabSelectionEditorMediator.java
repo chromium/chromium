@@ -58,6 +58,7 @@ class TabSelectionEditorMediator
 
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
+    private final TabListCoordinator mTabListCoordinator;
     private final ResetHandler mResetHandler;
     private final PropertyModel mModel;
     private final SelectionDelegate<Integer> mSelectionDelegate;
@@ -98,11 +99,12 @@ class TabSelectionEditorMediator
     };
 
     TabSelectionEditorMediator(Context context, TabModelSelector tabModelSelector,
-            ResetHandler resetHandler, PropertyModel model,
+            TabListCoordinator tabListCoordinator, ResetHandler resetHandler, PropertyModel model,
             SelectionDelegate<Integer> selectionDelegate,
             TabSelectionEditorToolbar tabSelectionEditorToolbar, boolean actionOnRelatedTabs) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
+        mTabListCoordinator = tabListCoordinator;
         mResetHandler = resetHandler;
         mModel = model;
         mSelectionDelegate = selectionDelegate;
@@ -202,6 +204,9 @@ class TabSelectionEditorMediator
 
     @Override
     public void show(List<Tab> tabs, int preSelectedTabCount) {
+        // We don't call TabListCoordinator#prepareTabSwitcherView, since not all the logic (e.g.
+        // requiring one tab to be selected) is applicable here.
+        mTabListCoordinator.prepareTabGridView();
         mVisibleTabs.clear();
         mVisibleTabs.addAll(tabs);
         mSelectionDelegate.setSelectionModeEnabledForZeroItems(true);
@@ -300,6 +305,7 @@ class TabSelectionEditorMediator
 
     @Override
     public void hide() {
+        mTabListCoordinator.cleanupTabGridView();
         mVisibleTabs.clear();
         mResetHandler.resetWithListOfTabs(null, 0, /*quickMode=*/false);
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, false);
