@@ -31,6 +31,11 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   AXNodePosition(const AXNodePosition& other);
 
   AXPositionInstance Clone() const override;
+
+ private:
+  // Return true if the provided node should always use a text position, rather
+  // than a tree position.
+  static bool IsTextPositionAnchor(const AXNode& node);
 };
 
 }  // namespace ui

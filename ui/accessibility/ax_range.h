@@ -130,6 +130,8 @@ class AXRange {
   //   nullopt - If positions are not comparable (see AXPosition::CompareTo).
   static absl::optional<int> CompareEndpoints(const AXPositionType* first,
                                               const AXPositionType* second) {
+    DCHECK(first->IsValid());
+    DCHECK(second->IsValid());
     absl::optional<int> tree_position_comparison =
         first->AsTreePosition()->CompareTo(*second->AsTreePosition());
 

@@ -54,12 +54,64 @@ AXNodePosition::AXPositionInstance AXNodePosition::CreatePosition(
     return CreateNullPosition();
 
   AXTreeID tree_id = node.tree()->GetAXTreeID();
-  if (node.IsLeaf()) {
-    return CreateTextPosition(tree_id, node.id(), child_index_or_text_offset,
-                              affinity);
+  if (IsTextPositionAnchor(node)) {
+    // TODO(accessibility) It is a mistake for the to caller try to create a
+    // text position with BEFORE_TEXT as the text offset. Correct the callers
+    // that are doing this.
+    // DCHECK_NE(child_index_or_text_offset, BEFORE_TEXT)
+    // << "Creating a text position with BEFORE_TEXT as the offset is illegal "
+    //    "and disallowed.";
+    int text_offset = child_index_or_text_offset == BEFORE_TEXT
+                          ? 0
+                          : child_index_or_text_offset;
+    return CreateTextPosition(tree_id, node.id(), text_offset, affinity);
   }
 
+  DCHECK_LE(child_index_or_text_offset,
+            static_cast<int>(node.GetChildCountCrossingTreeBoundary()))
+      << "\n* Trying to create a tree position with a child index that is too "
+         "large. Maybe a text position should have been created instead?\n"
+      << "\n* Anchor node: " << node << "\n* IsLeaf(): " << node.IsLeaf()
+      << "\n* Child offset: " << child_index_or_text_offset
+      << "\n* IsLeafNodeForTreePosition(): " << IsLeafNodeForTreePosition(node)
+      << "\n* Tree: " << node.tree()->ToString();
+
   return CreateTreePosition(tree_id, node.id(), child_index_or_text_offset);
+}
+
+// static
+bool AXNodePosition::IsTextPositionAnchor(const AXNode& node) {
+  // TODO(accessibility) Simplify. Not actually sure if this is the correct
+  // thing for the case where IsLeaf() == false but IsLeafNodeForTreePosition()
+  // is true.
+  if (node.IsLeaf())
+    return true;
+
+  // TODO(accessibility) Try to remove this condition. Text positions for a
+  // selection operation should only be created inside selectable text.
+  // A list marker for example is not selectable text: it would either be
+  // selected as a whole or not selected, and you can't select half of it.
+  if (IsLeafNodeForTreePosition(node))
+    return true;
+
+  if (node.GetRole() == ax::mojom::Role::kSpinButton) {
+    // TODO(benjamin.beaudry) Please look into whether this code needs to
+    // remain, or can be simplified.
+    return true;
+  }
+
+  // Ignored atomic text fields and spin buttons are not considered leaves by
+  // AXNode::IsLeaf(), but should always use a text position.
+  if (node.data().IsAtomicTextField()) {
+    // Ignored atomic text fields and spin buttons are not considered leaves by
+    // AXNode::IsLeaf(), but should always use a text position.
+    // TODO(accessibility) Nobody should be creating a text position on an
+    // ignored text field.
+    DCHECK(node.IsIgnored()) << "Returned false from IsLeaf(): " << node;
+    return true;
+  }
+
+  return false;
 }
 
 AXNodePosition::AXNodePosition() = default;

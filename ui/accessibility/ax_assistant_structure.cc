@@ -275,12 +275,16 @@ void WalkAXTreeDepthFirst(const AXNode* node,
   result->rect = gfx::Rect(parent_relative_rect.x(), parent_relative_rect.y(),
                            absolute_rect.width(), absolute_rect.height());
 
+  // Selection state comes from the tree data rather than
+  // GetUnignoredSelection() which uses AXPosition, as AXPosition requires a
+  // valid and registered AXTreeID, which exists only when accessibility is
+  // enabled. As an AXTreeSnapshotter does not enable accessibility, it is not
+  // able to use AXPosition.
   if (IsLeaf(node) && update.has_tree_data) {
     int start_selection = 0;
     int end_selection = 0;
-    AXSelection unignored_selection = tree->GetUnignoredSelection();
-    if (unignored_selection.anchor_object_id == node->id()) {
-      start_selection = unignored_selection.anchor_offset;
+    if (update.tree_data.sel_anchor_object_id == node->id()) {
+      start_selection = update.tree_data.sel_anchor_offset;
       config->should_select_leaf = true;
     }
 
@@ -288,8 +292,8 @@ void WalkAXTreeDepthFirst(const AXNode* node,
       end_selection = static_cast<int32_t>(GetText(node).length());
     }
 
-    if (unignored_selection.focus_object_id == node->id()) {
-      end_selection = unignored_selection.focus_offset;
+    if (update.tree_data.sel_focus_object_id == node->id()) {
+      end_selection = update.tree_data.sel_focus_offset;
       config->should_select_leaf = false;
     }
     if (end_selection > 0)

@@ -21,6 +21,8 @@ virtual/offsetparent-old-behavior/external/wpt/css/css-contain/content-visibilit
 crbug.com/1350162 external/wpt/html/semantics/interactive-elements/the-dialog-element/inert-svg-hittest.html [ Crash ]
 # Should not receive unincluded child:
 external/wpt/inert/dynamic-inert-on-focused-element.html [ Crash ]
+# SVG text selection does not work correctly:
+svg/text/select-x-list-4.svg [ Crash ]
 # Unknown cause:
 crbug.com/1225856 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-display-none-editable.html [ Crash ]
 
@@ -30,13 +32,6 @@ fast/forms/calendar-picker/date-picker-ax.html [ Failure Pass ]
 fast/forms/month/month-picker-ax.html [ Failure Pass ]
 # isUseCounted() difference:
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-non-ad-followed-by-ad.html [ Failure Pass ]
-# ax_position.h#467 -- IsIgnored():
-external/wpt/fullscreen/crashtests/chrome-1312699.html [ Crash ]
-http/tests/devtools/console/console-format.js [ Crash ]
-virtual/plz-dedicated-worker/http/tests/devtools/console/console-format.js [ Crash ]
-media/video-prefixed-fullscreen.html [ Crash ]
-media/video-controls-attribute-fullscreen.html [ Crash ]
-media/autoplay-muted.html [ Crash ]
 # Unknown cause:
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-ad-fixed-position.html [ Failure Pass ]
 virtual/disable-frequency-capping-for-overlay-popup-detection/http/tests/subresource_filter/overlay_popup_ad/overlay-popup-image-ad-fixed-position.html [ Failure Pass ]

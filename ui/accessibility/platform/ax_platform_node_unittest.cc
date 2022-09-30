@@ -41,6 +41,9 @@ AXTreeUpdate AXPlatformNodeTest::BuildTextField() {
   AXTreeUpdate update;
   update.root_id = text_field_node.id;
   update.nodes.push_back(text_field_node);
+  update.has_tree_data = true;
+  // An AXPosition will be created, and requires an AXTreeID.
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
 }
 
@@ -64,6 +67,8 @@ AXTreeUpdate AXPlatformNodeTest::BuildTextFieldWithSelectionRange(
   AXTreeUpdate update;
   update.root_id = text_field_node.id;
   update.nodes.push_back(text_field_node);
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
 }
 
@@ -80,6 +85,8 @@ AXTreeUpdate AXPlatformNodeTest::BuildContentEditable() {
   AXTreeUpdate update;
   update.root_id = content_editable_node.id;
   update.nodes.push_back(content_editable_node);
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
 }
 
@@ -102,6 +109,7 @@ AXTreeUpdate AXPlatformNodeTest::BuildContentEditableWithSelectionRange(
   update.nodes.push_back(content_editable_node);
 
   update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data.sel_anchor_object_id = content_editable_node.id;
   update.tree_data.sel_focus_object_id = content_editable_node.id;
   update.tree_data.sel_anchor_offset = start;
@@ -263,6 +271,8 @@ AXTreeUpdate AXPlatformNodeTest::AXPlatformNodeTest::Build3X3Table() {
   update.nodes.push_back(table_cell_3);        // 11
   update.nodes.push_back(table_cell_4);        // 12
 
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
 }
 
@@ -326,6 +336,9 @@ AXTreeUpdate AXPlatformNodeTest::BuildAriaColumnAndRowCountGrids() {
   update.nodes.push_back(rowcolindex_cell);
   update.nodes.push_back(rowcolcount_grid);
   update.nodes.push_back(unknown_grid);
+
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
 }
 
@@ -371,6 +384,9 @@ AXTreeUpdate AXPlatformNodeTest::BuildListBox(
   update.nodes.push_back(option_1);
   update.nodes.push_back(option_2);
   update.nodes.push_back(option_3);
+
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
 }
 

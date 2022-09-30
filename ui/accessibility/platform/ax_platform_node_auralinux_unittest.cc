@@ -2161,6 +2161,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkSelectionInterface) {
   update.nodes.push_back(item_2);
   update.nodes.push_back(item_3);
   update.nodes.push_back(item_4);
+  update.has_tree_data = true;
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   Init(update);
 
   AtkObject* root_atk_object(GetRootAtkObject());

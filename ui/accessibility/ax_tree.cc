@@ -2649,7 +2649,7 @@ bool ComputeUnignoredSelectionEndpoint(
     node = tree.GetFromId(node_id);
   if (!node) {
     node_id = kInvalidAXNodeID;
-    offset = -1;
+    offset = AXNodePosition::INVALID_OFFSET;
     affinity = ax::mojom::TextAffinity::kDownstream;
     return false;
   }

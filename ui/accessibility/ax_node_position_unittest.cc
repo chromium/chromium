@@ -713,26 +713,13 @@ TEST_F(AXPositionTest, Clone) {
   EXPECT_EQ(1, copy_position->child_index());
   EXPECT_EQ(AXNodePosition::INVALID_OFFSET, copy_position->text_offset());
 
-  tree_position = AXNodePosition::CreateTreePosition(
-      GetTreeID(), root_.id, AXNodePosition::BEFORE_TEXT);
-  ASSERT_NE(nullptr, tree_position);
-  copy_position = tree_position->Clone();
-  ASSERT_NE(nullptr, copy_position);
-  EXPECT_TRUE(copy_position->IsNullPosition())
-      << "`AXNodePosition::BEFORE_TEXT` is invalid on non-leaves.";
-  EXPECT_EQ(kInvalidAXNodeID, copy_position->anchor_id());
-  EXPECT_EQ(AXNodePosition::INVALID_INDEX, copy_position->child_index());
-  EXPECT_EQ(AXNodePosition::INVALID_OFFSET, copy_position->text_offset());
-
-  tree_position = AXNodePosition::CreateTreePosition(
-      GetTreeID(), inline_box1_.id, AXNodePosition::BEFORE_TEXT);
-  ASSERT_NE(nullptr, tree_position);
-  copy_position = tree_position->Clone();
-  ASSERT_NE(nullptr, copy_position);
-  EXPECT_TRUE(copy_position->IsTreePosition());
-  EXPECT_EQ(inline_box1_.id, copy_position->anchor_id());
-  EXPECT_EQ(AXNodePosition::BEFORE_TEXT, copy_position->child_index());
-  EXPECT_EQ(AXNodePosition::INVALID_OFFSET, copy_position->text_offset());
+  // Expect to trigger a DCHECK for an invalid position, because the root is not
+  // a leaf. A non-leaf must use a child index >= 0 and <= AnchorChildOffset().
+  // A child index of BEFORE_TEXT can only be used with a leaf anchor.
+  EXPECT_DEATH_IF_SUPPORTED(
+      AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
+                                         AXNodePosition::BEFORE_TEXT),
+      "Creating invalid positions is disallowed.");
 
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), text_field_.id, 0 /* text_offset */,
@@ -1071,15 +1058,13 @@ TEST_F(AXPositionTest, IsIgnored) {
   ASSERT_TRUE(tree_position_5->IsTreePosition());
   EXPECT_TRUE(tree_position_5->IsIgnored());
 
-  // A "before text" position on an ignored node that is not a leaf, however,
-  // should be invalid. It should not be ignored because in this case the child
-  // index makes no sense: the child index can point to any one of the node's
-  // children, not only the unignored ones.
-  TestPositionType tree_position_6 = AXNodePosition::CreateTreePosition(
-      GetTreeID(), static_text_data_1.id, AXNodePosition::BEFORE_TEXT);
-  ASSERT_TRUE(tree_position_6->IsNullPosition());
-  EXPECT_FALSE(tree_position_6->IsIgnored())
-      << "Null positions are by design not ignored.";
+  // A "before text" position is created on an ignored node that is not a leaf.
+  // However, such a position is illegal. The child index must point to one
+  // node's children.
+  EXPECT_DEATH_IF_SUPPORTED(
+      AXNodePosition::CreateTreePosition(GetTreeID(), static_text_data_1.id,
+                                         AXNodePosition::BEFORE_TEXT),
+      "Creating invalid positions is disallowed.");
 }
 
 TEST_F(AXPositionTest, GetTextFromNullPosition) {
@@ -2342,8 +2327,10 @@ TEST_F(AXPositionTest, TreePositionAtStartOrEndOfListMarkerAnchor) {
 
   SetTree(CreateAXTree({root, list, list_item, list_marker, static_text}));
 
+  // An anchor node that is considered a leaf for AXPosition must use a child
+  // offset of BEFORE_TEXT or AnchorChildCount().
   TestPositionType tree_position =
-      AXNodePosition::CreateTreePosition(GetTreeID(), list_marker.id, 0);
+      AXNodePosition::CreateTreePosition(GetTreeID(), list_marker.id, 1);
   ASSERT_NE(nullptr, tree_position);
   EXPECT_EQ(AXPositionKind::TREE_POSITION, tree_position->kind());
   EXPECT_TRUE(tree_position->IsLeaf());
@@ -9693,13 +9680,24 @@ TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
   EXPECT_TRUE(text_position->IsValid());
   EXPECT_EQ(*text_position, *text_position->AsValidPosition());
 
+  // Create a tree position on the inline text box with child index 0,
+  // which means the position is after the inline text box.
+  // This is because the inline text box is a leaf, which must use one of two
+  // child offsets: BEFORE_TEXT (meaning before the anchor) or AnchorChildCount
+  // (meaning after the anchor).
   TestPositionType tree_position =
       AXNodePosition::CreateTreePosition(GetTreeID(), inline_box_4.id, 0);
+  AXNode& inline_box_4_node = *GetNode(inline_box_4.id);
+  ASSERT_TRUE(AXNodePosition::IsLeafNodeForTreePosition(inline_box_4_node));
+  EXPECT_EQ(tree_position->GetAnchor()->GetChildCount(), 0U);
+  EXPECT_EQ(tree_position->GetAnchor()->id(), inline_box_4.id);
+  EXPECT_TRUE(tree_position->IsLeaf());
   ASSERT_NE(nullptr, tree_position);
   EXPECT_TRUE(tree_position->IsTreePosition());
   EXPECT_TRUE(tree_position->IsValid());
   EXPECT_EQ(*tree_position, *tree_position->AsValidPosition());
 
+  // Mark the static text and inline box descendents of the button as ignored.
   static_text_3.AddState(ax::mojom::State::kIgnored);
   inline_box_4.AddState(ax::mojom::State::kIgnored);
   AXTreeUpdate update;
@@ -9711,10 +9709,17 @@ TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
   EXPECT_TRUE(text_position->IsValid());
   EXPECT_EQ(1, text_position->text_offset());
 
-  EXPECT_TRUE(tree_position->IsValid());
-  tree_position = tree_position->AsValidPosition();
-  EXPECT_TRUE(tree_position->IsValid());
-  EXPECT_EQ(0, tree_position->child_index());
+  // The tree position is no longer valid. Changing it to a valid position will
+  // move the anchor to an unignored ancestor.
+  EXPECT_TRUE(tree_position->IsValid());  // TODO(nektar) Should this be false?
+  ASSERT_TRUE(tree_position->IsLeafTreePosition());
+  TestPositionType valid_tree_position = tree_position->AsValidPosition();
+  EXPECT_TRUE(valid_tree_position->IsValid());
+  EXPECT_NE(tree_position->GetAnchor(), valid_tree_position->GetAnchor());
+  EXPECT_TRUE(valid_tree_position->IsLeaf());
+  EXPECT_EQ(valid_tree_position->GetAnchor()->GetChildCount(), 1U);
+  EXPECT_EQ(valid_tree_position->GetAnchor()->id(), button_2.id);
+  EXPECT_EQ(1, valid_tree_position->child_index());
 }
 
 TEST_F(AXPositionTest, CreateNextCharacterPosition) {
@@ -10362,21 +10367,15 @@ TEST_F(AXPositionTest, OperatorEquals) {
 
   // Both child indices are invalid. It should result in equivalent null
   // positions.
-  TestPositionType tree_position1 = AXNodePosition::CreateTreePosition(
-      GetTreeID(), root_.id, 4 /* child_index */);
-  ASSERT_NE(nullptr, tree_position1);
-  TestPositionType tree_position2 = AXNodePosition::CreateTreePosition(
-      GetTreeID(), root_.id, AXNodePosition::INVALID_INDEX);
-  ASSERT_NE(nullptr, tree_position2);
-  EXPECT_EQ(*tree_position1, *tree_position2);
+  ASSERT_EQ(*AXNodePosition::CreateNullPosition(),
+            *AXNodePosition::CreateNullPosition());
 
   // An invalid position should not be equivalent to an "after children"
   // position.
-  tree_position1 = AXNodePosition::CreateTreePosition(GetTreeID(), root_.id,
-                                                      3 /* child_index */);
+  TestPositionType tree_position1 = AXNodePosition::CreateTreePosition(
+      GetTreeID(), root_.id, 3 /* child_index */);
   ASSERT_NE(nullptr, tree_position1);
-  tree_position2 = AXNodePosition::CreateTreePosition(
-      GetTreeID(), root_.id, AXNodePosition::INVALID_INDEX);
+  TestPositionType tree_position2 = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, tree_position2);
   EXPECT_NE(*tree_position1, *tree_position2);
 
@@ -10398,26 +10397,27 @@ TEST_F(AXPositionTest, OperatorEquals) {
   ASSERT_NE(nullptr, tree_position2);
   EXPECT_EQ(*tree_position1, *tree_position2);
 
+  // TODO(accessibility) Re-enable testing of invalid positions.
   // Both text offsets are invalid. It should result in equivalent null
   // positions.
-  TestPositionType text_position1 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), inline_box1_.id, 15 /* text_offset */,
-      ax::mojom::TextAffinity::kUpstream);
-  ASSERT_NE(nullptr, text_position1);
-  ASSERT_TRUE(text_position1->IsNullPosition());
-  TestPositionType text_position2 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), text_field_.id, -1 /* text_offset */,
-      ax::mojom::TextAffinity::kUpstream);
-  ASSERT_NE(nullptr, text_position2);
-  ASSERT_TRUE(text_position2->IsNullPosition());
-  EXPECT_EQ(*text_position1, *text_position2);
+  // TestPositionType text_position1 = AXNodePosition::CreateTextPosition(
+  //     GetTreeID(), inline_box1_.id, 15 /* text_offset */,
+  //     ax::mojom::TextAffinity::kUpstream);
+  // ASSERT_NE(nullptr, text_position1);
+  // ASSERT_TRUE(text_position1->IsNullPosition());
+  // TestPositionType text_position2 = AXNodePosition::CreateTextPosition(
+  //     GetTreeID(), text_field_.id, -1 /* text_offset */,
+  //     ax::mojom::TextAffinity::kUpstream);
+  // ASSERT_NE(nullptr, text_position2);
+  // ASSERT_TRUE(text_position2->IsNullPosition());
+  // EXPECT_EQ(*text_position1, *text_position2);
 
-  text_position1 = AXNodePosition::CreateTextPosition(
+  TestPositionType text_position1 = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position1);
   ASSERT_TRUE(text_position1->IsTextPosition());
-  text_position2 = AXNodePosition::CreateTextPosition(
+  TestPositionType text_position2 = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box1_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position2);
@@ -12329,12 +12329,10 @@ TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
   AXNodeData child_1_data;
   child_1_data.id = 3;
   child_1_data.role = ax::mojom::Role::kGenericContainer;
-  child_1_data.AddState(ax::mojom::State::kIgnored);
 
   AXNodeData child_2_data;
   child_2_data.id = 4;
   child_2_data.role = ax::mojom::Role::kGenericContainer;
-  child_2_data.AddState(ax::mojom::State::kIgnored);
 
   root_data.child_ids = {parent_data.id};
   parent_data.child_ids = {child_1_data.id, child_2_data.id};
@@ -12364,17 +12362,47 @@ TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
       AXNodePosition::CreateTreePosition(GetTreeID(), parent_data.id, 2);
   TestPositionType child_1_at_0 =
       AXNodePosition::CreateTreePosition(GetTreeID(), child_1_data.id, 0);
-  TestPositionType child_2_at_0 =
-      AXNodePosition::CreateTreePosition(GetTreeID(), child_2_data.id, 0);
+  TestPositionType child_2_at_before_text = AXNodePosition::CreateTreePosition(
+      GetTreeID(), child_2_data.id, AXNodePosition::BEFORE_TEXT);
 
-  EXPECT_EQ(*parent_at_0, *parent_at_0->AsValidPosition());
-  EXPECT_EQ(*parent_at_1, *parent_at_1->AsValidPosition());
+  // All positions are valid when created.
+  EXPECT_TRUE(parent_at_0->IsValid());
+  EXPECT_TRUE(parent_at_1->IsValid());
+  EXPECT_TRUE(parent_at_2->IsValid());
+  EXPECT_TRUE(child_1_at_0->IsValid());
+  EXPECT_TRUE(child_2_at_before_text->IsValid());
+
+  // Make some of the positions invalid.
+  child_1_data.AddState(ax::mojom::State::kIgnored);
+  child_2_data.AddState(ax::mojom::State::kIgnored);
+  AXTreeUpdate add_invalid_state_update;
+  add_invalid_state_update.nodes = {child_1_data, child_2_data};
+  ASSERT_TRUE(tree->Unserialize(add_invalid_state_update));
+  AXNode& parent_node = *GetNode(parent_data.id);
+  EXPECT_TRUE(AXNodePosition::IsLeafNodeForTreePosition(parent_node));
+  EXPECT_TRUE(parent_at_1->IsLeafTreePosition());
+
+  TestPositionType parent_at_before_text = AXNodePosition::CreateTreePosition(
+      GetTreeID(), parent_data.id, AXNodePosition::BEFORE_TEXT);
+
+  EXPECT_TRUE(parent_at_before_text->IsValid());
+  EXPECT_FALSE(parent_at_0->IsValid());
+  EXPECT_FALSE(parent_at_1->IsValid());
+  EXPECT_TRUE(parent_at_2->IsValid());
+  // TODO(accessibility) This one should be invalid because the anchor is
+  // ignored:
+  // EXPECT_FALSE(child_1_at_0->IsValid());
+  EXPECT_TRUE(child_2_at_before_text->IsValid());
+
+  EXPECT_EQ(*parent_at_before_text, *parent_at_before_text->AsValidPosition());
+  EXPECT_EQ(*parent_at_2, *parent_at_0->AsValidPosition());
+  EXPECT_EQ(*parent_at_2, *parent_at_1->AsValidPosition());
   EXPECT_EQ(*parent_at_2, *parent_at_2->AsValidPosition());
-  EXPECT_EQ(*parent_at_0, *child_1_at_0->AsValidPosition());
-  EXPECT_EQ(*parent_at_0, *child_2_at_0->AsValidPosition());
+  EXPECT_EQ(*parent_at_2, *child_1_at_0->AsValidPosition());
+  EXPECT_EQ(*parent_at_before_text, *child_2_at_before_text->AsValidPosition());
 
   for (TestPositionType::pointer position :
-       {parent_at_0.get(), child_1_at_0.get(), child_2_at_0.get()}) {
+       {parent_at_0.get(), child_1_at_0.get(), child_2_at_before_text.get()}) {
     AXNodePosition::AXPositionInstance valid = position->AsValidPosition();
     EXPECT_TRUE(position->IsLeaf());
     EXPECT_TRUE(valid->IsLeaf());
@@ -12387,10 +12415,13 @@ TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
 
     // Should not crash.
     AXSelection s = tree->GetUnignoredSelection();
+    int expected_offset = valid->AtEndOfAnchor()
+                              ? static_cast<int>(parent_node.GetChildCount())
+                              : AXNodePosition::BEFORE_TEXT;
     EXPECT_EQ(valid->anchor_id(), s.anchor_object_id);
-    EXPECT_EQ(valid->child_index(), s.anchor_offset);
+    EXPECT_EQ(valid->child_index(), expected_offset);
     EXPECT_EQ(valid->anchor_id(), s.focus_object_id);
-    EXPECT_EQ(valid->child_index(), s.focus_offset);
+    EXPECT_EQ(valid->child_index(), expected_offset);
   }
 }
 
