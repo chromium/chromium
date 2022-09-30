@@ -139,7 +139,7 @@ def write_to_bucket(cr_position: str):
   check_and_fix_content_types(destination)
 
 def direct_publish_samples(source: str, dest_subfolder: str):
-  destination = 'gs://chromium-webxr-samples' + '/' + dest_subfolder
+  destination = BUCKET + '/' + dest_subfolder
   run_modify('gsutil.py', '-m', 'rsync', '-x', 'media', '-r', './' + source,
           destination)
 
