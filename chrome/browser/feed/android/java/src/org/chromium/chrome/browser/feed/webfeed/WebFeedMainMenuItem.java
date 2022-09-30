@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
@@ -75,6 +76,8 @@ public class WebFeedMainMenuItem extends FrameLayout {
     private ChipView mCrowButton;
     private ImageView mIcon;
     private TextView mItemText;
+    // TODO(crbug.com/1369755): Move this variable into a mock
+    private boolean mItemTextClicked;
 
     private WebFeedFaviconFetcher mFaviconFetcher;
     private WebFeedSnackbarController mWebFeedSnackbarController;
@@ -152,6 +155,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 this::onFaviconFetched);
     }
 
+    @VisibleForTesting
+    public boolean isCreatorActivityInitiated() {
+        return mItemTextClicked;
+    }
+
     private void initializeText(WebFeedMetadata webFeedMetadata) {
         if (webFeedMetadata != null && !TextUtils.isEmpty(webFeedMetadata.title)) {
             mTitle = webFeedMetadata.title;
@@ -159,9 +167,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
             mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
         }
         mItemText.setText(mTitle);
+        mItemTextClicked = false;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
             mItemText.setOnClickListener((view) -> {
                 try {
+                    mItemTextClicked = true;
                     // Launch a new activity for the creator page.
                     Intent intent = new Intent(mContext, mCreatorActivityClass);
                     mContext.startActivity(intent);

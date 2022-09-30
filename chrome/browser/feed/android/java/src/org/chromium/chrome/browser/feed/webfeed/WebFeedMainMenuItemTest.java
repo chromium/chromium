@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed.webfeed;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
@@ -66,7 +67,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
 @LooperMode(LooperMode.Mode.LEGACY)
-@Features.DisableFeatures({ChromeFeatureList.CORMORANT})
+@Features.EnableFeatures({ChromeFeatureList.CORMORANT})
 @SmallTest
 public final class WebFeedMainMenuItemTest {
     private static final GURL TEST_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -182,6 +183,18 @@ public final class WebFeedMainMenuItemTest {
         assertEquals("Title should be shortened URL.",
                 UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(TEST_URL),
                 textView.getText());
+    }
+
+    @Test
+    @UiThreadTest
+    public void initialize_launchCreatorActivity() {
+        initializeWebFeedMainMenuItem();
+        respondWithFeedMetadata(null);
+
+        assertFalse(mWebFeedMainMenuItem.isCreatorActivityInitiated());
+        TextView textView = mWebFeedMainMenuItem.findViewById(R.id.menu_item_text);
+        textView.performClick();
+        assertTrue(mWebFeedMainMenuItem.isCreatorActivityInitiated());
     }
 
     @Test

@@ -1005,6 +1005,8 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/commerce/price_tracking/proto:proto_java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/contextmenu:java",
+      "//chrome/browser/creator/android:java",
+      "//chrome/browser/creator/android:junit",
       "//chrome/browser/dependency_injection:java",
       "//chrome/browser/device:java",
       "//chrome/browser/device:junit",

@@ -30,3 +30,27 @@ android_resources("creator_java_resources") {
   ]
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/creator/CreatorCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/creator/CreatorMediatorTest.java",
+  ]
+
+  deps = [
+    ":creator_java_resources",
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_java_test_support",
+  ]
+  resources_package = "org.chromium.chrome.browser.creator.test"
+}
