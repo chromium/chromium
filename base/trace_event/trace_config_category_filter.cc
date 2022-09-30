@@ -179,7 +179,7 @@ std::string TraceConfigCategoryFilter::ToFilterString() const {
 void TraceConfigCategoryFilter::SetCategoriesFromIncludedList(
     const Value& included_list) {
   included_categories_.clear();
-  for (const Value& item : included_list.GetListDeprecated()) {
+  for (const Value& item : included_list.GetList()) {
     if (!item.is_string())
       continue;
     const std::string& category = item.GetString();
@@ -195,7 +195,7 @@ void TraceConfigCategoryFilter::SetCategoriesFromIncludedList(
 void TraceConfigCategoryFilter::SetCategoriesFromExcludedList(
     const Value& excluded_list) {
   excluded_categories_.clear();
-  for (const Value& item : excluded_list.GetListDeprecated()) {
+  for (const Value& item : excluded_list.GetList()) {
     if (item.is_string())
       excluded_categories_.push_back(item.GetString());
   }

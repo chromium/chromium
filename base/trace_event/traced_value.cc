@@ -347,7 +347,7 @@ class PickleWriter final : public TracedValue::Writer {
             cur_list->Append(std::move(new_dict));
             // |new_dict| is invalidated at this point, so |cur_dict| needs to
             // be reset.
-            cur_dict = &cur_list->GetListDeprecated().back();
+            cur_dict = &cur_list->GetList().back();
             stack.push_back(cur_list);
             cur_list = nullptr;
           }
@@ -376,7 +376,7 @@ class PickleWriter final : public TracedValue::Writer {
             stack.push_back(cur_list);
             // |cur_list| is invalidated at this point by the Append, so it
             // needs to be reset.
-            cur_list = &cur_list->GetListDeprecated().back();
+            cur_list = &cur_list->GetList().back();
           }
         } break;
 

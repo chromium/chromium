@@ -270,7 +270,7 @@ static bool IsAllKeyValueInDict(const JsonKeyValue* key_values,
 const Value* TraceEventTestFixture::FindMatchingTraceEntry(
     const JsonKeyValue* key_values) {
   // Scan all items
-  for (const Value& value : trace_parsed_.GetListDeprecated()) {
+  for (const Value& value : trace_parsed_.GetList()) {
     if (!value.is_dict())
       continue;
 
@@ -346,7 +346,7 @@ const Value* FindTraceEntry(const Value& trace_parsed,
                             const char* string_to_match,
                             const Value* match_after_this_item = nullptr) {
   // Scan all items
-  for (const Value& value : trace_parsed.GetListDeprecated()) {
+  for (const Value& value : trace_parsed.GetList()) {
     if (match_after_this_item) {
       if (&value == match_after_this_item)
         match_after_this_item = nullptr;
@@ -364,7 +364,7 @@ const Value* FindTraceEntry(const Value& trace_parsed,
 std::vector<const Value*> FindTraceEntries(const Value& trace_parsed,
                                            const char* string_to_match) {
   std::vector<const Value*> hits;
-  for (const Value& value : trace_parsed.GetListDeprecated()) {
+  for (const Value& value : trace_parsed.GetList()) {
     if (!value.is_dict())
       continue;
 
@@ -773,7 +773,7 @@ void ValidateInstantEventPresentOnEveryThread(const Value& trace_parsed,
                                               int num_events) {
   std::map<int, std::map<int, bool>> results;
 
-  for (const Value& value : trace_parsed.GetListDeprecated()) {
+  for (const Value& value : trace_parsed.GetList()) {
     if (!value.is_dict())
       continue;
 
@@ -831,7 +831,7 @@ TEST_F(TraceEventTestFixture, DataDiscarded) {
 
   CancelTrace();
 
-  EXPECT_TRUE(trace_parsed_.GetListDeprecated().empty());
+  EXPECT_TRUE(trace_parsed_.GetList().empty());
 }
 
 class MockEnabledStateChangedObserver :
@@ -1125,7 +1125,7 @@ TEST_F(TraceEventTestFixture, Categories) {
   TRACE_EVENT_INSTANT0("cat2", "name", TRACE_EVENT_SCOPE_THREAD);
   EndTraceAndFlush();
   DropTracedMetadataRecords();
-  EXPECT_TRUE(trace_parsed_.GetListDeprecated().empty());
+  EXPECT_TRUE(trace_parsed_.GetList().empty());
 
   // Include existent category -> only events of that category
   Clear();
@@ -2073,8 +2073,8 @@ TEST_F(TraceEventTestFixture, TraceBufferVectorReportFull) {
   // Test that buffer_limit_reached_timestamp's value is between the timestamp
   // of the last trace event and current time.
   DropTracedMetadataRecords();
-  ASSERT_TRUE(!trace_parsed_.GetListDeprecated().empty());
-  const Value& last_trace_event = trace_parsed_.GetListDeprecated().back();
+  ASSERT_TRUE(!trace_parsed_.GetList().empty());
+  const Value& last_trace_event = trace_parsed_.GetList().back();
   EXPECT_TRUE(last_trace_event.is_dict());
   absl::optional<double> maybe_last_trace_event_timestamp =
       last_trace_event.FindDoubleKey("ts");
@@ -2449,7 +2449,7 @@ TEST_F(TraceEventTestFixture, TimeOffset) {
   double end_time = static_cast<double>(
       (TimeTicks::Now() - time_offset).ToInternalValue());
   double last_timestamp = 0;
-  for (const Value& item : trace_parsed_.GetListDeprecated()) {
+  for (const Value& item : trace_parsed_.GetList()) {
     EXPECT_TRUE(item.is_dict());
     absl::optional<double> timestamp = item.FindDoubleKey("ts");
     EXPECT_TRUE(timestamp.has_value());

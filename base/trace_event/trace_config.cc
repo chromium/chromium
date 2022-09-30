@@ -161,7 +161,7 @@ void TraceConfig::ProcessFilterConfig::InitializeFromConfigDict(
   const Value* value = dict.FindListKey(kIncludedProcessesParam);
   if (!value)
     return;
-  for (auto& pid_value : value->GetListDeprecated()) {
+  for (auto& pid_value : value->GetList()) {
     if (pid_value.is_int()) {
       included_process_ids_.insert(
           static_cast<base::ProcessId>(pid_value.GetInt()));
@@ -239,7 +239,7 @@ bool TraceConfig::EventFilterConfig::GetArgAsSet(
   const Value* list = args_.FindListPath(key);
   if (!list)
     return false;
-  for (const Value& item : list->GetListDeprecated()) {
+  for (const Value& item : list->GetList()) {
     if (item.is_string())
       out_set->insert(item.GetString());
   }
@@ -435,7 +435,7 @@ void TraceConfig::InitializeFromConfigDict(const Value& dict) {
   if (enable_systrace_) {
     const Value* systrace_events = dict.FindListKey(kSystraceEventsParam);
     if (systrace_events) {
-      for (const Value& value : systrace_events->GetListDeprecated())
+      for (const Value& value : systrace_events->GetList())
         systrace_events_.insert(value.GetString());
     }
   }
@@ -512,7 +512,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
   const Value* allowed_modes_list =
       memory_dump_config.FindListKey(kAllowedDumpModesParam);
   if (allowed_modes_list) {
-    for (const Value& item : allowed_modes_list->GetListDeprecated()) {
+    for (const Value& item : allowed_modes_list->GetList()) {
       DCHECK(item.is_string());
       memory_dump_config_.allowed_dump_modes.insert(
           StringToMemoryDumpLevelOfDetail(item.GetString()));
@@ -526,7 +526,7 @@ void TraceConfig::SetMemoryDumpConfigFromConfigDict(
   memory_dump_config_.triggers.clear();
   const Value* trigger_list = memory_dump_config.FindListKey(kTriggersParam);
   if (trigger_list) {
-    for (const Value& trigger : trigger_list->GetListDeprecated()) {
+    for (const Value& trigger : trigger_list->GetList()) {
       if (!trigger.is_dict())
         continue;
 
@@ -585,7 +585,7 @@ void TraceConfig::SetProcessFilterConfig(const ProcessFilterConfig& config) {
 void TraceConfig::SetHistogramNamesFromConfigList(
     const Value& histogram_names) {
   histogram_names_.clear();
-  for (const Value& value : histogram_names.GetListDeprecated())
+  for (const Value& value : histogram_names.GetList())
     histogram_names_.insert(value.GetString());
 }
 
@@ -593,7 +593,7 @@ void TraceConfig::SetEventFiltersFromConfigList(
     const Value& category_event_filters) {
   event_filters_.clear();
 
-  for (const Value& event_filter : category_event_filters.GetListDeprecated()) {
+  for (const Value& event_filter : category_event_filters.GetList()) {
     if (!event_filter.is_dict())
       continue;
 
