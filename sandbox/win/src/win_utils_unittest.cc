@@ -8,9 +8,9 @@
 
 #include <psapi.h>
 
-#include <algorithm>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -87,9 +87,7 @@ void FindHandle(const ProcessHandleMap& handle_map,
                 const base::win::ScopedHandle& handle) {
   ProcessHandleMap::const_iterator entry = handle_map.find(type_name);
   ASSERT_NE(handle_map.end(), entry);
-  const std::vector<HANDLE>& handles = entry->second;
-  EXPECT_NE(handles.cend(),
-            std::find(handles.cbegin(), handles.cend(), handle.Get()));
+  EXPECT_TRUE(base::Contains(entry->second, handle.Get()));
 }
 
 void TestCurrentProcessHandles(absl::optional<ProcessHandleMap> (*func)()) {
