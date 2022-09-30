@@ -3987,6 +3987,25 @@
             ]
         }
     ],
+    "DnsHttpsSvcbSchemeUpgrade": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220927",
+                    "enable_features": [
+                        "UseDnsHttpsSvcbAlpn"
+                    ]
+                }
+            ]
+        }
+    ],
     "DnsOverHttpsCox": [
         {
             "platforms": [

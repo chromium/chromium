@@ -872,7 +872,11 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
   // Alternative Service can only be set for HTTPS requests while Alternative
   // Proxy is set for HTTP requests.
-  if (alternative_service_info_.protocol() != kProtoUnknown) {
+  // The main job may use HTTP/3 if the origin is specified in
+  // `--origin-to-force-quic-on` switch. In that case, do not create
+  // `alternative_job_` and `dns_alpn_h3_job_`.
+  if ((alternative_service_info_.protocol() != kProtoUnknown) &&
+      !main_job_->using_quic()) {
     DCHECK(request_info_.url.SchemeIs(url::kHttpsScheme));
     DCHECK(!is_websocket_);
     DVLOG(1) << "Selected alternative service (host: "
@@ -896,7 +900,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         alternative_service_info_.protocol(), quic_version);
   }
 
-  if (dns_alpn_h3_job_enabled) {
+  if (dns_alpn_h3_job_enabled && !main_job_->using_quic()) {
     DCHECK(!is_websocket_);
     url::SchemeHostPort dns_alpn_h3_destination =
         url::SchemeHostPort(origin_url);
