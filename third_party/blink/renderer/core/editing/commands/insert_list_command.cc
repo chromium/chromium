@@ -551,7 +551,9 @@ void InsertListCommand::UnlistifyParagraph(
 
   VisiblePosition insertion_point = VisiblePosition::BeforeNode(*placeholder);
   VisiblePosition visible_start = CreateVisiblePosition(start);
+  ABORT_EDITING_COMMAND_IF(visible_start.IsNull());
   VisiblePosition visible_end = CreateVisiblePosition(end);
+  ABORT_EDITING_COMMAND_IF(visible_end.IsNull());
   DCHECK_LE(start, end);
   if (visible_end.DeepEquivalent() < visible_start.DeepEquivalent())
     visible_end = visible_start;
