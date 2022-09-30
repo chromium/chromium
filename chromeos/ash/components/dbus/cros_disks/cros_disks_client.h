@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_piece.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
@@ -293,12 +294,27 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
 };
 
 // A struct to represent information about a mount point sent from cros-disks.
-struct MountEntry {
-  MountError error_code = MountError::kUnknown;
+struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountEntry {
   std::string source_path;
-  MountType mount_type = MountType::kInvalid;
   std::string mount_path;
+  MountType mount_type = MountType::kInvalid;
+  MountError error_code = MountError::kUnknown;
   int progress_percent = 0;
+  bool read_only = false;
+
+  MountEntry(const MountEntry&);
+  MountEntry& operator=(const MountEntry&);
+
+  MountEntry(MountEntry&&);
+  MountEntry& operator=(MountEntry&&);
+
+  MountEntry();
+  MountEntry(base::StringPiece source_path,
+             base::StringPiece mount_path,
+             MountType mount_type,
+             MountError error_code = MountError::kUnknown,
+             int progress_percent = 0,
+             bool read_only = false);
 };
 
 // Output operator for logging.

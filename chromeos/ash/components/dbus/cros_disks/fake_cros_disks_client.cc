@@ -227,10 +227,11 @@ void FakeCrosDisksClient::GetDeviceProperties(
 void FakeCrosDisksClient::NotifyMountCompleted(MountError error_code,
                                                const std::string& source_path,
                                                MountType mount_type,
-                                               const std::string& mount_path) {
+                                               const std::string& mount_path,
+                                               const bool read_only) {
   for (auto& observer : observer_list_) {
     observer.OnMountCompleted(
-        {error_code, source_path, mount_type, mount_path});
+        {source_path, mount_path, mount_type, error_code, 100, read_only});
   }
 }
 

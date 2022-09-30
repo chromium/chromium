@@ -140,7 +140,12 @@ bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
       !reader->PopString(&entry->source_path) ||
       !reader->PopUint32(&mount_type) ||
       !reader->PopString(&entry->mount_path)) {
+    LOG(ERROR) << "Cannot parse MountEntry from DBus";
     return false;
+  }
+
+  if (!reader->PopBool(&entry->read_only)) {
+    LOG(WARNING) << "Cannot get MountEntry's read-only flag from DBus";
   }
 
   entry->error_code = CrosDisksMountErrorToChromeMountError(
@@ -161,11 +166,18 @@ bool ReadMountProgressFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
       !reader->PopString(&entry->source_path) ||
       !reader->PopUint32(&mount_type) ||
       !reader->PopString(&entry->mount_path)) {
+    LOG(ERROR) << "Cannot parse MountEntry from DBus";
     return false;
   }
 
-  if (!(progress_percent >= 0 && progress_percent <= 100))
-    return false;
+  if (!reader->PopBool(&entry->read_only)) {
+    LOG(WARNING) << "Cannot get MountEntry's read-only flag from DBus";
+  }
+
+  if (!(progress_percent >= 0 && progress_percent <= 100)) {
+    LOG(ERROR) << "Invalid progress percentage: " << progress_percent;
+    progress_percent = 0;
+  }
 
   entry->error_code = MountError::kInProgress;
   entry->mount_type = static_cast<MountType>(mount_type);
@@ -777,8 +789,29 @@ std::ostream& operator<<(std::ostream& out, const MountEntry& entry) {
   return out << "error_code = " << entry.error_code << ", source_path = '"
              << entry.source_path << "', mount_type = " << entry.mount_type
              << ", mount_path = '" << entry.mount_path
-             << "', progress_percent = " << entry.progress_percent;
+             << "', read_only = " << entry.read_only
+             << ", progress_percent = " << entry.progress_percent;
 }
+
+MountEntry::MountEntry(const MountEntry&) = default;
+MountEntry& MountEntry::operator=(const MountEntry&) = default;
+
+MountEntry::MountEntry(MountEntry&&) = default;
+MountEntry& MountEntry::operator=(MountEntry&&) = default;
+
+MountEntry::MountEntry() = default;
+MountEntry::MountEntry(const base::StringPiece source_path,
+                       const base::StringPiece mount_path,
+                       const MountType mount_type,
+                       const MountError error_code,
+                       const int progress_percent,
+                       const bool read_only)
+    : source_path(source_path),
+      mount_path(mount_path),
+      mount_type(mount_type),
+      error_code(error_code),
+      progress_percent(progress_percent),
+      read_only(read_only) {}
 
 ////////////////////////////////////////////////////////////////////////////////
 // DiskInfo

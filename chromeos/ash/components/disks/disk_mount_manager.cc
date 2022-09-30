@@ -114,7 +114,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (type == MountType::kDevice &&
         (it == disks_.end() || (*it)->is_hidden())) {
       VLOG(1) << "Disk '" << source_path << "' should not be mounted";
-      OnMountCompleted({MountError::kInternal, source_path, type});
+      OnMountCompleted({source_path, {}, type, MountError::kInternal});
       return;
     }
 
@@ -124,15 +124,6 @@ class DiskMountManagerImpl : public DiskMountManager,
         RemountOption::kMountNewDevice,
         BindOnce(&DiskMountManagerImpl::OnMount, weak_ptr_factory_.GetWeakPtr(),
                  source_path, type));
-
-    // Record the access mode option passed to CrosDisks.
-    // This is needed because CrosDisks service methods doesn't return the info
-    // via DBus.
-    if (const auto [_, ok] =
-            access_modes_.insert_or_assign(source_path, access_mode);
-        !ok) {
-      LOG(ERROR) << "Replaced access mode for '" << source_path << "'";
-    }
   }
 
   // DiskMountManager override.
@@ -395,7 +386,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (result)
       return;
 
-    OnMountCompleted({MountError::kInternal, source_path, type});
+    OnMountCompleted({source_path, {}, type, MountError::kInternal});
   }
 
   void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
@@ -405,28 +396,16 @@ class DiskMountManagerImpl : public DiskMountManager,
       // Not in mount_points_. This happens when the mount_points and disks_ are
       // inconsistent.
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
-      OnMountCompleted({MountError::kPathNotMounted, disk.device_path(),
-                        MountType::kDevice, mount_path});
+      OnMountCompleted({disk.device_path(), mount_path, MountType::kDevice,
+                        MountError::kPathNotMounted});
       return;
     }
 
-    const std::string& source_path = mount_point->source_path;
-
-    // Update the access mode option passed to CrosDisks.
-    // This is needed because CrosDisks service methods doesn't return the info
-    // via DBus, and must be updated before issuing Mount command as it'll be
-    // read by the handler of MountCompleted signal.
-    if (const auto [_, ok] =
-            access_modes_.insert_or_assign(source_path, access_mode);
-        !ok) {
-      LOG(ERROR) << "Replaced access mode for '" << source_path << "'";
-    }
-
     cros_disks_client_->Mount(
-        source_path, std::string(), std::string(), {}, access_mode,
+        mount_point->source_path, std::string(), std::string(), {}, access_mode,
         RemountOption::kRemountExistingDevice,
         BindOnce(&DiskMountManagerImpl::OnMount, weak_ptr_factory_.GetWeakPtr(),
-                 source_path, mount_point->mount_type));
+                 mount_point->source_path, mount_point->mount_type));
   }
 
   // Unmounts all mount points whose source path is transitively parented by
@@ -499,11 +478,12 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     }
 
-    const MountPoint mount_info{.source_path = entry.source_path,
-                                .mount_path = entry.mount_path,
-                                .mount_type = entry.mount_type,
-                                .mount_condition = mount_condition,
-                                .progress_percent = 100};
+    const MountPoint mount_info{entry.source_path,
+                                entry.mount_path,
+                                entry.mount_type,
+                                mount_condition,
+                                100,
+                                entry.read_only};
 
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
@@ -531,22 +511,15 @@ class DiskMountManagerImpl : public DiskMountManager,
     const Disks::const_iterator disk_it = disks_.find(mount_info.source_path);
     Disk* const disk = disk_it != disks_.end() ? disk_it->get() : nullptr;
 
-    const AccessModeMap::node_type access_mode =
-        access_modes_.extract(entry.source_path);
-
     if (want_to_keep && mount_info.mount_type == MountType::kDevice &&
         !mount_info.source_path.empty() && !mount_info.mount_path.empty() &&
         disk) {
-      // Currently the MountCompleted signal doesn't tell whether the device
-      // is mounted in read-only mode or not. Instead use the mount option
-      // recorded by DiskMountManagerImpl::MountPath().
-      // |source_path| should be same as |disk->device_path| because
-      // |VolumeManager::OnDiskEvent()| passes the latter to cros-disks as a
-      // source path when mounting a device.
+      DCHECK(disk);
+      DCHECK_EQ(disk->device_path(), mount_info.source_path);
+
       // Store whether the disk was mounted in read-only mode due to a policy.
-      disk->set_write_disabled_by_policy(
-          !disk->is_read_only_hardware() && access_mode &&
-          access_mode.mapped() == MountAccessMode::kReadOnly);
+      disk->set_write_disabled_by_policy(!disk->is_read_only_hardware() &&
+                                         entry.read_only);
 
       // Right now, a number of operations (format, rename, unmount) rely on the
       // mount path being set even if the disk isn't mounted. cros-disks also
@@ -584,12 +557,9 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnMountProgress(const MountEntry& entry) override {
     DCHECK_EQ(entry.error_code, MountError::kInProgress);
 
-    const auto [it, ok] =
-        mount_points_.insert({.source_path = entry.source_path,
-                              .mount_path = entry.mount_path,
-                              .mount_type = entry.mount_type,
-                              .mount_condition = MountCondition::kInProgress,
-                              .progress_percent = entry.progress_percent});
+    const auto [it, ok] = mount_points_.insert(
+        {entry.source_path, entry.mount_path, entry.mount_type,
+         MountCondition::kInProgress, entry.progress_percent, entry.read_only});
     if (ok) {
       DCHECK_EQ(it->mount_path, entry.mount_path);
       VLOG(1) << "Added in-progress mount point '" << entry.mount_path
@@ -603,6 +573,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     DCHECK_EQ(mount_point.source_path, entry.source_path);
     DCHECK_EQ(mount_point.mount_type, entry.mount_type);
     DCHECK_EQ(mount_point.mount_condition, MountCondition::kInProgress);
+    DCHECK_EQ(mount_point.read_only, entry.read_only);
 
     mount_point.progress_percent = entry.progress_percent;
     VLOG(1) << "Updated in-progress mount point '" << entry.mount_path
@@ -926,10 +897,10 @@ class DiskMountManagerImpl : public DiskMountManager,
     // Otherwise, default to false.
     // Lookup by |device_path| which we pass to cros-disks when mounting a
     // device in |VolumeManager::OnDiskEvent()|.
-    auto access_mode = access_modes_.find(disk_info.device_path());
-    bool write_disabled_by_policy =
-        access_mode != access_modes_.end() &&
-        access_mode->second == MountAccessMode::kReadOnly;
+    const MountPoints::const_iterator mount_point =
+        mount_points_.find(disk_info.mount_path());
+    const bool write_disabled_by_policy =
+        mount_point != mount_points_.end() && mount_point->read_only;
     std::unique_ptr<Disk> disk = std::make_unique<Disk>(
         disk_info, write_disabled_by_policy, base_mount_path);
     if (!is_new) {
@@ -988,7 +959,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Part of EnsureMountInfoRefreshed(). Called after mount entries are listed.
   void RefreshAfterEnumerateMountEntries(
       const std::vector<MountEntry>& entries) {
-    for (const auto& entry : entries)
+    for (const MountEntry& entry : entries)
       OnMountCompleted(entry);
     RefreshCompleted(true);
   }
@@ -1141,11 +1112,6 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   SuspendUnmountManager suspend_unmount_manager_{this};
 
-  // Whether the instance attempted to mount a device in read-only mode for
-  // each source path.
-  typedef std::map<std::string, MountAccessMode> AccessModeMap;
-  AccessModeMap access_modes_;
-
   base::WeakPtrFactory<DiskMountManagerImpl> weak_ptr_factory_{this};
 };
 
@@ -1165,6 +1131,26 @@ std::ostream& operator<<(std::ostream& out, MountCondition condition) {
 
   return out << static_cast<std::underlying_type_t<MountCondition>>(condition);
 }
+
+DiskMountManager::MountPoint::MountPoint(const MountPoint&) = default;
+DiskMountManager::MountPoint::MountPoint(MountPoint&&) = default;
+DiskMountManager::MountPoint& DiskMountManager::MountPoint::operator=(
+    const MountPoint&) = default;
+DiskMountManager::MountPoint& DiskMountManager::MountPoint::operator=(
+    MountPoint&&) = default;
+
+DiskMountManager::MountPoint::MountPoint(const base::StringPiece source_path,
+                                         const base::StringPiece mount_path,
+                                         const MountType mount_type,
+                                         const MountCondition mount_condition,
+                                         const int progress_percent,
+                                         const bool read_only)
+    : source_path(source_path),
+      mount_path(mount_path),
+      mount_type(mount_type),
+      mount_condition(mount_condition),
+      progress_percent(progress_percent),
+      read_only(read_only) {}
 
 DiskMountManager::Observer::~Observer() {
   DCHECK(!IsInObserverList());

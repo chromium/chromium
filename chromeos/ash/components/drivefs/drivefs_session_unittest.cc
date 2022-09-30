@@ -78,10 +78,9 @@ TEST_F(DriveFsDiskMounterTest, MountUnmount) {
   EXPECT_CALL(*this, OnCompleted(base::FilePath(kExpectedMountPath)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   std::move(mount_callback_)
-      .Run(ash::MountError::kNone, {base::StrCat({"drivefs://", token}),
-                                    kExpectedMountPath,
-                                    ash::MountType::kNetworkStorage,
-                                    {}});
+      .Run(ash::MountError::kNone,
+           {base::StrCat({"drivefs://", token}), kExpectedMountPath,
+            ash::MountType::kNetworkStorage});
   run_loop.Run();
 
   EXPECT_CALL(disk_manager_, UnmountPath(kExpectedMountPath, _));
@@ -95,10 +94,9 @@ TEST_F(DriveFsDiskMounterTest, DestroyAfterMounted) {
   EXPECT_CALL(*this, OnCompleted(base::FilePath(kExpectedMountPath)))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   std::move(mount_callback_)
-      .Run(ash::MountError::kNone, {base::StrCat({"drivefs://", token}),
-                                    kExpectedMountPath,
-                                    ash::MountType::kNetworkStorage,
-                                    {}});
+      .Run(ash::MountError::kNone,
+           {base::StrCat({"drivefs://", token}), kExpectedMountPath,
+            ash::MountType::kNetworkStorage});
   run_loop.Run();
 
   EXPECT_CALL(disk_manager_, UnmountPath(kExpectedMountPath, _));
@@ -120,10 +118,8 @@ TEST_F(DriveFsDiskMounterTest, MountError) {
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   std::move(mount_callback_)
       .Run(ash::MountError::kInvalidMountOptions,
-           {base::StrCat({"drivefs://", token}),
-            kExpectedMountPath,
-            ash::MountType::kNetworkStorage,
-            {}});
+           {base::StrCat({"drivefs://", token}), kExpectedMountPath,
+            ash::MountType::kNetworkStorage});
   run_loop.Run();
 }
 

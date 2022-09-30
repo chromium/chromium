@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   void NotifyMountCompleted(MountError error_code,
                             const std::string& source_path,
                             MountType mount_type,
-                            const std::string& mount_path);
+                            const std::string& mount_path,
+                            bool read_only = false);
   void NotifyFormatCompleted(FormatError error_code,
                              const std::string& device_path);
   void NotifyRenameCompleted(RenameError error_code,

@@ -289,11 +289,8 @@ struct MountEvent : public ObserverEvent {
   // callback.
   std::unique_ptr<Disk> disk;
 
-  MountEvent(MountEvent&& other)
-      : event(other.event),
-        error_code(other.error_code),
-        mount_point(other.mount_point),
-        disk(std::move(other.disk)) {}
+  MountEvent(MountEvent&& other) = default;
+
   MountEvent(DiskMountManager::MountEvent event,
              MountError error_code,
              const DiskMountManager::MountPoint& mount_point,
@@ -957,8 +954,8 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
   const std::string kSourcePath1 = kDevice1SourcePath;
   const std::string kSourcePath2 = kDevice2SourcePath;
-  const std::string kSourceFormat = std::string();
-  const std::string kMountLabel = std::string();  // N/A for MountType::kDevice
+  const std::string kSourceFormat;
+
   // For MountCompleted. Must be non-empty strings.
   const std::string kMountPath1 = "/media/foo";
   const std::string kMountPath2 = "/media/bar";
@@ -995,7 +992,7 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   fake_cros_disks_client_->NotifyMountCompleted(
       MountError::kNone, kSourcePath1, MountType::kDevice, kMountPath1);
   fake_cros_disks_client_->NotifyMountCompleted(
-      MountError::kNone, kSourcePath2, MountType::kDevice, kMountPath2);
+      MountError::kNone, kSourcePath2, MountType::kDevice, kMountPath2, true);
 
   // Event handlers of observers should be called.
   ASSERT_EQ(2U, observer_->GetEventCount());
@@ -1024,8 +1021,7 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
 
 TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
-  const std::string kSourceFormat = std::string();
-  const std::string kMountLabel = std::string();  // N/A for MountType::kDevice
+  const std::string kSourceFormat;
 
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback;
   EXPECT_CALL(
@@ -1130,7 +1126,7 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
       MountError::kNone, kDevice1SourcePath, MountType::kDevice,
-      kDevice1MountPath);
+      kDevice1MountPath, true);
 
   // Should remount disks that are not read-only by its hardware device.
   ASSERT_EQ(1U, observer_->GetEventCount());
@@ -1148,7 +1144,7 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
       MountError::kNone, kDevice1SourcePath, MountType::kDevice,
-      kDevice1MountPath);
+      kDevice1MountPath, false);
   // Event handlers of observers should be called.
   ASSERT_EQ(2U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(1), DiskMountManager::MOUNTING,

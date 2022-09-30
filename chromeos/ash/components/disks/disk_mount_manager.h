@@ -106,11 +106,26 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     // Mounted path.
     std::string mount_path;
     // Type of mount.
-    MountType mount_type = MountType::kInvalid;
+    MountType mount_type;
     // Condition of mount.
-    MountCondition mount_condition = MountCondition::kNone;
+    MountCondition mount_condition;
     // Progress percent between 0 and 100 when mount_condition is kInProgress.
-    int progress_percent = 0;
+    int progress_percent;
+    // Read-only file system?
+    bool read_only;
+
+    MountPoint(const MountPoint&);
+    MountPoint& operator=(const MountPoint&);
+
+    MountPoint(MountPoint&&);
+    MountPoint& operator=(MountPoint&&);
+
+    MountPoint(base::StringPiece source_path,
+               base::StringPiece mount_path,
+               MountType mount_type,
+               MountCondition mount_condition = MountCondition::kNone,
+               int progress_percent = 0,
+               bool read_only = false);
   };
 
   // Comparator sorting MountPoint objects by mount_path.
