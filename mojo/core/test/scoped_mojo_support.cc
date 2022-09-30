@@ -7,6 +7,8 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/bind.h"
 #include "base/test/test_io_thread.h"
 #include "mojo/core/embedder/configuration.h"
 #include "mojo/core/embedder/embedder.h"
@@ -60,7 +62,17 @@ class ScopedMojoSupport::CoreInstance {
 };
 
 ScopedMojoSupport::ScopedMojoSupport()
-    : core_(std::make_unique<CoreInstance>()) {}
+    : core_(std::make_unique<CoreInstance>()) {
+  // IO thread initialization can race to modify globals which other base object
+  // initializations (e.g. TaskEnvironment) might touch on the main thread as a
+  // side effect of any test that might run. Ensure the thread is fully started
+  // before we proceed. See https://crbug.com/1364731.
+  base::WaitableEvent io_thread_initialized;
+  test_io_thread_.PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                             io_thread_initialized.Signal();
+                           }));
+  io_thread_initialized.Wait();
+}
 
 ScopedMojoSupport::~ScopedMojoSupport() = default;
 
