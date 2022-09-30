@@ -11,7 +11,6 @@
 #include "components/breadcrumbs/core/application_breadcrumbs_not_user_action.inc"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 
 namespace breadcrumbs {
 
@@ -30,11 +29,6 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
               storage_dir,
               std::move(is_metrics_enabled_callback))) {
   base::AddActionCallback(user_action_callback_);
-
-  // Start crash reporter listening for breadcrumb events. Collected breadcrumbs
-  // will be attached to crash reports.
-  CrashReporterBreadcrumbObserver::GetInstance();
-
   AddEvent("Startup");
 }
 
