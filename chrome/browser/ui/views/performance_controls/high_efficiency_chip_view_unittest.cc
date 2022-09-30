@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -80,6 +82,12 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         ->UpdateAll();
   }
 
+  void SetHighEfficiencyModeEnabled(bool enabled) {
+    g_browser_process->local_state()->SetBoolean(
+        performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+        enabled);
+  }
+
   PageActionIconView* GetPageActionIconView() {
     return browser_view()
         ->GetLocationBarView()
@@ -108,6 +116,7 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
 // When the previous page has a tab discard state of true, when the icon is
 // updated it should be visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldShowForDiscardedPage) {
+  SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(true);
 
   PageActionIconView* view = GetPageActionIconView();
@@ -115,9 +124,21 @@ TEST_F(HighEfficiencyChipViewTest, ShouldShowForDiscardedPage) {
   EXPECT_TRUE(view->GetVisible());
 }
 
+// If a discard is triggered when the user doesn't have high efficiency mode
+// enabled, we don't show the chip.
+TEST_F(HighEfficiencyChipViewTest, ShouldNotShowWhenPrefIsFalse) {
+  SetHighEfficiencyModeEnabled(false);
+  SetTabDiscardState(true);
+
+  PageActionIconView* view = GetPageActionIconView();
+
+  EXPECT_FALSE(view->GetVisible());
+}
+
 // When the previous page was not previously discarded, the icon should not be
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
+  SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(false);
 
   PageActionIconView* view = GetPageActionIconView();
@@ -126,6 +147,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
 
 // When the page action chip is clicked, the dialog should open.
 TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
+  SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(true);
 
   PageActionIconView* view = GetPageActionIconView();
@@ -197,6 +219,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
 // When the previous page was not previously discarded, the icon should not be
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterThreeTimes) {
+  SetHighEfficiencyModeEnabled(true);
   // Open the tab 3 times with the label being visible.
   for (int i = 0; i < 3; i++) {
     SetTabDiscardState(true);

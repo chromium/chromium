@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
@@ -42,9 +43,16 @@ class HighEfficiencyChipView : public PageActionIconView,
   const raw_ptr<Browser> browser_;
   base::OneShotTimer timer_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
-  base::WeakPtrFactory<HighEfficiencyChipView> weak_ptr_factory_{this};
+  PrefChangeRegistrar registrar_;
+  bool is_high_efficiency_mode_enabled_ = false;
 
   void MaybeShowIPH();
+
+  // Callback for the registrar. Checks whether high efficiency mode is
+  // currently enabled.
+  void OnPrefChanged();
+
+  base::WeakPtrFactory<HighEfficiencyChipView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_HIGH_EFFICIENCY_CHIP_VIEW_H_

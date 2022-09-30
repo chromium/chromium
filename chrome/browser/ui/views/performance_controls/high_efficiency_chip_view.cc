@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,6 +22,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -54,6 +56,13 @@ HighEfficiencyChipView::HighEfficiencyChipView(
       browser_(browser) {
   DCHECK(browser_);
 
+  registrar_.Init(g_browser_process->local_state());
+  registrar_.Add(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,
+      base::BindRepeating(&HighEfficiencyChipView::OnPrefChanged,
+                          base::Unretained(this)));
+  OnPrefChanged();
+
   SetUpForInOutAnimation(kChipAnimationDuration);
   SetPaintLabelOverSolidBackground(true);
   SetProperty(views::kElementIdentifierKey, kHighEfficiencyChipElementId);
@@ -77,7 +86,7 @@ void HighEfficiencyChipView::UpdateImpl() {
   }
   TabDiscardTabHelper* const tab_helper =
       TabDiscardTabHelper::FromWebContents(web_contents);
-  if (tab_helper->IsChipVisible()) {
+  if (tab_helper->IsChipVisible() && is_high_efficiency_mode_enabled_) {
     SetVisible(true);
     if (tab_helper->ShouldIconAnimate()) {
       // Only animate the chip to the expanded view the first 3 times it is
@@ -146,6 +155,11 @@ void HighEfficiencyChipView::MaybeShowIPH() {
     if (promo_shown)
       PauseAnimation();
   }
+}
+
+void HighEfficiencyChipView::OnPrefChanged() {
+  is_high_efficiency_mode_enabled_ = registrar_.prefs()->GetBoolean(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
 }
 
 BEGIN_METADATA(HighEfficiencyChipView, PageActionIconView)
