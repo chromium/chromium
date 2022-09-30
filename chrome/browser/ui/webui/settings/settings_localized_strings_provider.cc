@@ -1728,32 +1728,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"privacySandboxCookiesDialogMore",
        IDS_SETTINGS_PRIVACY_SANDBOX_COOKIES_DIALOG_MORE},
       {"privacySandboxPageHeading", IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_HEADING},
-      {"privacySandboxPageExplanation2Phase2",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION2_PHASE2},
-      {"privacySandboxPageSettingTitle",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_TITLE},
-      {"privacySandboxPageSettingExplanation1Phase2",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION1_PHASE2},
-      {"privacySandboxPageSettingExplanation2Phase2",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION2_PHASE2},
-      {"privacySandboxPageSettingExplanation3Phase2",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_SETTING_EXPLANATION3_PHASE2},
       {"privacySandboxPageDetails", IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_DETAILS},
-      {"privacySandboxPageFlocHeading",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_HEADING},
-      {"privacySandboxPageFlocStatus",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_STATUS},
-      {"privacySandboxPageFlocStatusNotActive",
-       IDS_PRIVACY_SANDBOX_FLOC_STATUS_NOT_ACTIVE},
-      {"privacySandboxPageFlocCohort",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT},
-      {"privacySandboxFlocInvalid", IDS_PRIVACY_SANDBOX_FLOC_INVALID},
-      {"privacySandboxPageFlocCohortNextUpdate",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_COHORT_NEXT_UPDATE},
-      {"privacySandboxPageFlocTimeToNextComputeInvalid",
-       IDS_PRIVACY_SANDBOX_FLOC_TIME_TO_NEXT_COMPUTE_INVALID},
-      {"privacySandboxPageFlocResetCohort",
-       IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_FLOC_RESET_COHORT},
       // The following strings are used for PrivacySandboxSettings3.
       {"privacySandboxTrialsTitle", IDS_SETTINGS_PRIVACY_SANDBOX_TRIALS_TITLE},
       {"privacySandboxTrialsSummary",
@@ -1856,33 +1831,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString(
-      "privacySandboxPageExplanation1Phase2",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_PRIVACY_SANDBOX_PAGE_EXPLANATION1_PHASE2,
-          u"https://www.privacysandbox.com"));
-
-  // The complete FLoC explanation string must be built from two strings,
-  // one provided by the Privacy Sandbox service, and one with a URL
-  // replacement based on a feature parameter.
-  std::u16string floc_explanation =
-      l10n_util::GetPluralStringFUTF16(IDS_PRIVACY_SANDBOX_FLOC_DESCRIPTION,
-                                       7) +
-      u" " +  // Whitespace is a valid separator w.r.t l10n.
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_PRIVACY_SANDBOX_FLOC_TRIAL_ACTIVE,
-                                 u"https://privacysandbox.com/proposals/floc");
-  html_source->AddString("privacySandboxPageFlocExplanation", floc_explanation);
-
-  // The FLoC compute frequency string is constant through the life of the
-  // profile, and so the relevant string can be injected here, rather than
-  // fetched dynamically from JS.
-  html_source->AddString("privacySandboxPageFlocResetExplanation",
-                         l10n_util::GetPluralStringFUTF16(
-                             IDS_PRIVACY_SANDBOX_FLOC_RESET_EXPLANATION, 7));
-
-  html_source->AddBoolean(
-      "privacySandboxSettings3Enabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3));
   html_source->AddString(
       "privacySandboxAdMeasurementDialogControlMeasurement",
       l10n_util::GetStringFUTF16(

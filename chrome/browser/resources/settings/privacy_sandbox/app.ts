@@ -30,6 +30,15 @@ export enum PrivacySandboxSettingsView {
   SPAM_AND_FRAUD_DIALOG = 'spamAndFraudDialog',
 }
 
+export interface PrivacySandboxAppElement {
+  $: {
+    learnMoreLink: HTMLElement,
+    adPersonalizationRow: HTMLElement,
+    adMeasurementRow: HTMLElement,
+    spamAndFraudRow: HTMLElement,
+  };
+}
+
 const PrivacySandboxAppElementBase = PrefsMixin(PolymerElement);
 
 export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
@@ -43,27 +52,6 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
   static get properties() {
     return {
-      /**
-       * Mock preference for FLoC toggle to always display as off and disabled
-       * as the feature has been removed from the codebase.
-       * TODO(crbug.com/1299720): Remove this and all the UI code which uses it.
-       */
-      prefFlocToggle_: {
-        type: Object,
-        value() {
-          return {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-            userControlDisabled: true,
-          };
-        },
-      },
-
-      privacySandboxSettings3Enabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('privacySandboxSettings3Enabled'),
-      },
-
       /** Valid privacy sandbox settings view states. */
       privacySandboxSettingsViewEnum_: {
         type: Object,
@@ -113,10 +101,8 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private prefFlocToggle_: chrome.settingsPrivate.PrefObject;
   private privacySandboxBrowserProxy_: PrivacySandboxBrowserProxy =
       PrivacySandboxBrowserProxyImpl.getInstance();
-  private privacySandboxSettings3Enabled_: boolean;
   privacySandboxSettingsView: PrivacySandboxSettingsView;
   private topTopics_: PrivacySandboxInterest[];
   private blockedTopics_: PrivacySandboxInterest[];
@@ -175,11 +161,7 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.metricsBrowserProxy_.recordAction(
         privacySandboxApisEnabled ? 'Settings.PrivacySandbox.ApisEnabled' :
                                     'Settings.PrivacySandbox.ApisDisabled');
-    this.setPrefValue(
-        this.privacySandboxSettings3Enabled_ ?
-            'privacy_sandbox.manually_controlled_v2' :
-            'privacy_sandbox.manually_controlled',
-        true);
+    this.setPrefValue('privacy_sandbox.manually_controlled_v2', true);
 
     // As the backend will have cleared any data when the API is disabled, clear
     // the associated model entries.
@@ -202,24 +184,20 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     afterNextRender(this, async () => {
       switch (lastView) {
         case PrivacySandboxSettingsView.LEARN_MORE_DIALOG:
-          this.getElement_('#learnMoreLink')!.focus();
+          this.$.learnMoreLink.focus();
           break;
         case PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG:
         case PrivacySandboxSettingsView.AD_PERSONALIZATION_REMOVED_DIALOG:
-          this.getElement_('#adPersonalizationRow')!.focus();
+          this.$.adPersonalizationRow.focus();
           break;
         case PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG:
-          this.getElement_('#adMeasurementRow')!.focus();
+          this.$.adMeasurementRow.focus();
           break;
         case PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG:
-          this.getElement_('#spamAndFraudRow')!.focus();
+          this.$.spamAndFraudRow.focus();
           break;
       }
     });
-  }
-
-  private getElement_(selector: string): HTMLElement|null {
-    return this.shadowRoot!.querySelector<HTMLElement>(selector);
   }
 
   private onLearnMoreClick_(e: Event) {

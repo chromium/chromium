@@ -275,9 +275,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     const currentCookieSetting =
         this.getPref('generated.cookie_primary_setting').value;
     const privacySandboxEnabled =
-        loadTimeData.getBoolean('privacySandboxSettings3Enabled') ?
-        this.getPref('privacy_sandbox.apis_enabled_v2').value :
-        this.getPref('privacy_sandbox.apis_enabled').value;
+        this.getPref('privacy_sandbox.apis_enabled_v2').value;
 
     if (privacySandboxEnabled &&
         (currentCookieSetting === CookiePrimarySetting.ALLOW_ALL ||

@@ -433,9 +433,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   }
 
   private computePrivacySandboxSublabel_(): string {
-    const enabled = loadTimeData.getBoolean('privacySandboxSettings3Enabled') ?
-        this.getPref('privacy_sandbox.apis_enabled_v2').value :
-        this.getPref('privacy_sandbox.apis_enabled').value;
+    const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
     return enabled ? this.i18n('privacySandboxTrialsEnabled') :
                      this.i18n('privacySandboxTrialsDisabled');
   }

@@ -295,11 +295,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Privacy Sandbox page
-  (*s_allowlist)[::prefs::kPrivacySandboxApisEnabled] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kPrivacySandboxApisEnabledV2] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[::prefs::kPrivacySandboxManuallyControlled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kPrivacySandboxManuallyControlledV2] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
