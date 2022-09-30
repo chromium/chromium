@@ -407,12 +407,12 @@ void D3D11H265Accelerator::PicParamsFromSliceHeader(
   // IDR_W_RADL and IDR_N_LP NALUs do not contain st_rps in slice header.
   // Otherwise if short_term_ref_pic_set_sps_flag is 1, host decoder
   // shall set ucNumDeltaPocsOfRefRpsIdx to 0.
-  if (slice_hdr->short_term_ref_pic_set_sps_flag || !slice_hdr->st_rps_bits) {
+  if (slice_hdr->short_term_ref_pic_set_sps_flag) {
     pic_param->main.ucNumDeltaPocsOfRefRpsIdx = 0;
     pic_param->main.wNumBitsForShortTermRPSInSlice = 0;
   } else {
     pic_param->main.ucNumDeltaPocsOfRefRpsIdx =
-        slice_hdr->GetStRefPicSet(sps).num_delta_pocs;
+        slice_hdr->st_ref_pic_set.rps_idx_num_delta_pocs;
     pic_param->main.wNumBitsForShortTermRPSInSlice = slice_hdr->st_rps_bits;
   }
   pic_param->main.IrapPicFlag = slice_hdr->irap_pic;
