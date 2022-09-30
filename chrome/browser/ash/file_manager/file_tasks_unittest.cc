@@ -193,12 +193,12 @@ class FileManagerFileTaskPreferencesTest : public testing::Test {
 
   // Updates the default task preferences per the given dictionary values. Used
   // for testing ChooseAndSetDefaultTask.
-  void UpdateDefaultTaskPreferences(const base::DictionaryValue& mime_types,
-                                    const base::DictionaryValue& suffixes) {
-    profile_->GetTestingPrefService()->Set(prefs::kDefaultTasksByMimeType,
-                                           mime_types);
-    profile_->GetTestingPrefService()->Set(prefs::kDefaultTasksBySuffix,
-                                           suffixes);
+  void UpdateDefaultTaskPreferences(const base::Value::Dict& mime_types,
+                                    const base::Value::Dict& suffixes) {
+    profile_->GetTestingPrefService()->SetDict(prefs::kDefaultTasksByMimeType,
+                                               mime_types.Clone());
+    profile_->GetTestingPrefService()->SetDict(prefs::kDefaultTasksBySuffix,
+                                               suffixes.Clone());
   }
 
   void AddFakeAppToAppService(const std::string& app_id,
@@ -253,10 +253,9 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   EXPECT_FALSE(tasks[1].is_default);
 
   // Set Text.app as default for "text/plain" in the preferences.
-  base::DictionaryValue empty;
-  base::DictionaryValue mime_types;
-  mime_types.SetKey("text/plain",
-                    base::Value(TaskDescriptorToId(text_app_task)));
+  base::Value::Dict empty;
+  base::Value::Dict mime_types;
+  mime_types.Set("text/plain", base::Value(TaskDescriptorToId(text_app_task)));
   UpdateDefaultTaskPreferences(mime_types, empty);
 
   // Text.app should be chosen as default.
@@ -274,8 +273,8 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   EXPECT_FALSE(tasks[1].is_default);
 
   // Set Nice.app as default for ".txt" in the preferences.
-  base::DictionaryValue suffixes;
-  suffixes.SetKey(".txt", base::Value(TaskDescriptorToId(nice_app_task)));
+  base::Value::Dict suffixes;
+  suffixes.Set(".txt", base::Value(TaskDescriptorToId(nice_app_task)));
   UpdateDefaultTaskPreferences(empty, suffixes);
 
   // Now Nice.app should be chosen as default.
@@ -443,8 +442,8 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   // Set the default app preference.
   std::string files_app_id = package + "/" + activity;
   TaskDescriptor file_task(files_app_id, task_type, "view");
-  base::DictionaryValue mime_types;
-  mime_types.SetKey("image/png", base::Value(TaskDescriptorToId(file_task)));
+  base::Value::Dict mime_types;
+  mime_types.Set("image/png", base::Value(TaskDescriptorToId(file_task)));
   UpdateDefaultTaskPreferences(mime_types, {});
 
   // Create the file task descriptors to match against.
