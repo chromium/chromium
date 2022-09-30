@@ -98,9 +98,8 @@ TEST_F(DawnCachingInterfaceTest, IncognitoCachesDoNotShare) {
 
 TEST_F(DawnCachingInterfaceTest, UnableToCreateBackend) {
   // This factory mimics what happens when we are unable to create a backend.
-  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
-    return base::MakeRefCounted<RefCountedDiskCacheBackend>(nullptr);
-  }));
+  DawnCachingInterfaceFactory factory(base::BindRepeating(
+      []() -> scoped_refptr<detail::DawnCachingBackend> { return nullptr; }));
 
   // Without an actual backend, all loads and stores should do nothing.
   {
@@ -127,6 +126,65 @@ TEST_F(DawnCachingInterfaceTest, StoreTriggersHostSide) {
                         std::string(kData)));
   dawn_caching_interface->StoreData(kKey.data(), kKeySize, kData.data(),
                                     kDataSize);
+}
+
+TEST_F(DawnCachingInterfaceTest, TestMaxSizeEviction) {
+  // Verifies that a cache size that should only fit one entry will only keep
+  // one entry in memory.
+  static constexpr std::string_view kKey1 = "1";
+  static constexpr std::string_view kData1 = "1";
+  static constexpr std::string_view kKey2 = "2";
+  static constexpr std::string_view kData2 = "2";
+  static_assert(kKey1.size() == kKey2.size());
+  static_assert(kData1.size() == kData2.size());
+  static constexpr size_t kKeySize = kKey1.size();
+  static constexpr size_t kDataSize = kData1.size();
+  static constexpr size_t kCacheSize = 2u * kKeySize + 2u * kDataSize - 1u;
+
+  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
+    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+  }));
+
+  auto interface = factory.CreateInstance();
+  interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
+  interface->StoreData(kKey2.data(), kKeySize, kData2.data(), kDataSize);
+
+  EXPECT_EQ(0u, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  EXPECT_EQ(kDataSize, interface->LoadData(kKey2.data(), 1u, nullptr, 0));
+}
+
+TEST_F(DawnCachingInterfaceTest, TestLruEviction) {
+  // Verifies that a cache size that should only fit two entries evicts the
+  // proper entry when a third one is stored.
+  static constexpr std::string_view kKey1 = "1";
+  static constexpr std::string_view kData1 = "1";
+  static constexpr std::string_view kKey2 = "2";
+  static constexpr std::string_view kData2 = "2";
+  static constexpr std::string_view kKey3 = "3";
+  static constexpr std::string_view kData3 = "3";
+  static_assert(kKey1.size() == kKey2.size());
+  static_assert(kKey2.size() == kKey3.size());
+  static_assert(kData1.size() == kData2.size());
+  static_assert(kData2.size() == kData3.size());
+  static constexpr size_t kKeySize = kKey1.size();
+  static constexpr size_t kDataSize = kData1.size();
+  static constexpr size_t kCacheSize = 3u * kKeySize + 3u * kDataSize - 1u;
+
+  DawnCachingInterfaceFactory factory(base::BindRepeating([]() {
+    return base::MakeRefCounted<detail::DawnCachingBackend>(kCacheSize);
+  }));
+
+  // Even though Key1 was stored first, because we loaded it once, Key2 should
+  // be the one to be evicted when Key3 is added.
+  auto interface = factory.CreateInstance();
+  interface->StoreData(kKey1.data(), kKeySize, kData1.data(), kDataSize);
+  interface->StoreData(kKey2.data(), kKeySize, kData2.data(), kDataSize);
+  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  interface->StoreData(kKey3.data(), kKeySize, kData3.data(), kDataSize);
+
+  EXPECT_EQ(kDataSize, interface->LoadData(kKey1.data(), 1u, nullptr, 0));
+  EXPECT_EQ(0u, interface->LoadData(kKey2.data(), 1u, nullptr, 0));
+  EXPECT_EQ(kDataSize, interface->LoadData(kKey3.data(), 1u, nullptr, 0));
 }
 
 }  // namespace
