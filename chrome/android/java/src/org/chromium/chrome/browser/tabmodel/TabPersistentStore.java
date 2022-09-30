@@ -1970,6 +1970,10 @@ public class TabPersistentStore {
                 && !mTabsToMigrate.isEmpty()) {
             Tab tabToMigrate = mTabsToMigrate.pollFirst();
             if (tabToMigrate != null && !tabToMigrate.isDestroyed()) {
+                // Not all Tab metadata changes result in a Tab save. There is
+                // throttling via setShouldSave. To ensure an un-migrated Tab is
+                // saved, the shouldSave flag should be set.
+                CriticalPersistedTabData.from(tabToMigrate).setShouldSave();
                 tabToMigrate.setIsTabSaveEnabled(true);
             }
             numMigrated++;
