@@ -40,11 +40,10 @@ BrowserSwitcherService* BrowserSwitcherServiceFactory::GetForBrowserContext(
 }
 
 BrowserSwitcherServiceFactory::BrowserSwitcherServiceFactory()
-    : ProfileKeyedServiceFactory(
-          "BrowserSwitcherServiceFactory",
-          // Use the original profile's BrowserSwitcherService, even in
-          // Incognito mode.
-          ProfileSelections::BuildRedirectedInIncognito()) {}
+    : ProfileKeyedServiceFactory("BrowserSwitcherServiceFactory",
+                                 // Only create BrowserSwitcherService for
+                                 // regular, non-Incognito profiles.
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 BrowserSwitcherServiceFactory::~BrowserSwitcherServiceFactory() {}
 

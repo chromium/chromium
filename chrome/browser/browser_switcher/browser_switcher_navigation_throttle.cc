@@ -49,6 +49,9 @@ bool MaybeLaunchAlternativeBrowser(
   BrowserSwitcherService* service =
       BrowserSwitcherServiceFactory::GetForBrowserContext(
           navigation_handle->GetWebContents()->GetBrowserContext());
+  if (!service)
+    return false;
+
   const GURL& url = navigation_handle->GetURL();
   bool should_switch = service->sitelist()->ShouldSwitch(url);
 
@@ -89,8 +92,9 @@ BrowserSwitcherNavigationThrottle::MaybeCreateThrottleFor(
 
   content::BrowserContext* browser_context =
       navigation->GetWebContents()->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  if (browser_context->IsOffTheRecord())
+  if (!profile->IsRegularProfile())
     return nullptr;
 
   if (!navigation->IsInPrimaryMainFrame())
