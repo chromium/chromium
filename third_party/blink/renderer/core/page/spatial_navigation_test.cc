@@ -200,12 +200,11 @@ TEST_F(SpatialNavigationTest,
   Node* enclosing_container = ScrollableAreaOrDocumentOf(content);
 
   // TODO(crbug.com/889840):
-  // VisibleBoundsInVisualViewport does not (yet) take div-clipping into
+  // VisibleBoundsInLocalRoot does not (yet) take div-clipping into
   // account. The node is off screen, but nevertheless VBIVV returns a non-
-  // empty rect. If you fix VisibleBoundsInVisualViewport, change to
+  // empty rect. If you fix VisibleBoundsInLocalRoot, change to
   // EXPECT_TRUE here and stop using LayoutObject in IsOffscreen().
-  EXPECT_FALSE(
-      content->VisibleBoundsInVisualViewport().IsEmpty());  // EXPECT_TRUE.
+  EXPECT_FALSE(content->VisibleBoundsInLocalRoot().IsEmpty());  // EXPECT_TRUE.
 
   EXPECT_TRUE(IsOffscreen(content));
   EXPECT_FALSE(IsOffscreen(container));
@@ -369,11 +368,11 @@ TEST_F(SpatialNavigationTest, StartAtContainersEdge) {
   const PhysicalRect container_box = NodeRectInRootFrame(container);
 
   // TODO(crbug.com/889840):
-  // VisibleBoundsInVisualViewport does not (yet) take div-clipping into
+  // VisibleBoundsInLocalRoot does not (yet) take div-clipping into
   // account. The node is off screen, but nevertheless VBIVV returns a non-
-  // empty rect. If you fix VisibleBoundsInVisualViewport, change to
+  // empty rect. If you fix VisibleBoundsInLocalRoot, change to
   // EXPECT_TRUE here and stop using LayoutObject in IsOffscreen().
-  EXPECT_FALSE(b->VisibleBoundsInVisualViewport().IsEmpty());  // EXPECT_TRUE.
+  EXPECT_FALSE(b->VisibleBoundsInLocalRoot().IsEmpty());  // EXPECT_TRUE.
   EXPECT_TRUE(IsOffscreen(b));
 
   // Go down.
@@ -567,12 +566,11 @@ TEST_F(SpatialNavigationTest, DivsCanClipIframes) {
   EXPECT_FALSE(IsOffscreen(div));
 
   // TODO(crbug.com/889840):
-  // VisibleBoundsInVisualViewport does not (yet) take div-clipping into
+  // VisibleBoundsInLocalRoot does not (yet) take div-clipping into
   // account. The node is off screen, but nevertheless VBIVV returns a non-
-  // empty rect. If you fix VisibleBoundsInVisualViewport, change to
+  // empty rect. If you fix VisibleBoundsInLocalRoot, change to
   // EXPECT_TRUE here and stop using LayoutObject in IsOffscreen().
-  EXPECT_FALSE(
-      iframe->VisibleBoundsInVisualViewport().IsEmpty());  // EXPECT_TRUE.
+  EXPECT_FALSE(iframe->VisibleBoundsInLocalRoot().IsEmpty());  // EXPECT_TRUE.
 
   // The <iframe> is not displayed in the visual viewport because it is clipped
   // by the div. In other words, it is being offscreen. And so is also its

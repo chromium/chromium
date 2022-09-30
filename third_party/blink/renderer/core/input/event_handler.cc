@@ -2164,7 +2164,7 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
     }
     // Intersect the selection rect and the visible bounds of focused_element.
     if (focused_element) {
-      gfx::Rect clipped_rect = view->ViewportToFrame(
+      gfx::Rect clipped_rect = view->ConvertFromRootFrame(
           GetFocusedElementRectForNonLocatedContextMenu(focused_element));
       left = std::max(clipped_rect.x(), left);
       top = std::max(clipped_rect.y(), top);
@@ -2184,8 +2184,7 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
   } else if (focused_element) {
     gfx::Rect clipped_rect =
         GetFocusedElementRectForNonLocatedContextMenu(focused_element);
-    location_in_root_frame =
-        visual_viewport.ViewportToRootFrame(clipped_rect.CenterPoint());
+    location_in_root_frame = clipped_rect.CenterPoint();
   } else {
     // TODO(crbug.com/1274078): Should this use ScrollPosition()?
     location_in_root_frame =
@@ -2233,7 +2232,20 @@ WebInputEventResult EventHandler::ShowNonLocatedContextMenu(
 
 gfx::Rect EventHandler::GetFocusedElementRectForNonLocatedContextMenu(
     Element* focused_element) {
-  gfx::Rect clipped_rect = focused_element->VisibleBoundsInVisualViewport();
+  gfx::Rect visible_rect = focused_element->VisibleBoundsInLocalRoot();
+
+  VisualViewport& visual_viewport = frame_->GetPage()->GetVisualViewport();
+
+  // TODO(bokan): This method may not work as expected when the local root
+  // isn't the main frame since the result won't be transformed and clipped by
+  // the visual viewport (which is accessible only from the outermost main
+  // frame).
+  if (frame_->LocalFrameRoot().IsOutermostMainFrame()) {
+    visible_rect = visual_viewport.RootFrameToViewport(visible_rect);
+    visible_rect.Intersect(gfx::Rect(visual_viewport.Size()));
+  }
+
+  gfx::Rect clipped_rect = visible_rect;
   // The bounding rect of multiline elements may include points that are
   // not within the element. Intersect the clipped rect with the first
   // outline rect to ensure that the selection rect only includes visible
@@ -2241,7 +2253,8 @@ gfx::Rect EventHandler::GetFocusedElementRectForNonLocatedContextMenu(
   Vector<gfx::Rect> outline_rects = focused_element->OutlineRectsInWidget();
   if (outline_rects.size() > 1)
     clipped_rect.Intersect(outline_rects[0]);
-  return clipped_rect;
+
+  return visual_viewport.ViewportToRootFrame(clipped_rect);
 }
 
 void EventHandler::ScheduleHoverStateUpdate() {

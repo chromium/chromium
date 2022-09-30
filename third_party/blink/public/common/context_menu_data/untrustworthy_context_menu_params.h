@@ -126,7 +126,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // If this node is an input field, the type of that field.
   blink::mojom::ContextMenuDataInputFieldType input_field_type;
 
-  // Rect representing the coordinates in the document space of the selection.
+  // For the outermost main frame's widget, this will be the selection rect in
+  // viewport space. For a local root, this is in the coordinates of the local
+  // frame root.
   gfx::Rect selection_rect;
 
   // Start position of the selection text.

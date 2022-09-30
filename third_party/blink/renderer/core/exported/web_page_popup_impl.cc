@@ -868,15 +868,8 @@ gfx::Rect WebPagePopupImpl::GetAnchorRectInScreen() const {
   LocalFrameView* view = popup_client_->OwnerElement().GetDocument().View();
   DCHECK(view);
 
-  LocalFrameView* root_view = view->GetFrame().LocalFrameRoot().View();
-  DCHECK(root_view);
-
-  // TODO(bokan): VisibleBoundsInVisualViewport will soon be turned into
-  // VisibleBoundsInLocalRoot.
   return view->GetFrame().GetChromeClient().LocalRootToScreenDIPs(
-      root_view->ViewportToFrame(
-          popup_client_->OwnerElement().VisibleBoundsInVisualViewport()),
-      view);
+      popup_client_->OwnerElement().VisibleBoundsInLocalRoot(), view);
 }
 
 WebInputEventResult WebPagePopupImpl::DispatchBufferedTouchEvents() {

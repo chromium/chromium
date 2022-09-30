@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/menu_list_inner_element.h"
@@ -321,7 +322,23 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
     return;
   if (!select_->GetLayoutObject())
     return;
-  if (select_->VisibleBoundsInVisualViewport().IsEmpty())
+
+  gfx::Rect local_root_rect = select_->VisibleBoundsInLocalRoot();
+
+  if (!document.GetFrame()->LocalFrameRoot().IsOutermostMainFrame()) {
+    // TODO(bokan): If we're in a remote frame, we cannot access the active
+    // visual viewport. VisibleBoundsInLocalRoot will clip to the outermost
+    // main frame but if the user is pinch-zoomed this won't be accurate.
+    if (local_root_rect.IsEmpty())
+      return;
+  }
+
+  gfx::Rect visual_viewport_rect =
+      document.GetPage()->GetVisualViewport().RootFrameToViewport(
+          local_root_rect);
+  visual_viewport_rect.Intersect(
+      gfx::Rect(document.GetPage()->GetVisualViewport().Size()));
+  if (visual_viewport_rect.IsEmpty())
     return;
 
   if (!popup_) {

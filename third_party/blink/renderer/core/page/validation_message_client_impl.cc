@@ -190,12 +190,13 @@ void ValidationMessageClientImpl::CheckAnchorStatus(TimerBase*) {
     return;
   }
 
-  gfx::Rect new_anchor_rect_in_viewport =
-      current_anchor_->VisibleBoundsInVisualViewport();
-  if (new_anchor_rect_in_viewport.IsEmpty()) {
-    // In a remote frame, VisibleBoundsInVisualViewport() returns an empty
-    // rectangle for a while after initial load or scrolling.  So we don't
-    // hide the validation bubble until we see a non-empty rectable.
+  gfx::Rect new_anchor_rect_in_local_root =
+      current_anchor_->VisibleBoundsInLocalRoot();
+  if (new_anchor_rect_in_local_root.IsEmpty()) {
+    // In a remote frame, VisibleBoundsInLocalRoot() may return an empty
+    // rectangle while waiting for updated ancestor rects from the browser
+    // (e.g. during initial load or scrolling). So we don't hide the validation
+    // bubble until we see a non-empty rectangle.
     if (!allow_initial_empty_anchor_) {
       HideValidationMessage(*current_anchor_);
       return;

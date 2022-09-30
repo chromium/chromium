@@ -1704,21 +1704,6 @@ TEST_P(VisualViewportTest, ElementBoundsInWidgetSpaceAccountsForViewport) {
   EXPECT_EQ(expected_bounds.size(), bounds_in_viewport.size());
 }
 
-TEST_P(VisualViewportTest, ElementVisibleBoundsInVisualViewport) {
-  InitializeWithAndroidSettings();
-  WebView()->MainFrameViewWidget()->Resize(gfx::Size(640, 1080));
-  RegisterMockedHttpURLLoad("viewport-select.html");
-  NavigateTo(base_url_ + "viewport-select.html");
-
-  ASSERT_EQ(2.0f, WebView()->PageScaleFactor());
-  To<LocalFrame>(WebView()->GetPage()->MainFrame())->SetInitialFocus(false);
-  Element* element = WebView()->FocusedElement();
-  EXPECT_FALSE(element->VisibleBoundsInVisualViewport().IsEmpty());
-
-  WebView()->SetPageScaleFactor(4.0);
-  EXPECT_TRUE(element->VisibleBoundsInVisualViewport().IsEmpty());
-}
-
 // Test that the various window.scroll and document.body.scroll properties and
 // methods don't change with the visual viewport.
 TEST_P(VisualViewportTest, visualViewportIsInert) {

@@ -868,7 +868,9 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   int top = std::min(focus.y(), anchor.y());
   int right = std::max(focus.right(), anchor.right());
   int bottom = std::max(focus.bottom(), anchor.bottom());
-  gfx::Rect selection_rect(left, top, right - left, bottom - top);
+  gfx::Rect selection_rect =
+      document->GetFrame()->LocalFrameRoot().View()->FrameToViewport(
+          gfx::Rect(left, top, right - left, bottom - top));
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 
   // Select all the content of |textarea|.
@@ -879,16 +881,18 @@ TEST_P(ContextMenuControllerTest, SelectionRectClipped) {
   EXPECT_EQ(context_menu_data.selected_text, "Sample editable text");
 
   // The selection rect is clipped by the editable box.
-  gfx::Rect clip_bound = editable_element->VisibleBoundsInVisualViewport();
+  gfx::Rect clip_bound = editable_element->VisibleBoundsInLocalRoot();
   selection.ComputeAbsoluteBounds(anchor, focus);
-  anchor = document->GetFrame()->View()->FrameToViewport(anchor);
-  focus = document->GetFrame()->View()->FrameToViewport(focus);
+  anchor = document->GetFrame()->View()->ConvertToRootFrame(anchor);
+  focus = document->GetFrame()->View()->ConvertToRootFrame(focus);
   left = std::max(clip_bound.x(), std::min(focus.x(), anchor.x()));
   top = std::max(clip_bound.y(), std::min(focus.y(), anchor.y()));
   right = std::min(clip_bound.right(), std::max(focus.right(), anchor.right()));
   bottom =
       std::min(clip_bound.bottom(), std::max(focus.bottom(), anchor.bottom()));
-  selection_rect = gfx::Rect(left, top, right - left, bottom - top);
+  selection_rect =
+      document->GetFrame()->LocalFrameRoot().View()->FrameToViewport(
+          gfx::Rect(left, top, right - left, bottom - top));
   EXPECT_EQ(context_menu_data.selection_rect, selection_rect);
 }
 

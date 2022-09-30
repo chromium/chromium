@@ -2052,7 +2052,7 @@ Vector<gfx::Rect> Element::OutlineRectsInWidget(
   return rects;
 }
 
-gfx::Rect Element::VisibleBoundsInVisualViewport() const {
+gfx::Rect Element::VisibleBoundsInLocalRoot() const {
   if (!GetLayoutObject() || !GetDocument().GetPage() ||
       !GetDocument().GetFrame())
     return gfx::Rect();
@@ -2066,17 +2066,14 @@ gfx::Rect Element::VisibleBoundsInVisualViewport() const {
   rect.Intersect(frame_clip_rect);
 
   // MapToVisualRectInAncestorSpace, called with a null ancestor argument,
-  // returns the viewport-visible rect in the root frame's coordinate space.
+  // returns the root-frame-visible rect in the root frame's coordinate space.
+  // TODO(bokan): When the root is remote this appears to be document space,
+  // rather than frame.
   // MapToVisualRectInAncestorSpace applies ancestors' frame's clipping but does
   // not apply (overflow) element clipping.
   GetDocument().View()->GetLayoutView()->MapToVisualRectInAncestorSpace(nullptr,
                                                                         rect);
 
-  // TODO(layout-dev): Callers of this method don't expect the offset of the
-  // local frame root from a remote top-level frame to be applied here. They
-  // expect the result to be in the coordinate system of the local root frame.
-  // Either the method should be renamed to something which communicates that,
-  // or callers should be updated to expect actual top-level frame coordinates.
   rect = GetDocument()
              .GetFrame()
              ->LocalFrameRoot()
@@ -2084,20 +2081,7 @@ gfx::Rect Element::VisibleBoundsInVisualViewport() const {
              ->AbsoluteToLocalRect(rect, kTraverseDocumentBoundaries |
                                              kApplyRemoteMainFrameTransform);
 
-  gfx::Rect visible_rect = ToPixelSnappedRect(rect);
-  // If the rect is in the coordinates of the main frame, then it should
-  // also be clipped to the viewport to account for page scale. For OOPIFs,
-  // local frame root -> viewport coordinate conversion is done in the
-  // browser process.
-  if (GetDocument().GetFrame()->LocalFrameRoot().IsMainFrame()) {
-    gfx::Size viewport_size =
-        GetDocument().GetPage()->GetVisualViewport().Size();
-    visible_rect =
-        GetDocument().GetPage()->GetVisualViewport().RootFrameToViewport(
-            visible_rect);
-    visible_rect.Intersect(gfx::Rect(gfx::Point(), viewport_size));
-  }
-  return visible_rect;
+  return ToPixelSnappedRect(rect);
 }
 
 void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {

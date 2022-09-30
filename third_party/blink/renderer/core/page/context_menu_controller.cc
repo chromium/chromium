@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -392,29 +393,35 @@ static gfx::Rect ComputeSelectionRect(LocalFrame* selected_frame) {
   gfx::Rect anchor;
   gfx::Rect focus;
   selected_frame->Selection().ComputeAbsoluteBounds(anchor, focus);
-  anchor = selected_frame->View()->FrameToViewport(anchor);
-  focus = selected_frame->View()->FrameToViewport(focus);
-  int left = std::min(focus.x(), anchor.x());
-  int top = std::min(focus.y(), anchor.y());
-  int right = std::max(focus.x() + focus.width(), anchor.x() + anchor.width());
-  int bottom =
-      std::max(focus.y() + focus.height(), anchor.y() + anchor.height());
+  anchor = selected_frame->View()->ConvertToRootFrame(anchor);
+  focus = selected_frame->View()->ConvertToRootFrame(focus);
+
+  gfx::Rect combined_rect = anchor;
+  combined_rect.UnionEvenIfEmpty(focus);
+
   // Intersect the selection rect and the visible bounds of the focused_element
   // to ensure the selection rect is visible.
   Document* doc = selected_frame->GetDocument();
   if (doc) {
-    Element* focused_element = doc->FocusedElement();
-    if (focused_element) {
-      gfx::Rect visible_bound =
-          focused_element->VisibleBoundsInVisualViewport();
-      left = std::max(visible_bound.x(), left);
-      top = std::max(visible_bound.y(), top);
-      right = std::min(visible_bound.right(), right);
-      bottom = std::min(visible_bound.bottom(), bottom);
-    }
+    if (Element* focused_element = doc->FocusedElement())
+      combined_rect.Intersect(focused_element->VisibleBoundsInLocalRoot());
   }
 
-  return gfx::Rect(left, top, right - left, bottom - top);
+  // TODO(bokan): This method may not work as expected when the local root
+  // isn't the main frame since the result won't be transformed and clipped by
+  // the visual viewport (which is accessible only from the outermost main
+  // frame).
+  if (selected_frame->LocalFrameRoot().IsOutermostMainFrame()) {
+    VisualViewport& visual_viewport =
+        selected_frame->GetPage()->GetVisualViewport();
+
+    gfx::Rect rect_in_visual_viewport =
+        visual_viewport.RootFrameToViewport(combined_rect);
+    rect_in_visual_viewport.Intersect(gfx::Rect(visual_viewport.Size()));
+    return rect_in_visual_viewport;
+  }
+
+  return combined_rect;
 }
 
 bool ContextMenuController::ShouldShowContextMenuFromTouch(

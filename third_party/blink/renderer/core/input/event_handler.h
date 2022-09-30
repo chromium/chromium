@@ -368,6 +368,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
       const HitTestRequest& request,
       const WebMouseEvent& mev);
 
+  // Returned rect is in local root frame coordinates.
   gfx::Rect GetFocusedElementRectForNonLocatedContextMenu(
       Element* focused_element);
 
