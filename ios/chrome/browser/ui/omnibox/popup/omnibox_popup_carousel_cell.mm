@@ -116,17 +116,6 @@ UIStackView* CarouselStackView() {
   return self.suggestionsStackView.arrangedSubviews;
 }
 
-#pragma mark - UITableViewCell
-
-- (void)prepareForReuse {
-  [super prepareForReuse];
-  for (OmniboxPopupCarouselControl* control in self.suggestionsStackView
-           .arrangedSubviews) {
-    [control setupWithCarouselItem:nil];
-    control.hidden = YES;
-  }
-}
-
 #pragma mark - Public methods
 
 - (void)setupWithCarouselItems:(NSArray<CarouselItem*>*)carouselItems {
@@ -135,12 +124,12 @@ UIStackView* CarouselStackView() {
   }
 
   DCHECK(carouselItems.count <= kCarouselCapacity);
-  for (NSUInteger i = 0; i < carouselItems.count && i < kCarouselCapacity;
-       ++i) {
+  for (NSUInteger i = 0; i < kCarouselCapacity; ++i) {
     OmniboxPopupCarouselControl* control =
         self.suggestionsStackView.arrangedSubviews[i];
-    [control setupWithCarouselItem:carouselItems[i]];
-    control.hidden = NO;
+    CarouselItem* item = i < carouselItems.count ? carouselItems[i] : nil;
+    [control setupWithCarouselItem:item];
+    control.hidden = !item;
     control.menuProvider = self.menuProvider;
   }
 }

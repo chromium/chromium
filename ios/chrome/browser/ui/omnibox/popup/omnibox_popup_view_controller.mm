@@ -104,6 +104,11 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 // Provider used to fetch carousel favicons.
 @property(nonatomic, strong)
     FaviconAttributesProvider* carouselAttributeProvider;
+
+// UITableViewCell displaying the most visited carousel in (Web and SRP) ZPS
+// state.
+@property(nonatomic, strong) OmniboxPopupCarouselCell* carouselCell;
+
 @end
 
 @implementation OmniboxPopupViewController
@@ -182,6 +187,16 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
   }
 }
 
+- (OmniboxPopupCarouselCell*)carouselCell {
+  DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
+  if (!_carouselCell) {
+    _carouselCell = [[OmniboxPopupCarouselCell alloc] init];
+    _carouselCell.delegate = self;
+    _carouselCell.menuProvider = self.carouselMenuProvider;
+  }
+  return _carouselCell;
+}
+
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
@@ -220,8 +235,6 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 
   [self.tableView registerClass:[OmniboxPopupRowCell class]
          forCellReuseIdentifier:OmniboxPopupRowCellReuseIdentifier];
-  [self.tableView registerClass:[OmniboxPopupCarouselCell class]
-         forCellReuseIdentifier:OmniboxPopupCarouselCellReuseIdentifier];
   self.shouldUpdateVisibleSuggestionCount = YES;
 
   if (@available(iOS 15.0, *)) {
@@ -631,20 +644,14 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
     }
     case SuggestionGroupDisplayStyleCarousel: {
       DCHECK(base::FeatureList::IsEnabled(omnibox::kMostVisitedTiles));
-      OmniboxPopupCarouselCell* cell =
-          [self.tableView dequeueReusableCellWithIdentifier:
-                              OmniboxPopupCarouselCellReuseIdentifier
-                                               forIndexPath:indexPath];
-      cell.delegate = self;
-      cell.menuProvider = self.carouselMenuProvider;
       NSArray<CarouselItem*>* carouselItems = [self
           carouselItemsFromSuggestionGroup:self.currentResult[indexPath.section]
                             groupIndexPath:indexPath];
-      [cell setupWithCarouselItems:carouselItems];
+      [self.carouselCell setupWithCarouselItems:carouselItems];
       for (CarouselItem* item in carouselItems) {
-        [self fetchFaviconForCarouselItem:item carouselCell:cell];
+        [self fetchFaviconForCarouselItem:item];
       }
-      return cell;
+      return self.carouselCell;
     }
   }
 }
@@ -863,9 +870,8 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 }
 
 // TODO(crbug.com/1365374): Move to a mediator.
-- (void)fetchFaviconForCarouselItem:(CarouselItem*)carouselItem
-                       carouselCell:(OmniboxPopupCarouselCell*)cell {
-  __weak OmniboxPopupCarouselCell* weakCell = cell;
+- (void)fetchFaviconForCarouselItem:(CarouselItem*)carouselItem {
+  __weak OmniboxPopupCarouselCell* weakCell = self.carouselCell;
   __weak CarouselItem* weakItem = carouselItem;
 
   void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
