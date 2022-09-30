@@ -56,7 +56,7 @@ import './screens/login/update_required_card.m.js';
 import './screens/oobe/auto_enrollment_check.js';
 import './screens/oobe/demo_preferences.m.js';
 import './screens/oobe/demo_setup.m.js';
-import './screens/oobe/enable_debugging.m.js';
+import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.m.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
