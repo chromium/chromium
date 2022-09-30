@@ -28,8 +28,6 @@ using SiteInteraction = extensions::SitePermissionsHelper::SiteInteraction;
 
 // Similar to views::test::WidgetDestroyedWaiter but waiting after the widget
 // has been closed is a no-op rather than an error.
-// TODO(crbug.com/1354661): Move SafeWidgetDestroyedWaiter to a shared file
-// since it's used by multiple tests.
 class SafeWidgetDestroyedWaiter : public views::WidgetObserver {
  public:
   explicit SafeWidgetDestroyedWaiter(views::Widget* widget) {
