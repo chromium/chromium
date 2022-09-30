@@ -39,8 +39,8 @@ void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
     return;
   }
   {
-    DictionaryPrefUpdate update(prefs, kTopicsToHandler);
-    update->SetKey(sender_id, base::Value(old_prefs.Clone()));
+    ScopedDictPrefUpdate update(prefs, kTopicsToHandler);
+    update->Set(sender_id, old_prefs.Clone());
   }
   prefs->ClearPref(kTopicsToHandlerDeprecated);
 }
@@ -82,8 +82,8 @@ void InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
     PrefService* prefs) {
   // Go through all senders and their topics. Find topics with deprecated owner
   // name and mark them for cleanup.
-  DictionaryPrefUpdate update(prefs, kTopicsToHandler);
-  for (auto sender_to_topics : update.Get()->DictItems()) {
+  ScopedDictPrefUpdate update(prefs, kTopicsToHandler);
+  for (auto sender_to_topics : update.Get()) {
     const std::string& sender_id = sender_to_topics.first;
 
     base::flat_set<std::string> topics_to_cleanup;
@@ -108,9 +108,9 @@ void InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
         topics_to_cleanup.insert(topic_name);
       }
     }
-    base::Value* topics_data = update->FindDictKey(sender_id);
+    base::Value::Dict* topics_data = update->FindDict(sender_id);
     for (const std::string& topic_name : topics_to_cleanup) {
-      topics_data->RemoveKey(topic_name);
+      topics_data->Remove(topic_name);
     }
   }
 }
@@ -127,8 +127,8 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
   const base::Value::Dict* pref_data =
       prefs_->GetDict(kTopicsToHandler).FindDict(sender_id_);
   if (!pref_data) {
-    DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
-    update->SetKey(sender_id_, base::Value(base::Value::Type::DICTIONARY));
+    ScopedDictPrefUpdate update(prefs_, kTopicsToHandler);
+    update->Set(sender_id_, base::Value::Dict());
     return;
   }
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
@@ -207,15 +207,15 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
       base::STLSetDifference<std::set<TopicData>>(old_topics, topics);
   RemoveSubscribedTopics(handler, topics_to_unregister);
 
-  DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
-  base::Value* pref_data = update->FindDictKey(sender_id_);
+  ScopedDictPrefUpdate update(prefs_, kTopicsToHandler);
+  base::Value::Dict* pref_data = update->FindDict(sender_id_);
   for (const auto& topic : topics) {
     handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].insert(
         topic);
     base::Value::Dict handler_pref;
     handler_pref.Set(kHandler, handler->GetOwnerName());
     handler_pref.Set(kIsPublic, topic.is_public);
-    pref_data->SetKey(topic.name, base::Value(std::move(handler_pref)));
+    pref_data->Set(topic.name, std::move(handler_pref));
   }
   return true;
 }
@@ -344,11 +344,11 @@ base::Value::Dict InvalidatorRegistrarWithMemory::CollectDebugData() const {
 void InvalidatorRegistrarWithMemory::RemoveSubscribedTopics(
     const InvalidationHandler* handler,
     const std::set<TopicData>& topics_to_unsubscribe) {
-  DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
-  base::Value* pref_data = update->FindDictKey(sender_id_);
+  ScopedDictPrefUpdate update(prefs_, kTopicsToHandler);
+  base::Value::Dict* pref_data = update->FindDict(sender_id_);
   DCHECK(pref_data);
   for (const TopicData& topic : topics_to_unsubscribe) {
-    pref_data->RemoveKey(topic.name);
+    pref_data->Remove(topic.name);
     handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].erase(
         topic);
   }
