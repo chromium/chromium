@@ -1,6 +1,7 @@
 <div>
   <iron-pages attr-for-selected="id" selected="[[currentState_]]">
     <search-page id="searchPage" on-continue-click="handleContinueClick_"
+        feedback-context="[[feedbackContext_]]"
         description-template="[[descriptionTemplate_]]"
         help-content-search-result-count="{{helpContentSearchResultCount_}}"
         no-help-content-displayed="{{noHelpContentDisplayed_}}">

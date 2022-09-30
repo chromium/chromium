@@ -80,7 +80,7 @@ export function buildWordMatcher(words) {
  * @type {!RegExp}
  * @protected
  */
-const btRegEx = new RegExp(
+export const btRegEx = new RegExp(
     'blu[e]?[ ]?toot[h]?|\\bb[ ]?t\\b|\\bble\\b|\\bfloss\\b|\\bbluez\\b', 'i');
 
 /**

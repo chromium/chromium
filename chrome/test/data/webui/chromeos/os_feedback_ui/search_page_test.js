@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeEmptySearchResponse, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeEmptySearchResponse, fakeFeedbackContext, fakeInternalUserFeedbackContext, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
+import {domainQuestions, questionnaireBegin} from 'chrome://os-feedback/questionnaire.js';
 import {OS_FEEDBACK_UNTRUSTED_ORIGIN, SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
@@ -112,6 +113,9 @@ export function searchPageTestSuite() {
     let textAreaElement = null;
 
     await initializePage();
+    // The 'input' event triggers a listener that checks for internal user
+    // account, so we need to set up the context.
+    page.feedbackContext = fakeFeedbackContext;
     textAreaElement = getElement('#descriptionText');
     // Verify the textarea is empty and hint is showing.
     assertEquals('', textAreaElement.value);
@@ -153,6 +157,9 @@ export function searchPageTestSuite() {
     let textAreaElement = null;
 
     await initializePage();
+    // The 'input' event triggers a listener that checks for internal user
+    // account, so we need to set up the context.
+    page.feedbackContext = fakeFeedbackContext;
     textAreaElement = getElement('#descriptionText');
     // Verify the textarea is empty now.
     assertEquals('', textAreaElement.value);
@@ -233,6 +240,9 @@ export function searchPageTestSuite() {
    */
   test('DescriptionEmptyError', async () => {
     await initializePage();
+    // The 'input' event triggers a listener that checks for internal user
+    // account, so we need to set up the context.
+    page.feedbackContext = fakeFeedbackContext;
 
     const errorMsg = getElement('#emptyErrorContainer');
     // Verify that the error message is hidden in the beginning.
@@ -285,4 +295,110 @@ export function searchPageTestSuite() {
     assertTrue(!!actualCurrentState);
     assertEquals(FeedbackFlowState.SEARCH, actualCurrentState);
   });
+
+  test('typingBluetoothWithInternalAccountShowsQuestionnaire', async () => {
+    let textAreaElement = null;
+    await initializePage();
+    // The questionnaire will be only shown if the account belongs to an
+    // internal user.
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    textAreaElement = getElement('#descriptionText');
+    textAreaElement.value = 'My cat got a blue tooth because of ChromeOS.';
+    // Setting the value of the textarea in code does not trigger the
+    // input event. So we trigger it here.
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Check that the questionnaire and all relevant domain questions are
+    // present.
+    assertTrue(textAreaElement.value.indexOf(questionnaireBegin) >= 0);
+    domainQuestions['bluetooth'].forEach((question) => {
+      assertTrue(textAreaElement.value.indexOf(question) >= 0);
+    });
+  });
+
+  test('typingInternetWithInternalAccountShowsQuestionnaire', async () => {
+    let textAreaElement = null;
+    await initializePage();
+    // The questionnaire will be only shown if the account belongs to an
+    // internal user.
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    textAreaElement = getElement('#descriptionText');
+    textAreaElement.value = 'The entire Internet is down.';
+    // Setting the value of the textarea in code does not trigger the
+    // input event. So we trigger it here.
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Check that the questionnaire and all relevant domain questions are
+    // present.
+    assertTrue(textAreaElement.value.indexOf(questionnaireBegin) >= 0);
+    domainQuestions['wifi'].forEach((question) => {
+      assertTrue(textAreaElement.value.indexOf(question) >= 0);
+    });
+  });
+
+  test('typing5GWithInternalAccountShowsQuestionnaire', async () => {
+    let textAreaElement = null;
+    await initializePage();
+    // The questionnaire will be only shown if the account belongs to an
+    // internal user.
+    page.feedbackContext = fakeInternalUserFeedbackContext;
+
+    textAreaElement = getElement('#descriptionText');
+    textAreaElement.value = 'These 5G towers control my mind.';
+    // Setting the value of the textarea in code does not trigger the
+    // input event. So we trigger it here.
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Check that the questionnaire and all relevant domain questions are
+    // present.
+    assertTrue(textAreaElement.value.indexOf(questionnaireBegin) >= 0);
+    domainQuestions['cellular'].forEach((question) => {
+      assertTrue(textAreaElement.value.indexOf(question) >= 0);
+    });
+  });
+
+  test(
+      'typingSomethingElseWithInternalAccountDoesNotShowQuestionnaire',
+      async () => {
+        let textAreaElement = null;
+        await initializePage();
+        // The questionnaire will be only shown if the account belongs to an
+        // internal user.
+        page.feedbackContext = fakeInternalUserFeedbackContext;
+
+        textAreaElement = getElement('#descriptionText');
+        textAreaElement.value = 'You should just make ChromeOS better.';
+        // Setting the value of the textarea in code does not trigger the
+        // input event. So we trigger it here.
+        textAreaElement.dispatchEvent(new Event('input'));
+        await flushTasks();
+
+        // Check that the questionnaire is not shown.
+        assertFalse(textAreaElement.value.indexOf(questionnaireBegin) >= 0);
+      });
+
+  test(
+      'typingBluetoothWithoutInternalAccountDoesNotShowQuestionnaire',
+      async () => {
+        let textAreaElement = null;
+        await initializePage();
+        // The questionnaire will be only shown if the account belongs to an
+        // internal user.
+        page.feedbackContext = fakeFeedbackContext;
+
+        textAreaElement = getElement('#descriptionText');
+        textAreaElement.value = 'My cat got a blue tooth because of ChromeOS.';
+        // Setting the value of the textarea in code does not trigger the
+        // input event. So we trigger it here.
+        textAreaElement.dispatchEvent(new Event('input'));
+        await flushTasks();
+
+        // Check that the questionnaire is not shown.
+        assertFalse(textAreaElement.value.indexOf(questionnaireBegin) >= 0);
+      });
 }

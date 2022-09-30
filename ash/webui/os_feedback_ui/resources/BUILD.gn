@@ -50,6 +50,7 @@ generate_grd("build_grd") {
     "feedback_types.js",
     "index.html",
     "mojo_interface_provider.js",
+    "questionnaire.js",
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
@@ -164,6 +165,7 @@ js_library("mojo_interface_provider") {
 js_library("search_page") {
   deps = [
     ":feedback_flow",
+    ":feedback_types",
     ":help_content",
     ":mojo_interface_provider",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

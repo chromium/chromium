@@ -11,9 +11,10 @@ import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js'
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeedbackFlowState} from './feedback_flow.js';
-import {HelpContentList, HelpContentProviderInterface, SearchRequest, SearchResponse, SearchResult} from './feedback_types.js';
+import {btRegEx, buildWordMatcher, FeedbackFlowState} from './feedback_flow.js';
+import {FeedbackContext, HelpContentList, HelpContentProviderInterface, SearchRequest, SearchResponse, SearchResult} from './feedback_types.js';
 import {getHelpContentProvider} from './mojo_interface_provider.js';
+import {domainQuestions, questionnaireBegin} from './questionnaire.js';
 
 /**
  * The minimum number of characters added or deleted to start a new search for
@@ -33,6 +34,22 @@ const MAX_RESULTS = 5;
  * @type {string}
  */
 export const OS_FEEDBACK_UNTRUSTED_ORIGIN = 'chrome-untrusted://os-feedback';
+
+/**
+ * Regular expression to check for wifi-related keywords.
+ */
+const wifiRegEx =
+    buildWordMatcher(['wifi', 'wi-fi', 'internet', 'network', 'hotspot']);
+
+/**
+ * Regular expression to check for cellular-related keywords.
+ */
+const cellularRegEx = buildWordMatcher([
+  '2G',   '3G',    '4G',      '5G',       'LTE',      'UMTS',
+  'SIM',  'eSIM',  'mmWave',  'mobile',   'APN',      'IMEI',
+  'IMSI', 'eUICC', 'carrier', 'T.Mobile', 'TMO',      'Verizon',
+  'VZW',  'AT&T',  'MVNO',    'pin.lock', 'cellular',
+]);
 
 /**
  * @fileoverview
@@ -59,6 +76,7 @@ export class SearchPageElement extends SearchPageElementBase {
 
   static get properties() {
     return {
+      feedbackContext: {type: FeedbackContext, readOnly: false, notify: true},
       descriptionTemplate: {
         type: String,
         readonly: true,
@@ -77,6 +95,11 @@ export class SearchPageElement extends SearchPageElementBase {
 
   constructor() {
     super();
+
+    /**
+     * @type {!FeedbackContext}
+     */
+    this.feedbackContext;
 
     /** @type {string} */
     this.descriptionTemplate = '';
@@ -123,6 +146,13 @@ export class SearchPageElement extends SearchPageElementBase {
      * @private {!HelpContentList|undefined}
      */
     this.popularHelpContentList_;
+
+    /**
+     * The list of questionnaire questions that have already been appended to
+     * the input text.
+     * @private {Array<string>}
+     */
+    this.appendedQuestions = [];
   }
 
   ready() {
@@ -132,6 +162,10 @@ export class SearchPageElement extends SearchPageElementBase {
         this.shadowRoot.querySelector('iframe'));
     // Fetch popular help contents with empty query.
     this.fetchHelpContent_(/* query= */ '');
+
+    this.shadowRoot.querySelector('#descriptionText')
+        .addEventListener(
+            'input', (event) => this.checkForShowQuestionnaire_(event));
   }
 
   /**
@@ -329,6 +363,65 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   getSearchResultCountForTesting() {
     return this.helpContentSearchResultCount;
+  }
+
+  /**
+   * Checks if any keywords have associated questionnaire in a domain. If so,
+   * we append the questionnaire to the text input box.
+   * @param inputEvent The input event for the description textarea.
+   * @private
+   */
+  checkForShowQuestionnaire_(inputEvent) {
+    if (!this.feedbackContext.isInternalAccount) {
+      return;
+    }
+
+    const toAppend = [];
+
+    // Match user-entered description before the questionnaire to reduce false
+    // positives due to matching the questionnaire questions and answers.
+    const value = inputEvent.target.value;
+    const questionnaireBeginPos = value.indexOf(questionnaireBegin);
+    const matchedText = questionnaireBeginPos >= 0 ?
+        value.substring(0, questionnaireBeginPos) :
+        value;
+
+    if (btRegEx.test(matchedText)) {
+      toAppend.push(...domainQuestions['bluetooth']);
+    }
+
+
+    if (wifiRegEx.test(matchedText)) {
+      toAppend.push(...domainQuestions['wifi']);
+    }
+
+    if (cellularRegEx.test(matchedText)) {
+      toAppend.push(...domainQuestions['cellular']);
+    }
+
+    if (toAppend.length === 0) {
+      return;
+    }
+
+    const textarea = this.shadowRoot.querySelector('#descriptionText');
+    const savedCursor = textarea.selectionStart;
+    if (this.appendedQuestions.length === 0) {
+      textarea.value += '\n\n' + questionnaireBegin + '\n';
+    }
+
+    for (const question of toAppend) {
+      if (question in this.appendedQuestions) {
+        continue;
+      }
+
+      textarea.value += '* ' + question + ' \n';
+      this.appendedQuestions.push(question);
+    }
+
+    // After appending text, the web engine automatically moves the cursor to
+    // the end of the appended text, so we need to move the cursor back to where
+    // the user was typing before.
+    textarea.selectionEnd = savedCursor;
   }
 }
 
