@@ -25,7 +25,6 @@ import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Allows stylus handwriting using the Android stylus writing APIs introduced in Android T.
@@ -56,13 +55,10 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         for (InputMethodInfo inputMethod : inputMethods) {
             if (!inputMethod.getComponent().flattenToString().equals(defaultImePackage)) continue;
 
-            // We can't create a boolean here and set it in a lambda, so use AtomicBoolean instead.
-            AtomicBoolean result = new AtomicBoolean();
+            boolean result = inputMethod.supportsStylusHandwriting();
 
-            inputMethod.supportsStylusHandwriting();
-
-            Log.d(TAG, "Stylus feature supported by IME: %s", result.get());
-            return result.get();
+            Log.d(TAG, "Stylus feature supported by IME: %s", result);
+            return result;
         }
 
         Log.d(TAG, "Couldn't find IME");
