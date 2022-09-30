@@ -104,8 +104,9 @@ class FakeProducerConnectorService
 class FuchsiaPerfettoProducerConnectorTest : public testing::Test {
  public:
   FuchsiaPerfettoProducerConnectorTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        connector_client_(task_environment_.GetMainThreadTaskRunner()) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    connector_client_.emplace(task_environment_.GetMainThreadTaskRunner());
+  }
   ~FuchsiaPerfettoProducerConnectorTest() override = default;
 
   void SetUp() override {
@@ -114,13 +115,19 @@ class FuchsiaPerfettoProducerConnectorTest : public testing::Test {
     fidl::InterfaceHandle<fuchsia::tracing::perfetto::ProducerConnector>
         client_handle;
     service_.emplace(service_thread_.task_runner(), client_handle.NewRequest());
-    connector_client_.SetProducerServiceForTest(std::move(client_handle));
+    connector_client_->SetProducerServiceForTest(std::move(client_handle));
+  }
+
+  void TearDown() override {
+    // Tear down the connector and handle the resulting async deletion task.
+    connector_client_.reset();
+    base::RunLoop().RunUntilIdle();
   }
 
  protected:
   bool Connect(base::ScopedFD* socket_fd,
                base::OnceCallback<int()>* receive_fd_cb) {
-    auto conn_args = connector_client_.Connect();
+    auto conn_args = connector_client_->Connect();
     if (!conn_args) {
       return false;
     }
@@ -132,7 +139,7 @@ class FuchsiaPerfettoProducerConnectorTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  FuchsiaPerfettoProducerConnector connector_client_;
+  absl::optional<FuchsiaPerfettoProducerConnector> connector_client_;
 
   // The fake service runs on a separate thread so that it can respond
   // when synchronous calls are made to it from the main thread.
