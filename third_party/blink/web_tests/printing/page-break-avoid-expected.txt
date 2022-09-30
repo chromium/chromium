@@ -1,0 +1,14 @@
+Test for combined page-break-{before,after,inside}:avoid
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+PASS: page number of "page1-1" is 1
+PASS: page number of "page2-1" is 2
+PASS: page number of "page2-8" is 2
+All tests passed
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
