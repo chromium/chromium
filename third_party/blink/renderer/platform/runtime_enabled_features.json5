@@ -547,7 +547,7 @@
     },
     {
       name: "ContentVisibilityAutoStateChangedEvent",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ContextMenu",

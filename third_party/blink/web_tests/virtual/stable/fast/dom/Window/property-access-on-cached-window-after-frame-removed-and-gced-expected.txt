@@ -62,6 +62,7 @@ PASS childWindow.oncanplaythrough is null
 PASS childWindow.onchange is null
 PASS childWindow.onclick is null
 PASS childWindow.onclose is null
+PASS childWindow.oncontentvisibilityautostatechanged is null
 PASS childWindow.oncontextlost is null
 PASS childWindow.oncontextmenu is null
 PASS childWindow.oncontextrestored is null
