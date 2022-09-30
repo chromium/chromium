@@ -9,9 +9,10 @@
 CookieAccessFilter::CookieAccessFilter() = default;
 CookieAccessFilter::~CookieAccessFilter() = default;
 
-void CookieAccessFilter::AddAccess(const GURL& url, Type type) {
-  CookieAccessType t = (type == Type::kChange ? CookieAccessType::kWrite
-                                              : CookieAccessType::kRead);
+void CookieAccessFilter::AddAccess(const GURL& url, CookieOperation op) {
+  CookieAccessType t =
+      (op == CookieOperation::kChange ? CookieAccessType::kWrite
+                                      : CookieAccessType::kRead);
   if (!accesses_.empty() && accesses_.back().url == url) {
     // Coalesce accesses for the same URL. They may have come from separate
     // visits, but we can't distinguish them from redundant calls, which are

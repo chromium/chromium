@@ -15,7 +15,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "url/gurl.h"
 
-class DIPSBounceDetector;
+class DIPSNavigationHandle;
 class PermissionUmaUtil;
 class WebApkUkmRecorder;
 
@@ -116,8 +116,8 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source url
   // from the redirect chain. This method should only be called in the
-  // DIPSBounceDetector class.
-  static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSBounceDetector>,
+  // DIPSNavigationHandle class.
+  static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSNavigationHandle>,
                                             const GURL& redirect_url);
 
   // Add an entry to the UkmEntry list.

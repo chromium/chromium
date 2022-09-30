@@ -42,7 +42,7 @@ TEST(CookieAccessFilter, OneRead_Former) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -54,7 +54,7 @@ TEST(CookieAccessFilter, OneRead_Latter) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -66,7 +66,7 @@ TEST(CookieAccessFilter, OneWrite) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url2, CookieAccessFilter::Type::kChange);
+  filter.AddAccess(url2, CookieOperation::kChange);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -78,7 +78,7 @@ TEST(CookieAccessFilter, UnexpectedURL) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(GURL("http://other.com"), CookieAccessFilter::Type::kRead);
+  filter.AddAccess(GURL("http://other.com"), CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_FALSE(filter.Filter({url1, url2}, &result));
@@ -90,8 +90,8 @@ TEST(CookieAccessFilter, TwoReads) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -103,9 +103,9 @@ TEST(CookieAccessFilter, CoalesceReadBeforeWrite) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -117,9 +117,9 @@ TEST(CookieAccessFilter, CoalesceReadBeforeWrite_Repeated) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
@@ -132,9 +132,9 @@ TEST(CookieAccessFilter, CoalesceWrites) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -146,9 +146,9 @@ TEST(CookieAccessFilter, CoalesceWrites_Repeated) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
@@ -161,9 +161,9 @@ TEST(CookieAccessFilter, CoalesceReads) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -175,9 +175,9 @@ TEST(CookieAccessFilter, CoalesceReads_Repeated) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
@@ -190,9 +190,9 @@ TEST(CookieAccessFilter, CoalesceWriteBeforeRead) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2}, &result));
@@ -204,9 +204,9 @@ TEST(CookieAccessFilter, CoalesceWriteBeforeRead_Repeated) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url1, CookieOperation::kRead);
+  filter.AddAccess(url2, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url1, url2}, &result));
@@ -219,10 +219,10 @@ TEST(CookieAccessFilter, SameURLTwiceWithDifferentAccessTypes) {
   GURL url1("http://example.com");
   GURL url2("http://google.com");
   CookieAccessFilter filter;
-  filter.AddAccess(url1, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kRead);
-  filter.AddAccess(url2, CookieAccessFilter::Type::kChange);
-  filter.AddAccess(url1, CookieAccessFilter::Type::kRead);
+  filter.AddAccess(url1, CookieOperation::kChange);
+  filter.AddAccess(url2, CookieOperation::kRead);
+  filter.AddAccess(url2, CookieOperation::kChange);
+  filter.AddAccess(url1, CookieOperation::kRead);
 
   std::vector<CookieAccessType> result;
   ASSERT_TRUE(filter.Filter({url1, url2, url1}, &result));

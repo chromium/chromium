@@ -341,7 +341,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
   ConnectionHelpTabHelper::CreateForWebContents(web_contents);
   CoreTabHelper::CreateForWebContents(web_contents);
-  DIPSBounceDetector::CreateForWebContents(web_contents);
+  DIPSWebContentsObserver::CreateForWebContents(web_contents);
   if (DIPSService* dips_service = DIPSService::Get(profile)) {
     DIPSTabHelper::CreateForWebContents(web_contents, dips_service);
   }

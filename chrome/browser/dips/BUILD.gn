@@ -6,6 +6,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "cookie_access_filter_unittest.cc",
+    "dips_bounce_detector_unittest.cc",
     "dips_database_unittest.cc",
     "dips_storage_unittest.cc",
     "dips_utils_unittest.cc",
@@ -15,6 +16,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//components/ukm:test_support",
     "//testing/gtest",
     "//url",
   ]

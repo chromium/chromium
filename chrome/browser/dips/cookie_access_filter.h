@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "chrome/browser/dips/dips_utils.h"
-#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "url/gurl.h"
 
 // Filters a chain of URLs to the ones which accessed cookies.
@@ -20,10 +19,8 @@ class CookieAccessFilter {
   CookieAccessFilter();
   ~CookieAccessFilter();
 
-  using Type = network::mojom::CookieAccessDetails::Type;
-
   // Record that `url` accessed cookies.
-  void AddAccess(const GURL& url, Type type);
+  void AddAccess(const GURL& url, CookieOperation op);
 
   // Clear `result` and fill it with the the type of cookie access for each URL.
   // `result` will have the same length as `urls`. Returns true iff every

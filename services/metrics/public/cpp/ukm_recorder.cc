@@ -74,7 +74,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
-    base::PassKey<DIPSBounceDetector>,
+    base::PassKey<DIPSNavigationHandle>,
     const GURL& redirect_url) {
   return UkmRecorder::GetSourceIdFromScopeImpl(redirect_url,
                                                SourceIdType::REDIRECT_ID);

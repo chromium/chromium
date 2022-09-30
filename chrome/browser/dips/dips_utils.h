@@ -9,12 +9,18 @@
 
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
 class TimeDelta;
 }
+
+// A single cookie-accessing operation (either read or write). Not to be
+// confused with CookieAccessType, which can also represent no access or both
+// read+write.
+using CookieOperation = network::mojom::CookieAccessDetails::Type;
 
 // NOTE: We use this type as a bitfield, and will soon be logging it. Don't
 // change the values or add additional members.
