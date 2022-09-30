@@ -134,6 +134,8 @@ void CellularESimUninstallHandler::CompleteCurrentRequest(
   NET_LOG(EVENT) << "Completed uninstall request for "
                  << *uninstall_requests_.front() << ". Success = " << success;
   std::move(uninstall_requests_.front()->callback).Run(success);
+  last_service_count_removal_for_testing_ =
+      uninstall_requests_.front()->removed_service_paths.size();
   uninstall_requests_.pop_front();
 
   TransitionToUninstallState(UninstallState::kIdle);
@@ -380,13 +382,17 @@ void CellularESimUninstallHandler::AttemptRemoveShillService() {
   network_configuration_handler_->RemoveConfiguration(
       network->path(), absl::nullopt,
       base::BindOnce(&CellularESimUninstallHandler::OnRemoveServiceSuccess,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), network->path()),
       base::BindOnce(&CellularESimUninstallHandler::OnRemoveServiceFailure,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CellularESimUninstallHandler::OnRemoveServiceSuccess() {
+void CellularESimUninstallHandler::OnRemoveServiceSuccess(
+    const std::string& removed_service_path) {
   DCHECK_EQ(state_, UninstallState::kRemovingShillService);
+  uninstall_requests_.front()->removed_service_paths.insert(
+      removed_service_path);
+
   if (uninstall_requests_.front()->reset_euicc) {
     // Wait for next network list update before removing the next shill service.
     TransitionToUninstallState(UninstallState::kWaitingForNetworkListUpdate);
@@ -409,6 +415,7 @@ void CellularESimUninstallHandler::OnRemoveServiceFailure(
 }
 
 void CellularESimUninstallHandler::OnNetworkListWaitTimeout() {
+  DCHECK_EQ(state_, UninstallState::kWaitingForNetworkListUpdate);
   NET_LOG(ERROR)
       << "Timedout waiting for network list update after removing service.";
   TransitionToUninstallState(UninstallState::kRemovingShillService);
@@ -469,6 +476,21 @@ const NetworkState* CellularESimUninstallHandler::GetNextResetServiceToRemove()
     // Non Shill cellular services cannot be removed. They'll be automatically
     // removed when eSIM profile list updates.
     if (network->IsNonShillCellularNetwork()) {
+      continue;
+    }
+
+    // b/249825186: When the success callback of
+    // NetworkConfigurationHandler::RemoveConfiguration() is called on eSIM
+    // cellular shill service(s), the service may be still be exposed as it
+    // is still in the process of guaranteed destruction. Chrome relies on Shill
+    // pushing an update to the kServiceCompleteList property, which it should
+    // eventually, but removing a profile entry is a disk operation so it won't
+    // be instantaneous. Successful
+    // NetworkConfigurationHandler::RemoveConfiguration() calls to these
+    // services should be ignored, as these loadable profile entries no
+    // longer exist.
+    if (uninstall_requests_.front()->removed_service_paths.contains(
+            network->path())) {
       continue;
     }
     if (network->eid() == eid)

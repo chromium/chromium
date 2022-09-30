@@ -223,6 +223,11 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     task_environment_.FastForwardBy(time);
   }
 
+  uint8_t GetLastServiceCountRemovalForTesting() {
+    return cellular_esim_uninstall_handler_
+        ->last_service_count_removal_for_testing_;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
@@ -347,7 +352,10 @@ TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
   HandleNetworkDisconnect(/*should_fail=*/false);
 
   run_loop1.Run();
+  EXPECT_EQ(GetLastServiceCountRemovalForTesting(), 1);
+
   run_loop2.Run();
+  EXPECT_EQ(GetLastServiceCountRemovalForTesting(), 1);
 
   // Verify that both requests succeeded.
   EXPECT_TRUE(status1);
@@ -391,6 +399,7 @@ TEST_F(CellularESimUninstallHandlerTest, ResetEuiccMemory) {
   EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
   EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
   EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid2));
+  EXPECT_EQ(GetLastServiceCountRemovalForTesting(), 2);
 
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
                /*expected_count=*/1);

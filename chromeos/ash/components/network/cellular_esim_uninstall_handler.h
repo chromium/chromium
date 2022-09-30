@@ -145,6 +145,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
     absl::optional<dbus::ObjectPath> esim_profile_path;
     absl::optional<dbus::ObjectPath> euicc_path;
     bool reset_euicc;
+    base::flat_set<std::string> removed_service_paths;
     UninstallRequestCallback callback;
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
   };
@@ -180,7 +181,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
                           HermesResponseStatus status);
 
   void AttemptRemoveShillService();
-  void OnRemoveServiceSuccess();
+  void OnRemoveServiceSuccess(const std::string& removed_service_path);
   void OnRemoveServiceFailure(const std::string& error_name);
   void OnNetworkListWaitTimeout();
 
@@ -201,6 +202,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler
   NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
+  size_t last_service_count_removal_for_testing_ = 0;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
