@@ -76,8 +76,7 @@ class CallbackForwarder {
       std::decay_t<FirstType> data;
       if (!floss::FlossDBusClient::ReadDBusParam(reader, &data)) {
         std::stringstream message;
-        floss::DBusTypeInfo type_info =
-            floss::GetDBusTypeInfo<std::decay_t<FirstType>>();
+        floss::DBusTypeInfo type_info = floss::GetDBusTypeInfo(&data);
         std::string next_data_type =
             reader->HasMoreData() ? ("'" + reader->GetDataSignature() + "'")
                                   : "none";

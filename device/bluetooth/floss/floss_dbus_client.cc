@@ -188,120 +188,93 @@ std::string Error::ToString() {
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<bool>() {
+const DBusTypeInfo& GetDBusTypeInfo(const bool*) {
   static DBusTypeInfo info{"b", "bool"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<uint8_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const uint8_t*) {
   static DBusTypeInfo info{"y", "uint8_t"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<int8_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const int8_t*) {
   static DBusTypeInfo info{"n", "int8"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<uint16_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const uint16_t*) {
   static DBusTypeInfo info{"q", "uint16"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<int16_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const int16_t*) {
   static DBusTypeInfo info{"n", "int16"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<uint32_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const uint32_t*) {
   static DBusTypeInfo info{"u", "uint32"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<int32_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const int32_t*) {
   static DBusTypeInfo info{"i", "int32"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<uint64_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const uint64_t*) {
   static DBusTypeInfo info{"t", "uint64"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<int64_t>() {
+const DBusTypeInfo& GetDBusTypeInfo(const int64_t*) {
   static DBusTypeInfo info{"x", "int64"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<double>() {
+const DBusTypeInfo& GetDBusTypeInfo(const double*) {
   static DBusTypeInfo info{"d", "double"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<std::string>() {
+const DBusTypeInfo& GetDBusTypeInfo(const std::string*) {
   static DBusTypeInfo info{"s", "string"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<dbus::ObjectPath>() {
+const DBusTypeInfo& GetDBusTypeInfo(const dbus::ObjectPath*) {
   static DBusTypeInfo info{"o", "object_path"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<base::ScopedFD>() {
+const DBusTypeInfo& GetDBusTypeInfo(const base::ScopedFD*) {
   static DBusTypeInfo info{"h", "FD"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<FlossDeviceId>() {
+const DBusTypeInfo& GetDBusTypeInfo(const FlossDeviceId*) {
   static DBusTypeInfo info{"a{sv}", "FlossDeviceId"};
   return info;
 }
 
 template <>
-DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
-GetDBusTypeInfo<device::BluetoothUUID>() {
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo(
+    const device::BluetoothUUID*) {
   static DBusTypeInfo info{"ay", "BluetoothUUID"};
-  return info;
-}
-
-template <>
-DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
-GetDBusTypeInfo<std::vector<device::BluetoothUUID>>() {
-  static DBusTypeInfo info{"aay", "vector<BluetoothUUID>"};
-  return info;
-}
-
-template <>
-const DBusTypeInfo& GetDBusTypeInfo<std::vector<uint8_t>>() {
-  static DBusTypeInfo info{"ay", "vector<uint8_t>"};
-  return info;
-}
-
-template <>
-DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
-GetDBusTypeInfo<std::map<uint16_t, std::vector<uint8_t>>>() {
-  static DBusTypeInfo info{"a{qay}", "map<uint16_t, vector<uint8_t>>>"};
-  return info;
-}
-
-template <>
-DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo&
-GetDBusTypeInfo<std::map<std::string, std::vector<uint8_t>>>() {
-  static DBusTypeInfo info{"a{say}", "map<string, vector<uint8_t>>>"};
   return info;
 }
 

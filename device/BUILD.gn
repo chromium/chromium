@@ -278,6 +278,7 @@ test("device_unittests") {
       "bluetooth/floss/bluetooth_socket_floss_unittest.cc",
       "bluetooth/floss/exported_callback_manager_unittest.cc",
       "bluetooth/floss/floss_adapter_client_unittest.cc",
+      "bluetooth/floss/floss_dbus_client_unittest.cc",
       "bluetooth/floss/floss_gatt_client_unittest.cc",
       "bluetooth/floss/floss_lescan_client_unittest.cc",
       "bluetooth/floss/floss_manager_client_unittest.cc",

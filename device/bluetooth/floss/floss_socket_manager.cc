@@ -281,13 +281,13 @@ void FlossDBusClient::WriteDBusParam(
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<FlossSocketManager::SocketType>() {
+const DBusTypeInfo& GetDBusTypeInfo(const FlossSocketManager::SocketType*) {
   static DBusTypeInfo info{"u", "SocketType"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<FlossSocketManager::FlossSocket>() {
+const DBusTypeInfo& GetDBusTypeInfo(const FlossSocketManager::FlossSocket*) {
   static DBusTypeInfo info{"a{sv}", "FlossSocket"};
   return info;
 }

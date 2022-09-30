@@ -225,31 +225,31 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<ScanSettings>() {
+const DBusTypeInfo& GetDBusTypeInfo(const ScanSettings*) {
   static DBusTypeInfo info{"a{sv}", "ScanSettings"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<ScanFilterPattern>() {
+const DBusTypeInfo& GetDBusTypeInfo(const ScanFilterPattern*) {
   static DBusTypeInfo info{"a{sv}", "ScanFilterPattern"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<ScanFilterCondition>() {
+const DBusTypeInfo& GetDBusTypeInfo(const ScanFilterCondition*) {
   static DBusTypeInfo info{"a{sv}", "ScanFilterCondition"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<ScanFilter>() {
+const DBusTypeInfo& GetDBusTypeInfo(const ScanFilter*) {
   static DBusTypeInfo info{"a{sv}", "ScanFilter"};
   return info;
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<ScanResult>() {
+const DBusTypeInfo& GetDBusTypeInfo(const ScanResult*) {
   static DBusTypeInfo info{"a{sv}", "ScanResult"};
   return info;
 }

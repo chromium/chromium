@@ -41,7 +41,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader, LePhy* phy) {
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<LePhy>() {
+const DBusTypeInfo& GetDBusTypeInfo(const LePhy*) {
   static DBusTypeInfo info{"u", "LePhy"};
   return info;
 }
@@ -66,7 +66,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<GattStatus>() {
+const DBusTypeInfo& GetDBusTypeInfo(const GattStatus*) {
   static DBusTypeInfo info{"u", "GattStatus"};
   return info;
 }
@@ -110,7 +110,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<GattDescriptor>() {
+const DBusTypeInfo& GetDBusTypeInfo(const GattDescriptor*) {
   static DBusTypeInfo info{"a{sv}", "GattDescriptor"};
   return info;
 }
@@ -131,7 +131,7 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<GattCharacteristic>() {
+const DBusTypeInfo& GetDBusTypeInfo(const GattCharacteristic*) {
   static DBusTypeInfo info{"a{sv}", "GattCharacteristic"};
   return info;
 }
@@ -151,14 +151,8 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
-const DBusTypeInfo& GetDBusTypeInfo<GattService>() {
+const DBusTypeInfo& GetDBusTypeInfo(const GattService*) {
   static DBusTypeInfo info{"a{sv}", "GattService"};
-  return info;
-}
-
-template <>
-const DBusTypeInfo& GetDBusTypeInfo<std::vector<GattService>>() {
-  static DBusTypeInfo info{"av", "std::vector<GattService>"};
   return info;
 }
 

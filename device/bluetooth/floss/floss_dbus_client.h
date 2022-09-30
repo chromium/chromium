@@ -245,15 +245,34 @@ class WeaklyOwnedCallback {
 };
 
 struct DBusTypeInfo {
-  const char* dbus_signature;
-  const char* type_name;
+  const std::string dbus_signature;
+  const std::string type_name;
 };
 
 // To minimize the overhead of constructing a struct, this function returns
 // a const reference. Specialization implementations are recommended to return
 // a statically allocated DBusTypeInfo for this reason.
 template <typename T>
-DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo();
+DEVICE_BLUETOOTH_EXPORT const DBusTypeInfo& GetDBusTypeInfo(const T*);
+
+template <typename T>
+const DBusTypeInfo& GetDBusTypeInfo(const std::vector<T>*) {
+  static DBusTypeInfo elem_info = GetDBusTypeInfo(static_cast<T*>(nullptr));
+  static DBusTypeInfo info{"a" + elem_info.dbus_signature,
+                           "vector<" + elem_info.type_name + ">"};
+  return info;
+}
+
+template <typename T, typename U>
+const DBusTypeInfo& GetDBusTypeInfo(const std::map<T, U>*) {
+  static DBusTypeInfo key_info = GetDBusTypeInfo(static_cast<T*>(nullptr));
+  static DBusTypeInfo val_info = GetDBusTypeInfo(static_cast<U*>(nullptr));
+  static DBusTypeInfo info{std::string("a{") + key_info.dbus_signature +
+                               val_info.dbus_signature + std::string("}"),
+                           std::string("map<") + key_info.type_name + ", " +
+                               val_info.type_name + std::string(">")};
+  return info;
+}
 
 // Restrict all access to DBus client initialization to FlossDBusManager so we
 // can enforce the proper ordering of initialization and shutdowns.
@@ -318,7 +337,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   static void WriteDBusParamIntoVariant(dbus::MessageWriter* writer,
                                         const T& data) {
     dbus::MessageWriter variant(nullptr);
-    writer->OpenVariant(GetDBusTypeInfo<T>().dbus_signature, &variant);
+    writer->OpenVariant(GetDBusTypeInfo(&data).dbus_signature, &variant);
     WriteDBusParam(&variant, data);
     writer->CloseContainer(&variant);
   }
@@ -328,7 +347,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   static void WriteDBusParam(dbus::MessageWriter* writer,
                              const std::vector<T>& value) {
     dbus::MessageWriter array_writer(nullptr);
-    writer->OpenArray(GetDBusTypeInfo<T>().dbus_signature, &array_writer);
+    writer->OpenArray(GetDBusTypeInfo(static_cast<T*>(nullptr)).dbus_signature,
+                      &array_writer);
     for (const auto& entry : value) {
       WriteDBusParam<>(&array_writer, entry);
     }
@@ -340,9 +360,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
   static void WriteDBusParam(dbus::MessageWriter* writer,
                              const std::map<T, U>& data) {
     std::string signature(
-        std::string("{") + GetDBusTypeInfo<T>().dbus_signature +
-        GetDBusTypeInfo<U>().dbus_signature + std::string("}"));
-
+        std::string("{") +
+        GetDBusTypeInfo(static_cast<T*>(nullptr)).dbus_signature +
+        GetDBusTypeInfo(static_cast<U*>(nullptr)).dbus_signature +
+        std::string("}"));
     dbus::MessageWriter array(nullptr);
     writer->OpenArray(signature, &array);
     for (auto const& [key, val] : data) {
@@ -567,7 +588,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
 
           parsed_fields.insert(key);
         } else {
-          DBusTypeInfo type_info = GetDBusTypeInfo<T>();
+          DBusTypeInfo type_info = GetDBusTypeInfo(data);
           VLOG(3) << "Does not know how to read field " << type_info.type_name
                   << "." << key;
         }
