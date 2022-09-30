@@ -502,6 +502,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
       // This is a fatal error, but if there is a delegate, it will handle the
       // error result and recover by re-creating the manager. After a max
       // threshold number of errors is reached, it will crash the browser.
+      CHECK(!ax_tree()->error().empty())
+          << "A failed serialization didn't supply the error via "
+             "AXTree::RecordError().";
       if (!delegate_)
         CHECK(false) << ax_tree()->error();
       return false;
