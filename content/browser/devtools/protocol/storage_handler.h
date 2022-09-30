@@ -29,7 +29,7 @@ class StorageHandler : public DevToolsDomainHandler,
                        private content::InterestGroupManagerImpl::
                            InterestGroupObserverInterface {
  public:
-  StorageHandler();
+  explicit StorageHandler(bool client_is_trusted);
 
   StorageHandler(const StorageHandler&) = delete;
   StorageHandler& operator=(const StorageHandler&) = delete;
@@ -138,6 +138,7 @@ class StorageHandler : public DevToolsDomainHandler,
 
   // Exposes the API for managing storage quota overrides.
   std::unique_ptr<storage::QuotaOverrideHandle> quota_override_handle_;
+  bool client_is_trusted_;
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };

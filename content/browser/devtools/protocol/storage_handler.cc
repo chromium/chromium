@@ -269,8 +269,9 @@ class StorageHandler::IndexedDBObserver
   mojo::Receiver<storage::mojom::IndexedDBObserver> receiver_;
 };
 
-StorageHandler::StorageHandler()
-    : DevToolsDomainHandler(Storage::Metainfo::domainName) {}
+StorageHandler::StorageHandler(bool client_is_trusted)
+    : DevToolsDomainHandler(Storage::Metainfo::domainName),
+      client_is_trusted_(client_is_trusted) {}
 
 StorageHandler::~StorageHandler() {
   DCHECK(!cache_storage_observer_);
@@ -299,6 +300,8 @@ Response StorageHandler::Disable() {
 
 void StorageHandler::GetCookies(Maybe<std::string> browser_context_id,
                                 std::unique_ptr<GetCookiesCallback> callback) {
+  if (!client_is_trusted_)
+    callback->sendFailure(Response::ServerError("Permission denied"));
   StoragePartition* storage_partition = nullptr;
   Response response = StorageHandler::FindStoragePartition(browser_context_id,
                                                            &storage_partition);

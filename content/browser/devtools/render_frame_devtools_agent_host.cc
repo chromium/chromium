@@ -345,7 +345,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
   session->CreateAndAddHandler<protocol::ServiceWorkerHandler>(
       /* allow_inspect_worker= */ may_attach_to_brower);
-  session->CreateAndAddHandler<protocol::StorageHandler>();
+  session->CreateAndAddHandler<protocol::StorageHandler>(
+      session->GetClient()->IsTrusted());
   auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
       may_attach_to_brower
           ? protocol::TargetHandler::AccessMode::kRegular

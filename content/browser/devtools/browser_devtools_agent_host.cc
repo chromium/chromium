@@ -198,7 +198,8 @@ bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
       base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
   session->CreateAndAddHandler<protocol::MemoryHandler>();
   session->CreateAndAddHandler<protocol::SecurityHandler>();
-  session->CreateAndAddHandler<protocol::StorageHandler>();
+  session->CreateAndAddHandler<protocol::StorageHandler>(
+      session->GetClient()->IsTrusted());
   session->CreateAndAddHandler<protocol::SystemInfoHandler>();
   if (tethering_task_runner_) {
     session->CreateAndAddHandler<protocol::TetheringHandler>(
