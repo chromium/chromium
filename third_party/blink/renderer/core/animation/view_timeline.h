@@ -40,8 +40,8 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
     // Note these represent the logical start/end sides of the source scroller,
     // not the start/end of the timeline.
     // https://drafts.csswg.org/css-writing-modes-4/#css-start
-    Length start_side;
-    Length end_side;
+    Length start_side = Length::Fixed();
+    Length end_side = Length::Fixed();
   };
 
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
