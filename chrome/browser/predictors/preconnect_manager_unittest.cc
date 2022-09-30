@@ -18,6 +18,7 @@
 #include "chrome/browser/predictors/loading_test_util.h"
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -828,6 +829,19 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHost) {
   preconnect_manager_->StartPreresolveHost(non_http_url, network_isolation_key);
 }
 
+TEST_F(PreconnectManagerTest, TestStartPreresolveHostDisabledViaUI) {
+  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
+  GURL url("http://cdn.google.com/script.js");
+  GURL origin("http://cdn.google.com");
+  net::NetworkIsolationKey network_isolation_key =
+      CreateNetworkIsolationKey(origin);
+
+  // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
+  // will raise an error if it happens.
+  preconnect_manager_->StartPreresolveHost(url, network_isolation_key);
+}
+
 TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
   GURL cdn("http://cdn.google.com");
   GURL fonts("http://fonts.google.com");
@@ -842,6 +856,20 @@ TEST_F(PreconnectManagerTest, TestStartPreresolveHosts) {
                                             net::OK);
   mock_network_context_->CompleteHostLookup(fonts.host(), network_isolation_key,
                                             net::OK);
+}
+
+TEST_F(PreconnectManagerTest, TestStartPreresolveHostsDisabledViaUI) {
+  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
+  GURL cdn("http://cdn.google.com");
+  GURL fonts("http://fonts.google.com");
+  net::NetworkIsolationKey network_isolation_key =
+      CreateNetworkIsolationKey(cdn);
+
+  // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
+  // will raise an error if it happens.
+  preconnect_manager_->StartPreresolveHosts({cdn.host(), fonts.host()},
+                                            network_isolation_key);
 }
 
 TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
@@ -864,6 +892,21 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   // Non http url shouldn't be preconnected.
   GURL non_http_url("file:///tmp/index.html");
   preconnect_manager_->StartPreconnectUrl(non_http_url, allow_credentials,
+                                          network_isolation_key);
+}
+
+TEST_F(PreconnectManagerTest, TestStartPreconnectUrlDisabledViaUI) {
+  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
+  GURL url("http://cdn.google.com/script.js");
+  net::NetworkIsolationKey network_isolation_key =
+      CreateNetworkIsolationKey(url);
+  GURL origin("http://cdn.google.com");
+  bool allow_credentials = false;
+
+  // mock_network_context_.ResolveHostProxy shouldn't be called. The StrictMock
+  // will raise an error if it happens.
+  preconnect_manager_->StartPreconnectUrl(url, allow_credentials,
                                           network_isolation_key);
 }
 
@@ -958,6 +1001,23 @@ TEST_F(PreconnectManagerTest, TestSuccessfulProxyLookup) {
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   mock_network_context_->CompleteProxyLookup(origin_to_preconnect.GetURL(),
                                              GetIndirectProxyInfo());
+}
+
+TEST_F(PreconnectManagerTest, TestStartDisabledViaUI) {
+  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
+  mock_network_context_->EnableProxyTesting();
+  GURL main_frame_url("http://google.com");
+  net::NetworkIsolationKey network_isolation_key =
+      CreateNetworkIsolationKey(main_frame_url);
+  url::Origin origin_to_preconnect =
+      url::Origin::Create(GURL("http://cdn.google.com"));
+
+  // mock_delegate_.PreconnectInitiated shouldn't be called. The StrictMock
+  // will raise an error if it happens.
+  preconnect_manager_->Start(
+      main_frame_url,
+      {PreconnectRequest(origin_to_preconnect, 1, network_isolation_key)});
 }
 
 TEST_F(PreconnectManagerTest, TestSuccessfulHostLookupAfterProxyLookupFailure) {

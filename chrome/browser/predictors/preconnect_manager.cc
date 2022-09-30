@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -79,9 +81,19 @@ PreconnectManager::PreconnectManager(base::WeakPtr<Delegate> delegate,
 
 PreconnectManager::~PreconnectManager() = default;
 
+bool PreconnectManager::IsEnabled() {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (!profile) {
+    return false;
+  }
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
+}
+
 void PreconnectManager::Start(const GURL& url,
                               std::vector<PreconnectRequest> requests) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!IsEnabled())
+    return;
   PreresolveInfo* info;
   if (preresolve_info_.find(url) == preresolve_info_.end()) {
     auto iterator_and_whether_inserted = preresolve_info_.emplace(
@@ -105,6 +117,8 @@ void PreconnectManager::StartPreresolveHost(
     const GURL& url,
     const net::NetworkIsolationKey& network_isolation_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!IsEnabled())
+    return;
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
@@ -119,6 +133,8 @@ void PreconnectManager::StartPreresolveHosts(
     const std::vector<std::string>& hostnames,
     const net::NetworkIsolationKey& network_isolation_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!IsEnabled())
+    return;
   // Push jobs in front of the queue due to higher priority.
   for (const std::string& hostname : base::Reversed(hostnames)) {
     PreresolveJobId job_id = preresolve_jobs_.Add(
@@ -136,6 +152,8 @@ void PreconnectManager::StartPreconnectUrl(
     bool allow_credentials,
     net::NetworkIsolationKey network_isolation_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!IsEnabled())
+    return;
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   PreresolveJobId job_id = preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
