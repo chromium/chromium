@@ -156,6 +156,14 @@ object_value {
                     }
                   }
                   field {
+                    name: "expiry"
+                    value {
+                      string_value {
+                        value: "1000"
+                      }
+                    }
+                  }
+                  field {
                     name: "filter_data"
                     value {
                       object_value {
