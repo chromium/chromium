@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -193,8 +194,11 @@ class PasswordManagerClient {
 
 #if BUILDFLAG(IS_ANDROID)
   // Shows the error message that suggests the user to sign in to "save" or
-  // "use" passwords, depending on the |flow_type|.
-  virtual void ShowPasswordManagerErrorMessage(ErrorMessageFlowType flow_type);
+  // "use" passwords, depending on the |flow_type|. If the |error_type|
+  // indicates that signing in again won't help, the message won't be shown.
+  virtual void ShowPasswordManagerErrorMessage(
+      ErrorMessageFlowType flow_type,
+      password_manager::PasswordStoreBackendErrorType error_type);
 
   // Instructs the client to show the Touch To Fill UI.
   virtual void ShowTouchToFill(

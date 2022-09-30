@@ -34,7 +34,8 @@ bool PasswordManagerClient::IsAutoSignInEnabled() const {
 
 #if BUILDFLAG(IS_ANDROID)
 void PasswordManagerClient::ShowPasswordManagerErrorMessage(
-    ErrorMessageFlowType flow_type) {}
+    ErrorMessageFlowType flow_type,
+    password_manager::PasswordStoreBackendErrorType error_type) {}
 
 void PasswordManagerClient::ShowTouchToFill(
     PasswordManagerDriver* driver,

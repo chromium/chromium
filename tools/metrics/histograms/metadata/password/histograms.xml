@@ -1197,12 +1197,24 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ErrorMessageDismissalReason"
     enum="MessageDismissReason" expires_after="2023-02-01">
-  <owner>izuzic@chromium.org</owner>
-  <owner>ioanap@google.com</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
   <summary>
-    Records the reason that caused Password Error Message on Android to be
-    dismissed. It's recorded when the user dismisses the message by clicking the
-    Sign in button or when the message is autodismissed because of the timeout.
+    Records the reason that caused the Password Manager error message on Android
+    to be dismissed. It's recorded when the user dismisses the message by
+    clicking the Sign in button or when the message is autodismissed because of
+    the timeout.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ErrorMessageDisplayReason"
+    enum="PasswordStoreBackendErrorType" expires_after="2023-02-01">
+  <owner>izuzic@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the reason that caused the Password Manager error message to be
+    displayed. It's recorded as soon as the message is created and the recorded
+    reason is the error type. Currently only used on Android.
   </summary>
 </histogram>
 

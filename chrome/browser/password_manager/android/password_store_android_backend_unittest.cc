@@ -844,9 +844,10 @@ TEST_F(PasswordStoreAndroidBackendTest,
   base::MockCallback<LoginsOrErrorReply> mock_reply;
   EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
   backend().GetAllLoginsAsync(mock_reply.Get());
+
   EXPECT_CALL(
       mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
+      Run(ExpectError(PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
                       PasswordStoreBackendErrorRecoveryType::kUnrecoverable)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving AUTH_ERROR_UNRESOLVABLE code.
@@ -880,7 +881,7 @@ TEST_F(PasswordStoreAndroidBackendTest,
   backend().GetAllLoginsAsync(mock_reply.Get());
   EXPECT_CALL(
       mock_reply,
-      Run(ExpectError(PasswordStoreBackendErrorType::kUncategorized,
+      Run(ExpectError(PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
                       PasswordStoreBackendErrorRecoveryType::kRecoverable)));
   AndroidBackendError error{AndroidBackendErrorType::kExternalError};
   // Simulate receiving AUTH_ERROR_UNRESOLVABLE code.

@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detection_manager.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/password_manager/core/browser/password_store_backend_error.h"
 #include "components/prefs/pref_member.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -134,7 +135,8 @@ class ChromePasswordManagerClient
       CredentialsCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void ShowPasswordManagerErrorMessage(
-      password_manager::ErrorMessageFlowType flow_type) override;
+      password_manager::ErrorMessageFlowType flow_type,
+      password_manager::PasswordStoreBackendErrorType error_type) override;
 
   void ShowTouchToFill(
       password_manager::PasswordManagerDriver* driver,

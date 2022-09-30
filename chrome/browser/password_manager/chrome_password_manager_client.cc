@@ -456,13 +456,14 @@ bool ChromePasswordManagerClient::PromptUserToChooseCredentials(
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::ShowPasswordManagerErrorMessage(
-    password_manager::ErrorMessageFlowType flow_type) {
+    password_manager::ErrorMessageFlowType flow_type,
+    password_manager::PasswordStoreBackendErrorType error_type) {
   if (!password_manager_error_message_delegate_) {
     password_manager_error_message_delegate_ =
         std::make_unique<PasswordManagerErrorMessageDelegate>(
             std::make_unique<PasswordManagerErrorMessageHelperBridgeImpl>());
     password_manager_error_message_delegate_->MaybeDisplayErrorMessage(
-        web_contents(), flow_type,
+        web_contents(), flow_type, error_type,
         base::BindOnce(&ChromePasswordManagerClient::ResetErrorMessageDelegate,
                        base::Unretained(this)));
   }

@@ -7,11 +7,21 @@
 
 namespace password_manager {
 
+// List of constants describing the types of Android backend errors.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// This should be kept in sync with PasswordStoreBackendErrorType in enums.xml.
 enum class PasswordStoreBackendErrorType {
   kUncategorized = 0,
   // An authentication error that prevents the password store from accessing
-  // passwords and can be resolved by the user. Used on Android.
+  // passwords, for which the resolution intent has been received. Used on
+  // Android.
   kAuthErrorResolvable = 1,
+  // An authentication error that prevents the password store from accessing
+  // passwords, for which no resolution intent has been received. Used on
+  // Android.
+  kAuthErrorUnresolvable = 2,
+  kMaxValue = kAuthErrorUnresolvable,
 };
 
 enum class PasswordStoreBackendErrorRecoveryType {
