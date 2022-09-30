@@ -1302,5 +1302,11 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["wpt_internal/js/shared_memory"],
     "args": ["--enable-features=JavaScriptExperimentalSharedMemory"]
+  },
+  {
+    "prefix": "scoped-custom-element-registry-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/custom-elements/scoped-registry"],
+    "args": ["--disable-blink-features=ScopedCustomElementRegistry"]
   }
 ]

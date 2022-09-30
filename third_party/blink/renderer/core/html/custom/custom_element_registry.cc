@@ -77,6 +77,7 @@ bool ThrowIfValidName(const AtomicString& name,
 // static
 CustomElementRegistry* CustomElementRegistry::Create(
     ScriptState* script_state) {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
   return MakeGarbageCollected<CustomElementRegistry>(
       LocalDOMWindow::From(script_state));
 }
