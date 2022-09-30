@@ -21,7 +21,6 @@
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -31,7 +30,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/customize_themes/customize_themes.mojom.h"
@@ -76,8 +74,6 @@ class NewTabPageUI
       public customize_themes::mojom::CustomizeThemesHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
-      public ui::NativeThemeObserver,
-      public ThemeServiceObserver,
       public NtpCustomBackgroundServiceObserver,
       content::WebContentsObserver {
  public:
@@ -192,12 +188,6 @@ class NewTabPageUI
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
           pending_page_handler) override;
 
-  // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
-
-  // ThemeServiceObserver:
-  void OnThemeChanged() override;
-
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
   void OnNtpCustomBackgroundServiceShuttingDown() override;
@@ -205,6 +195,7 @@ class NewTabPageUI
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnColorProviderChanged() override;
 
   bool IsCustomLinksEnabled() const;
   bool IsShortcutsVisible() const;
@@ -238,10 +229,6 @@ class NewTabPageUI
   raw_ptr<Profile> profile_;
   raw_ptr<ThemeService> theme_service_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      native_theme_observation_{this};
-  base::ScopedObservation<ThemeService, ThemeServiceObserver>
-      theme_service_observation_{this};
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
