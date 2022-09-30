@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
@@ -130,71 +131,23 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 }  // namespace
 
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
-    WebAppInstallFinalizer* install_finalizer,
-    WebAppRegistrar* registrar,
-    webapps::WebappInstallSource install_surface,
-    base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback callback)
-    : noop_lock_(std::make_unique<NoopLock>()),
-      install_finalizer_(install_finalizer),
-      registrar_(registrar),
-      install_surface_(install_surface),
-      web_contents_(contents),
-      bypass_service_worker_check_(bypass_service_worker_check),
-      dialog_callback_(std::move(dialog_callback)),
-      install_callback_(std::move(callback)),
-      data_retriever_(std::make_unique<WebAppDataRetriever>()),
-      install_error_log_entry_(/*background_installation=*/false,
-                               install_surface_) {}
-
-FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
-    WebAppInstallFinalizer* install_finalizer,
-    WebAppRegistrar* registrar,
     webapps::WebappInstallSource install_surface,
     base::WeakPtr<content::WebContents> contents,
     bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
-    WebAppInstallFlow flow)
-    : noop_lock_(std::make_unique<NoopLock>()),
-      install_finalizer_(install_finalizer),
-      registrar_(registrar),
-      install_surface_(install_surface),
-      web_contents_(contents),
-      bypass_service_worker_check_(bypass_service_worker_check),
-      dialog_callback_(std::move(dialog_callback)),
-      install_callback_(std::move(callback)),
-      data_retriever_(std::make_unique<WebAppDataRetriever>()),
-      use_fallback_(use_fallback),
-      flow_(flow),
-      install_error_log_entry_(/*background_installation=*/false,
-                               install_surface_) {}
-
-FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     WebAppInstallFinalizer* install_finalizer,
-    WebAppRegistrar* registrar,
-    webapps::WebappInstallSource install_surface,
-    base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
-    WebAppInstallDialogCallback dialog_callback,
-    OnceInstallCallback callback,
-    bool use_fallback,
-    WebAppInstallFlow flow,
     std::unique_ptr<WebAppDataRetriever> data_retriever)
     : noop_lock_(std::make_unique<NoopLock>()),
-      install_finalizer_(install_finalizer),
-      registrar_(registrar),
       install_surface_(install_surface),
       web_contents_(contents),
       bypass_service_worker_check_(bypass_service_worker_check),
       dialog_callback_(std::move(dialog_callback)),
       install_callback_(std::move(callback)),
-      data_retriever_(std::move(data_retriever)),
       use_fallback_(use_fallback),
-      flow_(flow),
+      install_finalizer_(install_finalizer),
+      data_retriever_(std::move(data_retriever)),
       install_error_log_entry_(/*background_installation=*/false,
                                install_surface_) {}
 
@@ -320,7 +273,7 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
     LogInstallInfo();
   }
 
-  if (flow_ == WebAppInstallFlow::kCreateShortcut &&
+  if (install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT &&
       base::FeatureList::IsEnabled(
           webapps::features::kCreateShortcutIgnoresManifest)) {
     // When creating a shortcut, the |manifest_id| is not part of the App's
@@ -351,7 +304,8 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
 void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
     base::flat_set<GURL> icon_urls,
     bool skip_page_favicons) {
-  bool is_create_shortcut = flow_ == WebAppInstallFlow::kCreateShortcut;
+  bool is_create_shortcut =
+      install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;
   // Background installations are not a user-triggered installs, and thus
   // cannot be sent to the store.
   bool skip_store = is_create_shortcut || !opt_manifest_;

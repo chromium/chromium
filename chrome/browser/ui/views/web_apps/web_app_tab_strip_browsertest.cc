@@ -21,10 +21,9 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
-#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -163,28 +162,26 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     DCHECK(provider);
     test::WaitUntilReady(provider);
-    provider->command_manager().ScheduleCommand(
-        std::make_unique<FetchManifestAndInstallCommand>(
-            &provider->install_finalizer(), &provider->registrar(),
-            webapps::WebappInstallSource::MENU_BROWSER_TAB,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-            /*bypass_service_worker_check=*/false,
-            base::BindLambdaForTesting(
-                [](content::WebContents*,
-                   std::unique_ptr<WebAppInstallInfo> web_app_info,
-                   WebAppInstallationAcceptanceCallback acceptance_callback) {
-                  web_app_info->user_display_mode = UserDisplayMode::kTabbed;
-                  std::move(acceptance_callback)
-                      .Run(/*user_accepted=*/true, std::move(web_app_info));
-                }),
-            base::BindLambdaForTesting([&run_loop, &app_id](
-                                           const AppId& installed_app_id,
-                                           webapps::InstallResultCode code) {
+    provider->scheduler().FetchManifestAndInstall(
+        webapps::WebappInstallSource::MENU_BROWSER_TAB,
+        browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+        /*bypass_service_worker_check=*/false,
+        base::BindLambdaForTesting(
+            [](content::WebContents*,
+               std::unique_ptr<WebAppInstallInfo> web_app_info,
+               WebAppInstallationAcceptanceCallback acceptance_callback) {
+              web_app_info->user_display_mode = UserDisplayMode::kTabbed;
+              std::move(acceptance_callback)
+                  .Run(/*user_accepted=*/true, std::move(web_app_info));
+            }),
+        base::BindLambdaForTesting(
+            [&run_loop, &app_id](const AppId& installed_app_id,
+                                 webapps::InstallResultCode code) {
               DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = installed_app_id;
               run_loop.Quit();
             }),
-            /*use_fallback=*/true, WebAppInstallFlow::kInstallSite));
+        /*use_fallback=*/true);
     run_loop.Run();
   }
 

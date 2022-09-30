@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -140,15 +140,13 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   WebAppInstalledCallback callback = base::DoNothing();
 
-  provider->command_manager().ScheduleCommand(
-      std::make_unique<FetchManifestAndInstallCommand>(
-          &provider->install_finalizer(), &provider->registrar(),
-          install_source, web_contents->GetWeakPtr(),
-          /*bypass_service_worker_check=*/false,
-          base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
-                         chrome::PwaInProductHelpState::kNotShown),
-          base::BindOnce(OnWebAppInstalled, std::move(callback)),
-          /*use_fallback=*/true, flow));
+  provider->scheduler().FetchManifestAndInstall(
+      install_source, web_contents->GetWeakPtr(),
+      /*bypass_service_worker_check=*/false,
+      base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
+                     chrome::PwaInProductHelpState::kNotShown),
+      base::BindOnce(OnWebAppInstalled, std::move(callback)),
+      /*use_fallback=*/true);
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,
@@ -165,15 +163,13 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
     return false;
   }
 
-  provider->command_manager().ScheduleCommand(
-      std::make_unique<FetchManifestAndInstallCommand>(
-          &provider->install_finalizer(), &provider->registrar(),
-          install_source, web_contents->GetWeakPtr(),
-          bypass_service_worker_check,
-          base::BindOnce(OnWebAppInstallShowInstallDialog,
-                         WebAppInstallFlow::kInstallSite, install_source,
-                         iph_state),
-          base::BindOnce(OnWebAppInstalled, std::move(installed_callback))));
+  provider->scheduler().FetchManifestAndInstall(
+      install_source, web_contents->GetWeakPtr(), bypass_service_worker_check,
+      base::BindOnce(OnWebAppInstallShowInstallDialog,
+                     WebAppInstallFlow::kInstallSite, install_source,
+                     iph_state),
+      base::BindOnce(OnWebAppInstalled, std::move(installed_callback)),
+      /*use_fallback=*/false);
   return true;
 }
 

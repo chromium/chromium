@@ -41,6 +41,7 @@ class WebAppUiManager;
 class OsIntegrationManager;
 class WebAppTranslationManager;
 class WebAppCommandManager;
+class WebAppCommandScheduler;
 
 // WebAppProvider is the heart of Chrome web app code.
 //
@@ -104,6 +105,13 @@ class WebAppProvider : public KeyedService {
 
   // Start the Web App system. This will run subsystem startup tasks.
   void Start();
+
+  // Read/write to web app system should use `scheduler()` to guarantee safe
+  // access. This is safe to access even if the `WebAppProvider` is not ready.
+  WebAppCommandScheduler& scheduler();
+
+  // Web App sub components. These should only be accessed after
+  // `on_registry_ready()` is signaled.
 
   // The app registry model.
   WebAppRegistrar& registrar();
@@ -187,6 +195,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppUiManager> ui_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppCommandManager> command_manager_;
+  std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
 
   base::OneShotEvent on_registry_ready_;
 

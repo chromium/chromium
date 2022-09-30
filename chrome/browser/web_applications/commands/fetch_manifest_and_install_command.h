@@ -32,51 +32,20 @@ class AppLock;
 class NoopLock;
 class WebAppDataRetriever;
 class WebAppInstallFinalizer;
-class WebAppRegistrar;
 
 // Install web app from manifest for current `WebContents`.
 class FetchManifestAndInstallCommand : public WebAppCommand {
  public:
-  // When |dialog_callback| is null (aka |base::NullCallback|) the command
-  // doesn't show installation prompt in UI and installs the application in
-  // background.
-  FetchManifestAndInstallCommand(WebAppInstallFinalizer* install_finalizer,
-                                 WebAppRegistrar* registrar,
-                                 webapps::WebappInstallSource install_surface,
-                                 base::WeakPtr<content::WebContents> contents,
-                                 bool bypass_service_worker_check,
-                                 WebAppInstallDialogCallback dialog_callback,
-                                 OnceInstallCallback callback);
-
   // `use_fallback` allows getting fallback information from current document
   // to enable installing a non-promotable site.
-  //
-  // When |dialog_callback| is null (aka |base::NullCallback|) the command
-  // doesn't show installation prompt in UI and installs the application in
-  // background.
-  FetchManifestAndInstallCommand(WebAppInstallFinalizer* install_finalizer,
-                                 WebAppRegistrar* registrar,
-                                 webapps::WebappInstallSource install_surface,
-                                 base::WeakPtr<content::WebContents> contents,
-                                 bool bypass_service_worker_check,
-                                 WebAppInstallDialogCallback dialog_callback,
-                                 OnceInstallCallback callback,
-                                 bool use_fallback,
-                                 WebAppInstallFlow flow);
-
-  // TODO(https://crbug.com/1364390): Remove the constructors above and fix the
-  // param orders here after replacing callsites to use provider()->scheduler()
-  // interface.
   FetchManifestAndInstallCommand(
-      WebAppInstallFinalizer* install_finalizer,
-      WebAppRegistrar* registrar,
       webapps::WebappInstallSource install_surface,
       base::WeakPtr<content::WebContents> contents,
       bool bypass_service_worker_check,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback,
       bool use_fallback,
-      WebAppInstallFlow flow,
+      WebAppInstallFinalizer* install_finalizer,
       std::unique_ptr<WebAppDataRetriever> data_retriever);
 
   ~FetchManifestAndInstallCommand() override;
@@ -146,28 +115,23 @@ class FetchManifestAndInstallCommand : public WebAppCommand {
   std::unique_ptr<NoopLock> noop_lock_;
   std::unique_ptr<AppLock> app_lock_;
 
-  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
-  raw_ptr<WebAppRegistrar> registrar_;
   webapps::WebappInstallSource install_surface_;
-
   base::WeakPtr<content::WebContents> web_contents_;
   bool bypass_service_worker_check_;
   WebAppInstallDialogCallback dialog_callback_;
   OnceInstallCallback install_callback_;
+  // Whether using fallback installation data from the document.
+  bool use_fallback_ = false;
 
+  raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+
+  InstallErrorLogEntry install_error_log_entry_;
 
   AppId app_id_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;
-
   base::Value::Dict debug_log_;
-
-  // Whether using fallback installation data from the document.
-  bool use_fallback_ = false;
-  WebAppInstallFlow flow_{};
-
-  InstallErrorLogEntry install_error_log_entry_;
 
   base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };

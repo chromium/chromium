@@ -176,13 +176,11 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
       std::unique_ptr<WebAppDataRetriever> data_retriever,
       webapps::WebappInstallSource install_surface,
       WebAppInstallDialogCallback dialog_callback,
-      WebAppInstallFlow flow,
       bool use_fallback = false) {
     webapps::InstallResultCode result;
     base::RunLoop run_loop;
     provider()->command_manager().ScheduleCommand(
         std::make_unique<FetchManifestAndInstallCommand>(
-            &provider()->install_finalizer(), &provider()->registrar(),
             webapps::WebappInstallSource::MENU_BROWSER_TAB,
             web_contents()->GetWeakPtr(),
             /*bypass_service_worker_check=*/false, std::move(dialog_callback),
@@ -191,7 +189,8 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
                   result = code;
                   run_loop.Quit();
                 }),
-            use_fallback, flow, std::move(data_retriever)));
+            use_fallback, &provider()->install_finalizer(),
+            std::move(data_retriever)));
     run_loop.Run();
     return result;
   }
@@ -212,8 +211,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
   EXPECT_EQ(
       InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(true, UserDisplayMode::kStandalone),
-                     WebAppInstallFlow::kInstallSite),
+                     CreateDialogCallback(true, UserDisplayMode::kStandalone)),
       webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
@@ -231,9 +229,9 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithFallbackInstall) {
   data_retriever->SetRendererWebAppInstallInfo(std::move(web_app_info));
   EXPECT_EQ(
       InstallAndWait(kWebAppId, std::move(data_retriever),
-                     webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                     webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
                      CreateDialogCallback(true, UserDisplayMode::kStandalone),
-                     WebAppInstallFlow::kInstallSite, /*use_fallback=*/true),
+                     /*use_fallback=*/true),
       webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
@@ -243,9 +241,9 @@ TEST_F(FetchManifestAndInstallCommandTest,
        FallbackInstallWithFailToGetInstallInfo) {
   EXPECT_EQ(
       InstallAndWait(kWebAppId, std::make_unique<FakeDataRetriever>(),
-                     webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                     webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
                      CreateDialogCallback(true, UserDisplayMode::kStandalone),
-                     WebAppInstallFlow::kInstallSite, /*use_fallback=*/true),
+                     /*use_fallback=*/true),
       webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
   EXPECT_FALSE(provider()->registrar().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
@@ -255,9 +253,7 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithoutReparent) {
   EXPECT_EQ(
       InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(true, UserDisplayMode::kBrowser),
-
-                     WebAppInstallFlow::kInstallSite),
+                     CreateDialogCallback(true, UserDisplayMode::kBrowser)),
       webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
 }
@@ -266,9 +262,7 @@ TEST_F(FetchManifestAndInstallCommandTest, UserInstallDeclined) {
   EXPECT_EQ(
       InstallAndWait(kWebAppId, SetupDefaultFakeDataRetriever(),
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(false, UserDisplayMode::kStandalone),
-
-                     WebAppInstallFlow::kInstallSite),
+                     CreateDialogCallback(false, UserDisplayMode::kStandalone)),
       webapps::InstallResultCode::kUserInstallDeclined);
   EXPECT_FALSE(provider()->registrar().IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(0, fake_ui_manager()->num_reparent_tab_calls());
@@ -289,7 +283,6 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 
   provider()->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
-          &provider()->install_finalizer(), &provider()->registrar(),
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
           web_contents()->GetWeakPtr(),
           /*bypass_service_worker_check=*/false, std::move(dialog_callback),
@@ -298,7 +291,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
                 result_populated = true;
                 result = code;
               }),
-          /*use_fallback=*/false, WebAppInstallFlow::kInstallSite,
+          /*use_fallback=*/false, &provider()->install_finalizer(),
           SetupDefaultFakeDataRetriever()));
 
   dialog_runloop.Run();
@@ -316,7 +309,6 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
   base::RunLoop loop;
   provider()->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
-          &provider()->install_finalizer(), &provider()->registrar(),
           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
           web_contents()->GetWeakPtr(),
           /*bypass_service_worker_check=*/false, CreateDialogCallback(),
@@ -326,7 +318,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
                 result = code;
                 loop.Quit();
               }),
-          /*use_fallback=*/false, WebAppInstallFlow::kInstallSite,
+          /*use_fallback=*/false, &provider()->install_finalizer(),
           SetupDefaultFakeDataRetriever()));
 
   DeleteContents();
@@ -400,7 +392,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDisk) {
                     std::move(icons_map), IconsDownloadedResult::kCompleted,
                     net::HttpStatusCode::HTTP_OK, std::move(manifest)),
                 webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                CreateDialogCallback(true), WebAppInstallFlow::kInstallSite),
+                CreateDialogCallback(true)),
             webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(file_utils().DirectoryExists(manifest_resources_directory));
@@ -470,15 +462,14 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_PrimaryPageChanged) {
   EXPECT_FALSE(file_utils().DirectoryExists(manifest_resources_directory));
 
   IconsMap icons_map;
-  EXPECT_EQ(
-      InstallAndWait(
-          kWebAppId,
-          SetupFakeDataRetriever(std::move(icons_map),
-                                 IconsDownloadedResult::kPrimaryPageChanged,
-                                 net::HttpStatusCode::HTTP_OK),
-          webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-          CreateDialogCallback(true), WebAppInstallFlow::kInstallSite),
-      webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_EQ(InstallAndWait(kWebAppId,
+                           SetupFakeDataRetriever(
+                               std::move(icons_map),
+                               IconsDownloadedResult::kPrimaryPageChanged,
+                               net::HttpStatusCode::HTTP_OK),
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           CreateDialogCallback(true)),
+            webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(file_utils().DirectoryExists(manifest_resources_directory));
 
@@ -537,9 +528,7 @@ TEST_F(FetchManifestAndInstallCommandTest, GetIcons_IconNotFound) {
                                        IconsDownloadedResult::kCompleted,
                                        net::HttpStatusCode::HTTP_NOT_FOUND),
                 webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                CreateDialogCallback(true),
-
-                WebAppInstallFlow::kInstallSite),
+                CreateDialogCallback(true)),
             webapps::InstallResultCode::kSuccessNewInstall);
 
   EXPECT_TRUE(file_utils().DirectoryExists(manifest_resources_directory));
@@ -599,9 +588,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WriteDataToDiskFailed) {
                                             IconsDownloadedResult::kCompleted,
                                             net::HttpStatusCode::HTTP_OK),
                      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                     CreateDialogCallback(true),
-
-                     WebAppInstallFlow::kInstallSite),
+                     CreateDialogCallback(true)),
       webapps::InstallResultCode::kWriteDataFailed);
 
   const base::FilePath temp_dir = web_apps_dir.AppendASCII("Temp");
@@ -623,10 +610,10 @@ TEST_F(FetchManifestAndInstallCommandTest, IntentToPlayStore) {
   related_app.id = u"com.app.id";
   manifest->related_applications.push_back(std::move(related_app));
 
-  EXPECT_EQ(InstallAndWait(
-                kWebAppId, SetupDefaultFakeDataRetriever(std::move(manifest)),
-                webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                CreateDialogCallback(true), WebAppInstallFlow::kInstallSite),
+  EXPECT_EQ(InstallAndWait(kWebAppId,
+                           SetupDefaultFakeDataRetriever(std::move(manifest)),
+                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           CreateDialogCallback(true)),
             webapps::InstallResultCode::kIntentToPlayStore);
 }
 #endif

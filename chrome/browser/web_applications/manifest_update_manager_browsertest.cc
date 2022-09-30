@@ -40,8 +40,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
-#include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/manifest_update_task.h"
@@ -55,7 +53,7 @@
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
-#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -440,20 +438,18 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 
     AppId app_id;
     base::RunLoop run_loop;
-    GetProvider().command_manager().ScheduleCommand(
-        std::make_unique<FetchManifestAndInstallCommand>(
-            &GetProvider().install_finalizer(), &GetProvider().registrar(),
-            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-            /*bypass_service_worker_check=*/false,
-            base::BindOnce(test::TestAcceptDialogCallback),
-            base::BindLambdaForTesting([&](const AppId& new_app_id,
-                                           webapps::InstallResultCode code) {
+    GetProvider().scheduler().FetchManifestAndInstall(
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+        browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
+        /*bypass_service_worker_check=*/false,
+        base::BindOnce(test::TestAcceptDialogCallback),
+        base::BindLambdaForTesting(
+            [&](const AppId& new_app_id, webapps::InstallResultCode code) {
               EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
               app_id = new_app_id;
               run_loop.Quit();
             }),
-            /*use_fallback=*/true, WebAppInstallFlow::kInstallSite));
+        /*use_fallback=*/true);
 
     run_loop.Run();
     return app_id;

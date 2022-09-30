@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_provider.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
@@ -210,6 +212,10 @@ WebAppCommandManager& WebAppProvider::command_manager() {
   return *command_manager_;
 }
 
+WebAppCommandScheduler& WebAppProvider::scheduler() {
+  return *command_scheduler_;
+}
+
 void WebAppProvider::Shutdown() {
   command_manager_->Shutdown();
   ui_manager_->Shutdown();
@@ -282,6 +288,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   }
 
   command_manager_ = std::make_unique<WebAppCommandManager>(profile);
+  command_scheduler_ = std::make_unique<WebAppCommandScheduler>(this);
 
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
