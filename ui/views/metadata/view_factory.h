@@ -469,14 +469,14 @@ namespace views {                                                       \
    private:                                                             \
     using ViewClass_ = view_class;                                      \
    public:                                                              \
-    Builder<ViewClass_>() = default;                                    \
-    explicit Builder<ViewClass_>(ViewClass_* root_view)                 \
+    Builder() = default;                                                \
+    explicit Builder(ViewClass_* root_view)                             \
         : view_class##BuilderT<Builder<ViewClass_>>(root_view) {}       \
-    explicit Builder<ViewClass_>(std::unique_ptr<ViewClass_> view)      \
+    explicit Builder(std::unique_ptr<ViewClass_> view)                  \
         : view_class##BuilderT<Builder<ViewClass_>>(std::move(view)) {} \
-    Builder<ViewClass_>(Builder&&) = default;                           \
+    Builder(Builder&&) = default;                                       \
     Builder<ViewClass_>& operator=(Builder<ViewClass_>&&) = default;    \
-    ~Builder<ViewClass_>() = default;                                   \
+    ~Builder() = default;                                               \
     [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()  \
         override {                                                      \
       return std::make_unique<Builder<view_class>>(std::move(*this));   \
