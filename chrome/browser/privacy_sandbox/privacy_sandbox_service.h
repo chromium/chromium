@@ -215,6 +215,8 @@ class PrivacySandboxService : public KeyedService {
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed);
 
+  // DEPRECATED - Do not use in new code. It will be replaced with the in-memory
+  // FPS map.
   // Returns the first party sets recognised by the current profile. If FPS is
   // disabled, or if sets have not been loaded yet, an empty map is returned.
   // Encapsulates logic about whether FPS information should be shown, if it
@@ -230,6 +232,10 @@ class PrivacySandboxService : public KeyedService {
   // Encapsulates logic about whether FPS information should be shown, if it
   // should not, absl::nullopt is always returned.
   // Virtual for mocking in tests.
+  virtual absl::optional<net::SchemefulSite> GetFirstPartySetOwner(
+      const GURL& site_url) const;
+
+  // Same as GetFirstPartySetOwner but returns a formatted string.
   virtual absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
       const GURL& site_url) const;
 

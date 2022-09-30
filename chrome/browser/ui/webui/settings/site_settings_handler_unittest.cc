@@ -634,6 +634,34 @@ class SiteSettingsHandlerTest : public testing::Test,
     return nodes;
   }
 
+  void SetupDefaultFirstPartySets(MockPrivacySandboxService* mock_service) {
+    EXPECT_CALL(*mock_service, GetFirstPartySetOwner(_))
+        .WillRepeatedly(
+            [&](const GURL& url) -> absl::optional<net::SchemefulSite> {
+              auto first_party_sets = GetTestFirstPartySets();
+              if (first_party_sets.count(net::SchemefulSite(url))) {
+                return first_party_sets[net::SchemefulSite(url)];
+              }
+
+              return absl::nullopt;
+            });
+  }
+
+  base::flat_map<net::SchemefulSite, net::SchemefulSite>
+  GetTestFirstPartySets() {
+    base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
+        {ConvertEtldToSchemefulSite("google.com"),
+         ConvertEtldToSchemefulSite("google.com")},
+        {ConvertEtldToSchemefulSite("google.com.au"),
+         ConvertEtldToSchemefulSite("google.com")},
+        {ConvertEtldToSchemefulSite("example.com"),
+         ConvertEtldToSchemefulSite("example.com")},
+        {ConvertEtldToSchemefulSite("unrelated.com"),
+         ConvertEtldToSchemefulSite("unrelated.com")}};
+
+    return first_party_sets;
+  }
+
   // Content setting group name for the relevant ContentSettingsType.
   const std::string kNotifications;
   const std::string kCookies;
@@ -3012,28 +3040,16 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
-      {ConvertEtldToSchemefulSite("google.com"),
-       ConvertEtldToSchemefulSite("google.com")},
-      {ConvertEtldToSchemefulSite("google.com.au"),
-       ConvertEtldToSchemefulSite("google.com")},
-      {ConvertEtldToSchemefulSite("unrelated.com"),
-       ConvertEtldToSchemefulSite("unrelated.com")},
-      {ConvertEtldToSchemefulSite("ungrouped.com"),
-       ConvertEtldToSchemefulSite("ungrouped.com")},
-  };
+  SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
 
-  EXPECT_CALL(*mock_privacy_sandbox_service(), GetFirstPartySets())
-      .Times(4)
-      .WillRepeatedly(Return(first_party_sets));
   EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
       .Times(1)
       .WillOnce(Return(false));
   EXPECT_CALL(
       *mock_privacy_sandbox_service(),
-      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("ungrouped.com")))
-      .Times(1)
-      .WillOnce(Return(true));
+      IsPartOfManagedFirstPartySet(ConvertEtldToSchemefulSite("example.com")))
+      .Times(2)
+      .WillRepeatedly(Return(true));
 
   // Confirm that usage info only returns unpartitioned storage.
   SetUpCookiesTreeModel();
@@ -3045,13 +3061,15 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("www.example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("www.example.com", "2 B", "1 cookie", "", false);
+  ValidateUsageInfo("www.example.com", "2 B", "1 cookie",
+                    "Allowed for 1 example.com site", true);
 
   args.clear();
   args.Append("example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("example.com", "", "1 cookie", "", false);
+  ValidateUsageInfo("example.com", "", "1 cookie",
+                    "Allowed for 1 example.com site", true);
 
   args.clear();
   args.Append("google.com");
@@ -3063,8 +3081,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   args.Append("ungrouped.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->OnGetUsageInfo();
-  ValidateUsageInfo("ungrouped.com", "", "1 cookie",
-                    "Allowed for 1 ungrouped.com site", true);
+  ValidateUsageInfo("ungrouped.com", "", "1 cookie", "", false);
 }
 
 TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
@@ -3095,17 +3112,8 @@ TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
 }
 
 TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> first_party_sets = {
-      {ConvertEtldToSchemefulSite("example.com"),
-       ConvertEtldToSchemefulSite("example.com")},
-      {ConvertEtldToSchemefulSite("google.com"),
-       ConvertEtldToSchemefulSite("google.com")},
-      {ConvertEtldToSchemefulSite("google.com.au"),
-       ConvertEtldToSchemefulSite("google.com")},
-  };
+  SetupDefaultFirstPartySets(mock_privacy_sandbox_service());
 
-  EXPECT_CALL(*mock_privacy_sandbox_service(), GetFirstPartySets())
-      .WillOnce(Return(first_party_sets));
   EXPECT_CALL(*mock_privacy_sandbox_service(), IsPartOfManagedFirstPartySet(_))
       .Times(2)
       .WillRepeatedly(Return(false));
@@ -3129,6 +3137,8 @@ TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
   ASSERT_TRUE(data.arg2()->is_list());
   const base::Value::List& storage_and_cookie_list = data.arg2()->GetList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
+
+  auto first_party_sets = GetTestFirstPartySets();
 
   ValidateSitesWithFps(storage_and_cookie_list, first_party_sets);
 }

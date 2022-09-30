@@ -482,15 +482,16 @@ std::map<std::string, std::pair<std::string, int>> GetFpsMap(
     CookiesTreeModel* tree_model) {
   // Used to count unique eTLD+1 owned by a FPS owner.
   std::map<std::string, std::set<std::string>> fps_owner_to_members;
-  auto first_party_sets = privacy_sandbox_service->GetFirstPartySets();
+
   // Count members by unique eTLD+1 for each first party set.
   for (const auto& host_node : tree_model->GetRoot()->children()) {
     std::string etld_plus1 =
         GetEtldPlusOne(host_node->GetDetailedInfo().origin);
     auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
-    if (first_party_sets.count(schemeful_site)) {
-      auto fps_owner = first_party_sets[schemeful_site];
-      fps_owner_to_members[fps_owner.GetURL().host()].insert(etld_plus1);
+    auto fps_owner =
+        privacy_sandbox_service->GetFirstPartySetOwner(schemeful_site.GetURL());
+    if (fps_owner.has_value()) {
+      fps_owner_to_members[fps_owner->GetURL().host()].insert(etld_plus1);
     }
   }
 

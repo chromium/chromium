@@ -34,6 +34,10 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               GetFirstPartySets,
               (),
               (override, const));
+  MOCK_METHOD(absl::optional<net::SchemefulSite>,
+              GetFirstPartySetOwner,
+              (const GURL& site_url),
+              (override, const));
   MOCK_METHOD(absl::optional<std::u16string>,
               GetFirstPartySetOwnerForDisplay,
               (const GURL& site_url),
