@@ -475,7 +475,7 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
         ChromeShelfController::instance();
     // chrome_controller may be null in tests.
     if (chrome_controller) {
-      apps::mojom::WindowInfoPtr window_info = apps::mojom::WindowInfo::New();
+      apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>();
       window_info->window_id = arc_session_id;
       chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
           app_id, std::make_unique<ArcShelfSpinnerItemController>(

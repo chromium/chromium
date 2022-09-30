@@ -19,8 +19,8 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
-#include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,12 +38,10 @@ namespace {
 constexpr char kTestProfileName[] = "user@gmail.com";
 constexpr char16_t kTestProfileName16[] = u"user@gmail.com";
 
-apps::mojom::AppPtr MakeApp(const char* app_id,
-                            apps::mojom::AppType app_type,
-                            apps::mojom::InstallReason install_reason) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_id = app_id;
-  app->app_type = app_type;
+apps::AppPtr MakeApp(const char* app_id,
+                     apps::AppType app_type,
+                     apps::InstallReason install_reason) {
+  auto app = std::make_unique<apps::App>(app_type, app_id);
   app->install_reason = install_reason;
   return app;
 }
@@ -83,11 +81,11 @@ class ArcGhostWindowViewTest : public testing::Test {
 
   void InstallApp(const std::string& app_id) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    std::vector<apps::mojom::AppPtr> deltas;
+    std::vector<apps::AppPtr> deltas;
     apps::AppRegistryCache& cache = proxy->AppRegistryCache();
-    deltas.push_back(MakeApp(app_id.c_str(), apps::mojom::AppType::kArc,
-                             apps::mojom::InstallReason::kUser));
-    cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
+    deltas.push_back(MakeApp(app_id.c_str(), apps::AppType::kArc,
+                             apps::InstallReason::kUser));
+    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
                  false /* should_notify_initialized */);
   }
 
