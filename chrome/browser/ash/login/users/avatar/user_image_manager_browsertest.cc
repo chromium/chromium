@@ -625,7 +625,7 @@ class UserImageManagerPolicyTest : public UserImageManagerTestBase,
 // Verifies that the user image can be set through policy. Also verifies that
 // after the policy has been cleared, the user is able to choose a different
 // image.
-IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
+IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, DISABLED_SetAndClear) {
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(enterprise_account_id_);
   ASSERT_TRUE(user);
