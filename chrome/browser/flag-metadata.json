@@ -3235,6 +3235,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-web-usb-on-extension-service-worker",
+    "owners": [ "deviceapi-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-webassembly-baseline",
     "owners": [ "clemensb", "wasm-team@google.com" ],
     // This flag is often used by developers and partners to test

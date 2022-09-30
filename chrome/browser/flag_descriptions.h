@@ -629,6 +629,9 @@ extern const char kEnableNetworkLoggingToFileDescription[];
 extern const char kEnableTranslateSubFramesName[];
 extern const char kEnableTranslateSubFramesDescription[];
 
+extern const char kEnableWebUsbOnExtensionServiceWorkerName[];
+extern const char kEnableWebUsbOnExtensionServiceWorkerDescription[];
+
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 

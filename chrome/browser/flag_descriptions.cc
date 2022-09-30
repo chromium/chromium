@@ -1191,6 +1191,11 @@ const char kEnableTranslateSubFramesName[] = "Translate sub frames";
 const char kEnableTranslateSubFramesDescription[] =
     "Enable the translation of sub frames (as well as the main frame)";
 
+const char kEnableWebUsbOnExtensionServiceWorkerName[] =
+    "Enable WebUSB on extension service workers";
+const char kEnableWebUsbOnExtensionServiceWorkerDescription[] =
+    "When enabled, WebUSB API is available on extension service workers.";
+
 const char kEnableWindowsGamingInputDataFetcherName[] =
     "Enable Windows.Gaming.Input";
 const char kEnableWindowsGamingInputDataFetcherDescription[] =
