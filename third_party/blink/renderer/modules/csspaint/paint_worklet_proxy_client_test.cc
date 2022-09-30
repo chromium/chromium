@@ -61,8 +61,8 @@ class PaintWorkletProxyClientTest : public RenderingTest {
     dispatcher_ = std::make_unique<PaintWorkletPaintDispatcher>();
     fake_compositor_thread_runner_ = base::MakeRefCounted<FakeTaskRunner>();
     proxy_client_ = MakeGarbageCollected<PaintWorkletProxyClient>(
-        1, paint_worklet_, dispatcher_->GetWeakPtr(),
-        fake_compositor_thread_runner_);
+        1, paint_worklet_, GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+        dispatcher_->GetWeakPtr(), fake_compositor_thread_runner_);
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }
 
@@ -137,15 +137,17 @@ class PaintWorkletProxyClientTest : public RenderingTest {
 
 TEST_F(PaintWorkletProxyClientTest, PaintWorkletProxyClientConstruction) {
   PaintWorkletProxyClient* proxy_client =
-      MakeGarbageCollected<PaintWorkletProxyClient>(1, nullptr, nullptr,
-                                                    nullptr);
+      MakeGarbageCollected<PaintWorkletProxyClient>(
+          1, nullptr, GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+          nullptr, nullptr);
   EXPECT_EQ(proxy_client->worklet_id_, 1);
   EXPECT_EQ(proxy_client->paint_dispatcher_, nullptr);
 
   auto dispatcher = std::make_unique<PaintWorkletPaintDispatcher>();
 
   proxy_client = MakeGarbageCollected<PaintWorkletProxyClient>(
-      1, nullptr, dispatcher->GetWeakPtr(), nullptr);
+      1, nullptr, GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+      dispatcher->GetWeakPtr(), nullptr);
   EXPECT_EQ(proxy_client->worklet_id_, 1);
   EXPECT_NE(proxy_client->paint_dispatcher_, nullptr);
 }

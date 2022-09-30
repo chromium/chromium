@@ -49,6 +49,7 @@ class MODULES_EXPORT PaintWorkletProxyClient
   PaintWorkletProxyClient(
       int worklet_id,
       PaintWorklet*,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
       base::WeakPtr<PaintWorkletPaintDispatcher> compositor_paintee,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue);
 

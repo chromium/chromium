@@ -50,13 +50,15 @@ PaintWorkletProxyClient* PaintWorkletProxyClient::Create(LocalDOMWindow* window,
       local_frame->LocalRootFrameWidget()->EnsureCompositorPaintDispatcher(
           &compositor_host_queue);
   return MakeGarbageCollected<PaintWorkletProxyClient>(
-      worklet_id, paint_worklet, std::move(compositor_paint_dispatcher),
-      std::move(compositor_host_queue));
+      worklet_id, paint_worklet,
+      window->GetTaskRunner(TaskType::kInternalDefault),
+      std::move(compositor_paint_dispatcher), std::move(compositor_host_queue));
 }
 
 PaintWorkletProxyClient::PaintWorkletProxyClient(
     int worklet_id,
     PaintWorklet* paint_worklet,
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner,
     base::WeakPtr<PaintWorkletPaintDispatcher> paint_dispatcher,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_host_queue)
     : Supplement(nullptr),
@@ -64,7 +66,7 @@ PaintWorkletProxyClient::PaintWorkletProxyClient(
       compositor_host_queue_(std::move(compositor_host_queue)),
       worklet_id_(worklet_id),
       state_(RunState::kUninitialized),
-      main_thread_runner_(Thread::MainThread()->GetDeprecatedTaskRunner()),
+      main_thread_runner_(std::move(main_thread_runner)),
       paint_worklet_(paint_worklet) {
   DCHECK(IsMainThread());
 }

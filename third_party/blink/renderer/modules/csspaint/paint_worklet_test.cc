@@ -316,7 +316,9 @@ TEST_P(MainOrOffThreadPaintWorkletTest, AllGlobalScopesMustBeCreated) {
       std::make_unique<PaintWorkletPaintDispatcher>();
   Persistent<PaintWorkletProxyClient> proxy_client =
       MakeGarbageCollected<PaintWorkletProxyClient>(
-          1, paint_worklet_to_test, dispatcher->GetWeakPtr(), nullptr);
+          1, paint_worklet_to_test,
+          GetFrame().GetTaskRunner(TaskType::kInternalDefault),
+          dispatcher->GetWeakPtr(), nullptr);
   paint_worklet_to_test->SetProxyClientForTesting(proxy_client);
 
   while (paint_worklet_to_test->NeedsToCreateGlobalScopeForTesting()) {
