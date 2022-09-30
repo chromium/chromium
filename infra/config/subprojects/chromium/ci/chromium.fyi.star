@@ -200,7 +200,7 @@ ci.builder(
     ),
     console_view_entry = [
         consoles.console_view_entry(
-            category = "fuchsia|a64",
+            category = "fuchsia|arm64",
             short_name = "emu-arg",
         ),
     ],
@@ -212,14 +212,14 @@ ci.builder(
     name = "fuchsia-fyi-arm64-rel",
     console_view_entry = [
         consoles.console_view_entry(
-            category = "fuchsia|a64",
+            category = "fuchsia|arm64",
             short_name = "rel",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
             category = "fyi",
-            short_name = "a64",
+            short_name = "arm64",
         ),
     ],
     notifies = ["cr-fuchsia"],
@@ -281,7 +281,7 @@ ci.builder(
     ),
     console_view_entry = [
         consoles.console_view_entry(
-            category = "fuchsia|a64",
+            category = "fuchsia|arm64",
             short_name = "cfv2",
         ),
     ],
