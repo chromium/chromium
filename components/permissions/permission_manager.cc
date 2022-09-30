@@ -292,14 +292,6 @@ void PermissionManager::RequestPermissionsInternal(
       continue;
     }
 
-    auto status = GetPermissionOverrideForDevTools(
-        url::Origin::Create(canonical_requesting_origin), permission);
-    if (status != CONTENT_SETTING_DEFAULT) {
-      response_callback->OnPermissionsRequestResponseStatus(
-          CONTENT_SETTING_ALLOW);
-      continue;
-    }
-
     PermissionContextBase* context = GetPermissionContext(permission);
     DCHECK(context);
 
@@ -602,10 +594,6 @@ PermissionResult PermissionManager::GetPermissionStatusInternal(
 
   GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
       permission, requesting_origin, embedding_origin);
-  auto status = GetPermissionOverrideForDevTools(
-      url::Origin::Create(canonical_requesting_origin), permission);
-  if (status != CONTENT_SETTING_DEFAULT)
-    return PermissionResult(status, PermissionStatusSource::UNSPECIFIED);
   PermissionContextBase* context = GetPermissionContext(permission);
   PermissionResult result = context->GetPermissionStatus(
       render_frame_host, canonical_requesting_origin.DeprecatedGetOriginAsURL(),
@@ -616,42 +604,6 @@ PermissionResult PermissionManager::GetPermissionStatusInternal(
          result.content_setting == CONTENT_SETTING_ASK ||
          result.content_setting == CONTENT_SETTING_BLOCK);
   return result;
-}
-
-ContentSetting PermissionManager::GetPermissionOverrideForDevTools(
-    const url::Origin& origin,
-    ContentSettingsType permission) {
-  auto it = devtools_permission_overrides_.find(origin);
-  if (it == devtools_permission_overrides_.end())
-    it = devtools_permission_overrides_.find(devtools_global_overrides_origin_);
-  if (it == devtools_permission_overrides_.end())
-    return CONTENT_SETTING_DEFAULT;
-
-  auto setting_it = it->second.find(permission);
-  if (setting_it == it->second.end())
-    return CONTENT_SETTING_DEFAULT;
-
-  return setting_it->second;
-}
-
-void PermissionManager::SetPermissionOverridesForDevTools(
-    const absl::optional<url::Origin>& optional_origin,
-    const PermissionOverrides& overrides) {
-  ContentSettingsTypeOverrides result;
-  for (const auto& item : overrides) {
-    ContentSettingsType content_setting =
-        PermissionUtil::PermissionTypeToContentSettingTypeSafe(item.first);
-    if (content_setting != ContentSettingsType::DEFAULT)
-      result[content_setting] =
-          PermissionUtil::PermissionStatusToContentSetting(item.second);
-  }
-  const url::Origin& origin =
-      optional_origin.value_or(devtools_global_overrides_origin_);
-  devtools_permission_overrides_[origin] = std::move(result);
-}
-
-void PermissionManager::ResetPermissionOverridesForDevTools() {
-  devtools_permission_overrides_.clear();
 }
 
 }  // namespace permissions

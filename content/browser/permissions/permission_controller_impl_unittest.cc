@@ -59,12 +59,6 @@ class MockManagerWithRequests : public MockPermissionManager {
        const base::OnceCallback<
            void(const std::vector<blink::mojom::PermissionStatus>&)> callback),
       (override));
-  MOCK_METHOD(void,
-              SetPermissionOverridesForDevTools,
-              (const absl::optional<url::Origin>& origin,
-               const PermissionOverrides& overrides),
-              (override));
-  MOCK_METHOD(void, ResetPermissionOverridesForDevTools, (), (override));
   MOCK_METHOD(bool,
               IsPermissionOverridableByDevTools,
               (PermissionType, const absl::optional<url::Origin>&),
@@ -216,23 +210,6 @@ class PermissionControllerImplTest : public ::testing::Test {
   TestBrowserContext browser_context_;
   std::unique_ptr<PermissionControllerImpl> permission_controller_;
 };
-
-TEST_F(PermissionControllerImplTest, ResettingOverridesForwardsReset) {
-  EXPECT_CALL(*mock_manager(), ResetPermissionOverridesForDevTools());
-  permission_controller()->ResetOverridesForDevTools();
-}
-
-TEST_F(PermissionControllerImplTest, SettingOverridesForwardsUpdates) {
-  auto kTestOrigin = absl::make_optional(url::Origin::Create(GURL(kTestUrl)));
-  EXPECT_CALL(*mock_manager(),
-              SetPermissionOverridesForDevTools(
-                  kTestOrigin, testing::ElementsAre(testing::Pair(
-                                   PermissionType::GEOLOCATION,
-                                   blink::mojom::PermissionStatus::GRANTED))));
-  permission_controller()->SetOverrideForDevTools(
-      kTestOrigin, PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::GRANTED);
-}
 
 TEST_F(PermissionControllerImplTest,
        RequestPermissionsFromCurrentDocumentDelegatesIffMissingOverrides) {

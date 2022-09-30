@@ -147,8 +147,6 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
   void OnDelegatePermissionStatusChange(SubscriptionId subscription_id,
                                         blink::mojom::PermissionStatus status);
-  void UpdateDelegateOverridesForDevTools(
-      const absl::optional<url::Origin>& origin);
 
   DevToolsPermissionOverrides devtools_permission_overrides_;
 

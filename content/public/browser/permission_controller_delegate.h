@@ -23,8 +23,6 @@ class RenderProcessHost;
 
 class CONTENT_EXPORT PermissionControllerDelegate {
  public:
-  using PermissionOverrides = DevToolsPermissionOverrides::PermissionOverrides;
-
   // Identifier for an active subscription.
   using SubscriptionId = base::IdType64<PermissionControllerDelegate>;
 
@@ -130,17 +128,6 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // unsubscribed |subscription_id| or an `is_null()` ID is a no-op.
   virtual void UnsubscribePermissionStatusChange(
       SubscriptionId subscription_id) = 0;
-
-  // Manually overrides default permission settings of delegate, if overrides
-  // are tracked by the delegate. This method should only be called by the
-  // PermissionController owning the delegate.
-  virtual void SetPermissionOverridesForDevTools(
-      const absl::optional<url::Origin>& origin,
-      const PermissionOverrides& overrides) {}
-
-  // Removes overrides that have been set, if any, for all origins. If delegate
-  // does not maintain own permission set, then nothing happens.
-  virtual void ResetPermissionOverridesForDevTools() {}
 
   // Returns whether permission can be overridden by
   // DevToolsPermissionOverrides.

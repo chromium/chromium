@@ -221,7 +221,6 @@ PermissionControllerImpl::SetOverrideForDevTools(
   devtools_permission_overrides_.Set(origin, permission, status);
   NotifyChangedSubscriptions(old_statuses);
 
-  UpdateDelegateOverridesForDevTools(origin);
   return OverrideStatus::kOverrideSet;
 }
 
@@ -246,7 +245,6 @@ PermissionControllerImpl::GrantOverridesForDevTools(
   // notified manually.
   NotifyChangedSubscriptions(old_statuses);
 
-  UpdateDelegateOverridesForDevTools(origin);
   return OverrideStatus::kOverrideSet;
 }
 
@@ -254,27 +252,9 @@ void PermissionControllerImpl::ResetOverridesForDevTools() {
   const auto old_statuses = GetSubscriptionsStatuses();
   devtools_permission_overrides_ = DevToolsPermissionOverrides();
 
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (delegate)
-    delegate->ResetPermissionOverridesForDevTools();
-
   // If any statuses changed because they lost their overrides, the subscribers
   // must be notified manually.
   NotifyChangedSubscriptions(old_statuses);
-}
-
-void PermissionControllerImpl::UpdateDelegateOverridesForDevTools(
-    const absl::optional<url::Origin>& origin) {
-  PermissionControllerDelegate* delegate =
-      browser_context_->GetPermissionControllerDelegate();
-  if (!delegate)
-    return;
-
-  // If no overrides exist, still want to update with "blank" overrides.
-  PermissionOverrides current_overrides =
-      devtools_permission_overrides_.GetAll(origin);
-  delegate->SetPermissionOverridesForDevTools(origin, current_overrides);
 }
 
 void PermissionControllerImpl::RequestPermissions(

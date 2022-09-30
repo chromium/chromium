@@ -183,18 +183,6 @@ class PermissionManager : public KeyedService,
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
-  ContentSetting GetPermissionOverrideForDevTools(
-      const url::Origin& origin,
-      ContentSettingsType permission);
-
-  // content::PermissionControllerDelegate implementation.
-  // For the given |origin|, overrides permissions that belong to |overrides|.
-  // These permissions are in-sync with the PermissionController.
-  void SetPermissionOverridesForDevTools(
-      const absl::optional<url::Origin>& origin,
-      const PermissionOverrides& overrides) override;
-  void ResetPermissionOverridesForDevTools() override;
-
   raw_ptr<content::BrowserContext> browser_context_;
 
   PendingRequestsMap pending_requests_;
@@ -211,11 +199,6 @@ class PermissionManager : public KeyedService,
   SubscriptionTypeCounts subscription_type_counts_;
 
   PermissionContextMap permission_contexts_;
-  using ContentSettingsTypeOverrides =
-      base::flat_map<ContentSettingsType, ContentSetting>;
-  std::map<url::Origin, ContentSettingsTypeOverrides>
-      devtools_permission_overrides_;
-  url::Origin devtools_global_overrides_origin_;
 
   bool is_shutting_down_ = false;
 };
