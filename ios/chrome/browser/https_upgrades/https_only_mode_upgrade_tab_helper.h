@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_HTTPS_ONLY_MODE_UPGRADE_TAB_HELPER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
@@ -71,7 +72,7 @@ class HttpsOnlyModeUpgradeTabHelper
   // allowlisted).
   bool IsHttpAllowedForUrl(const GURL& url) const;
   // Called when the upgrade timer times out.
-  void OnHttpsLoadTimeout();
+  void OnHttpsLoadTimeout(base::WeakPtr<web::WebState> weak_web_state);
   // Stops the current navigation and sets the state so that an upgrade will be
   // started.
   void StopToUpgrade(

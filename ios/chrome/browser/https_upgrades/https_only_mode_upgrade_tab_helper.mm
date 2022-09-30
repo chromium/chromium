@@ -86,7 +86,7 @@ void HttpsOnlyModeUpgradeTabHelper::DidStartNavigation(
     timer_.Start(
         FROM_HERE, service_->GetFallbackDelay(),
         base::BindOnce(&HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout,
-                       base::Unretained(this)));
+                       base::Unretained(this), web_state->GetWeakPtr()));
     return;
   }
   if (state_ == State::kNone) {
@@ -195,10 +195,13 @@ void HttpsOnlyModeUpgradeTabHelper::ResetState() {
   timer_.Stop();
 }
 
-void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout() {
+void HttpsOnlyModeUpgradeTabHelper::OnHttpsLoadTimeout(
+    base::WeakPtr<web::WebState> weak_web_state) {
   DCHECK(state_ == State::kUpgraded);
   state_ = State::kStoppedWithTimeout;
-  web_state()->Stop();
+  if (weak_web_state) {
+    weak_web_state->Stop();
+  }
 }
 
 void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
