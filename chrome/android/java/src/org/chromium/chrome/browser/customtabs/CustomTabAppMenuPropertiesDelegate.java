@@ -23,7 +23,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -69,12 +69,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier, Verifier verifier,
+            ObservableSupplier<BookmarkModel> bookmarkModelSupplier, Verifier verifier,
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
             boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito,
             boolean isStartIconMenu) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, null, bookmarkBridgeSupplier, null);
+                toolbarManager, decorView, null, null, bookmarkModelSupplier, null);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;

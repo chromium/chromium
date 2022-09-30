@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -80,7 +79,6 @@ public class BookmarkSaveFlowTest {
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
     private BookmarkModel mBookmarkModel;
-    private BookmarkBridge mBookmarkBridge;
 
     @Before
     public void setUp() throws ExecutionException {
@@ -95,9 +93,7 @@ public class BookmarkSaveFlowTest {
             mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
             mBookmarkSaveFlowCoordinator = new BookmarkSaveFlowCoordinator(
                     cta, mBottomSheetController, mSubscriptionsManager, mUserEducationHelper);
-            mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
-                    mActivityTestRule.getActivity().getActivityTab().getWebContents()));
-            mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
+            mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
         });
 
         loadBookmarkModel();
@@ -167,7 +163,7 @@ public class BookmarkSaveFlowTest {
             BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
             PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder().setShoppingSpecifics(
                     ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());
-            mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
+            mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
             mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false,
                     /*wasBookmarkMoved=*/false, meta.build());
             return null;
@@ -185,7 +181,7 @@ public class BookmarkSaveFlowTest {
             BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
             PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder().setShoppingSpecifics(
                     ShoppingSpecifics.newBuilder().setProductClusterId(1234L).build());
-            mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
+            mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
             mBookmarkSaveFlowCoordinator.show(
                     id, /*fromHeuristicEntryPoint=*/true, /*wasBookmarkMoved=*/false, meta.build());
             return null;
@@ -203,7 +199,7 @@ public class BookmarkSaveFlowTest {
             BookmarkId id = addBookmark("Test bookmark", new GURL("http://a.com"));
             PowerBookmarkMeta.Builder meta = PowerBookmarkMeta.newBuilder().setShoppingSpecifics(
                     ShoppingSpecifics.newBuilder().setProductClusterId(1234L));
-            mBookmarkBridge.setPowerBookmarkMeta(id, meta.build());
+            mBookmarkModel.setPowerBookmarkMeta(id, meta.build());
             mBookmarkSaveFlowCoordinator.show(id, /*fromHeuristicEntryPoint=*/false,
                     /*wasBookmarkMoved=*/false, meta.build());
             return null;

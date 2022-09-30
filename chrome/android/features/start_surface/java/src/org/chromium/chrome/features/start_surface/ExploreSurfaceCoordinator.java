@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
@@ -83,7 +83,7 @@ public class ExploreSurfaceCoordinator {
                 SurfaceType.START_SURFACE, embeddingSurfaceConstructedTimeNs, swipeRefreshLayout,
                 /*overScrollDisabled=*/true, parentView,
                 new ExploreSurfaceActionDelegate(
-                        snackbarManager, new BookmarkBridge(profile), crowButtonDelegate),
+                        snackbarManager, new BookmarkModel(profile), crowButtonDelegate),
                 HelpAndFeedbackLauncherImpl.getInstance(), tabModelSelector);
 
         mFeedSurfaceCoordinator.getView().setId(R.id.start_surface_explore_view);
@@ -136,9 +136,9 @@ public class ExploreSurfaceCoordinator {
     }
 
     private class ExploreSurfaceActionDelegate extends FeedActionDelegateImpl {
-        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkBridge bookmarkBridge,
+        ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel,
                 CrowButtonDelegate crowButtonDelegate) {
-            super(mActivity, snackbarManager, mExploreSurfaceNavigationDelegate, bookmarkBridge,
+            super(mActivity, snackbarManager, mExploreSurfaceNavigationDelegate, bookmarkModel,
                     crowButtonDelegate);
         }
 

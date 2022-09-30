@@ -1730,7 +1730,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected RootUiCoordinator createRootUiCoordinator() {
         return new TabbedRootUiCoordinator(this, this::onOmniboxFocusChanged,
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
-                mBookmarkBridgeSupplier, mTabBookmarkerSupplier,
+                mBookmarkModelSupplier, mTabBookmarkerSupplier,
                 getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
                 mStartSurfaceSupplier, mTabSwitcherSupplier, mIntentMetadataOneshotSupplier,
                 mLayoutStateProviderSupplier, mStartSurfaceParentTabSupplier,
@@ -1975,7 +1975,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
                 getWindow().getDecorView(), this, mLayoutStateProviderSupplier,
                 ReturnToChromeUtil.isStartSurfaceEnabled(this) ? mStartSurfaceSupplier : null,
-                mBookmarkBridgeSupplier,
+                mBookmarkModelSupplier,
                 ()
                         -> getTabCreator(/*incognito=*/false)
                                    .launchUrl(NewTabPageUtils.encodeNtpUrl(

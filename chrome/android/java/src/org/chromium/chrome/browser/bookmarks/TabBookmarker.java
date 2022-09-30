@@ -27,7 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  */
 public class TabBookmarker {
     private final Activity mActivity;
-    private final Supplier<BookmarkBridge> mBookmarkBridgeSupplier;
+    private final Supplier<BookmarkModel> mBookmarkModelSupplier;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final boolean mIsCustomTab;
@@ -35,18 +35,18 @@ public class TabBookmarker {
     /**
      * Constructor.
      * @param activity The current activity.
-     * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
+     * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * @param bottomSheetControllerSupplier Supplier of the {@link BottomSheetController} for this
      *         activity.
      * @param snackbarManagerSupplier Supplier of the {@link SnackbarManager}.
      * @param isCustomTab Whether this is a custom tab activity.
      */
     public TabBookmarker(@NonNull Activity activity,
-            @NonNull ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier, boolean isCustomTab) {
         mActivity = activity;
-        mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
+        mBookmarkModelSupplier = bookmarkModelSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mIsCustomTab = isCustomTab;
@@ -78,7 +78,7 @@ public class TabBookmarker {
      * @param currentTab The tab being currently shown.
      */
     public void startOrModifyPriceTracking(Tab currentTab) {
-        BookmarkId bookmarkId = mBookmarkBridgeSupplier.get().getUserBookmarkIdForTab(currentTab);
+        BookmarkId bookmarkId = mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab);
         if (bookmarkId == null) {
             addOrEditBookmark(currentTab, BookmarkType.NORMAL, /* fromExplicitTrackUi=*/true);
         } else {
@@ -96,7 +96,7 @@ public class TabBookmarker {
         }
 
         // Defense in depth against the UI being erroneously enabled.
-        BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
+        BookmarkModel bridge = mBookmarkModelSupplier.get();
         if (bridge == null || !bridge.isEditBookmarksEnabled()) {
             assert false;
             return;

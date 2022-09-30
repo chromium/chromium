@@ -136,7 +136,7 @@ public class ReadingListTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
                     mActivityTestRule.getActivity().getActivityTab().getWebContents()));
-            mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
+            mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkModelForTesting();
 
             // Emulate sync disabled so promos are shown.
             when(mSyncService.isSyncRequested()).thenReturn(false);

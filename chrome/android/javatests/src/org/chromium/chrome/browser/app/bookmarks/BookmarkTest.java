@@ -61,7 +61,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkActionBar;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderRow;
 import org.chromium.chrome.browser.bookmarks.BookmarkItemRow;
@@ -80,7 +79,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -154,7 +152,6 @@ public class BookmarkTest {
 
     private BookmarkManager mManager;
     private BookmarkModel mBookmarkModel;
-    private BookmarkBridge mBookmarkBridge;
     private RecyclerView mItemsContainer;
     // Constant but can only be initialized after parameterized test runner setup because this would
     // trigger native load / CommandLineFlag setup.
@@ -182,9 +179,7 @@ public class BookmarkTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkModel = new BookmarkModel(Profile.fromWebContents(
-                    mActivityTestRule.getActivity().getActivityTab().getWebContents()));
-            mBookmarkBridge = mActivityTestRule.getActivity().getBookmarkBridgeForTesting();
+            mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
 
             // Emulate sync disabled so promos are shown.
             when(mSyncService.isSyncRequested()).thenReturn(false);
@@ -287,7 +282,7 @@ public class BookmarkTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         // All actions with BookmarkModel needs to run on UI thread.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkId id = mBookmarkBridge.getUserBookmarkIdForTab(
+            BookmarkId id = mBookmarkModel.getUserBookmarkIdForTab(
                     mActivityTestRule.getActivity().getActivityTabProvider().get());
             Assert.assertTrue("The test page is not added as bookmark: ",
                     mBookmarkModel.doesBookmarkExist(id));
@@ -321,7 +316,7 @@ public class BookmarkTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         // All actions with BookmarkModel needs to run on UI thread.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkId id = mBookmarkBridge.getUserBookmarkIdForTab(
+            BookmarkId id = mBookmarkModel.getUserBookmarkIdForTab(
                     mActivityTestRule.getActivity().getActivityTabProvider().get());
             Assert.assertTrue("The test page is not added as bookmark: ",
                     mBookmarkModel.doesBookmarkExist(id));
@@ -355,7 +350,7 @@ public class BookmarkTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
         // All actions with BookmarkModel needs to run on UI thread.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkId id = mBookmarkBridge.getUserBookmarkIdForTab(
+            BookmarkId id = mBookmarkModel.getUserBookmarkIdForTab(
                     mActivityTestRule.getActivity().getActivityTabProvider().get());
             Assert.assertTrue("The test page is not added as bookmark: ",
                     mBookmarkModel.doesBookmarkExist(id));

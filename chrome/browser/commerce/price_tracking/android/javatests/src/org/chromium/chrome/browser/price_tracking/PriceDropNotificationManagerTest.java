@@ -40,7 +40,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -105,15 +105,15 @@ public class PriceDropNotificationManagerTest {
     private SubscriptionsManagerImpl mMockSubscriptionsManager;
 
     @Mock
-    private BookmarkBridge mMockBookmarkBridge;
+    private BookmarkModel mMockBookmarkModel;
 
     @Before
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create();
-        when(mMockBookmarkBridge.isBookmarkModelLoaded()).thenReturn(true);
-        PriceDropNotificationManagerImpl.setBookmarkBridgeForTesting(mMockBookmarkBridge);
+        when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
+        PriceDropNotificationManagerImpl.setBookmarkModelForTesting(mMockBookmarkModel);
     }
 
     @After

@@ -8,7 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -33,17 +33,17 @@ import org.chromium.url.GURL;
 public class FeedActionDelegateImpl implements FeedActionDelegate {
     private static final String NEW_TAB_URL_HELP = "https://support.google.com/chrome/?p=new_tab";
     private final NativePageNavigationDelegate mNavigationDelegate;
-    private final BookmarkBridge mBookmarkBridge;
+    private final BookmarkModel mBookmarkModel;
     private final Context mActivityContext;
     private final SnackbarManager mSnackbarManager;
     private final CrowButtonDelegate mCrowButtonDelegate;
 
     public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
-            NativePageNavigationDelegate navigationDelegate, BookmarkBridge bookmarkBridge,
+            NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
             CrowButtonDelegate crowButtonDelegate) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
-        mBookmarkBridge = bookmarkBridge;
+        mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
         mCrowButtonDelegate = crowButtonDelegate;
     }
@@ -95,10 +95,10 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
 
     @Override
     public void addToReadingList(String title, String url) {
-        mBookmarkBridge.finishLoadingBookmarkModel(() -> {
+        mBookmarkModel.finishLoadingBookmarkModel(() -> {
             assert ThreadUtils.runningOnUiThread();
             BookmarkUtils.addToReadingList(
-                    new GURL(url), title, mSnackbarManager, mBookmarkBridge, mActivityContext);
+                    new GURL(url), title, mSnackbarManager, mBookmarkModel, mActivityContext);
         });
     }
 

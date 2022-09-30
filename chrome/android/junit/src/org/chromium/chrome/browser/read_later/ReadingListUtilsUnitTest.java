@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,7 +43,7 @@ import java.util.ArrayList;
 @Config(manifest = Config.NONE)
 public class ReadingListUtilsUnitTest {
     @Mock
-    BookmarkBridge mBookmarkModel;
+    BookmarkModel mBookmarkModel;
 
     @Mock
     BookmarkId mBookmarkId;
@@ -190,21 +189,21 @@ public class ReadingListUtilsUnitTest {
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
                 /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
-        BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
-        doReturn(existingBookmark).when(bookmarkBridge).getBookmarkById(existingBookmarkId);
+        BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
+        doReturn(existingBookmark).when(bookmarkModel).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
         doReturn(newBookmarkId)
-                .when(bookmarkBridge)
+                .when(bookmarkModel)
                 .addToReadingList("Test", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
         bookmarks.add(existingBookmarkId);
         ArrayList<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(
-                bookmarkBridge, bookmarks, typeSwappedBookmarks, parentId);
-        verify(bookmarkBridge)
+                bookmarkModel, bookmarks, typeSwappedBookmarks, parentId);
+        verify(bookmarkModel)
                 .addToReadingList("Test", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
-        verify(bookmarkBridge).deleteBookmark(existingBookmarkId);
+        verify(bookmarkModel).deleteBookmark(existingBookmarkId);
         Assert.assertEquals(0, bookmarks.size());
         Assert.assertEquals(1, typeSwappedBookmarks.size());
     }
@@ -219,21 +218,21 @@ public class ReadingListUtilsUnitTest {
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
                 /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
-        BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
-        doReturn(existingBookmark).when(bookmarkBridge).getBookmarkById(existingBookmarkId);
+        BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
+        doReturn(existingBookmark).when(bookmarkModel).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
         doReturn(newBookmarkId)
-                .when(bookmarkBridge)
+                .when(bookmarkModel)
                 .addBookmark(parentId, 0, "Test", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
         bookmarks.add(existingBookmarkId);
         ArrayList<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(
-                bookmarkBridge, bookmarks, typeSwappedBookmarks, parentId);
-        verify(bookmarkBridge)
+                bookmarkModel, bookmarks, typeSwappedBookmarks, parentId);
+        verify(bookmarkModel)
                 .addBookmark(parentId, 0, "Test", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
-        verify(bookmarkBridge).deleteBookmark(existingBookmarkId);
+        verify(bookmarkModel).deleteBookmark(existingBookmarkId);
         Assert.assertEquals(0, bookmarks.size());
         Assert.assertEquals(1, typeSwappedBookmarks.size());
     }
@@ -252,17 +251,17 @@ public class ReadingListUtilsUnitTest {
         BookmarkItem existingBookmark2 = new BookmarkItem(existingBookmarkId2, "Test2",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
                 /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
-        BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
-        doReturn(existingBookmark1).when(bookmarkBridge).getBookmarkById(existingBookmarkId1);
-        doReturn(existingBookmark2).when(bookmarkBridge).getBookmarkById(existingBookmarkId2);
+        BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
+        doReturn(existingBookmark1).when(bookmarkModel).getBookmarkById(existingBookmarkId1);
+        doReturn(existingBookmark2).when(bookmarkModel).getBookmarkById(existingBookmarkId2);
 
         BookmarkId newBookmarkId1 = new BookmarkId(3, BookmarkType.NORMAL);
         doReturn(newBookmarkId1)
-                .when(bookmarkBridge)
+                .when(bookmarkModel)
                 .addBookmark(parentId, 0, "Test1", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
         BookmarkId newBookmarkId2 = new BookmarkId(4, BookmarkType.NORMAL);
         doReturn(newBookmarkId2)
-                .when(bookmarkBridge)
+                .when(bookmarkModel)
                 .addBookmark(parentId, 0, "Test2", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
@@ -270,16 +269,16 @@ public class ReadingListUtilsUnitTest {
         bookmarks.add(existingBookmarkId2);
         ArrayList<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(
-                bookmarkBridge, bookmarks, typeSwappedBookmarks, parentId);
+                bookmarkModel, bookmarks, typeSwappedBookmarks, parentId);
         Assert.assertEquals(0, bookmarks.size());
         Assert.assertEquals(2, typeSwappedBookmarks.size());
 
-        verify(bookmarkBridge)
+        verify(bookmarkModel)
                 .addBookmark(parentId, 0, "Test1", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
-        verify(bookmarkBridge).deleteBookmark(existingBookmarkId1);
-        verify(bookmarkBridge)
+        verify(bookmarkModel).deleteBookmark(existingBookmarkId1);
+        verify(bookmarkModel)
                 .addBookmark(parentId, 0, "Test2", JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
-        verify(bookmarkBridge).deleteBookmark(existingBookmarkId2);
+        verify(bookmarkModel).deleteBookmark(existingBookmarkId2);
     }
 
     @Test
@@ -292,13 +291,13 @@ public class ReadingListUtilsUnitTest {
         BookmarkItem existingBookmark = new BookmarkItem(existingBookmarkId, "Test",
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL), /*isFolder=*/false, /*parent=*/null,
                 /*isEditable=*/true, /*isManaged=*/false, /*dateAdded*/ 0, /*read=*/false);
-        BookmarkBridge bookmarkBridge = Mockito.mock(BookmarkBridge.class);
+        BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
 
         ArrayList<BookmarkId> bookmarks = new ArrayList<>();
         bookmarks.add(existingBookmarkId);
         ArrayList<BookmarkId> typeSwappedBookmarks = new ArrayList<>();
         ReadingListUtils.typeSwapBookmarksIfNecessary(
-                bookmarkBridge, bookmarks, typeSwappedBookmarks, parentId);
+                bookmarkModel, bookmarks, typeSwappedBookmarks, parentId);
         Assert.assertEquals(1, bookmarks.size());
         Assert.assertEquals(0, typeSwappedBookmarks.size());
         Assert.assertEquals(existingBookmarkId, bookmarks.get(0));

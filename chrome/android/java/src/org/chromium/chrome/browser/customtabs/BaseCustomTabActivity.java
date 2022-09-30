@@ -153,7 +153,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         // clang-format off
         mBaseCustomTabRootUiCoordinator = new BaseCustomTabRootUiCoordinator(this,
                 getShareDelegateSupplier(), getActivityTabProvider(), mTabModelProfileSupplier,
-                mBookmarkBridgeSupplier, mTabBookmarkerSupplier,
+                mBookmarkModelSupplier, mTabBookmarkerSupplier,
                 getContextualSearchManagerSupplier(), getTabModelSelectorSupplier(),
                 getBrowserControlsManager(), getWindowAndroid(), getLifecycleDispatcher(),
                 getLayoutManagerSupplier(),
@@ -382,7 +382,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 == BrowserServicesIntentDataProvider.CLOSE_BUTTON_POSITION_END;
         return new CustomTabAppMenuPropertiesDelegate(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), mBookmarkBridgeSupplier, mVerifier,
+                getWindow().getDecorView(), mBookmarkModelSupplier, mVerifier,
                 mIntentDataProvider.getUiType(), mIntentDataProvider.getMenuTitles(),
                 mIntentDataProvider.isOpenedByChrome(),
                 mIntentDataProvider.shouldShowShareMenuItem(),

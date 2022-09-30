@@ -51,7 +51,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceConditions;
@@ -159,7 +159,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock
     public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock
-    public BookmarkBridge mBookmarkBridge;
+    public BookmarkModel mBookmarkModel;
     @Mock
     private IdentityManager mIdentityManagerMock;
     @Mock
@@ -177,7 +177,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             new OneshotSupplierImpl<>();
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
-    private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
+    private ObservableSupplierImpl<BookmarkModel> mBookmarkModelSupplier =
             new ObservableSupplierImpl<>();
     private OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier = new OneshotSupplierImpl<>();
 
@@ -220,13 +220,13 @@ public class AppMenuPropertiesDelegateUnitTest {
         Mockito.when(mManagedBrowserUtilsJniMock.isBrowserManaged(mProfile)).thenReturn(false);
         Mockito.when(mManagedBrowserUtilsJniMock.getBrowserManagerName(mProfile)).thenReturn("");
 
-        mBookmarkBridgeSupplier.set(mBookmarkBridge);
+        mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mLayoutStateProviderSupplier, mStartSurfaceSupplier, mBookmarkBridgeSupplier,
+                mLayoutStateProviderSupplier, mStartSurfaceSupplier, mBookmarkModelSupplier,
                 mIncognitoReauthControllerSupplier));
 
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
@@ -630,7 +630,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemShortcut() {
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
@@ -640,7 +640,7 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void updateBookmarkMenuItemShortcut_fromCCT() {
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
@@ -657,8 +657,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void updateBookmarkMenuItemShortcut_NullBookmarkBridge() {
-        mBookmarkBridgeSupplier.set(null);
+    public void updateBookmarkMenuItemShortcut_NullBookmarkModel() {
+        mBookmarkModelSupplier.set(null);
 
         MenuItem bookmarkMenuItemShortcut = mock(MenuItem.class);
         mAppMenuPropertiesDelegate.updateBookmarkMenuItemShortcut(
@@ -669,7 +669,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     public void updateBookmarkMenuItemRow() {
         setBookmarkItemRowEnabled(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
         MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
@@ -685,7 +685,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         setShoppingListItemRowEnabled(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
         setReadingListItemRowEnabled(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
         MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
@@ -724,9 +724,9 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void updateBookmarkMenuItemRow_NullBookmarkBridge() {
+    public void updateBookmarkMenuItemRow_NullBookmarkModel() {
         setBookmarkItemRowEnabled(true);
-        mBookmarkBridgeSupplier.set(null);
+        mBookmarkModelSupplier.set(null);
 
         MenuItem bookmarkMenuItemAdd = mock(MenuItem.class);
         MenuItem bookmarkMenuItemEdit = mock(MenuItem.class);
@@ -739,7 +739,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     public void updateReadingListMenuItemRow() {
         setReadingListItemRowEnabled(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         MenuItem readingListMenuItemAdd = mock(MenuItem.class);
         MenuItem readingListMenuItemDelete = mock(MenuItem.class);
@@ -762,9 +762,9 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
-    public void updateReadingListMenuItemRow_NullBookmarkBridge() {
+    public void updateReadingListMenuItemRow_NullBookmarkModel() {
         setReadingListItemRowEnabled(true);
-        mBookmarkBridgeSupplier.set(null);
+        mBookmarkModelSupplier.set(null);
 
         MenuItem readingListMenuItemAdd = mock(MenuItem.class);
         MenuItem readingListMenuItemDelete = mock(MenuItem.class);
@@ -778,15 +778,15 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void enablePriceTrackingItemRow() {
         setShoppingListItemRowEnabled(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
-        doReturn(mock(BookmarkId.class)).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
+        doReturn(mock(BookmarkId.class)).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setShoppingSpecifics(
                                 ShoppingSpecifics.newBuilder().setIsPriceTracked(false).build())
                         .build();
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
+        doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
         MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
         MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
@@ -801,15 +801,15 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void enablePriceTrackingItemRow_NullBookmarkId() {
         setShoppingListItemRowEnabled(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
-        doReturn(null).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
+        doReturn(null).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setShoppingSpecifics(
                                 ShoppingSpecifics.newBuilder().setIsPriceTracked(false).build())
                         .build();
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
+        doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
         MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
         MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
@@ -824,14 +824,14 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void enablePriceTrackingItemRow_PriceTrackingEnabled() {
         setShoppingListItemRowEnabled(true);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         BookmarkId bookmarkId = mock(BookmarkId.class);
         List<BookmarkId> allBookmarks = new ArrayList<>();
         allBookmarks.add(bookmarkId);
-        doReturn(bookmarkId).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
+        doReturn(bookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         doReturn(allBookmarks)
-                .when(mBookmarkBridge)
+                .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
         Long clusterId = 1L;
         doReturn(new ShoppingService.ProductInfo("", new GURL(""), clusterId, 0, "", 0, ""))
@@ -845,7 +845,7 @@ public class AppMenuPropertiesDelegateUnitTest {
                                                       .build())
                         .build();
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(meta);
-        doReturn(meta).when(mBookmarkBridge).getPowerBookmarkMeta(any());
+        doReturn(meta).when(mBookmarkModel).getPowerBookmarkMeta(any());
 
         MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
         MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
@@ -861,12 +861,12 @@ public class AppMenuPropertiesDelegateUnitTest {
         setShoppingListItemRowEnabled(true);
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
-        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+        doReturn(true).when(mBookmarkModel).isEditBookmarksEnabled();
 
         BookmarkId bookmarkId = mock(BookmarkId.class);
-        doReturn(bookmarkId).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
+        doReturn(bookmarkId).when(mBookmarkModel).getUserBookmarkIdForTab(any());
         doReturn(new ArrayList<BookmarkId>())
-                .when(mBookmarkBridge)
+                .when(mBookmarkModel)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
 
         MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
@@ -879,13 +879,13 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     @Test
     public void shouldCheckBookmarkStar() {
-        doReturn(true).when(mBookmarkBridge).hasBookmarkIdForTab(mTab);
+        doReturn(true).when(mBookmarkModel).hasBookmarkIdForTab(mTab);
         assertTrue(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
     }
 
     @Test
-    public void shouldCheckBookmarkStar_NullBookmarkBridge() {
-        mBookmarkBridgeSupplier.set(null);
+    public void shouldCheckBookmarkStar_NullBookmarkModel() {
+        mBookmarkModelSupplier.set(null);
         Assert.assertFalse(mAppMenuPropertiesDelegate.shouldCheckBookmarkStar(mTab));
     }
 

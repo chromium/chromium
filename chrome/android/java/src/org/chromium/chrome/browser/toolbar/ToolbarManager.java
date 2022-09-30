@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingControlle
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -215,8 +215,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private ActivityTabProvider.ActivityTabTabObserver mActivityTabTabObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final LocationBarModel mLocationBarModel;
-    private ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
-    private final Callback<BookmarkBridge> mBookmarkBridgeSupplierObserver;
+    private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
+    private final Callback<BookmarkModel> mBookmarkModelSupplierObserver;
     private TemplateUrlServiceObserver mTemplateUrlObserver;
     private LocationBar mLocationBar;
     private FindToolbarManager mFindToolbarManager;
@@ -404,7 +404,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      *                                  of toolbar interaction.
      * @param findToolbarManager The manager for the find in page function.
      * @param profileSupplier Supplier of the currently applicable profile.
-     * @param bookmarkBridgeSupplier Supplier of the bookmark bridge for the current profile.
+     * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * TODO(https://crbug.com/1084528): Use OneShotSupplier once it is ready.
      * @param layoutStateProviderSupplier Supplier of the {@link LayoutStateProvider}.
      * @param tabModelSelectorSupplier Supplier of the {@link TabModelSelector}.
@@ -441,7 +441,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             List<ButtonDataProvider> buttonDataProviders, ActivityTabProvider tabProvider,
             ScrimCoordinator scrimCoordinator, ToolbarActionModeCallback toolbarActionModeCallback,
             FindToolbarManager findToolbarManager, ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @Nullable Supplier<Boolean> canAnimateNativeBrowserControls,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
@@ -532,12 +532,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         mControlContainer = controlContainer;
         assert mControlContainer != null;
 
-        mBookmarkBridgeSupplier = bookmarkBridgeSupplier;
-        // We need to capture a reference to setBookmarkBridge/setCurrentProfile in order to remove
+        mBookmarkModelSupplier = bookmarkModelSupplier;
+        // We need to capture a reference to setBookmarkModel/setCurrentProfile in order to remove
         // them later; there is no guarantee in the JLS that referencing the same method later will
         // reference the same object.
-        mBookmarkBridgeSupplierObserver = this::setBookmarkBridge;
-        mBookmarkBridgeSupplier.addObserver(mBookmarkBridgeSupplierObserver);
+        mBookmarkModelSupplierObserver = this::setBookmarkModel;
+        mBookmarkModelSupplier.addObserver(mBookmarkModelSupplierObserver);
 
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
@@ -684,8 +684,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                     toolbarPageInfo::show, IntentHandler::bringTabToFront,
                     DownloadUtils::isAllowedToDownloadPage, NewTabPageUma::recordOmniboxNavigation,
                     TabWindowManagerSingleton::getInstance,
-                    (url) -> mBookmarkBridgeSupplier.hasValue()
-                            && mBookmarkBridgeSupplier.get().isBookmarked(url),
+                    (url) -> mBookmarkModelSupplier.hasValue()
+                            && mBookmarkModelSupplier.get().isBookmarked(url),
                     () ->
                     {
                         return mToolbar.getCurrentOptionalButtonVariant() ==
@@ -1488,12 +1488,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         if (mTabModelSelector != null) {
             mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         }
-        if (mBookmarkBridgeSupplier != null) {
-            BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
+        if (mBookmarkModelSupplier != null) {
+            BookmarkModel bridge = mBookmarkModelSupplier.get();
             if (bridge != null) bridge.removeObserver(mBookmarksObserver);
 
-            mBookmarkBridgeSupplier.removeObserver(mBookmarkBridgeSupplierObserver);
-            mBookmarkBridgeSupplier = null;
+            mBookmarkModelSupplier.removeObserver(mBookmarkModelSupplierObserver);
+            mBookmarkModelSupplier = null;
         }
         if (mTemplateUrlObserver != null) {
             TemplateUrlServiceFactory.get().removeObserver(mTemplateUrlObserver);
@@ -1906,9 +1906,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void updateBookmarkButtonStatus() {
-        if (mBookmarkBridgeSupplier == null) return;
+        if (mBookmarkModelSupplier == null) return;
         Tab currentTab = mLocationBarModel.getTab();
-        BookmarkBridge bridge = mBookmarkBridgeSupplier.get();
+        BookmarkModel bridge = mBookmarkModelSupplier.get();
         boolean isBookmarked =
                 currentTab != null && bridge != null && bridge.hasBookmarkIdForTab(currentTab);
         boolean editingAllowed =
@@ -2030,9 +2030,9 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
     }
 
-    private void setBookmarkBridge(BookmarkBridge bookmarkBridge) {
-        if (bookmarkBridge == null) return;
-        bookmarkBridge.addObserver(mBookmarksObserver);
+    private void setBookmarkModel(BookmarkModel bookmarkModel) {
+        if (bookmarkModel == null) return;
+        bookmarkModel.addObserver(mBookmarksObserver);
     }
 
     private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {

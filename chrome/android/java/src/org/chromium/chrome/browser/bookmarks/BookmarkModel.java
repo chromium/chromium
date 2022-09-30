@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -46,7 +45,6 @@ public class BookmarkModel extends BookmarkBridge {
         this(Profile.getLastUsedRegularProfile());
     }
 
-    @VisibleForTesting
     public BookmarkModel(Profile profile) {
         super(profile);
     }

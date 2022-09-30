@@ -42,7 +42,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
@@ -173,8 +172,6 @@ public class FeedSurfaceCoordinatorTest {
     private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     private SectionHeaderView mSectionHeaderView;
-    @Mock
-    private BookmarkBridge mBookmarkBridge;
     @Mock
     private FeedActionDelegate mFeedActionDelegate;
 
