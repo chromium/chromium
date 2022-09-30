@@ -1865,8 +1865,16 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetAllStorageKeysUsage) {
   EXPECT_FALSE(usage[storage_key2_index]->last_modified.is_null());
 }
 
+// TODO(crbug.com/1369300): Re-enable test for Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetAllStorageKeysUsageWithPadding \
+  DISABLED_GetAllStorageKeysUsageWithPadding
+#else
+#define MAYBE_GetAllStorageKeysUsageWithPadding \
+  GetAllStorageKeysUsageWithPadding
+#endif
 TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
-       GetAllStorageKeysUsageWithPadding) {
+       MAYBE_GetAllStorageKeysUsageWithPadding) {
   EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
 
   EXPECT_TRUE(Open(bucket_locator1_, "foo"));
