@@ -68,7 +68,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
       base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
       SupportedConfigs supported_configs,
-      bool is_hdr_supported);
+      bool system_hdr_enabled);
 
   D3D11VideoDecoder(const D3D11VideoDecoder&) = delete;
   D3D11VideoDecoder& operator=(const D3D11VideoDecoder&) = delete;
@@ -125,7 +125,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
           get_helper_cb,
       GetD3D11DeviceCB get_d3d11_device_cb,
       SupportedConfigs supported_configs,
-      bool is_hdr_supported);
+      bool system_hdr_enabled);
 
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
@@ -308,7 +308,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   SupportedConfigs supported_configs_;
 
   // Should we assume that we're outputting to an HDR display?
-  bool is_hdr_supported_ = false;
+  bool system_hdr_enabled_ = false;
 
   // Should we use multiple single textures for the decoder output (true) or one
   // texture with multiple array slices (false)?

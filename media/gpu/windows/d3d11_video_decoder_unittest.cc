@@ -204,7 +204,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
             gpu_task_runner_, std::make_unique<NullMediaLog>(),
             gpu_preferences_, gpu_workarounds_, std::move(impl),
             base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>(),
-            get_device_cb, *supported_configs, is_hdr_supported_));
+            get_device_cb, *supported_configs, system_hdr_enabled_));
   }
 
   void InitializeDecoder(const VideoDecoderConfig& config, bool expectSuccess) {
@@ -250,8 +250,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   Microsoft::WRL::ComPtr<DXGIDeviceMock> mock_dxgi_device_;
   Microsoft::WRL::ComPtr<DXGIAdapterMock> mock_dxgi_adapter_;
 
-  // Used by CreateDecoder() to tell D3D11VideoDecoder about HDR support.
-  bool is_hdr_supported_ = true;
+  // Used by CreateDecoder() to tell D3D11VideoDecoder about if HDR is enabled.
+  bool system_hdr_enabled_ = true;
 
   DXGI_ADAPTER_DESC mock_adapter_desc_;
 

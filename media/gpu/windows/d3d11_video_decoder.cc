@@ -94,7 +94,7 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
     base::RepeatingCallback<gpu::CommandBufferStub*()> get_stub_cb,
     D3D11VideoDecoder::GetD3D11DeviceCB get_d3d11_device_cb,
     SupportedConfigs supported_configs,
-    bool is_hdr_supported) {
+    bool system_hdr_enabled) {
   // We create |impl_| on the wrong thread, but we never use it here.
   // Note that the output callback will hop to our thread, post the video
   // frame, and along with a callback that will hop back to the impl thread
@@ -111,7 +111,7 @@ std::unique_ptr<VideoDecoder> D3D11VideoDecoder::Create(
       base::SequenceBound<D3D11VideoDecoderImpl>(
           gpu_task_runner, std::move(cloned_media_log), get_helper_cb),
       get_helper_cb, std::move(get_d3d11_device_cb),
-      std::move(supported_configs), is_hdr_supported));
+      std::move(supported_configs), system_hdr_enabled));
 }
 
 D3D11VideoDecoder::D3D11VideoDecoder(
@@ -123,7 +123,7 @@ D3D11VideoDecoder::D3D11VideoDecoder(
     base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()> get_helper_cb,
     GetD3D11DeviceCB get_d3d11_device_cb,
     SupportedConfigs supported_configs,
-    bool is_hdr_supported)
+    bool system_hdr_enabled)
     : media_log_(std::move(media_log)),
       impl_(std::move(impl)),
       gpu_task_runner_(std::move(gpu_task_runner)),
@@ -134,7 +134,7 @@ D3D11VideoDecoder::D3D11VideoDecoder(
       get_d3d11_device_cb_(std::move(get_d3d11_device_cb)),
       get_helper_cb_(std::move(get_helper_cb)),
       supported_configs_(std::move(supported_configs)),
-      is_hdr_supported_(is_hdr_supported) {
+      system_hdr_enabled_(system_hdr_enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(media_log_);
 }
@@ -256,8 +256,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   texture_selector_ = TextureSelector::Create(
       gpu_preferences_, gpu_workarounds_,
       decoder_configurator_->TextureFormat(),
-      is_hdr_supported_ ? TextureSelector::HDRMode::kSDROrHDR
-                        : TextureSelector::HDRMode::kSDROnly,
+      system_hdr_enabled_ ? TextureSelector::HDRMode::kSDROrHDR
+                          : TextureSelector::HDRMode::kSDROnly,
       &format_checker, video_device_, device_context_, media_log_.get(),
       config_.color_space_info().ToGfxColorSpace(), use_shared_handle);
   if (!texture_selector_)
@@ -812,7 +812,10 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     // order of these calls is important, and we must set the display metadata
     // if we set the stream metadata, else it can crash on some AMD cards.
     if (display_metadata) {
-      if (config_.hdr_metadata() ||
+      // If system hdr is not enabled, don't set metadata can help us avoid
+      // video processor's tone mapping (if gpu vendor is intel), since we
+      // always want to use gfx::ColorTransform do PQ tone-mapping.
+      if ((config_.hdr_metadata() && system_hdr_enabled_) ||
           gpu_workarounds_.use_empty_video_hdr_metadata) {
         // It's okay if this has an empty-initialized metadata.
         picture_buffers_[i]->texture_wrapper()->SetStreamHDRMetadata(
