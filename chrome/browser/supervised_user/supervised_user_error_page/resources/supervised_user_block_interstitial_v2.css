@@ -153,6 +153,7 @@ p {
 
 .custodian-information {
   clear: both;
+  display: flex;
   margin-top: 24px;
 }
 
@@ -163,7 +164,7 @@ p {
       url(default_200_percent/logo_avatar_circle_blue_color.png) 2x);
   float: left;
   height: 40px;
-  margin-right: 11px;
+  margin-inline-end: 12px;
   user-select: none;
   width: 40px;
 }
