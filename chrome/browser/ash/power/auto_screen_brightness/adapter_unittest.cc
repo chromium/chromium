@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -191,10 +190,8 @@ class AdapterTest : public testing::Test {
           ash::prefs::kPowerBatteryScreenBrightnessPercent, 10);
     }
 
-    CHECK(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName("testuser@gmail.com");
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
     profile_builder.SetPrefService(base::WrapUnique(regular_prefs));
 
     profile_ = profile_builder.Build();
@@ -285,7 +282,6 @@ class AdapterTest : public testing::Test {
   }
 
  protected:
-  base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
 
   TestObserver test_observer_;
