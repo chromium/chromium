@@ -38,9 +38,6 @@
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 
-# crbug.com/1061198
--org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.testExportMenuDisabled
-
 # crbug.com/1036556
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
 
