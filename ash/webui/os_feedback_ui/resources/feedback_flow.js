@@ -54,6 +54,7 @@ export const AdditionalContextQueryParam = {
   DESCRIPTION_TEMPLATE: 'description_template',
   EXTRA_DIAGNOSTICS: 'extra_diagnostics',
   CATEGORY_TAG: 'category_tag',
+  PAGE_URL: 'page_url',
 };
 
 /**
@@ -326,6 +327,10 @@ export class FeedbackFlowElement extends PolymerElement {
     const categoryTag = params.get(AdditionalContextQueryParam.CATEGORY_TAG);
     this.feedbackContext_.categoryTag =
         categoryTag ? decodeURIComponent(categoryTag) : '';
+    const pageUrl = params.get(AdditionalContextQueryParam.PAGE_URL);
+    if (pageUrl) {
+      this.feedbackContext_.pageUrl = {url: pageUrl};
+    }
   }
 
   /**

@@ -471,7 +471,7 @@ export function FeedbackFlowTestSuite() {
     assertEquals(1, feedbackServiceProvider.getFeedbackContextCallCount());
   });
 
-  // Test that the extra diagnostics and category tag get set
+  // Test that the extra diagnostics, category tag and page_url get set
   // when query parameter is non-empty.
   test(
       'AdditionalContextParametersProvidedInUrl_FeedbackContext_Matches',
@@ -486,6 +486,8 @@ export function FeedbackFlowTestSuite() {
             description_template);
         const category_tag = 'some%20category%20tag';
         queryParams.set(AdditionalContextQueryParam.CATEGORY_TAG, category_tag);
+        const page_url = 'some%20page%20url';
+        queryParams.set(AdditionalContextQueryParam.PAGE_URL, page_url);
         // Replace current querystring with the new one.
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
@@ -493,7 +495,7 @@ export function FeedbackFlowTestSuite() {
         const descriptionElement = getSearchPage().$['descriptionText'];
 
         const feedbackContext = getFeedbackContext_();
-        assertEquals(fakeFeedbackContext.pageUrl, feedbackContext.pageUrl);
+        assertEquals(page_url, feedbackContext.pageUrl.url);
         assertEquals(fakeFeedbackContext.email, feedbackContext.email);
         assertEquals(
             decodeURIComponent(extra_diagnostics),
@@ -502,9 +504,14 @@ export function FeedbackFlowTestSuite() {
             decodeURIComponent(description_template), descriptionElement.value);
         assertEquals(
             decodeURIComponent(category_tag), feedbackContext.categoryTag);
+
+        // Set the pageUrl in fake feedback context back to its origin value
+        // because it's overwritten by the page_url passed from the app.
+        fakeFeedbackContext.pageUrl = {url: 'chrome://tab/'};
       });
 
-  // Test that the extra diagnostics gets set when query parameter is empty.
+  // Test that the extra diagnostics gets set, and pageUrl uses the one passed
+  // from the feedbackContext when query parameter is empty.
   test(
       'AdditionalContextParametersNotProvidedInUrl_FeedbackContext_UsesDefault',
       async () => {

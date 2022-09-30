@@ -6,6 +6,8 @@
 #include "ash/shell.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "ash/webui/sample_system_web_app_ui/url_constants.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -116,6 +118,12 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OpenFeedbackByHotKey) {
   WaitForTestSystemAppInstall();
   GURL old_url = FindActiveUrl(browser());
 
+  WaitForTestSystemAppInstall();
+
+  feedback_url_ = GURL(base::StrCat(
+      {ash::kChromeUIOSFeedbackUrl, "/?page_url=",
+       base::EscapeQueryParamValue(old_url.spec(), /*use_plus=*/false)}));
+
   content::TestNavigationObserver navigation_observer(feedback_url_);
   navigation_observer.StartWatchingNewWebContents();
   // Try to press keyboard shortcut to open Feedback app.
@@ -123,6 +131,8 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OpenFeedbackByHotKey) {
   navigation_observer.Wait();
 
   ExpectFeedbackAppLaunched(old_url);
+
+  feedback_url_ = GURL(ash::kChromeUIOSFeedbackUrl);
 }
 
 // This test verifies that the Feedback app is not opened when
