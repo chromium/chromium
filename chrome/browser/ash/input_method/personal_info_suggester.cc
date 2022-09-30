@@ -401,11 +401,11 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
 }
 
 int PersonalInfoSuggester::GetPrefValue(const std::string& pref_name) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  auto value = update->FindIntKey(pref_name);
+  auto value = update->FindInt(pref_name);
   if (!value.has_value()) {
-    update->SetIntKey(pref_name, 0);
+    update->Set(pref_name, 0);
     return 0;
   }
   return *value;
@@ -416,9 +416,9 @@ void PersonalInfoSuggester::IncrementPrefValueTilCapped(
     int max_value) {
   int value = GetPrefValue(pref_name);
   if (value < max_value) {
-    DictionaryPrefUpdate update(profile_->GetPrefs(),
+    ScopedDictPrefUpdate update(profile_->GetPrefs(),
                                 prefs::kAssistiveInputFeatureSettings);
-    update->SetIntKey(pref_name, value + 1);
+    update->Set(pref_name, value + 1);
   }
 }
 

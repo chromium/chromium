@@ -615,9 +615,9 @@ TEST_F(PersonalInfoSuggesterTest, AcceptsSuggestionWithUpEnter) {
       /*enabled_features=*/{features::kAssistPersonalInfoEmail},
       /*disabled_features=*/{});
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  update->SetIntKey(kPersonalInfoSuggesterAcceptanceCount, 1);
+  update->Set(kPersonalInfoSuggesterAcceptanceCount, 1);
   suggester_->OnFocus(context_id_);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
@@ -730,10 +730,10 @@ TEST_F(PersonalInfoSuggesterTest, ShowsSettingLink) {
       /*disabled_features=*/{});
   suggester_->OnFocus(context_id_);
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
-  update->RemoveKey(kPersonalInfoSuggesterAcceptanceCount);
+  update->Remove(kPersonalInfoSuggesterShowSettingCount);
+  update->Remove(kPersonalInfoSuggesterAcceptanceCount);
   for (int i = 0; i < kMaxShowSettingCount; i++) {
     suggester_->TrySuggestWithSurroundingText(u"my email is ", 12, 12);
     // Dismiss suggestion.
@@ -753,9 +753,9 @@ TEST_F(PersonalInfoSuggesterTest, DoesntShowSettingLinkAfterAcceptance) {
       /*disabled_features=*/{});
   suggester_->OnFocus(context_id_);
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  update->SetIntKey(kPersonalInfoSuggesterShowSettingCount, 0);
+  update->Set(kPersonalInfoSuggesterShowSettingCount, 0);
 
   suggester_->TrySuggestWithSurroundingText(u"my email is ", 12, 12);
   EXPECT_TRUE(
@@ -774,10 +774,10 @@ TEST_F(PersonalInfoSuggesterTest, ClicksSettingsWithDownDownEnter) {
       /*enabled_features=*/{features::kAssistPersonalInfoEmail},
       /*disabled_features=*/{});
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
-  update->RemoveKey(kPersonalInfoSuggesterAcceptanceCount);
+  update->Remove(kPersonalInfoSuggesterShowSettingCount);
+  update->Remove(kPersonalInfoSuggesterAcceptanceCount);
   suggester_->OnFocus(context_id_);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 
@@ -796,10 +796,10 @@ TEST_F(PersonalInfoSuggesterTest, ClicksSettingsWithUpEnter) {
       /*enabled_features=*/{features::kAssistPersonalInfoEmail},
       /*disabled_features=*/{});
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  update->RemoveKey(kPersonalInfoSuggesterShowSettingCount);
-  update->RemoveKey(kPersonalInfoSuggesterAcceptanceCount);
+  update->Remove(kPersonalInfoSuggesterShowSettingCount);
+  update->Remove(kPersonalInfoSuggesterAcceptanceCount);
   suggester_->OnFocus(context_id_);
   profile_->set_profile_name(base::UTF16ToUTF8(email_));
 

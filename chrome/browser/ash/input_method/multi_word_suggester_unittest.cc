@@ -37,20 +37,17 @@ void SendKeyEvent(MultiWordSuggester* suggester, const ui::DomCode& code) {
 }
 
 void SetFirstAcceptTimeTo(Profile* profile, int days_ago) {
-  DictionaryPrefUpdate update(profile->GetPrefs(),
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
   base::TimeDelta since_epoch = base::Time::Now() - base::Time::UnixEpoch();
-  update->SetIntKey("multi_word_first_accept",
-                    since_epoch.InDaysFloored() - days_ago);
+  update->Set("multi_word_first_accept",
+              since_epoch.InDaysFloored() - days_ago);
 }
 
 absl::optional<int> GetFirstAcceptTime(Profile* profile) {
-  DictionaryPrefUpdate update(profile->GetPrefs(),
+  ScopedDictPrefUpdate update(profile->GetPrefs(),
                               prefs::kAssistiveInputFeatureSettings);
-  auto value = update->FindIntKey("multi_word_first_accept");
-  if (value.has_value())
-    return value.value();
-  return absl::nullopt;
+  return update->FindInt("multi_word_first_accept");
 }
 
 }  // namespace

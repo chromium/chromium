@@ -522,9 +522,9 @@ void MigratePinyinAndZhuyinSettings(PrefService* prefs,
       all_input_method_pref.FindDict(engine_id == "zh-t-i0-pinyin" ? "pinyin"
                                                                    : "zhuyin");
   if (existing_pref_or_null) {
-    DictionaryPrefUpdate update(prefs,
+    ScopedDictPrefUpdate update(prefs,
                                 ::prefs::kLanguageInputMethodSpecificSettings);
-    update->SetPath(engine_id, base::Value(existing_pref_or_null->Clone()));
+    update->SetByDottedPath(engine_id, existing_pref_or_null->Clone());
   }
 }
 
