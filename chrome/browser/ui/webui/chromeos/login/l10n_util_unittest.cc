@@ -25,10 +25,10 @@ namespace chromeos {
 namespace {
 
 void VerifyOnlyUILanguages(const base::Value::List& list) {
-  for (const base::Value& value : list) {
+  for (const auto& value : list) {
     ASSERT_TRUE(value.is_dict());
-    const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    const std::string* code = dict.GetDict().FindString("code");
+    const base::Value::Dict& dict = value.GetDict();
+    const std::string* code = dict.FindString("code");
     ASSERT_TRUE(code);
     EXPECT_NE("ga", *code)
         << "Irish is an example language which has input method "
