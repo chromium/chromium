@@ -34,7 +34,7 @@ class CppChecker(object):
   # This regular expression will be used to extract filenames from include
   # statements.
   _EXTRACT_INCLUDE_PATH = re.compile(
-      r'[ \t]*#[ \t]*(?:include|import)[ \t]+"(.*)"')
+      r'[ \t]*#[ \t]*(?:include|import)[ \t]*"(.*)"')
 
   def __init__(self, verbose, resolve_dotdot=False, root_dir=''):
     self._verbose = verbose
