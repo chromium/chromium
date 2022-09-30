@@ -36,6 +36,24 @@ AppLaunchParams::AppLaunchParams(const std::string& app_id,
       launch_files(files),
       intent(intentPtr ? intentPtr->Clone() : nullptr) {}
 
+AppLaunchParams::AppLaunchParams(const std::string& app_id,
+                                 LaunchContainer container,
+                                 WindowOpenDisposition disposition,
+                                 const GURL& override_url,
+                                 apps::LaunchSource launch_source,
+                                 int64_t display_id,
+                                 const std::vector<base::FilePath>& files,
+                                 const IntentPtr& intentPtr)
+    : app_id(app_id),
+      container(container),
+      disposition(disposition),
+      override_url(override_url),
+      command_line(base::CommandLine::NO_PROGRAM),
+      launch_source(launch_source),
+      display_id(display_id),
+      launch_files(files),
+      intent(intentPtr ? intentPtr->Clone() : nullptr) {}
+
 AppLaunchParams::AppLaunchParams(AppLaunchParams&&) = default;
 AppLaunchParams& AppLaunchParams::operator=(AppLaunchParams&&) = default;
 

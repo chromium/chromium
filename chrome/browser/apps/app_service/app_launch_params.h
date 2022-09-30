@@ -36,6 +36,15 @@ struct AppLaunchParams {
                   const std::vector<base::FilePath>& files,
                   const IntentPtr& intentPtr);
 
+  AppLaunchParams(const std::string& app_id,
+                  LaunchContainer container,
+                  WindowOpenDisposition disposition,
+                  const GURL& override_url,
+                  apps::LaunchSource launch_source,
+                  int64_t display_id,
+                  const std::vector<base::FilePath>& files,
+                  const IntentPtr& intentPtr);
+
   AppLaunchParams(const AppLaunchParams&) = delete;
   AppLaunchParams& operator=(const AppLaunchParams&) = delete;
   AppLaunchParams(AppLaunchParams&&);

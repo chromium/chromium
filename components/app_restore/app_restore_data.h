@@ -87,6 +87,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   absl::optional<int32_t> event_flag;
   absl::optional<int32_t> container;
   absl::optional<int32_t> disposition;
+  absl::optional<GURL> override_url;
   absl::optional<int64_t> display_id;
   absl::optional<std::string> handler_id;
   absl::optional<std::vector<GURL>> urls;

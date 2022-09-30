@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
+#include "chrome/browser/ash/web_applications/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
@@ -2718,8 +2720,13 @@ IN_PROC_BROWSER_TEST_F(ArcAppLaunchHandlerArcAppBrowserTest, RestoreLate) {
 class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     : public SystemWebAppIntegrationTest {
  public:
-  FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() = default;
-  ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override = default;
+  FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() {
+    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(true);
+  }
+
+  ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override {
+    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
+  }
 
   Browser* LaunchSystemWebApp(const GURL& gurl,
                               ash::SystemWebAppType system_app_type,
@@ -2734,6 +2741,25 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     proxy->Launch(
         *GetManager().GetAppIdForSystemApp(system_app_type), ui::EF_NONE,
         launch_source,
+        std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
+
+    navigation_observer.Wait();
+
+    return BrowserList::GetInstance()->GetLastActive();
+  }
+
+  Browser* LaunchSystemWebAppWithOverrideURL(
+      ash::SystemWebAppType system_app_type,
+      const GURL& override_url) {
+    WaitForTestSystemAppInstall();
+
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    content::TestNavigationObserver navigation_observer(override_url);
+    navigation_observer.StartWatchingNewWebContents();
+
+    proxy->LaunchAppWithUrl(
+        *GetManager().GetAppIdForSystemApp(system_app_type), ui::EF_NONE,
+        override_url, apps::LaunchSource::kFromChromeInternal,
         std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId));
 
     navigation_observer.Wait();
@@ -2841,6 +2867,57 @@ IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
       window->GetProperty(::app_restore::kRestoreWindowIdKey);
 
   EXPECT_EQ(window_id, restore_window_id);
+}
+
+// Ensure that Full Restore respects the override URL specified in a SWA's
+// AppLaunchParams if configured to do so.
+IN_PROC_BROWSER_TEST_P(FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest,
+                       LaunchSWAWithRestoreOverrideURL) {
+  const auto swa_type = SystemWebAppType::OS_URL_HANDLER;
+  const auto override_url = GURL(chrome::kChromeUIVersionURL);
+
+  Browser* app_browser =
+      LaunchSystemWebAppWithOverrideURL(swa_type, override_url);
+  ASSERT_TRUE(app_browser);
+  ASSERT_NE(browser(), app_browser);
+
+  // Get the window id.
+  aura::Window* window = app_browser->window()->GetNativeWindow();
+  int32_t window_id = window->GetProperty(::app_restore::kWindowIdKey);
+
+  WaitForAppLaunchInfoSaved();
+
+  // Create FullRestoreAppLaunchHandler.
+  auto app_launch_handler =
+      std::make_unique<FullRestoreAppLaunchHandler>(profile());
+
+  // Close app_browser so that the SWA can be relaunched.
+  web_app::CloseAndWait(app_browser);
+
+  ASSERT_FALSE(HasWindowInfo(window_id));
+
+  content::TestNavigationObserver navigation_observer(override_url);
+  navigation_observer.StartWatchingNewWebContents();
+  SetShouldRestore(app_launch_handler.get());
+  navigation_observer.Wait();
+
+  ASSERT_TRUE(HasWindowInfo(window_id));
+
+  // Get the restored browser for the system web app.
+  Browser* restore_app_browser = GetBrowserForWindowId(window_id);
+  ASSERT_TRUE(restore_app_browser);
+  ASSERT_NE(browser(), restore_app_browser);
+
+  // Get the restore window id.
+  window = restore_app_browser->window()->GetNativeWindow();
+  int32_t restore_window_id =
+      window->GetProperty(::app_restore::kRestoreWindowIdKey);
+
+  EXPECT_EQ(window_id, restore_window_id);
+
+  EXPECT_EQ(override_url, restore_app_browser->tab_strip_model()
+                              ->GetActiveWebContents()
+                              ->GetLastCommittedURL());
 }
 
 // Verify that when the full restore doesn't start, the browser window of the
