@@ -186,8 +186,6 @@ public class SigninFirstRunMediator
         boolean isSigninDisabledByPolicy = false;
         boolean isMetricsReportingDisabledByPolicy = false;
         if (hasPolicies) {
-            assert mDelegate.getNativeInitializationPromise().isFulfilled()
-                : "Must wait for native initialization if enterprise policies were found!";
             isSigninDisabledByPolicy =
                     IdentityServicesProvider.get()
                             .getSigninManager(Profile.getLastUsedRegularProfile())
