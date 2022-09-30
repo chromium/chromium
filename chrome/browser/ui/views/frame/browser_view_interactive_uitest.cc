@@ -209,7 +209,12 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
 }
 
 // Test whether bookmark bar shows up or hides correctly for fullscreen modes.
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_FullscreenShowBookmarkBar DISABLED_FullscreenShowBookmarkBar
+#else
+#define MAYBE_FullscreenShowBookmarkBar FullscreenShowBookmarkBar
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
 
   // If the bookmark bar is not showing, enable showing it so that we can check
