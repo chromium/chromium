@@ -46,7 +46,7 @@ class RenderFrameObserverTracker {
     render_frame_map_.Get()[render_frame] = this;
   }
 
-  RenderFrameObserverTracker<T>(const RenderFrameObserverTracker<T>&) = delete;
+  RenderFrameObserverTracker(const RenderFrameObserverTracker<T>&) = delete;
   RenderFrameObserverTracker<T>& operator=(
       const RenderFrameObserverTracker<T>&) = delete;
 
