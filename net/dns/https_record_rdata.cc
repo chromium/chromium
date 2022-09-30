@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -16,6 +15,7 @@
 
 #include "base/big_endian.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/immediate_crash.h"
 #include "base/memory/ptr_util.h"
@@ -447,8 +447,7 @@ bool ServiceFormHttpsRecordRdata::IsCompatible() const {
 // static
 bool ServiceFormHttpsRecordRdata::IsSupportedKey(uint16_t key) {
 #if DCHECK_IS_ON()
-  return std::find(std::begin(kSupportedKeys), std::end(kSupportedKeys), key) !=
-         std::end(kSupportedKeys);
+  return base::Contains(kSupportedKeys, key);
 #else
   // Only intended for DCHECKs.
   IMMEDIATE_CRASH();

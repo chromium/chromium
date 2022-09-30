@@ -68,6 +68,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -461,7 +462,7 @@ void Job::AttachRequest(
 void Job::DetachRequest(CertNetFetcherURLRequest::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
-  auto it = std::find(requests_.begin(), requests_.end(), request);
+  auto it = base::ranges::find(requests_, request);
   DCHECK(it != requests_.end());
   requests_.erase(it);
 

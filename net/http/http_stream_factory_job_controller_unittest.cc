@@ -4,13 +4,13 @@
 
 #include "net/http/http_stream_factory_job_controller.h"
 
-#include <algorithm>
 #include <list>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -3698,8 +3698,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   quic::ParsedQuicVersion unsupported_version_2 =
       quic::ParsedQuicVersion::Unsupported();
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
-    if (std::find(supported_versions.begin(), supported_versions.end(),
-                  version) != supported_versions.end())
+    if (base::Contains(supported_versions, version))
       continue;
     if (unsupported_version_1 == quic::ParsedQuicVersion::Unsupported()) {
       unsupported_version_1 = version;

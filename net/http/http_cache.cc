@@ -4,7 +4,6 @@
 
 #include "net/http/http_cache.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -21,6 +20,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -936,8 +936,7 @@ void HttpCache::DoneWithEntry(ActiveEntry* entry,
     entry->GetEntry()->CancelSparseIO();
 
   // Transaction is waiting in the done_headers_queue.
-  auto it = std::find(entry->done_headers_queue.begin(),
-                      entry->done_headers_queue.end(), transaction);
+  auto it = base::ranges::find(entry->done_headers_queue, transaction);
   if (it != entry->done_headers_queue.end()) {
     entry->done_headers_queue.erase(it);
 

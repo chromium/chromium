@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_context.h"
 
+#include "base/containers/contains.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_connection_helper.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
@@ -53,8 +54,7 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
       quic::QuicTime::Delta::FromMicroseconds(
           params.max_idle_time_before_crypto_handshake.InMicroseconds()));
   quic::QuicTagVector copt_to_send = params.connection_options;
-  if (std::find(copt_to_send.begin(), copt_to_send.end(), quic::kRVCM) ==
-      copt_to_send.end()) {
+  if (!base::Contains(copt_to_send, quic::kRVCM)) {
     copt_to_send.push_back(quic::kRVCM);
   }
   config.SetConnectionOptionsToSend(copt_to_send);

@@ -4,11 +4,11 @@
 
 #include "net/reporting/reporting_cache.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -129,7 +129,7 @@ class ReportingCacheTest : public ReportingTestBase,
 
     for (const ReportingReport* report : after) {
       // If report isn't in before, we've found the new instance.
-      if (std::find(before.begin(), before.end(), report) == before.end()) {
+      if (!base::Contains(before, report)) {
         EXPECT_EQ(network_isolation_key, report->network_isolation_key);
         EXPECT_EQ(url, report->url);
         EXPECT_EQ(user_agent, report->user_agent);

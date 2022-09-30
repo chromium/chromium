@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -460,8 +461,7 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
 
   // ParseStatusLine adds a normalized status line to raw_headers_
   std::string::const_iterator line_begin = raw_input.begin();
-  std::string::const_iterator line_end =
-      std::find(line_begin, raw_input.end(), '\0');
+  std::string::const_iterator line_end = base::ranges::find(raw_input, '\0');
   // has_headers = true, if there is any data following the status line.
   // Used by ParseStatusLine() to decide if a HTTP/0.9 is really a HTTP/1.0.
   bool has_headers =
@@ -545,10 +545,9 @@ std::string HttpResponseHeaders::GetStatusText() const {
   // '<http_version> SP <response_code>' or
   // '<http_version> SP <response_code> SP <status_text>'.
   std::string status_text = GetStatusLine();
-  std::string::const_iterator begin = status_text.begin();
-  std::string::const_iterator end = status_text.end();
   // Seek to beginning of <response_code>.
-  begin = std::find(begin, end, ' ');
+  std::string::const_iterator begin = base::ranges::find(status_text, ' ');
+  std::string::const_iterator end = status_text.end();
   CHECK(begin != end);
   ++begin;
   CHECK(begin != end);

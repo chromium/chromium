@@ -4,14 +4,13 @@
 
 // NOTE: based loosely on mozilla's nsDataChannel.cpp
 
-#include <algorithm>
-
 #include "net/base/data_url.h"
 
 #include "base/base64.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -64,16 +63,12 @@ bool DataURL::Parse(const GURL& url,
     content = content_string;
   }
 
-  base::StringPiece::const_iterator begin = content.begin();
-  base::StringPiece::const_iterator end = content.end();
-
-  base::StringPiece::const_iterator comma = std::find(begin, end, ',');
-
-  if (comma == end)
+  base::StringPiece::const_iterator comma = base::ranges::find(content, ',');
+  if (comma == content.end())
     return false;
 
   std::vector<base::StringPiece> meta_data =
-      base::SplitStringPiece(base::MakeStringPiece(begin, comma), ";",
+      base::SplitStringPiece(base::MakeStringPiece(content.begin(), comma), ";",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // These are moved to |mime_type| and |charset| on success.
@@ -134,7 +129,7 @@ bool DataURL::Parse(const GURL& url,
     // spaces itself, anyways. Should we just trim leading spaces instead?
     // Allowing random intermediary spaces seems unnecessary.
 
-    auto raw_body = base::MakeStringPiece(comma + 1, end);
+    auto raw_body = base::MakeStringPiece(comma + 1, content.end());
 
     // For base64, we may have url-escaped whitespace which is not part
     // of the data, and should be stripped. Otherwise, the escaped whitespace

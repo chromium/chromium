@@ -4,7 +4,6 @@
 
 #include "net/dns/host_resolver_manager.h"
 
-#include <algorithm>
 #include <cmath>
 #include <iterator>
 #include <limits>
@@ -1990,8 +1989,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // available and |fallback_only| is false, a job that is currently running an
   // insecure DnsTask will be completed with |error|.
   void AbortInsecureDnsTask(int error, bool fallback_only) {
-    bool has_system_fallback = std::find(tasks_.begin(), tasks_.end(),
-                                         TaskType::SYSTEM) != tasks_.end();
+    bool has_system_fallback = base::Contains(tasks_, TaskType::SYSTEM);
     if (has_system_fallback) {
       for (auto it = tasks_.begin(); it != tasks_.end();) {
         if (*it == TaskType::DNS)

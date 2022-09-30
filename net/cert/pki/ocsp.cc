@@ -4,9 +4,8 @@
 
 #include "net/cert/pki/ocsp.h"
 
-#include <algorithm>
-
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/cert/asn1_util.h"
@@ -590,14 +589,9 @@ scoped_refptr<ParsedCertificate> OCSPParseCertificate(base::StringPiece der) {
   // part of the extended key usage extension.
   if (!responder_certificate->has_extended_key_usage())
     return false;
-  const std::vector<der::Input>& ekus =
-      responder_certificate->extended_key_usage();
-  if (std::find(ekus.begin(), ekus.end(), der::Input(kOCSPSigning)) ==
-      ekus.end()) {
-    return false;
-  }
 
-  return true;
+  return base::Contains(responder_certificate->extended_key_usage(),
+                        der::Input(kOCSPSigning));
 }
 
 [[nodiscard]] bool VerifyOCSPResponseSignatureGivenCert(

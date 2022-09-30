@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/log/net_log_values.h"
@@ -104,7 +105,7 @@ void NetLog::RemoveObserver(NetLog::ThreadSafeObserver* observer) {
 
   DCHECK_EQ(this, observer->net_log_);
 
-  auto it = std::find(observers_.begin(), observers_.end(), observer);
+  auto it = base::ranges::find(observers_, observer);
   DCHECK(it != observers_.end());
   observers_.erase(it);
 
@@ -132,8 +133,7 @@ void NetLog::RemoveCaptureModeObserver(
   DCHECK_EQ(this, observer->net_log_);
   DCHECK(HasCaptureModeObserver(observer));
 
-  auto it = std::find(capture_mode_observers_.begin(),
-                      capture_mode_observers_.end(), observer);
+  auto it = base::ranges::find(capture_mode_observers_, observer);
   DCHECK(it != capture_mode_observers_.end());
   capture_mode_observers_.erase(it);
 

@@ -10,8 +10,7 @@
 #include <stdlib.h>
 #endif
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
@@ -73,9 +72,7 @@ bool ConvertBytesToDottedString(const der::Input& policy_oid,
 
 bool EVRootCAMetadata::IsEVPolicyOID(PolicyOID policy_oid) const {
   for (const auto& ev_root : kEvRootCaMetadata) {
-    if (std::find(std::begin(ev_root.policy_oids),
-                  std::end(ev_root.policy_oids),
-                  policy_oid) != std::end(ev_root.policy_oids)) {
+    if (base::Contains(ev_root.policy_oids, policy_oid)) {
       return true;
     }
   }
@@ -100,9 +97,7 @@ bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
   for (const auto& ev_root : kEvRootCaMetadata) {
     if (fingerprint != ev_root.fingerprint)
       continue;
-    return std::find(std::begin(ev_root.policy_oids),
-                     std::end(ev_root.policy_oids),
-                     policy_oid) != std::end(ev_root.policy_oids);
+    return base::Contains(ev_root.policy_oids, policy_oid);
   }
 
   auto it = extra_cas_.find(fingerprint);
