@@ -22,6 +22,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -37,6 +38,7 @@ using chromeos::network_config::mojom::NetworkType;
 
 const char kStubCellularDevicePath[] = "/device/stub_cellular_device";
 const char kStubCellularDeviceName[] = "stub_cellular_device";
+const char kCellularNetworkGuid[] = "cellular_guid";
 
 class FakeNetworkDetailedNetworkViewDelegate
     : public NetworkDetailedNetworkView::Delegate {
@@ -141,12 +143,33 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void AddCellularNetwork() {
+    const std::string cellular_path =
+        network_state_helper()->ConfigureService(base::StringPrintf(
+            R"({"GUID": "%s", "Type": "cellular", "Technology": "LTE",
+            "State": "idle"})",
+            kCellularNetworkGuid));
+
+    network_state_helper()->SetServiceProperty(
+        cellular_path, std::string(shill::kDeviceProperty),
+        base::Value(kStubCellularDevicePath));
+    network_state_helper()->SetServiceProperty(
+        cellular_path, std::string(shill::kStateProperty),
+        base::Value(shill::kStateOnline));
+    base::RunLoop().RunUntilIdle();
+  }
+
   NetworkListNetworkItemView* AddNetworkListItem() {
     return network_detailed_network_view()->AddNetworkListItem();
   }
 
   void NotifyNetworkListChanged() {
     network_detailed_network_view()->NotifyNetworkListChanged();
+  }
+
+  views::Button* FindSettingsButton() {
+    return FindViewById<views::Button*>(
+        NetworkDetailedView::NetworkDetailedViewChildId::kSettingsButton);
   }
 
   NetworkListWifiHeaderView* AddWifiSectionHeader() {
@@ -170,6 +193,12 @@ class NetworkDetailedNetworkViewTest : public AshTestBase {
   }
 
  private:
+  template <class T>
+  T FindViewById(NetworkDetailedView::NetworkDetailedViewChildId id) {
+    return static_cast<T>(
+        network_detailed_network_view_->GetViewByID(static_cast<int>(id)));
+  }
+
   NetworkDetailedNetworkViewImpl* network_detailed_network_view() {
     return network_detailed_network_view_;
   }
@@ -229,6 +258,26 @@ TEST_F(NetworkDetailedNetworkViewTest, ListItemClicked) {
       session_manager::SessionState::LOCKED);
   LeftClickOn(network_list_item);
   EXPECT_EQ(1u, delegate()->network_list_item_selected_count());
+}
+
+TEST_F(NetworkDetailedNetworkViewTest, SettingsButton) {
+  views::Button* settings_button = FindSettingsButton();
+
+  EXPECT_TRUE(settings_button->GetEnabled());
+
+  // When in OOBE and no active networks are available settings button is
+  // disabled.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+  NotifyNetworkListChanged();
+
+  EXPECT_FALSE(settings_button->GetEnabled());
+
+  // Add a network and check settings button state. When an active network
+  // is present settings button should be enabled.
+  AddCellularNetwork();
+  NotifyNetworkListChanged();
+  EXPECT_TRUE(settings_button->GetEnabled());
 }
 
 }  // namespace ash

@@ -5,11 +5,14 @@
 #include "ash/system/network/network_detailed_network_view_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/system/network/network_detailed_view.h"
 #include "ash/system/network/network_list_mobile_header_view_impl.h"
 #include "ash/system/network/network_list_network_item_view.h"
 #include "ash/system/network/network_list_wifi_header_view_impl.h"
 #include "ash/system/network/network_utils.h"
+#include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -31,6 +34,22 @@ NetworkDetailedNetworkViewImpl::~NetworkDetailedNetworkViewImpl() = default;
 void NetworkDetailedNetworkViewImpl::NotifyNetworkListChanged() {
   scroll_content()->InvalidateLayout();
   Layout();
+
+  if (!settings_button())
+    return;
+
+  if (Shell::Get()->session_controller()->login_status() ==
+      LoginStatus::NOT_LOGGED_IN) {
+    // When not logged in, only enable the settings button if there is a
+    // default (i.e. connected or connecting) network to show settings for.
+    settings_button()->SetEnabled(model()->default_network());
+  } else {
+    // Otherwise, enable if showing settings is allowed. There are situations
+    // (supervised user creation flow) when the session is started but UI flow
+    // continues within login UI, i.e., no browser window is yet available.
+    settings_button()->SetEnabled(
+        Shell::Get()->session_controller()->ShouldEnableSettings());
+  }
 }
 
 views::View* NetworkDetailedNetworkViewImpl::GetAsView() {
