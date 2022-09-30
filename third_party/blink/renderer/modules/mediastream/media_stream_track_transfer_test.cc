@@ -7,13 +7,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_mojo_media_stream_dispatcher_host.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -106,14 +110,13 @@ class ScopedMockUserMediaClient {
   Persistent<UserMediaClient> original_;
 };
 
-TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredState) {
-  V8TestingScope scope;
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
-
+MediaStreamTrack::TransferredValues TransferredValuesTabCaptureVideo() {
   // The TransferredValues here match the expectations in
   // V8ScriptValueSerializerForModulesTest.TransferMediaStreamTrack. Please keep
   // them in sync.
-  MediaStreamTrack::TransferredValues data{
+  return MediaStreamTrack::TransferredValues{
+      .track_impl_subtype =
+          BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo(),
       .session_id = base::UnguessableToken::Create(),
       .transfer_id = base::UnguessableToken::Create(),
       .kind = "video",
@@ -122,23 +125,45 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredState) {
       .enabled = false,
       .muted = true,
       .content_hint = WebMediaStreamTrack::ContentHintType::kVideoMotion,
-      .ready_state = MediaStreamSource::kReadyStateLive};
+      .ready_state = MediaStreamSource::kReadyStateLive,
+      .crop_version = 0};
+}
 
-  ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
-
+mojom::blink::StreamDevices DevicesTabCaptureVideo(
+    base::UnguessableToken session_id) {
   MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
                            "device_id", "device_name");
-  device.set_session_id(data.session_id);
+  device.set_session_id(session_id);
   device.display_media_info = media::mojom::DisplayMediaInformation::New(
       media::mojom::DisplayCaptureSurfaceType::BROWSER,
       /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
       /*capture_handle=*/nullptr);
+  return {absl::nullopt, device};
+}
+
+TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
+
+  auto data = TransferredValuesTabCaptureVideo();
+#if BUILDFLAG(IS_ANDROID)
+  data.track_impl_subtype = MediaStreamTrack::GetStaticWrapperTypeInfo();
+  data.crop_version = absl::nullopt;
+#endif
   scoped_user_media_client.mock_media_stream_dispatcher_host.SetStreamDevices(
-      {absl::nullopt, device});
+      DevicesTabCaptureVideo(data.session_id));
 
   auto* new_track =
       MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);
 
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(new_track->GetWrapperTypeInfo(),
+            MediaStreamTrack::GetStaticWrapperTypeInfo());
+#else
+  EXPECT_EQ(new_track->GetWrapperTypeInfo(),
+            BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo());
+#endif
   EXPECT_EQ(new_track->Component()->GetSourceName(), "device_name");
   // TODO(crbug.com/1288839): the ID needs to be set correctly
   // EXPECT_EQ(new_track->id(), "component_id");
@@ -158,6 +183,75 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredState) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateFocus) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
+
+  auto data = TransferredValuesTabCaptureVideo();
+  scoped_user_media_client.mock_media_stream_dispatcher_host.SetStreamDevices(
+      DevicesTabCaptureVideo(data.session_id));
+
+  auto* new_track_super =
+      MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);
+
+  ASSERT_EQ(new_track_super->GetWrapperTypeInfo(),
+            BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo());
+  auto* new_track =
+      static_cast<BrowserCaptureMediaStreamTrack*>(new_track_super);
+
+  // Calling focus() should throw an exception.
+  ScriptState::Scope script_scope(ToScriptStateForMainWorld(&scope.GetFrame()));
+  auto* execution_context = scope.GetExecutionContext();
+  ExceptionState exception_state(execution_context->GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "focus");
+  new_track->focus(
+      execution_context,
+      V8CaptureStartFocusBehavior(
+          V8CaptureStartFocusBehavior::Enum::kFocusCapturedSurface),
+      exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  DOMException* dom_exception = V8DOMException::ToImplWithTypeCheck(
+      execution_context->GetIsolate(), exception_state.GetException());
+  ASSERT_TRUE(dom_exception);
+  EXPECT_EQ(dom_exception->name(), "InvalidStateError");
+  exception_state.ClearException();
+
+  platform->RunUntilIdle();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST(MediaStreamTrackTransferTest,
+     TabCaptureVideoFromTransferredStateConditionalFocus) {
+  ScopedConditionalFocusForTest conditional_focus(true);
+  // RegionCapture overrides ConditionalFocus, so we turn it off here to test
+  // FocusableMediaStreamTrack.
+  ScopedRegionCaptureForTest region_capture(false);
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScopedMockUserMediaClient scoped_user_media_client(&scope.GetWindow());
+
+  auto data = TransferredValuesTabCaptureVideo();
+  data.track_impl_subtype =
+      FocusableMediaStreamTrack::GetStaticWrapperTypeInfo();
+  data.crop_version = absl::nullopt;
+  scoped_user_media_client.mock_media_stream_dispatcher_host.SetStreamDevices(
+      DevicesTabCaptureVideo(data.session_id));
+
+  auto* new_track =
+      MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);
+  EXPECT_EQ(new_track->GetWrapperTypeInfo(),
+            FocusableMediaStreamTrack::GetStaticWrapperTypeInfo());
+
+  platform->RunUntilIdle();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+// TODO(crbug.com/1288839): implement and test transferred crop version
+
 TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
   V8TestingScope scope;
 
@@ -165,6 +259,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
   // V8ScriptValueSerializerForModulesTest.TransferAudioMediaStreamTrack. Please
   // keep them in sync.
   MediaStreamTrack::TransferredValues data{
+      .track_impl_subtype = MediaStreamTrack::GetStaticWrapperTypeInfo(),
       .session_id = base::UnguessableToken::Create(),
       .transfer_id = base::UnguessableToken::Create(),
       .kind = "audio",
@@ -190,6 +285,8 @@ TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
   auto* new_track =
       MediaStreamTrack::FromTransferredState(scope.GetScriptState(), data);
 
+  EXPECT_EQ(new_track->GetWrapperTypeInfo(),
+            MediaStreamTrack::GetStaticWrapperTypeInfo());
   EXPECT_EQ(new_track->Component()->GetSourceName(), "device_name");
   // TODO(crbug.com/1288839): the ID needs to be set correctly
   // EXPECT_EQ(new_track->id(), "component_id");

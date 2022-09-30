@@ -58,6 +58,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   // For carrying data to the FromTransferredState method.
   struct TransferredValues {
+    const WrapperTypeInfo* track_impl_subtype;
     base::UnguessableToken session_id;
     base::UnguessableToken transfer_id;
     String kind;
@@ -67,6 +68,9 @@ class MODULES_EXPORT MediaStreamTrack
     bool muted;
     WebMediaStreamTrack::ContentHintType content_hint;
     MediaStreamSource::ReadyState ready_state;
+    // Set only if
+    // track_impl_subtype->IsSubclass(BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo())
+    absl::optional<uint32_t> crop_version;
   };
 
   // See SetFromTransferredStateImplForTesting in ./test/transfer_test_utils.h.

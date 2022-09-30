@@ -108,7 +108,22 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
   request->SetTransferData(data.session_id, data.transfer_id,
                            transferred_media_stream_track);
   request->Start();
-  return transferred_media_stream_track;
+
+  // TODO(1288839): get rid of TransferredMediaStreamTrack, since it's just a
+  // container for the impl track
+  auto* track = transferred_media_stream_track->track();
+  // TODO(1288839): What happens if GetOpenDevice fails?
+  DCHECK(track);
+  // TODO(1288839): make track_impl_subtype required
+  if (data.track_impl_subtype &&
+      track->GetWrapperTypeInfo() != data.track_impl_subtype) {
+    NOTREACHED() << "transferred track should be "
+                 << data.track_impl_subtype->interface_name
+                 << " but instead it is "
+                 << track->GetWrapperTypeInfo()->interface_name;
+    return nullptr;
+  }
+  return track;
 }
 
 // static

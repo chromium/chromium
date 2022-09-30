@@ -158,6 +158,11 @@ MediaStream::MediaStream(ExecutionContext* context,
     if (transferred_track) {
       DCHECK(!transferred_track->HasImplementation());
       transferred_track->SetImplementation(new_track);
+#if !BUILDFLAG(IS_ANDROID)
+      // The window of opportunity for focus is closed for all transferred
+      // tracks.
+      new_track->CloseFocusWindowOfOpportunity();
+#endif
     }
   }
 
