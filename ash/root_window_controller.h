@@ -262,7 +262,8 @@ class ASH_EXPORT RootWindowController {
   // Initializes the RootWindowController based on |root_window_type|.
   void Init(RootWindowType root_window_type);
 
-  void InitLayoutManagers();
+  void InitLayoutManagers(
+      std::unique_ptr<RootWindowLayoutManager> root_window_layout_manager);
 
   AccessibilityPanelLayoutManager* GetAccessibilityPanelLayoutManager() const;
 

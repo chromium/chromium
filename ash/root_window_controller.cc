@@ -959,10 +959,14 @@ void RootWindowController::Init(RootWindowType root_window_type) {
       root_window->SetEventTargeter(std::make_unique<RootWindowTargeter>());
   DCHECK(!old_targeter);
 
+  std::unique_ptr<RootWindowLayoutManager> root_window_layout_manager =
+      std::make_unique<RootWindowLayoutManager>(root_window);
+  root_window_layout_manager_ = root_window_layout_manager.get();
+
   CreateContainers();
   CreateSystemWallpaper(root_window_type);
 
-  InitLayoutManagers();
+  InitLayoutManagers(std::move(root_window_layout_manager));
   InitTouchHuds();
 
   // `shelf_` was created in the constructor.
@@ -1005,14 +1009,15 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   }
 }
 
-void RootWindowController::InitLayoutManagers() {
+void RootWindowController::InitLayoutManagers(
+    std::unique_ptr<RootWindowLayoutManager> root_window_layout_manager) {
   // Create the shelf and status area widgets. Creates the ShelfLayoutManager
   // as a side-effect.
   DCHECK(!shelf_->shelf_widget());
   aura::Window* root = GetRootWindow();
   shelf_->CreateShelfWidget(root);
 
-  root->SetLayoutManager(root_window_layout_manager_);
+  root->SetLayoutManager(std::move(root_window_layout_manager));
 
   for (auto* container : desks_util::GetDesksContainers(root)) {
     // Installs WorkspaceLayoutManager on the container.
@@ -1063,8 +1068,10 @@ void RootWindowController::InitLayoutManagers() {
 }
 
 void RootWindowController::CreateContainers() {
+  // CreateContainer() depends on root_window_layout_manager_.
+  DCHECK(root_window_layout_manager_);
+
   aura::Window* root = GetRootWindow();
-  root_window_layout_manager_ = new RootWindowLayoutManager(root);
 
   // Add a NOT_DRAWN layer in between the root_window's layer and its current
   // children so that we only need to initiate two LayerAnimationSequences for
