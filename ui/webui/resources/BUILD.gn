@@ -158,10 +158,7 @@ checked_in_dts_files = [
 ]
 
 if (is_chromeos_ash) {
-  checked_in_dts_files += [
-    "cr_elements/cr_container_shadow_behavior.d.ts",
-    "js/list_property_update_behavior.d.ts",
-  ]
+  checked_in_dts_files += [ "cr_elements/cr_container_shadow_behavior.d.ts" ]
 }
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are

@@ -105,7 +105,6 @@ if (include_js_tests) {
       "ntp4.js",
       "password_manager/password_manager_browsertest.js",
       "privacy_sandbox/privacy_sandbox_dialog_browsertest.js",
-      "resources/webui_resources_browsertest.js",
       "sandboxstatus_browsertest.js",
       "settings/a11y/a11y_browsertest.js",
       "settings/cr_settings_browsertest.js",
@@ -159,6 +158,7 @@ if (include_js_tests) {
         "../../../browser/ui/webui/chromeos/certificate_manager_dialog_browsertest.js",
         "chromeos/account_manager/account_manager_browsertest.js",
         "chromeos/arc_account_picker/arc_account_picker_browsertest.js",
+        "chromeos/ash_common/ash_common_resources_browsertest.js",
         "chromeos/ash_common/post_message_api/post_message_api_browsertest.js",
         "chromeos/edu_coexistence/edu_coexistence_browsertest.js",
         "chromeos/emoji_picker/emoji_picker_browsertest.js",
@@ -454,7 +454,7 @@ ts_library("build_ts") {
   if (is_chromeos_ash) {
     in_files += [
       "cr_focus_row_behavior_test.ts",
-      "resources/list_property_update_behavior_tests.ts",
+      "chromeos/ash_common/list_property_update_behavior_tests.ts",
     ]
   }
 

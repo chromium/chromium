@@ -78,11 +78,6 @@ preprocess_if_expr("preprocess_src") {
     in_files += [ "os_about.js" ]
   }
 
-  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
-  if (is_chromeos_ash) {
-    in_files += [ "list_property_update_behavior.js" ]
-  }
-
   if (is_ios) {
     in_files += [
       "ios/mojo_api.js",
@@ -139,7 +134,6 @@ js_type_check("js_resources_modules") {
     ":cr.m",
     ":event_tracker",
     ":icon",
-    ":list_property_update_behavior",
     ":load_time_data.m",
     ":parse_html_subset",
     ":plural_string_proxy",
@@ -165,12 +159,6 @@ js_library("event_tracker") {
 
 js_library("icon") {
   deps = [ ":cr.m" ]
-}
-
-js_library("list_property_update_behavior") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
 }
 
 js_library("load_time_data.m") {

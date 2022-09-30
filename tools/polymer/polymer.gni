@@ -15,7 +15,6 @@ common_auto_imports = [
   "ui/webui/resources/html/cr/ui/focus_outline_manager.html|FocusOutlineManager",
   "ui/webui/resources/html/cr/ui/focus_row_behavior.html|FocusRowBehavior",
   "ui/webui/resources/html/cr/ui/focus_without_ink_js.html|focusWithoutInk",
-  "ui/webui/resources/html/list_property_update_behavior.html|ListPropertyUpdateBehavior",
   "ui/webui/resources/html/load_time_data.html|loadTimeData",
   "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
   "ui/webui/resources/html/polymer.html|Polymer,html",

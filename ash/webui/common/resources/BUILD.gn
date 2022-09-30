@@ -109,6 +109,7 @@ non_web_component_files = [
   "focus_row_behavior.js",
   "focus_without_ink_js.js",
   "keyboard_shortcut_list_js.js",
+  "list_property_update_behavior.js",
   "multidevice_setup/fake_mojo_service.js",
   "multidevice_setup/mojo_api.js",
   "multidevice_setup/multidevice_setup_browser_proxy.js",
@@ -303,6 +304,7 @@ checked_in_dts_files = [
   "focus_row_behavior.d.ts",
   "keyboard_diagram.d.ts",
   "keyboard_key.d.ts",
+  "list_property_update_behavior.d.ts",
 
   "page_toolbar.d.ts",
   "navigation_view_panel.d.ts",
@@ -398,6 +400,7 @@ js_type_check("closure_compile_local") {
     ":keyboard_key",
     ":keyboard_layouts",
     ":keyboard_shortcut_list_js",
+    ":list_property_update_behavior",
     ":mojo_utils",
     ":navigation_selector",
     ":navigation_view_panel",
@@ -458,6 +461,12 @@ js_library("keyboard_layouts") {
 }
 
 js_library("keyboard_shortcut_list_js") {
+}
+
+js_library("list_property_update_behavior") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
 }
 
 js_library("mojo_utils") {
