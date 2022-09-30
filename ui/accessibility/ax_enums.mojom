@@ -1194,16 +1194,48 @@ enum SortDirection {
   kOther,
 };
 
+// The source of the accessible name. The source can influence which platform
+// accessibility API is used to expose the name (e.g. label versus title).
+// It can also impact whether or not whitespace is inserted between objects
+// (e.g. when the name of some other object should be constructed from a
+// container's children).
 enum NameFrom {
+  // No name has been provided. (See also kAttributeExplicitlyEmpty)
   kNone,
-  kAttribute,  // E.g. aria-label.
+
+  // The name comes from a flat string which is typically not displayed,
+  // such as aria-label (in the case of web content) or provided by the
+  // View.
+  kAttribute,
+
+  // The name has been removed to improve accessibility. Example: The name of
+  // this View is the same as the name of the View's parent, causing screen
+  // readers to speak the name twice. In order to prevent that, the name can
+  // be removed from one View. Note that as a general rule, the name should
+  // not be removed from the interactive/focusable View.
   kAttributeExplicitlyEmpty,
-  kCaption,  // E.g. in the case of a table, from a caption element.
+
+  // The name of this table comes from the table's caption.
+  kCaption,
+
+  // The name comes from the displayed text contents. This is appropriate for
+  // labels, links, static text nodes, etc. It is typically not appropriate for
+  // text fields.
   kContents,
-  kPlaceholder,  // E.g. from an HTML placeholder attribute on a text field.
-  kRelatedElement, // E.g. from a figcaption Element in a figure.
-  kTitle,  // E.g. <input type="text" title="title">.
-  kValue,  // E.g. <input type="button" value="Button's name">.
+
+  // The name of this text field comes from its placeholder.
+  kPlaceholder,
+
+  // The name comes from some other object in the content or UI, such as
+  // the figcaption element in a figure, or another View present in the UI.
+  kRelatedElement,
+
+  // The name comes from the title attribute (HTML), the title element (SVG),
+  // or a View's tooltip.
+  kTitle,
+
+  // The name comes from the value attribute, such as in a button element.
+  kValue,
 };
 
 // The source of the accessible description. Used by some screen readers

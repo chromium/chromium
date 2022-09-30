@@ -3523,6 +3523,12 @@ TEST_F(TextfieldTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   const std::string& name =
       data.GetStringAttribute(ax::mojom::StringAttribute::kName);
   EXPECT_EQ(test_tooltip_text, base::ASCIIToUTF16(name));
+
+  // `NameFrom::kAttribute` is appropriate when the name is explicitly set to
+  // a developer-provided string (rather than a label, tooltip, or placeholder
+  // for which there are other `NameFrom` values). `NameFrom::kContents` is
+  // typically not an appropriate value.
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttribute);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

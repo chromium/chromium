@@ -949,7 +949,7 @@ void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTextField;
 
   node_data->SetName(accessible_name_);
-  node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
+  node_data->SetNameFrom(ax::mojom::NameFrom::kAttribute);
 
   // Editable state indicates support of editable interface, and is always set
   // for a textfield, even if disabled or readonly.
