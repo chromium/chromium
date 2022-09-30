@@ -257,9 +257,11 @@ BASE_FEATURE(kShowUPMErrorNotification,
 
 // Enables the experiment to automatically submit a form after filling by
 // TouchToFill
+// TODO(crbug/1283004): Clean up the flag once the feature is completely landed
+// in Stable.
 BASE_FEATURE(kTouchToFillPasswordSubmission,
              "TouchToFillPasswordSubmission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the intent fetching for the credential manager in Google Mobile
 // Services. It does not enable launching the credential manager.

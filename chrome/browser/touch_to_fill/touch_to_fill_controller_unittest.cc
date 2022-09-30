@@ -400,14 +400,12 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
 
-  // Without |kTouchToFillPasswordSubmission|, a form that is ready for
-  // submission doesn't affect UI.
   EXPECT_CALL(
       view(),
       Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
            ElementsAreArray(credentials),
            ElementsAreArray(std::vector<TouchToFillWebAuthnCredential>()),
-           /*trigger_submission=*/false));
+           /*trigger_submission=*/true));
   touch_to_fill_controller().Show(
       credentials, {}, driver().AsWeakPtr(),
       autofill::mojom::SubmissionReadinessState::kTwoFields);
@@ -423,9 +421,7 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Success) {
               Authenticate(BiometricAuthRequester::kTouchToFill, _,
                            /*use_last_valid_auth=*/true))
       .WillOnce(RunOnceCallback<1>(true));
-  // Without |kTouchToFillPasswordSubmission|, don't trigger a submission, but
-  // inform the client that a form can be submitted.
-  EXPECT_CALL(driver(), TriggerFormSubmission()).Times(0);
+  EXPECT_CALL(driver(), TriggerFormSubmission());
   EXPECT_CALL(client(), StartSubmissionTrackingAfterTouchToFill(Eq(u"alice")));
 
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
