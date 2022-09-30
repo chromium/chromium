@@ -1005,7 +1005,6 @@
 <translation id="3633738897356909127">'Chrome अपडेट करें' बटन, अपनी Chrome सेटिंग से Chrome अपडेट करने के लिए Enter दबाएं</translation>
 <translation id="3634530185120165534">ट्रे 5</translation>
 <translation id="3634567936866541746">आपने अभी जिस साइट पर अपना पासवर्ड डाला है वह सुरक्षित नहीं है. खातों को सुरक्षित करने के लिए, Chrome का सुझाव है कि आप सेव किए गए पासवर्ड की जांच करें.</translation>
-<translation id="3637033245385760976">Chrome पर सूचनाएं पाने की सुविधा चालू होनी चाहिए. इस सुविधा को <ph name="NOTIFICATION_SETTINGS" /> में जाकर चालू किया जा सकता है</translation>
 <translation id="3637662659967048211">Google खाते में सेव करें</translation>
 <translation id="3640766068866876100">इंडेक्स-4x6-एक्स्ट्रा</translation>
 <translation id="3642638418806704195">ऐप्लिकेशन:</translation>
@@ -2326,6 +2325,7 @@
 <translation id="7234638337680728591">पेट्रोलियम से जुड़ी सेवाएं</translation>
 <translation id="7237492777898608035">इस साइट के लिए यह मैसेज दोबारा न दिखाएं</translation>
 <translation id="7238585580608191973">SHA-256 फ़िंगरप्रिंट</translation>
+<translation id="7239514174717251677">कीमत में कमी से जुड़ी सूचनाएं पाने की सुविधा चालू है. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> पर जाकर, इसे बंद किया जा सकता है</translation>
 <translation id="7240120331469437312">प्रमाणपत्र विषय वैकल्पिक नाम</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# मिलता-जुलता क्लस्टर}one{# मिलता-जुलता क्लस्टर}other{# मिलते-जुलते क्लस्टर}}</translation>
@@ -2825,7 +2825,6 @@
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> से एक निजी कनेक्‍शन स्‍थापित नहीं किया जा सकता क्‍योंकि आपके डिवाइस का तारीख और समय (<ph name="DATE_AND_TIME" />) गलत है.</translation>
 <translation id="8564182942834072828">अलग-अलग दस्तावेज़/बिना क्रम के लगाई गई कॉपी</translation>
 <translation id="8564985650692024650">अगर आपने अपने <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> पासवर्ड का दूसरी साइटों पर दोबारा इस्तेमाल किया है, तो क्रोमियम आपको उसे रीसेट करने का सुझाव देता है.</translation>
-<translation id="8573969211731659953">कीमत में कमी से जुड़ी सूचनाएं पाने की सुविधा चालू है. <ph name="NOTIFICATION_SETTINGS" /> में जाकर, इसे बंद किया जा सकता है</translation>
 <translation id="8576310925653847813">होम थिएटर सिस्टम</translation>
 <translation id="8577348305244205642">वर्चुअल कार्ड उपलब्ध नहीं है</translation>
 <translation id="858637041960032120">फ़ोन नंबर जोड़ें
@@ -3046,6 +3045,7 @@
 <translation id="9187461866967718678">जोखिम वाले खेल</translation>
 <translation id="9191834167571392248">नीचे बाईं ओर पंच</translation>
 <translation id="9199905725844810519">प्रिंट करने की सुविधा को ब्लॉक किया गया है</translation>
+<translation id="9202180858541326427">Chrome पर सूचनाएं पाने की सुविधा चालू होनी चाहिए. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> पर जाकर, इसे चालू किया जा सकता है</translation>
 <translation id="9205078245616868884">आपका डेटा आपके सिंक पासफ़्रेज़ से सुरक्षित किया गया है. सिंक शुरू करने के लिए इसे डालें.</translation>
 <translation id="920511547311754821">क्या आपको ओटीपी कोड नहीं मिला? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">लेख जोड़ने में विफल रहा.</translation>

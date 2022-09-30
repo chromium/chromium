@@ -1000,7 +1000,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3633738897356909127">Chromeni yangilash tugmasi, Chrome sozlamalari orqali Chromeni yangilash uchun Enter tugmasini bosing</translation>
 <translation id="3634530185120165534">Tarnov 5</translation>
 <translation id="3634567936866541746">Hozirgina shubhali saytda parol kiritdingiz. Hisoblar himoyasi uchun Chrome saqlangan parollaringizni tekshirishni tavsiya qiladi.</translation>
-<translation id="3637033245385760976">Chrome bildirishnomalari yoniq boʻlishi kerak. Ularni <ph name="NOTIFICATION_SETTINGS" /> orqali yoqishingiz mumkin</translation>
 <translation id="3637662659967048211">Google hisobiga saqlash</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Ilova:</translation>
@@ -2320,6 +2319,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7234638337680728591">Benzin narxi va avtomobilga yonilgʻi quyish</translation>
 <translation id="7237492777898608035">Bu saytda boshqa chiqmasin</translation>
 <translation id="7238585580608191973">SHA-256 barmoq izi</translation>
+<translation id="7239514174717251677">Narxi tushishi haqidagi bildirishnomalar yoniq. Bu parametrni istalgan vaqtda <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> orqali oʻzgartira olasiz.</translation>
 <translation id="7240120331469437312">Subyekt sertifikatining alternativ nomi</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# ta mos natija}other{# ta mos natija}}</translation>
@@ -2819,7 +2819,6 @@ Batafsil axborot:
 <translation id="8559762987265718583">Tizimdagi sana va vaqt sozlamalari (<ph name="DATE_AND_TIME" />) noto‘g‘ri bo‘lganligi sababli <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeni bilan havfsiz aloqa o‘rnatib bo‘lmadi.</translation>
 <translation id="8564182942834072828">Bir nechta hujjat/Tartibsiz nusxalarda</translation>
 <translation id="8564985650692024650">Parolingizni <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> domenidan tashqaridagi saytda kiritgan bo‘lsangiz, uni zudlik bilan almashtirishingizni tavsiya etamiz.</translation>
-<translation id="8573969211731659953">Narxi tushishi haqidagi bildirishnomalar yoniq. Bu parametrni istalgan vaqtda <ph name="NOTIFICATION_SETTINGS" /> orqali oʻzgartira olasiz.</translation>
 <translation id="8576310925653847813">Uy kinoteatri tizimlari</translation>
 <translation id="8577348305244205642">Virtual karta mavjud emas</translation>
 <translation id="858637041960032120">Raqam qo‘shing</translation>
@@ -3039,6 +3038,7 @@ Batafsil axborot:
 <translation id="9187461866967718678">Ekstremal sport</translation>
 <translation id="9191834167571392248">Quyi chapdan teshik ochish</translation>
 <translation id="9199905725844810519">Chop etish taqiqlangan</translation>
+<translation id="9202180858541326427">Chrome bildirishnomalari yoniq boʻlishi kerak. Ularni <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> orqali yoqishingiz mumkin</translation>
 <translation id="9205078245616868884">Ma’lumotlaringiz kodli ibora bilan shifrlangan. Sinxronlashuvni boshlash uchun uni kiriting.</translation>
 <translation id="920511547311754821">Kod topilmadimi? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Maqolani qo‘shib bo‘lmadi.</translation>

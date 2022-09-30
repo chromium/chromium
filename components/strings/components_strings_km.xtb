@@ -1008,7 +1008,6 @@
 <translation id="3633738897356909127">ប៊ូតុង "ដំឡើងកំណែ Chrome" ចុច "Enter" ដើម្បីដំឡើងកំណែ Chrome ពីការកំណត់ Chrome របស់អ្នក</translation>
 <translation id="3634530185120165534">ទម្រទី 5</translation>
 <translation id="3634567936866541746">អ្នកទើបតែ​បានបញ្ចូល​ពាក្យសម្ងាត់​របស់អ្នក​នៅលើ​គេហទំព័របញ្ឆោត។ ដើម្បី​រក្សាសុវត្ថិភាព​គណនី​របស់អ្នក Chrome សូមណែនាំឱ្យ​ពិនិត្យមើល​ពាក្យសម្ងាត់​ដែលអ្នកបានរក្សាទុក។</translation>
-<translation id="3637033245385760976">ត្រូវតែ​បើក​ការជូនដំណឹង​នៅលើ Chrome។ អ្នក​អាច​បើក​ការជូនដំណឹង​ទាំងនេះ​នៅក្នុង<ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="3637662659967048211">រក្សាទុក​នៅក្នុង​គណនី Google</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">កម្មវិធី៖</translation>
@@ -2330,6 +2329,7 @@
 <translation id="7234638337680728591">ស្ថានីយ​ប្រេងឥន្ធនៈ និងតម្លៃប្រេងឥន្ធនៈ</translation>
 <translation id="7237492777898608035">កុំបង្ហាញ​សារនេះ​ម្ដងទៀត​សម្រាប់​គេហទំព័រនេះ</translation>
 <translation id="7238585580608191973">ស្នាមម្រាមដៃ SHA-256</translation>
+<translation id="7239514174717251677">ការជូនដំណឹងអំពីការធ្លាក់ថ្លៃត្រូវបានបើក។ អ្នកអាចផ្លាស់ប្ដូរលក្ខណៈនេះនៅក្នុង<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="7240120331469437312">ឈ្មោះជម្រើសភាគីវិញ្ញាបនប័ត្រ</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{ត្រូវគ្នា #}other{ត្រូវគ្នា #}}</translation>
@@ -2831,7 +2831,6 @@
 <translation id="8559762987265718583">ការភ្ជាប់ឯកជនទៅ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> មិនអាចធ្វើឡើងទេ ពីព្រោះកាលបរិច្ឆេទ និងម៉ោងឧបករណ៍របស់អ្នក (<ph name="DATE_AND_TIME" />)មិនត្រឹមត្រូវ។</translation>
 <translation id="8564182942834072828">ឯកសារ​ដាច់ដោយឡែក/ច្បាប់ចម្លង​ដាច់ដោយឡែក</translation>
 <translation id="8564985650692024650">Chromium ណែនាំឱ្យ​កំណត់​ពាក្យសម្ងាត់ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> របស់អ្នក​ឡើងវិញ ប្រសិនបើ​អ្នកបាន​ប្រើ​វាម្តងទៀត​នៅលើ​ទំព័រផ្សេង។</translation>
-<translation id="8573969211731659953">ការជូនដំណឹង​អំពី​ការធ្លាក់ថ្លៃ​ត្រូវបាន​បើក។ អ្នក​អាច​ផ្លាស់ប្ដូរ​លក្ខណៈ​នេះ​នៅ​ក្នុង​<ph name="NOTIFICATION_SETTINGS" /></translation>
 <translation id="8576310925653847813">ប្រព័ន្ធបញ្ចាំង​ភាពយន្តនៅផ្ទះ</translation>
 <translation id="8577348305244205642">មិនអាចប្រើ​កាតនិមិ្មតបានទេ</translation>
 <translation id="858637041960032120">បន្ថែមលេខទូរស័ព្ទ</translation>
@@ -3051,6 +3050,7 @@
 <translation id="9187461866967718678">កីឡា​គ្រោះថ្នាក់​ខ្លាំង</translation>
 <translation id="9191834167571392248">ចោះ​ខាងក្រោម​ផ្នែកខាងឆ្វេង</translation>
 <translation id="9199905725844810519">ការបោះពុម្ពត្រូវបានទប់ស្កាត់។</translation>
+<translation id="9202180858541326427">ត្រូវតែបើកការជូនដំណឹងនៅលើ Chrome។ អ្នកអាចបើកការជូនដំណឹងទាំងនេះនៅក្នុង<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /></translation>
 <translation id="9205078245616868884">ទិន្នន័យរបស់អ្នកត្រូវបានអ៊ិនគ្រីបដោយប្រើឃ្លាសម្ងាត់សមកាលកម្មរបស់អ្នក។ សូមបញ្ចូលវាដើម្បីចាប់ផ្តើមធ្វើសមកាលកម្ម។</translation>
 <translation id="920511547311754821">រកមិនឃើញ​លេខកូដរបស់អ្នក​ឬ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">បានបរាជ័យក្នុងបន្ថែមអត្ថបទ។</translation>

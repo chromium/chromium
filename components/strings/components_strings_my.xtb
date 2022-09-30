@@ -1005,7 +1005,6 @@
 <translation id="3633738897356909127">Chrome အပ်ဒိတ်လုပ်ရန်ခလုတ်၊ သင့် Chrome ဆက်တင်များမှတစ်ဆင့် Chrome ကို အပ်ဒိတ်လုပ်ရန် Enter နှိပ်ပါ</translation>
 <translation id="3634530185120165534">ဗန်း ၅</translation>
 <translation id="3634567936866541746">လှည့်ဖြားတတ်သော ဝဘ်ဆိုက်တစ်ခုတွင် သင့်စကားဝှက်ကို သင်က ယခုလေးတွင် ထည့်လိုက်သည်။ အကောင့်များ လုံခြုံစေရန်အတွက် သင်သိမ်းထားသည့် စကားဝှက်များကို စစ်ဆေးရန် Chrome ကအကြုံပြုပါသည်။</translation>
-<translation id="3637033245385760976">Chrome အကြောင်းကြားချက်ကို ဖွင့်ထားရမည်။ ၎င်းတို့ကို <ph name="NOTIFICATION_SETTINGS" /> တွင် ဖွင့်နိုင်သည်</translation>
 <translation id="3637662659967048211">Google Account တွင် သိမ်းပါ</translation>
 <translation id="3640766068866876100">အညွှန်း-၄x၆-နောက်ဆက်တွဲ</translation>
 <translation id="3642638418806704195">အပလီကေးရှင်း-</translation>
@@ -2326,6 +2325,7 @@
 <translation id="7234638337680728591">ဂက်စ်ဈေးနှုန်းနှင့် ယာဉ်ဆီဖြည့်ခြင်း</translation>
 <translation id="7237492777898608035">ဤဝဘ်ဆိုက်အတွက် ဤမက်ဆေ့ဂျ်ကို ထပ်မပြပါနှင့်</translation>
 <translation id="7238585580608191973">SHA-256 လက်ဗွေ</translation>
+<translation id="7239514174717251677">ဈေးကျသည့် သတိပေးချက်များ ဖွင့်ထားသည်။ ၎င်းကို <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> တွင် ပြောင်းနိုင်သည်</translation>
 <translation id="7240120331469437312">လက်မှတ် အကြောင်းအရာ အစားထိုးရေး အမည်</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />၊ <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{ကိုက်ညီမှု # ခု}other{ကိုက်ညီမှု # ခု}}</translation>
@@ -2827,7 +2827,6 @@
 <translation id="8559762987265718583">သင့်ကိရိယာ၏ ရက်စွဲ နှင့် အချိန် (<ph name="DATE_AND_TIME" />)မှာ မမှန်၍ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ထံသို့ ကိုယ်ရေး ချိတ်ဆက်မှုကို ထူထောင်မရနိုင်ပါ။</translation>
 <translation id="8564182942834072828">သီးခြား စာရွက်စာတမ်းများ/စုစည်းစီစဉ်မထားသော မိတ္တူများ</translation>
 <translation id="8564985650692024650">အခြားဝဘ်ဆိုက်များတွင် သင်၏ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chromium က အကြံပြုပါသည်။</translation>
-<translation id="8573969211731659953">ဈေးကျသည့် သတိပေးချက်များ ဖွင့်ထားသည်။ ၎င်းကို <ph name="NOTIFICATION_SETTINGS" /> တွင် ပြောင်းနိုင်သည်</translation>
 <translation id="8576310925653847813">အိမ်သုံး ရုပ်ရှင်ရုံစနစ်များ</translation>
 <translation id="8577348305244205642">ပကတိအသွင်ကတ် မရနိုင်ပါ</translation>
 <translation id="858637041960032120">ဖုန်းနံပါတ် ပေါင်းထည့်ရန်</translation>
@@ -3047,6 +3046,7 @@
 <translation id="9187461866967718678">ပြင်းထန်သော အားကစား</translation>
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>
+<translation id="9202180858541326427">Chrome အကြောင်းကြားချက်ကို ဖွင့်ထားရမည်။ ၎င်းတို့ကို <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> တွင် ဖွင့်နိုင်သည်</translation>
 <translation id="9205078245616868884">သင့်ဒေတာများကို သင်စင့်ခ်ပြုလုပ်ထားသည့် စကားဝှက်ဖြင့် အသွင်ဝှက်ထားပါသည်။ စင့်ခ်ပြုလုပ်ခြင်းစတင်ရန် ၎င်းကိုထည့်ပါ။</translation>
 <translation id="920511547311754821">သင့်ကုဒ်ကို ရှာမတွေ့ဘူးလား။ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">ဆောင်းပါး ပေါင်းထည့်ခြင်း မအောင်မြင်ပါ။</translation>

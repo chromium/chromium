@@ -1005,7 +1005,6 @@
 <translation id="3633738897356909127">Chrome 업데이트 버튼, Chrome 설정에서 Chrome을 업데이트하려면 Enter 누르기</translation>
 <translation id="3634530185120165534">트레이 5</translation>
 <translation id="3634567936866541746">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
-<translation id="3637033245385760976">Chrome 알림이 사용 설정되어 있어야 합니다. <ph name="NOTIFICATION_SETTINGS" />에서 사용 설정할 수 있습니다.</translation>
 <translation id="3637662659967048211">Google 계정에 저장</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">애플리케이션:</translation>
@@ -2326,6 +2325,7 @@
 <translation id="7234638337680728591">유가 및 자동차 주유</translation>
 <translation id="7237492777898608035">사이트에서 이러한 메시지를 다시 표시하지 않음</translation>
 <translation id="7238585580608191973">SHA-256 지문</translation>
+<translation id="7239514174717251677">가격 인하 알림이 사용 설정되었습니다. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />에서 설정을 변경할 수 있습니다.</translation>
 <translation id="7240120331469437312">인증서 대상 대체 이름</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{#개 일치}other{#개 일치}}</translation>
@@ -2824,7 +2824,6 @@
 <translation id="8559762987265718583">기기의 날짜와 시간(<ph name="DATE_AND_TIME" />)이 잘못되어 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />에 대한 비공개 연결을 설정할 수 없습니다.</translation>
 <translation id="8564182942834072828">별도 문서/모으지 않은 사본</translation>
 <translation id="8564985650692024650">다른 사이트에서 비밀번호를 재사용했다면 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 비밀번호를 재설정하는 것이 좋습니다.</translation>
-<translation id="8573969211731659953">가격 인하 알림이 사용 설정되었습니다. <ph name="NOTIFICATION_SETTINGS" />에서 설정을 변경할 수 있습니다.</translation>
 <translation id="8576310925653847813">홈시어터 시스템</translation>
 <translation id="8577348305244205642">가상 카드 사용할 수 없음</translation>
 <translation id="858637041960032120">번호 추가</translation>
@@ -3044,6 +3043,7 @@
 <translation id="9187461866967718678">익스트림 스포츠</translation>
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>
+<translation id="9202180858541326427">Chrome 알림이 사용 설정되어 있어야 합니다. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />에서 사용 설정할 수 있습니다.</translation>
 <translation id="9205078245616868884">동기화 암호로 데이터가 암호화되어 있습니다. 동기화를 시작하려면 입력하세요.</translation>
 <translation id="920511547311754821">코드를 찾을 수 없나요? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">글을 추가하지 못했습니다.</translation>

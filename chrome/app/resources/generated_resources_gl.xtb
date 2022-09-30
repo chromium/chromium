@@ -1469,7 +1469,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2328561734797404498">Reinicia o teu dispositivo para utilizar <ph name="APP_NAME" />.</translation>
 <translation id="2328636661627946415">Estás no modo de incógnito, os sitios só poden utilizar as cookies para consultar a actividade de navegación que levaches a cabo no seu propio sitio. As cookies elimínanse ao final da sesión do modo mencionado.</translation>
 <translation id="2329597144923131178">Inicia sesión para ter os marcadores, o historial, os contrasinais e o resto da túa configuración en todos os teus dispositivos.</translation>
-<translation id="2332115969598251205">Non se poden cargar os dispositivos gardados en <ph name="PRIMARY_EMAIL" />. Comproba a conexión a Internet e téntao de novo.</translation>
+<translation id="2332115969598251205">Non se puideron cargar os dispositivos gardados en <ph name="PRIMARY_EMAIL" />. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="2332131598580221120">Ver na tenda</translation>
 <translation id="2332192922827071008">Abrir preferencias</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
@@ -3811,7 +3811,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4561893854334016293">Non cambiaches ningún permiso recentemente</translation>
 <translation id="4562155214028662640">Engadir impresión dixital</translation>
 <translation id="4563210852471260509">O idioma inicial de introdución de texto é o chinés</translation>
-<translation id="4563382028841851106">Eliminar da conta</translation>
+<translation id="4563382028841851106">Quitar da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
 <translation id="4564245002465020751">Finalizar a configuración no teléfono</translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>

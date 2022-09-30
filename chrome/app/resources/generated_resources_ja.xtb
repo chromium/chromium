@@ -2168,6 +2168,7 @@
 <translation id="2977480621796371840">グループから削除</translation>
 <translation id="2979639724566107830">新しいウィンドウで開く</translation>
 <translation id="2981113813906970160">大きいマウスカーソルを表示する</translation>
+<translation id="2981293774053328982">このファイルには、個人アカウントまたはソーシャル ネットワークのアカウントを侵害する恐れのあるマルウェアが含まれています</translation>
 <translation id="2983373101216420412">ケースのバッテリー残量は <ph name="PERCENTAGE" />% です。</translation>
 <translation id="2985348301114641460">「<ph name="EXTENSION_NAME" />」をインストールするよう管理者にリクエストを送信しますか？</translation>
 <translation id="2987620471460279764">他のデバイスからテキストが共有されました</translation>
@@ -6702,6 +6703,7 @@
 <translation id="7404065585741198296">USB ケーブルで接続したスマートフォン</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{安全確認を 1 時間前に実行しました}other{安全確認を {NUM_HOURS} 時間前に実行しました}}</translation>
 <translation id="740624631517654988">ポップアップがブロックされました</translation>
+<translation id="7406912950279255498">色反転モード</translation>
 <translation id="7407430846095439694">インポートしてバインド</translation>
 <translation id="7407504355934009739">ほとんどのユーザーがこのサイトの通知をブロックしています</translation>
 <translation id="740810853557944681">プリント サーバーを追加</translation>
@@ -7649,6 +7651,7 @@
     <ph name="BEGIN_PARAGRAPH3" />デバイスの所有者は、[設定] &gt; [詳細設定] &gt; [診断と使用状況のデータを Google に自動送信する] でこの機能を管理できます。<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />お子様のアカウントで [ウェブとアプリのアクティビティ] の設定もオンにしている場合、診断と使用状況のデータはお子様の Google アカウントにも保存される可能性があります。これらの設定の詳細と設定を調整する方法については、families.google.com をご覧ください。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">クライアント証明書が無効です</translation>
+<translation id="8270162672241199380">Steam インストーラ</translation>
 <translation id="827097179112817503">ホームボタンを表示する</translation>
 <translation id="8271268254812352141">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます。<ph name="LINK_BEGIN" />ウェブサイトの言語<ph name="LINK_END" />で翻訳言語をカスタマイズできます。</translation>
 <translation id="8271379370373330993">この後、保護者の方用の手順がいくつか続きます。お子様に <ph name="DEVICE_TYPE" /> を渡す前に、アカウント設定を終えてください。</translation>

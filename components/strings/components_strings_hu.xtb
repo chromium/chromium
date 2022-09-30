@@ -1003,7 +1003,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3633738897356909127">Chrome frissítése gomb, nyomja le az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
 <translation id="3634530185120165534">5. tálca</translation>
 <translation id="3634567936866541746">Megtévesztő webhelyen adta meg jelszavát. Fiókjai védelmében a Chrome azt javasolja, hogy ellenőrizze mentett jelszavait.</translation>
-<translation id="3637033245385760976">Be kell kapcsolni a Chrome-értesítéseket. Ezeket itt kapcsolhatja be: <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="3637662659967048211">Mentés Google-fiókba</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Alkalmazás:</translation>
@@ -2324,6 +2323,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7234638337680728591">Üzemanyagárak és töltőállomások</translation>
 <translation id="7237492777898608035">Ne jelenjen meg legközelebb ez az üzenet a webhely esetében</translation>
 <translation id="7238585580608191973">SHA-256 ujjlenyomat</translation>
+<translation id="7239514174717251677">Az árcsökkenésre vonatkozó értesítések be vannak kapcsolva. Ezt itt módosíthatja: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="7240120331469437312">Tanúsítványtulajdonos egyéb neve</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# találat}other{# találat}}</translation>
@@ -2823,7 +2823,6 @@ További részletek:
 <translation id="8559762987265718583">Nem hozható létre privát kapcsolat a következővel: <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, mert az eszköz dátum- és időbeállítása helytelen (<ph name="DATE_AND_TIME" />).</translation>
 <translation id="8564182942834072828">Különálló dokumentumok/Nem szétválogatott másolatok</translation>
 <translation id="8564985650692024650">A Chromium azt javasolja, hogy adjon meg új <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-jelszót a régi helyett, ha azt más webhelyeken is használta.</translation>
-<translation id="8573969211731659953">Az árcsökkenésre vonatkozó értesítések be vannak kapcsolva. Ezt itt módosíthatja: <ph name="NOTIFICATION_SETTINGS" />.</translation>
 <translation id="8576310925653847813">Házimozirendszerek</translation>
 <translation id="8577348305244205642">A virtuális kártya nem áll rendelkezésre</translation>
 <translation id="858637041960032120">Szám hozzáadása
@@ -3044,6 +3043,7 @@ További részletek:
 <translation id="9187461866967718678">Extrém sportok</translation>
 <translation id="9191834167571392248">Lyuk balra lent</translation>
 <translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
+<translation id="9202180858541326427">Be kell kapcsolni a Chrome-értesítéseket. Ezeket itt kapcsolhatja be: <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="9205078245616868884">Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="920511547311754821">Nem találja a kódját? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">A cikk hozzáadása sikertelen.</translation>

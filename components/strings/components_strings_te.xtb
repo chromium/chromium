@@ -1007,7 +1007,6 @@
 <translation id="3633738897356909127">'Chromeను అప్‌డేట్ చేయి' బటన్, మీ Chrome సెట్టింగ్‌ల నుండి Chromeను అప్‌డేట్ చేయడానికి 'Enter'ను నొక్కండి</translation>
 <translation id="3634530185120165534">ట్రే 5</translation>
 <translation id="3634567936866541746">మీరు మోసపూరితమైన సైట్‌లో మీ పాస్‌వర్డ్‌ను ఎంటర్ చేశారు. మీ ఖాతాలను సురక్షితంగా ఉంచడానికి, Chrome మీ సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయాలని సిఫార్సు చేస్తోంది.</translation>
-<translation id="3637033245385760976">Chrome నోటిఫికేషన్‌లు తప్పనిసరిగా ఆన్‌లో ఉండాలి. మీరు <ph name="NOTIFICATION_SETTINGS" />‌లో వాటిని ఆన్ చేయవచ్చు</translation>
 <translation id="3637662659967048211">Google ఖాతాకు సేవ్ చేయండి</translation>
 <translation id="3640766068866876100">సూచిక-4x6-Ext</translation>
 <translation id="3642638418806704195">యాప్:</translation>
@@ -2328,6 +2327,7 @@
 <translation id="7234638337680728591">గ్యాస్ ధరలు &amp; వాహన ఇంధనాలు</translation>
 <translation id="7237492777898608035">ఈ సైట్‌లో ఈ మెసేజ్‌ను మళ్లీ చూపవద్దు</translation>
 <translation id="7238585580608191973">SHA-256 వేలిముద్ర</translation>
+<translation id="7239514174717251677">ధర తగ్గుదల అలర్ట్‌లు ఆన్‌లో ఉన్నాయి. మీరు దీన్ని <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />‌లో మార్చవచ్చు</translation>
 <translation id="7240120331469437312">సర్టిఫికెట్ విషయ ప్రత్యామ్నాయ పేరు</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# మ్యాచ్}other{# మ్యాచ్‌లు}}</translation>
@@ -2827,7 +2827,6 @@
 <translation id="8559762987265718583">మీ పరికరం తేదీ మరియు సమయం <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> తప్పుగా ఉన్నందున (<ph name="DATE_AND_TIME" />)కు ప్రైవేట్ కనెక్షన్ ఏర్పాటు చేయబడదు.</translation>
 <translation id="8564182942834072828">విడి డాక్యుమెంట్‌లు/విడి కాపీలు</translation>
 <translation id="8564985650692024650">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
-<translation id="8573969211731659953">ధర తగ్గుదల అలర్ట్‌లు ఆన్‌లో ఉన్నాయి. మీరు <ph name="NOTIFICATION_SETTINGS" />‌లో దీన్ని మార్చవచ్చు</translation>
 <translation id="8576310925653847813">హోమ్ థియేటర్ సిస్టమ్‌లు</translation>
 <translation id="8577348305244205642">వర్చువల్ కార్డ్ అందుబాటులో లేదు</translation>
 <translation id="858637041960032120">ఫోన్ నం. జోడిం.</translation>
@@ -3047,6 +3046,7 @@
 <translation id="9187461866967718678">ప్రమాదకర క్రీడలు</translation>
 <translation id="9191834167571392248">ఎడమవైపు దిగువ భాగంలో రంధ్రం</translation>
 <translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
+<translation id="9202180858541326427">Chrome నోటిఫికేషన్‌లు తప్పనిసరిగా ఆన్‌లో ఉండాలి. మీరు వాటిని <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />‌లో ఆన్ చేయవచ్చు</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
 <translation id="920511547311754821">మీ కోడ్‌ను కనుగొనలేకపోయారా? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>

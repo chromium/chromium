@@ -1004,7 +1004,6 @@
 <translation id="3633738897356909127">'Chrome അപ്ഡേറ്റ് ചെയ്യുക' ബട്ടൺ, നിങ്ങളുടെ Chrome ക്രമീകരണത്തിൽ Chrome അപ്ഡേറ്റ് ചെയ്യാൻ 'Enter' അമർത്തുക</translation>
 <translation id="3634530185120165534">ട്രേ 5</translation>
 <translation id="3634567936866541746">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chrome നിർദ്ദേശിക്കുന്നു.</translation>
-<translation id="3637033245385760976">Chrome അറിയിപ്പുകൾ ഓണായിരിക്കണം. <ph name="NOTIFICATION_SETTINGS" /> എന്നതിൽ നിങ്ങൾക്ക് അവ ഓണാക്കാം</translation>
 <translation id="3637662659967048211">Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="3640766068866876100">സൂചിക-4x6-Ext</translation>
 <translation id="3642638418806704195">ആപ്പ്:</translation>
@@ -2325,6 +2324,7 @@
 <translation id="7234638337680728591">പെട്രോൾ വിലയും വാഹന ഇന്ധനവും</translation>
 <translation id="7237492777898608035">ഈ സൈറ്റിൽ വീണ്ടും ഈ സന്ദേശം കാണിക്കരുത്</translation>
 <translation id="7238585580608191973">SHA-256 ഫിംഗര്‍പ്രിന്‍റ്</translation>
+<translation id="7239514174717251677">വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ഓണാണ്. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> എന്നതിൽ നിങ്ങൾക്കിത് മാറ്റാം</translation>
 <translation id="7240120331469437312">സര്‍‌ട്ടിഫിക്കറ്റ് വിഷയേതര നാമം</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# പൊരുത്തം}other{# പൊരുത്തങ്ങൾ}}</translation>
@@ -2822,7 +2822,6 @@
 <translation id="8559762987265718583">നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്കുള്ള സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാവില്ല.</translation>
 <translation id="8564182942834072828">വെവ്വേറെ ഡോക്യുമെന്റുകൾ/ക്രമത്തിലല്ലാത്ത പകർപ്പുകൾ</translation>
 <translation id="8564985650692024650">മറ്റ് സൈറ്റുകളിൽ നിങ്ങൾ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> പാസ്‌വേഡ് പുനരുപയോഗിച്ചിട്ടുണ്ടെങ്കിൽ, അത് റീസെറ്റ് ചെയ്യാൻ Chromium ശുപാർ‌ശ ചെയ്യുന്നു.</translation>
-<translation id="8573969211731659953">വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ഓണാണ്. <ph name="NOTIFICATION_SETTINGS" /> എന്നതിൽ നിങ്ങൾക്കിത് മാറ്റാം</translation>
 <translation id="8576310925653847813">ഹോം തീയറ്റർ സംവിധാനങ്ങൾ</translation>
 <translation id="8577348305244205642">വെർച്വൽ കാർഡ് ലഭ്യമല്ല</translation>
 <translation id="858637041960032120">ഫോണ്‍ നമ്പര്‍ ചേര്‍ക്കുക</translation>
@@ -3042,6 +3041,7 @@
 <translation id="9187461866967718678">എക്‌സ്‌ട്രീം സ്‌പോർട്‌സ്</translation>
 <translation id="9191834167571392248">താഴെ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
+<translation id="9202180858541326427">Chrome അറിയിപ്പുകൾ ഓണായിരിക്കണം. <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" /> എന്നതിൽ നിങ്ങൾക്ക് അവ ഓണാക്കാം</translation>
 <translation id="9205078245616868884">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് ഇത് നൽകുക.</translation>
 <translation id="920511547311754821">നിങ്ങളുടെ കോഡ് കണ്ടെത്താനാകുന്നില്ലേ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">ലേഖനം ചേർക്കാനായില്ല.</translation>
