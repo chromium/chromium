@@ -39,12 +39,12 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Present the given overlay to swap chain. The backing content may not match
   // |overlay.quad_rect| (e.g. in the case of full screen) so this method
-  // returns a modified |transform| and |clip_rect| that should be used instead
-  // of the ones on |overlay|.
+  // returns a modified |visual_transform| and |visual_clip_rect| that should be
+  // used instead of the ones on |overlay|.
   // Returns true on success.
   bool PresentToSwapChain(const ui::DCRendererLayerParams& overlay,
-                          gfx::Transform* transform,
-                          gfx::Rect* clip_rect);
+                          gfx::Transform* visual_transform,
+                          gfx::Rect* visual_clip_rect);
 
   const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
     return swap_chain_;
@@ -148,21 +148,21 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const ui::DCRendererLayerParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
-      gfx::Transform* transform,
-      gfx::Rect* clip_rect);
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect);
 
   void AdjustSwapChainForFullScreenLetterboxing(
       const gfx::Size& monitor_size,
       const ui::DCRendererLayerParams& params,
       const gfx::Rect& overlay_onscreen_rect,
       gfx::Size* swap_chain_size,
-      gfx::Transform* transform,
-      gfx::Rect* clip_rect);
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect);
 
   // Returns optimal swap chain size for given layer.
   gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params,
-                                   gfx::Transform* transform,
-                                   gfx::Rect* clip_rect);
+                                   gfx::Transform* visual_transform,
+                                   gfx::Rect* visual_clip_rect);
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
@@ -205,8 +205,9 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // whichever is currently used.
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
 
-  // Present the Direct Compositon surface from MediaFoundationRenderer.
-  bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay);
+  // Present the Direct Composition surface from MediaFoundationRenderer.
+  bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay,
+                           gfx::Transform* visual_transform);
 
   // Release resources related to `PresentDCOMPSurface()`.
   void ReleaseDCOMPSurfaceResourcesIfNeeded();
