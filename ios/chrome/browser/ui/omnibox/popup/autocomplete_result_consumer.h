@@ -65,7 +65,7 @@
 // user doesn't have to scroll or hide the keyboard to see those `n` first
 // suggestions.
 - (void)requestResultsWithVisibleSuggestionCount:
-    (NSUInteger)visibleSuggestionCount
+    (NSInteger)visibleSuggestionCount
     __attribute__((swift_name("requestResults(visibleSuggestionCount:)")));
 ;
 

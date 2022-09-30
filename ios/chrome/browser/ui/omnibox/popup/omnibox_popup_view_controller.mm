@@ -90,7 +90,7 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
 
 // Estimated maximum number of visible suggestions.
 // Only updated in `newResultsAvailable` method, were the value is used.
-@property(nonatomic, assign) NSUInteger visibleSuggestionCount;
+@property(nonatomic, assign) NSInteger visibleSuggestionCount;
 
 // Boolean to update visible suggestion count only once on event such as device
 // orientation change or multitasking window change, where multiple keyboard and
@@ -112,7 +112,6 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
   if (self = [super initWithNibName:nil bundle:nil]) {
     _forwardsScrollEvents = YES;
     _preselectedMatchGroupIndex = 0;
-    _visibleSuggestionCount = 0;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // The iPad keyboard can cover some of the rows of the scroll view. The
@@ -315,8 +314,8 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
   if (self.shouldUpdateVisibleSuggestionCount) {
     [self updateVisibleSuggestionCount];
   }
-  [self.dataSource requestResultsWithVisibleSuggestionCount:
-                       MAX(0, self.visibleSuggestionCount)];
+  [self.dataSource
+      requestResultsWithVisibleSuggestionCount:self.visibleSuggestionCount];
 }
 
 #pragma mark - OmniboxPopupRowCellDelegate
