@@ -1525,7 +1525,7 @@ RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
       dest_url_info(dest_url_info),
       relation(relation_to_current) {}
 
-void RenderFrameHostManager::CancelPendingIfNecessary(
+void RenderFrameHostManager::CleanupIfSpeculativeForRenderProcessGone(
     RenderFrameHostImpl* render_frame_host) {
   if (render_frame_host == speculative_render_frame_host_.get()) {
     // TODO(nasko, clamy): This should just clean up the speculative RFH
