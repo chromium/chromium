@@ -55,6 +55,7 @@ class MockDelegate : public NetworkConnect::Delegate {
   MOCK_METHOD1(ShowEnrollNetwork, bool(const std::string& network_id));
   MOCK_METHOD1(ShowMobileSetupDialog, void(const std::string& network_id));
   MOCK_METHOD1(ShowCarrierAccountDetail, void(const std::string& network_id));
+  MOCK_METHOD1(ShowPortalSignin, void(const std::string& network_id));
   MOCK_METHOD2(ShowNetworkConnectError,
                void(const std::string& error_name,
                     const std::string& network_id));
@@ -324,6 +325,17 @@ TEST_F(NetworkConnectTest, ConnectToCellularNetwork_OutOfCredits) {
   base::RunLoop().RunUntilIdle();
 
   NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(NetworkConnectTest, ShowPortalSignin) {
+  EXPECT_CALL(*mock_delegate_, ShowPortalSignin(kWiFi1Guid));
+
+  service_test_->SetServiceProperty(kWiFi1ServicePath, shill::kStateProperty,
+                                    base::Value(shill::kStateRedirectFound));
+  base::RunLoop().RunUntilIdle();
+
+  NetworkConnect::Get()->ShowPortalSignin(kWiFi1Guid);
   base::RunLoop().RunUntilIdle();
 }
 

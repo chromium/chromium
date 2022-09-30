@@ -21,6 +21,12 @@ export class InternetPageBrowserProxy {
   showCellularSetupUI(guid) {}
 
   /**
+   * Shows the Portal Signin.
+   * @param {string} guid
+   */
+  showPortalSignin(guid) {}
+
+  /**
    * Shows configuration for external VPNs. Includes ThirdParty (extension
    * configured) VPNs, and Arc VPNs.
    * @param {string} guid
@@ -77,6 +83,11 @@ export class InternetPageBrowserProxyImpl {
   /** @override */
   showCellularSetupUI(guid) {
     chrome.send('showCellularSetupUI', [guid]);
+  }
+
+  /** @override */
+  showPortalSignin(guid) {
+    chrome.send('showPortalSignin', [guid]);
   }
 
   /** @override */

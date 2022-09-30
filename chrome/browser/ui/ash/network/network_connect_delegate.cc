@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ui/ash/network/enrollment_dialog_view.h"
+#include "chrome/browser/ui/ash/network/network_portal_signin_controller.h"
 #include "chrome/browser/ui/ash/network/network_state_notifier.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_dialog.h"
@@ -23,7 +24,9 @@ bool IsUIAvailable() {
 }  // namespace
 
 NetworkConnectDelegate::NetworkConnectDelegate()
-    : network_state_notifier_(std::make_unique<ash::NetworkStateNotifier>()) {}
+    : network_state_notifier_(std::make_unique<ash::NetworkStateNotifier>()),
+      network_portal_signin_controller_(
+          std::make_unique<ash::NetworkPortalSigninController>()) {}
 
 NetworkConnectDelegate::~NetworkConnectDelegate() = default;
 
@@ -60,6 +63,12 @@ void NetworkConnectDelegate::ShowCarrierAccountDetail(
   if (!IsUIAvailable())
     return;
   ash::cellular_setup::MobileSetupDialog::ShowByNetworkId(network_id);
+}
+
+void NetworkConnectDelegate::ShowPortalSignin(const std::string& network_id) {
+  if (!IsUIAvailable())
+    return;
+  network_portal_signin_controller_->ShowSignin();
 }
 
 void NetworkConnectDelegate::ShowNetworkConnectError(

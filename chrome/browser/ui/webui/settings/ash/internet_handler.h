@@ -47,6 +47,7 @@ class InternetHandler
       const base::Value::List& args);
   void ShowCarrierAccountDetail(const base::Value::List& args);
   void ShowCellularSetupUI(const base::Value::List& args);
+  void ShowPortalSignin(const base::Value::List& args);
 
   // Sets list of names of devices whose "Google Play Services" notifications
   // are disabled.

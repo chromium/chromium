@@ -42,6 +42,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
     // Shows UI displaying carrier network account details.
     virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
 
+    // Shows portal signin.
+    virtual void ShowPortalSignin(const std::string& network_id) = 0;
+
     // Shows an error notification. |error_name| is an error defined in
     // NetworkConnectionHandler. |network_id| may be empty.
     virtual void ShowNetworkConnectError(const std::string& error_name,
@@ -90,6 +93,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
 
   // Opens the carrier account detail page.
   virtual void ShowCarrierAccountDetail(const std::string& network_id) = 0;
+
+  // Opens the portal signin.
+  virtual void ShowPortalSignin(const std::string& network_id) = 0;
 
   // Configures a network with a dictionary of Shill properties, then sends a
   // connect request. The profile is set according to 'shared' if allowed.
