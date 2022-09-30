@@ -2300,7 +2300,7 @@
     },
     {
       name: "SecureContextFixForSharedWorkers",
-      status: "experimental",
+      status: "stable",
     },
     // SecurePaymentConfirmation has shipped on some platforms, but its
     // availability is controlled by the browser process (via the
