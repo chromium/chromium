@@ -212,7 +212,7 @@ void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
 }
 
 void IndexedDBContextImpl::GetUsageImpl(GetUsageCallback usage_callback) {
-  std::map<blink::StorageKey, storage::mojom::StorageUsageInfoV2Ptr> usage_map;
+  std::map<blink::StorageKey, storage::mojom::StorageUsageInfoPtr> usage_map;
   for (const auto& bucket_locator : GetAllBuckets()) {
     const auto& it = usage_map.find(bucket_locator.storage_key);
     if (it != usage_map.end()) {
@@ -223,12 +223,12 @@ void IndexedDBContextImpl::GetUsageImpl(GetUsageCallback usage_callback) {
       }
     } else {
       usage_map[bucket_locator.storage_key] =
-          storage::mojom::StorageUsageInfoV2::New(
+          storage::mojom::StorageUsageInfo::New(
               bucket_locator.storage_key, GetBucketDiskUsage(bucket_locator),
               GetBucketLastModified(bucket_locator));
     }
   }
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> result;
+  std::vector<storage::mojom::StorageUsageInfoPtr> result;
   for (const auto& it : usage_map) {
     result.emplace_back(it.second->Clone());
   }

@@ -2450,10 +2450,10 @@ class StoragePartitionImplSharedStorageTest : public StoragePartitionImplTest {
   }
 
  private:
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> GetSharedStorageUsage() {
+  std::vector<storage::mojom::StorageUsageInfoPtr> GetSharedStorageUsage() {
     DCHECK(shared_storage_manager_);
 
-    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
+    base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
         future;
     shared_storage_manager_->FetchOrigins(future.GetCallback());
     return future.Take();

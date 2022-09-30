@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
 // A mojo interface for content::StorageUsageInfo.
-struct StorageUsageInfoV2 {
+struct StorageUsageInfo {
   // The storage key for this usage information.
   blink.mojom.StorageKey storage_key;
 

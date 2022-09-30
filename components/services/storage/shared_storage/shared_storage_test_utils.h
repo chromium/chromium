@@ -161,11 +161,11 @@ class TestDatabaseOperationReceiver {
       InitStatus* out_status);
 
   void InfosCallbackBase(const DBOperation& current_operation,
-                         std::vector<mojom::StorageUsageInfoV2Ptr>* out_infos,
-                         std::vector<mojom::StorageUsageInfoV2Ptr> infos);
-  base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
+                         std::vector<mojom::StorageUsageInfoPtr>* out_infos,
+                         std::vector<mojom::StorageUsageInfoPtr> infos);
+  base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
   MakeInfosCallback(const DBOperation& current_operation,
-                    std::vector<mojom::StorageUsageInfoV2Ptr>* out_infos);
+                    std::vector<mojom::StorageUsageInfoPtr>* out_infos);
 
   void OnceClosureBase(const DBOperation& current_operation);
   base::OnceClosure MakeOnceClosure(const DBOperation& current_operation);

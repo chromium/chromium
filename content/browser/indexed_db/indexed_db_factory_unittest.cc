@@ -360,7 +360,7 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   EXPECT_TRUE(bucket_state5_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> infos;
+  std::vector<storage::mojom::StorageUsageInfoPtr> infos;
   storage::mojom::IndexedDBControlAsyncWaiter sync_control(context());
   sync_control.GetUsage(&infos);
 

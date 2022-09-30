@@ -746,18 +746,17 @@ class CacheStorageManagerTest : public testing::Test {
     run_loop->Quit();
   }
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> GetAllStorageKeysUsage(
+  std::vector<storage::mojom::StorageUsageInfoPtr> GetAllStorageKeysUsage(
       storage::mojom::CacheStorageOwner owner =
           storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::RunLoop loop;
-    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage;
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage;
     cache_manager_->GetAllStorageKeysUsage(
-        owner,
-        base::BindLambdaForTesting(
-            [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> inner) {
-              usage = std::move(inner);
-              loop.Quit();
-            }));
+        owner, base::BindLambdaForTesting(
+                   [&](std::vector<storage::mojom::StorageUsageInfoPtr> inner) {
+                     usage = std::move(inner);
+                     loop.Quit();
+                   }));
     loop.Run();
     return usage;
   }
@@ -1820,7 +1819,7 @@ TEST_F(CacheStorageManagerMemoryOnlyTest, GetAllStorageKeysUsage) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, usage.size());
 
@@ -1850,7 +1849,7 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetAllStorageKeysUsage) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, usage.size());
 
@@ -1934,10 +1933,10 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageDifferentOwners) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_cache =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_cache =
       GetAllStorageKeysUsage(storage::mojom::CacheStorageOwner::kCacheAPI);
   EXPECT_EQ(1ULL, usage_cache.size());
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_bgf =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_bgf =
       GetAllStorageKeysUsage(
           storage::mojom::CacheStorageOwner::kBackgroundFetch);
   ASSERT_EQ(2ULL, usage_bgf.size());
@@ -2001,7 +2000,7 @@ TEST_F(CacheStorageManagerTest, GetAllStorageKeysUsageWithOldIndex) {
   original_handle = CacheStorageCacheHandle();
 
   // Capture the size before the index has necessarily flushed to disk.
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(1ULL, usage.size());
   int64_t usage_before_close = usage[0]->total_size_bytes;
@@ -2060,7 +2059,7 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> original_usage =
+  std::vector<storage::mojom::StorageUsageInfoPtr> original_usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, original_usage.size());
 
@@ -2095,7 +2094,7 @@ TEST_P(CacheStorageManagerTestP, GetAllStorageKeysUsageAggregateBucketUsages) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> new_usage =
+  std::vector<storage::mojom::StorageUsageInfoPtr> new_usage =
       GetAllStorageKeysUsage();
   ASSERT_EQ(2ULL, new_usage.size());
 
@@ -3113,7 +3112,7 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
               base::RepeatingCallback<void(const proto::CacheStorageIndex&,
                                            const proto::CacheStorageIndex&,
                                            int64_t)> test_logic) {
-    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages =
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages =
         GetAllStorageKeysUsage();
     ASSERT_TRUE(usages.empty());
 

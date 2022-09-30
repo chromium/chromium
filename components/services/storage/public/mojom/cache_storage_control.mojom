@@ -53,7 +53,7 @@ interface CacheStorageControl {
 
   // Used in response to browsing data and quota manager requests to get
   // the per-StorageKey size and last time used data.
-  GetAllStorageKeysInfo() => (array<StorageUsageInfoV2> usage_info);
+  GetAllStorageKeysInfo() => (array<StorageUsageInfo> usage_info);
 
   // Adds an observer that will receive cache change callbacks.
   AddObserver(pending_remote<CacheStorageObserver> observer);

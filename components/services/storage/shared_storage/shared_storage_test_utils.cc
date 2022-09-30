@@ -277,8 +277,8 @@ TestDatabaseOperationReceiver::MakeStatusCallback(
 
 void TestDatabaseOperationReceiver::InfosCallbackBase(
     const DBOperation& current_operation,
-    std::vector<mojom::StorageUsageInfoV2Ptr>* out_infos,
-    std::vector<mojom::StorageUsageInfoV2Ptr> infos) {
+    std::vector<mojom::StorageUsageInfoPtr>* out_infos,
+    std::vector<mojom::StorageUsageInfoPtr> infos) {
   DCHECK(out_infos);
   *out_infos = std::move(infos);
 
@@ -286,10 +286,10 @@ void TestDatabaseOperationReceiver::InfosCallbackBase(
     Finish();
 }
 
-base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
+base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
 TestDatabaseOperationReceiver::MakeInfosCallback(
     const DBOperation& current_operation,
-    std::vector<mojom::StorageUsageInfoV2Ptr>* out_infos) {
+    std::vector<mojom::StorageUsageInfoPtr>* out_infos) {
   return base::BindOnce(&TestDatabaseOperationReceiver::InfosCallbackBase,
                         base::Unretained(this), current_operation, out_infos);
 }

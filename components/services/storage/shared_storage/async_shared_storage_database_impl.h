@@ -113,10 +113,9 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
                             bool perform_storage_cleanup = false) override;
   void PurgeStaleOrigins(
       base::OnceCallback<void(OperationResult)> callback) override;
-  void FetchOrigins(
-      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
-          callback,
-      bool exclude_empty_origins = true) override;
+  void FetchOrigins(base::OnceCallback<
+                        void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
+                    bool exclude_empty_origins = true) override;
   void MakeBudgetWithdrawal(
       url::Origin context_origin,
       double bits_debit,

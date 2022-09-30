@@ -21,7 +21,7 @@ interface LocalStorageControl {
                   pending_receiver<blink.mojom.StorageArea> receiver);
 
   // Retrieves some basic usage information about the Local Storage state.
-  GetUsage() => (array<StorageUsageInfoV2> info);
+  GetUsage() => (array<StorageUsageInfo> info);
 
   // Deletes all Local State state for the given `storage_key`. Responds when
   // the deletion is complete.

@@ -5207,11 +5207,11 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   task_environment()->RunUntilIdle();
 
   // Check that the localStorage data been removed.
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos;
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
   {
     base::RunLoop run_loop;
     local_storage_control->GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos_in) {
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
           usage_infos.swap(usage_infos_in);
           run_loop.Quit();
         }));
@@ -5415,11 +5415,11 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
   task_environment()->RunUntilIdle();
 
   // Check that the localStorage data been removed.
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos;
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
   {
     base::RunLoop run_loop;
     local_storage_control->GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos_in) {
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
           usage_infos.swap(usage_infos_in);
           run_loop.Quit();
         }));

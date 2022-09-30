@@ -118,10 +118,10 @@ class MockResultQueue {
     return next_length;
   }
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> NextInfos() {
+  std::vector<mojom::StorageUsageInfoPtr> NextInfos() {
     DCHECK(!result_queue_.empty());
     result_queue_.pop();
-    return std::vector<mojom::StorageUsageInfoV2Ptr>();
+    return std::vector<mojom::StorageUsageInfoPtr>();
   }
 
  private:
@@ -205,10 +205,9 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
       base::OnceCallback<void(OperationResult)> callback) override {
     Run(std::move(callback));
   }
-  void FetchOrigins(
-      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
-          callback,
-      bool exclude_empty_origins = true) override {
+  void FetchOrigins(base::OnceCallback<
+                        void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
+                    bool exclude_empty_origins = true) override {
     Run(std::move(callback));
   }
   void MakeBudgetWithdrawal(
@@ -288,7 +287,7 @@ class MockAsyncSharedStorageDatabase : public AsyncSharedStorageDatabase {
         .Then(std::move(callback));
   }
 
-  void Run(base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
+  void Run(base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
                callback) {
     DCHECK(callback);
     mock_result_queue_.AsyncCall(&MockResultQueue::NextInfos)
@@ -639,7 +638,7 @@ class SharedStorageManagerTest : public testing::Test {
     return future.Get();
   }
 
-  void FetchOrigins(std::vector<mojom::StorageUsageInfoV2Ptr>* out_result,
+  void FetchOrigins(std::vector<mojom::StorageUsageInfoPtr>* out_result,
                     bool exclude_empty_origins = true) {
     DCHECK(out_result);
     DCHECK(GetManager());
@@ -653,10 +652,10 @@ class SharedStorageManagerTest : public testing::Test {
     GetManager()->FetchOrigins(std::move(callback), exclude_empty_origins);
   }
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> FetchOriginsSync(
+  std::vector<mojom::StorageUsageInfoPtr> FetchOriginsSync(
       bool exclude_empty_origins = true) {
     DCHECK(GetManager());
-    base::test::TestFuture<std::vector<mojom::StorageUsageInfoV2Ptr>> future;
+    base::test::TestFuture<std::vector<mojom::StorageUsageInfoPtr>> future;
     GetManager()->FetchOrigins(future.GetCallback(), exclude_empty_origins);
     return future.Take();
   }
@@ -874,7 +873,7 @@ TEST_F(SharedStorageManagerFromFileV1Test, Version1_LoadFromFile) {
                                    .time.ToDeltaSinceWindowsEpoch()
                                    .InMicroseconds());
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos = FetchOriginsSync();
+  std::vector<mojom::StorageUsageInfoPtr> infos = FetchOriginsSync();
   std::vector<url::Origin> origins;
   for (const auto& info : infos)
     origins.push_back(info->storage_key.origin());
@@ -972,7 +971,7 @@ TEST_F(SharedStorageManagerFromFileV1NoBudgetTableTest,
                 .data,
             u"k");
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos = FetchOriginsSync();
+  std::vector<mojom::StorageUsageInfoPtr> infos = FetchOriginsSync();
   std::vector<url::Origin> origins;
   for (const auto& info : infos)
     origins.push_back(info->storage_key.origin());
@@ -1916,7 +1915,7 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
 
   // Check that origin list is initially empty due to the database not being
   // initialized.
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos1;
+  std::vector<mojom::StorageUsageInfoPtr> infos1;
   FetchOrigins(&infos1);
 
   OperationResult result1 = OperationResult::kSqlError;
@@ -1962,7 +1961,7 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   int length5 = -1;
   Length(kOrigin5, &length5);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos2;
+  std::vector<mojom::StorageUsageInfoPtr> infos2;
   FetchOrigins(&infos2);
 
   bool success1 = false;
@@ -1986,7 +1985,7 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   int length10 = -1;
   Length(kOrigin5, &length10);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos3;
+  std::vector<mojom::StorageUsageInfoPtr> infos3;
   FetchOrigins(&infos3);
 
   bool success2 = false;
@@ -2015,7 +2014,7 @@ TEST_P(SharedStorageManagerPurgeMatchingOriginsParamTest, SinceThreshold) {
   EXPECT_FALSE(memory_trimmed_);
   OnMemoryPressure(MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos4;
+  std::vector<mojom::StorageUsageInfoPtr> infos4;
   FetchOrigins(&infos4);
 
   GetResult value1;

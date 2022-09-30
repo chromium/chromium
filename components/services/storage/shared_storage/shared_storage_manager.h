@@ -208,16 +208,15 @@ class SharedStorageManager {
                             base::OnceCallback<void(OperationResult)> callback,
                             bool perform_storage_cleanup = false);
 
-  // Fetches a vector of `mojom::StorageUsageInfoV2Ptr`, with one
-  // `mojom::StorageUsageInfoV2Ptr` for each origin currently using shared
+  // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
+  // `mojom::StorageUsageInfoPtr` for each origin currently using shared
   // storage in this profile. Called by
   // `browsing_data::SharedStorageHelper::StartFetching`. If
   // `exclude_empty_origins` is true, then only those with positive `length` are
   // included in the vector.
-  void FetchOrigins(
-      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
-          callback,
-      bool exclude_empty_origins = true);
+  void FetchOrigins(base::OnceCallback<
+                        void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
+                    bool exclude_empty_origins = true);
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_origin`.

@@ -59,7 +59,7 @@ void AdaptSessionStorageUsageInfo(
 
 void AdaptStorageUsageInfo(
     DOMStorageContext::GetLocalStorageUsageCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
   std::vector<StorageUsageInfo> result;
   result.reserve(usage.size());
   for (const auto& info : usage) {
@@ -395,7 +395,7 @@ void DOMStorageContextWrapper::PurgeMemory(PurgeOption purge_option) {
 }
 
 void DOMStorageContextWrapper::OnStartupUsageRetrieved(
-    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
   if (!storage_policy_observer_)
     return;
 

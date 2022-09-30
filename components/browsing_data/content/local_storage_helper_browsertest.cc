@@ -146,10 +146,10 @@ IN_PROC_BROWSER_TEST_F(LocalStorageHelperTest, DeleteSingleOrigin) {
   delete_run_loop.Run();
 
   // Ensure the origin has been deleted, but other origins are intact.
-  std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos;
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos;
   base::RunLoop get_usage_run_loop;
   GetLocalStorageControl()->GetUsage(base::BindLambdaForTesting(
-      [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_infos_in) {
+      [&](std::vector<storage::mojom::StorageUsageInfoPtr> usage_infos_in) {
         usage_infos.swap(usage_infos_in);
         get_usage_run_loop.Quit();
       }));

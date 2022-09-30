@@ -51,7 +51,7 @@ void IndexedDBHelper::DeleteIndexedDB(const blink::StorageKey& storage_key,
 
 void IndexedDBHelper::IndexedDBUsageInfoReceived(
     FetchCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
   DCHECK(!callback.is_null());
   std::list<content::StorageUsageInfo> result;
   for (const auto& usage : usages) {

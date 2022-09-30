@@ -75,7 +75,7 @@ SharedStorageClearSiteDataTester::GetSharedStorageOrigins() {
       storage_partition_impl_->GetSharedStorageManager();
   DCHECK(shared_storage_manager);
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
       future;
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();
@@ -95,7 +95,7 @@ int SharedStorageClearSiteDataTester::GetSharedStorageNumEntriesForOrigin(
       storage_partition_impl_->GetSharedStorageManager();
   DCHECK(shared_storage_manager);
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
       future;
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();
@@ -115,7 +115,7 @@ int SharedStorageClearSiteDataTester::GetSharedStorageTotalEntries() {
       storage_partition_impl_->GetSharedStorageManager();
   DCHECK(shared_storage_manager);
 
-  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoV2Ptr>>
+  base::test::TestFuture<std::vector<storage::mojom::StorageUsageInfoPtr>>
       future;
   shared_storage_manager->FetchOrigins(future.GetCallback());
   auto infos = future.Take();

@@ -154,7 +154,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void PurgeMemory(PurgeOption purge_option);
 
   void OnStartupUsageRetrieved(
-      std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage);
+      std::vector<storage::mojom::StorageUsageInfoPtr> usage);
   void ApplyPolicyUpdates(
       std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
 

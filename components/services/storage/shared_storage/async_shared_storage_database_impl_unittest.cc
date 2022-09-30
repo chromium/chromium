@@ -526,7 +526,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     return future.Get();
   }
 
-  void FetchOrigins(std::vector<mojom::StorageUsageInfoV2Ptr>* out_result,
+  void FetchOrigins(std::vector<mojom::StorageUsageInfoPtr>* out_result,
                     bool exclude_empty_origins = true) {
     DCHECK(out_result);
     DCHECK(async_database_);
@@ -540,11 +540,11 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     async_database_->FetchOrigins(std::move(callback), exclude_empty_origins);
   }
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> FetchOriginsSync(
+  std::vector<mojom::StorageUsageInfoPtr> FetchOriginsSync(
       bool exclude_empty_origins = true) {
     DCHECK(async_database_);
 
-    base::test::TestFuture<std::vector<mojom::StorageUsageInfoV2Ptr>> future;
+    base::test::TestFuture<std::vector<mojom::StorageUsageInfoPtr>> future;
     async_database_->FetchOrigins(future.GetCallback(), exclude_empty_origins);
     return future.Take();
   }
@@ -1803,7 +1803,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   // Check that origin list is initially empty due to the database not being
   // initialized.
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos1;
+  std::vector<mojom::StorageUsageInfoPtr> infos1;
   FetchOrigins(&infos1);
 
   // Check that calling `PurgeStaleOrigins()` on the uninitialized database
@@ -1854,7 +1854,7 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   int length4 = -1;
   Length(kOrigin4, &length4);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos2;
+  std::vector<mojom::StorageUsageInfoPtr> infos2;
   FetchOrigins(&infos2);
 
   bool success1 = false;
@@ -1875,9 +1875,9 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
   int length8 = -1;
   Length(kOrigin4, &length8);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos3;
+  std::vector<mojom::StorageUsageInfoPtr> infos3;
   FetchOrigins(&infos3);
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos4;
+  std::vector<mojom::StorageUsageInfoPtr> infos4;
   FetchOrigins(&infos4, /*exclude_empty_origins=*/false);
 
   bool success2 = false;
@@ -1900,9 +1900,9 @@ TEST_P(AsyncSharedStorageDatabaseImplParamTest, PurgeStaleOrigins) {
 
   TrimMemory();
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos5;
+  std::vector<mojom::StorageUsageInfoPtr> infos5;
   FetchOrigins(&infos5);
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos6;
+  std::vector<mojom::StorageUsageInfoPtr> infos6;
   FetchOrigins(&infos6, /*exclude_empty_origins=*/false);
 
   OperationResult result14 = OperationResult::kSqlError;
@@ -2208,7 +2208,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   // Check that origin list is initially empty due to the database not being
   // initialized.
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos1;
+  std::vector<mojom::StorageUsageInfoPtr> infos1;
   FetchOrigins(&infos1);
 
   // Check that calling `PurgeMatchingOrigins()` on the uninitialized database
@@ -2266,7 +2266,7 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   int length5 = -1;
   Length(kOrigin5, &length5);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos2;
+  std::vector<mojom::StorageUsageInfoPtr> infos2;
   FetchOrigins(&infos2);
 
   bool success1 = false;
@@ -2290,9 +2290,9 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
   int length10 = -1;
   Length(kOrigin5, &length10);
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos3;
+  std::vector<mojom::StorageUsageInfoPtr> infos3;
   FetchOrigins(&infos3);
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos4;
+  std::vector<mojom::StorageUsageInfoPtr> infos4;
   FetchOrigins(&infos4, /*exclude_empty_origins=*/false);
 
   bool success2 = false;
@@ -2320,9 +2320,9 @@ TEST_P(AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest,
 
   TrimMemory();
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos5;
+  std::vector<mojom::StorageUsageInfoPtr> infos5;
   FetchOrigins(&infos5);
-  std::vector<mojom::StorageUsageInfoV2Ptr> infos6;
+  std::vector<mojom::StorageUsageInfoPtr> infos6;
   FetchOrigins(&infos6, /*exclude_empty_origins=*/false);
 
   GetResult value1;

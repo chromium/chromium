@@ -220,7 +220,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     int64_t size = 0;
     auto& control = GetControl(browser);
     control.GetUsage(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::StorageUsageInfoV2Ptr> usages) {
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
           for (auto& usage : usages)
             size += usage->total_size_bytes;
           loop.Quit();

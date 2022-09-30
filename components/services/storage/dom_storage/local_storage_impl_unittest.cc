@@ -44,8 +44,8 @@ std::string Uint8VectorToStdString(const std::vector<uint8_t>& v) {
 
 void GetStorageUsageCallback(
     const base::RepeatingClosure& callback,
-    std::vector<mojom::StorageUsageInfoV2Ptr>* out_result,
-    std::vector<mojom::StorageUsageInfoV2Ptr> result) {
+    std::vector<mojom::StorageUsageInfoPtr>* out_result,
+    std::vector<mojom::StorageUsageInfoPtr> result) {
   *out_result = std::move(result);
   callback.Run();
 }
@@ -202,9 +202,9 @@ class LocalStorageImplTest : public testing::Test {
     return contents;
   }
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> GetStorageUsageSync() {
+  std::vector<mojom::StorageUsageInfoPtr> GetStorageUsageSync() {
     base::RunLoop run_loop;
-    std::vector<mojom::StorageUsageInfoV2Ptr> result;
+    std::vector<mojom::StorageUsageInfoPtr> result;
     context()->GetUsage(base::BindOnce(&GetStorageUsageCallback,
                                        run_loop.QuitClosure(), &result));
     run_loop.Run();
@@ -433,7 +433,7 @@ TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
 }
 
 TEST_F(LocalStorageImplTest, GetStorageUsage_NoData) {
-  std::vector<mojom::StorageUsageInfoV2Ptr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   EXPECT_EQ(0u, info.size());
 }
 
@@ -464,7 +464,7 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 
   base::Time after_write = base::Time::Now();
 
-  std::vector<mojom::StorageUsageInfoV2Ptr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
   if (info[0]->storage_key == storage_key2)
     std::swap(info[0], info[1]);

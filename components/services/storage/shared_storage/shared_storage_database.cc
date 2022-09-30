@@ -762,7 +762,7 @@ SharedStorageDatabase::PurgeStaleOrigins() {
   return OperationResult::kSuccess;
 }
 
-std::vector<mojom::StorageUsageInfoV2Ptr> SharedStorageDatabase::FetchOrigins(
+std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins(
     bool exclude_empty_origins) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -778,10 +778,10 @@ std::vector<mojom::StorageUsageInfoV2Ptr> SharedStorageDatabase::FetchOrigins(
                                  "ORDER BY context_origin";
 
   sql::Statement statement(db_.GetUniqueStatement(kSelectSql));
-  std::vector<mojom::StorageUsageInfoV2Ptr> fetched_origin_infos;
+  std::vector<mojom::StorageUsageInfoPtr> fetched_origin_infos;
 
   while (statement.Step()) {
-    fetched_origin_infos.emplace_back(mojom::StorageUsageInfoV2::New(
+    fetched_origin_infos.emplace_back(mojom::StorageUsageInfo::New(
         blink::StorageKey(url::Origin::Create(GURL(statement.ColumnString(0)))),
         statement.ColumnInt64(2) * kSharedStorageEntryTotalBytesMultiplier *
             max_string_length_,

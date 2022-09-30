@@ -131,7 +131,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                      std::vector<DomStorageDatabase::KeyValuePair> data);
 
   void OnGotStorageUsageForShutdown(
-      std::vector<mojom::StorageUsageInfoV2Ptr> usage);
+      std::vector<mojom::StorageUsageInfoPtr> usage);
   void OnStorageKeysDeleted(leveldb::Status status);
   void OnShutdownComplete();
 

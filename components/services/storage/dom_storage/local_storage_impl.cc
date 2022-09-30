@@ -689,10 +689,10 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
   if (!database_) {
     // If for whatever reason no leveldb database is available, no storage is
     // used, so return an array only containing the current areas.
-    std::vector<mojom::StorageUsageInfoV2Ptr> result;
+    std::vector<mojom::StorageUsageInfoPtr> result;
     base::Time now = base::Time::Now();
     for (const auto& it : areas_) {
-      result.emplace_back(mojom::StorageUsageInfoV2::New(it.first, 0, now));
+      result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
     }
     std::move(callback).Run(std::move(result));
   } else {
@@ -710,7 +710,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
 void LocalStorageImpl::OnGotMetaData(
     GetUsageCallback callback,
     std::vector<DomStorageDatabase::KeyValuePair> data) {
-  std::vector<mojom::StorageUsageInfoV2Ptr> result;
+  std::vector<mojom::StorageUsageInfoPtr> result;
   std::set<blink::StorageKey> storage_keys;
   for (const auto& row : data) {
     absl::optional<blink::StorageKey> storage_key =
@@ -727,7 +727,7 @@ void LocalStorageImpl::OnGotMetaData(
       continue;
     }
 
-    result.emplace_back(mojom::StorageUsageInfoV2::New(
+    result.emplace_back(mojom::StorageUsageInfo::New(
         storage_key.value(), row_data.size_bytes(),
         base::Time::FromInternalValue(row_data.last_modified())));
   }
@@ -742,13 +742,13 @@ void LocalStorageImpl::OnGotMetaData(
         it.second->storage_area()->empty()) {
       continue;
     }
-    result.emplace_back(mojom::StorageUsageInfoV2::New(it.first, 0, now));
+    result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
   }
   std::move(callback).Run(std::move(result));
 }
 
 void LocalStorageImpl::OnGotStorageUsageForShutdown(
-    std::vector<mojom::StorageUsageInfoV2Ptr> usage) {
+    std::vector<mojom::StorageUsageInfoPtr> usage) {
   std::vector<blink::StorageKey> storage_keys_to_delete;
   for (const auto& info : usage) {
     if (base::Contains(storage_keys_to_purge_on_shutdown_, info->storage_key))

@@ -178,8 +178,7 @@ void AsyncSharedStorageDatabaseImpl::PurgeStaleOrigins(
 }
 
 void AsyncSharedStorageDatabaseImpl::FetchOrigins(
-    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoV2Ptr>)>
-        callback,
+    base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
     bool exclude_empty_origins) {
   DCHECK(callback);
   DCHECK(database_);

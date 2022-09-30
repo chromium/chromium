@@ -26,12 +26,12 @@ namespace {
 
 void GetAllStorageKeysInfoForCacheStorageCallback(
     CacheStorageHelper::FetchCallback callback,
-    std::vector<storage::mojom::StorageUsageInfoV2Ptr> usage_info) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
   std::list<content::StorageUsageInfo> result;
-  for (const storage::mojom::StorageUsageInfoV2Ptr& usage : usage_info) {
+  for (const storage::mojom::StorageUsageInfoPtr& usage : usage_info) {
     if (!HasWebScheme(usage->storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
     result.emplace_back(usage->storage_key, usage->total_size_bytes,
