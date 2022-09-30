@@ -308,11 +308,9 @@ void IntentPickerTabHelper::DidFinishNavigation(
   // or bubble if there are some apps available. We only want to check this if
   // the navigation happens in the primary main frame, and the navigation is not
   // the same document with same URL.
-  if (!web_contents())
+  if (!web_contents()) {
     return;
-
-  ++commit_count_;
-
+  }
   if (IsNavigatingToNewSite(navigation_handle)) {
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
