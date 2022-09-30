@@ -143,7 +143,8 @@ void BookmarkEditorView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // (RootView). Note that both views also share the same accessible name.
   // In the meantime, give it a generic role.
   node_data->role = ax::mojom::Role::kPane;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
+  node_data->SetNameChecked(
+      l10n_util::GetStringUTF8(IDS_BOOKMARK_EDITOR_TITLE));
 }
 
 bool BookmarkEditorView::IsCommandIdChecked(int command_id) const {

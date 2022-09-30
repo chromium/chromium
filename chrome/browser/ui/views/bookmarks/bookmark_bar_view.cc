@@ -334,7 +334,7 @@ class BookmarkFolderButton : public BookmarkMenuButtonBase {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     BookmarkMenuButtonBase::GetAccessibleNodeData(node_data);
-    node_data->SetName(GetAccessibleName());
+    node_data->SetNameChecked(GetAccessibleName());
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kRoleDescription,
         l10n_util::GetStringUTF8(
@@ -451,7 +451,7 @@ class BookmarkBarView::ButtonSeparatorView : public views::Separator {
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
     node_data->role = ax::mojom::Role::kSplitter;
-    node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_SEPARATOR));
+    node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_SEPARATOR));
   }
 };
 using ButtonSeparatorView = BookmarkBarView::ButtonSeparatorView;
@@ -1097,7 +1097,7 @@ void BookmarkBarView::ChildPreferredSizeChanged(views::View* child) {
 
 void BookmarkBarView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
+  node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARKS));
 }
 
 void BookmarkBarView::AnimationProgressed(const gfx::Animation* animation) {

@@ -65,7 +65,8 @@ SavedTabGroupBar::~SavedTabGroupBar() {
 
 void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kToolbar;
-  node_data->SetName(l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS));
+  node_data->SetNameChecked(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS));
 }
 
 void SavedTabGroupBar::SavedTabGroupAdded(const SavedTabGroup& group,
