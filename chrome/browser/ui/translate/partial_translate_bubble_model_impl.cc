@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/translate/partial_translate_bubble_model_impl.h"
 
-#include <limits>
-#include <string>
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
@@ -19,9 +17,6 @@
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_errors.h"
-#include "ui/gfx/font_list.h"
-#include "ui/gfx/text_constants.h"
-#include "ui/gfx/text_elider.h"
 
 namespace {
 
@@ -97,14 +92,7 @@ std::u16string PartialTranslateBubbleModelImpl::GetSourceText() const {
 
 void PartialTranslateBubbleModelImpl::SetTargetText(
     const std::u16string& text) {
-  // Note: Some languages have syntactic differences in use of ellipses.
-  // Luxembourgish uses a leading space and is the only one of these languages
-  // supported by Translate in Chrome. Given this, specific localization is not
-  // handled, but could be in the future if more languages are included.
-  if (source_text_truncated_)
-    target_text_ = text + u"…";
-  else
-    target_text_ = text;
+  target_text_ = text;
 }
 
 std::u16string PartialTranslateBubbleModelImpl::GetTargetText() const {
@@ -172,14 +160,7 @@ std::string PartialTranslateBubbleModelImpl::GetTargetLanguageCode() const {
 void PartialTranslateBubbleModelImpl::Translate(
     content::WebContents* web_contents) {
   PartialTranslateRequest request;
-  // If the selected text was truncated, strip the trailing ellipses before
-  // sending for translation.
-  std::u16string source_text = GetSourceText();
-  if (source_text_truncated_)
-    request.selection_text = source_text.substr(0, source_text.size() - 1);
-  else
-    request.selection_text = source_text;
-
+  request.selection_text = GetSourceText();
   request.selection_encoding = web_contents->GetEncoding();
   std::string source_language_code = GetSourceLanguageCode();
   if (source_language_code != translate::kUnknownLanguageCode) {
@@ -211,11 +192,6 @@ void PartialTranslateBubbleModelImpl::TranslateFullPage(
       ->GetTranslatePrefs()
       ->SetRecentTargetLanguage(GetTargetLanguageCode());
   translate_manager->ShowTranslateUI(GetTargetLanguageCode(), true);
-}
-
-void PartialTranslateBubbleModelImpl::SetSourceTextTruncated(
-    bool is_truncated) {
-  source_text_truncated_ = is_truncated;
 }
 
 void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
