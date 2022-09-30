@@ -426,6 +426,16 @@ EGLImageBacking::GenEGLImageSibling(base::span<const uint8_t> pixel_data) {
       bind_egl_image = false;
     }
     buffer = egl_image_buffer_;
+
+    if (!pixel_data.empty()) {
+      // If pixel data is being uploaded to the texture, that means we are
+      // sending commands to the gpu. Hence consider it as a write and add a
+      // fence to synchronize it with corresponding reads. This case happens
+      // when tab windows are composited by viz for tablet ui. Initial pixel
+      // data gets uploaded on the gpu main thread and being read on DrDc
+      // thread.
+      write_fence_ = gl::GLFenceEGL::Create();
+    }
   }
 
   // Mark the backing as cleared if pixel data has been uploaded. Note that
