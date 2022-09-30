@@ -28,6 +28,10 @@
 // NOTE: <action-link> and document.createElement('action-link') don't work.
 
 class ActionLink extends HTMLAnchorElement {
+  private boundOnKeyDown_: ((e: KeyboardEvent) => void)|null = null;
+  private boundOnMouseDown_: (() => void)|null = null;
+  private boundOnBlur_: (() => void)|null = null;
+
   connectedCallback() {
     // Action links can start disabled (e.g. <a is="action-link" disabled>).
     this.tabIndex = this.disabled ? -1 : 0;
@@ -36,7 +40,8 @@ class ActionLink extends HTMLAnchorElement {
       this.setAttribute('role', 'link');
     }
 
-    this.addEventListener('keydown', (e: KeyboardEvent) => {
+
+    this.boundOnKeyDown_ = (e: KeyboardEvent) => {
       if (!this.disabled && e.key === 'Enter' && !this.href) {
         // Schedule a click asynchronously because other 'keydown' handlers
         // may still run later (e.g. document.addEventListener('keydown')).
@@ -45,7 +50,8 @@ class ActionLink extends HTMLAnchorElement {
         // haven't found anything that breaks because of this (yet).
         window.setTimeout(() => this.click(), 0);
       }
-    });
+    };
+    this.addEventListener('keydown', this.boundOnKeyDown_!);
 
     function preventDefault(e: Event) {
       e.preventDefault();
@@ -56,7 +62,7 @@ class ActionLink extends HTMLAnchorElement {
       document.removeEventListener('mouseup', removePreventDefault);
     }
 
-    this.addEventListener('mousedown', function() {
+    this.boundOnMouseDown_ = () => {
       // This handlers strives to match the behavior of <a href="...">.
 
       // While the mouse is down, prevent text selection from dragging.
@@ -67,11 +73,20 @@ class ActionLink extends HTMLAnchorElement {
       if (document.activeElement !== this) {
         this.classList.add('no-outline');
       }
-    });
+    };
+    this.addEventListener('mousedown', this.boundOnMouseDown_!);
 
-    this.addEventListener('blur', function() {
-      this.classList.remove('no-outline');
-    });
+    this.boundOnBlur_ = () => this.classList.remove('no-outline');
+    this.addEventListener('blur', this.boundOnBlur_!);
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('keydown', this.boundOnKeyDown_!);
+    this.boundOnKeyDown_ = null;
+    this.removeEventListener('mousedown', this.boundOnMouseDown_!);
+    this.boundOnMouseDown_ = null;
+    this.removeEventListener('blur', this.boundOnBlur_!);
+    this.boundOnBlur_ = null;
   }
 
   set disabled(disabled: boolean) {
