@@ -329,10 +329,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
-      "syncSettingsCategorizationEnabled",
-      chromeos::features::IsSyncSettingsCategorizationEnabled());
-
-  html_source->AddBoolean(
       "userCannotManuallyEnterPassword",
       !ash::password_visibility::AccountHasUserFacingPassword(
           g_browser_process->local_state(), ash::ProfileHelper::Get()
