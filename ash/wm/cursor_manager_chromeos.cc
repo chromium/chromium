@@ -9,10 +9,14 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "ui/aura/env.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/events/event.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager.h"
 
@@ -26,8 +30,19 @@ CursorManager::~CursorManager() = default;
 void CursorManager::Init() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceShowCursor)) {
-    // TODO(sammiequon): Set a custom cursor.
-    SetCursor(ui::mojom::CursorType::kPointer);
+    // Set a custom cursor so users know that the switch is turned on.
+    gfx::NativeCursor cursor(ui::mojom::CursorType::kCustom);
+    const gfx::ImageSkia custom_icon =
+        gfx::CreateVectorIcon(kTouchIndicatorIcon, SK_ColorBLACK);
+    SkBitmap bitmap = *custom_icon.bitmap();
+    gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
+    auto* cursor_factory = ui::CursorFactory::GetInstance();
+    cursor.SetPlatformCursor(
+        cursor_factory->CreateImageCursor(cursor.type(), bitmap, hotspot));
+    cursor.set_custom_bitmap(bitmap);
+    cursor.set_custom_hotspot(hotspot);
+
+    SetCursor(cursor);
     LockCursor();
     return;
   }

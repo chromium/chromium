@@ -428,6 +428,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "toolbar_position_top_center.icon",
     "touch_calibration_complete_check.icon",
     "touch_calibration_hand.icon",
+    "touch_indicator.icon",
     "trash_can.icon",
     "tray_action_new_lock_screen_note.icon",
     "two_files.icon",
