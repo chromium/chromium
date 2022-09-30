@@ -24,7 +24,7 @@ BASE_DECLARE_FEATURE(kFileSystemConnectorEnabled);
 // The settings for a report service obtained from a connector policy.
 class FileSystemServiceSettings {
  public:
-  explicit FileSystemServiceSettings(
+  FileSystemServiceSettings(
       const base::Value& settings_value,
       const ServiceProviderConfig& service_provider_config);
   FileSystemServiceSettings(FileSystemServiceSettings&&);
