@@ -293,7 +293,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
 
   // In order to not jarringly refresh the menu while the user has it open,
   // updates are blocked while the menu is tracking.
-  bool is_menu_open_;
+  bool is_menu_open_ = false;
 
   // The default favicon if a HistoryItem does not have one.
   base::scoped_nsobject<NSImage> default_favicon_;
