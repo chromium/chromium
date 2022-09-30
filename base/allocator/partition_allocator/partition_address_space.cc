@@ -28,7 +28,7 @@
 #include <windows.h>
 #endif  // BUILDFLAG(IS_WIN)
 
-#if defined(PA_ENABLE_SHADOW_GIGACAGE)
+#if defined(PA_ENABLE_SHADOW_METADATA)
 #include <sys/mman.h>
 #endif
 
@@ -168,7 +168,7 @@ void PartitionAddressSpace::Init() {
     return;
 
   size_t regular_pool_size = RegularPoolSize();
-#if defined(PA_ENABLE_SHADOW_GIGACAGE)
+#if defined(PA_ENABLE_SHADOW_METADATA)
   int regular_pool_fd = memfd_create("/regular_pool", MFD_CLOEXEC);
 #else
   int regular_pool_fd = -1;
@@ -194,7 +194,7 @@ void PartitionAddressSpace::Init() {
       !IsInRegularPool(setup_.regular_pool_base_address_ + regular_pool_size));
 
   size_t brp_pool_size = BRPPoolSize();
-#if defined(PA_ENABLE_SHADOW_GIGACAGE)
+#if defined(PA_ENABLE_SHADOW_METADATA)
   int brp_pool_fd = memfd_create("/brp_pool", MFD_CLOEXEC);
 #else
   int brp_pool_fd = -1;
