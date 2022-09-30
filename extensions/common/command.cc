@@ -40,14 +40,6 @@ static const int kMaxTokenSize = 4;
 static const int kMaxTokenSize = 3;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// TODO(devlin): Expose this on Command, since many places implicitly check
-// this.
-bool IsNamedCommand(const std::string& command_name) {
-  return command_name != values::kPageActionCommandEvent &&
-         command_name != values::kBrowserActionCommandEvent &&
-         command_name != values::kActionCommandEvent;
-}
-
 bool DoesRequireModifier(const std::string& accelerator) {
   return accelerator != values::kKeyMediaNextTrack &&
          accelerator != values::kKeyMediaPlayPause &&
@@ -273,7 +265,7 @@ Command::Command(const std::string& command_name,
     : command_name_(command_name), description_(description), global_(global) {
   std::u16string error;
   accelerator_ = ParseImpl(accelerator, CommandPlatform(), 0,
-                           IsNamedCommand(command_name), &error);
+                           !IsActionRelatedCommand(command_name), &error);
 }
 
 Command::Command(const Command& other) = default;
@@ -303,8 +295,9 @@ std::string Command::CommandPlatform() {
 ui::Accelerator Command::StringToAccelerator(const std::string& accelerator,
                                              const std::string& command_name) {
   std::u16string error;
-  ui::Accelerator parsed = ParseImpl(accelerator, Command::CommandPlatform(), 0,
-                                     IsNamedCommand(command_name), &error);
+  ui::Accelerator parsed =
+      ParseImpl(accelerator, Command::CommandPlatform(), 0,
+                !IsActionRelatedCommand(command_name), &error);
   return parsed;
 }
 
@@ -412,6 +405,13 @@ bool Command::IsMediaKey(const ui::Accelerator& accelerator) {
   return ui::MediaKeysListener::IsMediaKeycode(accelerator.key_code());
 }
 
+// static
+bool Command::IsActionRelatedCommand(const std::string& command_name) {
+  return command_name == values::kActionCommandEvent ||
+         command_name == values::kBrowserActionCommandEvent ||
+         command_name == values::kPageActionCommandEvent;
+}
+
 bool Command::Parse(const base::DictionaryValue* command,
                     const std::string& command_name,
                     int index,
@@ -419,7 +419,7 @@ bool Command::Parse(const base::DictionaryValue* command,
   DCHECK(!command_name.empty());
 
   std::u16string description;
-  if (IsNamedCommand(command_name)) {
+  if (!IsActionRelatedCommand(command_name)) {
     const std::string* description_ptr =
         command->FindStringKey(keys::kDescription);
     if (!description_ptr || description_ptr->empty()) {
@@ -506,7 +506,7 @@ bool Command::Parse(const base::DictionaryValue* command,
       // Note that we pass iter->first to pretend we are on a platform we're not
       // on.
       accelerator = ParseImpl(iter->second, iter->first, index,
-                              IsNamedCommand(command_name), error);
+                              !IsActionRelatedCommand(command_name), error);
       if (accelerator.key_code() == ui::VKEY_UNKNOWN) {
         if (error->empty()) {
           *error = ErrorUtils::FormatErrorMessageUTF16(

@@ -31,6 +31,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/api/commands/commands_handler.h"
+#include "extensions/common/command.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -182,9 +183,7 @@ bool CommandService::AddKeybindingPref(
 
   // Media Keys are allowed to be used by named command only.
   DCHECK(!Command::IsMediaKey(accelerator) ||
-         (command_name != manifest_values::kPageActionCommandEvent &&
-          command_name != manifest_values::kBrowserActionCommandEvent &&
-          command_name != manifest_values::kActionCommandEvent));
+         !Command::IsActionRelatedCommand(command_name));
 
   ScopedDictPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
   base::Value::Dict& bindings = updater.Get();
@@ -469,9 +468,7 @@ bool CommandService::CanAutoAssign(const Command &command,
     return true;
 
   if (command.global()) {
-    if (command.command_name() == manifest_values::kBrowserActionCommandEvent ||
-        command.command_name() == manifest_values::kPageActionCommandEvent ||
-        command.command_name() == manifest_values::kActionCommandEvent)
+    if (Command::IsActionRelatedCommand(command.command_name()))
       return false;  // Browser and page actions are not global in nature.
 
     if (extension->permissions_data()->HasAPIPermission(

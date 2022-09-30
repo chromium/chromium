@@ -26,14 +26,6 @@
 
 using extensions::ActionInfo;
 
-namespace {
-bool IsActionRelatedCommand(const std::string& name) {
-  return name == extensions::manifest_values::kActionCommandEvent ||
-         name == extensions::manifest_values::kBrowserActionCommandEvent ||
-         name == extensions::manifest_values::kPageActionCommandEvent;
-}
-}  //  namespace
-
 // static
 std::unique_ptr<ExtensionActionPlatformDelegate>
 ExtensionActionPlatformDelegate::Create(
@@ -101,7 +93,7 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(
   if (extension_id != controller_->extension()->id())
     return;  // Not this action's extension.
 
-  if (!IsActionRelatedCommand(command.command_name()))
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name()))
     return;
 
   RegisterCommand();
@@ -113,7 +105,7 @@ void ExtensionActionPlatformDelegateViews::OnExtensionCommandRemoved(
   if (extension_id != controller_->extension()->id())
     return;
 
-  if (!IsActionRelatedCommand(command.command_name()))
+  if (!extensions::Command::IsActionRelatedCommand(command.command_name()))
     return;
 
   extensions::Command extension_command;
