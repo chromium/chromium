@@ -85610,6 +85610,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Rejected due to existing denial"/>
   <int value="6" label="Rejected due to missing sandbox token"/>
   <int value="7" label="Rejected due to denied prompt"/>
+  <int value="8"
+      label="Rejected due to a call being made from an invalid context"/>
 </enum>
 
 <enum name="ResolutionCategory">

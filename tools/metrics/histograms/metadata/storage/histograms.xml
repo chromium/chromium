@@ -92,6 +92,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="API.StorageAccess.RequestStorageAccessForOrigin"
+    enum="RequestStorageResult" expires_after="2023-03-12">
+  <owner>cfredric@chromium.org</owner>
+  <owner>mreichhoff@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records invocations of document.requestStorageAccessForOrigin and reasons
+    the request was approved or rejected. Recorded for every call to the
+    function, regardless of outcome. Note that
+    API.StorageAccess.RequestStorageAccess is similar, but for the other variant
+    of this API.
+  </summary>
+</histogram>
+
 <histogram name="Clipboard.ExtensionContentScriptReadHasUserActivation"
     units="proportion" expires_after="2021-08-09">
   <obsolete>

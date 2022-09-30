@@ -377,11 +377,17 @@ enum class RequestStorageResult {
   REJECTED_EXISTING_DENIAL = 5,
   REJECTED_SANDBOXED = 6,
   REJECTED_GRANT_DENIED = 7,
-  kMaxValue = REJECTED_GRANT_DENIED,
+  REJECTED_INCORRECT_FRAME = 8,
+  kMaxValue = REJECTED_INCORRECT_FRAME,
 };
 void FireRequestStorageAccessHistogram(RequestStorageResult result) {
   base::UmaHistogramEnumeration("API.StorageAccess.RequestStorageAccess",
                                 result);
+}
+
+void FireRequestStorageAccessForOriginHistogram(RequestStorageResult result) {
+  base::UmaHistogramEnumeration(
+      "API.StorageAccess.RequestStorageAccessForOrigin", result);
 }
 
 class IntrinsicSizeResizeObserverDelegate : public ResizeObserver::Delegate {
@@ -6062,6 +6068,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     ScriptState* script_state,
     const AtomicString& origin) {
   if (!GetFrame()) {
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::REJECTED_NO_ORIGIN);
     // Note that in detached frames, resolvers are not able to return a promise.
     return ScriptPromise::RejectWithDOMException(
         script_state,
@@ -6087,6 +6095,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
         "requestStorageAccessForOrigin: Must be handling a user gesture to "
         "use."));
 
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::REJECTED_NO_USER_GESTURE);
     resolver->Reject();
     return promise;
   }
@@ -6097,6 +6107,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
         mojom::blink::ConsoleMessageLevel::kError,
         "requestStorageAccessForOrigin: Only supported in primary top-level "
         "browsing contexts."));
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::REJECTED_INCORRECT_FRAME);
     resolver->Reject();
     return promise;
   }
@@ -6107,6 +6119,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
         mojom::blink::ConsoleMessageLevel::kError,
         "requestStorageAccessForOrigin: Cannot be used by opaque origins."));
 
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
     resolver->Reject();
     return promise;
   }
@@ -6119,6 +6133,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
         mojom::blink::ConsoleMessageSource::kSecurity,
         mojom::blink::ConsoleMessageLevel::kError,
         "requestStorageAccessForOrigin: Invalid origin parameter."));
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::REJECTED_OPAQUE_ORIGIN);
     resolver->Reject();
     return promise;
   }
@@ -6126,6 +6142,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
   if (dom_window_->GetSecurityOrigin()->IsSameSiteWith(supplied_origin.get())) {
     // Access is not actually disabled, so accept the request.
     resolver->Resolve();
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::APPROVED_EXISTING_ACCESS);
     return promise;
   }
 
@@ -6150,6 +6168,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
                 switch (status) {
                   case mojom::blink::PermissionStatus::GRANTED:
                     document->expressly_denied_storage_access_ = false;
+                    FireRequestStorageAccessForOriginHistogram(
+                        RequestStorageResult::APPROVED_NEW_GRANT);
                     resolver->Resolve();
                     break;
                   case mojom::blink::PermissionStatus::DENIED:
@@ -6159,6 +6179,8 @@ ScriptPromise Document::requestStorageAccessForOrigin(
                     [[fallthrough]];
                   case mojom::blink::PermissionStatus::ASK:
                   default:
+                    FireRequestStorageAccessForOriginHistogram(
+                        RequestStorageResult::REJECTED_GRANT_DENIED);
                     resolver->Reject();
                 }
               },

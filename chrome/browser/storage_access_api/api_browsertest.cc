@@ -23,6 +23,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -55,6 +56,8 @@ constexpr char kHostD[] = "d.test";
 
 constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
 constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
+constexpr char kRequestForOriginResultHistogram[] =
+    "API.StorageAccess.RequestStorageAccessForOrigin";
 
 enum class TestType { kFrame, kWorker };
 
@@ -768,6 +771,19 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestForOriginResultHistogram,
+                  1 /*RequestStorageResult::APPROVED_NEW_GRANT*/),
+              Gt(0));
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kUseCounterHistogram,
+                  blink::mojom::WebFeature::
+                      kStorageAccessAPI_requestStorageAccessForOrigin_Method),
+              Gt(0));
 }
 
 INSTANTIATE_TEST_CASE_P(/* no prefix */,
@@ -854,6 +870,13 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  0 /*RequestOutcome::kGrantedByFirstPartySet*/),
+              Gt(0));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
@@ -884,6 +907,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  5 /*RequestOutcome::kDeniedByPrerequisites*/),
+              Gt(0));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
@@ -949,8 +978,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   // this configuration, because the requesting site (`kHostA`) is not in the
   // same First-Party Set as the requested site (`kHostD`).
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
-      GetFrame(), base::StrCat({"https://", kHostD, ":",
-                                base::NumberToString(https_server().port())})));
+      GetPrimaryMainFrame(),
+      base::StrCat({"https://", kHostD, ":",
+                    base::NumberToString(https_server().port())})));
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
@@ -959,6 +989,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessAPIForOriginWithFirstPartySetsBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  content::FetchHistogramsFromChildProcesses();
+  EXPECT_THAT(histogram_tester.GetBucketCount(
+                  kRequestOutcomeHistogram,
+                  3 /*RequestOutcome::kDeniedByFirstPartySet*/),
+              Gt(0));
 }
 
 // Tests to validate that, when the `requestStorageAccessForOrigin` extension is
