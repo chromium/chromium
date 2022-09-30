@@ -8,8 +8,8 @@
 #include <cstring>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/compiler_specific.h"
 #include "base/memory/page_size.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,7 +26,7 @@ namespace allocator_shim::internal {
 // Platforms on which we override weak libc symbols.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-NOINLINE void FreeForTest(void* data) {
+PA_NOINLINE void FreeForTest(void* data) {
   free(data);
 }
 
@@ -68,8 +68,9 @@ TEST(PartitionAllocAsMalloc, Mallinfo) {
   EXPECT_GT(after_alloc.uordblks, before.uordblks);
 
   // a simple malloc() / free() pair can be discarded by the compiler (and is),
-  // making the test fail. It is sufficient to make |FreeForTest()| a NOINLINE
-  // function for the call to not be eliminated, but this is required.
+  // making the test fail. It is sufficient to make |FreeForTest()| a
+  // PA_NOINLINE function for the call to not be eliminated, but this is
+  // required.
   FreeForTest(data);
   FreeForTest(aligned_data);
   FreeForTest(direct_mapped_data);

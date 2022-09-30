@@ -15,8 +15,8 @@
 
 #include <new>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_APPLE)
@@ -28,7 +28,7 @@
 // it is also needless, since no library used on macOS imports these.
 //
 // TODO(lizeb): It may not be necessary anywhere to export these.
-#define SHIM_CPP_SYMBOLS_EXPORT NOINLINE
+#define SHIM_CPP_SYMBOLS_EXPORT PA_NOINLINE
 #endif
 
 SHIM_CPP_SYMBOLS_EXPORT void* operator new(size_t size) {

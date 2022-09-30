@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -24,7 +25,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_internals.h"
-#include "base/compiler_specific.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -77,9 +77,9 @@ class LeakySingleton {
  public:
   constexpr LeakySingleton() = default;
 
-  ALWAYS_INLINE T* Get() {
+  PA_ALWAYS_INLINE T* Get() {
     auto* instance = instance_.load(std::memory_order_acquire);
-    if (LIKELY(instance))
+    if (PA_LIKELY(instance))
       return instance;
 
     return GetSlowPath();
@@ -176,7 +176,7 @@ class MainPartitionConstructor {
 
 LeakySingleton<partition_alloc::ThreadSafePartitionRoot,
                MainPartitionConstructor>
-    g_root CONSTINIT = {};
+    g_root PA_CONSTINIT = {};
 partition_alloc::ThreadSafePartitionRoot* Allocator() {
   return g_root.Get();
 }
@@ -193,7 +193,7 @@ class AlignedPartitionConstructor {
 
 LeakySingleton<partition_alloc::ThreadSafePartitionRoot,
                AlignedPartitionConstructor>
-    g_aligned_root CONSTINIT = {};
+    g_aligned_root PA_CONSTINIT = {};
 
 partition_alloc::ThreadSafePartitionRoot* OriginalAllocator() {
   return g_original_root.load(std::memory_order_relaxed);
@@ -231,7 +231,7 @@ size_t g_extra_bytes;
 #endif  // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
 
 // TODO(brucedawson): Remove this when https://crbug.com/1151455 is fixed.
-ALWAYS_INLINE size_t MaybeAdjustSize(size_t size) {
+PA_ALWAYS_INLINE size_t MaybeAdjustSize(size_t size) {
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
   return base::CheckAdd(size, g_extra_bytes).ValueOrDie();
 #else   // BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86)
@@ -385,9 +385,9 @@ void* PartitionRealloc(const AllocatorDispatch*,
                        void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if BUILDFLAG(IS_APPLE)
-  if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                   reinterpret_cast<uintptr_t>(address)) &&
-               address)) {
+  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
+                      reinterpret_cast<uintptr_t>(address)) &&
+                  address)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `realloc` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -410,9 +410,9 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
 #if BUILDFLAG(IS_APPLE)
   // TODO(bartekn): Add MTE unmasking here (and below).
-  if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                   reinterpret_cast<uintptr_t>(object)) &&
-               object)) {
+  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
+                      reinterpret_cast<uintptr_t>(object)) &&
+                  object)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free` which supports zone-
     // dispatching so that it appropriately selects the right zone.
@@ -425,9 +425,9 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   // the pointer, pass it along. This should not have a runtime cost vs regular
   // Android, since on Android we have a PA_CHECK() rather than the branch here.
 #if BUILDFLAG(IS_CAST_ANDROID)
-  if (UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
-                   reinterpret_cast<uintptr_t>(object)) &&
-               object)) {
+  if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
+                      reinterpret_cast<uintptr_t>(object)) &&
+                  object)) {
     // A memory region allocated by the system allocator is passed in this
     // function.  Forward the request to `free()`, which is `__real_free()`
     // here.
