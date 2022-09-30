@@ -834,6 +834,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageBridge.java",
   "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageItem.java",
   "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageOrigin.java",
+  "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageTabData.java",
   "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageTabObserver.java",
   "java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java",
   "java/src/org/chromium/chrome/browser/offlinepages/PublishPageCallback.java",

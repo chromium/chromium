@@ -131,7 +131,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         /**
          * Returns whether the WebContents is showing trusted offline page.
          */
-        default boolean isShowingTrustedOfflinePage(WebContents webContents) {
+        default boolean isShowingTrustedOfflinePage(Tab tab) {
             return false;
         }
 
@@ -347,7 +347,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 formattedUrl = UrlUtilities.stripScheme(mUrlFormatter.format(originalUrl));
 
                 // Clear the editing text for untrusted offline pages.
-                if (!mOfflineStatus.isShowingTrustedOfflinePage(mTab.getWebContents())) {
+                if (!mOfflineStatus.isShowingTrustedOfflinePage(mTab)) {
                     return buildUrlBarData(url, formattedUrl, "");
                 }
 

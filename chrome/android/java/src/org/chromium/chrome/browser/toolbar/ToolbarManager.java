@@ -77,7 +77,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
-import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
+import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -516,13 +516,16 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
                 new LocationBarModel.OfflineStatus() {
                     @Override
-                    public boolean isShowingTrustedOfflinePage(WebContents webContents) {
-                        return OfflinePageUtils.isShowingTrustedOfflinePage(webContents);
+                    public boolean isShowingTrustedOfflinePage(Tab tab) {
+                        return OfflinePageTabData.isShowingTrustedOfflinePage(tab);
                     }
 
                     @Override
                     public boolean isOfflinePage(Tab tab) {
-                        return OfflinePageUtils.isOfflinePage(tab);
+                        TraceEvent.begin("isOfflinePage");
+                        boolean ret = OfflinePageTabData.isShowingOfflinePage(tab);
+                        TraceEvent.end("isOfflinePage");
+                        return ret;
                     }
                 },
                 SearchEngineLogoUtils.getInstance());

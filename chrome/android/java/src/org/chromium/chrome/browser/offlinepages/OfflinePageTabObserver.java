@@ -180,18 +180,25 @@ public class OfflinePageTabObserver
         Log.d(TAG, "onUrlUpdated");
         if (!OfflinePageUtils.isOfflinePage(tab)) {
             stopObservingTab(tab);
-        } else {
-            if (isObservingTab(tab)) {
-                mObservedTabs.get(tab.getId()).isLoaded = false;
-                mObservedTabs.get(tab.getId()).wasSnackbarSeen = false;
-            }
+        } else if (isObservingTab(tab)) {
+            mObservedTabs.get(tab.getId()).isLoaded = false;
+            mObservedTabs.get(tab.getId()).wasSnackbarSeen = false;
         }
         // In case any snackbars are showing, dismiss them before we navigate away.
         mSnackbarManager.dismissSnackbars(mSnackbarController);
     }
 
     void startObservingTab(Tab tab) {
-        if (!OfflinePageUtils.isOfflinePage(tab)) return;
+        assert tab.isInitialized();
+        boolean isOfflinePage = OfflinePageUtils.isOfflinePage(tab);
+        // Cache the offline state of the tab so we don't have to go to native every time we want to
+        // check this.
+        OfflinePageTabData offlinePageTabData = OfflinePageTabData.from(tab);
+        offlinePageTabData.setIsTabShowingOfflinePage(isOfflinePage);
+        offlinePageTabData.setIsTabShowingTrustedOfflinePage(
+                OfflinePageUtils.isShowingTrustedOfflinePage(tab.getWebContents()));
+
+        if (!isOfflinePage) return;
 
         mCurrentTab = tab;
 
@@ -217,6 +224,13 @@ public class OfflinePageTabObserver
     void stopObservingTab(Tab tab) {
         // If we are observing the tab, stop.
         if (isObservingTab(tab)) {
+            assert tab.isInitialized();
+            // Reset the cached offline state of the tab so we don't have to go to native every time
+            // we want to check this.
+            OfflinePageTabData offlinePageTabData = OfflinePageTabData.from(tab);
+            offlinePageTabData.setIsTabShowingOfflinePage(false);
+            offlinePageTabData.setIsTabShowingTrustedOfflinePage(false);
+
             mObservedTabs.remove(tab.getId());
             tab.removeObserver(this);
         }

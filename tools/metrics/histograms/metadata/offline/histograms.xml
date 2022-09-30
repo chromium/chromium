@@ -476,6 +476,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OfflinePages.CachedOfflineStatusValid" enum="BooleanMatched"
+    expires_after="2023-02-28">
+  <owner>pnoland@chromium.org</owner>
+  <owner>offline-dev@chromium.org</owner>
+  <summary>
+    Whether the offline page status cached for a given tab agrees with the true
+    value. Recorded with 1/100 probability each time the offline status for a
+    tab is checked.
+  </summary>
+</histogram>
+
 <histogram name="OfflinePages.CleanupThumbnails.Count" units="thumbnails"
     expires_after="2021-06-25">
   <owner>harringtond@chromium.org</owner>

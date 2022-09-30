@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -91,7 +92,13 @@ public class OfflinePageTabObserverTest {
         doReturn(false).when(mTab).isFrozen();
         doReturn(false).when(mTab).isHidden();
         doReturn(mWindowAndroid).when(mTab).getWindowAndroid();
+        doReturn(true).when(mTab).isInitialized();
         doReturn(mActivityRef).when(mWindowAndroid).getActivity();
+
+        UserDataHost userDataHost = new UserDataHost();
+        OfflinePageTabData offlinePageTabData = new OfflinePageTabData();
+        userDataHost.setUserData(OfflinePageTabData.class, offlinePageTabData);
+        doReturn(userDataHost).when(mTab).getUserDataHost();
 
         // Setting up mock snackbar manager.
         doNothing().when(mSnackbarManager).dismissSnackbars(eq(mSnackbarController));
@@ -157,12 +164,17 @@ public class OfflinePageTabObserverTest {
         doReturn(false).when(mOfflinePageUtils).isOfflinePage(any(Tab.class));
         observer.startObservingTab(mTab);
 
+        assertFalse(OfflinePageTabData.isShowingOfflinePage(mTab));
+        assertFalse(OfflinePageTabData.isShowingTrustedOfflinePage(mTab));
+
         assertFalse(observer.isObservingNetworkChanges());
         assertFalse(observer.isObservingTab(mTab));
         verify(observer, times(0)).showReloadSnackbar(any(Tab.class));
 
         doReturn(true).when(mOfflinePageUtils).isOfflinePage(any(Tab.class));
         observer.startObservingTab(mTab);
+
+        assertTrue(OfflinePageTabData.isShowingOfflinePage(mTab));
 
         assertTrue(observer.isObservingNetworkChanges());
         assertTrue(observer.isObservingTab(mTab));
@@ -422,11 +434,13 @@ public class OfflinePageTabObserverTest {
         assertFalse(observer.wasSnackbarSeen(mTab));
         verify(observer, times(0)).stopObservingTab(any(Tab.class));
         verify(mSnackbarManager, times(1)).dismissSnackbars(eq(mSnackbarController));
+        assertTrue(OfflinePageTabData.isShowingOfflinePage(mTab));
 
         // URL updated and tab no longer shows offline page.
         doReturn(false).when(mOfflinePageUtils).isOfflinePage(any(Tab.class));
         observer.onUrlUpdated(mTab);
 
+        assertFalse(OfflinePageTabData.isShowingOfflinePage(mTab));
         assertFalse(observer.isObservingTab(mTab));
         assertFalse(observer.isLoadedTab(mTab));
         assertFalse(observer.wasSnackbarSeen(mTab));
