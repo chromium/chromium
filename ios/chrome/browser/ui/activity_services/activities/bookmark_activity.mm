@@ -80,8 +80,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 - (UIImage*)activityImage {
   if (UseSymbols()) {
     if (self.bookmarked) {
-      // TODO(crbug.com/1315544): Update this one once created.
-      return DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+      return DefaultSymbolWithPointSize(kEditActionSymbol,
                                         kSymbolActionPointSize);
     }
     return DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
