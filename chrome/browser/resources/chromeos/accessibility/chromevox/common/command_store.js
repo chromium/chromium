@@ -312,7 +312,6 @@ export const CommandCategory = {
  *                  nodeList: (undefined|string),
  *                  skipInput: (undefined|boolean),
  *                  allowEvents: (undefined|boolean),
- *                  denyContinuation: (undefined|boolean),
  *                  denySignedOut: (undefined|boolean)}>}
  *  forward: Whether this command points forward.
  *  backward: Whether this command points backward. If neither forward or
@@ -333,8 +332,6 @@ export const CommandCategory = {
  *             other signed-out contexts. Defaults to false.
  *  allowEvents: Allows EventWatcher to continue processing events which can
  * trump TTS.
- *  denyContinuation: denies continuous read to proceed. Defaults to
- * false.
  */
 CommandStore.CMD_ALLOWLIST = {
   [Command.TOGGLE_STICKY_MODE]: {
@@ -350,7 +347,6 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.STOP_SPEECH]: {
     announce: false,
-    denyContinuation: true,
     doDefault: true,
     msgId: 'stop_speech_key',
     category: CommandCategory.CONTROLLING_SPEECH,
@@ -422,13 +418,11 @@ CommandStore.CMD_ALLOWLIST = {
   [Command.HANDLE_TAB]: {
     allowEvents: true,
     msgId: 'handle_tab_next',
-    denyContinuation: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.HANDLE_TAB_PREV]: {
     allowEvents: true,
     msgId: 'handle_tab_prev',
-    denyContinuation: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.FORWARD]: {
@@ -614,19 +608,17 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.FORCE_CLICK_ON_CURRENT_ITEM]: {
     announce: true,
-    denyContinuation: true,
     allowEvents: true,
     msgId: 'force_click_on_current_item',
     category: CommandCategory.ACTIONS,
   },
   [Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM]: {
     announce: true,
-    denyContinuation: true,
     allowEvents: true,
     msgId: 'force_long_click_on_current_item',
   },
   [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]:
-      {announce: true, allowEvents: true, denyContinuation: true},
+      {announce: true, allowEvents: true},
 
   [Command.READ_LINK_URL]: {
     announce: false,
@@ -662,7 +654,6 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.TOGGLE_SEARCH_WIDGET]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'toggle_search_widget',
     category: CommandCategory.INFORMATION,
   },
@@ -678,7 +669,6 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.TOGGLE_KEYBOARD_HELP]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_panel_menu',
     category: CommandCategory.HELP_COMMANDS,
   },
@@ -690,33 +680,28 @@ CommandStore.CMD_ALLOWLIST = {
   [Command.HELP]: {
     announce: false,
     msgId: 'help',
-    denyContinuation: true,
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.CONTEXT_MENU]: {
     announce: false,
     msgId: 'show_context_menu',
-    denyContinuation: true,
     category: CommandCategory.INFORMATION,
   },
 
   [Command.SHOW_OPTIONS_PAGE]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_options_page',
     denySignedOut: true,
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.SHOW_LOG_PAGE]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_log_page',
     denySignedOut: true,
     category: CommandCategory.HELP_COMMANDS,
   },
   [Command.SHOW_LEARN_MODE_PAGE]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_kb_explorer_page',
     denySignedOut: true,
     category: CommandCategory.HELP_COMMANDS,
@@ -741,7 +726,6 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.SHOW_FORMS_LIST]: {
     announce: false,
-    denyContinuation: true,
     nodeList: 'formField',
     msgId: 'show_forms_list',
     category: CommandCategory.OVERVIEW,
@@ -749,28 +733,24 @@ CommandStore.CMD_ALLOWLIST = {
   [Command.SHOW_HEADINGS_LIST]: {
     announce: false,
     nodeList: 'heading',
-    denyContinuation: true,
     msgId: 'show_headings_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_LANDMARKS_LIST]: {
     announce: false,
     nodeList: 'landmark',
-    denyContinuation: true,
     msgId: 'show_landmarks_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_LINKS_LIST]: {
     announce: false,
     nodeList: 'link',
-    denyContinuation: true,
     msgId: 'show_links_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_TABLES_LIST]: {
     announce: false,
     nodeList: 'table',
-    denyContinuation: true,
     msgId: 'show_tables_list',
     category: CommandCategory.OVERVIEW,
   },
