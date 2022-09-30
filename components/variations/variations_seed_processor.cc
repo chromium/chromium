@@ -363,15 +363,12 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
 
   const auto& entropy_provider =
       SelectEntropyProviderForStudy(processed_study, entropy_providers);
-  uint32_t randomization_seed = ShouldSessionRandomizeStudy(processed_study)
-                                    ? 0
-                                    : study.randomization_seed();
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(
           study.name(), processed_study.total_probability(),
           processed_study.GetDefaultExperimentName(), entropy_provider,
-          randomization_seed));
+          study.randomization_seed()));
 
   bool has_overrides = false;
   bool enables_or_disables_features = false;

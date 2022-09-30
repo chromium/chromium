@@ -86,7 +86,6 @@ class SessionEntropyProvider : public FieldTrial::EntropyProvider {
 
   double GetEntropyForTrial(StringPiece trial_name,
                             uint32_t randomization_seed) const override {
-    DCHECK_EQ(randomization_seed, 0u);
     return RandDouble();
   }
 };
