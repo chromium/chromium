@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
@@ -43,6 +44,8 @@ using autofill_assistant::password_change::TopIcon;
 namespace {
 
 constexpr int kTopIconSize = 96;
+constexpr base::TimeDelta kFocusOnHighlightedButtonDelaySeconds =
+    base::Seconds(2);
 
 // Helper method that creates a button container and sets the appropriate
 // alignment and spacing.
@@ -82,14 +85,18 @@ std::unique_ptr<views::MdTextButton> CreateButton(
 PasswordChangeRunView::PasswordChangeRunView(
     base::WeakPtr<PasswordChangeRunController> controller,
     raw_ptr<AssistantDisplayDelegate> display_delegate)
-    : controller_(controller), display_delegate_(display_delegate) {
+    : controller_(controller),
+      display_delegate_(display_delegate),
+      focus_on_button_timer_(std::make_unique<base::OneShotTimer>()) {
   DCHECK(display_delegate_);
 
   // Renders the view in the display delegate and passes ownership of `this`.
   display_delegate_->SetView(base::WrapUnique(this));
 }
 
-PasswordChangeRunView::~PasswordChangeRunView() = default;
+PasswordChangeRunView::~PasswordChangeRunView() {
+  focus_on_button_timer_->Stop();
+}
 
 void PasswordChangeRunView::Show() {
   PasswordChangeRunView::CreateView();
@@ -258,6 +265,15 @@ void PasswordChangeRunView::CreateBasePromptOptions(
           base::BindRepeating(
               &PasswordChangeRunController::OnBasePromptChoiceSelected,
               controller_, index)));
+      if (choices[index].highlighted) {
+        auto* button_to_be_focused = static_cast<views::MdTextButton*>(
+            button_container->children().back());
+        focus_on_button_timer_->Stop();
+        focus_on_button_timer_->Start(
+            FROM_HERE, kFocusOnHighlightedButtonDelaySeconds,
+            base::BindOnce(&PasswordChangeRunView::FocusPromptButton,
+                           base::Unretained(this), button_to_be_focused));
+      }
     }
   }
 }
@@ -292,6 +308,18 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
       base::BindRepeating(
           &PasswordChangeRunController::OnGeneratedPasswordSelected,
           controller_, true)));
+  // Focus on the choose generated password button.
+  auto* button_to_be_focused =
+      static_cast<views::MdTextButton*>(button_container->children()[1]);
+  focus_on_button_timer_->Stop();
+  focus_on_button_timer_->Start(
+      FROM_HERE, kFocusOnHighlightedButtonDelaySeconds,
+      base::BindOnce(&PasswordChangeRunView::FocusPromptButton,
+                     base::Unretained(this), button_to_be_focused));
+}
+
+void PasswordChangeRunView::FocusPromptButton(views::MdTextButton* button) {
+  button->RequestFocus();
 }
 
 void PasswordChangeRunView::ShowStartingScreen(const GURL& url) {
@@ -363,10 +391,16 @@ void PasswordChangeRunView::OnShowCompletionScreen() {
           &PasswordChangeRunController::OpenPasswordManager, controller_)));
 
   views::View* button_container = body_->AddChildView(CreateButtonContainer());
-  button_container->AddChildView(CreateButton(
+  auto* button_to_be_focused = button_container->AddChildView(CreateButton(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_SUCCESSFULLY_CHANGED_PASSWORD_CLOSE_SIDE_PANEL),
       true, show_completion_screen_done_button_callback_));
+
+  focus_on_button_timer_->Stop();
+  focus_on_button_timer_->Start(
+      FROM_HERE, kFocusOnHighlightedButtonDelaySeconds,
+      base::BindOnce(&PasswordChangeRunView::FocusPromptButton,
+                     base::Unretained(this), button_to_be_focused));
 }
 
 void PasswordChangeRunView::ClearPrompt() {
@@ -394,6 +428,11 @@ void PasswordChangeRunView::Close() {
 
 base::WeakPtr<PasswordChangeRunView> PasswordChangeRunView::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void PasswordChangeRunView::SetFocusOnButtonTimerForTest(
+    std::unique_ptr<base::OneShotTimer> focus_on_button_timer) {
+  focus_on_button_timer_ = std::move(focus_on_button_timer);
 }
 
 BEGIN_METADATA(PasswordChangeRunView, views::View)

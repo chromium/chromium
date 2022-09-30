@@ -9,6 +9,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/mock_timer.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_assistant_display_delegate.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/mock_password_change_run_controller.h"
@@ -24,6 +25,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -180,7 +182,11 @@ TEST_F(PasswordChangeRunViewTest, SetTopIcon) {
 }
 
 TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
+  auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+  base::MockOneShotTimer* timer_ptr = mock_timer.get();
+  view()->SetFocusOnButtonTimerForTest(std::move(mock_timer));
   std::vector<PromptChoice> choices = CreatePromptChoices();
+
   view()->ShowBasePrompt(kDescription, choices);
 
   views::View* container = GetButtonContainer();
@@ -195,6 +201,17 @@ TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
               choices[index].text);
     EXPECT_EQ(static_cast<views::MdTextButton*>(button)->GetProminent(),
               choices[index].highlighted);
+    ASSERT_FALSE(button->GetViewAccessibility().IsFocusedForTesting());
+  }
+
+  // Highlighted button gets focus after timed task is complete.
+  timer_ptr->Fire();
+  for (size_t index = 0; index < choices.size(); ++index) {
+    views::Button* button =
+        views::Button::AsButton(container->children()[index]);
+    ASSERT_TRUE(static_cast<views::MdTextButton*>(button)->GetProminent()
+                    ? button->GetViewAccessibility().IsFocusedForTesting()
+                    : !button->GetViewAccessibility().IsFocusedForTesting());
   }
 
   EXPECT_CALL(*controller(), OnBasePromptChoiceSelected(0));
@@ -246,6 +263,10 @@ TEST_F(PasswordChangeRunViewTest, CreateBasePromptWithEmptyText) {
 }
 
 TEST_F(PasswordChangeRunViewTest, CreateSuggestedPasswordPromptAndAccept) {
+  auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+  base::MockOneShotTimer* timer_ptr = mock_timer.get();
+  view()->SetFocusOnButtonTimerForTest(std::move(mock_timer));
+
   std::vector<PromptChoice> choices = CreatePromptChoices();
   view()->ShowUseGeneratedPasswordPrompt(kTitle, kPassword, kDescription,
                                          choices[0], choices[1]);
@@ -256,6 +277,22 @@ TEST_F(PasswordChangeRunViewTest, CreateSuggestedPasswordPromptAndAccept) {
   ASSERT_THAT(button_container->children(), SizeIs(2u));
   // Clicking the second button should accept the suggested password.
   EXPECT_CALL(*controller(), OnGeneratedPasswordSelected(true));
+
+  // Accept suggested password button gets focus after timed task is complete.
+  ASSERT_FALSE(button_container->children()[1]
+                   ->GetViewAccessibility()
+                   .IsFocusedForTesting());
+  ASSERT_FALSE(button_container->children()[1]
+                   ->GetViewAccessibility()
+                   .IsFocusedForTesting());
+  timer_ptr->Fire();
+  ASSERT_TRUE(button_container->children()[1]
+                  ->GetViewAccessibility()
+                  .IsFocusedForTesting());
+  ASSERT_FALSE(button_container->children()[0]
+                   ->GetViewAccessibility()
+                   .IsFocusedForTesting());
+
   SimulateButtonClick(button_container->children()[1]);
 
   // There should be two labels in the title container.

@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 #include "components/autofill_assistant/browser/public/password_change/proto/actions.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -18,6 +19,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class MdTextButton;
 class View;
 }  // namespace views
 
@@ -82,6 +84,9 @@ class PasswordChangeRunView : public views::View,
   void ResumeProgressBarAnimation() override;
   void OnControllerGone() override;
 
+  void SetFocusOnButtonTimerForTest(
+      std::unique_ptr<base::OneShotTimer> focus_on_button_timer);
+
   // Returns a weak pointer to itself.
   base::WeakPtr<PasswordChangeRunView> GetWeakPtr();
 
@@ -98,6 +103,9 @@ class PasswordChangeRunView : public views::View,
   // Closes the view by removing itself from the display.
   // This method destroys an instance of this class.
   void Close();
+
+  // Sets focus on the currently highlighted button (if any).
+  void FocusPromptButton(views::MdTextButton* button);
 
   // Method that updates the UI to render the completion screen. This is called
   // only AFTER `password_change_run_progress_` is completed, both in terms of
@@ -118,6 +126,10 @@ class PasswordChangeRunView : public views::View,
   // The body is used to render content below the title, i.e
   // prompts and descriptions.
   raw_ptr<views::View> body_ = nullptr;
+
+  // Once this timer is completed, the currently highlighted button will receive
+  // focus.
+  std::unique_ptr<base::OneShotTimer> focus_on_button_timer_;
 
   // Callback run when a user clicks Done after a successful run.
   base::RepeatingClosure show_completion_screen_done_button_callback_;
