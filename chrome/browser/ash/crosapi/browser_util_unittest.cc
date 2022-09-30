@@ -68,14 +68,6 @@ class ScopedLacrosAvailabilityCache {
   }
 };
 
-class ScopedSetLacrosEnabled {
- public:
-  ScopedSetLacrosEnabled() { browser_util::SetLacrosEnabledForTest(true); }
-  ~ScopedSetLacrosEnabled() { browser_util::SetLacrosEnabledForTest(false); }
-  ScopedSetLacrosEnabled(const ScopedSetLacrosEnabled&) = delete;
-  ScopedSetLacrosEnabled& operator=(const ScopedSetLacrosEnabled&) = delete;
-};
-
 }  // namespace
 
 class BrowserUtilTest : public testing::Test {
@@ -866,7 +858,7 @@ TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
   }
 
   {
-    ScopedSetLacrosEnabled scoped_enabled;
+    auto scoped_enabled = browser_util::SetLacrosEnabledForTest(true);
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled());
     EXPECT_TRUE(browser_util::IsAshBrowserSyncEnabled());
@@ -889,7 +881,7 @@ TEST_F(BrowserUtilTest, IsAshBrowserSyncEnabled) {
         {chromeos::features::kLacrosOnly, chromeos::features::kLacrosPrimary,
          chromeos::features::kLacrosSupport},
         {});
-    ScopedSetLacrosEnabled scoped_enabled;
+    auto scoped_enabled = browser_util::SetLacrosEnabledForTest(true);
     EXPECT_TRUE(browser_util::IsLacrosEnabled());
     EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled());
     EXPECT_FALSE(browser_util::IsAshBrowserSyncEnabled());

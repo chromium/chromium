@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -688,7 +689,6 @@ TEST_F(LegacyPackagedAppLacorsNotPrimaryPublisherTest,
 class LegacyPackagedAppLacorsPrimaryPublisherTest : public PublisherTest {
  public:
   LegacyPackagedAppLacorsPrimaryPublisherTest() {
-    crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kLacrosPrimary);
@@ -699,6 +699,10 @@ class LegacyPackagedAppLacorsPrimaryPublisherTest : public PublisherTest {
   LegacyPackagedAppLacorsPrimaryPublisherTest& operator=(
       const LegacyPackagedAppLacorsNotPrimaryPublisherTest&) = delete;
   ~LegacyPackagedAppLacorsPrimaryPublisherTest() override = default;
+
+ private:
+  base::AutoReset<bool> set_lacros_enabled_ =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(LegacyPackagedAppLacorsPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
@@ -723,7 +727,6 @@ TEST_F(LegacyPackagedAppLacorsPrimaryPublisherTest, LegacyPackagedAppsOnApps) {
 class StandaloneBrowserPublisherTest : public PublisherTest {
  public:
   StandaloneBrowserPublisherTest() {
-    crosapi::browser_util::SetLacrosEnabledForTest(true);
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary}, {});
@@ -808,6 +811,8 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   }
 
  private:
+  base::AutoReset<bool> set_lacros_enabled_ =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

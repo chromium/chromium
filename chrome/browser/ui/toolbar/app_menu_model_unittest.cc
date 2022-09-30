@@ -164,7 +164,8 @@ TEST_F(AppMenuModelTest, Basics) {
   // so that IDC_LACROS_DATA_MIGRATION can get visible.
   base::test::ScopedFeatureList feature_list(
       ash::features::kLacrosProfileMigrationForAnyUser);
-  crosapi::browser_util::SetLacrosEnabledForTest(true);
+  auto set_lacros_enabled =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
 #endif
 
   FakeIconDelegate fake_delegate;

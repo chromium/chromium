@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
@@ -473,10 +474,6 @@ bool IsLacrosSupportFlagAllowed() {
          (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
 }
 
-void SetLacrosEnabledForTest(bool force_enabled) {
-  g_lacros_enabled_for_test = force_enabled;
-}
-
 bool IsAshWebBrowserEnabled() {
   // Note that if you are updating this function, please also update the
   // *ForMigration variant to keep the logics consistent.
@@ -639,10 +636,6 @@ LacrosMode GetLacrosMode() {
   if (IsLacrosEnabled())
     return LacrosMode::kSideBySide;
   return LacrosMode::kDisabled;
-}
-
-void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value) {
-  g_lacros_primary_browser_for_test = value;
 }
 
 bool IsLacrosPrimaryBrowserAllowed() {
@@ -1076,6 +1069,17 @@ bool ShouldEnforceAshExtensionKeepList() {
   return IsLacrosPrimaryBrowser() &&
          base::FeatureList::IsEnabled(
              chromeos::features::kEnforceAshExtensionKeeplist);
+}
+
+base::AutoReset<bool> SetLacrosEnabledForTest(bool force_enabled) {
+  return base::AutoReset<bool>(&g_lacros_enabled_for_test, force_enabled);
+}
+
+base::AutoReset<absl::optional<bool>>
+SetLacrosPrimaryBrowserForTest(  // IN-TEST
+    absl::optional<bool> value) {
+  return base::AutoReset<absl::optional<bool>>(
+      &g_lacros_primary_browser_for_test, value);
 }
 
 }  // namespace browser_util

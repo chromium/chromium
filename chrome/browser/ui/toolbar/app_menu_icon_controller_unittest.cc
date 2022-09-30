@@ -160,7 +160,8 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
   // Forcibly enable Lacros Profile migration.
   base::test::ScopedFeatureList feature_list(
       ash::features::kLacrosProfileMigrationForAnyUser);
-  crosapi::browser_util::SetLacrosEnabledForTest(true);
+  auto set_lacros_enabled =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
 #endif
 
   ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -201,9 +202,6 @@ bool IsLacrosEnabledForMigration(const user_manager::User* user,
 // Returns true if |chromeos::features::kLacrosSupport| flag is allowed.
 bool IsLacrosSupportFlagAllowed();
 
-// Forces IsLacrosEnabled() to return true for testing.
-void SetLacrosEnabledForTest(bool force_enabled);
-
 // Returns true if Ash browser is enabled. Returns false iff Lacros is
 // enabled and is the only browser.
 bool IsAshWebBrowserEnabled();
@@ -228,10 +226,6 @@ bool IsLacrosPrimaryBrowserForMigration(const user_manager::User* user,
 // Returns the current mode Lacros is running.
 // See LacrosMode definition for a full list of modes.
 LacrosMode GetLacrosMode();
-
-// Forces IsLacrosPrimaryBrowser() to return true or false for testing.
-// Passing absl::nullopt will reset the state.
-void SetLacrosPrimaryBrowserForTest(absl::optional<bool> value);
 
 // Returns true if the lacros can be used as a primary browser
 // for the current session.
@@ -412,6 +406,15 @@ bool WasGotoFilesClicked(PrefService* local_state,
 
 // Returns true if ash 1st party extension keep list should be enforced.
 bool ShouldEnforceAshExtensionKeepList();
+
+// Forces IsLacrosEnabled() to return true or false for testing. Reset upon
+// destruction of returned |base::AutoReset| object.
+base::AutoReset<bool> SetLacrosEnabledForTest(bool force_enabled);
+
+// Forces IsLacrosPrimaryBrowser() to return true or false for testing.
+// Reset upon destruction of returned |base::AutoReset| object.
+base::AutoReset<absl::optional<bool>> SetLacrosPrimaryBrowserForTest(
+    absl::optional<bool> value);
 
 }  // namespace browser_util
 }  // namespace crosapi

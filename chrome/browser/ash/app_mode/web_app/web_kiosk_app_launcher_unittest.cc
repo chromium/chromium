@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -364,8 +366,6 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
         scoped_user_manager_(base::WrapUnique(fake_user_manager_)),
         wm_helper_(std::make_unique<exo::WMHelperChromeOS>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kWebKioskEnableLacros);
-    crosapi::browser_util::SetLacrosEnabledForTest(true);
-    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   }
 
   void LoginWebKioskUser() {
@@ -392,6 +392,10 @@ class WebKioskAppLauncherUsingLacrosTest : public WebKioskAppLauncherTest {
   exo::WMHelper* wm_helper() const { return wm_helper_.get(); }
 
  private:
+  base::AutoReset<bool> set_lacros_enabled_ =
+      crosapi::browser_util::SetLacrosEnabledForTest(true);
+  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
+      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<crosapi::FakeBrowserManager> browser_manager_;
   ash::FakeChromeUserManager* fake_user_manager_;

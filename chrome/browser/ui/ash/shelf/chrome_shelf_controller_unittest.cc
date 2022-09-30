@@ -34,6 +34,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_application_menu_model.h"
+#include "base/auto_reset.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -1334,7 +1335,6 @@ class ChromeShelfControllerLacrosPrimaryTest
   ~ChromeShelfControllerLacrosPrimaryTest() override = default;
 
   void SetUp() override {
-    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
     ChromeShelfControllerLacrosTest::SetUp();
 
     proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile());
@@ -1373,6 +1373,8 @@ class ChromeShelfControllerLacrosPrimaryTest
   apps::AppServiceProxy* proxy() { return proxy_; }
 
  private:
+  base::AutoReset<absl::optional<bool>> set_lacros_primary_ =
+      crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
   StandaloneBrowserExtensionAppShelfItemController* chrome_app_shelf_item_ =
       nullptr;
   apps::AppServiceProxy* proxy_ = nullptr;

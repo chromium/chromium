@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 
+#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -36,8 +37,6 @@ constexpr char kLacrosUnmounterUpstartJob[] = "lacros_2dunmounter";
 class BrowserLoaderTest : public testing::Test {
  public:
   BrowserLoaderTest() {
-    browser_util::SetLacrosEnabledForTest(true);
-
     // Create dependencies for object under test.
     component_manager_ =
         base::MakeRefCounted<component_updater::FakeCrOSComponentManager>();
@@ -58,7 +57,6 @@ class BrowserLoaderTest : public testing::Test {
 
   ~BrowserLoaderTest() override {
     browser_part_->ShutdownCrosComponentManager();
-    browser_util::SetLacrosEnabledForTest(false);
   }
 
   // Public because this is test code.
@@ -70,6 +68,10 @@ class BrowserLoaderTest : public testing::Test {
   ash::FakeUpstartClient fake_upstart_client_;
   std::unique_ptr<BrowserProcessPlatformPartTestApi> browser_part_;
   std::unique_ptr<BrowserLoader> browser_loader_;
+
+ private:
+  base::AutoReset<bool> set_lacros_enabled_ =
+      browser_util::SetLacrosEnabledForTest(true);
 };
 
 TEST_F(BrowserLoaderTest, OnLoadSelectionQuicklyChooseRootfs) {
