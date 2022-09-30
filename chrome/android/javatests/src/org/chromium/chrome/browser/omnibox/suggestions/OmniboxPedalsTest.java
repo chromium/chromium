@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
 
+import android.app.Activity;
 import android.support.test.InstrumentationRegistry;
 import android.view.KeyEvent;
 
@@ -29,6 +30,7 @@ import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -96,6 +98,7 @@ public class OmniboxPedalsTest {
     private OmniboxTestUtils mOmniboxUtils;
     private boolean mIncognito;
     private LocationBarLayout mLocationBarLayout;
+    private Activity mTargetActivity;
 
     public OmniboxPedalsTest(boolean incognito) {
         mIncognito = incognito;
@@ -125,9 +128,12 @@ public class OmniboxPedalsTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { IncognitoTabHostUtils.closeAllIncognitoTabs(); });
+        if (mTargetActivity != null) {
+            ApplicationTestUtils.finishActivity(mTargetActivity);
+        }
     }
 
     /**
@@ -196,8 +202,10 @@ public class OmniboxPedalsTest {
      */
     private <T> T clickOnPedalToSettings(
             final Class<T> activityType, @OmniboxPedalType int pedalType) {
-        return ActivityTestUtils.waitForActivity(InstrumentationRegistry.getInstrumentation(),
-                activityType, () -> clickOnPedal());
+        mTargetActivity = (Activity) ActivityTestUtils.waitForActivity(
+                InstrumentationRegistry.getInstrumentation(), activityType, () -> clickOnPedal());
+
+        return (T) mTargetActivity;
     }
 
     /**
@@ -291,8 +299,6 @@ public class OmniboxPedalsTest {
                 settingsActivity, ClearBrowsingDataTabsFragment.class);
 
         verifyHistogram(OmniboxPedalType.CLEAR_BROWSING_DATA);
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -310,8 +316,6 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, PasswordSettings.class);
 
         verifyHistogram(OmniboxPedalType.MANAGE_PASSWORDS);
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -330,8 +334,6 @@ public class OmniboxPedalsTest {
                 settingsActivity, AutofillPaymentMethodsFragment.class);
 
         verifyHistogram(OmniboxPedalType.UPDATE_CREDIT_CARD);
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -375,8 +377,6 @@ public class OmniboxPedalsTest {
                     mHistogramTester.getHistogramTotalCount("Settings.SafetyCheck.UpdatesResult"),
                     Matchers.is(1));
         });
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -394,8 +394,6 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, SiteSettings.class);
 
         verifyHistogram(OmniboxPedalType.MANAGE_SITE_SETTINGS);
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -413,8 +411,6 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, MainSettings.class);
 
         verifyHistogram(OmniboxPedalType.MANAGE_CHROME_SETTINGS);
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -448,8 +444,6 @@ public class OmniboxPedalsTest {
         Assert.assertNotNull("Could not find the history activity", historyActivity);
 
         verifyHistogram(OmniboxPedalType.VIEW_CHROME_HISTORY);
-
-        historyActivity.finish();
     }
 
     @Test
@@ -469,13 +463,11 @@ public class OmniboxPedalsTest {
         checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, AccessibilitySettings.class);
 
         verifyHistogram(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
-
-        settingsActivity.finish();
     }
 
     @Test
     @MediumTest
-    public void testPedalsStartedOnCtrlEnterKeyStroke() throws InterruptedException {
+    public void testPedalsStartedOnCtrlEnterKeyStroke() throws Exception {
         typeInOmnibox("Chrome accessibility");
         SuggestionInfo<PedalSuggestionView> pedal =
                 mOmniboxUtils.getSuggestionByType(OmniboxSuggestionUiType.PEDAL_SUGGESTION);
@@ -485,16 +477,15 @@ public class OmniboxPedalsTest {
         // Select Pedal with the TAB key and activate it with an ENTER key.
         mOmniboxUtils.sendKey(KeyEvent.KEYCODE_TAB);
 
-        SettingsActivity settingsActivity = ActivityTestUtils.waitForActivity(
+        mTargetActivity = ActivityTestUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SettingsActivity.class,
                 () -> mOmniboxUtils.sendKey(KeyEvent.KEYCODE_ENTER));
-        Assert.assertNotNull("Could not find the Settings activity", settingsActivity);
+        Assert.assertNotNull("Could not find the Settings activity", mTargetActivity);
 
-        checkSettingsWasShownAndOmniboxNoFocus(settingsActivity, AccessibilitySettings.class);
+        checkSettingsWasShownAndOmniboxNoFocus(
+                (SettingsActivity) mTargetActivity, AccessibilitySettings.class);
 
         verifyHistogram(OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY);
-
-        settingsActivity.finish();
     }
 
     @Test
@@ -556,7 +547,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.HISTORY_JOURNEYS})
-    public void testHistoryClustersAction() {
+    public void testHistoryClustersAction() throws Exception {
         if (mIncognito) return;
         mOmniboxUtils.requestFocus();
         List<AutocompleteMatch> suggestionsList = buildDummySuggestionsList(2, "Suggestion");
@@ -580,8 +571,9 @@ public class OmniboxPedalsTest {
                         tab.getUrl().getSpec(), Matchers.startsWith("chrome://history/journeys"));
             });
         } else {
-            ActivityTestUtils.waitForActivity(
+            mTargetActivity = ActivityTestUtils.waitForActivity(
                     InstrumentationRegistry.getInstrumentation(), HistoryActivity.class);
+            Assert.assertNotNull("Could not find the history activity", mTargetActivity);
         }
     }
 }
