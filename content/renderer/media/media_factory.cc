@@ -373,6 +373,10 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     const cc::LayerTreeSettings& settings,
     scoped_refptr<base::SingleThreadTaskRunner>
         main_thread_compositor_task_runner) {
+  // Media playback is not supported when recording/replaying.
+  if (recordreplay::IsRecordingOrReplaying())
+    return nullptr;
+
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
   if (source.IsMediaStream()) {
     return CreateWebMediaPlayerForMediaStream(
