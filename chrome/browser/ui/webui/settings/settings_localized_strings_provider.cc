@@ -73,6 +73,7 @@
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -1357,8 +1358,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "passwordsTimedOutDescription",
       l10n_util::GetPluralStringFUTF16(
           IDS_SETTINGS_PASSWORDS_TIMED_OUT_DESCRIPTION,
-          password_manager::features::kPasswordNotesAuthValidity.Get()
-              .InMinutes()));
+          syncer::kPasswordNotesAuthValidity.Get().InMinutes()));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,

@@ -113,8 +113,7 @@ class SingleClientPasswordsSyncTestWithBaseSpecificsInMetadataAndNotes
       : SyncTest(SINGLE_CLIENT) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{syncer::kCacheBaseEntitySpecificsInMetadata,
-                              syncer::kReadWritePasswordNotesBackupField,
-                              password_manager::features::kPasswordNotes},
+                              syncer::kPasswordNotesWithBackup},
         /*disabled_features=*/{});
   }
   ~SingleClientPasswordsSyncTestWithBaseSpecificsInMetadataAndNotes() override =

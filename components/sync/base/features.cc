@@ -22,8 +22,8 @@ BASE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing,
              "IgnoreSyncEncryptionKeysLongMissing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReadWritePasswordNotesBackupField,
-             "ReadWritePasswordNotesBackupField",
+BASE_FEATURE(kPasswordNotesWithBackup,
+             "PasswordNotesWithBackup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncAllowWalletDataInTransportModeWithCustomPassphrase,

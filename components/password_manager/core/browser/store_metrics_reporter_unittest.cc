@@ -25,6 +25,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -138,9 +139,9 @@ class StoreMetricsReporterTest : public SyncUsernameTestBase {
     // should be mocked.
     OSCryptMocker::SetUp();
 
-    feature_list_.InitWithFeatures(
-        {features::kPasswordReuseDetectionEnabled, features::kPasswordNotes},
-        {});
+    feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled,
+                                    syncer::kPasswordNotesWithBackup},
+                                   {});
 
     prefs_.registry()->RegisterBooleanPref(prefs::kCredentialsEnableService,
                                            false);

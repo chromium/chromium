@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -378,8 +379,7 @@ SavedPasswordsPresenter::EditSavedCredentials(
       new_form.password_issues.clear();
     }
 
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordNotes)) {
+    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
       if (note_changed) {
         PasswordNoteAction note_action =
             UpdateNoteInPasswordForm(new_form, updated_credential.note);

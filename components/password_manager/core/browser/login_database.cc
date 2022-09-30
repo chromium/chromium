@@ -44,6 +44,7 @@
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/sql_table_builder.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -2028,7 +2029,7 @@ InsecureCredentialsChanged LoginDatabase::UpdateInsecureCredentials(
 
 void LoginDatabase::PopulateFormWithNotes(FormPrimaryKey primary_key,
                                           PasswordForm* form) const {
-  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup))
     return;
   form->notes = password_notes_table_.GetPasswordNotes(primary_key);
 }
@@ -2036,7 +2037,7 @@ void LoginDatabase::PopulateFormWithNotes(FormPrimaryKey primary_key,
 void LoginDatabase::UpdatePasswordNotes(
     FormPrimaryKey primary_key,
     const std::vector<PasswordNote>& notes) {
-  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup))
     return;
 
   password_notes_table_.RemovePasswordNotes(primary_key);

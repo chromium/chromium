@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/sync/base/features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -200,7 +201,7 @@ void ReportLoginsWithSchemesMetrics(
 void ReportPasswordNotesMetrics(
     bool is_account_store,
     const std::vector<std::unique_ptr<PasswordForm>>& forms) {
-  if (!base::FeatureList::IsEnabled(features::kPasswordNotes)) {
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     return;
   }
 

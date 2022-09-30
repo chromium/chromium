@@ -2464,8 +2464,7 @@ class ModelTypeWorkerPasswordsTestWithNotes
     : public ModelTypeWorkerPasswordsTest {
  public:
   ModelTypeWorkerPasswordsTestWithNotes() {
-    feature_list_.InitAndEnableFeature(
-        syncer::kReadWritePasswordNotesBackupField);
+    feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   }
   ~ModelTypeWorkerPasswordsTestWithNotes() override = default;
 

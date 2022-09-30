@@ -291,8 +291,7 @@ void CommitContributionImpl::AdjustCommitProto(
         password_data,
         encrypted_password.mutable_password()->mutable_encrypted());
     DCHECK(result);
-    if (base::FeatureList::IsEnabled(
-            syncer::kReadWritePasswordNotesBackupField)) {
+    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
       // `encrypted_notes_backup` field needs to be populated regardless of
       // whether or not there are any notes.
       result = cryptographer_->Encrypt(password_data.notes(),

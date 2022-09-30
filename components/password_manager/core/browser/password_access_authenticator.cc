@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 
 namespace password_manager {
 
@@ -71,9 +72,9 @@ void PasswordAccessAuthenticator::OnUserReauthenticationResult(
 }
 
 base::TimeDelta PasswordAccessAuthenticator::GetAuthValidityPeriod() {
-  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup))
     return kAuthValidityPeriod;
-  return features::kPasswordNotesAuthValidity.Get();
+  return syncer::kPasswordNotesAuthValidity.Get();
 }
 
 }  // namespace password_manager

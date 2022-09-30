@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,9 +78,9 @@ class SavedPasswordsPresenterWithPasswordNotesTest
  protected:
   void SetUp() override {
     if (GetParam())
-      feature_list_.InitAndEnableFeature(features::kPasswordNotes);
+      feature_list_.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
     else
-      feature_list_.InitAndDisableFeature(features::kPasswordNotes);
+      feature_list_.InitAndDisableFeature(syncer::kPasswordNotesWithBackup);
   }
   base::test::ScopedFeatureList feature_list_;
 };
@@ -451,7 +452,7 @@ TEST_P(SavedPasswordsPresenterWithPasswordNotesTest, EditOnlyPassword) {
 
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes.emplace_back(u"display name", u"note with non-empty display name",
@@ -487,7 +488,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteFirstTime) {
 
 TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
 
@@ -518,7 +519,7 @@ TEST_F(SavedPasswordsPresenterTest, EditingNotesShouldNotResetPasswordIssues) {
 
 TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordNote kExistingNote =
       PasswordNote(u"existing note", base::Time::Now());
   PasswordForm form =
@@ -552,7 +553,7 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyNoteSecondTime) {
 
 TEST_F(SavedPasswordsPresenterTest, EditNoteAsEmpty) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kPasswordNotes);
+  feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   PasswordForm form =
       CreateTestPasswordForm(PasswordForm::Store::kProfileStore);
   form.notes = {PasswordNote(u"existing note", base::Time::Now())};

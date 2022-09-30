@@ -7767,11 +7767,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordViewPageInSettings)},
 
-    {"password-notes", flag_descriptions::kPasswordNotesName,
-     flag_descriptions::kPasswordNotesDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(password_manager::features::kPasswordNotes,
+    {"password-notes", flag_descriptions::kPasswordNotesWithBackupName,
+     flag_descriptions::kPasswordNotesWithBackupDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(syncer::kPasswordNotesWithBackup,
                                     kPasswordNotesAuthValidityVariations,
-                                    "PasswordNotes")},
+                                    "PasswordNotesWithBackup")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"frame-throttle-fps", flag_descriptions::kFrameThrottleFpsName,

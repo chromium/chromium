@@ -32,11 +32,21 @@ BASE_DECLARE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing);
 inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
     &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 3};
 
-// When enabled, Sync machinery will read and writes password notes to the
+// Enables adding, displaying and modifying extra notes to stored credentials.
+// When enabled, "PasswordViewPageInSettings" feature in the password manager
+// codebase is ignored and the new password view subpage is force enabled. When
+// enabled, Sync machinery will read and writes password notes to the
 // `encrypted_notes_backup` field inside the PasswordSpecifics proto. Together
 // with the logic on the server. this protects against notes being overwritten
 // by legacy clients not supporting password notes.
-BASE_DECLARE_FEATURE(kReadWritePasswordNotesBackupField);
+// This feature is added here instead of the password manager codebase to avoid
+// cycle dependencies.
+BASE_DECLARE_FEATURE(kPasswordNotesWithBackup);
+// Decides how long the user does not require reuathentication after
+// successfully authenticated.
+inline constexpr base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity{
+    &kPasswordNotesWithBackup, "authentication_validity_duration",
+    base::Minutes(5)};
 
 // Allows custom passphrase users to receive Wallet data for secondary accounts
 // while in transport-only mode.

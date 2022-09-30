@@ -80,6 +80,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -287,12 +288,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enablePasswordViewPage",
       base::FeatureList::IsEnabled(
           password_manager::features::kPasswordViewPageInSettings) ||
-          base::FeatureList::IsEnabled(
-              password_manager::features::kPasswordNotes));
+          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
 
   html_source->AddBoolean(
       "enablePasswordNotes",
-      base::FeatureList::IsEnabled(password_manager::features::kPasswordNotes));
+      base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
 
   html_source->AddBoolean(
       "enableSendPasswords",

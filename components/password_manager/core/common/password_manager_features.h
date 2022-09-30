@@ -49,9 +49,6 @@ BASE_DECLARE_FEATURE(kIOSPasswordManagerCrossOriginIframeSupport);
 #endif  // IS_IOS
 BASE_DECLARE_FEATURE(kMuteCompromisedPasswords);
 
-extern const base::FeatureParam<base::TimeDelta> kPasswordNotesAuthValidity;
-BASE_DECLARE_FEATURE(kPasswordNotes);
-
 BASE_DECLARE_FEATURE(kPasswordViewPageInSettings);
 BASE_DECLARE_FEATURE(kSendPasswords);
 BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);

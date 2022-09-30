@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/reauth_purpose.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Return;
@@ -27,9 +28,9 @@ namespace password_manager {
 
 namespace {
 base::TimeDelta GetAuthValidityPeriod() {
-  if (!base::FeatureList::IsEnabled(features::kPasswordNotes))
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup))
     return PasswordAccessAuthenticator::kAuthValidityPeriod;
-  return features::kPasswordNotesAuthValidity.Get();
+  return syncer::kPasswordNotesAuthValidity.Get();
 }
 }  // namespace
 
@@ -62,7 +63,7 @@ class PasswordAccessAuthenticatorTest
  protected:
   void SetUp() override {
     if (std::get<1>(GetParam()))
-      feature_list.InitAndEnableFeature(features::kPasswordNotes);
+      feature_list.InitAndEnableFeature(syncer::kPasswordNotesWithBackup);
   }
 
   void TearDown() override { feature_list.Reset(); }

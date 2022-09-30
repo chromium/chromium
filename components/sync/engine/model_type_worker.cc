@@ -187,8 +187,7 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
     LogPasswordNotesState(PasswordNotesStateForUMA::kUnset);
     return true;
   }
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReadWritePasswordNotesBackupField)) {
+  if (!base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     return true;
   }
   // It is guaranteed that if `encrypted()` is decryptable, then

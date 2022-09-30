@@ -161,8 +161,8 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kPasswordNotesName[] = "Password notes in settings";
-const char kPasswordNotesDescription[] =
+const char kPasswordNotesWithBackupName[] = "Password notes in settings";
+const char kPasswordNotesWithBackupDescription[] =
     "Enables a note section for each password in the settings page.";
 
 const char kPasswordViewPageInSettingsName[] = "Password view page in settings";
