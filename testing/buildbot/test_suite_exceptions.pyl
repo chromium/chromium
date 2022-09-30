@@ -4069,20 +4069,6 @@
     'remove_from': [
       'android-pie-arm64-rel', # crbug.com/1354867
     ],
-    'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          # TODO(crbug.com/1191784): Fix the test failure
-          '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
-        ],
-      },
-      'android-12-x64-rel': {
-        'args': [
-          # TODO(crbug.com/1191784): Fix the test failure
-          '--gtest_filter=-DownloadBrowserTest.OverrideDownloadDirectory',
-        ],
-      },
-    },
   },
   'weblayer_bundle_test': {
     'remove_from': [
