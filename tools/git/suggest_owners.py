@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,10 +8,12 @@ from __future__ import print_function
 import argparse
 import subprocess
 import pickle
+import re
 import os
+from pathlib import PurePath
 from os import path
 from datetime import date, timedelta
-from collections import namedtuple, defaultdict, Counter
+from collections import namedtuple, defaultdict
 
 Commit = namedtuple('Commit', ['hash', 'author', 'commit_date', 'dirs'])
 
@@ -25,15 +27,21 @@ OWNERS_CACHE = {}
 # filename for pickle cache
 CACHE_FILENAME = 'suggest_owners.cache'
 
-def _RunGitCommand(options, cmd_args):
+
+def _RunGitCommand(options, cmd_args, pipe_output=False):
   repo_path = path.join(options.repo_path, '.git')
   cmd = ['git', '--git-dir', repo_path] + cmd_args
   print('>', ' '.join(cmd))
-  return subprocess.check_output(cmd)
+  if not pipe_output:
+    return subprocess.check_output(cmd, encoding='utf-8')
+  else:
+    return subprocess.Popen(cmd, encoding='utf-8',
+                            stdout=subprocess.PIPE).stdout
 
 
 def _ValidAuthor(author):
-  return author.find('@chromium.org') > -1 and author.find('roller') == -1
+  return author.endswith(
+      ('@chromium.org', '@google.com')) and 'roller' not in author
 
 
 # Returns additions/deletions by a commit to a directory (and its descendants).
@@ -53,11 +61,12 @@ def getEditsForDirectory(commit, directory):
 def _PropagateCommit(options, commit):
   touched_dirs = set()
   # first get all the touched dirs and their ancestors
-  for directory in commit.dirs.iterkeys():
-    while directory != '':
-      touched_dirs.add(directory)
+  for directory in commit.dirs.keys():
+    # PurePath.parent returns '.' for non absolute paths in the limit.
+    while str(directory) != '.':
+      touched_dirs.add(str(directory))
       # get the parent directory
-      directory = path.dirname(directory)
+      directory = PurePath(directory).parent
   # loop over them and calculate the edits per directory
   for directory in touched_dirs:
     author_commits, author_additions, author_deletions = \
@@ -72,9 +81,9 @@ def _PropagateCommit(options, commit):
 # Checks if child_directory is same as or below parent_directory. For some
 # reason the os.path module does not have this functionality.
 def isSubDirectory(parent_directory, child_directory):
-  parent_directory = parent_directory + '/'
-  child_directory = child_directory + '/'
-  return child_directory.startswith(parent_directory)
+  parent_directory = PurePath(parent_directory)
+  child_directory = PurePath(child_directory)
+  return child_directory.is_relative_to(parent_directory)
 
 
 def _GetGitLogCmd(options):
@@ -115,7 +124,14 @@ def _ParseFileStatsLine(current_commit, line):
     deletions = 0
   else:
     deletions = int(deletions)
+  if additions == 0 and deletions == 0:
+    return True
   dir_path = path.dirname(filepath)
+  # For git renames, we count the destination directory
+  if '=>' in dir_path:
+    dir_path = re.sub(r'\{[^=]* => ([^\}]*)\}', r'\1', dir_path)
+    # remove possibly empty path parts.
+    dir_path = dir_path.replace('//', '/')
   commit_additions, commit_deletions = \
       current_commit.dirs.get(dir_path, (0,0))
   current_commit.dirs[dir_path] = (
@@ -129,9 +145,12 @@ def processAllCommits(options):
           'subdirectory or reduce the number of days of history to low double '
           'digits to make this faster. There is no progress indicator, it is '
           'all waiting for single git log to finish.')
-  output = _RunGitCommand(options, _GetGitLogCmd(options))
+  output_pipe = _RunGitCommand(options,
+                               _GetGitLogCmd(options),
+                               pipe_output=True)
   current_commit = None
-  for line in output.splitlines():
+  for line in iter(output_pipe.readline, ''):
+    line = line.rstrip('\n')
     if current_commit is None:
       current_commit = _ParseCommitLine(line)
     else:
@@ -148,15 +167,16 @@ def processAllCommits(options):
   # process the final commit
   if _ValidAuthor(current_commit.author):
     _PropagateCommit(options, current_commit)
+  print('Done parsing commit log.')
 
 
 def _CountCommits(directory):
   return sum(
-      [count for (count, _a, _d) in DIRECTORY_AUTHORS[directory].itervalues()])
+      [count for (count, _a, _d) in DIRECTORY_AUTHORS[directory].values()])
 
 
 def _GetOwnerLevel(options, author, directory):
-  sorted_owners = sorted(_GetOwners(options, directory), key=lambda (o,l): l)
+  sorted_owners = sorted(_GetOwners(options, directory), key=lambda e: e[1])
   for owner, level in sorted_owners:
     if author == owner:
       return level
@@ -222,8 +242,7 @@ def _IsTrivialDirectory(options, repo_subdir):
 
 def computeSuggestions(options):
   directory_suggestions = []
-  for directory, authors in sorted(
-      DIRECTORY_AUTHORS.iteritems(), key=lambda (d, a): d):
+  for directory, authors in sorted(DIRECTORY_AUTHORS.items()):
     if _IsTrivialDirectory(options, directory):
       continue
     if _CountCommits(directory) < options.dir_commit_limit:
@@ -233,8 +252,7 @@ def computeSuggestions(options):
         and not isSubDirectory(options.subdirectory, directory)):
       continue
     # sort authors by descending number of commits
-    sorted_authors = sorted(authors.items(),
-                            key=lambda (author, details): -details[0])
+    sorted_authors = sorted(authors.items(), key=lambda entry: -entry[1][0])
     # keep only authors above the limit
     suggestions = [(a,c) for a,c in sorted_authors if \
                    a not in options.ignore_authors \
@@ -296,7 +314,7 @@ def _IsCacheValid(options, metadata):
 
 def cacheProcessedCommits(options):
   metadata = _GetCacheMetadata(options)
-  with open(CACHE_FILENAME, 'w') as f:
+  with open(CACHE_FILENAME, 'wb') as f:
     pickle.dump((metadata, DIRECTORY_AUTHORS), f)
 
 
@@ -304,7 +322,7 @@ def maybeRestoreProcessedCommits(options):
   global DIRECTORY_AUTHORS
   if not path.exists(CACHE_FILENAME):
     return False
-  with open(CACHE_FILENAME) as f:
+  with open(CACHE_FILENAME, 'rb') as f:
     stored_metadata, cached_directory_authors = pickle.load(f)
     if _IsCacheValid(options, stored_metadata):
       print('Loading from cache')
