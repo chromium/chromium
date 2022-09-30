@@ -140,10 +140,10 @@ crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-
 # All of these are bugs/issues with the test itself.
 
 crbug.com/1341693 [ Linux ] external/wpt/dom/nodes/MutationObserver-document.html [ Skip ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
-crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
+crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-load.html [ Failure Pass ]
+crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-pause.html [ Failure Pass ]
+crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-invoke-play.html [ Failure Pass ]
+crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-source.html [ Failure Pass ]
 # TODO(crbug.com/1367142): Re-enable this test
 crbug.com/1339293 external/wpt/html/semantics/embedded-content/media-elements/loading-the-media-resource/resource-selection-remove-src.html [ Skip ]
 crbug.com/1339293 external/wpt/content-security-policy/media-src/media-src-7_1_2.sub.html [ Skip ]
