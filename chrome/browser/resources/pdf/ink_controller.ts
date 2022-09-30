@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 import {AnnotationTool} from './annotation_tool.js';
 import {SaveRequestType} from './constants.js';

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {Point, ViewportInterface, ViewportScroller} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 class FakePlugin extends EventTarget {
   get offsetWidth(): number {
