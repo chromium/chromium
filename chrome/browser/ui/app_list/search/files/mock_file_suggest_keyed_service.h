@@ -41,14 +41,16 @@ class MockFileSuggestKeyedService : public app_list::FileSuggestKeyedService {
 
   void SetSuggestionsForType(
       app_list::FileSuggestionType type,
-      const std::vector<app_list::FileSuggestData>& suggestions);
+      const absl::optional<std::vector<app_list::FileSuggestData>>&
+          suggestions);
 
  private:
   void RunGetSuggestFileDataCallback(app_list::FileSuggestionType type,
                                      GetSuggestFileDataCallback callback);
 
   // Caches file suggestions.
-  std::map<app_list::FileSuggestionType, std::vector<app_list::FileSuggestData>>
+  std::map<app_list::FileSuggestionType,
+           absl::optional<std::vector<app_list::FileSuggestData>>>
       type_suggestion_mappings_;
 
   base::WeakPtrFactory<MockFileSuggestKeyedService> weak_factory_{this};

@@ -41,7 +41,7 @@ void MockFileSuggestKeyedService::GetSuggestFileData(
 
 void MockFileSuggestKeyedService::SetSuggestionsForType(
     app_list::FileSuggestionType type,
-    const std::vector<app_list::FileSuggestData>& suggestions) {
+    const absl::optional<std::vector<app_list::FileSuggestData>>& suggestions) {
   type_suggestion_mappings_[type] = suggestions;
   OnSuggestionProviderUpdated(type);
 }

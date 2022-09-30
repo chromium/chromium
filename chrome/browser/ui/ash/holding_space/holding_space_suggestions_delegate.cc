@@ -44,10 +44,7 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
 
 void HoldingSpaceSuggestionsDelegate::OnFileSuggestionUpdated(
     app_list::FileSuggestionType type) {
-  // TODO(https://crbug.com/1369418): Fix local file suggestions behavior and
-  // remove this if.
-  if (type == app_list::FileSuggestionType::kDriveFile)
-    MaybeFetchSuggestions(type);
+  MaybeFetchSuggestions(type);
 }
 
 void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(

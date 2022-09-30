@@ -349,7 +349,15 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     // Needed by `file_manager::VolumeManager`.
     ash::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
+
+    // Needed for `app_list::MockFileSuggestKeyedService`.
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
     BrowserWithTestWindowTest::SetUp();
+
+    app_list::WaitUntilFileSuggestServiceReady(
+        app_list::FileSuggestKeyedServiceFactory::GetInstance()->GetService(
+            GetProfile()));
   }
 
   void TearDown() override {
@@ -361,7 +369,11 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     return {{arc::ArcFileSystemBridge::GetFactory(),
              base::BindRepeating(&BuildArcFileSystemBridge)},
             {file_manager::VolumeManagerFactory::GetInstance(),
-             base::BindRepeating(&BuildVolumeManager)}};
+             base::BindRepeating(&BuildVolumeManager)},
+            {app_list::FileSuggestKeyedServiceFactory::GetInstance(),
+             base::BindRepeating(&app_list::MockFileSuggestKeyedService::
+                                     BuildMockFileSuggestKeyedService,
+                                 temp_dir_.GetPath())}};
   }
 
   TestingProfile* CreateProfile() override {
@@ -509,6 +521,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   std::map<Profile*, testing::NiceMock<MockDownloadManager>*>
       download_managers_;
   arc::ArcServiceManager arc_service_manager_;
+  base::ScopedTempDir temp_dir_;
 };
 
 class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
@@ -2931,20 +2944,7 @@ class HoldingSpaceSuggestionsDelegateTest
         ash::features::kHoldingSpaceSuggestions, GetParam());
   }
 
-  // HoldingSpaceKeyedServiceTest:
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    auto testing_factories =
-        HoldingSpaceKeyedServiceTest::GetTestingFactories();
-    testing_factories.emplace_back(
-        app_list::FileSuggestKeyedServiceFactory::GetInstance(),
-        base::BindRepeating(&app_list::MockFileSuggestKeyedService::
-                                BuildMockFileSuggestKeyedService,
-                            temp_dir_.GetPath()));
-    return testing_factories;
-  }
-
   void SetUp() override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     HoldingSpaceKeyedServiceTest::SetUp();
 
     // Create a mount point to host test files.
@@ -2955,7 +2955,6 @@ class HoldingSpaceSuggestionsDelegateTest
     mount_point_->Mount(GetProfile());
 
     HoldingSpaceModelAttachedWaiter(profile).Wait();
-    app_list::WaitUntilFileSuggestServiceReady(GetFileSuggestKeyedService());
   }
 
   void TearDown() override {
@@ -2974,7 +2973,6 @@ class HoldingSpaceSuggestionsDelegateTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedTestMountPoint> mount_point_;
-  base::ScopedTempDir temp_dir_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2988,9 +2986,10 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   // completes.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       app_list::FileSuggestionType::kDriveFile,
-      /*suggestions=*/{{app_list::FileSuggestionType::kDriveFile, file_path_1,
-                        /*new_prediction_reason=*/absl::nullopt,
-                        /*new_score=*/absl::nullopt}});
+      /*suggestions=*/std::vector<app_list::FileSuggestData>{
+          {app_list::FileSuggestionType::kDriveFile, file_path_1,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3009,24 +3008,44 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   EXPECT_EQ(expected,
             GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
 
-  // TODO(https://crbug.com/1369418): Add local file suggestions to this
-  // test.
-
   const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+
+  // Update local file suggestions then check the model.
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      app_list::FileSuggestionType::kLocalFile,
+      /*suggestions=*/
+      std::vector<app_list::FileSuggestData>{
+          {app_list::FileSuggestionType::kLocalFile, file_path_2,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt}});
+  task_environment()->RunUntilIdle();
+
+  if (suggestion_feature_enabled) {
+    expected = std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>(
+        {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2},
+         {HoldingSpaceItem::Type::kDriveSuggestion, file_path_1}});
+  }
+  EXPECT_EQ(expected,
+            GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
+
+  const base::FilePath file_path_3 = mount_point()->CreateArbitraryFile();
 
   // Update drive file suggestions again then check the model.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       app_list::FileSuggestionType::kDriveFile,
-      {{app_list::FileSuggestionType::kDriveFile, file_path_1,
-        /*new_prediction_reason=*/absl::nullopt,
-        /*new_score=*/absl::nullopt},
-       {app_list::FileSuggestionType::kDriveFile, file_path_2,
-        /*new_prediction_reason=*/absl::nullopt,
-        /*new_score=*/absl::nullopt}});
+      /*suggestions=*/
+      std::vector<app_list::FileSuggestData>{
+          {app_list::FileSuggestionType::kDriveFile, file_path_1,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt},
+          {app_list::FileSuggestionType::kDriveFile, file_path_3,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
   if (suggestion_feature_enabled) {
     expected = std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>(
-        {{HoldingSpaceItem::Type::kDriveSuggestion, file_path_2},
+        {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2},
+         {HoldingSpaceItem::Type::kDriveSuggestion, file_path_3},
          {HoldingSpaceItem::Type::kDriveSuggestion, file_path_1}});
   }
   EXPECT_EQ(expected,
@@ -3034,16 +3053,28 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
 
   // Update drive file suggestions with an empty array.
   GetFileSuggestKeyedService()->SetSuggestionsForType(
-      app_list::FileSuggestionType::kDriveFile, /*suggestions=*/{});
+      app_list::FileSuggestionType::kDriveFile,
+      /*suggestions=*/std::vector<app_list::FileSuggestData>{});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   // Drive file suggestions should be removed from the model if the feature is
   // enabled.
   if (suggestion_feature_enabled) {
-    expected =
-        std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>({});
+    expected = std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>(
+        {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2}});
   }
 
+  EXPECT_EQ(expected,
+            GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
+
+  // Update local file suggestions with an empty array.
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      app_list::FileSuggestionType::kLocalFile,
+      /*suggestions=*/std::vector<app_list::FileSuggestData>{});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // There should not be any suggestion in the model.
+  expected.clear();
   EXPECT_EQ(expected,
             GetSuggestionsInModel(*HoldingSpaceController::Get()->model()));
 }
