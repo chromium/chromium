@@ -118,7 +118,11 @@ void MockMojoMediaStreamDispatcherHost::StopStreamDevice(
       return;
     }
   }
-  NOTREACHED();
+  // Require that the device is found if a new session id has not been
+  // requested.
+  if (session_id == session_id_) {
+    NOTREACHED();
+  }
 }
 
 void MockMojoMediaStreamDispatcherHost::OpenDevice(
