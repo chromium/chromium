@@ -28,10 +28,6 @@
 #include "chrome/updater/win/win_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
-
 // Definitions for COM updater classes provided for backward compatibility
 // with Google Update.
 
@@ -138,20 +134,9 @@ class IDispatchImpl
   const HRESULT hr_load_typelib_;
 };
 
-// TODO(crbug.com/1065712): these classes do not have to be visible in the
-// updater namespace. Additionally, there is some code duplication for the
-// registration and unregistration code in both server and service_main
-// compilation units.
-//
-// This class implements the legacy Omaha3 interfaces as expected by Chrome's
-// on-demand client.
-class LegacyOnDemandImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IGoogleUpdate3Web,
-          IAppBundleWeb,
-          IAppWeb,
-          IDispatch> {
+// This class implements the legacy Omaha3 IGoogleUpdate3Web interface as
+// expected by Chrome's on-demand client.
+class LegacyOnDemandImpl : public IDispatchImpl<IGoogleUpdate3Web> {
  public:
   LegacyOnDemandImpl();
   LegacyOnDemandImpl(const LegacyOnDemandImpl&) = delete;
@@ -160,76 +145,8 @@ class LegacyOnDemandImpl
   // Overrides for IGoogleUpdate3Web.
   IFACEMETHODIMP createAppBundleWeb(IDispatch** app_bundle_web) override;
 
-  // Overrides for IAppBundleWeb.
-  IFACEMETHODIMP createApp(BSTR app_id,
-                           BSTR brand_code,
-                           BSTR language,
-                           BSTR ap) override;
-  IFACEMETHODIMP createInstalledApp(BSTR app_id) override;
-  IFACEMETHODIMP createAllInstalledApps() override;
-  IFACEMETHODIMP get_displayLanguage(BSTR* language) override;
-  IFACEMETHODIMP put_displayLanguage(BSTR language) override;
-  IFACEMETHODIMP put_parentHWND(ULONG_PTR hwnd) override;
-  IFACEMETHODIMP get_length(int* number) override;
-  IFACEMETHODIMP get_appWeb(int index, IDispatch** app_web) override;
-  IFACEMETHODIMP initialize() override;
-  IFACEMETHODIMP checkForUpdate() override;
-  IFACEMETHODIMP download() override;
-  IFACEMETHODIMP install() override;
-  IFACEMETHODIMP pause() override;
-  IFACEMETHODIMP resume() override;
-  IFACEMETHODIMP cancel() override;
-  IFACEMETHODIMP downloadPackage(BSTR app_id, BSTR package_name) override;
-  IFACEMETHODIMP get_currentState(VARIANT* current_state) override;
-
-  // Overrides for IAppWeb.
-  IFACEMETHODIMP get_appId(BSTR* app_id) override;
-  IFACEMETHODIMP get_currentVersionWeb(IDispatch** current) override;
-  IFACEMETHODIMP get_nextVersionWeb(IDispatch** next) override;
-  IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override;
-  IFACEMETHODIMP get_currentState(IDispatch** current_state) override;
-  IFACEMETHODIMP launch() override;
-  IFACEMETHODIMP uninstall() override;
-  IFACEMETHODIMP get_serverInstallDataIndex(BSTR* language) override;
-  IFACEMETHODIMP put_serverInstallDataIndex(BSTR language) override;
-
-  // Overrides for IDispatch.
-  IFACEMETHODIMP GetTypeInfoCount(UINT*) override;
-  IFACEMETHODIMP GetTypeInfo(UINT, LCID, ITypeInfo**) override;
-  IFACEMETHODIMP GetIDsOfNames(REFIID, LPOLESTR*, UINT, LCID, DISPID*) override;
-  IFACEMETHODIMP Invoke(DISPID,
-                        REFIID,
-                        LCID,
-                        WORD,
-                        DISPPARAMS*,
-                        VARIANT*,
-                        EXCEPINFO*,
-                        UINT*) override;
-
  private:
   ~LegacyOnDemandImpl() override;
-
-  void UpdateStateCallback(UpdateService::UpdateState state_update);
-  void UpdateResultCallback(UpdateService::Result result);
-
-  // Handles the update service callbacks.
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  // Synchronized accessors.
-  std::string app_id() const {
-    base::AutoLock lock{lock_};
-    return app_id_;
-  }
-  void set_app_id(const std::string& app_id) {
-    base::AutoLock lock{lock_};
-    app_id_ = app_id;
-  }
-
-  // Access to these members must be serialized by using the lock.
-  mutable base::Lock lock_;
-  std::string app_id_;
-  absl::optional<UpdateService::UpdateState> state_update_;
-  absl::optional<UpdateService::Result> result_;
 };
 
 // This class implements the legacy Omaha3 IProcessLauncher interface as
