@@ -75,13 +75,15 @@
   <cr-lazy-render id="site-permissions">
     <template>
       <extensions-site-permissions delegate="[[delegate]]" slot="view"
+          extensions="[[extensions_]]"
           enable-enhanced-site-controls="[[enableEnhancedSiteControls]]">
       </extensions-site-permissions>
     </template>
   </cr-lazy-render>
   <cr-lazy-render id="site-permissions-by-site">
     <template>
-      <extensions-site-permissions-by-site delegate="[[delegate]]" slot="view">
+      <extensions-site-permissions-by-site delegate="[[delegate]]" slot="view"
+          extensions="[[extensions_]]">
       </extensions-site-permissions-by-site>
     </template>
   </cr-lazy-render>

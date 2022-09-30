@@ -37,12 +37,16 @@ export class ExtensionsSitePermissionsElement extends
 
   static get properties() {
     return {
+      extensions: Array,
+
       siteSetEnum_: {
         type: Object,
         value: chrome.developerPrivate.SiteSet,
       },
     };
   }
+
+  extensions: chrome.developerPrivate.ExtensionInfo[];
 
   private onAllSitesLinkClick_() {
     navigation.navigateTo({page: Page.SITE_PERMISSIONS_ALL_SITES});

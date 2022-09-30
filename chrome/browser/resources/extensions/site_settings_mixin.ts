@@ -23,6 +23,8 @@ export interface SiteSettingsDelegate {
       siteSet: chrome.developerPrivate.SiteSet, hosts: string[]): Promise<void>;
   getUserAndExtensionSitesByEtld():
       Promise<chrome.developerPrivate.SiteGroup[]>;
+  getMatchingExtensionsForSite(site: string):
+      Promise<chrome.developerPrivate.MatchingExtensionInfo[]>;
   getUserSiteSettingsChangedTarget():
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }

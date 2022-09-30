@@ -42,6 +42,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   static get properties() {
     return {
       delegate: Object,
+      extensions: Array,
       header: String,
       siteSet: String,
       sites: Array,
@@ -68,6 +69,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   }
 
   delegate: SiteSettingsDelegate;
+  extensions: chrome.developerPrivate.ExtensionInfo[];
   header: string;
   siteSet: chrome.developerPrivate.SiteSet;
   sites: string[];

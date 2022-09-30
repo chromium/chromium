@@ -2468,7 +2468,9 @@ DeveloperPrivateGetMatchingExtensionsForSiteFunction::Run() {
   URLPatternSet site_pattern({parsed_site});
   std::unique_ptr<ExtensionSet> all_extensions =
       ExtensionRegistry::Get(browser_context())
-          ->GenerateInstalledExtensionsSet();
+          ->GenerateInstalledExtensionsSet(
+              ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+              ExtensionRegistry::TERMINATED | ExtensionRegistry::BLOCKLISTED);
   for (const auto& extension : *all_extensions) {
     const URLPatternSet& extension_withheld_sites =
         extension->permissions_data()->withheld_permissions().effective_hosts();

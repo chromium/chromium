@@ -60,10 +60,7 @@
         expanded="{{expanded_}}">
     </cr-expand-button>
   </template>
-  <!-- TODO(crbug.com/1253673): Always show this once the option to edit
-       extension permissions for a site is added for the dialog. -->
-  <template is="dom-if"
-      if="[[showEditSitePermissionsDialogButton_(data)]]">
+  <template is="dom-if" if="[[!isExpandable_]]">
     <cr-icon-button class="subpage-arrow" id="edit-one-site-button"
         on-click="onEditSiteClick_">
     </cr-icon-button>
@@ -78,12 +75,8 @@
         <span class="site">[[item.site]]</span>
         <span class="site-subtext">[[getSiteSubtext_(item)]]</span>
       </div>
-      <!-- TODO(crbug.com/1253673): Always show this once the option to edit
-           extension permissions for a site is added for the dialog. -->
-      <template is="dom-if" if="[[isUserSpecifiedSite_(item.siteSet)]]">
-        <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
-        </cr-icon-button>
-      </template>
+      <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
+      </cr-icon-button>
     </div>
   </template>
 </div>
@@ -91,6 +84,7 @@
 <template is="dom-if" if="[[showEditSitePermissionsDialog_]]" restamp>
   <site-permissions-edit-permissions-dialog
       delegate="[[delegate]]"
+      extensions="[[extensions]]"
       site="[[siteToEdit_.site]]"
       original-site-set="[[siteToEdit_.siteSet]]"
       on-close="onEditSitePermissionsDialogClose_">

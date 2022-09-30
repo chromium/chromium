@@ -500,6 +500,11 @@ export class Service implements ServiceInterface {
     });
   }
 
+  getMatchingExtensionsForSite(site: string):
+      Promise<chrome.developerPrivate.MatchingExtensionInfo[]> {
+    return chrome.developerPrivate.getMatchingExtensionsForSite(site);
+  }
+
   getUserSiteSettingsChangedTarget() {
     return chrome.developerPrivate.onUserSiteSettingsChanged;
   }

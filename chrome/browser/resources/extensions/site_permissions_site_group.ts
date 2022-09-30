@@ -39,6 +39,7 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
     return {
       data: Object,
       delegate: Object,
+      extensions: Array,
 
       listIndex: {
         type: Number,
@@ -69,6 +70,7 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
 
   data: chrome.developerPrivate.SiteGroup;
   delegate: SiteSettingsDelegate;
+  extensions: chrome.developerPrivate.ExtensionInfo[];
   listIndex: number;
   private expanded_: boolean;
   private isExpandable_: boolean;
@@ -127,10 +129,6 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
         siteInfo.siteSet === chrome.developerPrivate.SiteSet.USER_PERMITTED ?
             'permittedSites' :
             'restrictedSites');
-  }
-
-  private showEditSitePermissionsDialogButton_(): boolean {
-    return !this.isExpandable_ && !!this.data.sites[0].siteSet;
   }
 
   private onEditSiteClick_() {

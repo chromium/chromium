@@ -34,6 +34,7 @@ export class ExtensionsSitePermissionsBySiteElement extends PolymerElement {
   static get properties() {
     return {
       delegate: Object,
+      extensions: Array,
 
       siteGroups_: {
         type: Array,
@@ -43,6 +44,7 @@ export class ExtensionsSitePermissionsBySiteElement extends PolymerElement {
   }
 
   delegate: ItemDelegate&SiteSettingsDelegate;
+  extensions: chrome.developerPrivate.ExtensionInfo[];
   private siteGroups_: chrome.developerPrivate.SiteGroup[];
 
   override ready() {

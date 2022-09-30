@@ -85,8 +85,11 @@
   <message name="IDS_EXTENSIONS_ERROR_PAGE_HEADING" desc="The heading of the page displaying an extension's errors.">
     Errors
   </message>
-  <message name="IDS_EXTENSIONS_EDIT_SITE_PERMISSIONS_ALLOW_ALL_EXTENSIONS" desc="The label for the dialog option to always allow extension to run on a site.">
+  <message name="IDS_EXTENSIONS_EDIT_SITE_PERMISSIONS_ALLOW_ALL_EXTENSIONS" desc="The label for the dialog option to always allow extensions to run on a site.">
     Allow all extensions to read and change <ph name="PERMITTED_SITE">$1</ph>
+  </message>
+  <message name="IDS_EXTENSIONS_EDIT_SITE_PERMISSIONS_CUSTOMIZE_PER_EXTENSION" desc="The label for the dialog option to customize site access settings per extension.">
+    Customize for each extension
   </message>
   <message name="IDS_EXTENSIONS_EDIT_SITE_PERMISSIONS_RESTRICT_EXTENSIONS" desc="The label for the dialog option to prevent extensions from running on a site.">
     Don't allow any extensions on <ph name="RESTRICTED_SITE">$1</ph>
@@ -409,6 +412,12 @@
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALL_SITES_EXTENSION_COUNT" desc="The subtext displayed for sites in the all sites subpage showing the number of extensions that can run for that site.">
     <ph name="NUM_EXTENSIONS">$1</ph> extensions
   </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALWAYS_ON_ALL_SITES" desc="The option shown for an extension that can access the site and all of its requested sites in the edit permissions dialog.">
+    Always on all sites
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ALWAYS_ON_THIS_SITE" desc="The option shown for an extension that can automatically access the site in the edit permissions dialog.">
+    Always on this site
+  </message>
   <message name="IDS_EXTENSIONS_PERMITTED_SITES" desc="The label above the list of sites that extensions are always permitted to run in.">
     All extensions allowed
   </message>
@@ -432,6 +441,9 @@
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_EDIT_PERMISSIONS" desc="The label for the option used to allow a user to edit a site's permissions. Used in the site permissions page.">
     Edit site permissions
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ON_CLICK" desc="The option shown for an extension that can only access the site when clicked in the edit permissions dialog.">
+    On click for this site
   </message>
   <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_ERROR" desc="The error message shown to the user when they entered an invalid site address into the input field.">
     Not a valid web address

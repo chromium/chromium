@@ -1,21 +1,98 @@
-<style include="cr-shared-style">
+<style include="cr-shared-style md-select">
+  :host {
+    --radio-group-height: 132px;
+    --dialog-height: 360px;
+  }
+
   cr-radio-group {
-    width: 100%;
+    height: var(--radio-group-height);
+    padding-inline: 8px;
+  }
+
+  .site-access-list {
+    max-height: var(--dialog-height);
+  }
+
+  .indented-site-access-list {
+    margin-inline-start: 36px;
+    max-height: calc(var(--dialog-height) - var(--radio-group-height));
+  }
+
+  .extension-row {
+    --md-select-width: 180px;
+    align-items: center;
+    border-top: var(--cr-separator-line);
+    display: flex;
+    height: 32px;
+    padding: 12px 0;
+  }
+
+  .extension-row:first-child {
+    border-top: none;
+  }
+
+  .extension-icon {
+    height: 24px;
+    margin-inline-end: 12px;
+    width: 24px;
+  }
+
+  .extension-name {
+    flex-grow: 1;
+    margin-inline-end: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 </style>
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title">[[computeDialogTitle_(site)]]</div>
+  <div slot="header">
+    <!-- The cr-radio-group is in the header instead of the body slot so it is
+         fixed in place while the list of extensions in the body slot can scroll
+         if the dialog's contents exceed the max height. -->
+    <template is="dom-if" if="[[!matchesSubdomains_(site)]]">
+      <cr-radio-group selected="{{siteSet_}}">
+        <cr-radio-button
+            name="[[siteSetEnum_.USER_PERMITTED]]"
+            label="[[getPermittedSiteLabel_(site)]]">
+        </cr-radio-button>
+        <cr-radio-button
+            name="[[siteSetEnum_.USER_RESTRICTED]]"
+            label="[[getRestrictedSiteLabel_(site)]]">
+        </cr-radio-button>
+        <cr-radio-button
+            name="[[siteSetEnum_.EXTENSION_SPECIFIED]]"
+            label="$i18n{editSitePermissionsCustomizePerExtension}">
+        </cr-radio-button>
+      </cr-radio-group>
+    </template>
+  </div>
   <div slot="body">
-    <cr-radio-group selected="{{siteSet_}}">
-      <cr-radio-button
-          name="[[siteSetEnum_.USER_PERMITTED]]"
-          label="[[getPermittedSiteLabel_(site)]]">
-      </cr-radio-button>
-      <cr-radio-button
-          name="[[siteSetEnum_.USER_RESTRICTED]]"
-          label="[[getRestrictedSiteLabel_(site)]]">
-      </cr-radio-button>
-    </cr-radio-group>
+    <template is="dom-if" if="[[showExtensionSiteAccessData_(siteSet_)]]">
+      <div class$="[[getDialogBodyContainerClass_(site)]]">
+        <template is="dom-repeat" items="[[extensionSiteAccessData_]]">
+          <div class="extension-row">
+            <img class="extension-icon" src="[[item.iconUrl]]" alt="">
+            <span class="extension-name">[[item.name]]</span>
+            <!-- TODO(crbug.com/1253673): Enable these after implementing an API
+                method to edit site access for multiple extensions. -->
+            <select class="extension-host-access md-select"
+                value="[[item.siteAccess]]" disabled>
+              <option value="[[hostAccessEnum_.ON_CLICK]]">
+                $i18n{sitePermissionsOnClick}
+              </option>
+              <option value="[[hostAccessEnum_.ON_SPECIFIC_SITES]]">
+                $i18n{sitePermissionsAlwaysOnThisSite}
+              </option>
+              <option value="[[hostAccessEnum_.ON_ALL_SITES]]">
+                $i18n{sitePermissionsAlwaysOnAllSites}
+              </option>
+            </select>
+          </div>
+        </template>
+      </div>
+    </template>
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelClick_">

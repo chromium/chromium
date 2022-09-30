@@ -406,6 +406,11 @@ declare global {
         sites: SiteInfo[],
       };
 
+      export type MatchingExtensionInfo = {
+        id: string,
+        siteAccess: HostAccess,
+      };
+
       type VoidCallback = () => void;
       type StringCallback = (s: string) => void;
 
@@ -465,6 +470,8 @@ declare global {
           options: UserSiteSettingsOptions, callback?: VoidCallback): void;
       export function getUserAndExtensionSitesByEtld(
           callback: (result: SiteGroup[]) => void): void;
+      export function getMatchingExtensionsForSite(site: string):
+          Promise<MatchingExtensionInfo[]>;
 
       export const onItemStateChanged: ChromeEvent<(data: EventData) => void>;
       export const onProfileStateChanged:

@@ -16,6 +16,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   testActivities?: chrome.activityLogPrivate.ActivityResultSet;
   userSiteSettings?: chrome.developerPrivate.UserSiteSettings;
   siteGroups?: chrome.developerPrivate.SiteGroup[];
+  matchingExtensionsInfo?: chrome.developerPrivate.MatchingExtensionInfo[];
 
   private retryLoadUnpackedError_?: chrome.developerPrivate.LoadError;
   private forceReloadItemError_: boolean = false;
@@ -36,6 +37,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'getExtensionsInfo',
       'getExtensionSize',
       'getFilteredExtensionActivityLog',
+      'getMatchingExtensionsForSite',
       'getProfileConfiguration',
       'getUserAndExtensionSitesByEtld',
       'getUserSiteSettings',
@@ -348,5 +350,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setShowAccessRequestsInToolbar(id: string, showRequests: boolean) {
     this.methodCalled('setShowAccessRequestsInToolbar', id, showRequests);
+  }
+
+  getMatchingExtensionsForSite(site: string) {
+    this.methodCalled('getMatchingExtensionsForSite', site);
+    return Promise.resolve(this.matchingExtensionsInfo!);
   }
 }
