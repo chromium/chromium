@@ -606,15 +606,23 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
 
   // Adjust the onscreen rect to touch two screen borders, and also make sure
   // the onscreen rect be right in the center.
+  // At the same time, make sure the origin position for clipped_onscreen_rect
+  // with round-up integer so that no extra blank bar shows up.
   if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
     clipped_onscreen_rect.set_x(0);
     clipped_onscreen_rect.set_width(monitor_size.width());
+    // Make clipped_onscreen_rect height even.
+    if (clipped_onscreen_rect.height() % 2 == 1)
+      clipped_onscreen_rect.set_height(clipped_onscreen_rect.height() + 1);
     clipped_onscreen_rect.set_y(
         (monitor_size.height() - clipped_onscreen_rect.height()) / 2);
   }
   if (IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
     clipped_onscreen_rect.set_y(0);
     clipped_onscreen_rect.set_height(monitor_size.height());
+    // Make clipped_onscreen_rect width even.
+    if (clipped_onscreen_rect.width() % 2 == 1)
+      clipped_onscreen_rect.set_width(clipped_onscreen_rect.width() + 1);
     clipped_onscreen_rect.set_x(
         (monitor_size.width() - clipped_onscreen_rect.width()) / 2);
   }
