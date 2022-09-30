@@ -1094,7 +1094,6 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private onClearAllData_(e: Event) {
     this.browserProxy.recordAction(AllSitesAction2.CLEAR_ALL_DATA);
-
     const scopes = [AllSitesDialog.CLEAR_DATA, 'All'];
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const installed = anyAppsInstalled ? 'Installed' : '';
@@ -1103,7 +1102,9 @@ export class AllSitesElement extends AllSitesElementBase {
     for (let index = this.filteredList_.length - 1; index >= 0; index--) {
       this.clearDataForSiteGroupIndex_(index);
     }
-    this.$.allSitesList.fire('iron-resize');
+    // Needed to update the filteredList_ for the "No sites found" text to
+    // appear.
+    this.forceListUpdate_();
     this.totalUsage_ = '0 B';
     this.onCloseDialog_(e);
   }

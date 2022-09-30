@@ -387,6 +387,28 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     }
   });
 
+  test('clear data "no sites" string', async function() {
+    testElement.siteGroupMap.set(
+        TEST_MULTIPLE_SITE_GROUP.etldPlus1,
+        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP)));
+    const googleSiteGroup = createSiteGroup('google.com', [
+      'https://www.google.com',
+      'https://docs.google.com',
+      'https://mail.google.com',
+    ]);
+    testElement.siteGroupMap.set(googleSiteGroup.etldPlus1, googleSiteGroup);
+    testElement.filter = 'google';
+    testElement.forceListUpdateForTesting();
+    await flushTasks();
+
+    assertFalse(isChildVisible(testElement, '#noSitesFoundText'));
+
+    clearDataViaClearAllButton('action-button');
+    await flushTasks();
+
+    assertTrue(isChildVisible(testElement, '#noSitesFoundText'));
+  });
+
   test('can be sorted by storage', async function() {
     setUpAllSites(prefsVarious);
     testElement.currentRouteChanged(routes.SITE_SETTINGS_ALL);

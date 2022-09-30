@@ -73,7 +73,8 @@
     <div class="list-frame" hidden$="[[!siteGroupMapEmpty_(siteGroupMap)]]">
       <div class="list-item secondary">$i18n{emptyAllSitesPage}</div>
     </div>
-    <div class="list-frame" hidden$="[[!noSearchResultFound_(filteredList_)]]">
+    <div id="noSitesFoundText" class="list-frame"
+     hidden$="[[!noSearchResultFound_(filteredList_)]]">
       <div class="list-item secondary">$i18n{noSitesFound}</div>
     </div>
     <div class="list-frame without-heading" id="listContainer">
