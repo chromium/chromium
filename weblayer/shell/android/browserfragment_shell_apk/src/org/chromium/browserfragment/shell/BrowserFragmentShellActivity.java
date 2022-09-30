@@ -23,6 +23,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.base.Log;
 import org.chromium.browserfragment.Browser;
 import org.chromium.browserfragment.BrowserFragment;
+import org.chromium.browserfragment.CookieManager;
 import org.chromium.browserfragment.FragmentParams;
 import org.chromium.browserfragment.Navigation;
 import org.chromium.browserfragment.NavigationObserver;
@@ -211,6 +212,37 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                     }, "x", Arrays.asList("*"));
                 }
             }
+            @Override
+            public void onFailure(Throwable thrown) {}
+        }, mContext.getMainExecutor());
+
+        ListenableFuture<CookieManager> cookieManagerFuture = fragment.getCookieManager();
+        Futures.addCallback(cookieManagerFuture, new FutureCallback<CookieManager>() {
+            @Override
+            public void onSuccess(CookieManager cookieManager) {
+                ListenableFuture<Void> setCookieFuture =
+                        cookieManager.setCookie("https://sadchonks.com", "foo=bar123");
+                Futures.addCallback(setCookieFuture, new FutureCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void v) {
+                        ListenableFuture<String> cookieFuture =
+                                cookieManager.getCookie("https://sadchonks.com");
+                        Futures.addCallback(cookieFuture, new FutureCallback<String>() {
+                            @Override
+                            public void onSuccess(String value) {
+                                Log.w(TAG, "cookie: " + value);
+                            }
+
+                            @Override
+                            public void onFailure(Throwable thrown) {}
+                        }, mContext.getMainExecutor());
+                    }
+
+                    @Override
+                    public void onFailure(Throwable thrown) {}
+                }, mContext.getMainExecutor());
+            }
+
             @Override
             public void onFailure(Throwable thrown) {}
         }, mContext.getMainExecutor());

@@ -57,6 +57,7 @@ android_library("java") {
     "org/chromium/weblayer/CookieChangeCause.java",
     "org/chromium/weblayer/CookieChangedCallback.java",
     "org/chromium/weblayer/CookieManager.java",
+    "org/chromium/weblayer/CookieManagerDelegate.java",
     "org/chromium/weblayer/CrashReporterCallback.java",
     "org/chromium/weblayer/CrashReporterController.java",
     "org/chromium/weblayer/DarkModeStrategy.java",
@@ -195,6 +196,7 @@ android_aidl("browserfragment_aidl") {
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
+    "org/chromium/browserfragment/interfaces/ICookieManagerDelegate.aidl",
     "org/chromium/browserfragment/interfaces/IFragmentParams.aidl",
     "org/chromium/browserfragment/interfaces/INavigationObserverDelegate.aidl",
     "org/chromium/browserfragment/interfaces/INavigationParams.aidl",
@@ -222,6 +224,7 @@ android_library("browserfragment_java") {
   sources = [
     "org/chromium/browserfragment/Browser.java",
     "org/chromium/browserfragment/BrowserFragment.java",
+    "org/chromium/browserfragment/CookieManager.java",
     "org/chromium/browserfragment/FragmentParams.java",
     "org/chromium/browserfragment/Navigation.java",
     "org/chromium/browserfragment/NavigationObserver.java",

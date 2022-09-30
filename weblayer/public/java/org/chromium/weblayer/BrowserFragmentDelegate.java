@@ -129,7 +129,15 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mHandler.post(() -> mFragment.onCreate(savedInstanceState, mBrowserDelegate));
+        mHandler.post(() -> {
+            mFragment.onCreate(savedInstanceState, mBrowserDelegate);
+
+            Profile profile = mFragment.getBrowser().getProfile();
+            try {
+                mClient.onCookieManagerReady(new CookieManagerDelegate(profile.getCookieManager()));
+            } catch (RemoteException e) {
+            }
+        });
     }
 
     @Override

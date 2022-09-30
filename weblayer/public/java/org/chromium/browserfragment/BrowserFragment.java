@@ -29,6 +29,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.ICookieManagerDelegate;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
@@ -42,9 +43,17 @@ public class BrowserFragment extends Fragment {
     private Browser mBrowser;
     private IBrowserFragmentDelegate mDelegate;
     private final TabListObserverDelegate mTabListObserverDelegate = new TabListObserverDelegate();
+
+    // TabManager
     private ListenableFuture<TabManager> mFutureTabManager;
     private CallbackToFutureAdapter.Completer<TabManager> mTabManagerCompleter;
     private TabManager mTabManager;
+
+    // CookieManager
+    private ListenableFuture<CookieManager> mFutureCookieManager;
+    private CallbackToFutureAdapter.Completer<CookieManager> mCookieManagerCompleter;
+    private CookieManager mCookieManager;
+
     private Bundle mInstanceState = new Bundle();
 
     private final IBrowserFragmentDelegateClient mClient =
@@ -67,6 +76,12 @@ public class BrowserFragment extends Fragment {
                         IObjectWrapper wrappedContentViewRenderView) {
                     LinearLayout layout = (LinearLayout) BrowserFragment.super.getView();
                     layout.addView(ObjectWrapper.unwrap(wrappedContentViewRenderView, View.class));
+                }
+
+                @Override
+                public void onCookieManagerReady(ICookieManagerDelegate delegate) {
+                    mCookieManager = new CookieManager(delegate);
+                    mCookieManagerCompleter.set(mCookieManager);
                 }
             };
 
@@ -99,6 +114,11 @@ public class BrowserFragment extends Fragment {
             mTabManagerCompleter = completer;
             // Debug string.
             return "TabManager Future";
+        });
+        mFutureCookieManager = CallbackToFutureAdapter.getFuture(completer -> {
+            mCookieManagerCompleter = completer;
+            // Debug string.
+            return "CookieManager Future";
         });
     }
 
@@ -260,6 +280,15 @@ public class BrowserFragment extends Fragment {
     }
 
     /**
+     * Returns a ListenableFuture to the CookieManager, which becomes available after the
+     * BrowserFragment's onCreate method finishes.
+     */
+    @NonNull
+    public ListenableFuture<CookieManager> getCookieManager() {
+        return mFutureCookieManager;
+    }
+
+    /**
      * Registers a browser observer and returns if successful.
      *
      * @param tabListObserver The TabListObserver.
@@ -295,6 +324,12 @@ public class BrowserFragment extends Fragment {
         if (mTabManager != null) {
             mTabManager.invalidate();
             mTabManager = null;
+        }
+        mFutureCookieManager = Futures.immediateFailedFuture(
+                new IllegalStateException("Browser has been destroyed"));
+        if (mCookieManager != null) {
+            mCookieManager.invalidate();
+            mCookieManager = null;
         }
     }
 
