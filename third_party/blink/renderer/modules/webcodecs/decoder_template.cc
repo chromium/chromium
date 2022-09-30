@@ -259,10 +259,12 @@ void DecoderTemplate<Traits>::ProcessRequests() {
     // Skip processing for requests that are canceled by a recent reset().
     if (request->reset_generation != reset_generation_) {
       if (request->resolver) {
-        // TODO(crbug.com/1229313): We might be in a Shutdown(), in which case
-        // this may actually be due to an error or close().
         request->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError, "Aborted due to reset()"));
+            DOMExceptionCode::kAbortError,
+            shutting_down_
+                ? (shutting_down_due_to_error_ ? "Aborted due to error"
+                                               : "Aborted due to close()")
+                : "Aborted due to reset()"));
       }
       requests_.pop_front();
       continue;
@@ -490,6 +492,9 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
   TRACE_EVENT1(kCategory, GetTraceNames()->shutdown.c_str(), "has_exception",
                !!exception);
+
+  shutting_down_ = true;
+  shutting_down_due_to_error_ = !!exception;
 
   // Abort pending work (otherwise it will never complete)
   if (pending_request_) {
