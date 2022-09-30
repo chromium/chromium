@@ -386,7 +386,7 @@ TEST_F(BrowsingHistoryHandlerTest, MdTruncatesTitles) {
   const base::Value* list = arg3->FindListKey("value");
   ASSERT_TRUE(list->is_list());
 
-  const base::Value& first_entry = list->GetListDeprecated()[0];
+  const base::Value& first_entry = list->GetList()[0];
   ASSERT_TRUE(first_entry.is_dict());
 
   const std::string* title = first_entry.FindStringKey("title");
