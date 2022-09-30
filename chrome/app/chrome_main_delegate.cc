@@ -73,6 +73,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/common/content_client.h"
@@ -805,6 +806,10 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
 #if BUILDFLAG(IS_MAC)
   chrome::CacheChannelInfo();
 #endif
+
+  // TODO(https://crbug.com/1360376): Consider deferring this to run after
+  // startup.
+  RequestUnwindPrerequisitesInstallation(chrome::GetChannel());
 
   return absl::nullopt;
 }

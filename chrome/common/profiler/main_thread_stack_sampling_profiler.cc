@@ -7,13 +7,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/threading/platform_thread.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/profiler/process_type.h"
 #include "chrome/common/profiler/thread_profiler.h"
-#include "chrome/common/profiler/unwind_util.h"
 #include "components/metrics/call_stack_profile_builder.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
-#include "components/version_info/channel.h"
 #include "content/public/common/content_switches.h"
 
 namespace {
@@ -38,11 +35,6 @@ std::unique_ptr<ThreadProfiler> CreateThreadProfiler(
 MainThreadStackSamplingProfiler::MainThreadStackSamplingProfiler() {
   const metrics::CallStackProfileParams::Process process =
       GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess());
-
-  if (process == metrics::CallStackProfileParams::Process::kBrowser) {
-    RequestUnwindPrerequisitesInstallation(chrome::GetChannel());
-  }
-
   sampling_profiler_ = CreateThreadProfiler(process);
 }
 
