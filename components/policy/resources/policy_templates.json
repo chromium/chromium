@@ -13862,6 +13862,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Close privacy warning notifications after a delay',
+        },
+        {
+          'value': False,
+          'caption': 'Show privacy notifications until dismissed by the user',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 688,
@@ -13887,6 +13897,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show privacy notifications until dismissed by the user',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show privacy notifications',
+        },
+      ],
       'example_value': False,
       'id': 723,
       'caption': '''Reduce Managed-guest session auto-launch notifications''',
@@ -13910,7 +13930,22 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable background mode',
+        },
+        {
+          'value': False,
+          'caption': 'Disable background mode',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 138,
       'caption': '''Continue running background apps when <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is closed''',
       'tags': ['system-security'],
@@ -13930,6 +13965,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable Google Drive syncing',
+        },
+        {
+          'value': False,
+          'caption': 'Enable Google Drive syncing',
+        },
+      ],
       'example_value': True,
       'id': 139,
       'caption': '''Disable Drive in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app''',
@@ -13949,6 +13994,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable Google Drive syncing over cellular connections',
+        },
+        {
+          'value': False,
+          'caption': 'Enable Google Drive syncing over cellular connections',
+        },
+      ],
       'example_value': True,
       'id': 140,
       'caption': '''Disable Google Drive over cellular connections in the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Files app''',
@@ -14049,6 +14104,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Do not allow user to bypass Safe Browsing warning',
+        },
+        {
+          'value': False,
+          'caption': 'Allow user to bypass Safe Browsing warning',
+        },
+      ],
       'example_value': True,
       'id': 150,
       'caption': '''Disable proceeding from the Safe Browsing warning page''',
@@ -14069,6 +14134,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to opt in to Safe Browsing extended reporting',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to opt in to Safe Browsing extended reporting',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 299,
@@ -14127,6 +14202,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disallow external storage devices',
+        },
+        {
+          'value': False,
+          'caption': 'Allow external storage devices',
+        },
+      ],
       'example_value': True,
       'id': 152,
       'caption': '''Disable mounting of external storage''',
@@ -14151,6 +14236,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disallow writing to external storage devices',
+        },
+        {
+          'value': False,
+          'caption': 'Allow writing to external storage devices',
+        },
+      ],
       'example_value': True
     },
     {
@@ -14163,6 +14258,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable audio output',
+        },
+        {
+          'value': False,
+          'caption': 'Disable audio output',
+        },
+      ],
       'example_value': False,
       'id': 159,
       'caption': '''Allow playing audio''',
