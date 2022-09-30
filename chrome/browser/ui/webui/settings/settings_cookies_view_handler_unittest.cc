@@ -167,8 +167,8 @@ TEST_F(CookiesViewHandlerTest, SingleRequestDuringBatch) {
   EXPECT_EQ(kGetDisplaylistCallbackID,
             get_display_list_response.arg1()->GetString());
   ASSERT_TRUE(get_display_list_response.arg2()->GetBool());
-  base::Value::ConstListView local_data_list =
-      get_display_list_response.arg3()->GetListDeprecated();
+  const base::Value::List& local_data_list =
+      get_display_list_response.arg3()->GetList();
   ASSERT_EQ(2U, local_data_list.size());
   EXPECT_EQ(kTestHost1, local_data_list[0].FindKey("site")->GetString());
   EXPECT_EQ(kTestHost2, local_data_list[1].FindKey("site")->GetString());
@@ -284,7 +284,7 @@ TEST_F(CookiesViewHandlerTest, ImmediateTreeOperation) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   ASSERT_TRUE(data.arg2()->GetBool());
 
-  base::Value::ConstListView cookies_list = data.arg3()->GetListDeprecated();
+  const base::Value::List& cookies_list = data.arg3()->GetList();
   ASSERT_EQ(2UL, cookies_list.size());
   EXPECT_EQ("cookie", cookies_list[0].FindKey("type")->GetString());
   EXPECT_EQ("local_storage", cookies_list[1].FindKey("type")->GetString());
@@ -307,8 +307,7 @@ TEST_F(CookiesViewHandlerTest, HandleGetDisplayList) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
-    base::Value::ConstListView local_data_list =
-        data.arg3()->GetListDeprecated();
+    const base::Value::List& local_data_list = data.arg3()->GetList();
     ASSERT_EQ(1U, local_data_list.size());
     EXPECT_EQ(kTestHost1, local_data_list[0].FindKey("site")->GetString());
   }
@@ -326,8 +325,7 @@ TEST_F(CookiesViewHandlerTest, HandleGetDisplayList) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
-    base::Value::ConstListView local_data_list =
-        data.arg3()->GetListDeprecated();
+    const base::Value::List& local_data_list = data.arg3()->GetList();
     ASSERT_EQ(2U, local_data_list.size());
     EXPECT_EQ(kTestHost1, local_data_list[0].FindKey("site")->GetString());
     EXPECT_EQ(kTestHost2, local_data_list[1].FindKey("site")->GetString());
@@ -351,8 +349,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveShownItems) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
-    base::Value::ConstListView local_data_list =
-        data.arg3()->GetListDeprecated();
+    const base::Value::List& local_data_list = data.arg3()->GetList();
     ASSERT_EQ(1U, local_data_list.size());
     EXPECT_EQ(kTestHost2, local_data_list[0].FindKey("site")->GetString());
   }
@@ -376,8 +373,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveShownItems) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
-    base::Value::ConstListView local_data_list =
-        data.arg3()->GetListDeprecated();
+    const base::Value::List& local_data_list = data.arg3()->GetList();
     ASSERT_EQ(1U, local_data_list.size());
     EXPECT_EQ(kTestHost1, local_data_list[0].FindKey("site")->GetString());
   }
@@ -397,7 +393,7 @@ TEST_F(CookiesViewHandlerTest, HandleGetCookieDetails) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   ASSERT_TRUE(data.arg2()->GetBool());
 
-  base::Value::ConstListView cookies_list = data.arg3()->GetListDeprecated();
+  const base::Value::List& cookies_list = data.arg3()->GetList();
   ASSERT_EQ(2UL, cookies_list.size());
   EXPECT_EQ("cookie", cookies_list[0].FindKey("type")->GetString());
   EXPECT_EQ("local_storage", cookies_list[1].FindKey("type")->GetString());
@@ -430,8 +426,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveAll) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
-    base::Value::ConstListView local_data_list =
-        data.arg3()->GetListDeprecated();
+    const base::Value::List& local_data_list = data.arg3()->GetList();
     ASSERT_EQ(0U, local_data_list.size());
   }
 }
@@ -451,7 +446,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveItem) {
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    base::Value::ConstListView cookies_list = data.arg3()->GetListDeprecated();
+    const base::Value::List& cookies_list = data.arg3()->GetList();
     ASSERT_EQ(2UL, cookies_list.size());
     // Find the entry item associated with the kTestCookie1 cookie.
     for (const auto& cookie : cookies_list) {
@@ -483,7 +478,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveItem) {
     task_environment()->RunUntilIdle();
 
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-    base::Value::ConstListView cookies_list = data.arg3()->GetListDeprecated();
+    const base::Value::List& cookies_list = data.arg3()->GetList();
     ASSERT_EQ(1UL, cookies_list.size());
     EXPECT_EQ("local_storage", cookies_list[0].FindKey("type")->GetString());
   }
@@ -517,8 +512,7 @@ TEST_F(CookiesViewHandlerTest, HandleRemoveSite) {
     EXPECT_EQ("cr.webUIResponse", data.function_name());
     EXPECT_EQ(kCallbackId, data.arg1()->GetString());
     ASSERT_TRUE(data.arg2()->GetBool());
-    base::Value::ConstListView local_data_list =
-        data.arg3()->GetListDeprecated();
+    const base::Value::List& local_data_list = data.arg3()->GetList();
     ASSERT_EQ(1U, local_data_list.size());
     EXPECT_EQ(kTestHost2, local_data_list[0].FindKey("site")->GetString());
   }

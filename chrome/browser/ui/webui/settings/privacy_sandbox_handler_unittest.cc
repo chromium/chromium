@@ -71,26 +71,24 @@ void ValidateFledgeInfo(content::TestWebUI* web_ui,
 
   auto* blocked_sites = data.arg3()->FindListKey("blockedSites");
   ASSERT_TRUE(blocked_sites);
-  ASSERT_EQ(expected_blocked_sites.size(),
-            blocked_sites->GetListDeprecated().size());
+  ASSERT_EQ(expected_blocked_sites.size(), blocked_sites->GetList().size());
   for (size_t i = 0; i < expected_blocked_sites.size(); i++) {
     EXPECT_EQ(expected_blocked_sites[i],
-              blocked_sites->GetListDeprecated()[i].GetString());
+              blocked_sites->GetList()[i].GetString());
   }
 
   auto* joining_sites = data.arg3()->FindListKey("joiningSites");
   ASSERT_TRUE(joining_sites);
-  ASSERT_EQ(expected_joining_sites.size(),
-            joining_sites->GetListDeprecated().size());
+  ASSERT_EQ(expected_joining_sites.size(), joining_sites->GetList().size());
   for (size_t i = 0; i < expected_joining_sites.size(); i++) {
     EXPECT_EQ(expected_joining_sites[i],
-              joining_sites->GetListDeprecated()[i].GetString());
+              joining_sites->GetList()[i].GetString());
   }
 }
 
 void ValidateTopicsInfo(
     std::vector<privacy_sandbox::CanonicalTopic> expected_topics,
-    base::Value::ConstListView actual_topics) {
+    const base::Value::List& actual_topics) {
   ASSERT_EQ(expected_topics.size(), actual_topics.size());
   for (size_t i = 0; i < expected_topics.size(); i++) {
     const auto& actual_topic = actual_topics[i];
@@ -262,11 +260,10 @@ TEST_F(PrivacySandboxHandlerTestMockService, GetTopicsState) {
   ASSERT_TRUE(data.arg2()->GetBool());
   ASSERT_TRUE(data.arg3()->is_dict());
 
-  ValidateTopicsInfo(
-      kTopTopics, data.arg3()->FindListKey("topTopics")->GetListDeprecated());
-  ValidateTopicsInfo(
-      kBlockedTopics,
-      data.arg3()->FindListKey("blockedTopics")->GetListDeprecated());
+  ValidateTopicsInfo(kTopTopics,
+                     data.arg3()->FindListKey("topTopics")->GetList());
+  ValidateTopicsInfo(kBlockedTopics,
+                     data.arg3()->FindListKey("blockedTopics")->GetList());
 }
 
 }  // namespace settings
