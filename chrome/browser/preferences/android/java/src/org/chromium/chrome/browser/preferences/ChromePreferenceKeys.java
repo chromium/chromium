@@ -439,7 +439,9 @@ public final class ChromePreferenceKeys {
     /**
      * Key used to save homepage location set by enterprise policy
      */
-    public static final String HOMEPAGE_LOCATION_POLICY = "Chrome.Policy.HomepageLocation";
+    public static final String DEPRECATED_HOMEPAGE_LOCATION_POLICY =
+            "Chrome.Policy.HomepageLocation";
+    public static final String HOMEPAGE_LOCATION_POLICY_GURL = "Chrome.Policy.HomepageLocationGurl";
 
     /**
      * Used for get image descriptions feature, track "Just once"/"Don't ask again" choice.
@@ -1089,7 +1091,8 @@ public final class ChromePreferenceKeys {
                 FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 FLAGS_SAFE_MODE_ENABLED,
                 FLAGS_SAFE_MODE_RUNS_LEFT,
-                HOMEPAGE_LOCATION_POLICY,
+                DEPRECATED_HOMEPAGE_LOCATION_POLICY,
+                HOMEPAGE_LOCATION_POLICY_GURL,
                 HOMEPAGE_USE_CHROME_NTP,
                 HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI,
                 HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL,

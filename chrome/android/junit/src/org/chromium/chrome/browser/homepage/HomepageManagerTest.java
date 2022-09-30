@@ -24,18 +24,20 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /** Unit tests for {@link HomepageManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {HomepageManagerTest.ShadowHomepagePolicyManager.class,
                 HomepageManagerTest.ShadowUrlUtilities.class,
-                HomepageManagerTest.ShadowPartnerBrowserCustomizations.class})
+                HomepageManagerTest.ShadowPartnerBrowserCustomizations.class, ShadowGURL.class})
 public class HomepageManagerTest {
     /** Shadow for {@link HomepagePolicyManager}. */
     @Implements(HomepagePolicyManager.class)
     public static class ShadowHomepagePolicyManager {
-        static String sHomepageUrl;
+        static GURL sHomepageUrl;
 
         @Implementation
         public static boolean isHomepageManagedByPolicy() {
@@ -43,7 +45,7 @@ public class HomepageManagerTest {
         }
 
         @Implementation
-        public static String getHomepageUrl() {
+        public static GURL getHomepageUrl() {
             return sHomepageUrl;
         }
     }
@@ -52,7 +54,7 @@ public class HomepageManagerTest {
     static class ShadowUrlUtilities {
         @Implementation
         public static boolean isNTPUrl(String url) {
-            return UrlConstants.NTP_URL.equals(url);
+            return JUnitTestGURLs.NTP_URL.equals(url);
         }
     }
 
@@ -77,30 +79,28 @@ public class HomepageManagerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        ShadowPartnerBrowserCustomizations.setPartnerBrowserCustomizations(
+                mPartnerBrowserCustomizations);
     }
 
     @Test
     @SmallTest
     public void testIsHomepageNonNtp() {
-        ShadowHomepagePolicyManager.sHomepageUrl = "";
+        ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
         Assert.assertFalse(
                 "Empty string should fall back to NTP", HomepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageUrl = null;
-        Assert.assertFalse("Null should fall back to the NTP", HomepageManager.isHomepageNonNtp());
-
-        ShadowHomepagePolicyManager.sHomepageUrl = "www.example.com";
+        ShadowHomepagePolicyManager.sHomepageUrl =
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
         Assert.assertTrue("Random web page is not the NTP", HomepageManager.isHomepageNonNtp());
 
-        ShadowHomepagePolicyManager.sHomepageUrl = UrlConstants.NTP_URL;
+        ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
         Assert.assertFalse("NTP should be considered the NTP", HomepageManager.isHomepageNonNtp());
     }
 
     @Test
     @SmallTest
     public void testGetDefaultHomepageUri() {
-        ShadowPartnerBrowserCustomizations.setPartnerBrowserCustomizations(
-                mPartnerBrowserCustomizations);
         Mockito.doNothing()
                 .when(mPartnerBrowserCustomizations)
                 .setPartnerHomepageListener(Matchers.anyObject());
@@ -115,7 +115,7 @@ public class HomepageManagerTest {
         Assert.assertEquals(
                 UrlConstants.NTP_NON_NATIVE_URL, HomepageManager.getDefaultHomepageUri());
 
-        final String blueUrl = "https://www.blue.com/";
+        final String blueUrl = JUnitTestGURLs.BLUE_1;
         SharedPreferencesManager.getInstance().writeString(
                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, blueUrl);
         SharedPreferencesManager.getInstance().writeString(

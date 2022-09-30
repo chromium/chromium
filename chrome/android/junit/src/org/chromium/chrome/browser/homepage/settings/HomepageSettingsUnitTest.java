@@ -252,9 +252,7 @@ public class HomepageSettingsUnitTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_Customized() {
-        setHomepagePolicy(TEST_URL_BAR);
-        Mockito.doReturn(true).when(mMockHomepagePolicyManger).isHomepageLocationPolicyEnabled();
-        Mockito.doReturn(TEST_URL_BAR).when(mMockHomepagePolicyManger).getHomepagePreference();
+        setHomepagePolicy(JUnitTestGURLs.getGURL(TEST_URL_BAR));
 
         launchHomepageSettings();
 
@@ -283,7 +281,7 @@ public class HomepageSettingsUnitTest {
     @SmallTest
     @Feature({"Homepage"})
     public void testStartUp_Policies_NTP() {
-        setHomepagePolicy(CHROME_NTP);
+        setHomepagePolicy(JUnitTestGURLs.getGURL(CHROME_NTP));
 
         launchHomepageSettings();
 
@@ -548,7 +546,7 @@ public class HomepageSettingsUnitTest {
                 .getHomePageUrl();
     }
 
-    private void setHomepagePolicy(String homepagePolicy) {
+    private void setHomepagePolicy(GURL homepagePolicy) {
         Mockito.doReturn(true).when(mMockHomepagePolicyManger).isHomepageLocationPolicyEnabled();
         Mockito.doReturn(homepagePolicy).when(mMockHomepagePolicyManger).getHomepagePreference();
     }

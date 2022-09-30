@@ -112,7 +112,7 @@ public class HomepagePolicyIntegrationTest {
         Assert.assertEquals("URL stored in shared preference should be the same as policy setting",
                 TEST_URL,
                 SharedPreferencesManager.getInstance().readString(
-                        ChromePreferenceKeys.HOMEPAGE_LOCATION_POLICY, ""));
+                        ChromePreferenceKeys.DEPRECATED_HOMEPAGE_LOCATION_POLICY, ""));
 
         // METRICS_HOMEPAGE_LOCATION_TYPE is recorded once in deferred start up tasks.
         Assert.assertEquals("Settings.Homepage.LocationType should record POLICY_OTHER once.", 1,

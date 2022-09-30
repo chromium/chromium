@@ -125,7 +125,7 @@ public class HomepageSettings extends PreferenceFragmentCompat {
      */
     private String getHomepageForEditText() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return HomepagePolicyManager.getHomepageUrl();
+            return HomepagePolicyManager.getHomepageUrl().getSpec();
         }
 
         String defaultUrl = HomepageManager.getDefaultHomepageUri();

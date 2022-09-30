@@ -198,7 +198,7 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     private @NonNull String getHomepageUriIgnoringEnabledState() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return HomepagePolicyManager.getHomepageUrl();
+            return HomepagePolicyManager.getHomepageUrl().getSpec();
         }
         if (getPrefHomepageUseChromeNTP()) {
             return UrlConstants.NTP_NON_NATIVE_URL;
