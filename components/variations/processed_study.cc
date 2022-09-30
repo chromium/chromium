@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/version.h"
@@ -62,40 +63,53 @@ bool ValidateStudyAndComputeTotalProbability(
     return false;
   }
 
-  const std::string& default_group_name = study.default_experiment_name();
+  // Validate experiment names
+  {
+    std::set<std::string> experiment_names;
+    for (const auto& experiment : study.experiment()) {
+      if (experiment.name().empty()) {
+        LogInvalidReason(InvalidStudyReason::kMissingExperimentName);
+        DVLOG(1) << study.name() << " is missing an experiment name";
+        return false;
+      }
+      if (!experiment_names.insert(experiment.name()).second) {
+        LogInvalidReason(InvalidStudyReason::kRepeatedExperimentName);
+        DVLOG(1) << study.name() << " has a repeated experiment name "
+                 << experiment.name();
+        return false;
+      }
+    }
+
+    // Specifying a default experiment is optional, so finding it in the
+    // experiment list is only required when it is specified.
+    if (!study.default_experiment_name().empty() &&
+        !base::Contains(experiment_names, study.default_experiment_name())) {
+      LogInvalidReason(InvalidStudyReason::kMissingDefaultExperimentInList);
+      DVLOG(1) << study.name() << " is missing default experiment ("
+               << study.default_experiment_name() << ") in its experiment list";
+      // The default group was not found in the list of groups. This study is
+      // not valid.
+      return false;
+    }
+  }
+
   base::FieldTrial::Probability divisor = 0;
-
   bool multiple_assigned_groups = false;
-  bool found_default_group = false;
 
-  std::set<std::string> experiment_names;
   std::set<std::string> features_to_associate;
 
-  for (int i = 0; i < study.experiment_size(); ++i) {
-    const Study_Experiment& experiment = study.experiment(i);
-    if (experiment.name().empty()) {
-      LogInvalidReason(InvalidStudyReason::kMissingExperimentName);
-      DVLOG(1) << study.name() << " is missing experiment " << i << " name";
-      return false;
-    }
-    if (!experiment_names.insert(experiment.name()).second) {
-      LogInvalidReason(InvalidStudyReason::kRepeatedExperimentName);
-      DVLOG(1) << study.name() << " has a repeated experiment name "
-               << study.experiment(i).name();
-      return false;
-    }
-
+  for (const auto& experiment : study.experiment()) {
     // Note: This checks for ACTIVATE_ON_QUERY, since there is no reason to
     // have this association with ACTIVATE_ON_STARTUP (where the trial starts
     // active), as well as allowing flexibility to disable this behavior in the
     // future from the server by introducing a new activation type.
     if (study.activation_type() == Study_ActivationType_ACTIVATE_ON_QUERY) {
       const auto& features = experiment.feature_association();
-      for (int j = 0; j < features.enable_feature_size(); ++j) {
-        features_to_associate.insert(features.enable_feature(j));
+      for (const auto& feature : features.enable_feature()) {
+        features_to_associate.insert(feature);
       }
-      for (int j = 0; j < features.disable_feature_size(); ++j) {
-        features_to_associate.insert(features.disable_feature(j));
+      for (const auto& feature : features.disable_feature()) {
+        features_to_associate.insert(feature);
       }
     }
 
@@ -132,19 +146,6 @@ bool ValidateStudyAndComputeTotalProbability(
       }
       divisor += experiment.probability_weight();
     }
-    if (study.experiment(i).name() == default_group_name)
-      found_default_group = true;
-  }
-
-  // Specifying a default experiment is optional, so finding it in the
-  // experiment list is only required when it is specified.
-  if (!study.default_experiment_name().empty() && !found_default_group) {
-    LogInvalidReason(InvalidStudyReason::kMissingDefaultExperimentInList);
-    DVLOG(1) << study.name() << " is missing default experiment ("
-             << study.default_experiment_name() << ") in its experiment list";
-    // The default group was not found in the list of groups. This study is not
-    // valid.
-    return false;
   }
 
   // Ensure that groups that don't explicitly enable/disable any features get
