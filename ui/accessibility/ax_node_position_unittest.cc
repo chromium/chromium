@@ -683,7 +683,8 @@ std::unique_ptr<AXTree> AXPositionTest::CreateAXTree(
 
 }  // namespace
 
-TEST_F(AXPositionTest, Clone) {
+// TODO(crbug.com/1370069): Re-enable this test
+TEST_F(AXPositionTest, DISABLED_Clone) {
   TestPositionType null_position = AXNodePosition::CreateNullPosition();
   ASSERT_NE(nullptr, null_position);
   TestPositionType copy_position = null_position->Clone();
@@ -918,7 +919,8 @@ TEST_F(AXPositionTest, ToString) {
       text_position_10->ToString());
 }
 
-TEST_F(AXPositionTest, IsIgnored) {
+// TODO(crbug.com/1370069): Re-enable this test
+TEST_F(AXPositionTest, DISABLED_IsIgnored) {
   EXPECT_FALSE(AXNodePosition::CreateNullPosition()->IsIgnored());
 
   // We now need to update the tree structure to test ignored tree and text
