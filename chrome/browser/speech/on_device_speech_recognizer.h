@@ -32,18 +32,10 @@ class OnDeviceSpeechRecognizer
   // on-device for the given language (BCP-47 format, e.g. "en-US").
   static bool IsOnDeviceSpeechRecognizerAvailable(const std::string& language);
 
-  // |language| specificies the recognition language in BCP-47 format.
-  // |recognition_mode_ime| is whether to use speech recognition configured for
-  // IME or Captions.
-  // |enable_formatting| is whether to include extra, assumed formatting and
-  // punctuation.
-  // TODO(katie): Combine bools into an int of bits.
   OnDeviceSpeechRecognizer(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
       Profile* profile,
-      const std::string& language,
-      bool recognition_mode_ime,
-      bool enable_formatting);
+      media::mojom::SpeechRecognitionOptionsPtr options);
   ~OnDeviceSpeechRecognizer() override;
   OnDeviceSpeechRecognizer(const OnDeviceSpeechRecognizer&) = delete;
   OnDeviceSpeechRecognizer& operator=(const OnDeviceSpeechRecognizer&) = delete;

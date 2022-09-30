@@ -12,6 +12,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 
 namespace {
 const char kSpeechRecognitionError[] = "A speech recognition error occurred";
@@ -107,8 +108,13 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale_)) {
     type_ = speech::SpeechRecognitionType::kOnDevice;
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        GetWeakPtr(), profile, locale_,
-        /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
+        GetWeakPtr(), profile,
+        media::mojom::SpeechRecognitionOptions::New(
+            media::mojom::SpeechRecognitionMode::kIme,
+            /*enable_formatting=*/false,
+            /*language=*/locale_,
+            /*is_server_based=*/false,
+            media::mojom::RecognizerClientType::kDictation));
   } else {
     type_ = speech::SpeechRecognitionType::kNetwork;
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(

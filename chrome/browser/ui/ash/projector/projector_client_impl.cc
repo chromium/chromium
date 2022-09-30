@@ -31,6 +31,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -84,8 +85,11 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
   speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
-      GetLocale(), /*recognition_mode_ime=*/false,
-      /*enable_formatting=*/true);
+      media::mojom::SpeechRecognitionOptions::New(
+          media::mojom::SpeechRecognitionMode::kCaption,
+          /*enable_formatting=*/true, GetLocale(),
+          /*is_server_based=*/false,
+          media::mojom::RecognizerClientType::kProjector));
 }
 
 void ProjectorClientImpl::StopSpeechRecognition() {

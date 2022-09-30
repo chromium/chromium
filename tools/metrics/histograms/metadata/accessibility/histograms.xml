@@ -1169,6 +1169,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}2"
+    units="ms" expires_after="2022-09-30">
+  <obsolete>
+    Deprecated as of 09/2022. Now using
+    Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3 This metric
+    measured the total speech recognition time not only for Live Caption but
+    also for other applications that use SODA.
+  </obsolete>
+  <owner>abigailbklein@google.com</owner>
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Measures how long SODA was running while the Live Caption UI was
+    {Visibility}. Logged once on the destruction of the
+    SpeechRecognitionRecognizerImpl.
+  </summary>
+  <token key="Visibility">
+    <variant name="Hidden"
+        summary="hidden. This might be because it was closed by user or
+                 because there was an error passing transcriptions to the UI"/>
+    <variant name="Visible" summary="visible and showing transcriptions"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.LiveCaption.Duration.CaptionBubble{Visibility}3"
     units="ms" expires_after="2023-06-13">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>

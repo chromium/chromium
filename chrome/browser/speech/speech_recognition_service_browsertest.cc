@@ -269,7 +269,8 @@ void SpeechRecognitionServiceTest::LaunchService() {
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true, "en-US"),
+          /*enable_formatting=*/true, "en-US", /* is_server_based=*/false,
+          media::mojom::RecognizerClientType::kLiveCaption),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
              bool is_multichannel_supported) {

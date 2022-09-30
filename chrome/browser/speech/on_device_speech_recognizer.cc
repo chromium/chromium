@@ -69,15 +69,14 @@ bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
 OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
     Profile* profile,
-    const std::string& language,
-    bool recognition_mode_ime,
-    bool enable_formatting)
+    media::mojom::SpeechRecognitionOptionsPtr options)
     : SpeechRecognizer(delegate),
       state_(SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF),
       is_multichannel_supported_(false),
-      language_(language),
       waiting_for_params_(false) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(options->language.has_value());
+  language_ = options->language.value();
 
   // Connect the AudioSourceSpeechRecognitionContext & bind an
   // AudioSourceFetcher recognizer.
@@ -88,10 +87,7 @@ OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
   audio_source_speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
-      media::mojom::SpeechRecognitionOptions::New(
-          recognition_mode_ime ? media::mojom::SpeechRecognitionMode::kIme
-                               : media::mojom::SpeechRecognitionMode::kCaption,
-          enable_formatting, language),
+      std::move(options),
       media::BindToCurrentLoop(
           base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));

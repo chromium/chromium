@@ -176,8 +176,23 @@ enum SpeechRecognitionMode {
   kCaption,
 };
 
+// Which Chrome/ChromeOS application that is triggering the
+// speech recognition session to start.
+[Stable, Extensible]
+enum RecognizerClientType {
+  [Default] kUnknown,
+  // Dictation on ChromeOS.
+  kDictation,
+  // LiveCaption on Chrome/ChromeOS.
+  kLiveCaption,
+  // Projector on ChromeOS.
+  kProjector,
+  // CastModerator on ChromeOS.
+  kCastModerator,
+};
+
 // Options for speech recognition.
-// TODO(crbug.com/1165437): Add option to include timing metrics in the result.
+// Next version: 2
 [Stable]
 struct SpeechRecognitionOptions {
   // What kind of recognition to use.
@@ -194,4 +209,10 @@ struct SpeechRecognitionOptions {
   // can use its own language. Right now Language is only used by Projector
   // and Dictation via OnDeviceSpeechRecognizer in Chrome OS.
   string? language;
+
+  // Whether the recognition is happening on-device or remotely on a server.
+  [MinVersion=1] bool is_server_based;
+
+  // Which client is requesting the speech recognition session.
+  [MinVersion=1] RecognizerClientType recognizer_client_type;
 };

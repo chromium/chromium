@@ -140,8 +140,13 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
         .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit))
         .RetiresOnSaturation();
     recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        mock_speech_delegate_->GetWeakPtr(), browser()->profile(), "en-US",
-        /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
+        mock_speech_delegate_->GetWeakPtr(), browser()->profile(),
+        media::mojom::SpeechRecognitionOptions::New(
+            media::mojom::SpeechRecognitionMode::kIme,
+            /*enable_formatting=*/false,
+            /*language=*/"en-US",
+            /*is_server_based=*/false,
+            media::mojom::RecognizerClientType::kDictation));
     loop.Run();
   }
 

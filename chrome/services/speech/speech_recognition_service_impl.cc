@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,13 @@
 
 namespace speech {
 
+namespace {
+
+constexpr char kInvalidSpeechRecogntionOptions[] =
+    "Invalid SpeechRecognitionOptions provided";
+
+}  // namespace
+
 SpeechRecognitionServiceImpl::SpeechRecognitionServiceImpl(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionService> receiver)
     : receiver_(this, std::move(receiver)) {}
@@ -25,6 +32,9 @@ SpeechRecognitionServiceImpl::~SpeechRecognitionServiceImpl() = default;
 void SpeechRecognitionServiceImpl::BindAudioSourceSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
         context) {
+  // TODO(b/249867435): Make this function create mojo::ReportBadMessage because
+  // this method shouldn't be called on platforms other than ChromeOS. ChromeOS
+  // clients should use CrosSpeechRecognitionService.
   audio_source_speech_recognition_contexts_.Add(this, std::move(context));
 }
 
@@ -45,6 +55,15 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
+  // This is currently only used by LiveCaption and server side
+  // speech recognition is not available to it.
+  if (options->is_server_based ||
+      options->recognizer_client_type !=
+          media::mojom::RecognizerClientType::kLiveCaption) {
+    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
+    return;
+  }
+
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
   if (!base::PathExists(binary_path_) || !base::PathExists(config_path_)) {
@@ -65,6 +84,15 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
     media::mojom::SpeechRecognitionOptionsPtr options,
     BindRecognizerCallback callback) {
+  // TODO(b/249867435): Remove SpeechRecognitionServiceImpl's implementation of
+  // AudioSourceSpeechRecognitionContext should be removed. AudioSourceFetcher
+  // is only ever used from ChromeOS and it should be accessed
+  // from CrosSpeechRecognitionService.
+  if (options->is_server_based) {
+    mojo::ReportBadMessage(kInvalidSpeechRecogntionOptions);
+    return;
+  }
+
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
   if (!base::PathExists(binary_path_) || !base::PathExists(config_path_)) {
