@@ -738,7 +738,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
 // Validate that if an iframe requests access that cookies become unblocked for
 // just that top-level/third-party combination.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
-                       GrantGivesCrossSiteCookieAccess) {
+                       // TODO(crbug.com/1370096): Re-enable this test
+                       DISABLED_GrantGivesCrossSiteCookieAccess) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
