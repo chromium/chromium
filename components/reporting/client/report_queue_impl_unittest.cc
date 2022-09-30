@@ -77,11 +77,6 @@ class ReportQueueImplTest : public testing::Test {
     report_queue_ = std::move(report_queue_result.ValueOrDie());
   }
 
-  void TearDown() override {
-    // Let everything ongoing to finish.
-    task_environment_.RunUntilIdle();
-  }
-
   TestStorageModule* test_storage_module() const {
     TestStorageModule* test_storage_module =
         google::protobuf::down_cast<TestStorageModule*>(storage_module_.get());
