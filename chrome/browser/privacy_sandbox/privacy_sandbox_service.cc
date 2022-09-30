@@ -312,7 +312,7 @@ bool PrivacySandboxService::IsFirstPartySetsDataAccessEnabled() {
   return pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled);
 }
 
-bool PrivacySandboxService::IsFirstPartySetsDataAccessManaged() {
+bool PrivacySandboxService::IsFirstPartySetsDataAccessManaged() const {
   return pref_service_->IsManagedPreference(
       prefs::kPrivacySandboxFirstPartySetsEnabled);
 }
@@ -665,11 +665,12 @@ PrivacySandboxService::GetFirstPartySetOwnerForDisplay(
 bool PrivacySandboxService::IsPartOfManagedFirstPartySet(
     const net::SchemefulSite& site) const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
-    return GetFirstPartySets()[site] ==
-           net::SchemefulSite(GURL("https://chromium.org"));
+    return IsFirstPartySetsDataAccessManaged() ||
+           GetFirstPartySets()[site] ==
+               net::SchemefulSite(GURL("https://chromium.org"));
   }
   // TODO(crbug.com/1332513): Retrieve set information from FPS delegate.
-  return false;
+  return IsFirstPartySetsDataAccessManaged();
 }
 
 /*static*/ PrivacySandboxService::PromptType

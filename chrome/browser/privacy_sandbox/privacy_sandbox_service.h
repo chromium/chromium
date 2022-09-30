@@ -172,7 +172,7 @@ class PrivacySandboxService : public KeyedService {
   bool IsFirstPartySetsDataAccessEnabled();
 
   // Returns whether the FirstPartySets preference is managed.
-  virtual bool IsFirstPartySetsDataAccessManaged();
+  virtual bool IsFirstPartySetsDataAccessManaged() const;
 
   // Toggles the FirstPartySets preference.
   void SetFirstPartySetsDataAccessEnabled(bool enabled);
@@ -233,8 +233,8 @@ class PrivacySandboxService : public KeyedService {
   virtual absl::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
       const GURL& site_url) const;
 
-  // Returns true if `site`'s membership in an FPS is being managed by policy.
-  // Virtual for mocking in tests.
+  // Returns true if `site`'s membership in an FPS is being managed by policy or
+  // if FirstPartySets preference is managed. Virtual for mocking in tests.
   virtual bool IsPartOfManagedFirstPartySet(
       const net::SchemefulSite& site) const;
 
