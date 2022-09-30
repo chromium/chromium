@@ -18211,6 +18211,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Only allow guest browser logins',
+        },
+        {
+          'value': False,
+          'caption': 'Allow guest browser logins and profile logins',
+        },
+      ],
       'example_value': True,
       'id': 574,
       'caption': '''Enforce browser guest mode''',
@@ -18230,6 +18240,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow adding new profiles',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow adding new profiles',
+        },
+      ],
       'example_value': True,
       'id': 276,
       'caption': '''Enable add person in user manager''',
@@ -18252,6 +18272,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force the user to sign in before using the browser',
+        },
+        {
+          'value': False,
+          'caption': 'Allow the user to use the browser without signing in',
+        },
+      ],
       'example_value': False,
       'id': 346,
       'caption': '''Enable force sign in for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>''',
@@ -18406,7 +18436,7 @@
       'id': 280,
       'caption': '''Minimum TLS version to fallback to''',
       'tags': ['system-security'],
-      'desc': '''Warning: The TLS version fallback will be removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> after version 52 (around September 2016) and this policy will stop working then.
+      'desc': '''This policy was removed in M53 after TLS version fallback was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       When a TLS handshake fails, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> would previously retry the connection with a lesser version of TLS in order to work around bugs in HTTPS servers. This setting configures the version at which this fallback process will stop. If a server performs version negotiation correctly (i.e. without breaking the connection) then this setting doesn't apply. Regardless, the resulting connection must still comply with SSLVersionMin.
 
@@ -18451,7 +18481,7 @@
       'id': 361,
       'caption': '''Maximum SSL version enabled''',
       'tags': ['system-security'],
-      'desc': '''Warning: The max TLS version policy will be entirely removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> around version 75 (around June 2019).
+      'desc': '''This policy was removed in M75 after the max TLS version policy was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       If this policy is not configured then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default maximum version.
 
@@ -18604,7 +18634,7 @@
       'id': 310,
       'caption': '''Enable RC4 cipher suites in TLS''',
       'tags': ['system-security'],
-      'desc': '''Warning: RC4 will be completely removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> after version 52 (around September 2016) and this policy will stop working then.
+      'desc': '''This policy was removed in M53 after RC4 was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       If the policy is not set, or is set to false, then RC4 cipher suites in TLS will not be enabled. Otherwise it may be set to true to retain compatibility with an outdated server. This is a stopgap measure and the server should be reconfigured.''',
     },
@@ -18629,7 +18659,7 @@
       'id': 334,
       'caption': '''Enable DHE cipher suites in TLS''',
       'tags': ['system-security'],
-      'desc': '''Warning: DHE will be completely removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> after version 57 (around March 2017) and this policy will stop working then.
+      'desc': '''This policy was removed in M58 after DHE was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       If the policy is not set, or is set to false, then DHE cipher suites in TLS will not be enabled. Otherwise it may be set to true to enable DHE cipher suites and retain compatibility with an outdated server. This is a stopgap measure and the server should be reconfigured.
 
@@ -18676,6 +18706,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Only allow users to turn off the device using the physical power button',
+        },
+        {
+          'value': False,
+          'caption': 'Allow users to turn off the device using either the shut down icon or the physical power button',
+        },
+      ],
       'example_value': True,
       'id': 284,
       'caption': '''Automatic reboot on device shutdown''',
@@ -18731,6 +18771,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Maximize the first browser window on first run',
+        },
+        {
+          'value': False,
+          'caption': 'Default system behavior (depends on screen size)',
+        },
+      ],
       'example_value': True,
       'id': 298,
       'caption': '''Maximize the first browser window on first run''',
@@ -18816,6 +18866,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow QUIC',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow QUIC',
+        },
+      ],
       'example_value': True,
       'id': 301,
       'caption': '''Allow QUIC protocol''',
@@ -18897,6 +18957,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable hardware acceleration',
+        },
+        {
+          'value': False,
+          'caption': 'Disable hardware acceleration',
+        },
+      ],
       'example_value': True,
       'id': 304,
       'caption': '''Use hardware acceleration when available''',
@@ -31983,7 +32053,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'id': 858,
       'caption': '''Enable 3DES cipher suites in TLS''',
       'tags': ['system-security'],
-      'desc': '''Warning: 3DES will be completely removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> in version 95 (around October 2021) and this policy will stop working then.
+      'desc': '''This policy was removed in M97 after 3DES was removed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
 
       If the policy is set to true, then 3DES cipher suites in TLS will be enabled. If it is set to false, they will be disabled. If the policy is unset, 3DES cipher suites are disabled by default. This policy may be used to temporarily retain compatibility with an outdated server. This is a stopgap measure and the server should be reconfigured.
       ''',
