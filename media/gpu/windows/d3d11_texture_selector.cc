@@ -122,23 +122,10 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
         output_pixel_format = PIXEL_FORMAT_ARGB;
 
-        if (input_color_space.GetTransferID() ==
-            gfx::ColorSpace::TransferID::HLG) {
-          // VideoProcessor do good HLG tone mappping between different gpu
-          // vendors if we change input transfer from hlg to Gamma2.2 (Windows
-          // does not support DXGI_COLOR_SPACE_YCBCR_STUDIO_GHLG_TOPLEFT_P2020
-          // well, see: https://crbug.com/1144260#c6) and output color space
-          // to sRGB.
-          output_color_space = gfx::ColorSpace::CreateSRGB();
-        } else {
-          // VideoProcessor do poor PQ tone mapping between different
-          // gpu vendors, no matter if
-          // D3D11_VIDEO_PROCESSOR_FEATURE_CAPS_METADATA_HDR10 feature caps is
-          // supported or not. but gfx::ColorTransform indeed handle PQ content
-          // well, so reset colorspace to use gfx do tone mapping and the result
-          // is pretty good indeed.
-          output_color_space.reset();
-        }
+        // Gfx::ColorTransform now can handle both PQ/HLG content well for
+        // all gpu vendors and also has a better performance when compared with
+        // video processor, reset colorspace to use gfx do tone mapping.
+        output_color_space.reset();
 
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
       } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
