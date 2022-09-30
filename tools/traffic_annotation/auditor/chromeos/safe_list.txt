@@ -11,7 +11,6 @@ all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
 all,ash/components/trial_group/trial_group_checker.cc
 all,chrome/browser/ash/net/network_portal_detector_impl.cc
 all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
-all,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_checker.cc
 all,chromeos/geolocation/simple_geolocation_request.cc
 all,components/quirks/quirks_client.cc
 all,ash/services/device_sync/cryptauth_client_impl.cc
