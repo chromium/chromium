@@ -51,12 +51,12 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   template <typename T>
   class IssueWithMetadata {
    public:
-    IssueWithMetadata<T>(
+    IssueWithMetadata(
         const T& issue_type,
         const std::vector<absl::variant<int, std::string>>& issue_path)
         : issue_type_(issue_type), issue_path_(issue_path) {}
-    ~IssueWithMetadata<T>() = default;
-    IssueWithMetadata<T>(const IssueWithMetadata<T>&) = default;
+    ~IssueWithMetadata() = default;
+    IssueWithMetadata(const IssueWithMetadata<T>&) = default;
 
     bool operator==(const IssueWithMetadata<T>& other) const {
       return std::tie(issue_type_, issue_path_) ==
