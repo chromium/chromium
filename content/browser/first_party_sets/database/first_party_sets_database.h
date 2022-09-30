@@ -103,8 +103,8 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
   // fetching methods when having query errors
 
-  // Gets the public First-Party Sets used by `browser_context_id`.
-  [[nodiscard]] net::GlobalFirstPartySets GetPublicSets(
+  // Gets the global First-Party Sets used by `browser_context_id`.
+  [[nodiscard]] net::GlobalFirstPartySets GetGlobalSets(
       const std::string& browser_context_id);
 
   // Gets the list of sites to clear for the `browser_context_id`.

@@ -104,7 +104,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
     embedder_will_provide_public_sets_ = enabled_ && will_provide;
   }
 
-  void GetPersistedPublicSetsForTesting(
+  void GetPersistedGlobalSetsForTesting(
       const std::string& browser_context_id,
       base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
           callback);

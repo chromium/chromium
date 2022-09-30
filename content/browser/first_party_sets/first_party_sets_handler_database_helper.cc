@@ -76,7 +76,7 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
   base::flat_set<net::SchemefulSite> diff =
-      ComputeSetsDiff(db_->GetPublicSets(browser_context_id),
+      ComputeSetsDiff(db_->GetGlobalSets(browser_context_id),
                       net::FirstPartySetsContextConfig(
                           db_->FetchPolicyModifications(browser_context_id)),
                       current_sets, current_config);
@@ -106,15 +106,15 @@ void FirstPartySetsHandlerDatabaseHelper::PersistSets(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
   if (!db_->PersistSets(browser_context_id, version, sets, config))
-    DVLOG(1) << "Failed to write public sets into the database.";
+    DVLOG(1) << "Failed to write sets into the database.";
 }
 
 net::GlobalFirstPartySets
-FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets(
+FirstPartySetsHandlerDatabaseHelper::GetPersistedGlobalSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
-  return db_->GetPublicSets(browser_context_id);
+  return db_->GetGlobalSets(browser_context_id);
 }
 
 }  // namespace content

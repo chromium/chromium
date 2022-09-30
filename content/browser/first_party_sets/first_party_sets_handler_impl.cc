@@ -179,7 +179,7 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
   db_helper_.Reset();
 }
 
-void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
+void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
     const std::string& browser_context_id,
     base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
         callback) {
@@ -190,7 +190,7 @@ void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
     return;
   }
   db_helper_
-      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets)
+      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::GetPersistedGlobalSets)
       .WithArgs(browser_context_id)
       .Then(std::move(callback));
 }

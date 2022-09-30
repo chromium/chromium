@@ -902,15 +902,15 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
   EXPECT_THAT(db()->FetchPolicyModifications("b2"), res);
 }
 
-TEST_F(FirstPartySetsDatabaseTest, GetPublicSets_NoPreExistingDB) {
+TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_THAT(db()->GetPublicSets("b").FindEntries(
+  EXPECT_THAT(db()->GetGlobalSets("b").FindEntries(
                   {net::SchemefulSite(GURL("https://example.test"))},
                   /*config=*/nullptr),
               IsEmpty());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, GetPublicSets) {
+TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
@@ -925,7 +925,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetPublicSets) {
   const net::SchemefulSite bbb(GURL("https://bbb.test"));
   OpenDatabase();
   EXPECT_THAT(
-      db()->GetPublicSets("b0").FindEntries({aaa, bbb},
+      db()->GetGlobalSets("b0").FindEntries({aaa, bbb},
                                             /*config=*/nullptr),
       UnorderedElementsAre(
           Pair(aaa, net::FirstPartySetEntry(bbb, net::SiteType::kAssociated,

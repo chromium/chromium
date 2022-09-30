@@ -65,7 +65,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
       const net::FirstPartySetsContextConfig& current_config);
 
   // Gets the list of sites to clear for the `browser_context_id`. This method
-  // wraps a few DB operations: reads the old public sets and policy
+  // wraps a few DB operations: reads the old global sets and policy
   // customization from DB, call `ComputeSetsDiff` with required inputs to
   // compute the list of sites to clear, stores the sites into DB, then reads
   // the final list of sites to be cleared from DB, which can include sites
@@ -86,8 +86,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
                    const net::GlobalFirstPartySets& sets,
                    const net::FirstPartySetsContextConfig& config);
 
-  // Wraps FirstPartySetsDatabase::GetPublicSets.
-  net::GlobalFirstPartySets GetPersistedPublicSets(
+  // Wraps FirstPartySetsDatabase::GetGlobalSets.
+  net::GlobalFirstPartySets GetPersistedGlobalSets(
       const std::string& browser_context_id);
 
  private:

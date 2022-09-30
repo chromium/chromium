@@ -58,10 +58,10 @@ net::GlobalFirstPartySets GetSetsAndWait() {
   return result.has_value() ? std::move(result).value() : future.Take();
 }
 
-absl::optional<net::GlobalFirstPartySets> GetPersistedPublicSetsAndWait(
+absl::optional<net::GlobalFirstPartySets> GetPersistedGlobalSetsAndWait(
     const std::string& browser_context_id) {
   base::test::TestFuture<absl::optional<net::GlobalFirstPartySets>> future;
-  FirstPartySetsHandlerImpl::GetInstance()->GetPersistedPublicSetsForTesting(
+  FirstPartySetsHandlerImpl::GetInstance()->GetPersistedGlobalSetsForTesting(
       browser_context_id, future.GetCallback());
   return future.Take();
 }
@@ -247,7 +247,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           /*context_config=*/nullptr, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_THAT(GetPersistedPublicSetsAndWait(browser_context_id)
+  EXPECT_THAT(GetPersistedGlobalSetsAndWait(browser_context_id)
                   ->FindEntries({foo, associated}, /*config=*/nullptr),
               UnorderedElementsAre(
                   Pair(foo, net::FirstPartySetEntry(
@@ -289,7 +289,7 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           /*context_config=*/nullptr, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_EQ(GetPersistedPublicSetsAndWait(browser_context_id), absl::nullopt);
+  EXPECT_EQ(GetPersistedGlobalSetsAndWait(browser_context_id), absl::nullopt);
 }
 
 TEST_F(FirstPartySetsHandlerImplEnabledTest,

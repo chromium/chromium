@@ -312,7 +312,7 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
   return transaction.Commit();
 }
 
-net::GlobalFirstPartySets FirstPartySetsDatabase::GetPublicSets(
+net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
