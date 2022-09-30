@@ -268,6 +268,21 @@ export function shareDataPageTestSuite() {
     assertTrue(isVisible(performanceTraceContainer));
   });
 
+  // Test clicking performanceTraceLink link.
+  test('performanceTraceLink', async () => {
+    await initializePage();
+
+    // Set up performance trace id.
+    page.feedbackContext = fakeFeedbackContext;
+
+    const link = getElement('#performanceTraceLink');
+
+    assertEquals('_blank', link.getAttribute('target'));
+    // Performance trace id is the last number in the URL, which is 1.
+    assertEquals(
+        'chrome://slow_trace/tracing.zip#1', link.getAttribute('href'));
+  });
+
   /**
    * Test that when when the send button is clicked, an on-continue is fired.
    * Case 1: Share pageUrl, do not share system logs.
