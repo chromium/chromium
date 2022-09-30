@@ -26946,11 +26946,6 @@
       "all"
     ]
   },
-  "mac-arm64-rel (reclient shadow)": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "mac11-arm64-rel-tests": {
     "gtest_tests": [
       {

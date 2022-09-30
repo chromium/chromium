@@ -168,24 +168,6 @@ ci.builder(
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
-ci.builder(
-    name = "mac-arm64-rel (reclient shadow)",
-    builder_spec = builder_config.copy_from(
-        "ci/mac-arm64-rel",
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "release|arm64",
-        short_name = "rec",
-    ),
-    os = os.MAC_DEFAULT,
-    sheriff_rotations = args.ignore_default(None),
-    builderless = True,
-    cores = None,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    reclient_jobs = 200,
-)
-
 ci.thin_tester(
     name = "mac11-arm64-rel-tests",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,

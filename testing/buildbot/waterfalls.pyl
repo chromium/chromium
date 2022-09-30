@@ -4226,15 +4226,6 @@
       'GPU Linux Builder (dbg)': {},
       'GPU Mac Builder': {},
       'GPU Mac Builder (dbg)': {},
-      'GPU Mac Builder (reclient shadow)': {
-        'additional_compile_targets': [
-            'angle_unittests',
-            'browser_tests',
-            'gl_tests',
-            'gl_unittests',
-            'telemetry_gpu_integration_test',
-        ],
-      },
       'Linux Debug (NVIDIA)': {
         'browser_config': 'debug',
         'os_type': 'linux',
@@ -5247,11 +5238,6 @@
         },
       },
       'mac-arm64-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-rel (reclient shadow)': {
         'additional_compile_targets': [
           'all',
         ],

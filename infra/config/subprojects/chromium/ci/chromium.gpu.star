@@ -9,7 +9,6 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
-load("//lib/structs.star", "structs")
 
 ci.defaults.set(
     builder_group = "chromium.gpu",
@@ -130,24 +129,6 @@ ci.gpu.mac_builder(
         category = "Mac",
     ),
     cq_mirrors_console_view = "mirrors",
-)
-
-ci.gpu.mac_builder(
-    name = "GPU Mac Builder (reclient shadow)",
-    builder_spec = builder_config.copy_from(
-        "ci/GPU Mac Builder",
-        lambda spec: structs.evolve(
-            spec,
-            build_gs_bucket = None,
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac",
-        short_name = "rec",
-    ),
-    goma_backend = None,
-    tree_closing = False,
-    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.gpu.mac_builder(
