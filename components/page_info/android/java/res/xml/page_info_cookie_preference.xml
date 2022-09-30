@@ -20,4 +20,7 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
         android:key="cookie_in_use" />
 
+    <org.chromium.components.browser_ui.settings.ChromeImageViewPreference
+        android:key="fps_in_use" />
+
 </PreferenceScreen>

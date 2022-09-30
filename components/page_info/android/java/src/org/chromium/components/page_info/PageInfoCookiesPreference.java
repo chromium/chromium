@@ -14,6 +14,8 @@ import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.site_settings.FPSCookieInfo;
+import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -28,10 +30,12 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
     private static final String COOKIE_IN_USE_PREFERENCE = "cookie_in_use";
+    private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
     private static final String CLEAR_BUTTON_PREFERENCE = "clear_button";
 
     private ChromeSwitchPreference mCookieSwitch;
     private ChromeImageViewPreference mCookieInUse;
+    private ChromeImageViewPreference mFPSInUse;
     private Runnable mOnClearCallback;
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
@@ -59,6 +63,8 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
         SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
         mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
         mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
+        mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
+        mFPSInUse.setVisible(false);
     }
 
     @Override
@@ -155,6 +161,29 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
 
         mDataUsed |= storageUsage != 0;
         updateCookieDeleteButton();
+    }
+
+    public void maybeShowFPSInfo(FPSCookieInfo fpsInfo, String currentOrigin) {
+        if (fpsInfo == null) {
+            return;
+        }
+
+        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+                && getSiteSettingsDelegate().isFirstPartySetsDataAccessEnabled()
+            : "First Party Sets UI and access should be enabled to show FPS info.";
+
+        mFPSInUse.setVisible(true);
+        mFPSInUse.setTitle(R.string.cookie_info_fps_title);
+        mFPSInUse.setSummary(String.format(
+                getContext().getString(R.string.cookie_info_fps_summary), fpsInfo.getOwner()));
+        mFPSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
+        mFPSInUse.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
+                getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                return getSiteSettingsDelegate().isPartOfManagedFirstPartySet(currentOrigin);
+            }
+        });
     }
 
     private void updateCookieDeleteButton() {

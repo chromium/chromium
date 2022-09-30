@@ -106,6 +106,10 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessManaged();
     }
 
+    public static boolean isPartOfManagedFirstPartySet(String origin) {
+        return PrivacySandboxBridgeJni.get().isPartOfManagedFirstPartySet(origin);
+    }
+
     public static void setFirstPartySetsDataAccessEnabled(boolean enabled) {
         PrivacySandboxBridgeJni.get().setFirstPartySetsDataAccessEnabled(enabled);
     }
@@ -137,6 +141,7 @@ public class PrivacySandboxBridge {
         boolean isPrivacySandboxRestricted();
         boolean isFirstPartySetsDataAccessEnabled();
         boolean isFirstPartySetsDataAccessManaged();
+        boolean isPartOfManagedFirstPartySet(String origin);
         void setPrivacySandboxEnabled(boolean enabled);
         void setFirstPartySetsDataAccessEnabled(boolean enabled);
         void fetchMemberToOwnerFPSMap(Callback<Map<String, String>> callback);

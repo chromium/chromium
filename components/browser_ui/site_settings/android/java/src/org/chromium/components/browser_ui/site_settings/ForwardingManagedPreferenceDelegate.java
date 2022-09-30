@@ -16,7 +16,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
  * will forward to the base implementation, which will typically be the embedder-provided
  * ManagedPreferenceDelegate instance.
  */
-class ForwardingManagedPreferenceDelegate implements ManagedPreferenceDelegate {
+public class ForwardingManagedPreferenceDelegate implements ManagedPreferenceDelegate {
     private final ManagedPreferenceDelegate mBase;
 
     public ForwardingManagedPreferenceDelegate(ManagedPreferenceDelegate base) {

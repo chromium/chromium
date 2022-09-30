@@ -93,6 +93,11 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
+    public boolean isPartOfManagedFirstPartySet(String origin) {
+        return false;
+    }
+
+    @Override
     public void setPrivacySandboxEnabled(boolean enabled) {
         mIsPrivacySandboxEnabled = enabled;
     }

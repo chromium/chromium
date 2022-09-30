@@ -89,7 +89,9 @@ public class PageInfoCookiesController
         SiteSettingsCategory storageCategory = SiteSettingsCategory.createFromType(
                 mMainController.getBrowserContext(), SiteSettingsCategory.Type.USE_STORAGE);
         new WebsitePermissionsFetcher(mMainController.getBrowserContext())
-                .fetchPreferencesForCategory(storageCategory, this::onStorageFetched);
+                .fetchPreferencesForCategoryAndPopulateFpsInfo(
+                        getDelegate().getSiteSettingsDelegate(), storageCategory,
+                        this::onStorageFetched);
 
         return view;
     }
@@ -102,6 +104,10 @@ public class PageInfoCookiesController
                 address, result);
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
+        }
+        if (mWebsite.getFPSCookieInfo() != null) {
+            mSubPage.maybeShowFPSInfo(
+                    mWebsite.getFPSCookieInfo(), mWebsite.getAddress().getOrigin());
         }
     }
 

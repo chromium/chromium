@@ -388,6 +388,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             WebsiteAddress address, Collection<Website> websites) {
         String origin = address.getOrigin();
         String host = Uri.parse(origin).getHost();
+        String domainAndRegistry = address.getDomainAndRegistry();
         Website merged = new Website(address, null);
         // This loop looks expensive, but the amount of data is likely to be relatively small
         // because most sites have very few permissions.
@@ -412,6 +413,10 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                 if (host.equals(storageInfo.getHost())) {
                     merged.addStorageInfo(storageInfo);
                 }
+            }
+            if (merged.getFPSCookieInfo() == null && other.getFPSCookieInfo() != null
+                    && domainAndRegistry.equals(other.getAddress().getDomainAndRegistry())) {
+                merged.setFPSCookieInfo(other.getFPSCookieInfo());
             }
             for (ChosenObjectInfo objectInfo : other.getChosenObjectInfo()) {
                 if (origin.equals(objectInfo.getOrigin())) {

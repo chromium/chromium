@@ -142,6 +142,12 @@ public interface SiteSettingsDelegate {
     boolean isFirstPartySetsDataAccessManaged();
 
     /***
+     * @param origin to check.
+     * @return true if the origin is part of the managed FirstPartySet.
+     */
+    boolean isPartOfManagedFirstPartySet(String origin);
+
+    /***
      * @return Enables/disables First Party Sets data access.
      */
     void setFirstPartySetsDataAccessEnabled(boolean enabled);

@@ -156,6 +156,11 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
+    public boolean isPartOfManagedFirstPartySet(String origin) {
+        return false;
+    }
+
+    @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
 
     @Override

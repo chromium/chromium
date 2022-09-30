@@ -216,3 +216,13 @@ static void JNI_PrivacySandboxBridge_FetchMemberToOwnerFPSMap(
 
   base::android::RunObjectCallbackAndroid(java_callback, map);
 }
+
+static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedFirstPartySet(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& origin) {
+  auto schemefulSite =
+      net::SchemefulSite(GURL(ConvertJavaStringToUTF8(env, origin)));
+
+  return GetPrivacySandboxService()->IsPartOfManagedFirstPartySet(
+      schemefulSite);
+}

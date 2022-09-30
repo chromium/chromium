@@ -408,6 +408,12 @@
   <message name="IDS_ALLSITES_FPS_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites settings page.">
     Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> sites in the <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> group, including <ph name="FPS_MEMBER">%3$s<ex>freep.com</ex></ph>
   </message>
+  <message name="IDS_COOKIE_INFO_FPS_TITLE" desc="First Party Sets title in the cookies info page.">
+      Related sites
+   </message>
+  <message name="IDS_COOKIE_INFO_FPS_SUMMARY" desc="First Party Sets summary in the cookies info page.">
+    This site is in <ph name="FPS_OWNER">%1$s<ex>google.com</ex></ph>'s group of sites that can see your activity in the group
+  </message>
 
   <!-- Desktop Site -->
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_DESKTOP_SITE_ALLOWED" desc="Summary text explaining that desktop view of sites will be requested by default.">

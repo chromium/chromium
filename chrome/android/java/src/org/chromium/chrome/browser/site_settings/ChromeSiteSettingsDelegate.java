@@ -229,6 +229,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isPartOfManagedFirstPartySet(String origin) {
+        return PrivacySandboxBridge.isPartOfManagedFirstPartySet(origin);
+    }
+
+    @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
         PrivacySandboxBridge.setFirstPartySetsDataAccessEnabled(enabled);
     }

@@ -71,6 +71,7 @@ android_resources("java_resources") {
     "res/drawable/ic_signal_cellular_2_bar.xml",
     "res/drawable/ic_signal_cellular_3_bar.xml",
     "res/drawable/ic_signal_cellular_4_bar.xml",
+    "res/drawable/tenancy.xml",
     "res/layout/bluetooth_scanning_permission_dialog.xml",
     "res/layout/bluetooth_scanning_permission_dialog_row.xml",
     "res/layout/device_item_list.xml",
