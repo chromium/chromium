@@ -26,7 +26,7 @@ declare_args() {
 }
 
 declare_args() {
-  use_freeslot_bitmap = false
+  use_freeslot_bitmap = true
 }
 
 declare_args() {
