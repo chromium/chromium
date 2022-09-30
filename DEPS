@@ -441,10 +441,6 @@ vars = {
   # and whatever else without interference from each other.
   'wuffs_revision': 'a8205c2fe7564b12fea81ee028ba670112cc7719',
   # Three lines of non-changing comments so that
-  # the commit queue can handle CLs rolling libgifcodec
-  # and whatever else without interference from each other.
-  'libgifcodec_revision': 'd06d2a6d42baf6c0c91cacc28df2542a911d05fe',
-  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libavif
   # and whatever else without interference from each other.
   'libavif_revision': 'cd0bb358f83d01867f0fa53079470043618c9af5',
@@ -1844,9 +1840,6 @@ deps = {
 
   'src/third_party/webrtc':
     Var('webrtc_git') + '/src.git' + '@' + '48912451d470b243c8602e9af5ca548173a64353',
-
-  'src/third_party/libgifcodec':
-     Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.

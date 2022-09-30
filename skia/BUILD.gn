@@ -10,7 +10,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//gpu/vulkan/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/test.gni")
-import("//third_party/libgifcodec/libgifcodec.gni")
 import("//third_party/skia/gn/shared_sources.gni")
 import("//third_party/skia/modules/skcms/skcms.gni")
 import("//tools/grit/grit_rule.gni")
@@ -25,10 +24,6 @@ if (current_cpu == "mipsel" || current_cpu == "mips64el") {
 
 skia_support_gpu = !is_ios
 skia_support_pdf = !is_ios && enable_basic_printing
-
-declare_args() {
-  enable_skia_wuffs_gif = true
-}
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -54,11 +49,7 @@ config("skia_config") {
   include_dirs = [ "//third_party/skia" ]
 
   if (!is_ios) {
-    if (enable_skia_wuffs_gif) {
-      include_dirs += [ "//third_party/wuffs/src/release/c" ]
-    } else {
-      include_dirs += [ "//third_party/libgifcodec" ]
-    }
+    include_dirs += [ "//third_party/wuffs/src/release/c" ]
   }
   if (enable_vulkan) {
     include_dirs += [ "//third_party/vulkan/include" ]
@@ -74,12 +65,8 @@ config("skia_config") {
     defines += [
       "SK_CODEC_DECODES_JPEG",
       "SK_ENCODE_JPEG",
+      "SK_HAS_WUFFS_LIBRARY",
     ]
-    if (enable_skia_wuffs_gif) {
-      defines += [ "SK_HAS_WUFFS_LIBRARY" ]
-    } else {
-      defines += [ "SK_USE_LIBGIFCODEC" ]
-    }
   }
   if (enable_vulkan) {
     defines += [ "SK_VULKAN=1" ]
@@ -367,23 +354,15 @@ component("skia") {
       "//third_party/skia/src/codec/SkParseEncodedOrigin.cpp",
       "//third_party/skia/src/codec/SkPngCodec.cpp",
       "//third_party/skia/src/codec/SkSampler.cpp",
-      "//third_party/skia/src/codec/SkStreamBuffer.cpp",
       "//third_party/skia/src/codec/SkSwizzler.cpp",
       "//third_party/skia/src/codec/SkWbmpCodec.cpp",
       "//third_party/skia/src/codec/SkWebpCodec.cpp",
+      "//third_party/skia/src/codec/SkWuffsCodec.cpp",
       "//third_party/skia/src/images/SkJPEGWriteUtility.cpp",
       "//third_party/skia/src/images/SkJpegEncoder.cpp",
       "//third_party/skia/src/ports/SkImageGenerator_skia.cpp",
     ]
-
-    if (enable_skia_wuffs_gif) {
-      deps += [ "//third_party/wuffs" ]
-      sources += [ "//third_party/skia/src/codec/SkWuffsCodec.cpp" ]
-    } else {
-      sources += rebase_path(libgifcodec_sources + libgifcodec_public,
-                             ".",
-                             "//third_party/libgifcodec")
-    }
+    deps += [ "//third_party/wuffs" ]
   }
 
   if (current_cpu == "arm") {
