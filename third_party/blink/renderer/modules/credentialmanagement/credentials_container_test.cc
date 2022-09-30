@@ -55,15 +55,13 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   void Bind(mojo::PendingReceiver<::blink::mojom::blink::CredentialManager>
                 receiver) {
     receiver_.Bind(std::move(receiver));
+    receiver_.set_disconnect_handler(WTF::BindOnce(
+        &MockCredentialManager::Disconnected, WTF::Unretained(this)));
   }
 
-  void WaitForConnectionError() {
-    if (!receiver_.is_bound())
-      return;
+  void Disconnected() { disconnected_ = true; }
 
-    receiver_.set_disconnect_handler(WTF::BindOnce(&test::ExitRunLoop));
-    test::EnterRunLoop();
-  }
+  bool IsDisconnected() const { return disconnected_; }
 
   void WaitForCallToGet() {
     if (get_callback_)
@@ -99,6 +97,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   mojo::Receiver<::blink::mojom::blink::CredentialManager> receiver_{this};
 
   GetCallback get_callback_;
+  bool disconnected_ = false;
 };
 
 class CredentialManagerTestingContext {
@@ -143,7 +142,7 @@ class MockPublicKeyCredential : public Credential {
 
 // The completion callbacks for pending mojom::CredentialManager calls each own
 // a persistent handle to a ScriptPromiseResolver instance. Ensure that if the
-// document is destored while a call is pending, it can still be freed up.
+// document is destroyed while a call is pending, it can still be freed up.
 TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
   MockCredentialManager mock_credential_manager;
   GCObjectLivenessObserver<Document> document_observer;
@@ -156,13 +155,14 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
               IGNORE_EXCEPTION_FOR_TESTING);
     mock_credential_manager.WaitForCallToGet();
   }
+  test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   ASSERT_TRUE(document_observer.WasCollected());
 
   mock_credential_manager.InvokeGetCallback();
-  mock_credential_manager.WaitForConnectionError();
+  ASSERT_TRUE(mock_credential_manager.IsDisconnected());
 }
 
 // If the document is detached before the request is resolved, the promise
