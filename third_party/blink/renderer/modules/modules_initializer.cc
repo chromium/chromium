@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom-blink.h"
@@ -118,9 +119,14 @@
 #endif
 
 namespace blink {
+namespace {
+
+// Controls whether media players use base::ThreadPool or (legacy) the
+// CategorizedWorkerPool, which predates the base thread pool.
+base::Feature kBlinkMediaPlayerUsesBaseThreadPool{
+    "BlinkMediaPlayerUsesThreadPool", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID)
-namespace {
 
 class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
                                public Supplement<Page>,
@@ -161,10 +167,9 @@ class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
 };
 
 const char SuspendCaptureObserver::kSupplementName[] = "SuspendCaptureObserver";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void ModulesInitializer::Initialize() {
   // Strings must be initialized before calling CoreInitializer::init().
@@ -335,7 +340,9 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
       source, media_player_client, context_impl, &encrypted_media,
       encrypted_media.ContentDecryptionModule(), sink_id,
       frame_widget->GetLayerTreeSettings(),
-      CategorizedWorkerPool::GetOrCreate()));
+      base::FeatureList::IsEnabled(kBlinkMediaPlayerUsesBaseThreadPool)
+          ? base::ThreadPool::CreateTaskRunner(base::TaskTraits{})
+          : CategorizedWorkerPool::GetOrCreate()));
 }
 
 WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
