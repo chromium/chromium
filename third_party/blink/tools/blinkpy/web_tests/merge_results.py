@@ -329,6 +329,13 @@ class MergeFilesKeepFiles(MergeFiles):
             self.filesystem.copyfile(filename, "%s_%i" % (out_filename, i))
 
 
+class IgnoreFiles(MergeFiles):
+    def __call__(self, out_filename, to_merge):
+        _log.warning('Ignoring merge to %s:', out_filename)
+        for filename in sorted(to_merge):
+            _log.warning('  %s', filename)
+
+
 class MergeFilesJSONP(MergeFiles):
     """Merge JSONP (and JSON) files.
 
@@ -356,7 +363,7 @@ class MergeFilesJSONP(MergeFiles):
             before_0, new_json_data_0, after_0 = self.load_jsonp(
                 self.filesystem.open_binary_file_for_reading(to_merge[0]))
         except ValueError as e:
-            raise MergeFailure(e.message, to_merge[0], None)
+            raise MergeFailure(str(e), to_merge[0], None)
 
         input_data = [new_json_data_0]
         for filename_n in to_merge[1:]:
@@ -364,7 +371,7 @@ class MergeFilesJSONP(MergeFiles):
                 before_n, new_json_data_n, after_n = self.load_jsonp(
                     self.filesystem.open_binary_file_for_reading(filename_n))
             except ValueError as e:
-                raise MergeFailure(e.message, filename_n, None)
+                raise MergeFailure(str(e), filename_n, None)
 
             if before_0 != before_n:
                 raise MergeFailure(
@@ -530,38 +537,6 @@ class DirMerger(Merger):
 # ------------------------------------------------------------------------
 
 
-class JSONWptReportsMerger(JSONMerger):
-    """Merger for the 'wpt report' format.
-
-    The JSON format is described at
-    https://github.com/web-platform-tests/wpt.fyi/tree/main/api#apiresultsupload
-
-    """
-
-    def __init__(self):
-        JSONMerger.__init__(self)
-
-        # results is a list, and we want to add them together.
-        self.add_helper(
-            NameRegexMatch(':results$'),
-            self.merge_listlike)
-
-        # pick run_info from shard 0.
-        self.add_helper(
-            NameRegexMatch(':run_info$'),
-            lambda o, name=None: o[0])
-
-        # We just take the earliest for time_start.
-        self.add_helper(
-            NameRegexMatch(':time_start$'),
-            lambda o, name=None: min(*o))
-
-        # and the last for time_end.
-        self.add_helper(
-            NameRegexMatch(':time_end$'),
-            lambda o, name=None: max(*o))
-
-
 class JSONTestResultsMerger(JSONMerger):
     """Merger for the 'json test result' format.
 
@@ -676,14 +651,12 @@ class WebTestDirMerger(DirMerger):
         self.add_helper(FilenameRegexMatch(r'system_log$'),
                         MergeFilesKeepFiles(self.filesystem))
 
-        # Merge WPT report JSON files
-        # https://github.com/web-platform-tests/wpt.fyi/tree/main/api#apiresultsupload
-        wpt_reports_json_merger = MergeFilesJSONP(
-            self.filesystem,
-            JSONWptReportsMerger())
-        self.add_helper(
-            FilenameRegexMatch(r'reports\.json$'),
-            wpt_reports_json_merger)
+        # Despite the extension, wptreport files are not true JSON files. They
+        # actually contain newline-delimited JSON objects (one per retry/repeat
+        # iteration). These reports are already uploaded to ResultDB, so there's
+        # no need to save them in CAS.
+        self.add_helper(FilenameRegexMatch(r'wpt_reports.*\.json$'),
+                        IgnoreFiles(self.filesystem))
 
         # These JSON files have "result style" JSON in them.
         results_json_file_merger = MergeFilesJSONP(
