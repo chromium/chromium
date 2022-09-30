@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include <cstddef>
 
-#include "base/time/time.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -60,12 +59,14 @@ void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
   }
 }
 
-void OmniboxChipButton::AnimateCollapse(base::TimeDelta kAnimationDuration) {
+void OmniboxChipButton::AnimateCollapse() {
+  constexpr auto kAnimationDuration = base::Milliseconds(250);
   animation_->SetSlideDuration(kAnimationDuration);
   animation_->Hide();
 }
 
-void OmniboxChipButton::AnimateExpand(base::TimeDelta kAnimationDuration) {
+void OmniboxChipButton::AnimateExpand() {
+  constexpr auto kAnimationDuration = base::Milliseconds(350);
   animation_->SetSlideDuration(kAnimationDuration);
   animation_->Show();
 }
@@ -78,11 +79,6 @@ void OmniboxChipButton::ResetAnimation(double value) {
 void OmniboxChipButton::SetExpandAnimationEndedCallback(
     base::RepeatingCallback<void()> callback) {
   expand_animation_ended_callback_ = callback;
-}
-
-void OmniboxChipButton::SetCollapseEndedCallback(
-    base::RepeatingCallback<void()> callback) {
-  collapse_animation_ended_callback_ = callback;
 }
 
 gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
@@ -116,15 +112,8 @@ void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
     return;
 
   fully_collapsed_ = animation->GetCurrentValue() != 1.0;
-
-  if (animation->GetCurrentValue() == 1.0 && expand_animation_ended_callback_) {
+  if (animation->GetCurrentValue() == 1.0 && expand_animation_ended_callback_)
     expand_animation_ended_callback_.Run();
-  }
-
-  if (animation->GetCurrentValue() == 0.0 &&
-      collapse_animation_ended_callback_) {
-    collapse_animation_ended_callback_.Run();
-  }
 }
 
 void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {

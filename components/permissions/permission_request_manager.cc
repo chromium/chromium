@@ -212,7 +212,7 @@ void PermissionRequestManager::AddRequest(
     return;
   }
 
-  // TODO(tsergeant): change the UMA to no longer mention bubble.
+  // TODO(tsergeant): change the UMA to no longer mention bubbles.
   base::RecordAction(base::UserMetricsAction("PermissionBubbleRequest"));
 
   // TODO(gbillock): is there a race between an early request on a
@@ -349,8 +349,7 @@ void PermissionRequestManager::UpdateAnchor() {
     // recreated for the new browser. Because of that, ignore prompt callbacks
     // while doing that.
     base::AutoReset<bool> ignore(&ignore_callbacks_from_prompt_, true);
-    if (!view_->UpdateAnchor())
-      RecreateView();
+    view_->UpdateAnchor();
   }
 }
 
@@ -401,7 +400,7 @@ void PermissionRequestManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // issued at DOMContentLoaded, they may be bouncing around in scheduled
   // callbacks finding the UI thread still. This makes sure we allow those
   // scheduled calls to AddRequest to complete before we show the page-load
-  // permissions prompt.
+  // permissions bubble.
   ScheduleDequeueRequestIfNeeded();
 }
 
@@ -411,12 +410,12 @@ void PermissionRequestManager::DOMContentLoaded(
 }
 
 void PermissionRequestManager::WebContentsDestroyed() {
-  // If the web contents has been destroyed, treat the prompt as cancelled.
+  // If the web contents has been destroyed, treat the bubble as cancelled.
   CleanUpRequests();
 
   // The WebContents is going away; be aggressively paranoid and delete
   // ourselves lest other parts of the system attempt to add permission
-  // prompts or use us otherwise during the destruction.
+  // bubbles or use us otherwise during the destruction.
   web_contents()->RemoveUserData(UserDataKey());
   // That was the equivalent of "delete this". This object is now destroyed;
   // returning from this function is the only safe thing to do.
@@ -494,8 +493,6 @@ void PermissionRequestManager::Accept() {
     PermissionGrantedIncludingDuplicates(*requests_iter,
                                          /*is_one_time=*/false);
   }
-
-  NotifyRequestDecided(PermissionAction::GRANTED);
   FinalizeCurrentRequests(PermissionAction::GRANTED);
 }
 
@@ -509,8 +506,6 @@ void PermissionRequestManager::AcceptThisTime() {
     PermissionGrantedIncludingDuplicates(*requests_iter,
                                          /*is_one_time=*/true);
   }
-
-  NotifyRequestDecided(PermissionAction::GRANTED_ONCE);
   FinalizeCurrentRequests(PermissionAction::GRANTED_ONCE);
 }
 
@@ -536,8 +531,6 @@ void PermissionRequestManager::Deny() {
        requests_iter++) {
     PermissionDeniedIncludingDuplicates(*requests_iter);
   }
-
-  NotifyRequestDecided(PermissionAction::DENIED);
   FinalizeCurrentRequests(PermissionAction::DENIED);
 }
 
@@ -550,8 +543,6 @@ void PermissionRequestManager::Dismiss() {
        requests_iter++) {
     CancelledIncludingDuplicates(*requests_iter);
   }
-
-  NotifyRequestDecided(PermissionAction::DISMISSED);
   FinalizeCurrentRequests(PermissionAction::DISMISSED);
 }
 
@@ -564,8 +555,6 @@ void PermissionRequestManager::Ignore() {
        requests_iter++) {
     CancelledIncludingDuplicates(*requests_iter);
   }
-
-  NotifyRequestDecided(PermissionAction::IGNORED);
   FinalizeCurrentRequests(PermissionAction::IGNORED);
 }
 
@@ -716,7 +705,7 @@ void PermissionRequestManager::ShowBubble() {
   // There is a race condition where the request might have been removed
   // already so double-checking that there is a request in progress.
   //
-  // There is no need to show a new prompt if the previous one still exists.
+  // There is no need to show a new bubble if the previous one still exists.
   if (!IsRequestInProgress() || view_)
     return;
 
@@ -1009,12 +998,6 @@ void PermissionRequestManager::NotifyBubbleAdded() {
 void PermissionRequestManager::NotifyBubbleRemoved() {
   for (Observer& observer : observer_list_)
     observer.OnBubbleRemoved();
-}
-
-void PermissionRequestManager::NotifyRequestDecided(
-    permissions::PermissionAction permission_action) {
-  for (Observer& observer : observer_list_)
-    observer.OnRequestDecided(permission_action);
 }
 
 void PermissionRequestManager::OnPermissionUiSelectorDone(

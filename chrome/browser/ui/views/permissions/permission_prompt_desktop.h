@@ -34,7 +34,7 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   ~PermissionPromptDesktop() override;
 
   // permissions::PermissionPrompt:
-  bool UpdateAnchor() override;
+  void UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override = 0;

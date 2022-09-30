@@ -87,7 +87,6 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/performance_manager/public/features.h"
-#include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/search_engines/template_url.h"
@@ -611,15 +610,15 @@ void LocationBarView::Layout() {
   // label/chip.
   const double kLeadingDecorationMaxFraction = 0.5;
 
-  if (chip_controller_ && chip_controller_->chip()->GetVisible() &&
+  if (chip_controller_ && chip_controller_->IsPermissionPromptChipVisible() &&
       !ShouldShowKeywordBubble()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, edge_padding,
                                       chip_controller_->chip());
   }
 
-  location_icon_view_->SetVisible(false);
   if (ShouldShowKeywordBubble()) {
+    location_icon_view_->SetVisible(false);
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       kLeadingDecorationMaxFraction,
                                       edge_padding, selected_keyword_view_);
@@ -646,14 +645,11 @@ void LocationBarView::Layout() {
       }
       selected_keyword_view_->SetCustomImage(image);
     }
-  } else if (location_icon_view_->GetShowText() &&
-             !ShouldChipOverrideLocationIcon()) {
-    location_icon_view_->SetVisible(true);
+  } else if (location_icon_view_->GetShowText()) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       kLeadingDecorationMaxFraction,
                                       edge_padding, location_icon_view_);
-  } else if (!ShouldChipOverrideLocationIcon()) {
-    location_icon_view_->SetVisible(true);
+  } else {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
                                       0, edge_padding, location_icon_view_);
   }
@@ -1355,14 +1351,6 @@ void LocationBarView::OnTouchUiChanged() {
   PreferredSizeChanged();
 }
 
-bool LocationBarView::ShouldChipOverrideLocationIcon() {
-  bool has_visible_chip =
-      chip_controller_ && chip_controller_->chip()->GetVisible();
-  return has_visible_chip &&
-         base::FeatureList::IsEnabled(
-             permissions::features::kChipLocationBarIconOverride);
-}
-
 bool LocationBarView::IsEditingOrEmpty() const {
   return omnibox_view_ && omnibox_view_->IsEditingOrEmpty();
 }
@@ -1437,14 +1425,14 @@ ui::ImageModel LocationBarView::GetLocationIcon(
 }
 
 void LocationBarView::UpdateChipVisibility() {
-  if (!chip_controller_ || !chip_controller_->chip()->GetVisible()) {
+  if (!chip_controller_ || !chip_controller_->IsPermissionPromptChipVisible()) {
     return;
   }
 
   if (IsEditingOrEmpty()) {
     // If a user starts typing, a permission request should be ignored and the
     // chip finalized.
-    chip_controller_->ResetChip();
+    chip_controller_->FinalizeChip();
   }
 }
 

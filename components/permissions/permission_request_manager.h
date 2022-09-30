@@ -81,7 +81,6 @@ class PermissionRequestManager
     virtual void OnRequestsFinalized() {}
 
     virtual void OnPermissionRequestManagerDestructed() {}
-    virtual void OnRequestDecided(permissions::PermissionAction action) {}
 
    protected:
     virtual ~Observer() = default;
@@ -285,7 +284,6 @@ class PermissionRequestManager
 
   void NotifyBubbleAdded();
   void NotifyBubbleRemoved();
-  void NotifyRequestDecided(permissions::PermissionAction permission_action);
 
   void OnPermissionUiSelectorDone(size_t selector_index,
                                   const UiDecision& decision);

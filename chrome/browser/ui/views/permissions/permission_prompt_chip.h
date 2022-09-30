@@ -35,7 +35,7 @@ class PermissionPromptChip : public PermissionPromptDesktop {
   PermissionPromptChip& operator=(const PermissionPromptChip&) = delete;
 
   // PermissionPrompt:
-  bool UpdateAnchor() override;
+  void UpdateAnchor() override;
   permissions::PermissionPromptDisposition GetPromptDisposition()
       const override;
 
