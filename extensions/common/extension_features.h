@@ -30,7 +30,6 @@ BASE_DECLARE_FEATURE(kStructuredCloningForMV3Messaging);
 
 BASE_DECLARE_FEATURE(kRestrictDeveloperModeAPIs);
 
-BASE_DECLARE_FEATURE(kCheckingUnexpectedExtensionIdInContentScriptIpcs);
 BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
