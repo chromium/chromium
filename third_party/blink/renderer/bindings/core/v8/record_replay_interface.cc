@@ -861,6 +861,11 @@ async function registerSourceMap(ev) {
   const script = sendMessage("Debugger.getScriptSource", { scriptId });
 
   const recordingId = getRecordingId();
+  if (!recordingId) {
+    // The recording has been invalidated.
+    return;
+  }
+
   const id = String(Math.floor(Math.random() * 10000000000));
   const name = `sourcemap-${id}.map`;
   const path = await writeToRecordingDirectory(name, sourceMap);
@@ -1117,7 +1122,13 @@ static std::string GetRecordingDirectory() {
 
 static void GetRecordingId(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::Isolate* isolate = args.GetIsolate();
-  args.GetReturnValue().Set(ToV8String(isolate, recordreplay::GetRecordingId()));
+
+  const char* recordingId = recordreplay::GetRecordingId();
+  if (recordingId) {
+    args.GetReturnValue().Set(ToV8String(isolate, recordingId));
+  } else {
+    args.GetReturnValue().SetNull();
+  }
 }
 
 static void SHA256DigestHex(const v8::FunctionCallbackInfo<v8::Value>& args) {
