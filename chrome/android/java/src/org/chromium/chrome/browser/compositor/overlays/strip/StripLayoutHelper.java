@@ -284,6 +284,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 mTabMenu.dismiss();
                 if (position == ID_CLOSE_ALL_TABS) {
                     mModel.closeAllTabs(false);
+                    RecordUserAction.record("MobileToolbarCloseAllTabs");
                 }
             }
         });

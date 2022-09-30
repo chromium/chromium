@@ -20166,6 +20166,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarCloseAllTabs">
+  <owner>clank-app-team@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    User clicked close all tabs button by long pressing close button on any tab
+    in the tablet tab strip. Android Only.
+  </description>
+</action>
+
 <action name="MobileToolbarCloseTab">
   <owner>clank-app-team@google.com</owner>
   <owner>twellington@chromium.org</owner>
