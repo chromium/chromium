@@ -273,8 +273,8 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
 
-    // Separators are drawn between child bubbles iff rebranding is enabled.
-    if (!features::IsHoldingSpaceRebrandEnabled())
+    // Separators are drawn between child bubbles iff refresh is enabled.
+    if (!features::IsHoldingSpaceRefreshEnabled())
       return;
 
     // Cache `x`, `height`, and `width` which is consistent across separators.

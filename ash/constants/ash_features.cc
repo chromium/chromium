@@ -1070,10 +1070,10 @@ BASE_FEATURE(kHoldingSpacePredictability,
              "HoldingSpacePredictability",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables rebranding of holding space to convey the relationship with
-// Files to simplify feature comprehension.
-BASE_FEATURE(kHoldingSpaceRebrand,
-             "HoldingSpaceRebrand",
+// Enables refresh of holding space UI to better convey the relationship with
+// the Files app to simplify feature comprehension.
+BASE_FEATURE(kHoldingSpaceRefresh,
+             "HoldingSpaceRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables suggestions in the pinned files section of Holding Space.
@@ -2453,8 +2453,8 @@ bool IsHoldingSpacePredictabilityEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpacePredictability);
 }
 
-bool IsHoldingSpaceRebrandEnabled() {
-  return base::FeatureList::IsEnabled(kHoldingSpaceRebrand);
+bool IsHoldingSpaceRefreshEnabled() {
+  return base::FeatureList::IsEnabled(kHoldingSpaceRefresh);
 }
 
 bool IsHoldingSpaceSuggestionsEnabled() {

@@ -301,7 +301,7 @@ void HoldingSpaceTray::ClickedOutsideBubble() {
 std::u16string HoldingSpaceTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringFUTF16(
       IDS_ASH_HOLDING_SPACE_A11Y_NAME,
-      features::IsHoldingSpaceRebrandEnabled()
+      features::IsHoldingSpaceRefreshEnabled()
           ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
           : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
@@ -313,7 +313,7 @@ views::View* HoldingSpaceTray::GetTooltipHandlerForPoint(
 }
 
 std::u16string HoldingSpaceTray::GetTooltipText(const gfx::Point& point) const {
-  return features::IsHoldingSpaceRebrandEnabled()
+  return features::IsHoldingSpaceRefreshEnabled()
              ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
              : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
@@ -487,7 +487,7 @@ void HoldingSpaceTray::OnThemeChanged() {
 
   // Default tray icon.
   default_tray_icon_->SetImage(gfx::CreateVectorIcon(
-      features::IsHoldingSpaceRebrandEnabled() ? kHoldingSpaceRebrandIcon
+      features::IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
                                                : kHoldingSpaceIcon,
       kHoldingSpaceTrayIconSize, color));
 

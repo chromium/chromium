@@ -3621,43 +3621,43 @@ TEST_P(HoldingSpaceTraySuggestionsFeatureTest,
 }
 
 // Base class for tests of holding space parameterized by whether the
-// `kHoldingSpaceRebrand` feature flag is enabled.
-class HoldingSpaceTrayRebrandTest
+// `kHoldingSpaceRefresh` feature flag is enabled.
+class HoldingSpaceTrayRefreshTest
     : public HoldingSpaceTrayTestBase,
-      public testing::WithParamInterface</*rebrand_enabled=*/bool> {
+      public testing::WithParamInterface</*refresh_enabled=*/bool> {
  public:
-  HoldingSpaceTrayRebrandTest() {
-    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRebrand,
-                                              IsHoldingSpaceRebrandEnabled());
+  HoldingSpaceTrayRefreshTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kHoldingSpaceRefresh,
+                                              IsHoldingSpaceRefreshEnabled());
   }
 
-  bool IsHoldingSpaceRebrandEnabled() const { return GetParam(); }
+  bool IsHoldingSpaceRefreshEnabled() const { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceTrayRebrandTest,
-                         /*rebrand_enabled=*/testing::Bool());
+                         HoldingSpaceTrayRefreshTest,
+                         /*refresh_enabled=*/testing::Bool());
 
-TEST_P(HoldingSpaceTrayRebrandTest, CheckTrayAccessibilityText) {
+TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayAccessibilityText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_EQ(
       GetTray()->GetAccessibleNameForTray(),
-      IsHoldingSpaceRebrandEnabled()
+      IsHoldingSpaceRefreshEnabled()
           ? u"Quick files: recent screen captures, downloads, and pinned files"
           : u"Tote: recent screen captures, downloads, and pinned files");
 }
 
-TEST_P(HoldingSpaceTrayRebrandTest, TrayButtonWithRebrandIcon) {
+TEST_P(HoldingSpaceTrayRefreshTest, TrayButtonWithRefreshIcon) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_TRUE(gfx::BitmapsAreEqual(
       *test_api()->GetDefaultTrayIcon()->GetImage().bitmap(),
       *gfx::CreateVectorIcon(
-           IsHoldingSpaceRebrandEnabled() ? kHoldingSpaceRebrandIcon
+           IsHoldingSpaceRefreshEnabled() ? kHoldingSpaceRefreshIcon
                                           : kHoldingSpaceIcon,
            kHoldingSpaceTrayIconSize,
            AshColorProvider::Get()->GetContentLayerColor(
@@ -3665,14 +3665,14 @@ TEST_P(HoldingSpaceTrayRebrandTest, TrayButtonWithRebrandIcon) {
            .bitmap()));
 }
 
-TEST_P(HoldingSpaceTrayRebrandTest, CheckTrayTooltipText) {
+TEST_P(HoldingSpaceTrayRefreshTest, CheckTrayTooltipText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()),
-            IsHoldingSpaceRebrandEnabled() ? u"Quick files" : u"Tote");
+            IsHoldingSpaceRefreshEnabled() ? u"Quick files" : u"Tote");
 }
 
-TEST_P(HoldingSpaceTrayRebrandTest, PaintsSeparatorBetweenBubbles) {
+TEST_P(HoldingSpaceTrayRefreshTest, PaintsSeparatorBetweenBubbles) {
   StartSession();
 
   // Add a pinned file and a download to holding space so that both the
@@ -3714,7 +3714,7 @@ TEST_P(HoldingSpaceTrayRebrandTest, PaintsSeparatorBetweenBubbles) {
   SkColor actual_color =
       bitmap.getColor(separator_midpoint_x, separator_midpoint_y);
   SkColor expected_color = color_utils::GetResultingPaintColor(
-      /*foreground=*/IsHoldingSpaceRebrandEnabled()
+      /*foreground=*/IsHoldingSpaceRefreshEnabled()
           ? AshColorProvider::Get()->GetContentLayerColor(
                 AshColorProvider::ContentLayerType::kSeparatorColor)
           : SK_ColorTRANSPARENT,
