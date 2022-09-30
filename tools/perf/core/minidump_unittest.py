@@ -202,7 +202,6 @@ class BrowserMinidumpTest(tab_test_case.TabTestCase):
   @decorators.Disabled(
       'chromeos-local',
       'win7',  # https://crbug.com/1084931
-      'android-nougat',  # Flaky: https://crbug.com/1342706
   )
   def testMinidumpFromRendererHang(self):
     """Tests that renderer hangs result in minidumps.
