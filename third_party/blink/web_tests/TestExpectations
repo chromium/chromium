@@ -5980,9 +5980,6 @@ crbug.com/1233826 [ Mac ] virtual/threaded/external/wpt/animation-worklet/workle
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-local-time-before-start.https.html [ Crash Failure Pass ]
 crbug.com/1233766 [ Mac ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-get-timing-on-worklet-thread.https.html [ Crash Failure Pass ]
 
-# [CompositeClipPathAnimations] failing test
-crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-filter.html [ Crash Failure Pass ]
-
 # Following tests fail on mac11-arm64 or mac12-arm64
 crbug.com/1249176 [ Mac11-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]
