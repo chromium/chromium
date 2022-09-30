@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_registry.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
@@ -97,7 +98,7 @@ class AnimationTimeline;
 namespace gfx {
 class QuadF;
 class RectF;
-}
+}  // namespace gfx
 
 namespace mojo {
 template <typename Interface>
@@ -620,8 +621,8 @@ class CORE_EXPORT Document : public ContainerNode,
   DocumentState* GetDocumentState() const;
   void SetStateForNewControls(const Vector<String>&);
 
-  LocalFrameView* View() const;  // can be null
-  LocalFrame* GetFrame() const;  // can be null
+  LocalFrameView* View() const;   // can be null
+  LocalFrame* GetFrame() const;   // can be null
   Page* GetPage() const;          // can be null
   Settings* GetSettings() const;  // can be null
 
@@ -1465,6 +1466,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-object-element
   // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
   void DelayLoadEventUntilLayoutTreeUpdate();
+
+  const EventPath::NodePath& GetOrCalculateEventNodePath(Node& node);
 
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
@@ -2452,6 +2455,16 @@ class CORE_EXPORT Document : public ContainerNode,
   // Tracks and reports metrics of attempted font match attempts (both
   // successful and not successful) by the page.
   std::unique_ptr<FontMatchingMetrics> font_matching_metrics_;
+
+  // For a given node, cache the vector of nodes that defines its EventPath so
+  // all events dispatched on this node won't get recalculated. This cache uses
+  // a LRU strategy and gets cleared when the DOM tree version changes.
+  uint64_t event_node_path_dom_tree_version_;
+  using EventNodePathCache =
+      HeapHashMap<Member<Node>, Member<EventPath::NodePath>>;
+  using EventNodePathCacheKeyList = HeapLinkedHashSet<Member<Node>>;
+  EventNodePathCache event_node_path_cache_;
+  EventNodePathCacheKeyList event_node_path_cache_key_list_;
 
 #if DCHECK_IS_ON()
   unsigned slot_assignment_recalc_forbidden_recursion_depth_ = 0;

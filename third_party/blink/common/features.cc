@@ -1642,5 +1642,11 @@ BASE_FEATURE(kWildcardSubdomainsInPermissionsPolicy,
              "WildcardSubdomainsInPermissionsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::Feature kDocumentEventNodePathCaching{
+    "DocumentEventNodePathCaching", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
+    &kDocumentEventNodePathCaching, "max-cache-entries", 100};
+
 }  // namespace features
 }  // namespace blink
