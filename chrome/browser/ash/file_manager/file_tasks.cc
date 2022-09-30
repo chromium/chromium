@@ -681,22 +681,22 @@ void UpdateDefaultTask(Profile* profile,
   }
 
   if (!mime_types.empty()) {
-    DictionaryPrefUpdate mime_type_pref(pref_service,
+    ScopedDictPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);
     for (const std::string& mime_type : mime_types) {
-      mime_type_pref->SetStringKey(mime_type, task_id);
+      mime_type_pref->Set(mime_type, task_id);
     }
   }
 
   std::set<std::string> lowercase_suffixes;
   if (!suffixes.empty()) {
-    DictionaryPrefUpdate mime_type_pref(pref_service,
+    ScopedDictPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksBySuffix);
     for (const std::string& suffix : suffixes) {
       // Suffixes are case insensitive.
       std::string lower_suffix = base::ToLowerASCII(suffix);
       lowercase_suffixes.insert(lower_suffix);
-      mime_type_pref->SetStringKey(lower_suffix, task_id);
+      mime_type_pref->Set(lower_suffix, task_id);
     }
   }
 

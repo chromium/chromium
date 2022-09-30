@@ -91,19 +91,13 @@ void Registry::RememberFileSystem(
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdate dict_update(pref_service,
+  ScopedDictPrefUpdate dict_update(pref_service,
                                    prefs::kFileSystemProviderMounted);
 
-  base::Value* file_systems_per_extension = dict_update->FindKeyOfType(
-      file_system_info.provider_id().ToString(), base::Value::Type::DICTIONARY);
-  if (!file_systems_per_extension) {
-    file_systems_per_extension =
-        dict_update->SetKey(file_system_info.provider_id().ToString(),
-                            base::Value(base::Value::Type::DICTIONARY));
-  }
-
-  file_systems_per_extension->SetKey(file_system_info.file_system_id(),
-                                     std::move(file_system));
+  base::Value::Dict* file_systems_per_extension =
+      dict_update->EnsureDict(file_system_info.provider_id().ToString());
+  file_systems_per_extension->Set(file_system_info.file_system_id(),
+                                  std::move(file_system));
 }
 
 void Registry::ForgetFileSystem(const ProviderId& provider_id,
@@ -111,17 +105,17 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdate dict_update(pref_service,
+  ScopedDictPrefUpdate dict_update(pref_service,
                                    prefs::kFileSystemProviderMounted);
 
-  base::Value* file_systems_per_extension =
-      dict_update->FindDictKey(provider_id.ToString());
+  base::Value::Dict* file_systems_per_extension =
+      dict_update->FindDict(provider_id.ToString());
   if (!file_systems_per_extension)
     return;  // Nothing to forget.
 
-  file_systems_per_extension->RemoveKey(file_system_id);
-  if (file_systems_per_extension->DictEmpty())
-    dict_update->RemoveKey(provider_id.ToString());
+  file_systems_per_extension->Remove(file_system_id);
+  if (file_systems_per_extension->empty())
+    dict_update->Remove(provider_id.ToString());
 }
 
 std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
@@ -243,25 +237,25 @@ void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
 
   // TODO(mtomasz): Consider optimizing it by moving information about watchers
   // or even file systems to leveldb.
-  DictionaryPrefUpdate dict_update(pref_service,
+  ScopedDictPrefUpdate dict_update(pref_service,
                                    prefs::kFileSystemProviderMounted);
 
   // All of the following checks should not happen in healthy environment.
   // However, since they rely on storage, DCHECKs can't be used.
-  base::Value* file_systems_per_extension =
-      dict_update->FindDictKey(file_system_info.provider_id().ToString());
-  base::Value* file_system = nullptr;
-  base::Value* watchers = nullptr;
-  base::Value* watcher_value = nullptr;
+  base::Value::Dict* file_systems_per_extension =
+      dict_update->FindDict(file_system_info.provider_id().ToString());
+  base::Value::Dict* file_system = nullptr;
+  base::Value::Dict* watchers = nullptr;
+  base::Value::Dict* watcher_value = nullptr;
 
   if (file_systems_per_extension) {
-    file_system = file_systems_per_extension->FindDictKey(
-        file_system_info.file_system_id());
+    file_system =
+        file_systems_per_extension->FindDict(file_system_info.file_system_id());
   }
   if (file_system)
-    watchers = file_system->FindDictKey(kPrefKeyWatchers);
+    watchers = file_system->FindDict(kPrefKeyWatchers);
   if (watchers)
-    watcher_value = watchers->FindDictKey(watcher.entry_path.value());
+    watcher_value = watchers->FindDict(watcher.entry_path.value());
 
   if (!watcher_value) {
     // Broken preferences.
@@ -269,7 +263,7 @@ void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
     return;
   }
 
-  watcher_value->SetKey(kPrefKeyWatcherLastTag, base::Value(watcher.last_tag));
+  watcher_value->Set(kPrefKeyWatcherLastTag, watcher.last_tag);
 }
 
 }  // namespace file_system_provider

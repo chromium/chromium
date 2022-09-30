@@ -58,9 +58,9 @@ class GuestOsFileTasksTest : public testing::Test {
               guest_os::VmType vm_type) {
     // crostini.registry {<id>: {container_name: "penguin", name: {"": <name>},
     //                           mime_types: [<mime>,], vm_name: "termina"}}
-    DictionaryPrefUpdate update(profile_.GetPrefs(),
+    ScopedDictPrefUpdate update(profile_.GetPrefs(),
                                 guest_os::prefs::kGuestOsRegistry);
-    base::Value* registry = update.Get();
+    base::Value::Dict& registry = update.Get();
     base::Value app(base::Value::Type::DICTIONARY);
     app.SetKey("container_name", base::Value("penguin"));
     base::Value mime_list(base::Value::Type::LIST);
@@ -76,7 +76,7 @@ class GuestOsFileTasksTest : public testing::Test {
     app.SetKey("name", std::move(name_dict));
     app.SetKey("vm_name", base::Value("termina"));
     app.SetIntKey("vm_type", static_cast<int>(vm_type));
-    registry->SetKey(id, std::move(app));
+    registry.Set(id, std::move(app));
   }
 
   void AddEntry(const std::string& path, const std::string& mime) {
@@ -91,10 +91,10 @@ class GuestOsFileTasksTest : public testing::Test {
 
   void AddMime(const std::string& file_ext, const std::string& mime) {
     // crostini.mime_types.termina.penguin.<file_ext>: <mime>
-    DictionaryPrefUpdate update(profile_.GetPrefs(),
+    ScopedDictPrefUpdate update(profile_.GetPrefs(),
                                 guest_os::prefs::kGuestOsMimeTypes);
-    base::Value* mimes = update.Get();
-    mimes->SetStringPath("termina.penguin." + file_ext, mime);
+    base::Value::Dict& mimes = update.Get();
+    mimes.SetByDottedPath("termina.penguin." + file_ext, mime);
   }
 
   content::BrowserTaskEnvironment task_environment_;
