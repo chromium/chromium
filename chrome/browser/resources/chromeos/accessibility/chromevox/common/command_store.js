@@ -307,7 +307,6 @@ export const CommandCategory = {
  *                  findNext: (undefined|string),
  *                  doDefault: (undefined|boolean),
  *                  msgId: (undefined|string),
- *                  nodeList: (undefined|string),
  *                  allowEvents: (undefined|boolean),
  *                  denySignedOut: (undefined|boolean)}>}
  *  announce: Whether to call finishNavCommand and announce the current
@@ -318,8 +317,6 @@ export const CommandCategory = {
  *  doDefault: Whether to do the default action. This means that keys will be
  *             passed through to the usual DOM capture/bubble phases.
  *  msgId: The message resource describing the command.
- *  nodeList: The id from the map above if this command is used for
- *            showing a list of nodes.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
  *  allowEvents: Allows EventWatcher to continue processing events which can
@@ -685,31 +682,26 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.SHOW_FORMS_LIST]: {
     announce: false,
-    nodeList: 'formField',
     msgId: 'show_forms_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_HEADINGS_LIST]: {
     announce: false,
-    nodeList: 'heading',
     msgId: 'show_headings_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_LANDMARKS_LIST]: {
     announce: false,
-    nodeList: 'landmark',
     msgId: 'show_landmarks_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_LINKS_LIST]: {
     announce: false,
-    nodeList: 'link',
     msgId: 'show_links_list',
     category: CommandCategory.OVERVIEW,
   },
   [Command.SHOW_TABLES_LIST]: {
     announce: false,
-    nodeList: 'table',
     msgId: 'show_tables_list',
     category: CommandCategory.OVERVIEW,
   },
