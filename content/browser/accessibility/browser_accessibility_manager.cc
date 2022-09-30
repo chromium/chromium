@@ -280,13 +280,13 @@ bool BrowserAccessibilityManager::CanFireEvents() const {
   // Fire events only when the root of the tree is reachable, to avoid a bug
   // in AppKit that gets stuck in an infinite loop trying to find the root,
   // causing VoiceOver to get stuck announcing "Chrome is not responding".
-  BrowserAccessibilityManager* root_manager = GetRootManager();
+  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (!root_manager)
     return false;
 
   // Make sure that nodes can be traversed to the root.
   const BrowserAccessibilityManager* ancestor_manager = this;
-  while (!ancestor_manager->IsRootTree()) {
+  while (!ancestor_manager->IsRootFrameManager()) {
     BrowserAccessibility* host_node =
         ancestor_manager->GetParentNodeFromParentTree();
     if (!host_node)
@@ -398,7 +398,7 @@ void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
   if (parent) {
     if (!connected_to_parent_tree_node_)
       ParentConnectionChanged(parent);
-    SANITIZER_CHECK(!IsRootTree());
+    SANITIZER_CHECK(!IsRootFrameManager());
     return;
   }
 
@@ -414,7 +414,7 @@ void BrowserAccessibilityManager::EnsureParentConnectionIfNotRootManager() {
     // an existing document. Due to race conditions, in some cases, |this| is
     // destroyed first, and this condition is not reached; while in other cases
     // the parent node is destroyed first (this case).
-    DCHECK(IsRootTree() || !CanFireEvents());
+    DCHECK(IsRootFrameManager() || !CanFireEvents());
   }
 }
 
@@ -431,12 +431,12 @@ BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
 }
 
 void BrowserAccessibilityManager::OnWindowFocused() {
-  if (IsRootTree())
+  if (IsRootFrameManager())
     FireFocusEventsIfNeeded();
 }
 
 void BrowserAccessibilityManager::OnWindowBlurred() {
-  if (IsRootTree())
+  if (IsRootFrameManager())
     SetLastFocusedNode(nullptr);
 }
 
@@ -532,7 +532,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     return true;
   }
 
-  BrowserAccessibilityManager* root_manager = GetRootManager();
+  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   DCHECK(root_manager) << "Cannot have detached document here, as "
                           "CanFireEvents() must return false in that case.";
 
@@ -541,7 +541,7 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   bool has_parent_id = parent_id != ui::AXTreeIDUnknown();
   BrowserAccessibilityManager* parent_manager =
       has_parent_id ? BrowserAccessibilityManager::FromID(parent_id) : nullptr;
-  if (IsRootTree()) {
+  if (IsRootFrameManager()) {
     CHECK(!has_parent_id) << "The root frame must be parentless, root url = "
                           << GetTreeData().url << "\nSupposed parent = "
                           << (parent_manager
@@ -853,7 +853,7 @@ bool BrowserAccessibilityManager::NativeViewHasFocus() {
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetFocus() const {
-  BrowserAccessibilityManager* root_manager = GetRootManager();
+  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (!root_manager) {
     // We can't retrieved the globally focused object since we don't have access
     // to the top document. If we return the focus in the current or a
@@ -1709,9 +1709,9 @@ ui::AXPlatformNodeDelegate* BrowserAccessibilityManager::RootDelegate() const {
   return GetBrowserAccessibilityRoot();
 }
 
-BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
-    const {
-  if (IsRootTree())
+BrowserAccessibilityManager*
+BrowserAccessibilityManager::GetManagerForRootFrame() const {
+  if (IsRootFrameManager())
     return const_cast<BrowserAccessibilityManager*>(this);
 
   BrowserAccessibilityManager* parent_manager =
@@ -1726,7 +1726,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::GetRootManager()
     return nullptr;
   }
 
-  return parent_manager->GetRootManager();
+  return parent_manager->GetManagerForRootFrame();
 }
 
 ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
@@ -1739,7 +1739,7 @@ ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
   if (!parent)
     return nullptr;
 
-  DCHECK(!IsRootTree());
+  DCHECK(!IsRootFrameManager());
 
 #if DCHECK_IS_ON()
   BrowserAccessibilityManager* browser_accessibility_manager_parent =
@@ -1761,18 +1761,18 @@ ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
 
 BrowserAccessibilityDelegate*
 BrowserAccessibilityManager::GetDelegateFromRootManager() const {
-  BrowserAccessibilityManager* root_manager = GetRootManager();
+  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (root_manager)
     return root_manager->delegate();
   return nullptr;
 }
 
-bool BrowserAccessibilityManager::IsRootTree() const {
+bool BrowserAccessibilityManager::IsRootFrameManager() const {
   // delegate_ can be null in unit tests.
   if (!delegate_)
     return GetTreeData().parent_tree_id == ui::AXTreeIDUnknown();
 
-  bool is_root_tree = delegate_->AccessibilityIsMainFrame();
+  bool is_root_tree = delegate_->AccessibilityIsRootFrame();
   DCHECK(!is_root_tree || GetParentTreeID() == ui::AXTreeIDUnknown())
       << "Root tree has parent tree id of: " << GetParentTreeID();
   return is_root_tree;
@@ -1800,7 +1800,7 @@ BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
   // hit test result, but AXPlatformNodeDelegate says that it's only supposed
   // to return a descendant, so this isn't correctly fulfilling the contract.
   // Unchecked it can even lead to an infinite loop.
-  BrowserAccessibilityManager* root_manager = GetRootManager();
+  BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (root_manager && root_manager != this)
     return root_manager->CachingAsyncHitTest(physical_pixel_point);
 
@@ -2008,7 +2008,7 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
   BrowserAccessibilityDelegate* root_delegate = GetDelegateFromRootManager();
   if (!root_delegate)
     return false;
-  if (!root_delegate->AccessibilityIsMainFrame())
+  if (!root_delegate->AccessibilityIsRootFrame())
     return false;
 
   // Don't fire events when this document might be stale as the user has

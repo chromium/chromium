@@ -1095,7 +1095,9 @@ bool content::IsNSRange(id value) {
   // A nil parent means we're the root.
   // Hook back up to RenderWidgetHostViewCocoa.
   BrowserAccessibilityManagerMac* manager =
-      _owner->manager()->GetRootManager()->ToBrowserAccessibilityManagerMac();
+      _owner->manager()
+          ->GetManagerForRootFrame()
+          ->ToBrowserAccessibilityManagerMac();
   if (!manager) {
     // TODO(accessibility) Determine why this is happening.
     SANITIZER_NOTREACHED();
@@ -1669,7 +1671,9 @@ bool content::IsNSRange(id value) {
     return nil;
 
   BrowserAccessibilityManagerMac* root_manager =
-      _owner->manager()->GetRootManager()->ToBrowserAccessibilityManagerMac();
+      _owner->manager()
+          ->GetManagerForRootFrame()
+          ->ToBrowserAccessibilityManagerMac();
   CHECK(root_manager) << "There should always be a root manager whenever an "
                          "object is instanceActive.";
   CHECK(root_manager->GetParentView());

@@ -98,7 +98,7 @@ GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
       BrowserAccessibility::FromAXPlatformNodeDelegate(node);
   DCHECK(node_internal);
   BrowserAccessibilityManager* root_manager =
-      node_internal->manager()->GetRootManager();
+      node_internal->manager()->GetManagerForRootFrame();
   DCHECK(root_manager);
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);

@@ -3114,11 +3114,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), main_url));
 
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
-  EXPECT_TRUE(main_frame->AccessibilityIsMainFrame());
+  EXPECT_TRUE(main_frame->AccessibilityIsRootFrame());
 
   ASSERT_EQ(1u, main_frame->child_count());
   RenderFrameHostImpl* iframe = main_frame->child_at(0)->current_frame_host();
-  EXPECT_FALSE(iframe->AccessibilityIsMainFrame());
+  EXPECT_FALSE(iframe->AccessibilityIsRootFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,

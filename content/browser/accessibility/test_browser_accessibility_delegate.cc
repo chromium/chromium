@@ -48,7 +48,7 @@ TestBrowserAccessibilityDelegate::AccessibilityRenderFrameHost() {
   return nullptr;
 }
 
-bool TestBrowserAccessibilityDelegate::AccessibilityIsMainFrame() {
+bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() {
   return is_root_frame_;
 }
 

@@ -192,7 +192,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
 
       NSDictionary* user_info = GetUserInfoForSelectedTextChangedNotification();
 
-      BrowserAccessibilityManager* root_manager = GetRootManager();
+      BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
       if (!root_manager)
         return;
       BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
@@ -266,7 +266,8 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       // subsequent changes to the user. WebKit seems to address this by firing
       // AXMenuClosed on the document itself when an accessible menu is being
       // detached. See WebKit's AccessibilityObject::detachRemoteParts
-      if (BrowserAccessibilityManager* root_manager = GetRootManager()) {
+      if (BrowserAccessibilityManager* root_manager =
+              GetManagerForRootFrame()) {
         if (BrowserAccessibility* root =
                 root_manager->GetBrowserAccessibilityRoot())
           FireNativeMacNotification((NSString*)kAXMenuClosedNotification, root);
@@ -576,7 +577,7 @@ id BrowserAccessibilityManagerMac::GetWindow() {
 }
 
 bool BrowserAccessibilityManagerMac::IsChromeNewTabPage() {
-  if (!delegate() || !IsRootTree())
+  if (!delegate() || !IsRootFrameManager())
     return false;
   content::WebContents* web_contents = WebContents::FromRenderFrameHost(
       delegate()->AccessibilityRenderFrameHost());
@@ -590,7 +591,7 @@ bool BrowserAccessibilityManagerMac::IsChromeNewTabPage() {
 
 bool BrowserAccessibilityManagerMac::ShouldFireLoadCompleteNotification() {
   // If it's not the top-level document, we shouldn't fire AXLoadComplete.
-  if (!IsRootTree())
+  if (!IsRootFrameManager())
     return false;
 
   // On MacOS 10.15, firing AXLoadComplete causes focus to move to the

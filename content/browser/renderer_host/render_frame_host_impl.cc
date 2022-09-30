@@ -2910,7 +2910,7 @@ void RenderFrameHostImpl::AccessibilityFatalError() {
 
 gfx::AcceleratedWidget
 RenderFrameHostImpl::AccessibilityGetAcceleratedWidget() {
-  DCHECK(AccessibilityIsMainFrame());
+  DCHECK(AccessibilityIsRootFrame());
   // Only the active RenderFrameHost is connected to the native widget tree for
   // accessibility, so return null if this is queried on any other frame.
   if (!IsActive())
@@ -2985,7 +2985,7 @@ void RenderFrameHostImpl::AccessibilityHitTest(
                      opt_event_to_fire, std::move(opt_callback)));
 }
 
-bool RenderFrameHostImpl::AccessibilityIsMainFrame() {
+bool RenderFrameHostImpl::AccessibilityIsRootFrame() {
   // Do not use is_main_frame() or IsOutermostMainFrame().
   // Frame trees may be nested so it can be the case that is_main_frame() is
   // true, but is not the outermost RenderFrameHost (it only checks for nullity
@@ -2998,7 +2998,7 @@ bool RenderFrameHostImpl::AccessibilityIsMainFrame() {
 
 WebContentsAccessibility*
 RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
-  DCHECK(AccessibilityIsMainFrame());
+  DCHECK(AccessibilityIsRootFrame());
   auto* view = static_cast<RenderWidgetHostViewBase*>(GetView());
   if (!view)
     return nullptr;
@@ -10250,7 +10250,7 @@ RenderFrameHost* RenderFrameHost::FromPlaceholderToken(
 ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
   auto* parent = GetParentOrOuterDocumentOrEmbedder();
   if (!parent) {
-    DCHECK(AccessibilityIsMainFrame())
+    DCHECK(AccessibilityIsRootFrame())
         << "Child frame requires a parent, root=" << GetLastCommittedURL();
     return ui::AXTreeIDUnknown();
   }
@@ -10263,7 +10263,7 @@ ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
   //     << "Parent frame must have an id, child url = " <<
   //     GetLastCommittedURL()
   //     << "    parent url = " << parent->GetLastCommittedURL();
-  DCHECK(!AccessibilityIsMainFrame())
+  DCHECK(!AccessibilityIsRootFrame())
       << "Root frame must not have a parent, root=" << GetLastCommittedURL()
       << "  parent=" << parent->GetLastCommittedURL();
   return parent->GetAXTreeID();
@@ -10271,7 +10271,7 @@ ui::AXTreeID RenderFrameHostImpl::GetParentAXTreeID() {
 
 ui::AXTreeID RenderFrameHostImpl::GetFocusedAXTreeID() {
   // If this is not the root frame tree node, we're done.
-  if (!AccessibilityIsMainFrame())
+  if (!AccessibilityIsRootFrame())
     return ui::AXTreeIDUnknown();
 
   RenderFrameHostImpl* focused_frame = delegate_->GetFocusedFrame();

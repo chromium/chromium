@@ -107,9 +107,9 @@ class CONTENT_EXPORT BrowserAccessibilityDelegate {
       base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
                               int hit_node_id)> opt_callback) = 0;
 
-  // Returns true if this delegate represents the main (topmost) frame in a
+  // Returns true if this delegate represents the root (outermost) frame in a
   // tree of frames.
-  virtual bool AccessibilityIsMainFrame() = 0;
+  virtual bool AccessibilityIsRootFrame() = 0;
   virtual WebContentsAccessibility*
   AccessibilityGetWebContentsAccessibility() = 0;
 };
@@ -471,18 +471,20 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   BrowserAccessibilityDelegate* delegate() const { return delegate_; }
 
   // If this BrowserAccessibilityManager is a child frame or guest frame,
-  // returns the BrowserAccessibilityManager from the top document in the frame
-  // tree. If the current frame is not connected to its parent frame yet, or if
-  // it got disconnected after being reparented, return nullptr to indicate that
-  // we don't have access to the root manager yet.
-  BrowserAccessibilityManager* GetRootManager() const;
+  // returns the BrowserAccessibilityManager from the root frame. The root frame
+  // is the outermost frame, so this method will walk up to any parents (in the
+  // case of subframes), any outer documents (e.g. fenced frame owners), and any
+  // GuestViews. If the current frame is not connected to its parent frame yet,
+  // or if it got disconnected after being reparented, return nullptr to
+  // indicate that we don't have access to the manager of the root frame yet.
+  BrowserAccessibilityManager* GetManagerForRootFrame() const;
 
   // Returns the BrowserAccessibilityDelegate from |GetRootManager| above, or
   // returns nullptr in case we don't have access to the root manager yet.
   BrowserAccessibilityDelegate* GetDelegateFromRootManager() const;
 
-  // Returns whether this is the top document.
-  bool IsRootTree() const;
+  // Returns whether this is the root frame.
+  bool IsRootFrameManager() const;
 
   // Get a snapshot of the current tree as an AXTreeUpdate.
   ui::AXTreeUpdate SnapshotAXTreeForTesting();

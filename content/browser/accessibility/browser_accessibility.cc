@@ -826,7 +826,8 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     // TODO(crbug.com/1074116): this should probably apply visual viewport
     // offset as well.
     if (!content::AXShouldIncludePageScaleFactorInRoot()) {
-      BrowserAccessibilityManager* root_manager = manager()->GetRootManager();
+      BrowserAccessibilityManager* root_manager =
+          manager()->GetManagerForRootFrame();
       if (root_manager)
         bounds.Scale(root_manager->GetPageScaleFactor());
     }

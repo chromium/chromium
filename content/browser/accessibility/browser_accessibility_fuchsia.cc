@@ -72,7 +72,7 @@ void BrowserAccessibilityFuchsia::OnDataChanged() {
 
   // Declare this node as the fuchsia tree root if it's the root of the main
   // frame's tree.
-  if (manager()->IsRootTree() &&
+  if (manager()->IsRootFrameManager() &&
       manager()->GetBrowserAccessibilityRoot() == this) {
     ui::AccessibilityBridgeFuchsia* accessibility_bridge =
         GetAccessibilityBridge();
@@ -426,7 +426,8 @@ bool BrowserAccessibilityFuchsia::IsListElement() const {
 bool BrowserAccessibilityFuchsia::AccessibilityPerformAction(
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kHitTest) {
-    BrowserAccessibilityManager* root_manager = manager()->GetRootManager();
+    BrowserAccessibilityManager* root_manager =
+        manager()->GetManagerForRootFrame();
     DCHECK(root_manager);
 
     ui::AccessibilityBridgeFuchsia* accessibility_bridge =

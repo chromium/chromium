@@ -1455,7 +1455,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestHitTestScaled) {
   std::unique_ptr<BrowserAccessibilityManager> child_manager(
       BrowserAccessibilityManager::Create(child_update, nullptr));
 
-  ASSERT_EQ(parent_manager.get(), child_manager->GetRootManager());
+  ASSERT_EQ(parent_manager.get(), child_manager->GetManagerForRootFrame());
 
   // Set scaling factor for testing to be 200%
   parent_manager->UseCustomDeviceScaleFactorForTesting(2.0f);

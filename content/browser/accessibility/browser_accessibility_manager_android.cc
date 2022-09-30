@@ -25,7 +25,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
                                                   nullptr);
 
   WebContentsAccessibilityAndroid* wcax = nullptr;
-  if (delegate->AccessibilityIsMainFrame()) {
+  if (delegate->AccessibilityIsRootFrame()) {
     wcax = static_cast<WebContentsAccessibilityAndroid*>(
         delegate->AccessibilityGetWebContentsAccessibility());
   }
@@ -580,8 +580,8 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
 
   // When the root changes, send the new root id and a navigate signal to Java.
   if (root_changed) {
-    auto* root_manager =
-        static_cast<BrowserAccessibilityManagerAndroid*>(GetRootManager());
+    auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
+        GetManagerForRootFrame());
     DCHECK(root_manager);
 
     auto* root = static_cast<BrowserAccessibilityAndroid*>(
@@ -600,8 +600,8 @@ void BrowserAccessibilityManagerAndroid::OnNodeCreated(ui::AXTree* tree,
   BrowserAccessibilityManager::OnNodeCreated(tree, node);
   if (node->data().GetBoolAttribute(
           ax::mojom::BoolAttribute::kTouchPassthrough)) {
-    auto* root =
-        static_cast<BrowserAccessibilityManagerAndroid*>(GetRootManager());
+    auto* root = static_cast<BrowserAccessibilityManagerAndroid*>(
+        GetManagerForRootFrame());
     if (root)
       root->EnableTouchPassthrough();
     else
@@ -618,10 +618,10 @@ void BrowserAccessibilityManagerAndroid::OnBoolAttributeChanged(
                                                       new_value);
   if (new_value && attr == ax::mojom::BoolAttribute::kTouchPassthrough) {
     // TODO(accessibility): there's a tiny chance we could get this
-    // called on an iframe before it's attached to the root manager.
+    // called on an iframe before it's attached to the root frame manager.
     // If this ever becomes an issue in practice, make this more robust.
-    auto* root =
-        static_cast<BrowserAccessibilityManagerAndroid*>(GetRootManager());
+    auto* root = static_cast<BrowserAccessibilityManagerAndroid*>(
+        GetManagerForRootFrame());
     if (root)
       root->EnableTouchPassthrough();
     else
