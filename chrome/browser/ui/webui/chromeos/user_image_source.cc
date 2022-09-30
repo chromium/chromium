@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/url_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -43,7 +44,8 @@ void ParseRequest(const GURL& url, std::string* email, int* frame) {
   // migrated.
   if (!status) {
     LOG(WARNING) << "Failed to deserialize account_id.";
-    account_id = user_manager::known_user::GetAccountId(
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    account_id = known_user.GetAccountId(
         serialized_account_id, std::string() /* id */, AccountType::UNKNOWN);
   }
   *email = account_id.GetUserEmail();
