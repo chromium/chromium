@@ -3791,6 +3791,21 @@
             ]
         }
     ],
+    "DiacriticsOnPhysicalKeyboardLongpress": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiacriticsOnPhysicalKeyboardLongpress"
+                    ]
+                }
+            ]
+        }
+    ],
     "DifferentWorkQueueCapacities": [
         {
             "platforms": [
