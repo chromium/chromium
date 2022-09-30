@@ -33,7 +33,7 @@ namespace blink {
 
 namespace {
 
-class MockChromeClient : public EmptyChromeClient {
+class PasswordResetChromeClient : public EmptyChromeClient {
  public:
   MOCK_METHOD(void,
               PasswordFieldReset,
@@ -41,10 +41,25 @@ class MockChromeClient : public EmptyChromeClient {
               (override));
 };
 
+class HTMLInputElementTestChromeClient : public EmptyChromeClient {
+ public:
+  gfx::Rect LocalRootToScreenDIPs(const gfx::Rect& local_root_rect,
+                                  const LocalFrameView* view) const override {
+    return view->GetPage()->GetVisualViewport().RootFrameToViewport(
+        local_root_rect);
+  }
+};
+
 }  // namespace
 
 class HTMLInputElementTest : public PageTestBase {
  protected:
+  void SetUp() override {
+    auto* chrome_client =
+        MakeGarbageCollected<HTMLInputElementTestChromeClient>();
+    SetupPageWithClients(chrome_client);
+  }
+
   HTMLInputElement& TestElement() {
     Element* element = GetDocument().getElementById("test");
     DCHECK(element);
@@ -307,14 +322,14 @@ class HTMLInputElementPasswordFieldResetTest
       public ::testing::WithParamInterface<PasswordFieldResetParam> {
  protected:
   void SetUp() override {
-    chrome_client_ = MakeGarbageCollected<MockChromeClient>();
+    chrome_client_ = MakeGarbageCollected<PasswordResetChromeClient>();
     SetupPageWithClients(chrome_client_);
   }
 
-  MockChromeClient& chrome_client() { return *chrome_client_; }
+  PasswordResetChromeClient& chrome_client() { return *chrome_client_; }
 
  private:
-  Persistent<MockChromeClient> chrome_client_;
+  Persistent<PasswordResetChromeClient> chrome_client_;
 };
 
 // Tests that PasswordFieldReset() is (only) called for empty fields. This is

@@ -53,7 +53,7 @@ class CORE_EXPORT ColorChooserClient : public GarbageCollectedMixin {
   // Called when ColorChooser UI was closed by the user.
   virtual void DidEndChooser() = 0;
   virtual Element& OwnerElement() const = 0;
-  virtual gfx::Rect ElementRectRelativeToViewport() const = 0;
+  virtual gfx::Rect ElementRectRelativeToLocalRoot() const = 0;
   virtual Color CurrentColor() = 0;
   virtual bool ShouldShowSuggestions() const = 0;
   virtual Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const = 0;

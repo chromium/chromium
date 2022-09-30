@@ -21,8 +21,8 @@ class TextAutosizerClient : public RenderingTestChromeClient {
   float WindowToViewportScalar(LocalFrame*, const float value) const override {
     return value * device_scale_factor_;
   }
-  gfx::Rect ViewportToScreen(const gfx::Rect& rect,
-                             const LocalFrameView*) const override {
+  gfx::Rect LocalRootToScreenDIPs(const gfx::Rect& rect,
+                                  const LocalFrameView*) const override {
     return gfx::ScaleToRoundedRect(rect, 1 / device_scale_factor_);
   }
 

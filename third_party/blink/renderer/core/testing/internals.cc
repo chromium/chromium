@@ -3545,10 +3545,11 @@ String Internals::selectedTextForClipboard() {
   return GetFrame()->Selection().SelectedTextForClipboard();
 }
 
-void Internals::setVisualViewportOffset(int x, int y) {
+void Internals::setVisualViewportOffset(int css_x, int css_y) {
   if (!GetFrame())
     return;
-  gfx::PointF offset(x, y);
+  float zoom = GetFrame()->PageZoomFactor();
+  gfx::PointF offset(css_x * zoom, css_y * zoom);
   GetFrame()->GetPage()->GetVisualViewport().SetLocation(offset);
 }
 

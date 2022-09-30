@@ -180,8 +180,8 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void InvalidateContainer() override {}
   void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta delay) override {}
-  gfx::Rect ViewportToScreen(const gfx::Rect& r,
-                             const LocalFrameView*) const override {
+  gfx::Rect LocalRootToScreenDIPs(const gfx::Rect& r,
+                                  const LocalFrameView*) const override {
     return r;
   }
   float WindowToViewportScalar(LocalFrame*, const float s) const override {

@@ -260,8 +260,8 @@ Element& ColorInputType::OwnerElement() const {
   return GetElement();
 }
 
-gfx::Rect ColorInputType::ElementRectRelativeToViewport() const {
-  return GetElement().GetDocument().View()->FrameToViewport(
+gfx::Rect ColorInputType::ElementRectRelativeToLocalRoot() const {
+  return GetElement().GetDocument().View()->ConvertToRootFrame(
       GetElement().PixelSnappedBoundingBox());
 }
 

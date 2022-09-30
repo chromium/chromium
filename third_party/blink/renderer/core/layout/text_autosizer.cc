@@ -803,13 +803,10 @@ bool TextAutosizer::ClusterHasEnoughTextToAutosize(
 
   // 4 lines of text is considered enough to autosize.
   float minimum_text_length_to_autosize = WidthFromBlock(width_provider) * 4;
-  if (LocalFrameView* view = document_->View()) {
-    minimum_text_length_to_autosize =
-        document_->GetPage()
-            ->GetChromeClient()
-            .ViewportToScreen(
-                gfx::Rect(0, 0, minimum_text_length_to_autosize, 0), view)
-            .width();
+  if (LocalFrame* frame = document_->GetFrame()) {
+    minimum_text_length_to_autosize /=
+        document_->GetPage()->GetChromeClient().WindowToViewportScalar(frame,
+                                                                       1);
   }
 
   float length = 0;

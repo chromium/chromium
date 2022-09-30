@@ -52,7 +52,7 @@ class ColorInputType final : public InputType,
   void DidChooseColor(const Color&) override;
   void DidEndChooser() override;
   Element& OwnerElement() const override;
-  gfx::Rect ElementRectRelativeToViewport() const override;
+  gfx::Rect ElementRectRelativeToLocalRoot() const override;
   Color CurrentColor() override;
   bool ShouldShowSuggestions() const override;
   Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const override;

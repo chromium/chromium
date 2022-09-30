@@ -145,9 +145,11 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // painting. This informs the client of the area that needs to be redrawn.
   virtual void InvalidateContainer() = 0;
 
-  // Converts the rect from the viewport coordinates to screen coordinates.
-  virtual gfx::Rect ViewportToScreen(const gfx::Rect&,
-                                     const LocalFrameView*) const = 0;
+  // Converts the rect from local root coordinates (using the local root of the
+  // given LocalFrameView) to screen coordinates. Performs the visual viewport
+  // transform.
+  virtual gfx::Rect LocalRootToScreenDIPs(const gfx::Rect&,
+                                          const LocalFrameView*) const = 0;
 
   void ScheduleAnimation(const LocalFrameView* view) {
     ScheduleAnimation(view, base::TimeDelta());

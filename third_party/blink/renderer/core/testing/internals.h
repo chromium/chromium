@@ -517,7 +517,8 @@ class Internals final : public ScriptWrappable {
   String selectedHTMLForClipboard();
   String selectedTextForClipboard();
 
-  void setVisualViewportOffset(int x, int y);
+  // Sets the visual viewport offset within the layout viewport.
+  void setVisualViewportOffset(int css_x, int css_y);
 
   // Return true if the given use counter exists for the given document.
   // |feature| must be one of the values from the WebFeature enum.
