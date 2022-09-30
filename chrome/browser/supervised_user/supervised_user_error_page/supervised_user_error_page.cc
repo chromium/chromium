@@ -113,10 +113,10 @@ std::string BuildHtml(bool allow_access_requests,
   } else if (allow_access_requests) {
     block_header =
         l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-    block_message = l10n_util::GetStringUTF8(
-        web_filter_interstitial_refresh_enabled && is_automatically_blocked
-            ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED
-            : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
+    block_message =
+        l10n_util::GetStringUTF8(web_filter_interstitial_refresh_enabled
+                                     ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2
+                                     : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
   } else {
     block_header = l10n_util::GetStringUTF8(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);

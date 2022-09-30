@@ -102,20 +102,9 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   if (param.allow_access_requests) {
     EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
                             IDS_CHILD_BLOCK_INTERSTITIAL_HEADER)));
-    // Ensure that HTML contains a specific block message for sites that may
-    // contain mature content.
     if (param.is_web_filter_interstitial_refresh_enabled) {
-      if (param.reason == ASYNC_CHECKER || param.reason == DENYLIST) {
-        EXPECT_THAT(
-            result,
-            testing::HasSubstr(l10n_util::GetStringUTF8(
-                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED)));
-        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                                IDS_SUPERVISED_USER_BLOCK_MESSAGE_SAFE_SITES)));
-      } else {
-        EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
-                                IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));
-      }
+      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2)));
       // Ensure that HTML contains a block message that is specific to the
       // number of parents who can approve and the reason that the site is
       // blocked. DEFAULT indicates that the parent(s) required the child
@@ -143,6 +132,9 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
                           IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT)));
         }
       }
+    } else {
+      EXPECT_THAT(result, testing::HasSubstr(l10n_util::GetStringUTF8(
+                              IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE)));
     }
     EXPECT_THAT(result,
                 testing::Not(testing::HasSubstr(l10n_util::GetStringUTF8(
