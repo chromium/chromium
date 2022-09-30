@@ -110,6 +110,11 @@ using password_manager::prefs::kCredentialsEnableService;
                                         kCredentialsEnableService)];
 
   [self passwordAutoFillStatusDidChange];
+
+  // TODO(crbug.com/1335156): Read the actual state and push to the consumer;
+  // this is placeholder behavior.
+  [self.consumer setOnDeviceEncryptionState:
+                     PasswordSettingsOnDeviceEncryptionStateOptedIn];
 }
 
 - (void)userDidStartExportFlow {

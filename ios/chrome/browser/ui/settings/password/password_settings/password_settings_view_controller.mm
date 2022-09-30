@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_view_controller.h"
 
 #import "base/check.h"
+#import "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
@@ -34,6 +36,7 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
   SectionIdentifierPasswordsInOtherApps,
+  SectionIdentifierOnDeviceEncryption,
   SectionIdentifierExportPasswordsButton,
 };
 
@@ -43,6 +46,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeManagedSavePasswords,
   ItemTypePasswordsInOtherApps,
   ItemTypeExportPasswordsButton,
+  ItemTypeOnDeviceEncryptionOptInDescription,
+  ItemTypeOnDeviceEncryptionOptedInDescription,
+  ItemTypeOnDeviceEncryptionOptedInLearnMore,
+  ItemTypeOnDeviceEncryptionSetUp,
+};
+
+// Indicates whether the model has not started loading, is in the process of
+// loading, or has completed loading.
+typedef NS_ENUM(NSInteger, ModelLoadStatus) {
+  ModelNotLoaded = 0,
+  ModelIsLoading,
+  ModelLoadComplete,
 };
 
 }  // namespace
@@ -51,9 +66,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
 
-  // Whether or not the model has been loaded.
-  BOOL _isModelLoaded;
-
   // Whether or not Chromium has been enabled as a credential provider at the
   // iOS level. This may not be known at load time; the detail text showing on
   // or off status will be omitted until this is populated.
@@ -61,6 +73,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // State
+
+// Tracks whether or not the model has loaded.
+@property(nonatomic, assign) ModelLoadStatus modelLoadStatus;
 
 // Whether or not the exporter should be enabled.
 @property(nonatomic, assign) BOOL canExportPasswords;
@@ -71,6 +86,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Indicates whether or not "Offer to Save Passwords" is set to enabled.
 @property(nonatomic, assign, getter=isSavePasswordsEnabled)
     BOOL savePasswordsEnabled;
+
+// On-device encryption state according to the sync service.
+@property(nonatomic, assign)
+    PasswordSettingsOnDeviceEncryptionState onDeviceEncryptionState;
 
 // UI elements
 
@@ -86,6 +105,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, readonly)
     TableViewDetailIconItem* passwordsInOtherAppsItem;
 
+// Descriptive text shown when the user has the option of enabling on-device
+// encryption.
+@property(nonatomic, readonly)
+    TableViewImageItem* onDeviceEncryptionOptInDescriptionItem;
+
+// Descriptive text shown when the user has already enabled on-device
+// encryption.
+@property(nonatomic, readonly)
+    TableViewImageItem* onDeviceEncryptionOptedInDescription;
+
+// A button giving the user more information about on-device encrpytion, shown
+// when they have already enabled it.
+@property(nonatomic, readonly)
+    TableViewTextItem* onDeviceEncryptionOptedInLearnMore;
+
+// A button which triggers the setup of on-device encryption.
+@property(nonatomic, readonly) TableViewTextItem* setUpOnDeviceEncryptionItem;
+
 @end
 
 @implementation PasswordSettingsViewController
@@ -93,6 +130,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @synthesize savePasswordsItem = _savePasswordsItem;
 @synthesize managedSavePasswordsItem = _managedSavePasswordsItem;
 @synthesize passwordsInOtherAppsItem = _passwordsInOtherAppsItem;
+@synthesize onDeviceEncryptionOptInDescriptionItem =
+    _onDeviceEncryptionOptInDescriptionItem;
+@synthesize onDeviceEncryptionOptedInDescription =
+    _onDeviceEncryptionOptedInDescription;
+@synthesize onDeviceEncryptionOptedInLearnMore =
+    _onDeviceEncryptionOptedInLearnMore;
+@synthesize setUpOnDeviceEncryptionItem = _setUpOnDeviceEncryptionItem;
 
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
@@ -126,9 +170,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)loadModel {
   [super loadModel];
 
-  TableViewModel* model = self.tableViewModel;
+  self.modelLoadStatus = ModelIsLoading;
 
-  _isModelLoaded = YES;
+  TableViewModel* model = self.tableViewModel;
 
   [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
@@ -137,12 +181,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
 
+  if (self.onDeviceEncryptionState !=
+      PasswordSettingsOnDeviceEncryptionStateNotShown) {
+    [self updateOnDeviceEncryptionSectionWithOldState:
+              PasswordSettingsOnDeviceEncryptionStateNotShown];
+  }
+
   // Export passwords button.
   [model addSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
   _exportPasswordsItem = [self makeExportPasswordsItem];
   [self updateExportPasswordsButton];
   [model addItem:_exportPasswordsItem
       toSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
+
+  self.modelLoadStatus = ModelLoadComplete;
 }
 
 #pragma mark - UITableViewDataSource
@@ -190,6 +242,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
       }
       break;
     }
+    case ItemTypeOnDeviceEncryptionSetUp: {
+      // TODO(crbug.com/1335156): Trigger setup.
+      break;
+    }
+    case ItemTypeOnDeviceEncryptionOptedInLearnMore: {
+      // TODO(crbug.com/1335156): Open appropriate URL.
+      break;
+    }
+    case ItemTypeOnDeviceEncryptionOptedInDescription:
+    case ItemTypeOnDeviceEncryptionOptInDescription:
     case ItemTypeSavePasswordsSwitch:
     case ItemTypeManagedSavePasswords: {
       NOTREACHED();
@@ -264,6 +326,77 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _passwordsInOtherAppsItem;
 }
 
+- (TableViewImageItem*)onDeviceEncryptionOptInDescriptionItem {
+  if (_onDeviceEncryptionOptInDescriptionItem) {
+    return _onDeviceEncryptionOptInDescriptionItem;
+  }
+
+  _onDeviceEncryptionOptInDescriptionItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeOnDeviceEncryptionOptInDescription];
+  _onDeviceEncryptionOptInDescriptionItem.title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION);
+  _onDeviceEncryptionOptInDescriptionItem.detailText = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPT_IN);
+  _onDeviceEncryptionOptInDescriptionItem.enabled = NO;
+  _onDeviceEncryptionOptInDescriptionItem.accessibilityIdentifier =
+      kPasswordSettingsOnDeviceEncryptionOptInId;
+  _onDeviceEncryptionOptInDescriptionItem.accessibilityTraits |=
+      UIAccessibilityTraitLink;
+  return _onDeviceEncryptionOptInDescriptionItem;
+}
+
+- (TableViewImageItem*)onDeviceEncryptionOptedInDescription {
+  if (_onDeviceEncryptionOptedInDescription) {
+    return _onDeviceEncryptionOptedInDescription;
+  }
+
+  _onDeviceEncryptionOptedInDescription = [[TableViewImageItem alloc]
+      initWithType:ItemTypeOnDeviceEncryptionOptedInDescription];
+  _onDeviceEncryptionOptedInDescription.title =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION);
+  _onDeviceEncryptionOptedInDescription.detailText = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE);
+  _onDeviceEncryptionOptedInDescription.enabled = NO;
+  _onDeviceEncryptionOptedInDescription.accessibilityIdentifier =
+      kPasswordSettingsOnDeviceEncryptionOptedInTextId;
+  return _onDeviceEncryptionOptedInDescription;
+}
+
+- (TableViewTextItem*)onDeviceEncryptionOptedInLearnMore {
+  if (_onDeviceEncryptionOptedInLearnMore) {
+    return _onDeviceEncryptionOptedInLearnMore;
+  }
+
+  _onDeviceEncryptionOptedInLearnMore = [[TableViewTextItem alloc]
+      initWithType:ItemTypeOnDeviceEncryptionOptedInLearnMore];
+  _onDeviceEncryptionOptedInLearnMore.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPTED_IN_LEARN_MORE);
+  _onDeviceEncryptionOptedInLearnMore.textColor =
+      [UIColor colorNamed:kBlueColor];
+  _onDeviceEncryptionOptedInLearnMore.accessibilityTraits =
+      UIAccessibilityTraitButton;
+  _onDeviceEncryptionOptedInLearnMore.accessibilityIdentifier =
+      kPasswordSettingsOnDeviceEncryptionLearnMoreId;
+  return _onDeviceEncryptionOptedInLearnMore;
+}
+
+- (TableViewTextItem*)setUpOnDeviceEncryptionItem {
+  if (_setUpOnDeviceEncryptionItem) {
+    return _setUpOnDeviceEncryptionItem;
+  }
+
+  _setUpOnDeviceEncryptionItem =
+      [[TableViewTextItem alloc] initWithType:ItemTypeOnDeviceEncryptionSetUp];
+  _setUpOnDeviceEncryptionItem.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP);
+  _setUpOnDeviceEncryptionItem.textColor = [UIColor colorNamed:kBlueColor];
+  _setUpOnDeviceEncryptionItem.accessibilityTraits = UIAccessibilityTraitButton;
+  _setUpOnDeviceEncryptionItem.accessibilityIdentifier =
+      kPasswordSettingsOnDeviceEncryptionSetUpId;
+  _setUpOnDeviceEncryptionItem.accessibilityTraits |= UIAccessibilityTraitLink;
+  return _setUpOnDeviceEncryptionItem;
+}
+
 // Creates the "Export Passwords..." button. Coloring and enabled/disabled state
 // are handled by `updateExportPasswordsButton`, which should be called as soon
 // as the mediator has provided the necessary state.
@@ -287,7 +420,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _managedByPolicy = managedByPolicy;
 
-  if (!_isModelLoaded) {
+  if (self.modelLoadStatus == ModelNotLoaded) {
     return;
   }
 
@@ -311,7 +444,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _savePasswordsEnabled = enabled;
 
-  if (!_isModelLoaded) {
+  if (self.modelLoadStatus == ModelNotLoaded) {
     return;
   }
 
@@ -330,17 +463,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   _passwordsInOtherAppsEnabled = enabled;
 
-  if (!_isModelLoaded) {
+  if (self.modelLoadStatus == ModelNotLoaded) {
     return;
   }
 
   [self updatePasswordsInOtherAppsItem];
 }
 
+- (void)setOnDeviceEncryptionState:
+    (PasswordSettingsOnDeviceEncryptionState)onDeviceEncryptionState {
+  PasswordSettingsOnDeviceEncryptionState oldState = _onDeviceEncryptionState;
+  if (oldState == onDeviceEncryptionState) {
+    return;
+  }
+  _onDeviceEncryptionState = onDeviceEncryptionState;
+
+  if (self.modelLoadStatus == ModelNotLoaded) {
+    return;
+  }
+
+  [self updateOnDeviceEncryptionSectionWithOldState:oldState];
+}
+
 - (void)updateExportPasswordsButton {
   // This can be invoked before the item is ready when passwords are received
   // too early.
-  if (!_isModelLoaded) {
+  if (self.modelLoadStatus == ModelNotLoaded) {
     return;
   }
   if (self.canExportPasswords) {
@@ -405,6 +553,89 @@ typedef NS_ENUM(NSInteger, ItemType) {
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
     [self reconfigureCellsForItems:@[ self.passwordsInOtherAppsItem ]];
+  }
+}
+
+// Updates the UI to present the correct elements for the user's current
+// on-device encryption state. `oldState` indicates the currently-displayed UI
+// at the time of invocation and is used to determine if we need to add a new
+// section or clear (and possibly reload) an existing one.
+- (void)updateOnDeviceEncryptionSectionWithOldState:
+    (PasswordSettingsOnDeviceEncryptionState)oldState {
+  // Easy case: the section just needs to be removed.
+  if (self.onDeviceEncryptionState ==
+          PasswordSettingsOnDeviceEncryptionStateNotShown &&
+      [self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]) {
+    NSInteger section = [self.tableViewModel
+        sectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption];
+    [self.tableViewModel
+        removeSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+    if (self.modelLoadStatus == ModelLoadComplete) {
+      [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:section]
+                    withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    return;
+  }
+
+  // Prepare the section in the model, either by clearing or adding it.
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]) {
+    [self.tableViewModel deleteAllItemsFromSectionWithIdentifier:
+                             SectionIdentifierOnDeviceEncryption];
+  } else {
+    // Find the section that's supposed to be before On-Device Encryption, and
+    // insert after that.
+    NSInteger priorSectionIndex = [self.tableViewModel
+        sectionForSectionIdentifier:SectionIdentifierPasswordsInOtherApps];
+    NSInteger onDeviceEncryptionSectionIndex = priorSectionIndex + 1;
+    [self.tableViewModel
+        insertSectionWithIdentifier:SectionIdentifierOnDeviceEncryption
+                            atIndex:onDeviceEncryptionSectionIndex];
+  }
+
+  // Actually populate the section.
+  switch (self.onDeviceEncryptionState) {
+    case PasswordSettingsOnDeviceEncryptionStateOptedIn: {
+      [self.tableViewModel addItem:self.onDeviceEncryptionOptedInDescription
+           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [self.tableViewModel addItem:self.onDeviceEncryptionOptedInLearnMore
+           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      break;
+    }
+    case PasswordSettingsOnDeviceEncryptionStateOfferOptIn: {
+      [self.tableViewModel addItem:self.onDeviceEncryptionOptInDescriptionItem
+           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [self.tableViewModel addItem:self.setUpOnDeviceEncryptionItem
+           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      break;
+    }
+    default: {
+      // If the state is PasswordSettingsOnDeviceEncryptionStateNotShown, then
+      // we shouldn't be trying to populate this section. If it's some other
+      // value, then this switch needs to be updated.
+      NOTREACHED();
+      break;
+    }
+  }
+
+  // If the model hasn't finished loading, there's no need to update the table
+  // view.
+  if (self.modelLoadStatus != ModelLoadComplete) {
+    return;
+  }
+
+  NSIndexSet* indexSet = [NSIndexSet
+      indexSetWithIndex:
+          [self.tableViewModel
+              sectionForSectionIdentifier:SectionIdentifierOnDeviceEncryption]];
+
+  if (oldState == PasswordSettingsOnDeviceEncryptionStateNotShown) {
+    [self.tableView insertSections:indexSet
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
+  } else {
+    [self.tableView reloadSections:indexSet
+                  withRowAnimation:UITableViewRowAnimationAutomatic];
   }
 }
 

@@ -5,6 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SETTINGS_PASSWORD_SETTINGS_CONSUMER_H_
 
+// State of on-device encryption.
+typedef NS_ENUM(NSInteger, PasswordSettingsOnDeviceEncryptionState) {
+  // User can not opt-in in their current state, so the section should not be
+  // shown.
+  PasswordSettingsOnDeviceEncryptionStateNotShown = 0,
+  // On-device encryption is on.
+  PasswordSettingsOnDeviceEncryptionStateOptedIn,
+  // User can opt-in to on-device encryption.
+  PasswordSettingsOnDeviceEncryptionStateOfferOptIn,
+};
+
 // Interface for passing state from the mediator to the ViewController showing
 // the password settings submenu.
 @protocol PasswordSettingsConsumer
@@ -23,6 +34,10 @@
 // Indicates whether or not Chromium has been enabled as a credential provider
 // at the iOS level.
 - (void)setPasswordsInOtherAppsEnabled:(BOOL)enabled;
+
+// Indicates the on-device encryption state according to the sync service.
+- (void)setOnDeviceEncryptionState:
+    (PasswordSettingsOnDeviceEncryptionState)onDeviceEncryptionState;
 
 // Enables/disables the "Export Passwords..." button based on the current state.
 - (void)updateExportPasswordsButton;

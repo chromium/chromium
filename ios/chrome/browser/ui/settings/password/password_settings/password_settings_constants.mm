@@ -21,3 +21,12 @@ NSString* const kPasswordsSettingsTableViewId = @"PasswordsSettingsTableViewId";
 
 NSString* const kPasswordSettingsPasswordsInOtherAppsRowId =
     @"PasswordSettingsPasswordsInOtherAppsRowId";
+
+NSString* const kPasswordSettingsOnDeviceEncryptionOptInId =
+    @"PasswordSettingsOnDeviceEncryptionOptInId";
+NSString* const kPasswordSettingsOnDeviceEncryptionLearnMoreId =
+    @"PasswordSettingsOnDeviceEncryptionLearnMoreId";
+NSString* const kPasswordSettingsOnDeviceEncryptionOptedInTextId =
+    @"PasswordSettingsOnDeviceEncryptionOptedInTextId";
+NSString* const kPasswordSettingsOnDeviceEncryptionSetUpId =
+    @"PasswordSettingsOnDeviceEncryptionSetUpId";
