@@ -210,7 +210,8 @@ public class StartSurfaceBackButtonTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "open_ntp_instead_of_start/false"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS +
+        "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     @DisableIf.
         Build(sdk_is_less_than = Build.VERSION_CODES.N, message = "Flaky, see crbug.com/1246457")
     public void testShow_SingleAsHomepageV2_BackButtonWithTabSwitcher() {
@@ -311,7 +312,8 @@ public class StartSurfaceBackButtonTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "open_ntp_instead_of_start/false"})
+    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
+            + "open_ntp_instead_of_start/false/open_start_as_homepage/true"})
     // clang-format off
     public void testUserActionLoggedWhenBackToStartSurfaceHomePage() throws ExecutionException {
         // clang-format on
