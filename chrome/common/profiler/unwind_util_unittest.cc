@@ -21,7 +21,8 @@ using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Return;
 
-// For `RequestUnwindPrerequisitesInstallation`-related unit tests below.
+// For `RequestUnwindPrerequisitesInstallation` and
+// `AreUnwindPrerequisitesAvailable`-related unit tests below.
 class MockModuleUnwindPrerequisitesDelegate
     : public UnwindPrerequisitesDelegate {
  public:

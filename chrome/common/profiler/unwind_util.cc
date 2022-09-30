@@ -189,17 +189,17 @@ class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
 
 void RequestUnwindPrerequisitesInstallation(
     version_info::Channel channel,
-    UnwindPrerequisitesDelegate* delegate) {
+    UnwindPrerequisitesDelegate* prerequites_delegate) {
   CHECK_EQ(metrics::CallStackProfileParams::Process::kBrowser,
            GetProfileParamsProcess(*base::CommandLine::ForCurrentProcess()));
-  if (AreUnwindPrerequisitesAvailable(channel, delegate)) {
+  if (AreUnwindPrerequisitesAvailable(channel, prerequites_delegate)) {
     return;
   }
 #if ANDROID_ARM32_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
     BUILDFLAG(GOOGLE_CHROME_BRANDING)
   ModuleUnwindPrerequisitesDelegate default_delegate;
-  if (delegate == nullptr) {
-    delegate = &default_delegate;
+  if (prerequites_delegate == nullptr) {
+    prerequites_delegate = &default_delegate;
   }
   // We only want to incur the cost of universally downloading the module in
   // early channels, where profiling will occur over substantially all of
@@ -211,7 +211,7 @@ void RequestUnwindPrerequisitesInstallation(
   // run of Chrome following install.
   if (channel == version_info::Channel::CANARY ||
       channel == version_info::Channel::DEV) {
-    delegate->RequestInstallation(channel);
+    prerequites_delegate->RequestInstallation(channel);
   }
 #endif
 }

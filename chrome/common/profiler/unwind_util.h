@@ -35,11 +35,12 @@ class UnwindPrerequisitesDelegate {
 // RequestUnwindPrerequisitesInstallation() can only be called from the browser
 // process.
 //
-// If `delegate` is provided, it is used to request installation of unwind
-// prerequisites, on certain Android platforms only. Intended for unit testing.
+// If `prerequites_delegate` is provided, it is used to request installation of
+// unwind prerequisites, on certain Android platforms only. Intended for unit
+// testing.
 void RequestUnwindPrerequisitesInstallation(
     version_info::Channel channel,
-    UnwindPrerequisitesDelegate* delegate = nullptr);
+    UnwindPrerequisitesDelegate* prerequites_delegate = nullptr);
 
 // Are the prerequisites required for unwinding available in the current
 // context?
