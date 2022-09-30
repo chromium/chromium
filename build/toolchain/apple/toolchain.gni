@@ -40,7 +40,8 @@ if (swift_toolchain_path == -1) {
     swiftc_version = "swift-5.7-release"
 
     # Use the hermetic swift toolchain.
-    swift_toolchain_path = "//third_party/swift-toolchain/"
+    swift_toolchain_path =
+        rebase_path("//third_party/swift-toolchain/", root_build_dir)
   } else {
     swift_toolchain_path = ""
   }
@@ -646,8 +647,7 @@ template("apple_toolchain") {
         }
 
         if (swift_toolchain_path != "") {
-          _extra_flags += " -swift-toolchain-path " +
-                          rebase_path(swift_toolchain_path, root_build_dir)
+          _extra_flags += " -swift-toolchain-path $swift_toolchain_path"
         }
 
         # The Swift compiler assumes that the generated header will be used by
