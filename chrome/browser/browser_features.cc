@@ -76,7 +76,7 @@ BASE_FEATURE(kUseManagementService,
 // Enables integration with the macOS feature Universal Links.
 BASE_FEATURE(kEnableUniveralLinks,
              "EnableUniveralLinks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

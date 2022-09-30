@@ -20,6 +20,15 @@ absl::optional<IntentPickerAppInfo> FindMacAppForUrl(const GURL& url);
 // by `FindMacAppForUrl` above, for the given `url`.
 void LaunchMacApp(const GURL& url, const std::string& launch_name);
 
+// Force `FindMacAppForUrl` to return fixed values for testing.
+// - If `fake` is `true` and `app_path` is set to a path, then
+//   `FindMacAppForUrl` will return an `IntentPickerAppInfo` for the app at that
+//   path.
+// - If `fake` is `true` and `app_path` is empty, then `FindMacAppForUrl` will
+//   return a `nullopt`.
+// - If `fake` is `false`, then `FindMacAppForUrl` will behave normally.
+void OverrideMacAppForUrlForTesting(bool fake, const std::string& app_path);
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_MAC_INTENT_PICKER_HELPERS_H_

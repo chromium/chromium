@@ -62,6 +62,8 @@ class IntentPickerTabHelper
                            std::vector<apps::IntentPickerAppInfo> apps,
                            IntentPickerIconLoaderCallback callback);
 
+  int commit_count() { return commit_count_; }
+
   // Sets a OnceClosure callback which will be called next time the icon is
   // updated. If include_latest_navigation is true, and the latest navigation
   // was finished, the callback is called immediately.
@@ -110,6 +112,10 @@ class IntentPickerTabHelper
   // True if the icon should be shown as in an expanded chip style due to usage
   // on this origin.
   bool show_expanded_chip_from_usage_ = false;
+
+  // Tracks the number of commits on this page, to allow for checking to make
+  // sure that asynchronous invocations do not cause a stale intent picker.
+  int commit_count_ = 0;
 
   // Contains the app ID of an app which can be opened through the intent
   // picker. This is only set when ShowIconForApps() is called with a single
