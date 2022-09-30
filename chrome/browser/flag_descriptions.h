@@ -3656,9 +3656,6 @@ extern const char kOneGroupPerRendererDescription[];
 extern const char kDisableQuickAnswersV2TranslationName[];
 extern const char kDisableQuickAnswersV2TranslationDescription[];
 
-extern const char kQuickAnswersForMoreLocalesName[];
-extern const char kQuickAnswersForMoreLocalesDescription[];
-
 extern const char kSyncChromeOSExplicitPassphraseSharingName[];
 extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)

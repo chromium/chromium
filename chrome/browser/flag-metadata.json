@@ -5621,11 +5621,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "quick-answers-for-more-locales",
-    "owners": [ "croissant-eng", "updowndota" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "quick-commands",
     "owners": [ "lgrey" ],
     "expiry_milestone": 110

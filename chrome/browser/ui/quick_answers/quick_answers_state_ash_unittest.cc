@@ -235,26 +235,7 @@ TEST_F(QuickAnswersStateAshTest, UpdateSpokenFeedbackEnabled) {
   EXPECT_TRUE(QuickAnswersState::Get()->spoken_feedback_enabled());
 }
 
-TEST_F(QuickAnswersStateAshTest, LocaleEligible) {
-  QuickAnswersState::Get()->AddObserver(observer());
-
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
-  EXPECT_FALSE(observer()->is_eligible());
-
-  UErrorCode error_code = U_ZERO_ERROR;
-  icu::Locale::setDefault(icu::Locale(ULOC_US), error_code);
-  prefs()->SetString(language::prefs::kApplicationLocale, "en");
-
-  SimulateUserLogin(kTestUser);
-  EXPECT_TRUE(QuickAnswersState::Get()->is_eligible());
-  EXPECT_TRUE(observer()->is_eligible());
-}
-
 TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersForMoreLocales);
-
   QuickAnswersState::Get()->AddObserver(observer());
 
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
@@ -273,26 +254,7 @@ TEST_F(QuickAnswersStateAshTest, EligibleLocales) {
   EXPECT_TRUE(observer()->is_eligible());
 }
 
-TEST_F(QuickAnswersStateAshTest, LocaleIneligible) {
-  QuickAnswersState::Get()->AddObserver(observer());
-
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
-  EXPECT_FALSE(observer()->is_eligible());
-
-  UErrorCode error_code = U_ZERO_ERROR;
-  icu::Locale::setDefault(icu::Locale(ULOC_CHINESE), error_code);
-  prefs()->SetString(language::prefs::kApplicationLocale, "zh");
-
-  SimulateUserLogin(kTestUser);
-  EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());
-  EXPECT_FALSE(observer()->is_eligible());
-}
-
 TEST_F(QuickAnswersStateAshTest, IneligibleLocales) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersForMoreLocales);
-
   QuickAnswersState::Get()->AddObserver(observer());
 
   EXPECT_FALSE(QuickAnswersState::Get()->is_eligible());

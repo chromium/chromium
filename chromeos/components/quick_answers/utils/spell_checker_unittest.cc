@@ -125,10 +125,6 @@ TEST_F(SpellCheckerTest, ShouldResetOnUserConsentRejected) {
 }
 
 TEST_F(SpellCheckerTest, ShouldNotSetupWithUnsupportedApplicationLocale) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersForMoreLocales);
-
   EXPECT_FALSE(fake_quick_answers_state()->prefs_initialized());
   EXPECT_FALSE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
 
@@ -169,11 +165,7 @@ TEST_F(SpellCheckerTest, ShouldFilterCountryCodeOfApplicationLocale) {
             "en");
 }
 
-TEST_F(SpellCheckerTest, ShouldSetupWithPreferredLanguagesWithFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersForMoreLocales);
-
+TEST_F(SpellCheckerTest, ShouldSetupWithPreferredLanguages) {
   EXPECT_FALSE(fake_quick_answers_state()->prefs_initialized());
   EXPECT_FALSE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
 
@@ -200,11 +192,7 @@ TEST_F(SpellCheckerTest, ShouldSetupWithPreferredLanguagesWithFlag) {
             "it");
 }
 
-TEST_F(SpellCheckerTest, ShouldFilterUnsupportedPreferredLanguagesWithFlag) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::features::kQuickAnswersForMoreLocales);
-
+TEST_F(SpellCheckerTest, ShouldFilterUnsupportedPreferredLanguages) {
   EXPECT_FALSE(fake_quick_answers_state()->prefs_initialized());
   EXPECT_FALSE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
 

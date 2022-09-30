@@ -25,17 +25,6 @@ const char kQuickAnswersConsentImpression[] =
 // Supported languages of the Quick Answers feature.
 const std::string kSupportedLanguages[] = {"en", "es", "it", "fr", "pt", "de"};
 
-bool IsQuickAnswersAllowedForLocale(const std::string& locale,
-                                    const std::string& runtime_locale) {
-  // String literals used in some cases in the array because their
-  // constant equivalents don't exist in:
-  // third_party/icu/source/common/unicode/uloc.h
-  const std::string kAllowedLocales[] = {ULOC_CANADA, ULOC_UK, ULOC_US,
-                                         "en_AU",     "en_IN", "en_NZ"};
-  return base::Contains(kAllowedLocales, locale) ||
-         base::Contains(kAllowedLocales, runtime_locale);
-}
-
 std::string ConsentResultTypeToString(ConsentResultType type) {
   switch (type) {
     case ConsentResultType::kAllow:
@@ -98,13 +87,8 @@ void QuickAnswersState::UpdateEligibility() {
   if (resolved_application_locale_.empty())
     return;
 
-  bool is_eligible = IsQuickAnswersAllowedForLocale(
-      resolved_application_locale_, icu::Locale::getDefault().getName());
-
-  if (chromeos::features::IsQuickAnswersForMoreLocalesEnabled()) {
-    is_eligible = IsSupportedLanguage(
-        l10n_util::GetLanguage(resolved_application_locale_));
-  }
+  bool is_eligible =
+      IsSupportedLanguage(l10n_util::GetLanguage(resolved_application_locale_));
 
   if (is_eligible_ == is_eligible)
     return;

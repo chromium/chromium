@@ -31,8 +31,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kDisableQuickAnswersV2Translation);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kQuickAnswersV2SettingsSubToggle);
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-BASE_DECLARE_FEATURE(kQuickAnswersForMoreLocales);
 
 // Keep alphabetized.
 
@@ -43,8 +41,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersV2SettingsSubToggleEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsQuickAnswersAlwaysTriggerForSingleWord();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsQuickAnswersForMoreLocalesEnabled();
 
 }  // namespace features
 }  // namespace chromeos

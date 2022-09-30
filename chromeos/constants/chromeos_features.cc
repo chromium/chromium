@@ -53,11 +53,6 @@ BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Quick Answers for more locales.
-BASE_FEATURE(kQuickAnswersForMoreLocales,
-             "QuickAnswersForMoreLocales",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsCloudGamingDeviceEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsCloudGamingDevice();
@@ -76,10 +71,6 @@ bool IsQuickAnswersV2TranslationDisabled() {
 
 bool IsQuickAnswersV2SettingsSubToggleEnabled() {
   return base::FeatureList::IsEnabled(kQuickAnswersV2SettingsSubToggle);
-}
-
-bool IsQuickAnswersForMoreLocalesEnabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersForMoreLocales);
 }
 
 }  // namespace chromeos::features
