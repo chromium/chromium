@@ -14,12 +14,12 @@ class View;
 
 class VIEWS_EXPORT MouseWatcherViewHost : public MouseWatcherHost {
  public:
-  // Creates a new MouseWatcherViewHost. |hot_zone_insets| is added to the
+  // Creates a new MouseWatcherViewHost. `hot_zone_insets` is added to the
   // bounds of the view to determine the active zone. For example, if
-  // |hot_zone_insets.bottom()| is 10, then the listener is not notified if
+  // `hot_zone_insets.bottom()` is 10, then the listener is not notified if
   // the y coordinate is between the origin of the view and height of the view
   // plus 10.
-  MouseWatcherViewHost(View* view, const gfx::Insets& hot_zone_insets);
+  MouseWatcherViewHost(const View* view, const gfx::Insets& hot_zone_insets);
 
   MouseWatcherViewHost(const MouseWatcherViewHost&) = delete;
   MouseWatcherViewHost& operator=(const MouseWatcherViewHost&) = delete;
@@ -34,7 +34,7 @@ class VIEWS_EXPORT MouseWatcherViewHost : public MouseWatcherHost {
   bool IsMouseOverWindow();
 
   // View we're listening for events over.
-  raw_ptr<View> view_;
+  const raw_ptr<const View> view_;
   // Insets added to the bounds of the view.
   const gfx::Insets hot_zone_insets_;
 };

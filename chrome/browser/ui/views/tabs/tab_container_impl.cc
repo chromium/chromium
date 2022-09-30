@@ -609,6 +609,11 @@ void TabContainerImpl::EnterTabClosingMode(absl::optional<int> override_width,
   if (override_width.has_value())
     override_available_width_for_tabs_ = override_width;
 
+  // Default to freezing tabs in their current state if our caller doesn't have
+  // a more specific plan.
+  if (!override_available_width_for_tabs_.has_value())
+    override_available_width_for_tabs_ = width();
+
   resize_layout_timer_.Stop();
   if (source == CLOSE_TAB_FROM_TOUCH)
     StartResizeLayoutTabsFromTouchTimer();
@@ -1150,38 +1155,47 @@ void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
   // The tab at |model_index| has already been removed from the model, but is
   // still in |tabs_view_model_|.  Index math with care!
   const int model_count = GetTabCount() - 1;
-  const int tab_overlap = TabStyle::GetTabOverlap();
-  if (in_tab_close_ && model_count > 0 && model_index != model_count) {
-    // The user closed a tab other than the last tab. Set
-    // override_available_width_for_tabs_ so that as the user closes tabs with
-    // the mouse a tab continues to fall under the mouse.
-    int next_active_index = controller_->GetActiveIndex();
-    DCHECK(IsValidModelIndex(next_active_index));
-    if (model_index <= next_active_index) {
-      // At this point, model's internal state has already been updated.
-      // |contents| has been detached from model and the active index has been
-      // updated. But the tab for |contents| isn't removed yet. Thus, we need to
-      // fix up next_active_index based on it.
-      next_active_index++;
-    }
-    Tab* next_active_tab = GetTabAtModelIndex(next_active_index);
-    Tab* tab_being_removed = GetTabAtModelIndex(model_index);
 
-    int size_delta = tab_being_removed->width();
-    // When removing an active, non-pinned tab, the next active tab will be
-    // given the active width (unless it is pinned). Thus the width being
-    // removed from the container is really the current width of whichever
-    // inactive tab will be made active.
-    if (was_active && !tab_being_removed->data().pinned &&
-        !next_active_tab->data().pinned &&
-        layout_helper_->active_tab_width() >
-            layout_helper_->inactive_tab_width()) {
-      size_delta = next_active_tab->width();
+  // If we're closing the last tab, tab closing mode is no longer meaningful.
+  if (model_count == 0)
+    ExitTabClosingMode();
+
+  // No updates needed if we aren't in tab closing mode or are closing the
+  // trailingmost tab.
+  if (!in_tab_close_ || model_index == model_count)
+    return;
+
+  // Update `override_available_width_for_tabs_` so that as the user closes tabs
+  // with the mouse a tab continues to fall under the mouse.
+  const Tab* const tab_being_removed = GetTabAtModelIndex(model_index);
+  int size_delta = tab_being_removed->width();
+
+  // When removing an active, non-pinned tab, the next active tab will be
+  // given the active width (unless it is pinned). Thus the width being
+  // removed from the container is really the current width of whichever
+  // inactive tab will be made active.
+  if (was_active && !tab_being_removed->data().pinned &&
+      layout_helper_->active_tab_width() >
+          layout_helper_->inactive_tab_width()) {
+    int next_active_index = controller_->GetActiveIndex();
+    // The next active tab may not be in this TabContainer.
+    if (IsValidModelIndex(next_active_index)) {
+      if (model_index <= next_active_index) {
+        // At this point, model's internal state has already been updated.
+        // |contents| has been detached from model and the active index has
+        // been updated. But the tab for |contents| isn't removed yet. Thus,
+        // we need to fix up next_active_index based on it.
+        next_active_index++;
+      }
+      const Tab* const next_active_tab = GetTabAtModelIndex(next_active_index);
+      if (!next_active_tab->data().pinned)
+        size_delta = next_active_tab->width();
     }
-    override_available_width_for_tabs_ =
-        tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
-        tab_overlap;
   }
+
+  override_available_width_for_tabs_ =
+      tabs_view_model_.ideal_bounds(model_count).right() - size_delta +
+      TabStyle::GetTabOverlap();
 }
 
 void TabContainerImpl::ResizeLayoutTabs() {
@@ -1249,10 +1263,11 @@ void TabContainerImpl::AddMessageLoopObserver() {
     constexpr int kTabStripAnimationHSlop = 60;
     mouse_watcher_ = std::make_unique<views::MouseWatcher>(
         std::make_unique<views::MouseWatcherViewHost>(
-            this, gfx::Insets::TLBR(
-                      0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
-                      kTabStripAnimationVSlop,
-                      base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
+            controller_->GetTabClosingModeMouseWatcherHostView(),
+            gfx::Insets::TLBR(
+                0, base::i18n::IsRTL() ? kTabStripAnimationHSlop : 0,
+                kTabStripAnimationVSlop,
+                base::i18n::IsRTL() ? 0 : kTabStripAnimationHSlop)),
         this);
   }
   mouse_watcher_->Start(GetWidget()->GetNativeWindow());

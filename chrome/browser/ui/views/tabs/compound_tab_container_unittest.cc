@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "tab_style_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -78,6 +79,10 @@ class FakeTabContainerController final : public TabContainerController {
            !tab_strip_controller_->EverHasVisibleBackgroundTabShapes();
   }
 
+  const views::View* GetTabClosingModeMouseWatcherHostView() const override {
+    return nullptr;
+  }
+
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
 };
@@ -140,7 +145,7 @@ class CompoundTabContainerTest : public ChromeViewsTestBase {
               TabActive active = TabActive::kInactive) {
     Tab* tab = tab_container_->AddTab(
         std::make_unique<Tab>(tab_slot_controller_.get()), model_index, pinned);
-    tab_strip_controller_->AddTab(model_index, active == TabActive::kActive);
+    tab_strip_controller_->AddTab(model_index, active, pinned);
 
     if (active == TabActive::kActive)
       tab_slot_controller_->set_active_tab(tab);
@@ -287,4 +292,142 @@ TEST_F(CompoundTabContainerTest, RemoveTab) {
   // Remove the only remaining tab.
   RemoveTab(0);
   EXPECT_EQ(tab_container_->GetTabCount(), 0);
+}
+
+TEST_F(CompoundTabContainerTest, GetIndexOfFirstNonClosingTab) {
+  // Test that CompoundTabContainer can identify the tab events should be
+  // forwarded to in case one is closing.
+
+  // Create a tabstrip with four tabs.
+  Tab* first_pinned = AddTab(0, TabPinned::kPinned);
+  AddTab(1, TabPinned::kPinned);
+  Tab* first_unpinned = AddTab(2, TabPinned::kUnpinned);
+  AddTab(3, TabPinned::kUnpinned);
+
+  // RemoveTab below *starts* the tab removal process, but leaves the view
+  // around to be animated closed.
+
+  // Remove `first_unpinned`, so the next non-closing tab is the other unpinned
+  // tab, i.e. both tabs are in `unpinned_tab_container_`.
+  RemoveTab(2);
+  EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_unpinned),
+            2);
+
+  // Both tabs are in `pinned_tab_container_`.
+  RemoveTab(0);
+  EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_pinned), 0);
+
+  // One tab is in each container.
+  RemoveTab(0);
+  EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_pinned), 0);
+
+  // There is no next tab, and this one is unpinned.
+  RemoveTab(0);
+  EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_unpinned),
+            -1);
+
+  // There is no next tab, and this one is pinned.
+  EXPECT_EQ(tab_container_->GetModelIndexOfFirstNonClosingTab(first_pinned),
+            -1);
+}
+
+TEST_F(CompoundTabContainerTest, ExitsClosingModeAtStandardWidth) {
+  AddTab(0, TabPinned::kUnpinned, absl::nullopt, TabActive::kActive);
+
+  // Create just enough tabs so tabs are not full size.
+  const int standard_width = TabStyleViews::GetStandardWidth();
+  while (tab_container_->GetActiveTabWidth() == standard_width) {
+    AddTab(0, TabPinned::kUnpinned);
+    tab_container_->CompleteAnimationAndLayout();
+  }
+
+  // The test closes two tabs, we need at least one left over after that.
+  ASSERT_GE(tab_container_->GetTabCount(), 3);
+
+  // Enter tab closing mode manually; this would normally happen as the result
+  // of a mouse/touch-based tab closure action.
+  tab_container_->EnterTabClosingMode(absl::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  // Close the second-to-last tab; tab closing mode should remain active,
+  // constraining tab widths to below full size.
+  RemoveTab(tab_container_->GetTabCount() - 2);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+
+  // Close the last tab; tab closing mode should allow tabs to resize to full
+  // size.
+  RemoveTab(tab_container_->GetTabCount() - 1);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
+}
+
+TEST_F(CompoundTabContainerTest, ClosingPinnedTabsEngagesClosingMode) {
+  // This test verifies that tab closing mode engages correctly when closing a
+  // pinned tab.
+
+  // Add two unpinned tabs to be governed by closing mode.
+  AddTab(0, TabPinned::kUnpinned, absl::nullopt, TabActive::kActive);
+  AddTab(1, TabPinned::kUnpinned, absl::nullopt, TabActive::kInactive);
+
+  // Create just enough (pinned) tabs so the active tab is not full size.
+  const int standard_width = TabStyleViews::GetStandardWidth();
+  while (tab_container_->GetActiveTabWidth() == standard_width) {
+    AddTab(0, TabPinned::kPinned, absl::nullopt, TabActive::kInactive);
+    tab_container_->CompleteAnimationAndLayout();
+  }
+
+  // The test closes two tabs, we need at least one left over after that.
+  ASSERT_GE(tab_container_->GetTabCount(), 3);
+
+  // Enter tab closing mode manually; this would normally happen as the result
+  // of a mouse/touch-based tab closure action.
+  tab_container_->EnterTabClosingMode(absl::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  // Close the third-to-last tab, which is the last pinned tab; tab closing mode
+  // should constrain tab widths to below full size.
+  RemoveTab(tab_container_->GetTabCount() - 3);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+
+  // Close the last tab, which is the inactive unpinned tab; tab closing mode
+  // should allow tabs to resize to full size.
+  RemoveTab(tab_container_->GetTabCount() - 1);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
+}
+
+TEST_F(CompoundTabContainerTest, ExitsClosingModeWhenClosingLastUnpinnedTab) {
+  // Add two unpinned tabs to be governed by closing mode.
+  AddTab(0, TabPinned::kUnpinned, absl::nullopt, TabActive::kInactive);
+  AddTab(1, TabPinned::kUnpinned, absl::nullopt, TabActive::kActive);
+
+  // Create just enough (pinned) tabs so the active tab is not full size.
+  const int standard_width = TabStyleViews::GetStandardWidth();
+  while (tab_container_->GetActiveTabWidth() == standard_width) {
+    AddTab(0, TabPinned::kPinned);
+    tab_container_->CompleteAnimationAndLayout();
+  }
+
+  // The test closes two tabs, we need at least one left over after that.
+  ASSERT_GE(tab_container_->GetTabCount(), 3);
+
+  // Enter tab closing mode manually; this would normally happen as the result
+  // of a mouse/touch-based tab closure action.
+  tab_container_->EnterTabClosingMode(absl::nullopt,
+                                      CloseTabSource::CLOSE_TAB_FROM_MOUSE);
+
+  // Close the second-to-last tab, which is the inactive unpinned tab; tab
+  // closing mode should remain active, constraining tab widths to below full
+  // size.
+  RemoveTab(tab_container_->GetTabCount() - 2);
+  tab_container_->CompleteAnimationAndLayout();
+  ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
+
+  // Close the last tab, which is the active unpinned tab; tab closing mode
+  // should exit.
+  RemoveTab(tab_container_->GetTabCount() - 1);
+  tab_container_->CompleteAnimationAndLayout();
+  EXPECT_FALSE(tab_container_->InTabClose());
 }

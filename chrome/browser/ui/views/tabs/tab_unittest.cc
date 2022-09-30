@@ -652,8 +652,8 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
 // This test verifies that the tab has its icon state updated when the alert
 // animation fade-out finishes.
 TEST_F(AlertIndicatorButtonTest, ShowsAndHidesAlertIndicator) {
-  controller_->AddPinnedTab(0, false);
-  controller_->AddTab(1, true);
+  controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
+  controller_->AddTab(1, TabActive::kActive);
   Tab* media_tab = tab_strip_->tab_at(0);
 
   // Pinned inactive tab only has an icon.

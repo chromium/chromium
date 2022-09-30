@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -24,8 +25,9 @@ class FakeBaseTabStripController : public TabStripController {
       delete;
   ~FakeBaseTabStripController() override;
 
-  void AddTab(int index, bool is_active);
-  void AddPinnedTab(int index, bool is_active);
+  void AddTab(int index,
+              TabActive is_active,
+              TabPinned is_pinned = TabPinned::kUnpinned);
   void RemoveTab(int index);
 
   void MoveTabIntoGroup(int index,
@@ -101,6 +103,7 @@ class FakeBaseTabStripController : public TabStripController {
   raw_ptr<TabStrip> tab_strip_ = nullptr;
 
   int num_tabs_ = 0;
+  int num_pinned_tabs_ = 0;
   int active_index_ = -1;
 
   tab_groups::TabGroupVisualData fake_group_data_;

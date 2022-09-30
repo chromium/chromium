@@ -10,7 +10,7 @@
 
 namespace views {
 
-MouseWatcherViewHost::MouseWatcherViewHost(View* view,
+MouseWatcherViewHost::MouseWatcherViewHost(const View* view,
                                            const gfx::Insets& hot_zone_insets)
     : view_(view), hot_zone_insets_(hot_zone_insets) {}
 
@@ -41,7 +41,7 @@ bool MouseWatcherViewHost::IsCursorInViewZone(const gfx::Point& screen_point) {
 
 // Returns true if the mouse is over the view's window.
 bool MouseWatcherViewHost::IsMouseOverWindow() {
-  Widget* widget = view_->GetWidget();
+  const Widget* const widget = view_->GetWidget();
   if (!widget)
     return false;
 

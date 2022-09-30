@@ -70,6 +70,10 @@ class PinnedTabContainerController final : public TabContainerController {
     return base_controller_->CanExtendDragHandle();
   }
 
+  const views::View* GetTabClosingModeMouseWatcherHostView() const override {
+    return base_controller_->GetTabClosingModeMouseWatcherHostView();
+  }
+
  private:
   const raw_ref<TabContainerController> base_controller_;
 };
@@ -123,6 +127,10 @@ class UnpinnedTabContainerController final : public TabContainerController {
 
   bool CanExtendDragHandle() const override {
     return base_controller_->CanExtendDragHandle();
+  }
+
+  const views::View* GetTabClosingModeMouseWatcherHostView() const override {
+    return base_controller_->GetTabClosingModeMouseWatcherHostView();
   }
 
  private:
@@ -341,7 +349,7 @@ void CompoundTabContainer::NotifyTabGroupEditorBubbleClosed() {
 }
 
 int CompoundTabContainer::GetModelIndexOf(const TabSlotView* slot_view) const {
-  int pinned_index = pinned_tab_container_->GetModelIndexOf(slot_view);
+  const int pinned_index = pinned_tab_container_->GetModelIndexOf(slot_view);
   if (pinned_index != TabStripModel::kNoTab)  // TODO(crbug.com/1346023): Maybe
                                               // optional instead.
     return pinned_index;
@@ -362,12 +370,25 @@ int CompoundTabContainer::GetTabCount() const {
 }
 
 int CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(Tab* tab) const {
-  NOTREACHED();
-  // TODO(crbug.com/1346023): Impl
-  // If the tab is pinned, ask pinned container
-  // If that returns kNoTab, ask unpinned container for the first nonclosing tab
-  // Otherwise, just forward to unpinned container
-  return TabStripModel::kNoTab;
+  if (tab->data().pinned) {
+    const int pinned_index =
+        pinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
+
+    // If there are no non-closing pinned tabs after `tab`, return the first
+    // non-closing unpinned tab, if there is one (if the unpinned container is
+    // empty or only has closing tabs, GetTabCount will be 0).
+    if (pinned_index == TabStripModel::kNoTab &&
+        unpinned_tab_container_->GetTabCount() > 0) {
+      return NumPinnedTabs();
+    }
+    return pinned_index;
+  } else {
+    const int unpinned_index =
+        unpinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
+    if (unpinned_index != TabStripModel::kNoTab)
+      return unpinned_index + NumPinnedTabs();
+    return TabStripModel::kNoTab;
+  }
 }
 
 void CompoundTabContainer::UpdateHoverCard(
@@ -376,9 +397,10 @@ void CompoundTabContainer::UpdateHoverCard(
   // TODO(crbug.com/1346023): probably hover card controller ownership is wrong
 }
 
-void CompoundTabContainer::HandleLongTap(ui::GestureEvent* event) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+void CompoundTabContainer::HandleLongTap(ui::GestureEvent* const event) {
+  TabContainer* const tab_container = GetTabContainerAt(event->location());
+  ConvertEventToTarget(tab_container, event);
+  tab_container->HandleLongTap(event);
 }
 
 bool CompoundTabContainer::IsRectInContentArea(const gfx::Rect& rect) {
@@ -438,12 +460,18 @@ int CompoundTabContainer::GetAvailableWidthForTabContainer() const {
 void CompoundTabContainer::EnterTabClosingMode(
     absl::optional<int> override_width,
     CloseTabSource source) {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  if (override_width.has_value()) {
+    override_width = override_width.value() -
+                     pinned_tab_container_->GetPreferredSize().width();
+  }
+
+  // The pinned container can't be in closing mode, as pinned tabs don't resize.
+  unpinned_tab_container_->EnterTabClosingMode(override_width, source);
 }
+
 void CompoundTabContainer::ExitTabClosingMode() {
-  // TODO(crbug.com/1346023): Impl
-  NOTREACHED();
+  // The pinned container can't be in closing mode, as pinned tabs don't resize.
+  unpinned_tab_container_->ExitTabClosingMode();
 }
 
 void CompoundTabContainer::SetTabSlotVisibility() {
@@ -451,7 +479,7 @@ void CompoundTabContainer::SetTabSlotVisibility() {
 }
 
 bool CompoundTabContainer::InTabClose() {
-  // Only unpinned TabContainer can be in tab closing mode.
+  // The pinned container can't be in closing mode, as pinned tabs don't resize.
   return unpinned_tab_container_->InTabClose();
 }
 

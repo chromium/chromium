@@ -104,6 +104,10 @@ class FakeTabContainerController final : public TabContainerController {
            !tab_strip_controller_->EverHasVisibleBackgroundTabShapes();
   }
 
+  const views::View* GetTabClosingModeMouseWatcherHostView() const override {
+    return nullptr;
+  }
+
  private:
   const raw_ref<TabStripController> tab_strip_controller_;
 };
@@ -164,7 +168,7 @@ class TabContainerTest : public ChromeViewsTestBase {
               TabPinned pinned = TabPinned::kUnpinned) {
     Tab* tab = tab_container_->AddTab(
         std::make_unique<Tab>(tab_slot_controller_.get()), model_index, pinned);
-    tab_strip_controller_->AddTab(model_index, active == TabActive::kActive);
+    tab_strip_controller_->AddTab(model_index, active, pinned);
 
     if (active == TabActive::kActive)
       tab_slot_controller_->set_active_tab(tab);
@@ -347,13 +351,13 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
 
   // Close the second-to-last tab; tab closing mode should remain active,
   // constraining tab widths to below full size.
-  tab_container_->RemoveTab(tab_container_->GetTabCount() - 2, false);
+  RemoveTab(tab_container_->GetTabCount() - 2);
   tab_container_->CompleteAnimationAndLayout();
   ASSERT_LT(tab_container_->GetActiveTabWidth(), standard_width);
 
   // Close the last tab; tab closing mode should allow tabs to resize to full
   // size.
-  tab_container_->RemoveTab(tab_container_->GetTabCount() - 1, false);
+  RemoveTab(tab_container_->GetTabCount() - 1);
   tab_container_->CompleteAnimationAndLayout();
   EXPECT_EQ(tab_container_->GetActiveTabWidth(), standard_width);
 }
@@ -386,7 +390,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   // Remove the second from last tab
   tab_container_->EnterTabClosingMode(absl::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
-  tab_container_->RemoveTab(tab_container_->GetTabCount() - 2, false);
+  RemoveTab(tab_container_->GetTabCount() - 2);
   tab_container_->CompleteAnimationAndLayout();
 
   // Get the group tab's close button center point
@@ -398,7 +402,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   tab_container_->EnterTabClosingMode(absl::nullopt,
                                       CloseTabSource::CLOSE_TAB_FROM_MOUSE);
   tab_container_->OnGroupContentsChanged(group1);
-  tab_container_->RemoveTab(1, true);
+  RemoveTab(1);
   tab_container_->CompleteAnimationAndLayout();
 
   // Check if the next tab moves to its place

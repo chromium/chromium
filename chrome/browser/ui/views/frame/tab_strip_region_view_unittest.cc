@@ -104,7 +104,8 @@ TEST_P(TabStripRegionViewTest, GrabHandleSpaceStaysVisible) {
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
   for (int i = 0; i < 100; ++i) {
-    controller_->AddTab(i, (i == 0));
+    controller_->AddTab(i,
+                        (i == 0) ? TabActive::kActive : TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LE(tab_strip_region_view_->reserved_grab_handle_space_for_testing()
                   ->bounds()
@@ -118,7 +119,8 @@ TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
   for (int i = 0; i < 100; ++i) {
-    controller_->AddTab(i, (i == 0));
+    controller_->AddTab(i,
+                        (i == 0) ? TabActive::kActive : TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LE(tab_strip_region_view_->new_tab_button()->bounds().right(),
               kTabStripRegionViewWidth);
@@ -129,7 +131,7 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view_->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
 
-  controller_->AddTab(0, true);
+  controller_->AddTab(0, TabActive::kActive);
 
   CompleteAnimationAndLayout();
 
@@ -149,7 +151,7 @@ TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
   for (int i = 0; i < 10; ++i) {
     tab_strip_region_view_->new_tab_button()->AnimateToStateForTesting(
         views::InkDropState::ACTION_TRIGGERED);
-    controller_->AddTab(i, true /* is_active */);
+    controller_->AddTab(i, TabActive::kActive);
     CompleteAnimationAndLayout();
     tab_strip_region_view_->new_tab_button()->AnimateToStateForTesting(
         views::InkDropState::HIDDEN);
@@ -165,7 +167,7 @@ TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
 // is maximized (Fitt's Law).
 TEST_P(TabStripRegionViewTest, ChildrenAreFlushWithTopOfTabStripRegionView) {
   tab_strip_region_view_->SetBounds(0, 0, 1000, 100);
-  controller_->AddTab(0, true);
+  controller_->AddTab(0, TabActive::kActive);
 
   CompleteAnimationAndLayout();
 
@@ -206,12 +208,12 @@ class TabStripRegionViewTestWithScrollingDisabled
 TEST_F(TabStripRegionViewTestWithScrollingDisabled,
        TabStripCannotBeLargerThanContainer) {
   const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
-  controller_->AddTab(0, true);
+  controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full.
   while (GetInactiveTabWidth() > minimum_active_width) {
-    controller_->AddTab(0, false);
+    controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
   }
@@ -219,7 +221,7 @@ TEST_F(TabStripRegionViewTestWithScrollingDisabled,
   // Add a few more tabs after the tabstrip is full to ensure tabs added
   // afterwards are not visible.
   for (int i = 0; i < 10; i++) {
-    controller_->AddTab(0, false);
+    controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
   }
   EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
@@ -246,12 +248,12 @@ class TabStripRegionViewTestWithScrollingEnabled
 TEST_F(TabStripRegionViewTestWithScrollingEnabled,
        TabStripCanBeLargerThanContainer) {
   const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
-  controller_->AddTab(0, true);
+  controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
   while (GetInactiveTabWidth() > minimum_active_width) {
-    controller_->AddTab(0, false);
+    controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
     EXPECT_LT(tab_strip_->width(), tab_strip_region_view_->width());
   }
@@ -262,7 +264,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   // region, not just the portion of that that's allocated to the tabstrip
   // itself (e.g. some of that space is for the NTB).
   for (int i = 0; i < 10; i++) {
-    controller_->AddTab(0, false);
+    controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
   }
   EXPECT_GT(tab_strip_->width(), tab_strip_region_view_->width());
@@ -273,12 +275,12 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
 TEST_F(TabStripRegionViewTestWithScrollingEnabled,
        TabStripScrollButtonsNotInWindowCaption) {
   const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
-  controller_->AddTab(0, true);
+  controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
   // Add tabs to the tabstrip until it is full and should start overflowing.
   while (GetInactiveTabWidth() > minimum_active_width) {
-    controller_->AddTab(0, false);
+    controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
   }
 
@@ -288,7 +290,7 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
   // region, not just the portion of that that's allocated to the tabstrip
   // itself (e.g. some of that space is for the NTB).
   for (int i = 0; i < 10; i++) {
-    controller_->AddTab(0, false);
+    controller_->AddTab(0, TabActive::kInactive);
     CompleteAnimationAndLayout();
   }
 

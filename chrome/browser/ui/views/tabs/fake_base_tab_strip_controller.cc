@@ -20,29 +20,24 @@ FakeBaseTabStripController::FakeBaseTabStripController() = default;
 
 FakeBaseTabStripController::~FakeBaseTabStripController() = default;
 
-void FakeBaseTabStripController::AddTab(int index, bool is_active) {
-  num_tabs_++;
-  tab_groups_.insert(tab_groups_.begin() + index, absl::nullopt);
-
-  if (tab_strip_)
-    tab_strip_->AddTabAt(index, TabRendererData());
-  if (is_active) {
-    SelectTab(index,
-              ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::PointF(), gfx::PointF(),
-                             base::TimeTicks::Now(), 0, 0));
-  }
-}
-
-void FakeBaseTabStripController::AddPinnedTab(int index, bool is_active) {
+void FakeBaseTabStripController::AddTab(int index,
+                                        TabActive is_active,
+                                        TabPinned is_pinned) {
   num_tabs_++;
   tab_groups_.insert(tab_groups_.begin() + index, absl::nullopt);
 
   TabRendererData data;
-  data.pinned = true;
+  if (is_pinned == TabPinned::kPinned) {
+    num_pinned_tabs_++;
+    data.pinned = true;
+  }
   if (tab_strip_)
     tab_strip_->AddTabAt(index, std::move(data));
-  if (is_active)
-    active_index_ = index;
+  if (is_active == TabActive::kActive) {
+    SetActiveIndex(index);
+  } else if (index <= active_index_) {
+    SetActiveIndex(active_index_ + 1);
+  }
 }
 
 void FakeBaseTabStripController::MoveTab(int from_index, int to_index) {
@@ -67,19 +62,22 @@ bool FakeBaseTabStripController::ToggleTabGroupCollapsedState(
 
 void FakeBaseTabStripController::RemoveTab(int index) {
   num_tabs_--;
+  if (index < num_pinned_tabs_)
+    num_pinned_tabs_--;
   tab_groups_.erase(tab_groups_.begin() + index);
 
   // RemoveTabAt() expects the controller state to have been updated already.
   const bool was_active = index == active_index_;
   if (was_active) {
     active_index_ = std::min(active_index_, num_tabs_ - 1);
-    selection_model_.SetSelectedIndex(active_index_);
   } else if (active_index_ > index) {
     --active_index_;
   }
+  selection_model_.SetSelectedIndex(active_index_);
+
   if (tab_strip_) {
     tab_strip_->RemoveTabAt(nullptr, index, was_active);
-    if (was_active && IsValidIndex(active_index_))
+    if (IsValidIndex(active_index_))
       tab_strip_->SetSelection(selection_model_);
   }
 }
@@ -202,7 +200,7 @@ bool FakeBaseTabStripController::IsTabSelected(int index) const {
 }
 
 bool FakeBaseTabStripController::IsTabPinned(int index) const {
-  return false;
+  return index < num_pinned_tabs_;
 }
 
 void FakeBaseTabStripController::SelectTab(int index, const ui::Event& event) {
@@ -247,7 +245,7 @@ void FakeBaseTabStripController::OnDropIndexUpdate(int index,
 }
 
 void FakeBaseTabStripController::CreateNewTab() {
-  AddTab(num_tabs_, true);
+  AddTab(num_tabs_, TabActive::kActive);
 }
 
 void FakeBaseTabStripController::CreateNewTabWithLocation(

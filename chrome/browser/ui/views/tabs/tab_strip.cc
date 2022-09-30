@@ -1388,6 +1388,10 @@ bool TabStrip::CanExtendDragHandle() const {
          !controller_->EverHasVisibleBackgroundTabShapes();
 }
 
+const views::View* TabStrip::GetTabClosingModeMouseWatcherHostView() const {
+  return this;
+}
+
 bool TabStrip::IsGroupCollapsed(const tab_groups::TabGroupId& group) const {
   return controller_->IsGroupCollapsed(group);
 }

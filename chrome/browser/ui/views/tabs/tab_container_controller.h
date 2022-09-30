@@ -13,6 +13,10 @@ namespace tab_groups {
 class TabGroupId;
 }  // namespace tab_groups
 
+namespace views {
+class View;
+}
+
 // Model/Controller for the TabContainer.
 // NOTE: All indices used by this class are in model coordinates.
 class TabContainerController {
@@ -57,6 +61,11 @@ class TabContainerController {
   // Whether the window drag handle area can be extended to include the top of
   // inactive tabs.
   virtual bool CanExtendDragHandle() const = 0;
+
+  // Tab closing mode should remain active as long as the mouse is in or near
+  // this view. See `TabContainerImpl::in_tab_close_` for more details on tab
+  // closing mode.
+  virtual const views::View* GetTabClosingModeMouseWatcherHostView() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_CONTAINER_CONTROLLER_H_

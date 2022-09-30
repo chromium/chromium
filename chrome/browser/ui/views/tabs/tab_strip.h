@@ -242,6 +242,7 @@ class TabStrip : public views::View,
   gfx::Range ListTabsInGroup(
       const tab_groups::TabGroupId& group) const override;
   bool CanExtendDragHandle() const override;
+  const views::View* GetTabClosingModeMouseWatcherHostView() const override;
 
   // TabContainerController AND TabSlotController:
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
