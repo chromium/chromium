@@ -119,7 +119,6 @@ class SyncTest : public PlatformBrowserTest {
 
   // The type of server we're running against.
   enum ServerType {
-    SERVER_TYPE_UNDECIDED,
     EXTERNAL_LIVE_SERVER,  // A remote server that the test code has no control
                            // over whatsoever; cross your fingers that the
                            // account state is initially clean.
@@ -245,9 +244,6 @@ class SyncTest : public PlatformBrowserTest {
   // Returns true if a quiescent state was successfully reached.
   bool AwaitQuiescence();
 
-  // Returns true if we are running tests against external servers.
-  bool UsingExternalServers() const;
-
   // Sets the mock gaia response for when an OAuth2 token is requested.
   // Each call to this method will overwrite responses that were previously set.
   void SetOAuth2TokenResponse(const std::string& response_data,
@@ -367,9 +363,6 @@ class SyncTest : public PlatformBrowserTest {
   // the username on the first line and the password on the second line.
   void ReadPasswordFile();
 
-  // Helper method that starts up a sync test server if required.
-  void SetUpTestServerIfRequired();
-
   // Helper method used to set up fake responses for kClientLoginUrl,
   // kIssueAuthTokenUrl, kGetUserInfoUrl and kSearchDomainCheckUrl in order to
   // mock out calls to GAIA servers.
@@ -379,10 +372,6 @@ class SyncTest : public PlatformBrowserTest {
   // various gaia URLs, cancel any outstanding URL requests, and return to using
   // the default URLFetcher creation mechanism.
   void ClearMockGaiaResponses();
-
-  // Decide which sync server implementation to run against based on the type
-  // of test being run and command line args passed in.
-  void DecideServerType();
 
   // Initializes any custom services needed for the |profile| at |index|.
   void InitializeProfile(int index, Profile* profile);
@@ -411,6 +400,9 @@ class SyncTest : public PlatformBrowserTest {
   // Used to differentiate between single-client and two-client tests.
   const TestType test_type_;
 
+  // The kind of server being used, c.f. ServerType.
+  const ServerType server_type_;
+
   // Used to remember when the test fixture was constructed and later understand
   // how long the setup took.
   const base::Time test_construction_time_;
@@ -426,10 +418,6 @@ class SyncTest : public PlatformBrowserTest {
 
   // Locally available plain text file in which GAIA credentials are stored.
   base::FilePath password_file_;
-
-  // Tells us what kind of server we're using (some tests run only on certain
-  // server types).
-  ServerType server_type_;
 
   // The default profile, created before our actual testing |profiles_|. This is
   // needed in a workaround for https://crbug.com/801569, see comments in the

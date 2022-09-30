@@ -250,9 +250,12 @@ class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
 
 SyncTest::SyncTest(TestType test_type)
     : test_type_(test_type),
+      server_type_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+                       syncer::kSyncServiceURL)
+                       ? EXTERNAL_LIVE_SERVER
+                       : IN_PROCESS_FAKE_SERVER),
       test_construction_time_(base::Time::Now()),
       sync_run_loop_timeout(FROM_HERE, TestTimeouts::action_max_timeout()),
-      server_type_(SERVER_TYPE_UNDECIDED),
       previous_profile_(nullptr),
       num_clients_(-1) {
   // Any RunLoop timeout will by default result in test failure.
@@ -282,9 +285,6 @@ void SyncTest::SetUp() {
   sync_test_utils_android::SetUpAuthForTesting();
 #endif
 
-  // Sets |server_type_| if it wasn't specified by the test.
-  DecideServerType();
-
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(switches::kPasswordFileForTest)) {
     ReadPasswordFile();
@@ -292,7 +292,7 @@ void SyncTest::SetUp() {
     // Decide on username to use or create one.
     if (cl->HasSwitch(switches::kSyncUserForTest)) {
       username_ = cl->GetSwitchValueASCII(switches::kSyncUserForTest);
-    } else if (!UsingExternalServers()) {
+    } else if (server_type_ != EXTERNAL_LIVE_SERVER) {
       username_ = "user@gmail.com";
     }
     // Decide on password to use.
@@ -368,7 +368,7 @@ void SyncTest::AddTestSwitches(base::CommandLine* cl) {
 
   if (cl->HasSwitch(syncer::kSyncServiceURL)) {
     // TODO(crbug.com/1243653): setup real SecurityDomainService if
-    // UsingExternalServers().
+    // server_type_ == EXTERNAL_LIVE_SERVER.
     // Effectively disables kSyncTrustedVaultPassphraseRecovery for E2E tests.
     cl->AppendSwitchASCII(syncer::kTrustedVaultServiceURL, "broken_url");
   }
@@ -389,7 +389,8 @@ bool SyncTest::CreateProfile(int index) {
 // multiple profiles.
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedAllowBlockingForTesting allow_blocking;
-  if (UsingExternalServers() && (num_clients_ > 1 || use_new_user_data_dir_)) {
+  if (server_type_ == EXTERNAL_LIVE_SERVER &&
+      (num_clients_ > 1 || use_new_user_data_dir_)) {
     scoped_temp_dirs_.push_back(std::make_unique<base::ScopedTempDir>());
     // For multi profile UI signin, profile paths should be outside user data
     // dir to allow signing-in multiple profiles to same account. Otherwise, we
@@ -420,7 +421,7 @@ bool SyncTest::CreateProfile(int index) {
 
   BeforeSetupClient(index, profile_path);
 
-  if (UsingExternalServers()) {
+  if (server_type_ == EXTERNAL_LIVE_SERVER) {
     // If running against an EXTERNAL_LIVE_SERVER, we signin profiles using real
     // GAIA server. This requires creating profiles with no test hooks.
     InitializeProfile(index, MakeProfileForUISignin(profile_path));
@@ -639,7 +640,7 @@ bool SyncTest::SetupClients() {
   }
 
   // Verifier account is not useful when running against external servers.
-  DCHECK(!UsingExternalServers() || !UseVerifier());
+  DCHECK(server_type_ != EXTERNAL_LIVE_SERVER || !UseVerifier());
 
 // Verifier needs to create a test profile. But Clank doesn't support multiple
 // profiles.
@@ -697,8 +698,9 @@ void SyncTest::InitializeProfile(int index, Profile* profile) {
   }
 
   SyncServiceImplHarness::SigninType signin_type =
-      UsingExternalServers() ? SyncServiceImplHarness::SigninType::UI_SIGNIN
-                             : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
+      server_type_ == EXTERNAL_LIVE_SERVER
+          ? SyncServiceImplHarness::SigninType::UI_SIGNIN
+          : SyncServiceImplHarness::SigninType::FAKE_SIGNIN;
 
   DCHECK(!clients_[index]);
   clients_[index] = SyncServiceImplHarness::Create(GetProfile(index), username_,
@@ -775,8 +777,6 @@ void SyncTest::SetUpInvalidations(int index) {
       update_client_id->Set(kInvalidationGCMSenderId, client_id);
       break;
     }
-    case SERVER_TYPE_UNDECIDED:
-      NOTREACHED();
   }
 }
 
@@ -802,8 +802,6 @@ void SyncTest::InitializeConfigurationRefresher(int index) {
           SyncServiceFactory::GetForProfile(GetProfile(index)));
       break;
     }
-    case SERVER_TYPE_UNDECIDED:
-      NOTREACHED();
   }
 }
 
@@ -818,7 +816,7 @@ void SyncTest::SetupSyncInternal(SetupSyncMode setup_mode) {
   // TODO(crbug.com/801482): If we ever start running tests against external
   // servers again, we might have to find a way to clear any pre-existing data
   // from the test account.
-  if (UsingExternalServers()) {
+  if (server_type_ == EXTERNAL_LIVE_SERVER) {
     LOG(ERROR) << "WARNING: Running against external servers with an existing "
                   "account. If there is any pre-existing data in the account, "
                   "things will likely break.";
@@ -919,7 +917,7 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (UsingExternalServers()) {
+  if (server_type_ == EXTERNAL_LIVE_SERVER) {
     // OneClickSigninSyncStarter observer is created with a real user sign in.
     // It is deleted on certain conditions which are not satisfied by our tests,
     // and this causes the SigninTracker observer to stay hanging at shutdown.
@@ -1004,7 +1002,7 @@ void SyncTest::SetUpInProcessBrowserTestFixture() {
 
 void SyncTest::OnWillCreateBrowserContextServices(
     content::BrowserContext* context) {
-  if (UsingExternalServers()) {
+  if (server_type_ == EXTERNAL_LIVE_SERVER) {
     // DO NOTHING. External live sync servers use GCM to notify profiles of
     // any invalidations in sync'ed data. No need to provide a testing
     // factory for ProfileInvalidationProvider and SyncInvalidationsService.
@@ -1102,7 +1100,7 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
 }
 
 void SyncTest::ResetSyncForPrimaryAccount() {
-  if (UsingExternalServers()) {
+  if (server_type_ == EXTERNAL_LIVE_SERVER) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     // For external server testing, we need to have a clean account.
     // The following code will sign in one chrome browser, get
@@ -1142,28 +1140,47 @@ void SyncTest::ResetSyncForPrimaryAccount() {
 }
 
 void SyncTest::SetUpOnMainThread() {
-  // Start up a sync test server if one is needed and setup mock gaia responses.
-  // Note: This must be done prior to the call to SetupClients() because we want
-  // the mock gaia responses to be available before GaiaUrls is initialized.
-  SetUpTestServerIfRequired();
+  switch (server_type_) {
+    case EXTERNAL_LIVE_SERVER: {
+      // Allows google.com as well as country-specific TLDs.
+      host_resolver()->AllowDirectLookup("*.google.com");
+      host_resolver()->AllowDirectLookup("accounts.google.*");
+      host_resolver()->AllowDirectLookup("*.googleusercontent.com");
+      // Allow connection to googleapis.com for oauth token requests in E2E
+      // tests.
+      host_resolver()->AllowDirectLookup("*.googleapis.com");
 
-  if (UsingExternalServers()) {
-    // Allows google.com as well as country-specific TLDs.
-    host_resolver()->AllowDirectLookup("*.google.com");
-    host_resolver()->AllowDirectLookup("accounts.google.*");
-    host_resolver()->AllowDirectLookup("*.googleusercontent.com");
-    // Allow connection to googleapis.com for oauth token requests in E2E tests.
-    host_resolver()->AllowDirectLookup("*.googleapis.com");
+      // On Linux, we use Chromium's NSS implementation which uses the following
+      // hosts for certificate verification. Without these overrides, running
+      // the integration tests on Linux causes error as we make external DNS
+      // lookups.
+      host_resolver()->AllowDirectLookup("*.thawte.com");
+      host_resolver()->AllowDirectLookup("*.geotrust.com");
+      host_resolver()->AllowDirectLookup("*.gstatic.com");
+      break;
+    }
+    case IN_PROCESS_FAKE_SERVER: {
+      // Start up a sync test server and setup mock gaia responses.
+      // Note: This must be done prior to the call to SetupClients() because we
+      // want the mock gaia responses to be available before GaiaUrls is
+      // initialized.
+      base::FilePath user_data_dir;
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+      fake_server_ = std::make_unique<fake_server::FakeServer>(user_data_dir);
+      fake_server_sync_invalidation_sender_ =
+          std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
+              fake_server_.get());
 
-    // On Linux, we use Chromium's NSS implementation which uses the following
-    // hosts for certificate verification. Without these overrides, running the
-    // integration tests on Linux causes error as we make external DNS lookups.
-    host_resolver()->AllowDirectLookup("*.thawte.com");
-    host_resolver()->AllowDirectLookup("*.geotrust.com");
-    host_resolver()->AllowDirectLookup("*.gstatic.com");
-  } else {
-    SetupMockGaiaResponsesForProfile(
-        ProfileManager::GetLastUsedProfileIfLoaded());
+      // Subscribe to invalidations for all the profiles which were created
+      // before. This is mainly the case on Android platform.
+      for (const auto& profile_and_fcm_handler : profile_to_fcm_handler_map_) {
+        fake_server_sync_invalidation_sender_->AddFCMHandler(
+            profile_and_fcm_handler.second);
+      }
+      SetupMockGaiaResponses();
+      SetupMockGaiaResponsesForProfile(
+          ProfileManager::GetLastUsedProfileIfLoaded());
+    }
   }
 }
 
@@ -1237,60 +1254,13 @@ void SyncTest::ClearMockGaiaResponses() {
   test_url_loader_factory_.ClearResponses();
 }
 
-void SyncTest::DecideServerType() {
-  // Only set |server_type_| if it hasn't already been set. This allows for
-  // tests to explicitly set this value in each test class if needed.
-  if (server_type_ == SERVER_TYPE_UNDECIDED) {
-    base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-    if (!cl->HasSwitch(syncer::kSyncServiceURL)) {
-      // If no sync server URL is provided, start up a local sync test server
-      // and point Chrome to its URL. This is the most common configuration,
-      server_type_ = IN_PROCESS_FAKE_SERVER;
-    } else {
-      // If a sync server URL is provided, it is assumed that the server is
-      // already running. Chrome will automatically connect to it at the URL
-      // provided. There is nothing to do here.
-      server_type_ = EXTERNAL_LIVE_SERVER;
-    }
-  }
-}
-
-// Start up a local sync server based on the value of server_type_, which
-// was determined from the command line parameters.
-void SyncTest::SetUpTestServerIfRequired() {
-  if (UsingExternalServers()) {
-    // Nothing to do; we'll just talk to the URL we were given.
-  } else if (server_type_ == IN_PROCESS_FAKE_SERVER) {
-    base::FilePath user_data_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    fake_server_ = std::make_unique<fake_server::FakeServer>(user_data_dir);
-    fake_server_sync_invalidation_sender_ =
-        std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
-            fake_server_.get());
-
-    // Subscribe to invalidations for all the profiles which were created
-    // before. This is mainly the case on Android platform.
-    for (const auto& profile_and_fcm_handler : profile_to_fcm_handler_map_) {
-      fake_server_sync_invalidation_sender_->AddFCMHandler(
-          profile_and_fcm_handler.second);
-    }
-    SetupMockGaiaResponses();
-  } else {
-    LOG(FATAL) << "Don't know which server environment to run test in.";
-  }
-}
-
 bool SyncTest::TestUsesSelfNotifications() {
   // Default is True unless we are running against external servers.
-  return !UsingExternalServers();
+  return server_type_ != EXTERNAL_LIVE_SERVER;
 }
 
 bool SyncTest::AwaitQuiescence() {
   return SyncServiceImplHarness::AwaitQuiescence(GetSyncClients());
-}
-
-bool SyncTest::UsingExternalServers() const {
-  return server_type_ == EXTERNAL_LIVE_SERVER;
 }
 
 void SyncTest::TriggerMigrationDoneError(syncer::ModelTypeSet model_types) {
@@ -1329,7 +1299,7 @@ bool SyncTest::WaitForAsyncChangesToBeCommitted(size_t profile_index) const {
   // to wait for asynchronous commits to the external servers. Although
   // CommittedAllNudgedChangesChecker will wait for all the local changes to be
   // committed, it doesn't cover all the cases.
-  if (!UsingExternalServers()) {
+  if (server_type_ != EXTERNAL_LIVE_SERVER) {
     // Wait for committing DeviceInfo with sharing_fields, it may happen
     // asynchronously due to FCM token registration.
     if (GetSyncService(profile_index)
