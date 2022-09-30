@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/delivery_type_names.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
@@ -107,14 +108,14 @@ void CoreInitializer::Initialize() {
       xmlns_names::kAttrsCount;
 
   const unsigned kCoreStaticStringsCount =
-      kQualifiedNamesCount + event_interface_names::kNamesCount +
-      event_target_names::kNamesCount + event_type_names::kNamesCount +
-      fetch_initiator_type_names::kNamesCount + font_family_names::kNamesCount +
-      html_tokenizer_names::kNamesCount + http_names::kNamesCount +
-      input_type_names::kNamesCount + keywords::kNamesCount +
-      media_feature_names::kNamesCount + media_type_names::kNamesCount +
-      performance_entry_names::kNamesCount + pointer_type_names::kNamesCount +
-      shadow_element_names::kNamesCount;
+      kQualifiedNamesCount + delivery_type_names::kNamesCount +
+      event_interface_names::kNamesCount + event_target_names::kNamesCount +
+      event_type_names::kNamesCount + fetch_initiator_type_names::kNamesCount +
+      font_family_names::kNamesCount + html_tokenizer_names::kNamesCount +
+      http_names::kNamesCount + input_type_names::kNamesCount +
+      keywords::kNamesCount + media_feature_names::kNamesCount +
+      media_type_names::kNamesCount + performance_entry_names::kNamesCount +
+      pointer_type_names::kNamesCount + shadow_element_names::kNamesCount;
 
   StringImpl::ReserveStaticStringsCapacityForSize(
       kCoreStaticStringsCount + StringImpl::AllStaticStrings().size());
@@ -129,6 +130,7 @@ void CoreInitializer::Initialize() {
   xml_names::Init();
   xmlns_names::Init();
 
+  delivery_type_names::Init();
   event_interface_names::Init();
   event_target_names::Init();
   event_type_names::Init();

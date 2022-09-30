@@ -34,6 +34,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/delivery_type_names.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -71,6 +73,9 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       initiator_type_(initiator_type.empty()
                           ? fetch_initiator_type_names::kOther
                           : initiator_type),
+      delivery_type_(info.cache_state == mojom::blink::CacheState::kNone
+                         ? g_empty_string
+                         : delivery_type_names::kCache),
       alpn_negotiated_protocol_(
           static_cast<String>(info.alpn_negotiated_protocol)),
       connection_info_(static_cast<String>(info.connection_info)),
@@ -170,10 +175,12 @@ AtomicString PerformanceResourceTiming::initiatorType() const {
   return initiator_type_;
 }
 
-// TODO(crbug/1358591): Support "cache" and "navigational-prefetch".
+// TODO(crbug/1358591): Support "navigational-prefetch".
 AtomicString PerformanceResourceTiming::deliveryType() const {
   DCHECK(RuntimeEnabledFeatures::DeliveryTypeEnabled());
-  return g_empty_atom;
+  if (!AllowTimingDetails())
+    return g_empty_atom;
+  return delivery_type_;
 }
 
 AtomicString PerformanceResourceTiming::renderBlockingStatus() const {

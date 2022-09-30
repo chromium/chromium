@@ -139,6 +139,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
 
   // Do not access private fields directly. Use getter methods.
   AtomicString initiator_type_;
+  AtomicString delivery_type_;
   AtomicString alpn_negotiated_protocol_;
   AtomicString connection_info_;
   RenderBlockingStatusType render_blocking_status_;
