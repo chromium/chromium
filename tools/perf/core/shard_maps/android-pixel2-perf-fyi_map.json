@@ -8,7 +8,7 @@
                 "abridged": false
             },
             "rendering.mobile": {
-                "end": 222,
+                "end": 223,
                 "abridged": false
             },
             "speedometer2": {
@@ -29,8 +29,8 @@
                         "end": 86
                     },
                     {
-                        "begin": 222,
-                        "end": 421
+                        "begin": 223,
+                        "end": 422
                     }
                 ],
                 "abridged": false
@@ -103,12 +103,12 @@
         }
     },
     "extra_infos": {
-        "num_stories": 627,
+        "num_stories": 628,
         "predicted_min_shard_time": 6659.0,
         "predicted_min_shard_index": 2,
         "predicted_max_shard_time": 6772.0,
         "predicted_max_shard_index": 3,
-        "shard #0": 6745.0,
+        "shard #0": 6737.0,
         "shard #1": 6718.0,
         "shard #2": 6659.0,
         "shard #3": 6772.0
