@@ -35,6 +35,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.inputmethod.EditorInfoCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -123,7 +124,7 @@ public class FindToolbar extends LinearLayout implements BackPressHandler {
 
         public FindQuery(Context context, AttributeSet attrs) {
             super(context, attrs);
-            if (!BackPressManager.isEnabled()) {
+            if (!BackPressManager.isEnabled() && !BuildInfo.isAtLeastT()) {
                 setOnKeyListener(this);
             }
         }

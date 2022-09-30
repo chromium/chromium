@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -192,7 +193,7 @@ public class SearchActivity extends AsyncInitializationActivity
         };
 
         BackPressManager backPressManager = null;
-        if (BackPressManager.isEnabled()) {
+        if (BackPressManager.isEnabled() || BuildInfo.isAtLeastT()) {
             backPressManager = new BackPressManager();
             getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
         }
