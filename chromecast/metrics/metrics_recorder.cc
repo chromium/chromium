@@ -111,6 +111,11 @@ class DummyEventBuilder : public CastEventBuilder {
     return *this;
   }
 
+  CastEventBuilder& SetAoghStandardAgentId(
+      const std::string& agent_id) override {
+    return *this;
+  }
+
   CastEventBuilder& SetUiVersion(const std::string& ui_version) override {
     return *this;
   }

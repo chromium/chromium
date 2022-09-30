@@ -102,6 +102,11 @@ CastEventBuilder& CastEventBuilderSimple::SetAoghAgentId(
   return *this;
 }
 
+CastEventBuilder& CastEventBuilderSimple::SetAoghStandardAgentId(
+    const std::string& standard_agent_id) {
+  return *this;
+}
+
 CastEventBuilder& CastEventBuilderSimple::SetUiVersion(
     const std::string& value) {
   return *this;

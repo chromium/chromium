@@ -40,6 +40,8 @@ class CastEventBuilderSimple : public CastEventBuilder {
   CastEventBuilder& SetAoghRequestId(const std::string& request_id) override;
   CastEventBuilder& SetAoghLocalDeviceId(int64_t local_id) override;
   CastEventBuilder& SetAoghAgentId(const std::string& agent_id) override;
+  CastEventBuilder& SetAoghStandardAgentId(
+      const std::string& standard_agent_id) override;
   CastEventBuilder& SetUiVersion(const std::string& ui_version) override;
   CastEventBuilder& SetAuditReport(const std::string& audit_report) override;
   CastEventBuilder& SetDuoCoreVersion(int64_t version) override;

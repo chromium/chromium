@@ -74,6 +74,8 @@ class CastEventBuilder {
   virtual CastEventBuilder& SetAoghRequestId(const std::string& request_id) = 0;
   virtual CastEventBuilder& SetAoghLocalDeviceId(int64_t local_id) = 0;
   virtual CastEventBuilder& SetAoghAgentId(const std::string& agent_id) = 0;
+  virtual CastEventBuilder& SetAoghStandardAgentId(
+      const std::string& standard_agent_id) = 0;
   virtual CastEventBuilder& SetUiVersion(const std::string& ui_version) = 0;
   virtual CastEventBuilder& SetAuditReport(const std::string& audit_report) = 0;
   virtual CastEventBuilder& SetDuoCoreVersion(int64_t version) = 0;
