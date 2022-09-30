@@ -1378,7 +1378,7 @@ if (!is_component_build) {
     _src_jar = "$_package_dir/cronet_api-src.jar"
 
     _annotations_dep =
-        "//third_party/androidx:androidx_annotation_annotation_java"
+        "//third_party/androidx:androidx_annotation_annotation_jvm_java"
     _build_config_dep = "$_annotations_dep$build_config_target_suffix"
     _build_config =
         get_label_info(_annotations_dep, "target_gen_dir") + "/" +
