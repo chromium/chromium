@@ -310,7 +310,6 @@ export const CommandCategory = {
  *                  doDefault: (undefined|boolean),
  *                  msgId: (undefined|string),
  *                  nodeList: (undefined|string),
- *                  skipInput: (undefined|boolean),
  *                  allowEvents: (undefined|boolean),
  *                  denySignedOut: (undefined|boolean)}>}
  *  forward: Whether this command points forward.
@@ -326,8 +325,6 @@ export const CommandCategory = {
  *  msgId: The message resource describing the command.
  *  nodeList: The id from the map above if this command is used for
  *            showing a list of nodes.
- *  skipInput: Explicitly skips this command when text input has focus.
- *             Defaults to false.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
  *  allowEvents: Allows EventWatcher to continue processing events which can
@@ -474,28 +471,24 @@ CommandStore.CMD_ALLOWLIST = {
     backward: true,
     announce: true,
     msgId: 'previous_character',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_CHARACTER]: {
     forward: true,
     announce: true,
     msgId: 'next_character',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_WORD]: {
     backward: true,
     announce: true,
     msgId: 'previous_word',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_WORD]: {
     forward: true,
     announce: true,
     msgId: 'next_word',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_LINE]: {
@@ -514,42 +507,36 @@ CommandStore.CMD_ALLOWLIST = {
     backward: true,
     announce: true,
     msgId: 'previous_sentence',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_SENTENCE]: {
     forward: true,
     announce: true,
     msgId: 'next_sentence',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_OBJECT]: {
     backward: true,
     announce: true,
     msgId: 'previous_object',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_OBJECT]: {
     forward: true,
     announce: true,
     msgId: 'next_object',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_GROUP]: {
     backward: true,
     announce: true,
     msgId: 'previous_group',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.NEXT_GROUP]: {
     forward: true,
     announce: true,
     msgId: 'next_group',
-    skipInput: true,
     category: CommandCategory.NAVIGATION,
   },
   [Command.PREVIOUS_SIMILAR_ITEM]: {
@@ -1075,28 +1062,24 @@ CommandStore.CMD_ALLOWLIST = {
   [Command.PREVIOUS_ROW]: {
     backward: true,
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_prev_row',
     category: CommandCategory.TABLES,
   },
   [Command.PREVIOUS_COL]: {
     backward: true,
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_prev_col',
     category: CommandCategory.TABLES,
   },
   [Command.NEXT_ROW]: {
     forward: true,
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_next_row',
     category: CommandCategory.TABLES,
   },
   [Command.NEXT_COL]: {
     forward: true,
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_next_col',
     category: CommandCategory.TABLES,
   },
