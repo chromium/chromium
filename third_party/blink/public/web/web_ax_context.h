@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "ui/accessibility/ax_event.h"
 
 namespace ui {
 class AXMode;
@@ -60,15 +61,25 @@ class BLINK_EXPORT WebAXContext {
   // the last serialization) into |updates|. (Heuristically) skips
   // serializing dirty nodes whose AX id is in |already_serialized_ids|, and
   // adds serialized dirty objects into |already_serialized_ids|.
-  void SerializeDirtyObjects(std::vector<ui::AXTreeUpdate>& updates,
-                             std::set<int32_t>& already_serialized_ids,
-                             bool has_plugin_tree_source);
+  void SerializeDirtyObjectsAndEvents(bool has_plugin_tree_source,
+                                      std::vector<ui::AXTreeUpdate>& updates,
+                                      std::vector<ui::AXEvent>& events,
+                                      bool& had_end_of_test_event,
+                                      bool& had_load_complete_messages,
+                                      bool& need_to_send_location_changes);
 
-  // Clears out the list of dirty AXObjects.
-  void ClearDirtyObjects();
+  // Clears out the list of dirty AXObjects and of pending events.
+  void ClearDirtyObjectsAndPendingEvents();
 
-  // Returns true if any AXObject is dirty.
+  // Note that any pending event also causes its corresponding object to
+  // become dirty.
   bool HasDirtyObjects();
+
+  // Adds the event to a list of pending events that is cleared out by
+  // a subsequent call to SerializeDirtyObjectsAndEvents. Returns false if
+  // the event is already pending.
+  bool AddPendingEvent(const ui::AXEvent& event,
+                       bool insert_at_beginning = false);
 
  private:
   std::unique_ptr<AXContext> private_;

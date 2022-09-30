@@ -259,10 +259,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Manages the automatic image annotations, if enabled.
   std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
 
-  // Events from Blink are collected until they are ready to be
-  // sent to the browser.
-  std::vector<ui::AXEvent> pending_events_;
-
   using PluginAXTreeSerializer = ui::AXTreeSerializer<const ui::AXNode*>;
   std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   PluginAXTreeSource* plugin_tree_source_;

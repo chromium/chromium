@@ -488,10 +488,10 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
 
 void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   reset_token_ = reset_token;
-  if (ax_context_)
+  if (ax_context_) {
     ax_context_->ResetSerializer();
-  pending_events_.clear();
-  ax_context_->ClearDirtyObjects();
+    ax_context_->ClearDirtyObjectsAndPendingEvents();
+  }
 
   const WebDocument& document = GetMainDocument();
   if (!document.IsNull()) {
@@ -552,14 +552,11 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     obj.InvalidateSerializerSubtree();
 #endif
 
-  // Discard duplicate accessibility events.
-  for (const ui::AXEvent& pending_event : pending_events_) {
-    if (pending_event.id == event.id &&
-        pending_event.event_type == event.event_type) {
-      return;
-    }
+  if (!ax_context_ || !ax_context_->AddPendingEvent(event)) {
+    DCHECK(ax_context_);
+    return;
   }
-  pending_events_.push_back(event);
+
   if (IsImmediateProcessingRequiredForEvent(event))
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
@@ -1022,13 +1019,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     std::vector<ui::AXEvent>& events,
     std::vector<ui::AXTreeUpdate>& updates,
     bool invalidate_plugin_subtree) {
-  // Make a copy of the events, because it's possible that
-  // actions inside this loop will cause more events to be
-  // queued up.
-
-  std::vector<ui::AXEvent> src_events = pending_events_;
-  pending_events_.clear();
-
   bool had_end_of_test_event = false;
 
   // If there's a layout complete or a scroll changed message, we need to send
@@ -1039,14 +1029,12 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
   // time to inject a stylesheet for image annotation debugging.
   bool had_load_complete_messages = false;
 
-  // Keep track of IDs serialized so we don't serialize the same node twice.
-  std::set<int32_t> already_serialized_ids;
-
   // Serialize all dirty objects in the list at this point in time, stopping
   // either when the queue is empty, or the number of remaining objects to
   // serialize has been reached.
-  ax_context_->SerializeDirtyObjects(updates, already_serialized_ids,
-    !!plugin_tree_source_);
+  ax_context_->SerializeDirtyObjectsAndEvents(
+      !!plugin_tree_source_, updates, events, had_end_of_test_event,
+      had_load_complete_messages, need_to_send_location_changes);
 
   for (auto& update : updates) {
     if (update.node_id_to_clear > 0)
@@ -1056,43 +1044,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
       AddPluginTreeToUpdate(&update, invalidate_plugin_subtree);
 
     AddImageAnnotations(document, update.nodes);
-  }
-
-  // Loop over each event and generate an updated event message.
-  for (ui::AXEvent& event : src_events) {
-    if (event.event_type == ax::mojom::Event::kEndOfTest) {
-      had_end_of_test_event = true;
-      continue;
-    }
-
-    if (already_serialized_ids.find(event.id) == already_serialized_ids.end()) {
-      // Node no longer exists or could not be serialized.
-      VLOG(1) << "Dropped AXEvent: " << event.event_type << " on "
-              << WebAXObject::FromWebDocumentByID(document, event.id)
-                     .ToString(true)
-                     .Utf8();
-      continue;
-    }
-
-#if DCHECK_IS_ON()
-    WebAXObject obj = WebAXObject::FromWebDocumentByID(document, event.id);
-    DCHECK(!obj.IsDetached())
-        << "Detached object for AXEvent: " << event.event_type << " on #"
-        << event.id;
-#endif
-
-    if (event.event_type == ax::mojom::Event::kLayoutComplete)
-      need_to_send_location_changes = true;
-
-    if (event.event_type == ax::mojom::Event::kLoadComplete)
-      had_load_complete_messages = true;
-
-    events.push_back(event);
-
-    VLOG(1) << "AXEvent: " << ui::ToString(event.event_type) << " on "
-            << WebAXObject::FromWebDocumentByID(document, event.id)
-                   .ToString(true)
-                   .Utf8();
   }
 
   if (had_end_of_test_event) {
@@ -1136,6 +1087,10 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
       << "SendPendingAccessibilityEvents should not do any work when nothing "
          "has enabled accessibility.";
 
+  // TODO(aleventhal): needs_initial_ax_tree_root_ and this whole piece of logic
+  // will eventually either go away or move to AXObjectCacheImpl, where it can
+  // be done more simply. Basically we want to fire a page load event when
+  // waking up and the page was already loaded.
   if (needs_initial_ax_tree_root_) {
     // At the very start of accessibility for this document, push a layout
     // complete for the entire document, in order to initialize the browser's
@@ -1143,9 +1098,14 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     needs_initial_ax_tree_root_ = false;
     auto root_obj = WebAXObject::FromWebDocument(document);
     // Always fire layout complete for a new root object.
-    pending_events_.insert(
-        pending_events_.begin(),
-        ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete));
+    // TODO(aleventhal): eventually hopefully we can get rid of
+    // insert_at_beginning. We only need that for inserting the fake load event
+    // when we wake up to an already-loaded page. But it would be better to
+    // just insert the kLoadComplete event when creating the root and the page
+    // was already loaded.
+    ax_context_->AddPendingEvent(
+        ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLayoutComplete),
+        true /* insert_at_beginning*/);
     MarkWebAXObjectDirty(root_obj, false);
 
     // If loaded and has some content, insert load complete at the top, so that
@@ -1154,13 +1114,13 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
     // page was already loaded.
     if (root_obj.IsLoaded() && !document.Body().IsNull() &&
         !document.Body().FirstChild().IsNull()) {
-      pending_events_.insert(
-          pending_events_.begin(),
-          ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadComplete));
+      ax_context_->AddPendingEvent(
+          ui::AXEvent(root_obj.AxID(), ax::mojom::Event::kLoadComplete),
+          true /* insert_at_beginning*/);
     }
   }
 
-  if (pending_events_.empty() && !ax_context_->HasDirtyObjects()) {
+  if (!ax_context_->HasDirtyObjects()) {
     // By default, assume the next batch does not have interactive events, and
     // defer so that the batch of events is larger. If any interactive events
     // come in, the batch will be processed immediately.

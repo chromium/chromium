@@ -225,13 +225,25 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
       ax::mojom::blink::Action event_from_action,
       const std::vector<ui::AXEventIntent>& event_intents) = 0;
 
-  virtual void SerializeDirtyObjects(std::vector<ui::AXTreeUpdate>& updates,
-                                     std::set<int32_t>& already_serialized_ids,
-                                     bool has_plugin_tree_source) = 0;
+  virtual void SerializeDirtyObjectsAndEvents(
+      bool has_plugin_tree_source,
+      std::vector<ui::AXTreeUpdate>& updates,
+      std::vector<ui::AXEvent>& events,
+      bool& had_end_of_test_event,
+      bool& had_load_complete_messages,
+      bool& need_to_send_location_changes) = 0;
 
-  virtual void ClearDirtyObjects() = 0;
+  virtual void ClearDirtyObjectsAndPendingEvents() = 0;
 
+  // Note that any pending event also causes its corresponding object to
+  // become dirty.
   virtual bool HasDirtyObjects() = 0;
+
+  // Adds the event to a list of pending events that is cleared out by
+  // a subsequent call to  duplicates are not represented.. Returns false if
+  // the event is already pending; duplicates are not represented.
+  virtual bool AddPendingEvent(const ui::AXEvent& event,
+                               bool insert_at_beginning) = 0;
 
   // Ensure that a call to ProcessDeferredAccessibilityEvents() will occur soon.
   virtual void ScheduleVisualUpdate(Document& document) = 0;

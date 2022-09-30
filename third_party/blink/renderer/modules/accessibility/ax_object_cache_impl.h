@@ -430,13 +430,25 @@ class MODULES_EXPORT AXObjectCacheImpl
       ax::mojom::blink::Action event_from_action,
       const std::vector<ui::AXEventIntent>& event_intents) override;
 
-  void SerializeDirtyObjects(std::vector<ui::AXTreeUpdate>& updates,
-                             std::set<int32_t>& already_serialized_ids,
-                             bool has_plugin_tree_source) override;
+  void SerializeDirtyObjectsAndEvents(
+      bool has_plugin_tree_source,
+      std::vector<ui::AXTreeUpdate>& updates,
+      std::vector<ui::AXEvent>& events,
+      bool& had_end_of_test_event,
+      bool& had_load_complete_messages,
+      bool& need_to_send_location_changes) override;
 
-  void ClearDirtyObjects() override { dirty_objects_.clear(); }
+  void ClearDirtyObjectsAndPendingEvents() override {
+    dirty_objects_.clear();
+    pending_events_.clear();
+  }
 
-  bool HasDirtyObjects() override { return !dirty_objects_.empty(); }
+  bool HasDirtyObjects() override {
+    return !dirty_objects_.empty();
+  }
+
+  bool AddPendingEvent(const ui::AXEvent& event,
+                       bool insert_at_beginning) override;
 
   void InvalidateSerializerSubtree(AXObject& obj) {
     ax_tree_serializer_->InvalidateSubtree(&obj);
@@ -849,6 +861,8 @@ class MODULES_EXPORT AXObjectCacheImpl
   std::unique_ptr<ui::AXTreeSerializer<AXObject*>> ax_tree_serializer_;
 
   HeapDeque<Member<AXDirtyObject>> dirty_objects_;
+
+  Deque<ui::AXEvent> pending_events_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
 };

@@ -79,26 +79,38 @@ void WebAXContext::MarkAllImageAXObjectsDirty(
   private_->GetAXObjectCache().MarkAllImageAXObjectsDirty(event_from_action);
 }
 
-void WebAXContext::SerializeDirtyObjects(
+void WebAXContext::SerializeDirtyObjectsAndEvents(
+    bool has_plugin_tree_source,
     std::vector<ui::AXTreeUpdate>& updates,
-    std::set<int32_t>& already_serialized_ids,
-    bool has_plugin_tree_source) {
+    std::vector<ui::AXEvent>& events,
+    bool& had_end_of_test_event,
+    bool& had_load_complete_messages,
+    bool& need_to_send_location_changes) {
   if (!private_->HasActiveDocument())
     return;
-  private_->GetAXObjectCache().SerializeDirtyObjects(
-      updates, already_serialized_ids, has_plugin_tree_source);
+  private_->GetAXObjectCache().SerializeDirtyObjectsAndEvents(
+      has_plugin_tree_source, updates, events, had_end_of_test_event,
+      had_load_complete_messages, need_to_send_location_changes);
 }
 
-void WebAXContext::ClearDirtyObjects() {
+void WebAXContext::ClearDirtyObjectsAndPendingEvents() {
   if (!private_->HasActiveDocument())
     return;
-  private_->GetAXObjectCache().ClearDirtyObjects();
+  private_->GetAXObjectCache().ClearDirtyObjectsAndPendingEvents();
 }
 
 bool WebAXContext::HasDirtyObjects() {
   if (!private_->HasActiveDocument())
     return true;
   return private_->GetAXObjectCache().HasDirtyObjects();
+}
+
+bool WebAXContext::AddPendingEvent(const ui::AXEvent& event,
+                                   bool insert_at_beginning) {
+  if (!private_->HasActiveDocument())
+    return true;
+  return private_->GetAXObjectCache().AddPendingEvent(event,
+                                                      insert_at_beginning);
 }
 
 }  // namespace blink

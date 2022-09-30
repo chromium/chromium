@@ -3936,10 +3936,21 @@ void AXObjectCacheImpl::MarkAXObjectDirty(
     InvalidateSerializerSubtree(*obj);
 }
 
-void AXObjectCacheImpl::SerializeDirtyObjects(
+void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
+    bool has_plugin_tree_source,
     std::vector<ui::AXTreeUpdate>& updates,
-    std::set<int32_t>& already_serialized_ids,
-    bool has_plugin_tree_source) {
+    std::vector<ui::AXEvent>& events,
+    bool& had_end_of_test_event,
+    bool& had_load_complete_messages,
+    bool& need_to_send_location_changes) {
+  HashSet<int32_t> already_serialized_ids;
+
+  // Make a copy of the events, because it's possible that
+  // actions inside this loop will cause more events to be
+  // queued up.
+  Deque<ui::AXEvent> src_events = pending_events_;
+  pending_events_.clear();
+
   // Dirty objects can be added as a result of serialization. For example,
   // as children are iterated during depth first traversal in the serializer,
   // the children sometimes need to be created. The initialization of these
@@ -3989,7 +4000,7 @@ void AXObjectCacheImpl::SerializeDirtyObjects(
     // ends up skipping it. That's probably a Blink bug if that happens, but
     // still we need to make sure we don't keep trying the same object over
     // again.
-    if (!already_serialized_ids.insert(obj->AXObjectID()).second)
+    if (!already_serialized_ids.insert(obj->AXObjectID()).is_new_entry)
       continue;  // No insertion, was already present.
 
     ui::AXTreeUpdate update;
@@ -4015,6 +4026,56 @@ void AXObjectCacheImpl::SerializeDirtyObjects(
 
     updates.push_back(update);
   }
+
+  // Loop over each event and generate an updated event message.
+  for (ui::AXEvent& event : src_events) {
+    if (event.event_type == ax::mojom::blink::Event::kEndOfTest) {
+      had_end_of_test_event = true;
+      continue;
+    }
+
+    if (already_serialized_ids.find(event.id) == already_serialized_ids.end()) {
+      // Node no longer exists or could not be serialized.
+      VLOG(1) << "Dropped AXEvent: " << event.event_type << " on "
+              << ObjectFromAXID(event.id);
+      continue;
+    }
+
+#if DCHECK_IS_ON()
+    AXObject* obj = ObjectFromAXID(event.id);
+    DCHECK(obj && !obj->IsDetached())
+        << "Detached object for AXEvent: " << event.event_type << " on #"
+        << event.id;
+#endif
+
+    if (event.event_type == ax::mojom::blink::Event::kLayoutComplete)
+      need_to_send_location_changes = true;
+
+    if (event.event_type == ax::mojom::blink::Event::kLoadComplete)
+      had_load_complete_messages = true;
+
+    events.push_back(event);
+
+    VLOG(1) << "AXEvent: " << event.event_type << " on "
+            << ObjectFromAXID(event.id);
+  }
+}
+
+bool AXObjectCacheImpl::AddPendingEvent(const ui::AXEvent& event,
+                                        bool insert_at_beginning) {
+  // Discard duplicate accessibility events.
+  for (const ui::AXEvent& pending_event : pending_events_) {
+    if (pending_event.id == event.id &&
+        pending_event.event_type == event.event_type) {
+      return false;
+    }
+  }
+
+  if (insert_at_beginning)
+    pending_events_.push_front(event);
+  else
+    pending_events_.push_back(event);
+  return true;
 }
 
 mojo::Remote<blink::mojom::blink::RenderAccessibilityHost>&
