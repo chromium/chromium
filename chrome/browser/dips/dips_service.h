@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,10 +37,14 @@ class DIPSService : public KeyedService {
   void Shutdown() override;
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
+  void InitializeStorageWithEngagedSites();
+  void InitializeStorage(base::Time time, std::vector<std::string> sites);
 
   raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   base::SequenceBound<DIPSStorage> storage_;
+
+  base::WeakPtrFactory<DIPSService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DIPS_DIPS_SERVICE_H_

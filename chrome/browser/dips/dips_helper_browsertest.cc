@@ -310,3 +310,18 @@ IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
   histograms.ExpectTotalCount(kTimeToStorage, 1);
   histograms.ExpectUniqueTimeSample(kTimeToStorage, base::Seconds(10), 1);
 }
+
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, PRE_PrepopulateTest) {
+  // Simulate the user typing the URL to visit the page, which will record site
+  // engagement.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/title1.html")));
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSTabHelperBrowserTest, PrepopulateTest) {
+  // Since there was previous site engagement, the DIPS DB should be
+  // prepopulated with a user interaction timestamp.
+  auto state = GetDIPSState(GURL("http://a.test"));
+  ASSERT_TRUE(state.has_value());
+  EXPECT_TRUE(state->user_interaction_time.has_value());
+}

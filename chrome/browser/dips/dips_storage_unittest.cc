@@ -4,8 +4,13 @@
 
 #include "chrome/browser/dips/dips_storage.h"
 
+#include "base/functional/bind.h"
+#include "base/task/thread_pool.h"
+#include "base/test/task_environment.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class DIPSStorageTest : public testing::Test {
@@ -113,4 +118,156 @@ TEST_F(DIPSStorageTest, DifferentSiteDifferentState) {
   // Verify that url1 and url2 have independent state:
   EXPECT_EQ(storage_.Read(url1).site_storage_time(), time1);
   EXPECT_EQ(storage_.Read(url2).site_storage_time(), time2);
+}
+
+scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::ThreadPolicy::PREFER_BACKGROUND});
+}
+
+void StoreState(absl::optional<StateValue>* state_value,
+                const DIPSState& state) {
+  *state_value = state.was_loaded() ? absl::make_optional(state.ToStateValue())
+                                    : absl::nullopt;
+}
+
+TEST(DIPSStoragePrepopulateTest, NoExistingTime) {
+  base::test::TaskEnvironment task_environment;
+  base::SequenceBound<DIPSStorage> storage(CreateTaskRunner());
+  base::Time time = base::Time::FromDoubleT(1);
+
+  storage.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
+  storage.AsyncCall(&DIPSStorage::Prepopulate)
+      .WithArgs(time, std::vector<std::string>{"site"});
+  absl::optional<StateValue> state;
+  storage.AsyncCall(&DIPSStorage::Read)
+      .WithArgs(GURL("http://site"))
+      .Then(base::BindOnce(StoreState, &state));
+  storage.FlushPostedTasksForTesting();
+
+  ASSERT_TRUE(state.has_value());
+  EXPECT_EQ(state->user_interaction_time, time);  // written
+  EXPECT_EQ(state->site_storage_time, time);      // written
+}
+
+TEST(DIPSStoragePrepopulateTest, ExistingStorageAndInteractionTimes) {
+  base::test::TaskEnvironment task_environment;
+  base::SequenceBound<DIPSStorage> storage(CreateTaskRunner());
+  base::Time interaction_time = base::Time::FromDoubleT(1);
+  base::Time storage_time = base::Time::FromDoubleT(2);
+  base::Time prepopulate_time = base::Time::FromDoubleT(3);
+
+  storage.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
+  // First record interaction and storage for the site, then call Prepopulate().
+  storage.AsyncCall(&DIPSStorage::RecordInteraction)
+      .WithArgs(GURL("http://site"), interaction_time,
+                DIPSCookieMode::kStandard);
+  storage.AsyncCall(&DIPSStorage::RecordStorage)
+      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kStandard);
+  storage.AsyncCall(&DIPSStorage::Prepopulate)
+      .WithArgs(prepopulate_time, std::vector<std::string>{"site"});
+  absl::optional<StateValue> state;
+  storage.AsyncCall(&DIPSStorage::Read)
+      .WithArgs(GURL("http://site"))
+      .Then(base::BindOnce(StoreState, &state));
+  storage.FlushPostedTasksForTesting();
+
+  // Prepopulate() didn't overwrite the previous timestamps.
+  ASSERT_TRUE(state.has_value());
+  EXPECT_EQ(state->user_interaction_time, interaction_time);  // no change
+  EXPECT_EQ(state->site_storage_time, storage_time);          // no change
+}
+
+TEST(DIPSStoragePrepopulateTest, ExistingStorageTime) {
+  base::test::TaskEnvironment task_environment;
+  base::SequenceBound<DIPSStorage> storage(CreateTaskRunner());
+  base::Time storage_time = base::Time::FromDoubleT(1);
+  base::Time prepopulate_time = base::Time::FromDoubleT(2);
+
+  storage.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
+  // Record only storage for the site, then call Prepopulate().
+  storage.AsyncCall(&DIPSStorage::RecordStorage)
+      .WithArgs(GURL("http://site"), storage_time, DIPSCookieMode::kStandard);
+  storage.AsyncCall(&DIPSStorage::Prepopulate)
+      .WithArgs(prepopulate_time, std::vector<std::string>{"site"});
+  absl::optional<StateValue> state;
+  storage.AsyncCall(&DIPSStorage::Read)
+      .WithArgs(GURL("http://site"))
+      .Then(base::BindOnce(StoreState, &state));
+  storage.FlushPostedTasksForTesting();
+
+  ASSERT_TRUE(state.has_value());
+  EXPECT_EQ(state->site_storage_time, storage_time);          // no change
+  EXPECT_EQ(state->user_interaction_time, prepopulate_time);  // written
+}
+
+TEST(DIPSStoragePrepopulateTest, ExistingInteractionTime) {
+  base::test::TaskEnvironment task_environment;
+  base::SequenceBound<DIPSStorage> storage(CreateTaskRunner());
+  base::Time interaction_time = base::Time::FromDoubleT(1);
+  base::Time prepopulate_time = base::Time::FromDoubleT(2);
+
+  storage.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
+  // Record only storage for the site, then call Prepopulate().
+  storage.AsyncCall(&DIPSStorage::RecordInteraction)
+      .WithArgs(GURL("http://site"), interaction_time,
+                DIPSCookieMode::kStandard);
+  storage.AsyncCall(&DIPSStorage::Prepopulate)
+      .WithArgs(prepopulate_time, std::vector<std::string>{"site"});
+  absl::optional<StateValue> state;
+  storage.AsyncCall(&DIPSStorage::Read)
+      .WithArgs(GURL("http://site"))
+      .Then(base::BindOnce(StoreState, &state));
+  storage.FlushPostedTasksForTesting();
+
+  ASSERT_TRUE(state.has_value());
+  EXPECT_EQ(state->user_interaction_time, interaction_time);  // no change
+  EXPECT_EQ(state->site_storage_time, absl::nullopt);         // no change
+}
+
+TEST(DIPSStoragePrepopulateTest, WorksOnChunks) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED);
+  base::SequenceBound<DIPSStorage> storage(CreateTaskRunner());
+  base::Time time = base::Time::FromDoubleT(1);
+  std::vector<std::string> sites = {"site1", "site2", "site3"};
+  DIPSStorage::SetPrepopulateChunkSizeForTesting(2);
+
+  absl::optional<StateValue> state1, state2, state3;
+  auto queue_state_reads = [&]() {
+    storage.AsyncCall(&DIPSStorage::Read)
+        .WithArgs(GURL("http://site1"))
+        .Then(base::BindOnce(StoreState, &state1));
+    storage.AsyncCall(&DIPSStorage::Read)
+        .WithArgs(GURL("http://site2"))
+        .Then(base::BindOnce(StoreState, &state2));
+    storage.AsyncCall(&DIPSStorage::Read)
+        .WithArgs(GURL("http://site3"))
+        .Then(base::BindOnce(StoreState, &state3));
+  };
+
+  storage.AsyncCall(&DIPSStorage::Init).WithArgs(absl::nullopt);
+  storage.AsyncCall(&DIPSStorage::Prepopulate).WithArgs(time, std::move(sites));
+  queue_state_reads();
+  task_environment.RunUntilIdle();
+
+  // At this point, the entire |sites| vector has been processed. But we made
+  // async calls to read the state for each site before Prepopulate()
+  // actually ran, so the reads were performed after only the first chunk of
+  // |sites| was processed.
+
+  // The first two sites were prepopulated.
+  EXPECT_TRUE(state1.has_value());
+  EXPECT_TRUE(state2.has_value());
+  // The last wasn't.
+  ASSERT_FALSE(state3.has_value());
+
+  queue_state_reads();
+  task_environment.RunUntilIdle();
+
+  // Now we've read the final state for all sites.
+  EXPECT_TRUE(state1.has_value());
+  EXPECT_TRUE(state2.has_value());
+  EXPECT_TRUE(state3.has_value());
 }
