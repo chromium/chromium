@@ -244,13 +244,6 @@ class HardwareDisplayPlaneManager {
 
   virtual std::unique_ptr<HardwareDisplayPlane> CreatePlane(uint32_t plane_id);
 
-  // Finds the plane located at or after |*index| that is not in use and can
-  // be used with |crtc_id|.
-  HardwareDisplayPlane* FindNextUnusedPlane(
-      size_t* index,
-      uint32_t crtc_id,
-      const DrmOverlayPlane& overlay) const;
-
   // Convert |crtc/connector_id| into an index, returning empty if the ID
   // couldn't be found.
   absl::optional<int> LookupCrtcIndex(uint32_t crtc_id) const;

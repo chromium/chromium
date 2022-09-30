@@ -23,6 +23,21 @@
 
 namespace ui {
 
+namespace {
+
+gfx::Rect OverlayPlaneToDrmSrcRect(const DrmOverlayPlane& plane) {
+  const gfx::Size& size = plane.buffer->size();
+  gfx::RectF crop_rectf = plane.crop_rect;
+  crop_rectf.Scale(size.width(), size.height());
+  // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
+  gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
+  // Convert to 16.16 fixed point required by the DRM overlay APIs.
+  return gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
+                   crop_rect.width() << 16, crop_rect.height() << 16);
+}
+
+}  // namespace
+
 HardwareDisplayPlaneList::HardwareDisplayPlaneList() {
   atomic_property_set.reset(drmModeAtomicAlloc());
 }
@@ -93,20 +108,6 @@ std::unique_ptr<HardwareDisplayPlane> HardwareDisplayPlaneManager::CreatePlane(
   return std::make_unique<HardwareDisplayPlane>(id);
 }
 
-HardwareDisplayPlane* HardwareDisplayPlaneManager::FindNextUnusedPlane(
-    size_t* index,
-    uint32_t crtc_id,
-    const DrmOverlayPlane& overlay) const {
-  for (size_t i = *index; i < planes_.size(); ++i) {
-    auto* plane = planes_[i].get();
-    if (!plane->in_use() && IsCompatible(plane, overlay, crtc_id)) {
-      *index = i + 1;
-      return plane;
-    }
-  }
-  return nullptr;
-}
-
 absl::optional<int> HardwareDisplayPlaneManager::LookupCrtcIndex(
     uint32_t crtc_id) const {
   for (size_t i = 0; i < crtc_state_.size(); ++i) {
@@ -139,7 +140,7 @@ base::flat_set<uint32_t> HardwareDisplayPlaneManager::CrtcMaskToCrtcIds(
 bool HardwareDisplayPlaneManager::IsCompatible(HardwareDisplayPlane* plane,
                                                const DrmOverlayPlane& overlay,
                                                uint32_t crtc_id) const {
-  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
+  if (plane->in_use() || plane->type() == DRM_PLANE_TYPE_CURSOR ||
       !plane->CanUseForCrtcId(crtc_id))
     return false;
 
@@ -204,27 +205,25 @@ bool HardwareDisplayPlaneManager::AssignOverlayPlanes(
     HardwareDisplayPlaneList* plane_list,
     const DrmOverlayPlaneList& overlay_list,
     uint32_t crtc_id) {
-  size_t plane_idx = 0;
+  auto hw_planes_iter = planes_.begin();
   for (const auto& plane : overlay_list) {
-    HardwareDisplayPlane* hw_plane =
-        FindNextUnusedPlane(&plane_idx, crtc_id, plane);
+    HardwareDisplayPlane* hw_plane = nullptr;
+    for (; hw_planes_iter != planes_.end(); ++hw_planes_iter) {
+      auto* current = hw_planes_iter->get();
+      if (IsCompatible(current, plane, crtc_id)) {
+        hw_plane = current;
+        ++hw_planes_iter; // bump so we don't assign the same plane twice
+        break;
+      }
+    }
+
     if (!hw_plane) {
       RestoreCurrentPlaneList(plane_list);
       return false;
     }
 
-    gfx::Rect fixed_point_rect;
-    const gfx::Size& size = plane.buffer->size();
-    gfx::RectF crop_rectf = plane.crop_rect;
-    crop_rectf.Scale(size.width(), size.height());
-    // DrmOverlayManager::CanHandleCandidate guarantees this is safe.
-    gfx::Rect crop_rect = gfx::ToNearestRect(crop_rectf);
-    // Convert to 16.16 fixed point required by the DRM overlay APIs.
-    fixed_point_rect =
-        gfx::Rect(crop_rect.x() << 16, crop_rect.y() << 16,
-                  crop_rect.width() << 16, crop_rect.height() << 16);
-
-    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id, fixed_point_rect)) {
+    if (!SetPlaneData(plane_list, hw_plane, plane, crtc_id,
+                      OverlayPlaneToDrmSrcRect(plane))) {
       RestoreCurrentPlaneList(plane_list);
       return false;
     }

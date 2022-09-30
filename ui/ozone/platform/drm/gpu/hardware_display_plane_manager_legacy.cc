@@ -206,7 +206,7 @@ bool HardwareDisplayPlaneManagerLegacy::IsCompatible(
     HardwareDisplayPlane* plane,
     const DrmOverlayPlane& overlay,
     uint32_t crtc_id) const {
-  if (plane->type() == DRM_PLANE_TYPE_CURSOR ||
+  if (plane->in_use() || plane->type() == DRM_PLANE_TYPE_CURSOR ||
       !plane->CanUseForCrtcId(crtc_id))
     return false;
 
