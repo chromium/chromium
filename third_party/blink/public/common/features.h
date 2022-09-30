@@ -660,7 +660,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionDelayLimitParam;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionFeatureLimitParam;
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDelayAsyncScriptUrls);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kDelayAsyncScriptAllowList;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
@@ -674,7 +673,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLowPriorityAsyncScriptExecution);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution;
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
-// than |feature_limit|. Zero value means no limit.
+// than |low_pri_async_exec_feature_limit|. Zero value means no limit.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kLowPriorityAsyncScriptExecutionFeatureLimitParam;
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.

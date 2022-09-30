@@ -1398,7 +1398,7 @@ const base::FeatureParam<DelayAsyncScriptDelayType>::Option
 
 const base::FeatureParam<DelayAsyncScriptDelayType>
     kDelayAsyncScriptExecutionDelayParam{
-        &kDelayAsyncScriptExecution, "delay_type",
+        &kDelayAsyncScriptExecution, "delay_async_exec_delay_type",
         DelayAsyncScriptDelayType::kFinishedParsing,
         &delay_async_script_execution_delay_types};
 
@@ -1412,29 +1412,31 @@ const base::FeatureParam<DelayAsyncScriptTarget>::Option
          "cross_site_with_allow_list_report_only"},
 };
 const base::FeatureParam<DelayAsyncScriptTarget> kDelayAsyncScriptTargetParam{
-    &kDelayAsyncScriptExecution, "target", DelayAsyncScriptTarget::kAll,
-    &delay_async_script_target_types};
+    &kDelayAsyncScriptExecution, "delay_async_exec_target",
+    DelayAsyncScriptTarget::kAll, &delay_async_script_target_types};
 
 // kDelayAsyncScriptExecution will delay executing async script at max
-// |delay_limit|.
+// |delay_async_exec_delay_limit|.
 const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionDelayLimitParam{&kDelayAsyncScriptExecution,
-                                              "delay_limit", base::Seconds(0)};
+                                              "delay_async_exec_delay_limit",
+                                              base::Seconds(0)};
 
 // kDelayAsyncScriptExecution will be disabled after document elapsed more than
-// |feature_limit|. Zero value means no limit.
+// |delay_async_exec_feature_limit|. Zero value means no limit.
 // This is to avoid unnecessary async script delay after LCP (for
 // kEachLcpCandidate or kEachPaint). Because we can't determine the LCP timing
 // while loading, we use timeout instead.
 const base::FeatureParam<base::TimeDelta>
     kDelayAsyncScriptExecutionFeatureLimitParam{
-        &kDelayAsyncScriptExecution, "feature_limit", base::Seconds(0)};
+        &kDelayAsyncScriptExecution, "delay_async_exec_feature_limit",
+        base::Seconds(0)};
 
 const base::FeatureParam<std::string> kDelayAsyncScriptAllowList{
-    &kDelayAsyncScriptExecution, "allow_list", ""};
+    &kDelayAsyncScriptExecution, "delay_async_exec_allow_list", ""};
 
 const base::FeatureParam<bool> kDelayAsyncScriptExecutionMainFrameOnlyParam{
-    &kDelayAsyncScriptExecution, "main_frame_only", false};
+    &kDelayAsyncScriptExecution, "delay_async_exec_main_frame_only", false};
 
 BASE_FEATURE(kLowPriorityAsyncScriptExecution,
              "LowPriorityAsyncScriptExecution",
@@ -1442,35 +1444,40 @@ BASE_FEATURE(kLowPriorityAsyncScriptExecution,
 
 const base::FeatureParam<base::TimeDelta>
     kTimeoutForLowPriorityAsyncScriptExecution{
-        &kLowPriorityAsyncScriptExecution, "timeout", base::Milliseconds(0)};
+        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_timeout",
+        base::Milliseconds(0)};
 
 // kLowPriorityAsyncScriptExecution will be disabled after document elapsed more
-// than |feature_limit|. Zero value means no limit.
+// than |low_pri_async_exec_feature_limit|. Zero value means no limit.
 const base::FeatureParam<base::TimeDelta>
     kLowPriorityAsyncScriptExecutionFeatureLimitParam{
-        &kLowPriorityAsyncScriptExecution, "feature_limit", base::Seconds(0)};
+        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_feature_limit",
+        base::Seconds(0)};
 
 // kLowPriorityAsyncScriptExecution will be applied only for cross site scripts.
 const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionCrossSiteOnlyParam{
-        &kLowPriorityAsyncScriptExecution, "cross_site_only", false};
+        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_cross_site_only",
+        false};
 
 const base::FeatureParam<bool>
     kLowPriorityAsyncScriptExecutionMainFrameOnlyParam{
-        &kLowPriorityAsyncScriptExecution, "main_frame_only", false};
+        &kLowPriorityAsyncScriptExecution, "low_pri_async_exec_main_frame_only",
+        false};
 
 BASE_FEATURE(kLowPriorityScriptLoading,
              "LowPriorityScriptLoading",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kLowPriorityScriptLoadingCrossSiteOnlyParam{
-    &kLowPriorityScriptLoading, "cross_site_only", false};
+    &kLowPriorityScriptLoading, "low_pri_async_loading_cross_site_only", false};
 const base::FeatureParam<base::TimeDelta>
     kLowPriorityScriptLoadingFeatureLimitParam{
-        &kLowPriorityScriptLoading, "feature_limit", base::Seconds(0)};
+        &kLowPriorityScriptLoading, "low_pri_async_loading_feature_limit",
+        base::Seconds(0)};
 const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
-    &kLowPriorityScriptLoading, "deny_list", ""};
+    &kLowPriorityScriptLoading, "low_pri_async_loading_deny_list", ""};
 const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
-    &kLowPriorityScriptLoading, "main_frame_only", false};
+    &kLowPriorityScriptLoading, "low_pri_async_loading_main_frame_only", false};
 
 BASE_FEATURE(kDOMContentLoadedWaitForAsyncScript,
              "DOMContentLoadedWaitForAsyncScript",
