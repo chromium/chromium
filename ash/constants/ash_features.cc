@@ -680,7 +680,7 @@ BASE_FEATURE(kEcheSWAMeasureLatency,
 // Enables sending start signaling to establish Eche's WebRTC connection.
 BASE_FEATURE(kEcheSWASendStartSignaling,
              "EcheSWASendStartSignaling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows disabling the stun servers when establishing a WebRTC connection to
 // Eche.
