@@ -291,6 +291,9 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
     const gfx::AxisTransform2d& raster_transform,
     scoped_refptr<RasterSource> raster_source,
     bool can_use_lcd_text) {
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("PictureLayerTilingSet::AddTiling");
+
   if (!raster_source_)
     raster_source_ = raster_source;
 

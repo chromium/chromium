@@ -22,6 +22,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
@@ -1322,8 +1323,14 @@ void LayerTreeImpl::SetElementIdsForTesting() {
 bool LayerTreeImpl::UpdateDrawProperties(
     bool update_image_animation_controller,
     LayerImplList* output_update_layer_list_for_testing) {
-  if (!needs_update_draw_properties_)
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties Start");
+
+  if (!needs_update_draw_properties_) {
+    // https://linear.app/replay/issue/RUN-550
+    recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties #1");
     return true;
+  }
 
   TRACE_EVENT0("cc,benchmark", "LayerTreeImpl::UpdateDrawProperties");
 
@@ -1338,15 +1345,21 @@ bool LayerTreeImpl::UpdateDrawProperties(
 
   // For max_texture_size. When a new output surface is received the needs
   // update draw properties flag is set again.
-  if (!host_impl_->layer_tree_frame_sink())
+  if (!host_impl_->layer_tree_frame_sink()) {
+    // https://linear.app/replay/issue/RUN-550
+    recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties #2");
     return false;
+  }
 
   // Clear this after the renderer early out, as it should still be
   // possible to hit test even without a renderer.
   render_surface_list_.clear();
 
-  if (layer_list_.empty())
+  if (layer_list_.empty()) {
+    // https://linear.app/replay/issue/RUN-550
+    recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties #3");
     return false;
+  }
 
   {
     base::ElapsedTimer timer;
@@ -1453,6 +1466,9 @@ bool LayerTreeImpl::UpdateDrawProperties(
   if (update_image_animation_controller && image_animation_controller()) {
     image_animation_controller()->UpdateStateFromDrivers();
   }
+
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("LayerTreeImpl::UpdateDrawProperties Done");
 
   device_viewport_rect_changed_ = false;
 

@@ -587,7 +587,13 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 }
 
 bool PictureLayerImpl::UpdateTiles() {
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("PictureLayerImpl::UpdateTiles Start %d", id());
+
   if (!CanHaveTilings()) {
+    // https://linear.app/replay/issue/RUN-550
+    recordreplay::Assert("PictureLayerImpl::UpdateTiles #1");
+
     ideal_page_scale_ = 0.f;
     ideal_device_scale_ = 0.f;
     ideal_contents_scale_ = 0.f;
@@ -662,6 +668,10 @@ bool PictureLayerImpl::UpdateTiles() {
       can_require_tiles_for_activation);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
+
+  // https://linear.app/replay/issue/RUN-550
+  recordreplay::Assert("PictureLayerImpl::UpdateTiles Done %d", updated);
+
   return updated;
 }
 
