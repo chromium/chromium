@@ -66,12 +66,7 @@ void HardwareDisplayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("owning_crtc", owning_crtc_);
   dict.Add("in_use", in_use_);
 
-  {
-    auto array = dict.AddArray("possible_crtc_ids");
-    for (auto id : possible_crtc_ids_) {
-      array.AppendItem().WriteUInt64(id);
-    }
-  }
+  dict.Add("possible_crtc_ids", possible_crtc_ids_);
 
   auto type = dict.AddItem("type");
   switch (properties_.type.value) {

@@ -56,12 +56,7 @@ void CrtcCommitRequest::WriteIntoTrace(perfetto::TracedValue context) const {
       plane_list_->WriteIntoTrace(std::move(hardware_display_plane_list));
   }
 
-  {
-    auto array = dict.AddArray("overlays");
-    for (auto& overlay : overlays_) {
-      overlay.WriteIntoTrace(array.AppendItem());
-    }
-  }
+  dict.Add("overlays", overlays_);
 }
 
 // static

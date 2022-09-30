@@ -109,7 +109,7 @@ void ParamsToTracedValue(
     const ScreenManager::ControllerConfigsList& controllers_params,
     uint32_t modeset_flag) {
   auto dict = std::move(context).WriteDictionary();
-  dict.AddItem("modeset_flag").WriteUInt64(modeset_flag);
+  dict.Add("modeset_flag", modeset_flag);
 
   auto array = dict.AddArray("param");
   for (const auto& param : controllers_params) {
@@ -834,12 +834,7 @@ void ScreenManager::UpdateControllerToWindowMapping() {
 void ScreenManager::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
 
-  {
-    auto array = dict.AddArray("hardware_display_controllers");
-    for (const auto& controller : controllers_) {
-      controller->WriteIntoTrace(array.AppendItem());
-    }
-  }
+  dict.Add("hardware_display_controllers", controllers_);
 
   {
     auto array = dict.AddArray("drm_devices");
@@ -849,7 +844,7 @@ void ScreenManager::WriteIntoTrace(perfetto::TracedValue context) const {
         continue;
 
       seen_devices.insert(controller->GetDrmDevice()->device_path());
-      controller->GetDrmDevice()->WriteIntoTrace(array.AppendItem());
+      array.Append(controller->GetDrmDevice());
     }
   }
 

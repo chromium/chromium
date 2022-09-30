@@ -41,18 +41,9 @@ HardwareDisplayPlaneList::PageFlipInfo::~PageFlipInfo() = default;
 void HardwareDisplayPlaneList::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
-  {
-    auto array = dict.AddArray("plane_list");
-    for (const auto* plane : plane_list) {
-      plane->WriteIntoTrace(array.AppendItem());
-    }
-  }
-  {
-    auto array = dict.AddArray("old_plane_list");
-    for (const auto* plane : old_plane_list) {
-      plane->WriteIntoTrace(array.AppendItem());
-    }
-  }
+
+  dict.Add("plane_list", plane_list);
+  dict.Add("old_plane_list", old_plane_list);
 }
 
 HardwareDisplayPlaneManager::CrtcProperties::CrtcProperties() = default;

@@ -616,13 +616,7 @@ void DrmDevice::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
 
   dict.Add("device_path", device_path_.value());
-
-  {
-    auto array = dict.AddArray("planes");
-    for (const auto& plane : plane_manager_->planes()) {
-      plane->WriteIntoTrace(array.AppendItem());
-    }
-  }
+  dict.Add("planes", plane_manager_->planes());
 }
 
 bool DrmDevice::SetGammaRamp(

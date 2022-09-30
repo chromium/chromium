@@ -488,13 +488,8 @@ void HardwareDisplayController::WriteIntoTrace(
   dict.Add("cursor_location", cursor_location_.ToString());
   dict.Add("has_page_flip_request", page_flip_request_ != nullptr);
 
-  owned_hardware_planes_.WriteIntoTrace(dict.AddItem("owned_hardware_planes"));
-
-  {
-    auto array = dict.AddArray("crtc_controllers");
-    for (const auto& crtc : crtc_controllers_)
-      crtc->WriteIntoTrace(array.AppendItem());
-  }
+  dict.Add("owned_hardware_planes", owned_hardware_planes_);
+  dict.Add("crtc_controllers", crtc_controllers_);
 
   {
     auto array = dict.AddArray("preferred_format_modifiers");
