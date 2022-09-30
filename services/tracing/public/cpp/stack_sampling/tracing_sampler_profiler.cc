@@ -729,8 +729,12 @@ TracingSamplerProfiler::StackProfileWriter::GetCallstackIDAndMaybeEmit(
 
   auto* callstack_entry = interned_data->add_callstacks();
   callstack_entry->set_iid(interned_callstack.id);
-  for (auto& frame_id : frame_ids)
-    callstack_entry->add_frame_ids(frame_id);
+  // base::Unwinder starts from stack top and works to the bottom, but our
+  // Callstack proto wants bottom first to stack top, so we iterate in reverse.
+  // See b/241357440 for context.
+  for (auto it = frame_ids.rbegin(); it != frame_ids.rend(); ++it) {
+    callstack_entry->add_frame_ids(*it);
+  }
 
   return interned_callstack.id;
 }
