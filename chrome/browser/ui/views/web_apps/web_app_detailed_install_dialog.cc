@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/common/constants.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -334,6 +335,11 @@ void ShowWebAppDetailedInstallDialog(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
                   std::make_unique<ImageCarouselView>(screenshots),
                   views::BubbleDialogModelHost::FieldType::kControl))
+          .SetDialogDestroyingCallback(base::BindOnce(
+              [](web_app::WebAppDetailedInstallDialogDelegate* delegate) {
+                delegate->OnCancel();
+              },
+              base::Unretained(delegate_ptr)))
           .Build();
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
@@ -354,7 +360,8 @@ WebAppDetailedInstallDialogDelegate::WebAppDetailedInstallDialogDelegate(
     chrome::PwaInProductHelpState iph_state,
     PrefService* prefs,
     feature_engagement::Tracker* tracker)
-    : web_contents_(web_contents),
+    : WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       install_info_(std::move(web_app_info)),
       callback_(std::move(callback)),
       iph_state_(std::move(iph_state)),
@@ -371,10 +378,18 @@ WebAppDetailedInstallDialogDelegate::~WebAppDetailedInstallDialogDelegate() {
     return;
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  // Dehighlight the install icon when this dialog is closed.
-  browser_view->toolbar_button_provider()
-      ->GetPageActionIconView(PageActionIconType::kPwaInstall)
-      ->SetHighlighted(false);
+
+  if (browser_view && browser_view->toolbar_button_provider()) {
+    PageActionIconView* install_icon =
+        browser_view->toolbar_button_provider()->GetPageActionIconView(
+            PageActionIconType::kPwaInstall);
+    if (install_icon) {
+      // Dehighlight the install icon when this dialog is closed.
+      browser_view->toolbar_button_provider()
+          ->GetPageActionIconView(PageActionIconType::kPwaInstall)
+          ->SetHighlighted(false);
+    }
+  }
 }
 
 void WebAppDetailedInstallDialogDelegate::OnAccept() {
@@ -390,6 +405,9 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
 }
 
 void WebAppDetailedInstallDialogDelegate::OnCancel() {
+  if (callback_.is_null())
+    return;
+
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
   if (iph_state_ == chrome::PwaInProductHelpState::kShown && install_info_) {
     web_app::AppId app_id = web_app::GenerateAppId(install_info_->manifest_id,
@@ -398,6 +416,36 @@ void WebAppDetailedInstallDialogDelegate::OnCancel() {
   }
 
   std::move(callback_).Run(false, std::move(install_info_));
+}
+
+void WebAppDetailedInstallDialogDelegate::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN)
+    CloseDialog();
+}
+
+void WebAppDetailedInstallDialogDelegate::WebContentsDestroyed() {
+  CloseDialog();
+}
+
+void WebAppDetailedInstallDialogDelegate::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  // Close dialog when navigating to a different domain.
+  if (!url::IsSameOriginWith(
+          navigation_handle->GetPreviousPrimaryMainFrameURL(),
+          navigation_handle->GetURL())) {
+    CloseDialog();
+  }
+}
+
+void WebAppDetailedInstallDialogDelegate::CloseDialog() {
+  if (dialog_model() && dialog_model()->host())
+    dialog_model()->host()->Close();
 }
 
 }  // namespace web_app
