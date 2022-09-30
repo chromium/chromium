@@ -832,7 +832,7 @@ void ArcNotificationContentView::GetAccessibleNodeData(
         l10n_util::GetStringUTF8(
             IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
   }
-  node_data->SetName(accessible_name_);
+  node_data->SetNameChecked(accessible_name_);
 }
 
 void ArcNotificationContentView::OnAccessibilityEvent(ax::mojom::Event event) {
