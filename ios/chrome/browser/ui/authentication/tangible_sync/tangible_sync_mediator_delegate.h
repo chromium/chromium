@@ -19,6 +19,10 @@
 // Notifies the delegate that the user has been removed.
 - (void)tangibleSyncMediatorUserRemoved:(TangibleSyncMediator*)mediator;
 
+// Sets the UI as interactable or not.
+- (void)tangibleSyncMediator:(TangibleSyncMediator*)mediator
+                   UIEnabled:(BOOL)UIEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_TANGIBLE_SYNC_TANGIBLE_SYNC_MEDIATOR_DELEGATE_H_

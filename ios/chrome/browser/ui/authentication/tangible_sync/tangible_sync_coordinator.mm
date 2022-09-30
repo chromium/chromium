@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
@@ -34,7 +35,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface TangibleSyncCoordinator () <TangibleSyncMediatorDelegate,
+@interface TangibleSyncCoordinator () <AuthenticationFlowDelegate,
+                                       TangibleSyncMediatorDelegate,
                                        TangibleSyncViewControllerDelegate>
 @end
 
@@ -51,6 +53,7 @@
   NSMutableArray* _consentStringIDs;
   // `YES` if coordinator used during the first run.
   BOOL _firstRun;
+  ActivityOverlayCoordinator* _activityOverlayCoordinator;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -113,6 +116,16 @@
   _viewController = nil;
 }
 
+#pragma mark - AuthenticationFlowDelegate
+
+- (void)didPresentDialog {
+  [self setUIEnabled:YES];
+}
+
+- (void)didDismissDialog {
+  [self setUIEnabled:NO];
+}
+
 #pragma mark - TangibleSyncMediatorDelegate
 
 - (void)tangibleSyncMediatorDidSuccessfulyFinishSignin:
@@ -136,6 +149,11 @@
   DCHECK(self.coordinatorCompleted);
   self.coordinatorCompleted(NO);
   self.coordinatorCompleted = nil;
+}
+
+- (void)tangibleSyncMediator:(TangibleSyncMediator*)mediator
+                   UIEnabled:(BOOL)UIEnabled {
+  [self setUIEnabled:UIEnabled];
 }
 
 #pragma mark - TangibleSyncViewControllerDelegate
@@ -200,7 +218,7 @@
                          presentingViewController:_viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowsingDataCommands);
-  authenticationFlow.delegate = _viewController;
+  authenticationFlow.delegate = self;
 
   [_mediator startSyncWithConfirmationID:_viewController.activateSyncButtonID
                               consentIDs:_consentStringIDs
@@ -233,6 +251,22 @@
   DCHECK(_advancedSettingsSigninCoordinator);
   [_advancedSettingsSigninCoordinator stop];
   _advancedSettingsSigninCoordinator = nil;
+}
+
+// Adds an overlay to block the UI if `UIEnabled` is `YES`, otherwise, removes
+// the overlay.
+- (void)setUIEnabled:(BOOL)UIEnabled {
+  if (UIEnabled) {
+    DCHECK(_activityOverlayCoordinator);
+    [_activityOverlayCoordinator stop];
+    _activityOverlayCoordinator = nil;
+  } else {
+    DCHECK(!_activityOverlayCoordinator);
+    _activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
+        initWithBaseViewController:_viewController
+                           browser:self.browser];
+    [_activityOverlayCoordinator start];
+  }
 }
 
 @end

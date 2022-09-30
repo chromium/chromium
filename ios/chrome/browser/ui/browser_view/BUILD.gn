@@ -112,7 +112,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/dialogs:dialogs_internal",
     "//ios/chrome/browser/ui/download",
     "//ios/chrome/browser/ui/download:features",
-    "//ios/chrome/browser/ui/elements:elements_internal",
+    "//ios/chrome/browser/ui/elements:activity_overlay",
     "//ios/chrome/browser/ui/find_bar",
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:utils",

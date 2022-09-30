@@ -38,6 +38,20 @@ source_set("elements") {
   ]
 }
 
+source_set("activity_overlay") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "activity_overlay_coordinator.h",
+    "activity_overlay_coordinator.mm",
+  ]
+  deps = [
+    ":elements_internal",
+    "//base",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
 source_set("constants") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -57,6 +71,7 @@ source_set("unit_tests") {
     "windowed_container_view_unittest.mm",
   ]
   deps = [
+    ":activity_overlay",
     ":elements",
     ":elements_internal",
     "//base",
@@ -72,8 +87,6 @@ source_set("unit_tests") {
 source_set("elements_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "activity_overlay_coordinator.h",
-    "activity_overlay_coordinator.mm",
     "activity_overlay_view.h",
     "activity_overlay_view.mm",
     "activity_overlay_view_controller.h",

@@ -85,7 +85,7 @@
     advancedSyncSettingsLinkWasTapped:(BOOL)advancedSyncSettingsLinkWasTapped {
   DCHECK(!_authenticationFlow);
 
-  [self.consumer setUIEnabled:NO];
+  [self.delegate tangibleSyncMediator:self UIEnabled:NO];
 
   // Local copy to be captured.
   NSArray<NSNumber*>* consentIDsCopy = [consentIDs copy];
@@ -145,7 +145,7 @@
                         consentIDs:(NSArray<NSNumber*>*)consentIDs
          advancedSettingsRequested:(BOOL)advancedSettingsRequested {
   _authenticationFlow = nil;
-  [self.consumer setUIEnabled:YES];
+  [self.delegate tangibleSyncMediator:self UIEnabled:YES];
 
   if (!success) {
     return;

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 
-#import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,10 +22,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 
 }  // namespace
 
-@implementation TangibleSyncViewController {
-  // Scrim displayed above the view when the UI is disabled.
-  ActivityOverlayView* _overlay;
-}
+@implementation TangibleSyncViewController
 
 @dynamic delegate;
 @synthesize primaryIdentityAvatarImage = _primaryIdentityAvatarImage;
@@ -93,37 +89,12 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   [self.delegate logScrollButtonVisible:!self.didReachBottom];
 }
 
-#pragma mark - AuthenticationFlowDelegate
-
-- (void)didPresentDialog {
-  DCHECK(_overlay);
-  [_overlay.indicator stopAnimating];
-}
-
-- (void)didDismissDialog {
-  DCHECK(_overlay);
-  [_overlay.indicator startAnimating];
-}
-
 #pragma mark - TangibleSyncConsumer
 
 - (void)setPrimaryIdentityAvatarImage:(UIImage*)primaryIdentityAvatarImage {
   if (_primaryIdentityAvatarImage != primaryIdentityAvatarImage) {
     _primaryIdentityAvatarImage = primaryIdentityAvatarImage;
     self.avatarImage = primaryIdentityAvatarImage;
-  }
-}
-
-- (void)setUIEnabled:(BOOL)UIEnabled {
-  if (UIEnabled) {
-    [_overlay removeFromSuperview];
-    _overlay = nil;
-  } else {
-    _overlay = [[ActivityOverlayView alloc] init];
-    _overlay.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_overlay];
-    AddSameConstraints(self.view, _overlay);
-    [_overlay.indicator startAnimating];
   }
 }
 
