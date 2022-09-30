@@ -956,7 +956,7 @@ constexpr TimeDelta TimeBase<TimeClass>::since_origin() const {
 template <class TimeClass>
 constexpr TimeDelta TimeBase<TimeClass>::operator-(
     const TimeBase<TimeClass>& other) const {
-  return Microseconds(us_ - other.us_);
+  return Microseconds(ClampSub(us_, other.us_));
 }
 
 template <class TimeClass>

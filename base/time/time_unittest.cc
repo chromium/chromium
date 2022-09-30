@@ -857,6 +857,8 @@ TEST_F(TimeTest, Max) {
   static_assert(kMax == Time::Max(), "");
   EXPECT_GT(kMax, Time::Now());
   static_assert(kMax > Time(), "");
+  EXPECT_TRUE((Time::Now() - kMax).is_negative());
+  EXPECT_TRUE((kMax - Time::Now()).is_positive());
 }
 
 TEST_F(TimeTest, MaxConversions) {
@@ -905,6 +907,16 @@ TEST_F(TimeTest, MaxConversions) {
   EXPECT_EQ(std::numeric_limits<DWORD>::max(), ftime.dwHighDateTime);
   EXPECT_EQ(std::numeric_limits<DWORD>::max(), ftime.dwLowDateTime);
 #endif
+}
+
+TEST_F(TimeTest, Min) {
+  constexpr Time kMin = Time::Min();
+  static_assert(kMin.is_min(), "");
+  static_assert(kMin == Time::Min(), "");
+  EXPECT_LT(kMin, Time::Now());
+  static_assert(kMin < Time(), "");
+  EXPECT_TRUE((Time::Now() - kMin).is_positive());
+  EXPECT_TRUE((kMin - Time::Now()).is_negative());
 }
 
 #if BUILDFLAG(IS_APPLE)
