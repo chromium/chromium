@@ -46,6 +46,7 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned minUniformBufferOffsetAlignment() const;
   unsigned minStorageBufferOffsetAlignment() const;
   unsigned maxVertexBuffers() const;
+  uint64_t maxBufferSize() const;
   unsigned maxVertexAttributes() const;
   unsigned maxVertexBufferArrayStride() const;
   unsigned maxInterStageShaderComponents() const;

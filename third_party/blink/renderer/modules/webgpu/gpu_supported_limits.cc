@@ -27,6 +27,7 @@
   X(minUniformBufferOffsetAlignment)           \
   X(minStorageBufferOffsetAlignment)           \
   X(maxVertexBuffers)                          \
+  X(maxBufferSize)                             \
   X(maxVertexAttributes)                       \
   X(maxVertexBufferArrayStride)                \
   X(maxInterStageShaderComponents)             \
