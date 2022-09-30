@@ -60,7 +60,7 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
 
 InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     const GURL& url,
-    WebAppUrlLoader& url_loader,
+    std::unique_ptr<WebAppUrlLoader> url_loader,
     WebAppInstallFinalizer& install_finalizer,
     base::OnceCallback<void(base::expected<InstallIsolatedAppCommandSuccess,
                                            InstallIsolatedAppCommandError>)>
@@ -68,7 +68,7 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
     : lock_(std::make_unique<SharedWebContentsWithAppLock>(
           base::flat_set<AppId>{GenerateAppId("", GURL{url})})),
       url_(url),
-      url_loader_(url_loader),
+      url_loader_(std::move(url_loader)),
       install_finalizer_(install_finalizer),
       data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -103,10 +103,10 @@ void InstallIsolatedAppCommand::Start() {
 void InstallIsolatedAppCommand::LoadUrl() {
   DCHECK(url_.is_valid());
 
-  url_loader_.LoadUrl(url_, shared_web_contents(),
-                      WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
-                      base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl,
-                                     weak_factory_.GetWeakPtr()));
+  url_loader_->LoadUrl(url_, shared_web_contents(),
+                       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
+                       base::BindOnce(&InstallIsolatedAppCommand::OnLoadUrl,
+                                      weak_factory_.GetWeakPtr()));
 }
 
 void InstallIsolatedAppCommand::OnLoadUrl(WebAppUrlLoaderResult result) {

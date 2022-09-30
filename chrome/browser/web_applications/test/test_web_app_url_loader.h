@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -20,12 +21,6 @@ namespace web_app {
 
 class TestWebAppUrlLoader : public WebAppUrlLoader {
  public:
-  struct LoadUrlCall {
-    GURL url;
-    base::raw_ptr<content::WebContents> web_contents;
-    UrlComparison url_comparison;
-  };
-
   TestWebAppUrlLoader();
   TestWebAppUrlLoader(const TestWebAppUrlLoader&) = delete;
   TestWebAppUrlLoader& operator=(const TestWebAppUrlLoader&) = delete;
@@ -57,8 +52,13 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
   void SetPrepareForLoadResultLoaded();
   void AddPrepareForLoadResults(const std::vector<Result>& results);
 
-  absl::optional<LoadUrlCall> last_load_url_call() const {
-    return last_load_url_call_;
+  void TrackLoadUrlCalls(
+      base::RepeatingCallback<void(const GURL& url,
+                                   content::WebContents* web_contents,
+                                   UrlComparison url_comparison)>
+
+          load_url_tracker) {
+    load_url_tracker_ = std::move(load_url_tracker);
   }
 
  private:
@@ -76,7 +76,10 @@ class TestWebAppUrlLoader : public WebAppUrlLoader {
 
   std::queue<std::pair<GURL, ResultCallback>> pending_requests_;
 
-  absl::optional<LoadUrlCall> last_load_url_call_ = absl::nullopt;
+  base::RepeatingCallback<void(const GURL& url,
+                               content::WebContents* web_contents,
+                               UrlComparison url_comparison)>
+      load_url_tracker_ = base::DoNothing();
 };
 
 }  // namespace web_app

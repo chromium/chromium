@@ -48,17 +48,11 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
             base::BindOnce(
                 [](WebAppProvider& provider, GURL url,
                    base::OnceClosure callback) {
-                  std::unique_ptr<WebAppUrlLoader> url_loader =
-                      std::make_unique<WebAppUrlLoader>();
-
-                  WebAppUrlLoader& url_loader_ref = *url_loader;
-
                   base::OnceCallback<void(
                       base::expected<InstallIsolatedAppCommandSuccess,
                                      InstallIsolatedAppCommandError>)>
                       install_isolated_app_callback = base::BindOnce(
-                          [](std::unique_ptr<WebAppUrlLoader> url_loader,
-                             base::expected<InstallIsolatedAppCommandSuccess,
+                          [](base::expected<InstallIsolatedAppCommandSuccess,
                                             InstallIsolatedAppCommandError>
                                  result) {
                             if (!result.has_value()) {
@@ -66,13 +60,13 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
                                             "failed. Error: "
                                          << result.error();
                             }
-                          },
-                          std::move(url_loader));
+                          });
 
                   DCHECK(url.is_valid());
                   std::unique_ptr<InstallIsolatedAppCommand> command =
                       std::make_unique<InstallIsolatedAppCommand>(
-                          url, url_loader_ref, provider.install_finalizer(),
+                          url, std::make_unique<WebAppUrlLoader>(),
+                          provider.install_finalizer(),
                           std::move(install_isolated_app_callback)
                               .Then(std::move(callback)));
                   provider.command_manager().ScheduleCommand(
