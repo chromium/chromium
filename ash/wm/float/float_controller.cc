@@ -11,38 +11,47 @@
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/color_util.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/splitview/split_view_constants.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_event_handler.h"
 #include "base/check_op.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/constants.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
 
-constexpr int kTuckHandleWidth = 20;
-constexpr int kTuckHandleHeight = 116;
+constexpr float kTuckHandleCornerRadius = 12;
+constexpr int kTuckHandleIconSize = 16;
+constexpr int kTuckHandleWidth = 24;
+constexpr int kTuckHandleHeight = 100;
 
 // Disables the window's position auto management and returns its original
 // value.
@@ -86,30 +95,37 @@ void ShowFloatedWindow(aura::Window* floated_window) {
 
 }  // namespace
 
-// The handle that allows users to bring tucked windows back onscreen.
-class FloatController::TuckHandle : public views::Button {
+// -----------------------------------------------------------------------------
+// FloatController::TuckHandle:
+
+// Represents a tuck handle that untucks floated windows from offscreen.
+class FloatController::TuckHandle : public views::ImageButton {
  public:
-  explicit TuckHandle(aura::Window* window)
-      : views::Button(base::BindRepeating(&TuckHandle::OnButtonPressed,
-                                          base::Unretained(this))),
-        window_(window) {
-    // TODO(sophiewen): Update with UI specs.
-    SetBackground(views::CreateSolidBackground(SK_ColorRED));
+  TuckHandle(base::RepeatingClosure callback, const gfx::VectorIcon* icon)
+      : views::ImageButton(callback), icon_(icon) {
+    SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+    SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    SetFlipCanvasOnPaintForRTLUI(false);
     SetFocusBehavior(FocusBehavior::NEVER);
   }
   TuckHandle(const TuckHandle&) = delete;
+  TuckHandle& operator=(const TuckHandle&) = delete;
   ~TuckHandle() override = default;
 
- private:
-  void OnButtonPressed() {
-    // Untuck the window, which sets the window bounds back onscreen.
-    // Destroys `this`.
-    Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
-        window_);
+  // views::ImageButton:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    SetBackground(views::CreateSolidBackground(ColorUtil::GetSecondToneColor(
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+            ? SK_ColorWHITE
+            : SK_ColorBLACK)));
+    SetImage(views::Button::STATE_NORMAL,
+             gfx::CreateVectorIcon(*icon_, kTuckHandleIconSize, SK_ColorWHITE));
   }
 
-  // The window that the handle is attached to. Must be floated and tucked.
-  aura::Window* window_;
+ private:
+  // The untuck icon.
+  const gfx::VectorIcon* const icon_;
 };
 
 // Scoped class which makes modifications while a window is tucked. It owns a
@@ -136,11 +152,10 @@ class FloatController::ScopedWindowTucker {
                                                  false);
     params.name = "TuckHandleWidget";
     tuck_handle_widget_->Init(std::move(params));
-    tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(window_));
-    tuck_handle_widget_->Show();
 
     // The window should already be tucked offscreen.
     gfx::Point tuck_handle_origin = window_->GetTargetBounds().left_center();
+    bool left = true;
     switch (magnetism_corner) {
       case MagnetismCorner::kTopLeft:
       case MagnetismCorner::kBottomLeft:
@@ -153,10 +168,33 @@ class FloatController::ScopedWindowTucker {
         tuck_handle_origin =
             window_->GetTargetBounds().left_center() -
             gfx::Vector2d(kTuckHandleWidth, kTuckHandleHeight / 2);
+        left = false;
         break;
     }
+    tuck_handle_widget_->SetContentsView(std::make_unique<TuckHandle>(
+        base::BindRepeating(&ScopedWindowTucker::OnButtonPressed,
+                            base::Unretained(this)),
+        left ? &kKsvArrowRightIcon : &kKsvArrowLeftIcon));
+    ui::Layer* layer = tuck_handle_widget_->GetLayer();
+    layer->SetFillsBoundsOpaquely(false);
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    if (left) {
+      layer->SetRoundedCornerRadius(
+          {0, kTuckHandleCornerRadius, kTuckHandleCornerRadius, 0});
+    } else {
+      layer->SetRoundedCornerRadius(
+          {kTuckHandleCornerRadius, 0, 0, kTuckHandleCornerRadius});
+    }
+    tuck_handle_widget_->Show();
     tuck_handle_widget_->SetBounds(gfx::Rect(
         tuck_handle_origin, gfx::Size(kTuckHandleWidth, kTuckHandleHeight)));
+  }
+
+  void OnButtonPressed() {
+    // Untuck the window, which sets the window bounds back onscreen.
+    // Destroys `this`.
+    Shell::Get()->float_controller()->MaybeUntuckFloatedWindowForTablet(
+        window_);
   }
 
  private:
