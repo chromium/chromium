@@ -112,6 +112,11 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   absl::optional<gfx::RectF> bounding_box =
       ClipPathClipper::LocalClipPathBoundingBox(clip_path_owner);
   DCHECK(bounding_box);
+
+  // Pixel snap bounding rect to allow for the proper painting of partially
+  // opaque pixels
+  *bounding_box = gfx::RectF(gfx::ToEnclosingRect(*bounding_box));
+
   // The mask image should be the same size as the bounding rect, but will have
   // an origin of 0,0 as it has its own coordinate space.
   gfx::RectF src_rect = gfx::RectF(bounding_box.value().size());
