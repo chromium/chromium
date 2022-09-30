@@ -4,8 +4,6 @@
 
 #include "base/allocator/partition_alloc_support.h"
 
-#include <inttypes.h>
-
 #include <array>
 #include <cinttypes>
 #include <cstdint>
