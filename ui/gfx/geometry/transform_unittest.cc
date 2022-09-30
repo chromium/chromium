@@ -208,19 +208,19 @@ TEST(XFormTest, PrePostOperations) {
   auto m1 = Transform::Affine(1, 2, 3, 4, 5, 6);
   auto m2 = m1;
   m1.Translate(10, 20);
-  m2.PreconcatTransform(Transform::MakeTranslation(10, 20));
+  m2.PreConcat(Transform::MakeTranslation(10, 20));
   EXPECT_EQ(m1, m2);
 
   m1.PostTranslate(11, 22);
-  m2.ConcatTransform(Transform::MakeTranslation(11, 22));
+  m2.PostConcat(Transform::MakeTranslation(11, 22));
   EXPECT_EQ(m1, m2);
 
   m1.Scale(3, 4);
-  m2.PreconcatTransform(Transform::MakeScale(3, 4));
+  m2.PreConcat(Transform::MakeScale(3, 4));
   EXPECT_EQ(m1, m2);
 
   m1.PostScale(5, 6);
-  m2.ConcatTransform(Transform::MakeScale(5, 6));
+  m2.PostConcat(Transform::MakeScale(5, 6));
   EXPECT_EQ(m1, m2);
 }
 
@@ -1167,7 +1167,7 @@ TEST(XFormTest, VerifyBlendForCompositeTransform) {
       2.0, 2.0, SkDoubleToScalar(1 / expectedEndOfAnimation.rc(3.0, 3.0)));
   normalizationMatrix.set_rc(
       3.0, 3.0, SkDoubleToScalar(1 / expectedEndOfAnimation.rc(3.0, 3.0)));
-  normalizedExpectedEndOfAnimation.PreconcatTransform(normalizationMatrix);
+  normalizedExpectedEndOfAnimation.PreConcat(normalizationMatrix);
 
   EXPECT_TRUE(MatricesAreNearlyEqual(normalizedExpectedEndOfAnimation, to));
 }
@@ -1599,7 +1599,7 @@ TEST(XFormTest, verifyMatrixMultiplication) {
   Transform B;
   InitializeTestMatrix2(&B);
 
-  A.PreconcatTransform(B);
+  A.PreConcat(B);
   EXPECT_ROW1_EQ(2036.0f, 2292.0f, 2548.0f, 2804.0f, A);
   EXPECT_ROW2_EQ(2162.0f, 2434.0f, 2706.0f, 2978.0f, A);
   EXPECT_ROW3_EQ(2288.0f, 2576.0f, 2864.0f, 3152.0f, A);
@@ -3000,7 +3000,7 @@ TEST(XFormTest, PreConcatAxisTransform2d) {
   auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
   auto t1 = t;
   t.PreConcat(axis);
-  t1.PreconcatTransform(axis_full);
+  t1.PreConcat(axis_full);
   EXPECT_EQ(t, t1);
 }
 
@@ -3011,7 +3011,7 @@ TEST(XFormTest, PostConcatAxisTransform2d) {
   auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
   auto t1 = t;
   t.PostConcat(axis);
-  t1.ConcatTransform(axis_full);
+  t1.PostConcat(axis_full);
   EXPECT_EQ(t, t1);
 }
 

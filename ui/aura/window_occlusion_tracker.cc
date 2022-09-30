@@ -90,8 +90,8 @@ gfx::Transform GetWindowTransformRelativeToRoot(
                           static_cast<float>(window->layer()->bounds().y()));
     transform_relative_to_root = window->layer()->transform();
   }
-  transform_relative_to_root.ConcatTransform(translation);
-  transform_relative_to_root.ConcatTransform(parent_transform_relative_to_root);
+  transform_relative_to_root.PostConcat(translation);
+  transform_relative_to_root.PostConcat(parent_transform_relative_to_root);
   return transform_relative_to_root;
 }
 

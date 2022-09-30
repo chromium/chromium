@@ -451,7 +451,7 @@ bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
   if (transform_tree_index != root_id)
     property_trees->transform_tree().CombineTransformsBetween(
         transform_tree_index, root_id, &to_3d_root);
-  to_3d_root.PreconcatTransform(root_node->to_parent);
+  to_3d_root.PreConcat(root_node->to_parent);
   return to_3d_root.IsBackFaceVisible();
 }
 
@@ -606,7 +606,7 @@ gfx::Transform ScreenSpaceTransformInternal(LayerType* layer,
       gfx::Transform::MakeTranslation(layer->offset_to_transform_parent().x(),
                                       layer->offset_to_transform_parent().y());
   gfx::Transform ssxform = tree.ToScreen(layer->transform_tree_index());
-  xform.ConcatTransform(ssxform);
+  xform.PostConcat(ssxform);
   return xform;
 }
 

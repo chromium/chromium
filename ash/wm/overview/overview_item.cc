@@ -495,7 +495,7 @@ void OverviewItem::AnimateAndCloseWindow(bool up) {
     ScopedOverviewAnimationSettings settings(
         OVERVIEW_ANIMATION_CLOSE_OVERVIEW_ITEM, window);
     gfx::Transform original_transform = window->transform();
-    original_transform.ConcatTransform(transform);
+    original_transform.PostConcat(transform);
     window->SetTransform(original_transform);
     if (observe) {
       settings.AddObserver(new AnimationObserver{

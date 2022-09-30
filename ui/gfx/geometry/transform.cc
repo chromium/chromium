@@ -83,20 +83,17 @@ void Transform::GetColMajorF(float a[16]) const {
 
 void Transform::RotateAboutXAxis(double degrees) {
   double radians = gfx::DegToRad(degrees);
-  PreconcatTransform(
-      RotationAboutXAxisSinCos(std::sin(radians), std::cos(radians)));
+  PreConcat(RotationAboutXAxisSinCos(std::sin(radians), std::cos(radians)));
 }
 
 void Transform::RotateAboutYAxis(double degrees) {
   double radians = gfx::DegToRad(degrees);
-  PreconcatTransform(
-      RotationAboutYAxisSinCos(std::sin(radians), std::cos(radians)));
+  PreConcat(RotationAboutYAxisSinCos(std::sin(radians), std::cos(radians)));
 }
 
 void Transform::RotateAboutZAxis(double degrees) {
   double radians = gfx::DegToRad(degrees);
-  PreconcatTransform(
-      RotationAboutZAxisSinCos(std::sin(radians), std::cos(radians)));
+  PreConcat(RotationAboutZAxisSinCos(std::sin(radians), std::cos(radians)));
 }
 
 void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
@@ -113,8 +110,7 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
     z *= scale;
   }
   double radians = gfx::DegToRad(degrees);
-  PreconcatTransform(
-      RotationUnitSinCos(x, y, z, std::sin(radians), std::cos(radians)));
+  PreConcat(RotationUnitSinCos(x, y, z, std::sin(radians), std::cos(radians)));
 }
 
 // static
@@ -233,11 +229,11 @@ void Transform::ApplyPerspectiveDepth(SkScalar depth) {
   }
 }
 
-void Transform::PreconcatTransform(const Transform& transform) {
+void Transform::PreConcat(const Transform& transform) {
   matrix_.preConcat(transform.matrix_);
 }
 
-void Transform::ConcatTransform(const Transform& transform) {
+void Transform::PostConcat(const Transform& transform) {
   matrix_.postConcat(transform.matrix_);
 }
 

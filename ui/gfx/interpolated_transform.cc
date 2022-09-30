@@ -78,7 +78,7 @@ gfx::Transform InterpolatedTransform::Interpolate(float t) const {
     t = 1.0f - t;
   gfx::Transform result = InterpolateButDoNotCompose(t);
   if (child_.get()) {
-    result.ConcatTransform(child_->Interpolate(t));
+    result.PostConcat(child_->Interpolate(t));
   }
   return result;
 }

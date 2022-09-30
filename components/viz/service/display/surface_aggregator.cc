@@ -183,7 +183,7 @@ SharedQuadState* CopyAndScaleSharedQuadState(
   // root draw pass from a surface into a pass when the surface draw quad's
   // transform is not identity.
   gfx::Transform new_transform = quad_to_target_transform;
-  new_transform.ConcatTransform(target_transform);
+  new_transform.PostConcat(target_transform);
 
   shared_quad_state->SetAll(
       new_transform, quad_layer_rect, visible_quad_layer_rect,
@@ -739,7 +739,7 @@ void SurfaceAggregator::EmitSurfaceContent(
   referenced_surfaces_.insert(surface_id);
 
   gfx::Transform combined_transform = scaled_quad_to_target_transform;
-  combined_transform.ConcatTransform(target_transform);
+  combined_transform.PostConcat(target_transform);
 
   // If the SurfaceDrawQuad is marked as being reflected and surface contents
   // are going to be scaled then keep the RenderPass. This allows the reflected
@@ -818,8 +818,8 @@ void SurfaceAggregator::EmitSurfaceContent(
     // Contributing passes aggregated in to the pass list need to take the
     // transform of the surface quad into account to update their transform to
     // the root surface.
-    copy_pass->transform_to_root_target.ConcatTransform(combined_transform);
-    copy_pass->transform_to_root_target.ConcatTransform(
+    copy_pass->transform_to_root_target.PostConcat(combined_transform);
+    copy_pass->transform_to_root_target.PostConcat(
         dest_pass->transform_to_root_target);
 
     CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),

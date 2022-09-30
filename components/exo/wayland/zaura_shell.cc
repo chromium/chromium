@@ -72,7 +72,7 @@ bool TransformRelativeToScreenIsAxisAligned(aura::Window* window) {
   gfx::Transform transform_relative_to_screen;
   DCHECK(window->layer()->GetTargetTransformRelativeTo(
       window->GetRootWindow()->layer(), &transform_relative_to_screen));
-  transform_relative_to_screen.ConcatTransform(
+  transform_relative_to_screen.PostConcat(
       window->GetRootWindow()->layer()->GetTargetTransform());
   return transform_relative_to_screen.Preserves2dAxisAlignment();
 }

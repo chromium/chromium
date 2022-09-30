@@ -312,7 +312,7 @@ TEST(TransformOperationTest, ApplyOrder) {
   expected_translate_matrix.Translate3d(dx, dy, dz);
 
   gfx::Transform expected_combined_matrix = expected_scale_matrix;
-  expected_combined_matrix.PreconcatTransform(expected_translate_matrix);
+  expected_combined_matrix.PreConcat(expected_translate_matrix);
 
   EXPECT_TRANSFORM_EQ(expected_combined_matrix, operations.Apply());
 }
@@ -376,7 +376,7 @@ TEST(TransformOperationTest, BlendOrder) {
   blended_translate.Blend(translate_from, progress);
 
   gfx::Transform expected = blended_scale;
-  expected.PreconcatTransform(blended_translate);
+  expected.PreConcat(blended_translate);
 
   TransformOperations blended = operations_to.Blend(operations_from, progress);
 
@@ -401,7 +401,7 @@ TEST(TransformOperationTest, BlendOrder) {
 
   gfx::Transform blended_append_scale = appended_scale;
   blended_append_scale.Blend(gfx::Transform(), progress);
-  expected.PreconcatTransform(blended_append_scale);
+  expected.PreConcat(blended_append_scale);
 
   operations_expected.AppendScale(
       gfx::Tween::FloatValueBetween(progress, 1, sx3),
@@ -433,8 +433,8 @@ TEST(TransformOperationTest, BlendOrder) {
   blended_matrix.Blend(transform_from, progress);
 
   expected = blended_scale;
-  expected.PreconcatTransform(blended_translate);
-  expected.PreconcatTransform(blended_matrix);
+  expected.PreConcat(blended_translate);
+  expected.PreConcat(blended_matrix);
 
   operations_expected = base_operations_expected;
   operations_expected.AppendMatrix(blended_matrix);

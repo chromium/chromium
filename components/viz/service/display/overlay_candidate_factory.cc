@@ -351,7 +351,7 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromDrawQuadResource(
   if (supports_arbitrary_transform_) {
     gfx::Transform transform = sqs->quad_to_target_transform;
     if (y_flipped) {
-      transform.PreconcatTransform(gfx::OverlayTransformToTransform(
+      transform.PreConcat(gfx::OverlayTransformToTransform(
           gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL, candidate.display_rect.size()));
     }
     candidate.transform = transform;

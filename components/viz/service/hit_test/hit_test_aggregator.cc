@@ -153,7 +153,7 @@ size_t HitTestAggregator::AppendRegion(size_t region_index,
       // element we can simplify the tree by merging the flags and transform
       // into the kHitTestChildSurface element.
       if (!hit_test_region_list->transform.IsIdentity())
-        transform.PreconcatTransform(hit_test_region_list->transform);
+        transform.PreConcat(hit_test_region_list->transform);
 
       flags |= hit_test_region_list->flags;
       reasons |= hit_test_region_list->async_hit_test_reasons;

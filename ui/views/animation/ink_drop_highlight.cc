@@ -149,7 +149,7 @@ gfx::Transform InkDropHighlight::CalculateTransform() const {
   transform.Translate(-layer_offset.x(), -layer_offset.y());
 
   // Add subpixel correction to the transform.
-  transform.ConcatTransform(
+  transform.PostConcat(
       GetTransformSubpixelCorrection(transform, layer_->device_scale_factor()));
 
   return transform;

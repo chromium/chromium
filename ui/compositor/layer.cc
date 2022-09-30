@@ -1816,8 +1816,8 @@ bool Layer::GetTransformRelativeToImpl(const Layer* ancestor,
     const gfx::Transform& layer_transform =
         is_target_transform ? p->GetTargetTransform() : p->transform();
     if (!layer_transform.IsIdentity())
-      transform->ConcatTransform(layer_transform);
-    transform->ConcatTransform(translation);
+      transform->PostConcat(layer_transform);
+    transform->PostConcat(translation);
   }
   return p == ancestor;
 }

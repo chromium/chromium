@@ -41,7 +41,7 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
   gfx::Point3F offset;
 
   gfx::Transform transform_corrected(transform);
-  transform_corrected.ConcatTransform(subpixel_correction);
+  transform_corrected.PostConcat(subpixel_correction);
   transform_corrected.TransformPoint(&offset);
   offset.Scale(device_scale_factor);
 

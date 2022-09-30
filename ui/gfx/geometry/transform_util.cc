@@ -123,19 +123,19 @@ Transform BuildSkewMatrix(const DecomposedTransform& decomp) {
   Transform temp;
   if (decomp.skew[2]) {
     temp.set_rc(1, 2, decomp.skew[2]);
-    matrix.PreconcatTransform(temp);
+    matrix.PreConcat(temp);
   }
 
   if (decomp.skew[1]) {
     temp.set_rc(1, 2, 0);
     temp.set_rc(0, 2, decomp.skew[1]);
-    matrix.PreconcatTransform(temp);
+    matrix.PreConcat(temp);
   }
 
   if (decomp.skew[0]) {
     temp.set_rc(0, 2, 0);
     temp.set_rc(0, 1, decomp.skew[0]);
-    matrix.PreconcatTransform(temp);
+    matrix.PreConcat(temp);
   }
   return matrix;
 }
@@ -162,11 +162,11 @@ Transform ComposeTransform(const Transform& perspective,
                            const Transform& scale) {
   Transform matrix;
 
-  matrix.PreconcatTransform(perspective);
-  matrix.PreconcatTransform(translation);
-  matrix.PreconcatTransform(rotation);
-  matrix.PreconcatTransform(skew);
-  matrix.PreconcatTransform(scale);
+  matrix.PreConcat(perspective);
+  matrix.PreConcat(translation);
+  matrix.PreConcat(rotation);
+  matrix.PreConcat(skew);
+  matrix.PreConcat(scale);
 
   return matrix;
 }
@@ -560,7 +560,7 @@ bool SnapTransform(Transform* out,
 Transform TransformAboutPivot(const PointF& pivot, const Transform& transform) {
   Transform result;
   result.Translate(pivot.x(), pivot.y());
-  result.PreconcatTransform(transform);
+  result.PreConcat(transform);
   result.Translate(-pivot.x(), -pivot.y());
   return result;
 }

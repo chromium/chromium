@@ -205,7 +205,7 @@ void VrController::GetPointerTransform(gfx::Transform* out) const {
   GetTransform(&controller);
 
   GetRelativePointerTransform(out);
-  out->ConcatTransform(controller);
+  out->PostConcat(controller);
 }
 
 float VrController::GetOpacity() const {

@@ -142,7 +142,7 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   // root transforms must be applied to it.
   gfx::Transform quad_to_root_transform(
       quad->shared_quad_state->quad_to_target_transform);
-  quad_to_root_transform.ConcatTransform(transform_to_root_target);
+  quad_to_root_transform.PostConcat(transform_to_root_target);
   // Flatten transform to 2D since DirectComposition doesn't support 3D
   // transforms.  This only applies when non axis aligned overlays are enabled.
   quad_to_root_transform.FlattenTo2d();
@@ -202,9 +202,9 @@ void FromTextureQuad(const TextureDrawQuad* quad,
     quad_to_root_transform.Scale(1.0, -1.0);
     quad_to_root_transform.PostTranslate(0.0, dc_layer->content_rect.height());
   }
-  quad_to_root_transform.ConcatTransform(
+  quad_to_root_transform.PostConcat(
       quad->shared_quad_state->quad_to_target_transform);
-  quad_to_root_transform.ConcatTransform(transform_to_root_target);
+  quad_to_root_transform.PostConcat(transform_to_root_target);
   // Flatten transform to 2D since DirectComposition doesn't support 3D
   // transforms.  This only applies when non axis aligned overlays are enabled.
   quad_to_root_transform.FlattenTo2d();

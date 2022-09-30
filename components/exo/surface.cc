@@ -1444,7 +1444,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   viewport_to_target_matrix.postScale(device_scale_factor, device_scale_factor);
 
   gfx::Transform quad_to_target_transform(buffer_transform_);
-  quad_to_target_transform.ConcatTransform(
+  quad_to_target_transform.PostConcat(
       gfx::SkMatrixToTransform(viewport_to_target_matrix));
 
   bool are_contents_opaque =

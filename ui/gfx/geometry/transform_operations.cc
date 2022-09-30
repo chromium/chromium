@@ -37,7 +37,7 @@ Transform TransformOperations::Apply() const {
 Transform TransformOperations::ApplyRemaining(size_t start) const {
   Transform to_return;
   for (size_t i = start; i < operations_.size(); i++) {
-    to_return.PreconcatTransform(operations_[i].matrix);
+    to_return.PreConcat(operations_[i].matrix);
   }
   return to_return;
 }

@@ -81,11 +81,11 @@ void Repositioner::UpdateTransform(const gfx::Transform& head_pose) {
   if (reset_yaw_) {
     gfx::Vector3dF current_right = {1, 0, 0};
     transform_.TransformVector(&current_right);
-    transform_.ConcatTransform(
+    transform_.PostConcat(
         gfx::Transform(gfx::Quaternion(current_right, {1, 0, 0})));
   } else {
     transform_ = initial_transform_;
-    transform_.ConcatTransform(gfx::Transform(
+    transform_.PostConcat(gfx::Transform(
         gfx::Quaternion(initial_laser_direction_, laser_direction_)));
   }
 
@@ -108,7 +108,7 @@ void Repositioner::UpdateTransform(const gfx::Transform& head_pose) {
 
   gfx::Vector3dF expected_right = gfx::CrossProduct(new_forward, up);
   gfx::Quaternion rotate_to_expected_right(new_right, expected_right);
-  transform_.ConcatTransform(gfx::Transform(rotate_to_expected_right));
+  transform_.PostConcat(gfx::Transform(rotate_to_expected_right));
   if (gfx::AngleBetweenVectorsInDegrees(
           initial_laser_direction_, laser_direction_) > kDragThresholdDegrees) {
     has_moved_beyond_threshold_ = true;

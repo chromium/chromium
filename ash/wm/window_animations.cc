@@ -262,7 +262,7 @@ void CrossFadeAnimationInternal(
   gfx::Transform old_transform(old_layer->transform());
   gfx::Transform old_transform_in_root;
   old_transform_in_root.Translate(old_bounds.x(), old_bounds.y());
-  old_transform_in_root.PreconcatTransform(old_transform);
+  old_transform_in_root.PreConcat(old_transform);
   old_transform_in_root.Translate(-old_bounds.x(), -old_bounds.y());
   old_transform_in_root.TransformRect(&old_transformed_bounds);
   const gfx::Rect new_bounds(window->bounds());

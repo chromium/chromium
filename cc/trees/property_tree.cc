@@ -223,9 +223,9 @@ void TransformTree::CombineTransformsBetween(int source_id,
   // A's from_screen will not produce the correct result.
   if (!dest ||
       (dest->ancestors_are_invertible && dest->node_and_ancestors_are_flat)) {
-    transform->ConcatTransform(ToScreen(current->id));
+    transform->PostConcat(ToScreen(current->id));
     if (dest)
-      transform->ConcatTransform(FromScreen(dest->id));
+      transform->PostConcat(FromScreen(dest->id));
     return;
   }
 
@@ -274,10 +274,10 @@ void TransformTree::CombineTransformsBetween(int source_id,
     const TransformNode* node = Node(source_to_destination[index]);
     if (node->flattens_inherited_transform)
       combined_transform.FlattenTo2d();
-    combined_transform.PreconcatTransform(node->to_parent);
+    combined_transform.PreConcat(node->to_parent);
   }
 
-  transform->ConcatTransform(combined_transform);
+  transform->PostConcat(combined_transform);
 }
 
 bool TransformTree::CombineInversesBetween(int source_id,
@@ -291,9 +291,9 @@ bool TransformTree::CombineInversesBetween(int source_id,
   // involved.
   if (current->ancestors_are_invertible &&
       current->node_and_ancestors_are_flat) {
-    transform->PreconcatTransform(FromScreen(current->id));
+    transform->PreConcat(FromScreen(current->id));
     if (dest)
-      transform->PreconcatTransform(ToScreen(dest->id));
+      transform->PreConcat(ToScreen(dest->id));
     return true;
   }
 
@@ -306,7 +306,7 @@ bool TransformTree::CombineInversesBetween(int source_id,
   CombineTransformsBetween(dest_id, source_id, &dest_to_source);
   gfx::Transform source_to_dest;
   bool all_are_invertible = dest_to_source.GetInverse(&source_to_dest);
-  transform->PreconcatTransform(source_to_dest);
+  transform->PreConcat(source_to_dest);
   return all_are_invertible;
 }
 
@@ -556,7 +556,7 @@ void TransformTree::UpdateLocalTransform(
                       node->scroll_offset.OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
   transform.Translate(AnchorScrollOffset(node));
-  transform.PreconcatTransform(node->local);
+  transform.PreConcat(node->local);
   transform.Translate3d(gfx::Point3F() - node->origin);
 
   node->set_to_parent(transform);
@@ -569,7 +569,7 @@ void TransformTree::UpdateScreenSpaceTransform(TransformNode* node,
   gfx::Transform to_screen_space_transform = ToScreen(parent_node->id);
   if (node->flattens_inherited_transform)
     to_screen_space_transform.FlattenTo2d();
-  to_screen_space_transform.PreconcatTransform(node->to_parent);
+  to_screen_space_transform.PreConcat(node->to_parent);
   node->ancestors_are_invertible = parent_node->ancestors_are_invertible;
   node->node_and_ancestors_are_flat =
       parent_node->node_and_ancestors_are_flat && node->to_parent.IsFlat();
@@ -705,7 +705,7 @@ void TransformTree::SetRootScaleAndTransform(
     set_needs_update(true);
   }
 
-  transform.ConcatTransform(root_from_screen);
+  transform.PostConcat(root_from_screen);
   TransformNode* contents_root_node = Node(kContentsRootPropertyNodeId);
   if (contents_root_node->local != transform) {
     contents_root_node->local = transform;
@@ -1532,7 +1532,7 @@ gfx::Transform ScrollTree::ScreenSpaceTransform(int scroll_node_id) const {
   gfx::Transform screen_space_transform = gfx::Transform::MakeTranslation(
       scroll_node->offset_to_transform_parent.x(),
       scroll_node->offset_to_transform_parent.y());
-  screen_space_transform.ConcatTransform(
+  screen_space_transform.PostConcat(
       transform_tree.ToScreen(transform_node->id));
   if (scroll_node->should_flatten)
     screen_space_transform.FlattenTo2d();

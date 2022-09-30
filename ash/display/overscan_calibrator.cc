@@ -63,7 +63,7 @@ void DrawTriangle(int x_offset,
   rotate_transform.Rotate(rotation_degree);
   gfx::Transform move_transform;
   move_transform.Translate(x_offset, y_offset);
-  rotate_transform.ConcatTransform(move_transform);
+  rotate_transform.PostConcat(move_transform);
   base_path.transform(gfx::TransformToFlattenedSkMatrix(rotate_transform),
                       &path);
 

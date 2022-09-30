@@ -110,7 +110,7 @@ bool GetCalibratedTransform(
 
   // Create a transform matrix using the touch calibration data.
   // clang-format off
-  ctm->ConcatTransform(gfx::Transform::RowMajor(
+  ctm->PostConcat(gfx::Transform::RowMajor(
       display_points_x[0], display_points_x[1], 0, display_points_x[2],
       display_points_y[0], display_points_y[1], 0, display_points_y[2],
       0, 0, 1, 0,
@@ -274,7 +274,7 @@ gfx::Transform TouchTransformController::GetTouchTransform(
                                     touch_native_size);
   }
 
-  stored_ctm.ConcatTransform(ctm);
+  stored_ctm.PostConcat(ctm);
   return stored_ctm;
 }
 

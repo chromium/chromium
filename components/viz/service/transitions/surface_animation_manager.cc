@@ -180,7 +180,7 @@ void ReplaceSharedElementWithRenderPass(
   transform.Translate(-shared_pass_output_rect.x(),
                       -shared_pass_output_rect.y());
 
-  copied_quad_state->quad_to_target_transform.PreconcatTransform(transform);
+  copied_quad_state->quad_to_target_transform.PreConcat(transform);
 
   auto* render_pass_quad =
       target_render_pass
@@ -811,7 +811,7 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
       auto* pass_for_draw = transition_pass.get();
       if (!pass_for_draw) {
         pass_for_draw = animation_pass;
-        src_transform.ConcatTransform(combined_transform);
+        src_transform.PostConcat(combined_transform);
         src_opacity *= combined_opacity;
         blend_mode = SkBlendMode::kSrcOver;
       }
@@ -850,7 +850,7 @@ void SurfaceAnimationManager::CopyAndInterpolateSharedElements(
     SkBlendMode blend_mode = SkBlendMode::kSrc;
     if (!pass_for_draw) {
       pass_for_draw = animation_pass;
-      dest_transform.ConcatTransform(combined_transform);
+      dest_transform.PostConcat(combined_transform);
       dest_opacity *= combined_opacity;
       blend_mode = SkBlendMode::kSrcOver;
     }

@@ -182,7 +182,7 @@ class LayerTreeHostOcclusionTestDrawPropertiesOnMask
     EXPECT_EQ(child_surface, child->render_target());
 
     gfx::Transform transform = child_surface->draw_transform();
-    transform.PreconcatTransform(child->DrawTransform());
+    transform.PreConcat(child->DrawTransform());
     EXPECT_OCCLUSION_EQ(
         Occlusion(transform, SimpleEnclosedRegion(),
                   SimpleEnclosedRegion(gfx::Rect(13, 9, 10, 11))),

@@ -835,7 +835,7 @@ FovRectangle Ui::GetMinimalFov(const gfx::Transform& view_matrix,
     gfx::Point3F right_top{0.5, 0.5, 0};
 
     gfx::Transform transform = element->world_space_transform();
-    transform.ConcatTransform(view_matrix);
+    transform.PostConcat(view_matrix);
 
     // Transform to view space.
     transform.TransformPoint(&left_bottom);

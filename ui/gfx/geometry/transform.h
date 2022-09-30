@@ -132,8 +132,58 @@ class GEOMETRY_SKIA_EXPORT Transform {
   static Transform ColMajorF(const float a[16]);
   void GetColMajorF(float a[16]) const;
 
+  // Applies a transformation on the current transformation,
+  // i.e. this = this * transform.
+  // "Pre" here means |this| is before the operator in the expression.
+  // Corresponds to DOMMatrix.multiplySelf().
+  void PreConcat(const Transform& transform);
+
+  // Applies a transformation on the current transformation,
+  // i.e. this = transform * this.
+  // Corresponds to DOMMatrix.preMultiplySelf() (note the difference about
+  // "Pre" and "Post"). "Post" here means |this| is after the operator in the
+  // expression.
+  void PostConcat(const Transform& transform);
+
+  // Applies a 2d-axis transform on the current transformation,
+  // i.e. this = this * transform.
+  void PreConcat(const AxisTransform2d& transform);
+
+  // Applies a transformation on the current transformation,
+  // i.e. this = transform * this.
+  void PostConcat(const AxisTransform2d& transform);
+
+  // Applies the current transformation on a scaling and assigns the result
+  // to |this|, i.e. this = this * scaling.
+  void Scale(SkScalar scale) { Scale(scale, scale); }
+  void Scale(SkScalar x, SkScalar y);
+  void Scale3d(SkScalar x, SkScalar y, SkScalar z);
+
+  // Applies a scale to the current transformation and assigns the result to
+  // |this|, i.e. this = scaling * this.
+  void PostScale(SkScalar scale) { PostScale(scale, scale); }
+  void PostScale(SkScalar x, SkScalar y);
+  void PostScale3d(SkScalar x, SkScalar y, SkScalar z);
+
+  // Applies the current transformation on a translation and assigns the result
+  // to |this|, i.e. this = this * translation.
+  void Translate(const Vector2dF& offset);
+  void Translate(SkScalar x, SkScalar y);
+  void Translate3d(const Vector3dF& offset);
+  void Translate3d(SkScalar x, SkScalar y, SkScalar z);
+
+  // Applies a translation to the current transformation and assigns the result
+  // to |this|, i.e. this = translation * this.
+  void PostTranslate(const Vector2dF& offset);
+  void PostTranslate(SkScalar x, SkScalar y);
+  void PostTranslate3d(const Vector3dF& offset);
+  void PostTranslate3d(SkScalar x, SkScalar y, SkScalar z);
+
+  // The following methods have the "Pre" semantics,
+  // i.e. this = this * operation.
+
   // Applies the current transformation on a 2d rotation and assigns the result
-  // to |this|.
+  // to |this|, i.e. this = this * rotation.
   void Rotate(double degrees) { RotateAboutZAxis(degrees); }
 
   // Applies the current transformation on an axis-angle rotation and assigns
@@ -143,53 +193,15 @@ class GEOMETRY_SKIA_EXPORT Transform {
   void RotateAboutZAxis(double degrees);
   void RotateAbout(const Vector3dF& axis, double degrees);
 
-  // Applies the current transformation on a scaling and assigns the result
-  // to |this|.
-  void Scale(SkScalar x, SkScalar y);
-  void Scale3d(SkScalar x, SkScalar y, SkScalar z);
-
-  // Applies a scale to the current transformation and assigns the result to
-  // |this|.
-  void PostScale(SkScalar x, SkScalar y);
-  void PostScale3d(SkScalar x, SkScalar y, SkScalar z);
-
-  // Applies the current transformation on a translation and assigns the result
-  // to |this|.
-  void Translate(const Vector2dF& offset);
-  void Translate(SkScalar x, SkScalar y);
-  void Translate3d(const Vector3dF& offset);
-  void Translate3d(SkScalar x, SkScalar y, SkScalar z);
-
-  // Applies a translation to the current transformation and assigns the result
-  // to |this|.
-  void PostTranslate(const Vector2dF& offset);
-  void PostTranslate(SkScalar x, SkScalar y);
-  void PostTranslate3d(const Vector3dF& offset);
-  void PostTranslate3d(SkScalar x, SkScalar y, SkScalar z);
-
   // Applies the current transformation on a skew and assigns the result
-  // to |this|.
-  void Skew(double angle_x, double angle_y);
+  // to |this|, i.e. this = this * skew.
+  void Skew(double degrees_x, double degrees_y);
+  void SkewX(double degrees) { Skew(degrees, 0); }
+  void SkewY(double degrees) { Skew(0, degrees); }
 
   // Applies the current transformation on a perspective transform and assigns
   // the result to |this|.
   void ApplyPerspectiveDepth(SkScalar depth);
-
-  // Applies a transformation on the current transformation
-  // (i.e. 'this = this * transform;').
-  void PreconcatTransform(const Transform& transform);
-
-  // Applies a transformation on the current transformation
-  // (i.e. 'this = transform * this;').
-  void ConcatTransform(const Transform& transform);
-
-  // Applies a 2d-axis transform on the current transformation,
-  // i.e. this = this * transform.
-  void PreConcat(const AxisTransform2d& transform);
-
-  // Applies a transformation on the current transformation,
-  // i.e. this = transform * this.
-  void PostConcat(const AxisTransform2d& transform);
 
   // Returns true if this is the identity matrix.
   // This function modifies a mutable variable in |matrix_|.
@@ -375,7 +387,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Sets |this| = |this| * |other|
   Transform& operator*=(const Transform& other) {
-    PreconcatTransform(other);
+    PreConcat(other);
     return *this;
   }
 

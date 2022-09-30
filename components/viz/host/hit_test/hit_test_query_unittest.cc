@@ -1194,7 +1194,7 @@ TEST_F(HitTestQueryTest, GetTransformToTarget) {
   gfx::Transform transform_to_b;
   gfx::Transform expected_transform_to_b;
   expected_transform_to_b.Translate(-200, -150);
-  expected_transform_to_b.ConcatTransform(transform_c_to_b);
+  expected_transform_to_b.PostConcat(transform_c_to_b);
   EXPECT_TRUE(hit_test_query().GetTransformToTarget(b_id, &transform_to_b));
   // Use ToString so that we can compare float.
   EXPECT_EQ(transform_to_b.ToString(), expected_transform_to_b.ToString());

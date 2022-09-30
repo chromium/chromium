@@ -171,7 +171,7 @@ gfx::Transform Reticle::LocalTransform() const {
 
   gfx::Vector3dF expected_right = gfx::CrossProduct(forward, up);
   gfx::Quaternion rotate_to_expected_right(right, expected_right);
-  mat.ConcatTransform(gfx::Transform(rotate_to_expected_right));
+  mat.PostConcat(gfx::Transform(rotate_to_expected_right));
 
   mat.PostTranslate3d(model_->reticle.target_point.OffsetFromOrigin());
   return mat;

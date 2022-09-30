@@ -33,7 +33,7 @@ bool ScaledDepthAdjuster::OnBeginFrame(const gfx::Transform& head_pose) {
   gfx::Transform inherited;
   for (UiElement* anc = parent(); anc; anc = anc->parent()) {
     if (anc->type() == kTypeScaledDepthAdjuster) {
-      inherited.ConcatTransform(anc->LocalTransform());
+      inherited.PostConcat(anc->LocalTransform());
     }
   }
   bool success = inherited.GetInverse(&transform_);

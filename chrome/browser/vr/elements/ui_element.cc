@@ -462,7 +462,7 @@ gfx::TransformOperations UiElement::GetTargetTransform() const {
 gfx::Transform UiElement::ComputeTargetWorldSpaceTransform() const {
   gfx::Transform m;
   for (const UiElement* current = this; current; current = current->parent()) {
-    m.ConcatTransform(current->GetTargetLocalTransform());
+    m.PostConcat(current->GetTargetLocalTransform());
   }
   return m;
 }
@@ -1040,10 +1040,10 @@ bool UiElement::UpdateWorldSpaceTransform(bool parent_changed) {
     gfx::Transform inheritable = LocalTransform();
 
     if (parent_) {
-      inheritable.ConcatTransform(parent_->inheritable_transform());
+      inheritable.PostConcat(parent_->inheritable_transform());
     }
 
-    transform.ConcatTransform(inheritable);
+    transform.PostConcat(inheritable);
     changed = !transform.ApproximatelyEqual(world_space_transform_) ||
               !inheritable.ApproximatelyEqual(inheritable_transform_);
     set_world_space_transform(transform);

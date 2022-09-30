@@ -495,11 +495,11 @@ gfx::Rect View::GetVisibleBounds() const {
   gfx::Transform transform;
 
   while (view != nullptr && !vis_bounds.IsEmpty()) {
-    transform.ConcatTransform(view->GetTransform());
+    transform.PostConcat(view->GetTransform());
     gfx::Transform translation;
     translation.Translate(static_cast<float>(view->GetMirroredX()),
                           static_cast<float>(view->y()));
-    transform.ConcatTransform(translation);
+    transform.PostConcat(translation);
 
     vis_bounds = view->ConvertRectToParent(vis_bounds);
     const View* ancestor = view->parent_;
@@ -2936,11 +2936,11 @@ bool View::GetTransformRelativeTo(const View* ancestor,
   const View* p = this;
 
   while (p && p != ancestor) {
-    transform->ConcatTransform(p->GetTransform());
+    transform->PostConcat(p->GetTransform());
     gfx::Transform translation;
     translation.Translate(static_cast<float>(p->GetMirroredX()),
                           static_cast<float>(p->y()));
-    transform->ConcatTransform(translation);
+    transform->PostConcat(translation);
 
     p = p->parent_;
   }

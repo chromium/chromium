@@ -999,10 +999,10 @@ bool RenderWidgetHostViewBase::GetTransformToViewCoordSpace(
   // concatenating an identity matrix, so we don't add those checks here.
   transform->MakeIdentity();
 
-  transform->ConcatTransform(transform_to_pixel);
-  transform->ConcatTransform(transform_this_to_root);
-  transform->ConcatTransform(transform_root_to_target);
-  transform->ConcatTransform(transform_from_pixel);
+  transform->PostConcat(transform_to_pixel);
+  transform->PostConcat(transform_this_to_root);
+  transform->PostConcat(transform_root_to_target);
+  transform->PostConcat(transform_from_pixel);
 
   return true;
 }
