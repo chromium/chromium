@@ -103,6 +103,7 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -2244,7 +2245,8 @@ EasyUnlockKeyManager* UserSessionManager::GetEasyUnlockKeyManager() {
 
 void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
                                                  bool locale_pref_checked) {
-  if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
+  if (browser_shutdown::IsTryingToQuit() ||
+      chrome::IsSendingStopRequestToSessionManager())
     return;
 
   if (!locale_pref_checked) {
@@ -2355,7 +2357,8 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
 void UserSessionManager::RespectLocalePreferenceWrapper(
     Profile* profile,
     base::OnceClosure callback) {
-  if (browser_shutdown::IsTryingToQuit() || chrome::IsAttemptingShutdown())
+  if (browser_shutdown::IsTryingToQuit() ||
+      chrome::IsSendingStopRequestToSessionManager())
     return;
 
   const user_manager::User* const user =

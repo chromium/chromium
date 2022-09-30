@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 ChromeBrowserMainExtraPartsOzone::ChromeBrowserMainExtraPartsOzone() = default;

@@ -131,6 +131,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"

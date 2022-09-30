@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/shutdown_signal_handlers_posix.h"
 #include "content/public/browser/browser_task_traits.h"

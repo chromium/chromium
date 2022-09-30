@@ -42,7 +42,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/mac/auth_session_request.h"
 #include "chrome/browser/mac/key_window_notifier.h"

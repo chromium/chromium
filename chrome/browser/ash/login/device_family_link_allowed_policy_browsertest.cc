@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_chromeos.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, InSessionUpdate) {
 
   // Family link off - Family Link user session should be terminated.
   SetDeviceFamilyLinkAccountsAllowedPolicy(false);
-  EXPECT_TRUE(chrome::IsAttemptingShutdown());
+  EXPECT_TRUE(chrome::IsSendingStopRequestToSessionManager());
   termination_waiter.Run();
 }
 

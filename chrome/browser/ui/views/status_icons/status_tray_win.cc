@@ -16,7 +16,7 @@
 #include "base/threading/thread.h"
 #include "base/win/windows_types.h"
 #include "base/win/wrapped_window_proc.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/views/status_icons/status_icon_win.h"
 #include "chrome/browser/ui/views/status_icons/status_tray_state_changer_win.h"
 #include "chrome/common/chrome_constants.h"

@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Close all browser windows and wait for the operation to complete.
   size_t browser_count = chrome::GetTotalBrowserCount();
-  chrome::CloseAllBrowsers();
+  CloseAllBrowsers();
   for (size_t i = 0; i < browser_count; ++i)
     ui_test_utils::WaitForBrowserToClose();
   ASSERT_EQ(0u, BrowserList::GetInstance()->size());

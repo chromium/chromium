@@ -70,7 +70,8 @@ void NotifyAndTerminate(bool fast_path) {
 
   // Signal session manager to stop the session if Chrome has initiated an
   // attempt to do so.
-  if (chrome::IsAttemptingShutdown() && ash::SessionTerminationManager::Get()) {
+  if (chrome::IsSendingStopRequestToSessionManager() &&
+      ash::SessionTerminationManager::Get()) {
     ash::SessionTerminationManager::Get()->StopSession(
         login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
   }

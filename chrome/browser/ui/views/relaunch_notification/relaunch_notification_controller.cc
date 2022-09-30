@@ -13,7 +13,7 @@
 #include "base/time/default_tick_clock.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
