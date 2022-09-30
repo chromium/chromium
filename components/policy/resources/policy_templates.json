@@ -25670,7 +25670,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Google Assistant to access screen context',
+        },
+        {
+          'value': False,
+          'caption': 'Block Google Assistant from accessing screen context during interactions',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 527,
       'caption': '''Allow Google Assistant to access screen context''',
       'desc': '''Setting the policy to Enabled lets Google Assistant access screen context and send that data to a server. Setting the policy to Disabled keeps Google Assistant from screen context.
@@ -25688,7 +25703,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the Google Assistant hotword',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the Google Assistant hotword',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 529,
       'caption': '''Allow Google Assistant to listen for the voice activation phrase''',
       'desc': '''Setting the policy to Enabled lets Google Assistant listen for the voice activation phrase. Setting the policy to Disabled keeps Google Assistant from listening for the phrase.
@@ -25919,6 +25949,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the wilco diagnostics and telemetry controller',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the wilco diagnostics and telemetry controller',
+        },
+      ],
       'example_value': False,
       'id': 532,
       'caption': '''Allows wilco diagnostics and telemetry controller''',
@@ -25992,6 +26032,16 @@
         'dynamic_refresh': True,
         'per_profile': False
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable peak shift power management',
+        },
+        {
+          'value': False,
+          'caption': 'Disable peak shift power management',
+        },
+      ],
       'example_value': False,
       'id': 538,
       'caption': '''Enable peak shift power management''',
@@ -26115,6 +26165,16 @@
         'dynamic_refresh': True,
         'per_profile': False
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable boot on AC',
+        },
+        {
+          'value': False,
+          'caption': 'Disable boot on AC',
+        },
+      ],
       'example_value': False,
       'id': 541,
       'caption': '''Enable boot on AC (alternating current)''',
@@ -26136,6 +26196,16 @@
         'dynamic_refresh': True,
         'per_profile': False
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable USB power share',
+        },
+        {
+          'value': False,
+          'caption': 'Disable USB power share',
+        },
+      ],
       'example_value': True,
       'id': 553,
       'caption': '''Enable USB power share''',
@@ -26313,6 +26383,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enforce online logins on the login and lock screens',
+        },
+        {
+          'value': False,
+          'caption': 'Only enforce online logins on the login screen',
+        },
+      ],
       'example_value': True,
       'id': 719,
       'caption': '''Enables online re-authentication on lock screen for SAML users''',
@@ -26389,6 +26469,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable advanced battery charge mode',
+        },
+        {
+          'value': False,
+          'caption': 'Disable advanced battery charge mode',
+        },
+      ],
       'example_value': False,
       'id': 548,
       'caption': '''Enable advanced battery charge mode''',
@@ -26674,6 +26764,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Kerberos',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Kerberos',
+        },
+      ],
       'example_value': True,
       'id': 557,
       'caption': '''Enable Kerberos functionality''',
@@ -26695,6 +26795,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to remember Kerberos passwords',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to remember Kerberos passwords',
+        },
+      ],
       'example_value': True,
       'id': 558,
       'caption': '''Enable 'Remember password' feature''',
@@ -26716,6 +26826,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to add Kerberos accounts',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to add Kerberos accounts',
+        },
+      ],
       'example_value': True,
       'id': 559,
       'caption': '''Users can add Kerberos accounts''',
@@ -26888,6 +27008,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Do not launch the browser on startup',
+        },
+        {
+          'value': False,
+          'caption': 'Automatically launch the browser on startup',
+        },
+      ],
       'example_value': True,
       'id': 568,
       'caption': '''Suppress launching of browser window''',
@@ -26911,6 +27041,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the device to request powerwash',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow the device to request powerwash',
+        },
+      ],
       'supported_on': ['chrome_os:77-'],
       'caption': '''Allow the device to request powerwash''',
       'tags': [],
@@ -27022,6 +27162,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable virtual machine command line access',
+        },
+        {
+          'value': False,
+          'caption': 'Disable virtual machine command line access',
+        },
+      ],
       'example_value': False,
       'id': 577,
       'caption': '''Specify VM CLI permission''',
@@ -27077,6 +27227,16 @@
       'schema': {
         'type': 'boolean',
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to play media when the device is locked',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to play media when the device is locked',
+        },
+      ],
       'example_value': True,
       'default': True,
       'features': {
@@ -28026,6 +28186,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Renderer Code Integrity',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Renderer Code Integrity',
+        },
+      ],
       'example_value': False,
       'id': 598,
       'caption': '''Enable Renderer Code Integrity''',
@@ -28213,7 +28383,22 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always sandbox the audio process',
+        },
+        {
+          'value': False,
+          'caption': 'Never sandbox the audio process',
+        },
+        {
+          'value': None,
+          'caption': 'Use the default configuration for the audio sandbox',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 627,
       'caption': '''Allow the audio sandbox to run''',
       'tags': ['system-security'],
