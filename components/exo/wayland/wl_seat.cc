@@ -8,18 +8,15 @@
 #include <wayland-server-protocol-core.h>
 
 #include "build/chromeos_buildflags.h"
+#include "components/exo/keyboard.h"
 #include "components/exo/pointer.h"
 #include "components/exo/touch.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
+#include "components/exo/wayland/wayland_keyboard_delegate.h"
 #include "components/exo/wayland/wayland_pointer_delegate.h"
 #include "components/exo/wayland/wayland_touch_delegate.h"
 #include "ui/base/buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/exo/keyboard.h"
-#include "components/exo/wayland/wayland_keyboard_delegate.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace exo {
 namespace wayland {
@@ -47,7 +44,6 @@ void pointer_release(wl_client* client, wl_resource* resource) {
 const struct wl_pointer_interface pointer_implementation = {pointer_set_cursor,
                                                             pointer_release};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 ////////////////////////////////////////////////////////////////////////////////
 // wl_keyboard_interface:
 
@@ -60,7 +56,6 @@ void keyboard_release(wl_client* client, wl_resource* resource) {
 const struct wl_keyboard_interface keyboard_implementation = {keyboard_release};
 
 #endif  // BUILDFLAG(USE_XKBCOMMON)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 ////////////////////////////////////////////////////////////////////////////////
 // wl_touch_interface:
 
@@ -87,7 +82,7 @@ void seat_get_pointer(wl_client* client, wl_resource* resource, uint32_t id) {
 }
 
 void seat_get_keyboard(wl_client* client, wl_resource* resource, uint32_t id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_XKBCOMMON)
+#if BUILDFLAG(USE_XKBCOMMON)
   auto* data = GetUserDataAs<WaylandSeat>(resource);
 
   uint32_t version = wl_resource_get_version(resource);
@@ -102,7 +97,7 @@ void seat_get_keyboard(wl_client* client, wl_resource* resource, uint32_t id) {
                     std::move(keyboard));
 #else
   NOTIMPLEMENTED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_XKBCOMMON)
+#endif  // BUILDFLAG(USE_XKBCOMMON)
 }
 
 void seat_get_touch(wl_client* client, wl_resource* resource, uint32_t id) {
@@ -137,9 +132,9 @@ void bind_seat(wl_client* client, void* data, uint32_t version, uint32_t id) {
     wl_seat_send_name(resource, "default");
   uint32_t capabilities = WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_XKBCOMMON)
+#if BUILDFLAG(USE_XKBCOMMON)
   capabilities |= WL_SEAT_CAPABILITY_KEYBOARD;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_XKBCOMMON)
+#endif  // BUILDFLAG(USE_XKBCOMMON)
   wl_seat_send_capabilities(resource, capabilities);
 }
 

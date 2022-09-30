@@ -11,12 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/exo/test/exo_test_base.h"
-#else
-#include "components/exo/test/exo_test_base_views.h"
-#endif
 
 namespace exo {
 class SecurityDelegate;
@@ -27,15 +22,8 @@ class Server;
 
 namespace test {
 
-// Use ExoTestBase on Chrome OS because Server starts to depends on ash::Shell,
-// which is unavailable on other platforms so then ExoTestBaseViews instead.
-using TestBase =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    exo::test::ExoTestBase
-#else
-    exo::test::ExoTestBaseViews
-#endif
-    ;
+// Use ExoTestBase because Server starts to depends on ash::Shell.
+using TestBase = exo::test::ExoTestBase;
 
 // Base class for tests that create an exo's wayland server.
 class WaylandServerTestBase : public TestBase {
