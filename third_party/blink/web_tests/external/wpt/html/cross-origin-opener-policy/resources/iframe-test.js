@@ -146,6 +146,9 @@ function iframe_test(description, iframe_origin, popup_origin, headers,
           // and we can do extra verifications.
           if (popup_via === 'window_open') {
             assert_equals(
+              await evaluate(iframe_token, 'popup != null'), "true",
+              'Popup handle is non-null in iframe?');
+            assert_equals(
               await evaluate(iframe_token, 'popup.closed'), "false",
               'Popup appears closed from iframe?');
             assert_equals(
@@ -169,6 +172,9 @@ function iframe_test(description, iframe_origin, popup_origin, headers,
           // When the popup was created using window.open, we've kept a handle
           // and we can do extra verifications.
           if (popup_via === 'window_open') {
+            assert_equals(
+              await evaluate(iframe_token, 'popup != null'), "true",
+              'Popup handle is non-null in iframe?');
             assert_equals(
               await evaluate(iframe_token, 'popup.closed'), "false",
               'Popup appears closed from iframe?');
@@ -194,8 +200,12 @@ function iframe_test(description, iframe_origin, popup_origin, headers,
           // When the popup was created using window.open, we've kept a handle
           // and we can do extra verifications.
           if (popup_via === 'window_open') {
-            assert_equals(await evaluate(iframe_token, 'popup.closed'), "true",
-                        'Popup appears closed from iframe?');
+            assert_equals(
+              await evaluate(iframe_token, 'popup != null'), "true",
+              'Popup handle is non-null in iframe?');
+            assert_equals(
+              await evaluate(iframe_token, 'popup.closed'), "true",
+              'Popup appears closed from iframe?');
           }
           break;
         }
