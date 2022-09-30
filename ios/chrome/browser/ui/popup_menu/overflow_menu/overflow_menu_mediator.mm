@@ -229,7 +229,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* findInPageAction;
 @property(nonatomic, strong) OverflowMenuAction* textZoomAction;
 
-@property(nonatomic, strong) OverflowMenuAction* settingsAction;
 @property(nonatomic, strong) OverflowMenuAction* reportIssueAction;
 @property(nonatomic, strong) OverflowMenuAction* helpAction;
 @property(nonatomic, strong) OverflowMenuAction* shareChromeAction;
@@ -744,11 +743,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                    kToolsMenuTextZoom, ^{
                                                      [weakSelf openTextZoom];
                                                    });
-    self.settingsAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_SETTINGS, kSettingsFilledSymbol, YES,
-        kToolsMenuSettingsActionId, ^{
-          [weakSelf openSettingsFromAction];
-        });
 
     self.reportIssueAction = CreateOverflowMenuAction(
         IDS_IOS_OPTIONS_REPORT_AN_ISSUE, kWarningSymbol, YES,
@@ -869,12 +863,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         IDS_IOS_TOOLS_MENU_TEXT_ZOOM, @"overflow_menu_action_text_zoom",
         kToolsMenuTextZoom, ^{
           [weakSelf openTextZoom];
-        });
-
-    self.settingsAction = CreateOverflowMenuAction(
-        IDS_IOS_TOOLS_MENU_SETTINGS, @"overflow_menu_action_settings",
-        kToolsMenuSettingsActionId, ^{
-          [weakSelf openSettingsFromAction];
         });
 
     self.reportIssueAction = CreateOverflowMenuAction(
@@ -1105,10 +1093,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
   NSMutableArray<OverflowMenuAction*>* helpActions =
       [[NSMutableArray alloc] init];
-
-  if (IsNewOverflowMenuSettingsActionEnabled()) {
-    [helpActions addObject:self.settingsAction];
-  }
 
   if (ios::provider::IsUserFeedbackSupported()) {
     [helpActions addObject:self.reportIssueAction];
@@ -1680,13 +1664,6 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 - (void)openSiteInformation {
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.pageInfoCommandsHandler showPageInfo];
-}
-
-// Dismisses the menu and opens settings, firing metrics for the settings
-// action row.
-- (void)openSettingsFromAction {
-  RecordAction(UserMetricsAction("MobileMenuSettingsAction"));
-  [self openSettings];
 }
 
 // Dismisses the menu and opens settings.

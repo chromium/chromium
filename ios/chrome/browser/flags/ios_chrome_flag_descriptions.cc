@@ -491,11 +491,6 @@ const char kNewOverflowMenuAlternateIPHName[] =
 const char kNewOverflowMenuAlternateIPHDescription[] =
     "Uses the alternative IPH flow for the new overflow menu";
 
-const char kNewOverflowMenuSettingsActionName[] =
-    "Settings action in the new overflow menu";
-const char kNewOverflowMenuSettingsActionDescription[] =
-    "Adds a Settings action to the new overflow menu";
-
 extern const char kNewOverflowMenuSimpleDestinationIconsName[] =
     "Simple Destination icons in the new overflow menu";
 extern const char kNewOverflowMenuSimpleDestinationIconsDescription[] =

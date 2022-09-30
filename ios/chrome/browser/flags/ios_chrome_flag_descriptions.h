@@ -451,11 +451,6 @@ extern const char kNewOverflowMenuDescription[];
 extern const char kNewOverflowMenuAlternateIPHName[];
 extern const char kNewOverflowMenuAlternateIPHDescription[];
 
-// Title and description for the flag to add a Settings action to the new
-// overflow menu.
-extern const char kNewOverflowMenuSettingsActionName[];
-extern const char kNewOverflowMenuSettingsActionDescription[];
-
 // Title and description for the flag to use simple icons for the Destinations
 // in the new overflow menu.
 extern const char kNewOverflowMenuSimpleDestinationIconsName[];

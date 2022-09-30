@@ -266,9 +266,6 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   if (IsNewOverflowMenuCBDActionEnabled()) {
     number_of_action_items++;
   }
-  if (IsNewOverflowMenuSettingsActionEnabled()) {
-    number_of_action_items++;
-  }
   if (ios::provider::IsTextZoomEnabled()) {
     number_of_action_items++;
   }

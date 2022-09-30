@@ -13,9 +13,6 @@ BASE_DECLARE_FEATURE(kNewOverflowMenu);
 // Feature to add a Clear Browsing Data action to the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenuCBDAction);
 
-// Feature to add a Settings action to the new overflow menu.
-BASE_DECLARE_FEATURE(kNewOverflowMenuSettingsAction);
-
 // Feature to use simple icons for new overflow menu destinations.
 BASE_DECLARE_FEATURE(kNewOverflowMenuSimpleDestinationIcons);
 
@@ -33,9 +30,6 @@ bool IsNewOverflowMenuEnabled();
 
 // Whether or not the NewOverflowMenuCBDAction feature is enabled.
 bool IsNewOverflowMenuCBDActionEnabled();
-
-// Whether or not the NewOverflowMenuSettingsAction feature is enabled.
-bool IsNewOverflowMenuSettingsActionEnabled();
 
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
