@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 
 #include <algorithm>
 #include <utility>
@@ -58,7 +58,7 @@ media::AudioParameters GetAudioParameters(
 
 }  // namespace
 
-bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
+bool SpeechRecognitionRecognizerClientImpl::IsOnDeviceSpeechRecognizerAvailable(
     const std::string& language) {
   if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
     return false;
@@ -66,7 +66,7 @@ bool OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
   return soda_installer->IsSodaInstalled(speech::GetLanguageCode(language));
 }
 
-OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
+SpeechRecognitionRecognizerClientImpl::SpeechRecognitionRecognizerClientImpl(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
     Profile* profile,
     media::mojom::SpeechRecognitionOptionsPtr options)
@@ -88,24 +88,25 @@ OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       std::move(options),
-      media::BindToCurrentLoop(
-          base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerBound,
-                         weak_factory_.GetWeakPtr())));
+      media::BindToCurrentLoop(base::BindOnce(
+          &SpeechRecognitionRecognizerClientImpl::OnRecognizerBound,
+          weak_factory_.GetWeakPtr())));
 
   audio_source_speech_recognition_context_.set_disconnect_handler(
-      media::BindToCurrentLoop(
-          base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerDisconnected,
-                         weak_factory_.GetWeakPtr())));
+      media::BindToCurrentLoop(base::BindOnce(
+          &SpeechRecognitionRecognizerClientImpl::OnRecognizerDisconnected,
+          weak_factory_.GetWeakPtr())));
 }
 
-OnDeviceSpeechRecognizer::~OnDeviceSpeechRecognizer() {
+SpeechRecognitionRecognizerClientImpl::
+    ~SpeechRecognitionRecognizerClientImpl() {
   audio_source_fetcher_->Stop();
   audio_source_fetcher_.reset();
   speech_recognition_client_receiver_.reset();
   audio_source_speech_recognition_context_.reset();
 }
 
-void OnDeviceSpeechRecognizer::Start() {
+void SpeechRecognitionRecognizerClientImpl::Start() {
   // Get audio parameters from the AudioSystem, and use these to start
   // recognition from the callback.
   if (!audio_system_)
@@ -113,16 +114,17 @@ void OnDeviceSpeechRecognizer::Start() {
   waiting_for_params_ = true;
   audio_system_->GetInputStreamParameters(
       media::AudioDeviceDescription::kDefaultDeviceId,
-      base::BindOnce(&OnDeviceSpeechRecognizer::StartFetchingOnInputDeviceInfo,
+      base::BindOnce(&SpeechRecognitionRecognizerClientImpl::
+                         StartFetchingOnInputDeviceInfo,
                      weak_factory_.GetWeakPtr()));
 }
 
-void OnDeviceSpeechRecognizer::Stop() {
+void SpeechRecognitionRecognizerClientImpl::Stop() {
   audio_source_fetcher_->Stop();
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNITION_STOPPING);
 }
 
-void OnDeviceSpeechRecognizer::OnSpeechRecognitionRecognitionEvent(
+void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionRecognitionEvent(
     const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -137,31 +139,31 @@ void OnDeviceSpeechRecognizer::OnSpeechRecognitionRecognitionEvent(
                              result.is_final, result);
 }
 
-void OnDeviceSpeechRecognizer::OnSpeechRecognitionError() {
+void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionError() {
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_ERROR);
 }
 
-void OnDeviceSpeechRecognizer::OnLanguageIdentificationEvent(
+void SpeechRecognitionRecognizerClientImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
   // Do nothing.
 }
 
-void OnDeviceSpeechRecognizer::OnSpeechRecognitionStopped() {
+void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionStopped() {
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY);
   delegate()->OnSpeechRecognitionStopped();
 }
 
-void OnDeviceSpeechRecognizer::OnRecognizerBound(
+void SpeechRecognitionRecognizerClientImpl::OnRecognizerBound(
     bool is_multichannel_supported) {
   is_multichannel_supported_ = is_multichannel_supported;
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY);
 }
 
-void OnDeviceSpeechRecognizer::OnRecognizerDisconnected() {
+void SpeechRecognitionRecognizerClientImpl::OnRecognizerDisconnected() {
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_ERROR);
 }
 
-void OnDeviceSpeechRecognizer::StartFetchingOnInputDeviceInfo(
+void SpeechRecognitionRecognizerClientImpl::StartFetchingOnInputDeviceInfo(
     const absl::optional<media::AudioParameters>& params) {
   // waiting_for_params_ was set before requesting audio params from the
   // AudioSystem, which returns here asynchronously. If this has changed, then
@@ -182,7 +184,8 @@ void OnDeviceSpeechRecognizer::StartFetchingOnInputDeviceInfo(
   UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_RECOGNIZING);
 }
 
-void OnDeviceSpeechRecognizer::UpdateStatus(SpeechRecognizerStatus state) {
+void SpeechRecognitionRecognizerClientImpl::UpdateStatus(
+    SpeechRecognizerStatus state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   waiting_for_params_ = false;
   if (state_ == state)

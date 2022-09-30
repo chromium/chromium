@@ -8,7 +8,7 @@
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
-#include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -40,8 +40,9 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechResult(
     bool is_final,
     const absl::optional<media::SpeechRecognitionResult>& full_result) {
   // TODO(crbug.com/1220107): NetworkSpeechRecognizer adds spaces between
-  // results, but OnDeviceSpeechRecognizer doesn't. Add behavior in
-  // OnDeviceSpeechRecognizer so it's consistent with NetworkSpeechRecognizer.
+  // results, but SpeechRecognitionRecognizerClientImpl doesn't. Add behavior in
+  // SpeechRecognitionRecognizerClientImpl so it's consistent with
+  // NetworkSpeechRecognizer.
   if (!interim_results_ && !is_final) {
     // If |interim_results_| is false, then don't handle the result unless this
     // is a final result.
@@ -105,16 +106,18 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
 
   // Choose which type of speech recognition, either on-device or network.
   Profile* profile = Profile::FromBrowserContext(context_);
-  if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale_)) {
+  if (SpeechRecognitionRecognizerClientImpl::
+          IsOnDeviceSpeechRecognizerAvailable(locale_)) {
     type_ = speech::SpeechRecognitionType::kOnDevice;
-    speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-        GetWeakPtr(), profile,
-        media::mojom::SpeechRecognitionOptions::New(
-            media::mojom::SpeechRecognitionMode::kIme,
-            /*enable_formatting=*/false,
-            /*language=*/locale_,
-            /*is_server_based=*/false,
-            media::mojom::RecognizerClientType::kDictation));
+    speech_recognizer_ =
+        std::make_unique<SpeechRecognitionRecognizerClientImpl>(
+            GetWeakPtr(), profile,
+            media::mojom::SpeechRecognitionOptions::New(
+                media::mojom::SpeechRecognitionMode::kIme,
+                /*enable_formatting=*/false,
+                /*language=*/locale_,
+                /*is_server_based=*/false,
+                media::mojom::RecognizerClientType::kDictation));
   } else {
     type_ = speech::SpeechRecognitionType::kNetwork;
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(

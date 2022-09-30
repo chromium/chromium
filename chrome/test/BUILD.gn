@@ -3950,7 +3950,7 @@ if (!is_android) {
         "../browser/signin/chromeos_mirror_account_consistency_browsertest.cc",
         "../browser/speech/extension_api/tts_extension_api_ash_browsertest.cc",
         "../browser/speech/network_speech_recognizer_browsertest.cc",
-        "../browser/speech/on_device_speech_recognizer_browsertest.cc",
+        "../browser/speech/speech_recognition_recognizer_client_impl_browsertest.cc",
         "../browser/support_tool/ash/ui_hierarchy_data_collector_browsertest.cc",
         "../browser/ui/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ui/app_list/app_list_sort_browsertest.cc",

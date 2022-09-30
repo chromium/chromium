@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SPEECH_ON_DEVICE_SPEECH_RECOGNIZER_H_
-#define CHROME_BROWSER_SPEECH_ON_DEVICE_SPEECH_RECOGNIZER_H_
+#ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_RECOGNIZER_CLIENT_IMPL_H_
+#define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_RECOGNIZER_CLIENT_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -22,9 +22,10 @@ namespace media {
 class AudioSystem;
 }  // namespace media
 
-// OnDeviceSpeechRecognizer is a wrapper around the on-device speech recognition
-// engine that simplifies its use from the browser process.
-class OnDeviceSpeechRecognizer
+// SpeechRecognitionRecognizerClientImpl is a wrapper around the on-device
+// speech recognition engine that simplifies its use from the browser process.
+// This client class is only used on ash chrome browser.
+class SpeechRecognitionRecognizerClientImpl
     : public SpeechRecognizer,
       public media::mojom::SpeechRecognitionRecognizerClient {
  public:
@@ -32,13 +33,15 @@ class OnDeviceSpeechRecognizer
   // on-device for the given language (BCP-47 format, e.g. "en-US").
   static bool IsOnDeviceSpeechRecognizerAvailable(const std::string& language);
 
-  OnDeviceSpeechRecognizer(
+  SpeechRecognitionRecognizerClientImpl(
       const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
       Profile* profile,
       media::mojom::SpeechRecognitionOptionsPtr options);
-  ~OnDeviceSpeechRecognizer() override;
-  OnDeviceSpeechRecognizer(const OnDeviceSpeechRecognizer&) = delete;
-  OnDeviceSpeechRecognizer& operator=(const OnDeviceSpeechRecognizer&) = delete;
+  ~SpeechRecognitionRecognizerClientImpl() override;
+  SpeechRecognitionRecognizerClientImpl(
+      const SpeechRecognitionRecognizerClientImpl&) = delete;
+  SpeechRecognitionRecognizerClientImpl& operator=(
+      const SpeechRecognitionRecognizerClientImpl&) = delete;
 
   // SpeechRecognizer:
   // Start and Stop must be called on the UI thread.
@@ -55,7 +58,7 @@ class OnDeviceSpeechRecognizer
   void OnSpeechRecognitionStopped() override;
 
  private:
-  friend class OnDeviceSpeechRecognizerTest;
+  friend class SpeechRecognitionRecognizerClientImplTest;
 
   void OnRecognizerBound(bool success);
   void OnRecognizerDisconnected();
@@ -75,8 +78,8 @@ class OnDeviceSpeechRecognizer
   // in between requesting the callback and it running.
   bool waiting_for_params_;
 
-  // Tests may set audio_system_ after constructing an OnDeviceSpeechRecognizer
-  // to override default behavior.
+  // Tests may set audio_system_ after constructing an
+  // SpeechRecognitionRecognizerClientImpl to override default behavior.
   std::unique_ptr<media::AudioSystem> audio_system_;
 
   mojo::Remote<media::mojom::AudioSourceSpeechRecognitionContext>
@@ -85,7 +88,8 @@ class OnDeviceSpeechRecognizer
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_receiver_{this};
 
-  base::WeakPtrFactory<OnDeviceSpeechRecognizer> weak_factory_{this};
+  base::WeakPtrFactory<SpeechRecognitionRecognizerClientImpl> weak_factory_{
+      this};
 };
 
-#endif  // CHROME_BROWSER_SPEECH_ON_DEVICE_SPEECH_RECOGNIZER_H_
+#endif  // CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_RECOGNIZER_CLIENT_IMPL_H_

@@ -23,7 +23,7 @@ namespace views {
 class WebView;
 }  // namespace views
 
-class OnDeviceSpeechRecognizer;
+class SpeechRecognitionRecognizerClientImpl;
 
 // The client implementation for the ProjectorController in ash/. This client is
 // responsible for handling requests that have browser dependencies.
@@ -96,7 +96,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   ash::ProjectorController* const controller_;
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
-  std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;
+  std::unique_ptr<SpeechRecognitionRecognizerClientImpl> speech_recognizer_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

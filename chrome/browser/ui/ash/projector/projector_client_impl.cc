@@ -19,7 +19,7 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -78,12 +78,12 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   // ProjectorController should only request for speech recognition after it
   // has been informed that recognition is available.
   // TODO(crbug.com/1165437): Dynamically determine language code.
-  DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-      GetLocale()));
+  DCHECK(SpeechRecognitionRecognizerClientImpl::
+             IsOnDeviceSpeechRecognizerAvailable(GetLocale()));
 
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
-  speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
+  speech_recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
       weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 
 #include <map>
 #include <memory>
@@ -89,15 +89,17 @@ class MockAudioSystem : public media::AudioSystem {
   std::map<std::string, absl::optional<media::AudioParameters>> params_;
 };
 
-// Tests OnDeviceSpeechRecognizer plumbing with a fake SpeechRecognitionService.
-// Does not do end-to-end audio fetching or test SODA on device.
-class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
+// Tests SpeechRecognitionRecognizerClientImpl plumbing with a fake
+// SpeechRecognitionService. Does not do end-to-end audio fetching or test SODA
+// on device.
+class SpeechRecognitionRecognizerClientImplTest : public InProcessBrowserTest {
  public:
-  OnDeviceSpeechRecognizerTest() = default;
-  ~OnDeviceSpeechRecognizerTest() override = default;
-  OnDeviceSpeechRecognizerTest(const OnDeviceSpeechRecognizerTest&) = delete;
-  OnDeviceSpeechRecognizerTest& operator=(const OnDeviceSpeechRecognizerTest&) =
-      delete;
+  SpeechRecognitionRecognizerClientImplTest() = default;
+  ~SpeechRecognitionRecognizerClientImplTest() override = default;
+  SpeechRecognitionRecognizerClientImplTest(
+      const SpeechRecognitionRecognizerClientImplTest&) = delete;
+  SpeechRecognitionRecognizerClientImplTest& operator=(
+      const SpeechRecognitionRecognizerClientImplTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitAndEnableFeature(
@@ -110,7 +112,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
     CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
         ->SetTestingFactoryAndUse(
             browser()->profile(),
-            base::BindRepeating(&OnDeviceSpeechRecognizerTest::
+            base::BindRepeating(&SpeechRecognitionRecognizerClientImplTest::
                                     CreateTestSpeechRecognitionService,
                                 base::Unretained(this)));
     mock_speech_delegate_ =
@@ -139,7 +141,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
                 OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY))
         .WillOnce(InvokeWithoutArgs(&loop, &base::RunLoop::Quit))
         .RetiresOnSaturation();
-    recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
+    recognizer_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
         mock_speech_delegate_->GetWeakPtr(), browser()->profile(),
         media::mojom::SpeechRecognitionOptions::New(
             media::mojom::SpeechRecognitionMode::kIme,
@@ -172,7 +174,7 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
 
   std::unique_ptr<testing::StrictMock<MockSpeechRecognizerDelegate>>
       mock_speech_delegate_;
-  std::unique_ptr<OnDeviceSpeechRecognizer> recognizer_;
+  std::unique_ptr<SpeechRecognitionRecognizerClientImpl> recognizer_;
 
   // Unowned.
   speech::FakeSpeechRecognitionService* fake_service_;
@@ -180,11 +182,13 @@ class OnDeviceSpeechRecognizerTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, SetsUpServiceConnection) {
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
+                       SetsUpServiceConnection) {
   ConstructRecognizerAndWaitForReady();
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, StartsCapturingAudio) {
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
+                       StartsCapturingAudio) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
   EXPECT_FALSE(fake_service_->is_capturing_audio());
@@ -214,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, StartsCapturingAudio) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                        ReceivesRecognitionEvents) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
@@ -245,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, ReceivesErrors) {
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
+                       ReceivesErrors) {
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
 
@@ -257,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, ReceivesErrors) {
   base::RunLoop().RunUntilIdle();
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                        UsesReturnedParametersIfFramesPerBufferIsSlowEnough) {
   fake_service_->set_multichannel_supported(true);
   int sample_rate = 10000;
@@ -274,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
   EXPECT_TRUE(fake_service_->audio_parameters()->Equals(params));
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                        SlowerPollingIfFramesPerBufferIsTooShort) {
   fake_service_->set_multichannel_supported(true);
   int sample_rate = 20000;
@@ -296,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
             fake_service_->audio_parameters()->frames_per_buffer());
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
                        SetsToSingleChannelIfMultichannelNotSupported) {
   fake_service_->set_multichannel_supported(false);
   int sample_rate = 20000;
@@ -315,7 +320,8 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest,
             fake_service_->audio_parameters()->channel_layout());
 }
 
-IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, DefaultParameters) {
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionRecognizerClientImplTest,
+                       DefaultParameters) {
   fake_service_->set_multichannel_supported(true);
   ConstructRecognizerAndWaitForReady();
   StartListeningWithAudioParams(absl::nullopt);
