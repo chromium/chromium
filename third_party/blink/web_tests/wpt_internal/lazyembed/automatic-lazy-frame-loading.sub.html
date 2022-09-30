@@ -10,7 +10,23 @@
   <div style="height:9000px;"></div>
   <div id="btf_div"></div>
   <script>
+    const FRAME_IDS = {
+      ATF: 'atf_default',
+      ATF_LAZY: 'atf_lazy',
+      BTF: 'btf_default',
+      BTF_LAZY: 'btf_lazy'
+    };
+
+    const EMBED_URL = "http://{{host}}:{{ports[http][0]}}/" +
+      "/wpt_internal/lazyembed/resources/embed.html";
+    const EMBED_URL_LAZY = "http://bad3p.test:{{ports[http][0]}}" +
+      "/wpt_internal/lazyembed/resources/embed.html";
+
+    const atf = document.querySelector('#atf_div');
+    const btf = document.querySelector('#btf_div');
+
     let loaded_ids = [];
+
     const _createSimpleFrame = () => {
       const iframe = document.createElement('iframe');
       iframe.witdh = "100";
@@ -41,6 +57,18 @@
       _setAttributes(iframe, id, src);
     };
 
+    const appendFrameToAboveTheFold = ({ isLazy }) => {
+      const id = isLazy ? "atf_lazy" : "atf_default";
+      const src = isLazy ? EMBED_URL_LAZY : EMBED_URL;
+      appendFrame(id, src, atf);
+    };
+
+    const appendFrameToBelowTheFold = ({ isLazy }) => {
+      const id = isLazy ? "btf_lazy" : "btf_default";
+      const src = isLazy ? EMBED_URL_LAZY : EMBED_URL;
+      appendFrame(id, src, btf);
+    };
+
     const isElementLoaded = (id) => loaded_ids.includes(id);
 
     const waitForElementLoad = (id) => {
@@ -55,21 +83,6 @@
         }
       });
     };
-
-    const defaultEmbedUrl = "http://{{host}}:{{ports[http][0]}}/" +
-                            "/wpt_internal/lazyembed/resources/embed.html";
-    const lazyEmbedUrl = "http://bad3p.test:{{ports[http][0]}}" +
-                         "/wpt_internal/lazyembed/resources/embed.html";
-
-    const atf = document.querySelector('#atf_div');
-    const btf = document.querySelector('#btf_div');
-
-    const appendFrames = () => {
-      appendFrame("atf_default", defaultEmbedUrl, atf);
-      appendFrame("atf_lazy", lazyEmbedUrl, atf);
-      appendFrame("btf_default", defaultEmbedUrl, btf);
-      appendFrame("btf_lazy", lazyEmbedUrl, btf);
-    }
 
     const removeIframes = () => {
       document.querySelectorAll('iframe').forEach(e => e.remove());
@@ -99,23 +112,31 @@
 
     promise_test(async t => {
       t.add_cleanup(cleanup);
-      appendFrames();
 
       let result;
-      // Test above the fold iframes.
-      result = await waitForElementLoad("atf_default");
+      appendFrameToAboveTheFold({ isLazy: false });
+      result = await waitForElementLoad(FRAME_IDS.ATF);
       assert_true(result, "iframe above the fold is successfully loaded");
-      result = await waitForElementLoad("atf_lazy");
-      assert_true(result, "iframe with lazy loadable url above the fold is successfully loaded");
 
+      appendFrameToAboveTheFold({ isLazy: true });
+      result = await waitForElementLoad(FRAME_IDS.ATF_LAZY);
+      assert_true(result, "iframe with lazy loadable url above the fold is successfully loaded");
+    }, "LazyEmbeds for above the fold");
+
+    promise_test(async t => {
+      t.add_cleanup(cleanup);
+
+      let result;
       // Normally iframe loads src url even in out of viewport.
-      result = await waitForElementLoad("btf_default");
+      appendFrameToBelowTheFold({ isLazy: false });
+      result = await waitForElementLoad(FRAME_IDS.BTF);
       assert_true(result, "iframe below the fold is successfully loaded");
 
       // Test config passes 1000ms as a test param, but this test want to check
       // if the frame is loaded via scrolling. To detect the frame src is still
       // not loaded, just wait for 500ms.
-      result = await wait(t, 500, "btf_lazy");
+      appendFrameToBelowTheFold({ isLazy: true });
+      result = await wait(t, 500, FRAME_IDS.BTF_LAZY);
       assert_false(result, "iframe with lazy loadable url below the fold is not loaded on navigation");
 
       // Then scroll to below the fold.
@@ -124,22 +145,20 @@
       // If viewport is close to the frame, then start loading.
       result = await waitForElementLoad("btf_lazy");
       assert_true(result, "iframe with lazy loadable url below the fold is loaded when close to the element");
-    }, "Automatic lazy frame loading");
+    }, "LazyEmbeds for below the fold");
 
     promise_test(async t => {
       t.add_cleanup(cleanup);
 
-      const id = "btf_lazy"
-      appendFrame(id, lazyEmbedUrl, btf);
-
+      appendFrameToBelowTheFold({ isLazy: true });
       const timeoutMs = 1000;
       let result;
       // To detect the frame src is not loaded, wait until the timeout.
-      result = await wait(t, timeoutMs, id);
+      result = await wait(t, timeoutMs, FRAME_IDS.BTF_LAZY);
       assert_false(result, "iframe is not loaded yet right after the timeout");
 
       await waitUntilIdle();
-      result = await waitForElementLoad(id);
+      result = await waitForElementLoad(FRAME_IDS.BTF_LAZY);
       assert_true(result, "iframe with lazy loadable url below the fold is " +
                           "loaded when after the timeout and idle");
     }, "Automatic lazy frame loading with timeout");
@@ -147,19 +166,18 @@
     promise_test(async t => {
       t.add_cleanup(cleanup);
 
-      const id = "btf_lazy"
-      appendAdFrame(id, lazyEmbedUrl, btf);
+      appendFrameToBelowTheFold({ isLazy: true });
 
       // The timeout setting of LazyEmbeds.
       // LazyAds timeout is set as 5000ms in VirtualTestSuites.
       const timeoutMs = 1000;
       let result;
       // To detect the frame src is not loaded, wait until the timeout.
-      result = await wait(t, timeoutMs, id);
+      result = await wait(t, timeoutMs, FRAME_IDS.BTF_LAZY);
       assert_false(result, "iframe is not loaded yet right after the timeout");
 
       await waitUntilIdle();
-      result = await waitForElementLoad(id);
+      result = await waitForElementLoad(FRAME_IDS.BTF_LAZY);
       assert_true(
         result, "iframe is loaded after passing the LazyEmbeds timeout");
     }, "LazyEmbeds timeout is prioritized than LazyAds whtn the frame is " +
