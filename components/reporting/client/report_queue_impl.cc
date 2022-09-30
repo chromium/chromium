@@ -167,12 +167,8 @@ SpeculativeReportQueueImpl::SpeculativeReportQueueImpl(
 
 SpeculativeReportQueueImpl::~SpeculativeReportQueueImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  while (!pending_record_producers_.empty()) {
-    auto head = std::move(pending_record_producers_.front());
-    pending_record_producers_.pop();
-    std::move(head.record_callback)
-        .Run(Status(error::DATA_LOSS, "The queue is being destructed"));
-  }
+  PurgePendingProducers(
+      Status(error::DATA_LOSS, "The queue is being destructed"));
 }
 
 void SpeculativeReportQueueImpl::Flush(Priority priority,
@@ -188,17 +184,13 @@ void SpeculativeReportQueueImpl::Flush(Priority priority,
               return;
             }
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-            if (!self->status_or_report_queue_.has_value()) {
+            if (!self->actual_report_queue_.has_value()) {
               std::move(callback).Run(Status(error::FAILED_PRECONDITION,
                                              "ReportQueue is not ready yet."));
               return;
             }
-            if (!self->status_or_report_queue_->ok()) {
-              std::move(callback).Run(self->status_or_report_queue_->status());
-              return;
-            }
             const std::unique_ptr<ReportQueue>& report_queue =
-                self->status_or_report_queue_->ValueOrDie();
+                self->actual_report_queue_.value();
             report_queue->Flush(priority, std::move(callback));
           },
           priority, std::move(callback), weak_ptr_factory_.GetWeakPtr()));
@@ -222,14 +214,8 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer(
     EnqueueCallback callback,
     RecordProducer record_producer) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!status_or_report_queue_.has_value()) {
+  if (!actual_report_queue_.has_value()) {
     // Queue is not ready yet, store the record in the memory queue.
-    pending_record_producers_.emplace(std::move(record_producer),
-                                      std::move(callback), priority);
-    return;
-  }
-  if (!status_or_report_queue_->ok()) {
-    // Queue creation failed, leave it for another attempt.
     pending_record_producers_.emplace(std::move(record_producer),
                                       std::move(callback), priority);
     return;
@@ -237,7 +223,7 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer(
   // Queue is ready. If memory queue is empty, just forward the record.
   if (pending_record_producers_.empty()) {
     const std::unique_ptr<ReportQueue>& report_queue =
-        status_or_report_queue_->ValueOrDie();
+        actual_report_queue_.value();
     report_queue->AddProducedRecord(std::move(record_producer), priority,
                                     std::move(callback));
     return;
@@ -251,14 +237,12 @@ void SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer(
 
 void SpeculativeReportQueueImpl::EnqueuePendingRecordProducers() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(status_or_report_queue_.has_value());
-  DCHECK(status_or_report_queue_->ok());
+  DCHECK(actual_report_queue_.has_value());
   if (pending_record_producers_.empty()) {
     return;
   }
   const std::unique_ptr<ReportQueue>& report_queue =
-      status_or_report_queue_->ValueOrDie();
-
+      actual_report_queue_.value();
   auto head = std::move(pending_record_producers_.front());
   pending_record_producers_.pop();
   if (pending_record_producers_.empty()) {
@@ -320,20 +304,30 @@ void SpeculativeReportQueueImpl::AttachActualQueue(
               return;
             }
             DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
-            if (self->status_or_report_queue_.has_value()) {
+            if (self->actual_report_queue_.has_value()) {
               // Already attached, do nothing.
               return;
             }
-            self->status_or_report_queue_ = std::move(status_or_actual_queue);
-            // TODO(b/239583016): remove the ok status check once the enqueue
-            // callbacks are stored along with the records in a pending queue
-            // instead of only the records, and run the callbacks with the
-            // failure status if creation failed.
-            if (self->status_or_report_queue_->ok() &&
-                !self->pending_record_producers_.empty()) {
-              self->EnqueuePendingRecordProducers();
+            if (!status_or_actual_queue.ok()) {
+              // Failed to create actual queue.
+              // Flush all pending records with this status.
+              self->PurgePendingProducers(status_or_actual_queue.status());
+              return;
             }
+            // Actual report queue succeeded, store it (never to change later).
+            self->actual_report_queue_ =
+                std::move(status_or_actual_queue.ValueOrDie());
+            self->EnqueuePendingRecordProducers();
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(status_or_actual_queue)));
+}
+
+void SpeculativeReportQueueImpl::PurgePendingProducers(Status status) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while (!pending_record_producers_.empty()) {
+    auto head = std::move(pending_record_producers_.front());
+    pending_record_producers_.pop();
+    std::move(head.record_callback).Run(status);
+  }
 }
 }  // namespace reporting

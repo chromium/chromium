@@ -123,6 +123,9 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   // of it.
   void EnqueuePendingRecordProducers() const;
 
+  // Purges all |pending_record_producers_| with error.
+  void PurgePendingProducers(Status status) const;
+
   // Optionally enqueues |record_producer| (owned) to actual queue, if ready.
   // Otherwise adds it to the end of |pending_record_producers_|.
   void MaybeEnqueueRecordProducer(Priority priority,
@@ -134,9 +137,8 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Creation status of |ReportQueue| and actual |ReportQueue| if successfully
-  // created.
-  absl::optional<StatusOr<std::unique_ptr<ReportQueue>>> status_or_report_queue_
+  // Actual |ReportQueue| once successfully created (immutable after that).
+  absl::optional<std::unique_ptr<ReportQueue>> actual_report_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Queue of the pending record producers, collected before actual queue has
