@@ -97,19 +97,19 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   // data.
   bool UsesAndroidBackendAsMainBackend();
 
-  // Retries to add/update login into |built_in_backend| in case of an
-  // unrecoverable error inside |android_backend|. |form| and
-  // |original_callback| are the original parameters passed to
-  // Add/UpdateLoginAsync.
-  void MaybeRetryToAddLoginOnFail(const PasswordForm& form,
-                                  PasswordChangesOrErrorReply original_callback,
-                                  bool was_using_android_backend,
-                                  PasswordChangesOrError result);
-  void MaybeRetryToUpdateLoginOnFail(
-      const PasswordForm& form,
-      PasswordChangesOrErrorReply original_callback,
-      bool was_using_android_backend,
-      const PasswordChangesOrError& result);
+  // Retries to execute operation on |built_in_backend| in case of an
+  // unrecoverable error inside |android_backend|. |retry_callback| is the
+  // pending operation with binded parameters, |result_callback| is the original
+  // operation callback.
+  // |ResultT| is the resulting type of the backend operation that will be
+  // passed to the result callback. Could be either |LoginsResultOrError| or
+  // |PasswordChangesOrError|.
+  template <typename ResultT>
+  void MaybeRetryOperation(
+      base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
+          retry_callback,
+      base::OnceCallback<void(ResultT)> result_callback,
+      ResultT result);
 
   PasswordStoreBackend* main_backend();
   PasswordStoreBackend* shadow_backend();
