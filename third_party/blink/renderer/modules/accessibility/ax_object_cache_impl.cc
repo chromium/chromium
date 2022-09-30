@@ -1824,8 +1824,6 @@ void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   if (!object)
     return;
 
-  fixed_or_sticky_node_ids_.clear();
-
   if (active_aria_modal_dialog_ == object)
     active_aria_modal_dialog_ = nullptr;
 
@@ -1837,6 +1835,7 @@ void AXObjectCacheImpl::RemoveAXID(AXObject* object) {
   object->SetAXObjectID(0);
   ids_in_use_.erase(obj_id);
   autofill_state_map_.erase(obj_id);
+  fixed_or_sticky_node_ids_.erase(obj_id);
 
   relation_cache_->RemoveAXID(obj_id);
 }

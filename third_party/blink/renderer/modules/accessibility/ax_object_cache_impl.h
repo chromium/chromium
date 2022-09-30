@@ -865,6 +865,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   Deque<ui::AXEvent> pending_events_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RemoveAXID);
 };
 
 // This is the only subclass of AXObjectCache.
