@@ -201,9 +201,7 @@ if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
     }
     configs += [ ":libaom_config" ]
 
-    # https://bugs.chromium.org/p/aomedia/issues/detail?id=2294
-    sources = [ "//third_party/libaom/source/libaom/aom_ports/arm_cpudetect.c" ]
-    sources += aom_av1_common_intrin_neon
+    sources = aom_av1_common_intrin_neon
     sources += aom_dsp_common_intrin_neon
     sources += aom_av1_encoder_intrin_neon
     sources += aom_dsp_encoder_intrin_neon
@@ -259,6 +257,11 @@ static_library("libaom") {
   if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
       cpu_arch_full == "arm-neon-cpu-detect") {
     deps += [ ":libaom_intrinsics_neon" ]
+  }
+  if (current_cpu == "arm64" || current_cpu == "arm") {
+    # This is needed by all arm boards due to aom_arm_cpu_caps()
+    sources +=
+        [ "//third_party/libaom/source/libaom/aom_ports/arm_cpudetect.c" ]
   }
   if (is_android) {
     deps += [ "//third_party/android_ndk:cpu_features" ]
