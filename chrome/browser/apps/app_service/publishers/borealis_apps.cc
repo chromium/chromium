@@ -417,9 +417,12 @@ void BorealisApps::GetMenuModel(const std::string& app_id,
                                 base::OnceCallback<void(MenuItems)> callback) {
   MenuItems menu_items;
 
+  // Apps should only be uninstallable if we can run the VM, but the vm itself
+  // should always be uninstallable.
   if (borealis::BorealisService::GetForProfile(profile_)
           ->Features()
-          .IsEnabled()) {
+          .IsEnabled() ||
+      app_id == borealis::kClientAppId) {
     AddCommandItem(ash::UNINSTALL, IDS_APP_LIST_UNINSTALL_ITEM, menu_items);
   }
 
