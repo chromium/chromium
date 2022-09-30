@@ -102,7 +102,7 @@ void SessionDataDeleterInternal::Run(
     // Clear storage and keep this object alive until deletion is done.
     storage_partition->ClearData(
         removal_mask, content::StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-        base::BindRepeating(&OriginMatcher),
+        /*filter_builder=*/nullptr, base::BindRepeating(&OriginMatcher),
         /*cookie_deletion_filter=*/nullptr,
         /*perform_storage_cleanup=*/false, base::Time(), base::Time::Max(),
         base::BindOnce(&SessionDataDeleterInternal::OnStorageDeletionDone,

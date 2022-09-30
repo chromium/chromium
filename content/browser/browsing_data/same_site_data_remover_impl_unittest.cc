@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/browser/browsing_data/same_site_data_remover_impl.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -37,7 +39,8 @@ namespace content {
 struct StoragePartitionSameSiteRemovalData {
   uint32_t removal_mask = 0;
   uint32_t quota_storage_removal_mask = 0;
-  StoragePartition::StorageKeyPolicyMatcherFunction storage_key_matcher;
+  std::unique_ptr<BrowsingDataFilterBuilder> filter_builder;
+  StoragePartition::StorageKeyPolicyMatcherFunction storage_key_policy_matcher;
 };
 
 class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
@@ -53,17 +56,20 @@ class SameSiteRemoverTestStoragePartition : public TestStoragePartition {
 
   void ClearData(uint32_t removal_mask,
                  uint32_t quota_storage_removal_mask,
-                 StorageKeyPolicyMatcherFunction storage_key_matcher,
+                 BrowsingDataFilterBuilder* filter_builder,
+                 StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
                  network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
                  bool perform_storage_cleanup,
                  const base::Time begin,
                  const base::Time end,
                  base::OnceClosure callback) override {
+    DCHECK(filter_builder);
     storage_partition_removal_data_.removal_mask = removal_mask;
     storage_partition_removal_data_.quota_storage_removal_mask =
         quota_storage_removal_mask;
-    storage_partition_removal_data_.storage_key_matcher =
-        std::move(storage_key_matcher);
+    storage_partition_removal_data_.filter_builder = filter_builder->Copy();
+    storage_partition_removal_data_.storage_key_policy_matcher =
+        std::move(storage_key_policy_matcher);
     std::move(callback).Run();
   }
 
@@ -300,7 +306,7 @@ TEST_F(SameSiteDataRemoverImplTest, TestStoragePartitionDataRemoval) {
   DeleteSameSiteNoneCookies();
 
   ClearStoragePartitionData();
-  StoragePartitionSameSiteRemovalData removal_data =
+  const StoragePartitionSameSiteRemovalData& removal_data =
       storage_partition.GetStoragePartitionRemovalData();
 
   const uint32_t expected_removal_mask =
@@ -313,18 +319,19 @@ TEST_F(SameSiteDataRemoverImplTest, TestStoragePartitionDataRemoval) {
   EXPECT_EQ(removal_data.quota_storage_removal_mask,
             expected_quota_storage_mask);
 
-  auto special_storage_policy =
-      base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting(
-          "http://www.google.com/test"),
-      special_storage_policy.get()));
-  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting("http://google.com"),
-      special_storage_policy.get()));
-  EXPECT_FALSE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting("http://youtube.com"),
-      special_storage_policy.get()));
+  ASSERT_TRUE(removal_data.filter_builder);
+  EXPECT_TRUE(removal_data.storage_key_policy_matcher.is_null());
+
+  StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
+      removal_data.filter_builder->BuildStorageKeyFilter();
+
+  EXPECT_TRUE(
+      storage_key_matcher.Run(blink::StorageKey::CreateFromStringForTesting(
+          "http://www.google.com/test")));
+  EXPECT_TRUE(storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("http://google.com")));
+  EXPECT_FALSE(storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("http://youtube.com")));
 }
 
 TEST_F(SameSiteDataRemoverImplTest, TestClearStoragePartitionsForOrigins) {
@@ -338,7 +345,7 @@ TEST_F(SameSiteDataRemoverImplTest, TestClearStoragePartitionsForOrigins) {
 
   std::set<std::string> clear_origins = {"https://a.com", "https://b.com"};
   ClearStoragePartitionForOrigins(clear_origins);
-  StoragePartitionSameSiteRemovalData removal_data =
+  const StoragePartitionSameSiteRemovalData& removal_data =
       storage_partition.GetStoragePartitionRemovalData();
 
   const uint32_t expected_removal_mask =
@@ -351,14 +358,16 @@ TEST_F(SameSiteDataRemoverImplTest, TestClearStoragePartitionsForOrigins) {
   EXPECT_EQ(removal_data.quota_storage_removal_mask,
             expected_quota_storage_mask);
 
-  auto special_storage_policy =
-      base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting("https://a.com"),
-      special_storage_policy.get()));
-  EXPECT_FALSE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting("http://youtube.com"),
-      special_storage_policy.get()));
+  ASSERT_TRUE(removal_data.filter_builder);
+  EXPECT_TRUE(removal_data.storage_key_policy_matcher.is_null());
+
+  StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
+      removal_data.filter_builder->BuildStorageKeyFilter();
+
+  EXPECT_TRUE(storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("https://a.com")));
+  EXPECT_FALSE(storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("http://youtube.com")));
 }
 
 TEST_F(SameSiteDataRemoverImplTest, TestDoesNotDeletePartitionedCookies) {
@@ -403,7 +412,7 @@ TEST_F(SameSiteDataRemoverImplTest, TestDoesNotDeletePartitionedCookies) {
 
   DeleteSameSiteNoneCookies();
   ClearStoragePartitionData();
-  StoragePartitionSameSiteRemovalData removal_data =
+  const StoragePartitionSameSiteRemovalData& removal_data =
       storage_partition.GetStoragePartitionRemovalData();
 
   const std::vector<net::CanonicalCookie>& cookies =
@@ -411,15 +420,17 @@ TEST_F(SameSiteDataRemoverImplTest, TestDoesNotDeletePartitionedCookies) {
   ASSERT_EQ(1u, cookies.size());
   ASSERT_EQ(cookies[0].Name(), "__Host-partitioned");
 
-  auto storage_policy =
-      base::MakeRefCounted<storage::MockSpecialStoragePolicy>();
-  EXPECT_TRUE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting("https://www.google.com"),
-      storage_policy.get()));
-  EXPECT_FALSE(removal_data.storage_key_matcher.Run(
-      blink::StorageKey::CreateFromStringForTesting(
-          "https://www.partitioned.com"),
-      storage_policy.get()));
+  ASSERT_TRUE(removal_data.filter_builder);
+  EXPECT_TRUE(removal_data.storage_key_policy_matcher.is_null());
+
+  StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
+      removal_data.filter_builder->BuildStorageKeyFilter();
+
+  EXPECT_TRUE(storage_key_matcher.Run(
+      blink::StorageKey::CreateFromStringForTesting("https://www.google.com")));
+  EXPECT_FALSE(
+      storage_key_matcher.Run(blink::StorageKey::CreateFromStringForTesting(
+          "https://www.partitioned.com")));
 }
 
 }  // namespace content

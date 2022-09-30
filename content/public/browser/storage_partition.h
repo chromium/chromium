@@ -64,6 +64,7 @@ namespace content {
 
 class BackgroundSyncContext;
 class BrowserContext;
+class BrowsingDataFilterBuilder;
 class BrowsingTopicsSiteDataManager;
 class ContentIndexContext;
 class DedicatedWorkerService;
@@ -223,11 +224,15 @@ class CONTENT_EXPORT StoragePartition {
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
-  // match.
+  // match. Returns true if the given StorageKey matches the storage policy,
+  // false otherwise.
   using StorageKeyPolicyMatcherFunction =
       base::RepeatingCallback<bool(const blink::StorageKey&,
                                    storage::SpecialStoragePolicy*)>;
 
+  // A callback type to check if a given StorageKey matches. Can be passed
+  // empty/null where used which means the StorageKey will always match. Returns
+  // true when the given StorageKey matches, false otherwise.
   using StorageKeyMatcherFunction =
       base::RepeatingCallback<bool(const blink::StorageKey&)>;
 
@@ -239,7 +244,7 @@ class CONTENT_EXPORT StoragePartition {
     // Called on a deletion event for storage keyed storage APIs.
     virtual void OnStorageKeyDataCleared(
         uint32_t remove_mask,
-        StorageKeyMatcherFunction storage_key_matcher,
+        StorageKeyMatcherFunction storage_key_policy_matcher,
         const base::Time begin,
         const base::Time end) = 0;
   };
@@ -257,8 +262,10 @@ class CONTENT_EXPORT StoragePartition {
 
   // Similar to ClearData().
   // Deletes all data out for the StoragePartition.
-  // * `storage_key_matcher` is present if special storage policy is to be
-  //   handled, otherwise the callback should be null.
+  // * `filter_builder` is present if origin/domain filters are to be handled,
+  //   otherwise should be nullptr.
+  // * `storage_key_policy_matcher` is present if special storage policy is to
+  //   be handled, otherwise the callback should be null.
   //   The StorageKey matcher does not apply to cookies, instead use:
   // * `cookie_deletion_filter` identifies the cookies to delete and will be
   //   used if `remove_mask` has the REMOVE_DATA_MASK_COOKIES bit set. Note:
@@ -277,7 +284,8 @@ class CONTENT_EXPORT StoragePartition {
   virtual void ClearData(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      StorageKeyPolicyMatcherFunction storage_key_matcher,
+      BrowsingDataFilterBuilder* filter_builder,
+      StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
       network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
       bool perform_storage_cleanup,
       const base::Time begin,

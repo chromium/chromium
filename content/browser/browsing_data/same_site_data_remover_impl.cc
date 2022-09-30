@@ -78,17 +78,6 @@ std::unique_ptr<BrowsingDataFilterBuilder> CreateBrowsingDataFilterBuilder(
   return filter_builder;
 }
 
-StoragePartition::StorageKeyPolicyMatcherFunction CreateGenericKeyPolicyMatcher(
-    BrowsingDataFilterBuilder& filter_builder) {
-  return base::BindRepeating(
-      [](StoragePartition::StorageKeyMatcherFunction key_matcher,
-         const blink::StorageKey& storage_key,
-         storage::SpecialStoragePolicy* policy) {
-        return key_matcher.Run(storage_key);
-      },
-      filter_builder.BuildStorageKeyFilter());
-}
-
 }  // namespace
 
 SameSiteDataRemoverImpl::SameSiteDataRemoverImpl(
@@ -127,8 +116,8 @@ void SameSiteDataRemoverImpl::ClearStoragePartitionData(
       CreateBrowsingDataFilterBuilder(same_site_none_domains_);
   storage_partition_->ClearData(
       kStoragePartitionRemovalMask,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      CreateGenericKeyPolicyMatcher(*filter_builder), nullptr, false,
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, filter_builder.get(),
+      StoragePartition::StorageKeyPolicyMatcherFunction(), nullptr, false,
       base::Time(), base::Time::Max(), std::move(closure));
 }
 
@@ -144,8 +133,8 @@ void SameSiteDataRemoverImpl::ClearStoragePartitionForOrigins(
   }
   storage_partition_->ClearData(
       kStoragePartitionRemovalMask,
-      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
-      CreateGenericKeyPolicyMatcher(*filter_builder), nullptr, false,
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, filter_builder.get(),
+      StoragePartition::StorageKeyPolicyMatcherFunction(), nullptr, false,
       base::Time(), base::Time::Max(), std::move(closure));
 }
 

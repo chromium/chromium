@@ -71,6 +71,7 @@ class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
 class BroadcastChannelService;
+class BrowsingDataFilterBuilder;
 class BucketManager;
 class CacheStorageControlWrapper;
 class CookieStoreManager;
@@ -216,7 +217,8 @@ class CONTENT_EXPORT StoragePartitionImpl
                  base::OnceClosure callback) override;
   void ClearData(uint32_t remove_mask,
                  uint32_t quota_storage_remove_mask,
-                 StorageKeyPolicyMatcherFunction storage_key_matcher,
+                 BrowsingDataFilterBuilder* filter_builder,
+                 StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
                  network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
                  bool perform_storage_cleanup,
                  const base::Time begin,
@@ -560,13 +562,15 @@ class CONTENT_EXPORT StoragePartitionImpl
   // state.
   void OnStorageServiceDisconnected();
 
-  // Clears the data specified by the `storage_key` or `storage_key_matcher`.
-  // `storage_key` and `storage_key_matcher` will never both be populated.
+  // Clears the data specified by the `storage_key` or
+  // `filter_builder`/`storage_key_policy_matcher`. `storage_key` and
+  // `filter_builder`/`storage_key_policy_matcher` will never both be populated.
   void ClearDataImpl(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
       const blink::StorageKey& storage_key,
-      StorageKeyPolicyMatcherFunction storage_key_matcher,
+      BrowsingDataFilterBuilder* filter_builder,
+      StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
       network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
       bool perform_storage_cleanup,
       const base::Time begin,

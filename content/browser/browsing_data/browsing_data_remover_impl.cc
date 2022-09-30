@@ -67,20 +67,15 @@ base::OnceClosure RunsOrPostOnCurrentTaskRunner(base::OnceClosure closure) {
 }
 
 // Returns whether `storage_key` matches `origin_type_mask` given the special
-// storage `policy`; and if `predicate` is not null, then also whether
-// it matches `predicate`. If `origin_type_mask` contains embedder-specific
+// storage `policy`. If `origin_type_mask` contains embedder-specific
 // datatypes, `embedder_matcher` must not be null; the decision for those
 // datatypes will be delegated to it.
-bool DoesStorageKeyMatchMaskAndPredicate(
+bool DoesStorageKeyMatchMask(
     uint64_t origin_type_mask,
-    content::StoragePartition::StorageKeyMatcherFunction predicate,
     const BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher&
         embedder_matcher,
     const blink::StorageKey& storage_key,
     storage::SpecialStoragePolicy* policy) {
-  if (predicate && !std::move(predicate).Run(storage_key))
-    return false;
-
   const std::vector<std::string>& schemes = url::GetWebStorageSchemes();
   bool is_web_scheme = base::Contains(schemes, storage_key.origin().scheme());
 
@@ -170,9 +165,8 @@ bool BrowsingDataRemoverImpl::DoesOriginMatchMaskForTesting(
   if (embedder_delegate_)
     embedder_matcher = embedder_delegate_->GetOriginTypeMatcher();
 
-  return DoesStorageKeyMatchMaskAndPredicate(
-      origin_type_mask, base::NullCallback(), std::move(embedder_matcher),
-      blink::StorageKey(origin), policy);
+  return DoesStorageKeyMatchMask(origin_type_mask, std::move(embedder_matcher),
+                                 blink::StorageKey(origin), policy);
 }
 
 void BrowsingDataRemoverImpl::Remove(const base::Time& delete_begin,
@@ -336,9 +330,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // INITIALIZATION
   base::RepeatingCallback<bool(const GURL&)> url_filter =
       filter_builder->BuildUrlFilter();
-  content::StoragePartition::StorageKeyMatcherFunction storage_key_filter =
-      static_cast<BrowsingDataFilterBuilderImpl*>(filter_builder)
-          ->BuildStorageKeyFilter();
 
   // Some backends support a filter that |is_null()| to make complete deletion
   // more efficient.
@@ -489,8 +480,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
     storage_partition->ClearData(
         storage_partition_remove_mask, quota_storage_remove_mask,
-        base::BindRepeating(&DoesStorageKeyMatchMaskAndPredicate,
-                            origin_type_mask_, storage_key_filter,
+        filter_builder,
+        base::BindRepeating(&DoesStorageKeyMatchMask, origin_type_mask_,
                             std::move(embedder_matcher)),
         std::move(deletion_filter), perform_storage_cleanup, delete_begin_,
         delete_end_,
@@ -780,7 +771,9 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type,
       GetStoragePartition()->ClearData(
           StoragePartition::REMOVE_DATA_MASK_COOKIES,
           /*quota_storage_remove_mask=*/0,
-          /*origin_matcher=*/base::NullCallback(), std::move(deletion_filter),
+          /*filter_builder=*/nullptr,
+          /*storage_key_policy_matcher=*/base::NullCallback(),
+          std::move(deletion_filter),
           /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
       return;

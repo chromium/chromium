@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/browsing_data_history_observer_service.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_types.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_storage_partition.h"
@@ -25,8 +27,9 @@ namespace {
 struct RemovalData {
   uint32_t removal_mask = 0;
   uint32_t quota_storage_removal_mask = 0;
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder;
   content::StoragePartition::StorageKeyPolicyMatcherFunction
-      storage_key_matcher;
+      storage_key_policy_matcher;
   base::Time begin;
   base::Time end;
 };
@@ -38,7 +41,8 @@ class RemovalDataTestStoragePartition : public content::TestStoragePartition {
 
   void ClearData(uint32_t removal_mask,
                  uint32_t quota_storage_removal_mask,
-                 StorageKeyPolicyMatcherFunction storage_key_matcher,
+                 content::BrowsingDataFilterBuilder* filter_builder,
+                 StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
                  network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
                  bool perform_storage_cleanup,
                  const base::Time begin,
@@ -47,10 +51,13 @@ class RemovalDataTestStoragePartition : public content::TestStoragePartition {
     RemovalData removal_data;
     removal_data.removal_mask = removal_mask;
     removal_data.quota_storage_removal_mask = quota_storage_removal_mask;
-    removal_data.storage_key_matcher = std::move(storage_key_matcher);
+    removal_data.filter_builder =
+        filter_builder ? filter_builder->Copy() : nullptr;
+    removal_data.storage_key_policy_matcher =
+        std::move(storage_key_policy_matcher);
     removal_data.begin = begin;
     removal_data.end = end;
-    removal_data_ = removal_data;
+    removal_data_ = std::move(removal_data);
 
     std::move(callback).Run();
   }
@@ -94,8 +101,8 @@ TEST_F(BrowsingDataHistoryObserverServiceTest, AllHistoryDeleted_DataCleared) {
   EXPECT_EQ(base::Time(), removal_data->begin);
   EXPECT_EQ(base::Time::Max(), removal_data->end);
 
-  // A null origin matcher indicates to remove all origins.
-  EXPECT_TRUE(removal_data->storage_key_matcher.is_null());
+  // A null filter builder indicates to remove all origins.
+  EXPECT_FALSE(removal_data->filter_builder);
 }
 
 TEST_F(BrowsingDataHistoryObserverServiceTest,
@@ -126,13 +133,16 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
   EXPECT_EQ(base::Time(), removal_data->begin);
   EXPECT_EQ(base::Time::Max(), removal_data->end);
 
+  ASSERT_TRUE(removal_data->filter_builder);
+
+  content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
+      removal_data->filter_builder->BuildStorageKeyFilter();
+
   // Data for `origin_a` should be cleared, but not for `origin_b`.
-  EXPECT_TRUE(removal_data->storage_key_matcher.Run(
-      blink::StorageKey(url::Origin::Create(origin_a)),
-      /*special_storage_policy=*/nullptr));
-  EXPECT_FALSE(removal_data->storage_key_matcher.Run(
-      blink::StorageKey(url::Origin::Create(origin_b)),
-      /*special_storage_policy=*/nullptr));
+  EXPECT_TRUE(storage_key_matcher.Run(
+      blink::StorageKey(url::Origin::Create(origin_a))));
+  EXPECT_FALSE(storage_key_matcher.Run(
+      blink::StorageKey(url::Origin::Create(origin_b))));
 }
 
 TEST_F(BrowsingDataHistoryObserverServiceTest,
@@ -156,7 +166,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
 
   EXPECT_EQ(begin, removal_data->begin);
   EXPECT_EQ(end, removal_data->end);
-  EXPECT_TRUE(removal_data->storage_key_matcher.is_null());
+  EXPECT_FALSE(removal_data->filter_builder);
 }
 
 TEST_F(BrowsingDataHistoryObserverServiceTest,
@@ -185,15 +195,18 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
 
   EXPECT_EQ(begin, removal_data->begin);
   EXPECT_EQ(end, removal_data->end);
-  EXPECT_FALSE(removal_data->storage_key_matcher.is_null());
+  EXPECT_FALSE(removal_data->storage_key_policy_matcher.is_null());
+
+  ASSERT_TRUE(removal_data->filter_builder);
+
+  content::StoragePartition::StorageKeyMatcherFunction storage_key_matcher =
+      removal_data->filter_builder->BuildStorageKeyFilter();
 
   // Data for `origin_a` should be cleared, but not for `origin_b`.
-  EXPECT_TRUE(removal_data->storage_key_matcher.Run(
-      blink::StorageKey(url::Origin::Create(origin_a)),
-      /*special_storage_policy=*/nullptr));
-  EXPECT_FALSE(removal_data->storage_key_matcher.Run(
-      blink::StorageKey(url::Origin::Create(origin_b)),
-      /*special_storage_policy=*/nullptr));
+  EXPECT_TRUE(storage_key_matcher.Run(
+      blink::StorageKey(url::Origin::Create(origin_a))));
+  EXPECT_FALSE(storage_key_matcher.Run(
+      blink::StorageKey(url::Origin::Create(origin_b))));
 }
 
 #if BUILDFLAG(IS_ANDROID)

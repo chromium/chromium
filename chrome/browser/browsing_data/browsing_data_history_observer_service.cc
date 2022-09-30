@@ -113,17 +113,9 @@ void ClearCommerceData(Profile* profile,
 }
 #endif
 
-bool DoesStorageKeyMatchPredicate(
-    content::StoragePartition::StorageKeyMatcherFunction predicate,
-    const blink::StorageKey& storage_key,
-    storage::SpecialStoragePolicy* policy) {
-  if (!std::move(predicate).Run(storage_key))
-    return false;
-
-  if (policy && policy->IsStorageProtected(storage_key.origin().GetURL()))
-    return false;
-
-  return true;
+bool IsStorageProtected(const blink::StorageKey& storage_key,
+                        storage::SpecialStoragePolicy* policy) {
+  return !(policy && policy->IsStorageProtected(storage_key.origin().GetURL()));
 }
 
 void DeleteStoragePartitionDataWithFilter(
@@ -132,11 +124,9 @@ void DeleteStoragePartitionDataWithFilter(
     base::Time delete_begin,
     base::Time delete_end) {
   content::StoragePartition::StorageKeyPolicyMatcherFunction
-      storage_key_matcher =
-          filter_builder
-              ? base::BindRepeating(&DoesStorageKeyMatchPredicate,
-                                    filter_builder->BuildStorageKeyFilter())
-              : base::NullCallback();
+      storage_key_policy_matcher =
+          filter_builder ? base::BindRepeating(&IsStorageProtected)
+                         : base::NullCallback();
 
   const uint32_t removal_mask =
       content::StoragePartition::REMOVE_DATA_MASK_AGGREGATION_SERVICE |
@@ -147,7 +137,8 @@ void DeleteStoragePartitionDataWithFilter(
       content::StoragePartition::REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL;
   const uint32_t quota_removal_mask = 0;
   storage_partition->ClearData(
-      removal_mask, quota_removal_mask, std::move(storage_key_matcher),
+      removal_mask, quota_removal_mask, filter_builder.get(),
+      std::move(storage_key_policy_matcher),
       /*cookie_deletion_filter=*/nullptr, /*perform_storage_cleanup=*/false,
       delete_begin, delete_end, base::DoNothing());
 }
