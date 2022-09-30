@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -155,8 +156,7 @@ void LoginAsh::LaunchSamlUserSession(const std::string& email,
   }
 
   chromeos::UserContext context(user_manager::USER_TYPE_REGULAR,
-                                user_manager::known_user::GetAccountId(
-                                    email, gaia_id, AccountType::GOOGLE));
+                                AccountId::FromUserEmailGaiaId(email, gaia_id));
   chromeos::Key key(password);
   key.SetLabel(ash::kCryptohomeGaiaKeyLabel);
   context.SetKey(key);
