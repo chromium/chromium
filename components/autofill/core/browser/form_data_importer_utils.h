@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
@@ -38,6 +39,7 @@ class TimestampedSameOriginQueue {
 
     const base::Time timestamp;
   };
+  using iterator = typename std::list<value_type>::iterator;
   using const_iterator = typename std::list<value_type>::const_iterator;
 
   explicit TimestampedSameOriginQueue(
@@ -88,6 +90,8 @@ class TimestampedSameOriginQueue {
   void Clear() { erase(begin(), end()); }
 
   // The elements are ordered from newest to latest.
+  iterator begin() { return items_.begin(); }
+  iterator end() { return items_.end(); }
   const_iterator begin() const { return items_.begin(); }
   const_iterator end() const { return items_.end(); }
 
@@ -168,10 +172,30 @@ class MultiStepImportMerger {
       ProfileImportMetadata& import_metadata,
       const url::Origin& origin);
 
+  // With AutofillComplementCountryEarly, merging can fail if one profile
+  // fragment contains an observed country and the complemented country of the
+  // other profile disagrees with it. This function attempts to make `profile_a`
+  // and `profile_b` mergeable by removing the complemented country.
+  // If successful, true is returned and the complemented country removed.
+  // TODO(crbug.com/1287498): Remove AutofillComplementCountryEarly reference.
+  bool MergeableByRemovingIncorrectlyComplementedCountry(
+      AutofillProfile& profile_a,
+      bool& complemented_profile_a,
+      AutofillProfile& profile_b,
+      bool& complemented_profile_b) const;
+
+  // `ProfileImportMetadata` is used to log metrics on the user decision,
+  // depending on features like invalid phone number removal. When combining two
+  // profile fragments, we need to decide which features had an effect on the
+  // resulting profile. This function does so by merging `source` into `target`.
+  void MergeImportMetadata(const ProfileImportMetadata& source,
+                           ProfileImportMetadata& target) const;
+
   // Needed to predict the country code of a merged import candidate, to
   // ultimately decide if the profile meets the minimum import requirements.
   std::string app_locale_;
   std::string variation_country_code_;
+  AutofillProfileComparator comparator_;
 
   // Represents a submitted form, stored to be considered as a merge candidate
   // for other candidate profiles in future submits in a multi-step import

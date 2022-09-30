@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
 #include "base/memory/raw_ptr.h"
@@ -4313,6 +4314,34 @@ TEST_P(FormDataImporterTest, MultiStepImport) {
   ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
 
   form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
+  ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
+}
+
+// Tests that a complemented country is discarded in favour of an observed one.
+TEST_P(FormDataImporterTest, MultiStepImportComplementCountryEarly) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillEnableMultiStepImports,
+                             features::kAutofillComplementCountryEarly},
+                            {});
+
+  // Import a profile fragment with country information.
+  TypeValuePairs type_value_pairs =
+      GetSplitDefaultProfileTypeValuePairs(/*part=*/1);
+  EXPECT_TRUE(base::Contains(
+      type_value_pairs,
+      std::pair<ServerFieldType, std::string>(ADDRESS_HOME_COUNTRY, "US")));
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ImportAddressProfilesAndVerifyExpectation(*form_structure, {});
+
+  // Now import a profile without a country. The country is thus be complemented
+  // to the variation country "DE".
+  autofill_client_->SetVariationConfigCountryCode("DE");
+  type_value_pairs = GetSplitDefaultProfileTypeValuePairs(/*part=*/2);
+  EXPECT_FALSE(base::Contains(type_value_pairs, ADDRESS_HOME_COUNTRY,
+                              [](auto& pair) { return pair.first; }));
+  form_structure = ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
   ImportAddressProfileAndVerifyImportOfDefaultProfile(*form_structure);
 }
 
