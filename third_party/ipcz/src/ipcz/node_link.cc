@@ -191,6 +191,7 @@ void NodeLink::RequestIntroduction(const NodeName& name) {
 
 void NodeLink::AcceptIntroduction(const NodeName& name,
                                   LinkSide side,
+                                  Node::Type remote_node_type,
                                   uint32_t remote_protocol_version,
                                   Ref<DriverTransport> transport,
                                   DriverMemory memory) {
@@ -199,6 +200,7 @@ void NodeLink::AcceptIntroduction(const NodeName& name,
   msg::AcceptIntroduction accept;
   accept.params().name = name;
   accept.params().link_side = side;
+  accept.params().remote_node_type = remote_node_type;
   accept.params().remote_protocol_version = remote_protocol_version;
   accept.params().transport =
       accept.AppendDriverObject(transport->TakeDriverObject());
@@ -466,8 +468,8 @@ bool NodeLink::OnAcceptIntroduction(msg::AcceptIntroduction& accept) {
       accept.TakeDriverObject(accept.params().transport));
   node()->AcceptIntroduction(
       *this, accept.params().name, accept.params().link_side,
-      accept.params().remote_protocol_version, std::move(transport),
-      NodeLinkMemory::Create(node(), std::move(mapping)));
+      accept.params().remote_node_type, accept.params().remote_protocol_version,
+      std::move(transport), NodeLinkMemory::Create(node(), std::move(mapping)));
   return true;
 }
 
@@ -796,7 +798,7 @@ void NodeLink::OnTransportError() {
   }
 
   Ref<NodeLink> self = WrapRefCounted(this);
-  node_->DropLink(remote_node_name_);
+  node_->DropConnection(remote_node_name_);
 }
 
 void NodeLink::WaitForParcelFragmentToResolve(

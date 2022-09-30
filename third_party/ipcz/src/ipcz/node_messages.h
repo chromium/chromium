@@ -14,6 +14,7 @@
 #include "ipcz/link_side.h"
 #include "ipcz/message.h"
 #include "ipcz/node_name.h"
+#include "ipcz/node_type.h"
 #include "ipcz/router_descriptor.h"
 #include "ipcz/sequence_number.h"
 #include "ipcz/sublink_id.h"

@@ -137,6 +137,7 @@ class NodeLink : public msg::NodeMessageListener {
   // construct a new NodeLink to that node.
   void AcceptIntroduction(const NodeName& name,
                           LinkSide side,
+                          Node::Type remote_node_type,
                           uint32_t remote_protocol_version,
                           Ref<DriverTransport> transport,
                           DriverMemory memory);

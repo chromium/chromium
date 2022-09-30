@@ -12,13 +12,13 @@
 #include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
 #include "ipcz/link_side.h"
+#include "ipcz/node.h"
 #include "ipcz/node_messages.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
 
-class Node;
 class NodeLink;
 class Portal;
 
@@ -73,11 +73,9 @@ class NodeConnector : public msg::NodeMessageListener {
 
   size_t num_portals() const { return waiting_portals_.size(); }
 
-  // Invoked once by the implementation when it has completed the handshake.
-  // `new_link` has already assumed ownership of the underlying transport and
-  // is listening for incoming messages on it. Destroys `this`.
-  void AcceptConnection(Ref<NodeLink> new_link,
-                        LinkSide link_side,
+  // Invoked once by the implementation when it has completed its handshake.
+  // Destroys `this`.
+  void AcceptConnection(Node::Connection connection,
                         uint32_t num_remote_portals);
 
   // Invoked if the transport observes an error before receiving the expected
@@ -95,9 +93,7 @@ class NodeConnector : public msg::NodeMessageListener {
 
  private:
   bool ActivateTransport();
-  void EstablishWaitingPortals(Ref<NodeLink> to_link,
-                               LinkSide link_side,
-                               size_t max_valid_portals);
+  void EstablishWaitingPortals(Ref<NodeLink> to_link, size_t max_valid_portals);
 
   const ConnectCallback callback_;
 };

@@ -58,9 +58,8 @@ class NodeTest : public testing::Test {
         node, LinkSide::kB, name, broker_name, Node::Type::kBroker, 0,
         transports.second, NodeLinkMemory::Create(node, buffer.memory.Map()));
     node->SetAssignedName(name);
-    broker_->AddLink(name, broker_link);
-    node->AddLink(broker_name, node_link);
-    node->SetBrokerLink(node_link);
+    broker_->AddConnection(name, {.link = broker_link});
+    node->AddConnection(broker_name, {.link = node_link, .broker = node_link});
     broker_link->Activate();
     node_link->Activate();
   }

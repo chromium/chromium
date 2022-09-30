@@ -6,6 +6,8 @@
 #define IPCZ_SRC_IPCZ_NODE_H_
 
 #include <functional>
+#include <utility>
+#include <vector>
 
 #include "ipcz/api_object.h"
 #include "ipcz/driver_memory.h"
@@ -13,9 +15,11 @@
 #include "ipcz/link_side.h"
 #include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
+#include "ipcz/node_type.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 
 namespace ipcz {
@@ -29,17 +33,19 @@ class NodeLinkMemory;
 // introduced to each other exclusively through such brokers.
 class Node : public APIObjectImpl<Node, APIObject::kNode> {
  public:
-  enum class Type {
-    // A broker node assigns its own name and is able to assign names to other
-    // nodes upon connection. Brokers are trusted to introduce nodes to each
-    // other upon request, and brokers may connect to other brokers in order to
-    // share information and effectively bridge two node networks together.
-    kBroker,
+  using Type = NodeType;
 
-    // A "normal" (i.e. non-broker) node is assigned a permanent name by the
-    // first broker node it connects to, and it can only make contact with other
-    // nodes by requesting an introduction from that broker.
-    kNormal,
+  // State regarding a connection to a single remote node.
+  struct Connection {
+    // The NodeLink used to communicate with the remote node.
+    Ref<NodeLink> link;
+
+    // The NodeLink used to communicate with the broker of the remote node's
+    // network. If the remote node belongs to the same network as the local
+    // node, then this is the same link the local node's `broker_link_`. If the
+    // local node *is* the broker for the remote node on `link`, then this link
+    // is null.
+    Ref<NodeLink> broker;
   };
 
   // Constructs a new node of the given `type`, using `driver` to support IPC.
@@ -69,30 +75,23 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // Gets a reference to the node's broker link, if it has one.
   Ref<NodeLink> GetBrokerLink();
 
-  // Sets this node's broker link, which is used e.g. to make introduction
-  // requests.
-  //
-  // This is called by a NodeConnector implementation after accepting a valid
-  // handshake message from a broker node, and `link` will be used as this
-  // node's permanent broker.
-  //
-  // Note that like any other NodeLink used by this Node, the same `link` must
-  // also be registered via AddLink() to associate it with its remote Node's
-  // name. This is also done by NodeConnector.
-  void SetBrokerLink(Ref<NodeLink> link);
-
   // Sets this node's assigned name as given by a broker. NodeConnector is
   // responsible for calling on non-broker Nodes this after receiving the
   // expected handshake from a broker. Must not be called on broker nodes, as
   // they assign their own name at construction time.
   void SetAssignedName(const NodeName& name);
 
-  // Registers a new NodeLink for the given `remote_node_name`.
-  bool AddLink(const NodeName& remote_node_name, Ref<NodeLink> link);
+  // Registers a new connection for the given `remote_node_name`.
+  bool AddConnection(const NodeName& remote_node_name, Connection connection);
+
+  // Returns a copy of the Connection to the remote node named by `name`, or
+  // null if this node has no connection to that node.
+  absl::optional<Node::Connection> GetConnection(const NodeName& name);
 
   // Returns a reference to the NodeLink used by this Node to communicate with
   // the remote node identified by `name`; or null if this node has no NodeLink
-  // connected to that node.
+  // connected to that node. This is shorthand for GetConnection() in the common
+  // case where the caller only wants the underlying NodeLink.
   Ref<NodeLink> GetLink(const NodeName& name);
 
   // Generates a new random NodeName using this node's driver as a source of
@@ -138,6 +137,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   void AcceptIntroduction(NodeLink& from_node_link,
                           const NodeName& name,
                           LinkSide side,
+                          Node::Type remote_node_type,
                           uint32_t remote_protocol_version,
                           Ref<DriverTransport> transport,
                           Ref<NodeLinkMemory> memory);
@@ -154,8 +154,8 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // the relay source directly.
   bool AcceptRelayedMessage(msg::AcceptRelayedMessage& accept);
 
-  // Drops this node's link to the named node, if one exists.
-  void DropLink(const NodeName& name);
+  // Drops this node's connection to the named node, if one exists.
+  void DropConnection(const NodeName& name);
 
   // Asynchronously waits for this Node to acquire a broker link and then
   // invokes `callback` with it. If this node already has a broker link then the
@@ -173,6 +173,10 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // Resolves all pending introduction requests with a null link, implying
   // failure.
   void CancelAllIntroductions();
+
+  // Creates a new transport and link memory and sends introduction messages to
+  // introduce the remote node on `first` to the remote node on `second`.
+  void IntroduceRemoteNodes(NodeLink& first, NodeLink& second);
 
   const Type type_;
   const IpczDriver& driver_;
@@ -199,8 +203,8 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // if this is a non-broker node. If this is a broker node, these links are
   // either assigned by this node itself, or received from other brokers in the
   // system.
-  using NodeLinkMap = absl::flat_hash_map<NodeName, Ref<NodeLink>>;
-  NodeLinkMap node_links_ ABSL_GUARDED_BY(mutex_);
+  using ConnectionMap = absl::flat_hash_map<NodeName, Connection>;
+  ConnectionMap connections_ ABSL_GUARDED_BY(mutex_);
 
   // A map of other nodes to which this node is waiting for an introduction from
   // `broker_link_`. Once such an introduction is received, all callbacks for

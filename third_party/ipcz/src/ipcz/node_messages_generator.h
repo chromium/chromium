@@ -205,6 +205,9 @@ IPCZ_MSG_BEGIN(AcceptIntroduction, IPCZ_MSG_ID(11), IPCZ_MSG_VERSION(0))
   // for the NodeLink it will establish over `transport`.
   IPCZ_MSG_PARAM(LinkSide, link_side)
 
+  // Indicates the type of the remote node being introduced.
+  IPCZ_MSG_PARAM(NodeType, remote_node_type)
+
   // Indicates the highest ipcz protocol version which the remote side of
   // `transport` able and willing to use according to the broker.
   IPCZ_MSG_PARAM(uint32_t, remote_protocol_version)

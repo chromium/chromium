@@ -71,13 +71,12 @@ class NodeConnectorForBrokerToNonBroker : public NodeConnector {
              << broker_name_.ToString() << " from new node "
              << new_remote_node_name_.ToString();
 
-    AcceptConnection(
-        NodeLink::CreateActive(
-            node_, LinkSide::kA, broker_name_, new_remote_node_name_,
-            Node::Type::kNormal, connect.params().protocol_version, transport_,
-            NodeLinkMemory::Create(node_,
-                                   std::move(link_memory_allocation_.mapping))),
-        LinkSide::kA, connect.params().num_initial_portals);
+    Ref<NodeLink> link = NodeLink::CreateActive(
+        node_, LinkSide::kA, broker_name_, new_remote_node_name_,
+        Node::Type::kNormal, connect.params().protocol_version, transport_,
+        NodeLinkMemory::Create(node_,
+                               std::move(link_memory_allocation_.mapping)));
+    AcceptConnection({.link = link}, connect.params().num_initial_portals);
     return true;
   }
 
@@ -131,12 +130,11 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
         connect.params().protocol_version, transport_,
         NodeLinkMemory::Create(node_, buffer_memory.Map()));
     node_->SetAssignedName(connect.params().receiver_name);
-    node_->SetBrokerLink(new_link);
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(new_link);
     }
 
-    AcceptConnection(std::move(new_link), LinkSide::kB,
+    AcceptConnection({.link = new_link, .broker = new_link},
                      connect.params().num_initial_portals);
     return true;
   }
@@ -179,13 +177,13 @@ class NodeConnectorForReferrer : public NodeConnector {
 
     broker_link_->ReferNonBroker(
         std::move(transport_for_broker_), checked_cast<uint32_t>(num_portals()),
-        [connector = WrapRefCounted(this)](
+        [connector = WrapRefCounted(this), broker = broker_link_](
             Ref<NodeLink> link_to_referred_node,
             uint32_t remote_num_initial_portals) {
           if (link_to_referred_node) {
-            connector->AcceptConnection(std::move(link_to_referred_node),
-                                        LinkSide::kA,
-                                        remote_num_initial_portals);
+            connector->AcceptConnection(
+                {.link = link_to_referred_node, .broker = broker},
+                remote_num_initial_portals);
           } else {
             connector->RejectConnection();
           }
@@ -255,11 +253,14 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
         broker_protocol_version, transport_,
         NodeLinkMemory::Create(node_, broker_buffer.Map()));
     node_->SetAssignedName(connect.params().name);
-    node_->SetBrokerLink(broker_link);
     if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
       node_->SetAllocationDelegate(broker_link);
     }
-    node_->AddLink(connect.params().broker_name, std::move(broker_link));
+    node_->AddConnection(connect.params().broker_name,
+                         {
+                             .link = broker_link,
+                             .broker = broker_link,
+                         });
 
     const uint32_t referrer_protocol_version = std::min(
         connect.params().referrer_protocol_version, msg::kProtocolVersion);
@@ -269,7 +270,7 @@ class NodeConnectorForReferredNonBroker : public NodeConnector {
         referrer_protocol_version, std::move(referrer_transport),
         NodeLinkMemory::Create(node_, referrer_buffer.Map()));
 
-    AcceptConnection(referrer_link, LinkSide::kB,
+    AcceptConnection({.link = referrer_link, .broker = broker_link},
                      connect.params().num_initial_portals);
     referrer_link->Activate();
     return true;
@@ -324,7 +325,7 @@ class NodeConnectorForBrokerReferral : public NodeConnector {
         node_, LinkSide::kA, broker_name_, referred_node_name_,
         Node::Type::kNormal, protocol_version, transport_,
         NodeLinkMemory::Create(node_, std::move(link_memory_.mapping)));
-    AcceptConnection(link_to_referree, LinkSide::kA, /*num_remote_portals=*/0);
+    AcceptConnection({.link = link_to_referree}, /*num_remote_portals=*/0);
 
     // Now we can create a new link to introduce both clients -- the referrer
     // and the referree -- to each other.
@@ -511,21 +512,20 @@ NodeConnector::NodeConnector(Ref<Node> node,
 
 NodeConnector::~NodeConnector() = default;
 
-void NodeConnector::AcceptConnection(Ref<NodeLink> new_link,
-                                     LinkSide link_side,
+void NodeConnector::AcceptConnection(Node::Connection connection,
                                      uint32_t num_remote_portals) {
-  node_->AddLink(new_link->remote_node_name(), new_link);
+  node_->AddConnection(connection.link->remote_node_name(), connection);
   if (callback_) {
-    callback_(new_link);
+    callback_(connection.link);
   }
-  EstablishWaitingPortals(std::move(new_link), link_side, num_remote_portals);
+  EstablishWaitingPortals(std::move(connection.link), num_remote_portals);
 }
 
 void NodeConnector::RejectConnection() {
   if (callback_) {
     callback_(nullptr);
   }
-  EstablishWaitingPortals(nullptr, LinkSide::kA, 0);
+  EstablishWaitingPortals(nullptr, 0);
   if (transport_) {
     transport_->Deactivate();
   }
@@ -541,7 +541,6 @@ bool NodeConnector::ActivateTransport() {
 }
 
 void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
-                                            LinkSide link_side,
                                             size_t max_valid_portals) {
   ABSL_ASSERT(to_link != nullptr || max_valid_portals == 0);
   const size_t num_valid_portals =
@@ -550,7 +549,7 @@ void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
     const Ref<Router> router = waiting_portals_[i]->router();
     Ref<RouterLink> link = to_link->AddRemoteRouterLink(
         SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
-        LinkType::kCentral, link_side, router);
+        LinkType::kCentral, to_link->link_side(), router);
     if (link) {
       router->SetOutwardLink(std::move(link));
     } else {

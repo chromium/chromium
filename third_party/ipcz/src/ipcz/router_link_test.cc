@@ -58,8 +58,9 @@ class TestNodePair {
         node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
         Node::Type::kBroker, 0, transports.second,
         NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
-    node_a_->AddLink(kTestNonBrokerName, node_link_a_);
-    node_b_->AddLink(kTestBrokerName, node_link_b_);
+    node_a_->AddConnection(kTestNonBrokerName, {.link = node_link_a_});
+    node_b_->AddConnection(kTestBrokerName,
+                           {.link = node_link_b_, .broker = node_link_b_});
   }
 
   ~TestNodePair() {
