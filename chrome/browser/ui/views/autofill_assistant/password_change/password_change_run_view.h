@@ -82,6 +82,7 @@ class PasswordChangeRunView : public views::View,
   void ShowErrorScreen() override;
   void PauseProgressBarAnimation() override;
   void ResumeProgressBarAnimation() override;
+  void SetFocus() override;
   void OnControllerGone() override;
 
   void SetFocusOnButtonTimerForTest(
@@ -122,6 +123,7 @@ class PasswordChangeRunView : public views::View,
   raw_ptr<ThemeTrackingNonAccessibleImageView> top_icon_ = nullptr;
   raw_ptr<views::View> title_container_ = nullptr;
   raw_ptr<PasswordChangeRunProgress> password_change_run_progress_ = nullptr;
+  std::u16string last_title_accessibility_name_announced_;
 
   // The body is used to render content below the title, i.e
   // prompts and descriptions.

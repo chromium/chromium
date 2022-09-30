@@ -229,6 +229,7 @@ TEST_F(ApcExternalActionDelegateTest, OnTouchableAreaChangedShowAndHideScrim) {
   touchable_areas.emplace_back();
   EXPECT_CALL(*apc_scrim_manager(), Hide);
   EXPECT_CALL(*display(), PauseProgressBarAnimation);
+  EXPECT_CALL(*display(), SetFocus);
   action_delegate()->OnTouchableAreaChanged(visual_viewport, touchable_areas,
                                             restricted_areas);
 

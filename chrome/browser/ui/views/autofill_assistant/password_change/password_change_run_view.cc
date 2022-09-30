@@ -28,6 +28,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -100,6 +101,11 @@ PasswordChangeRunView::~PasswordChangeRunView() {
 
 void PasswordChangeRunView::Show() {
   PasswordChangeRunView::CreateView();
+  SetFocus();
+}
+
+void PasswordChangeRunView::SetFocus() {
+  RequestFocus();
 }
 
 SkColor PasswordChangeRunView::GetBackgroundColor() const {
@@ -125,6 +131,13 @@ void PasswordChangeRunView::CreateView() {
                       /*top=*/views::LayoutProvider::Get()->GetDistanceMetric(
                           views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                       /*left=*/0, /*bottom=*/0, /*right=*/0));
+
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlertDialog);
+  // TODO(crbug.com/1329179): Ask accessibility reviewers what the best string
+  // to use here is.
+  GetViewAccessibility().OverrideName(u"Automatic password change",
+                                      ax::mojom::NameFrom::kAttribute);
+  SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 
   top_icon_ =
       AddChildView(std::make_unique<ThemeTrackingNonAccessibleImageView>(
@@ -191,7 +204,8 @@ void PasswordChangeRunView::SetTopIcon(TopIcon top_icon) {
 
 void PasswordChangeRunView::SetTitle(const std::u16string& title) {
   title_container_->RemoveAllChildViews();
-  title_container_->AddChildView(
+
+  views::Label* title_ptr = title_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(title)
           .SetMultiLine(true)
@@ -199,6 +213,16 @@ void PasswordChangeRunView::SetTitle(const std::u16string& title) {
           .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
           .SetID(static_cast<int>(ChildrenViewsIds::kTitle))
           .Build());
+
+  if (!title.empty()) {
+    title_ptr->SetAccessibleName(title);
+    title_ptr->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
+    if (last_title_accessibility_name_announced_ != title) {
+      last_title_accessibility_name_announced_ = title;
+      title_ptr->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
+      title_ptr->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    }
+  }
 }
 void PasswordChangeRunView::SetDescription(const std::u16string& description) {
   body_->RemoveAllChildViews();
@@ -206,7 +230,7 @@ void PasswordChangeRunView::SetDescription(const std::u16string& description) {
     return;
   }
   body_->AddChildView(std::make_unique<views::Separator>());
-  body_->AddChildView(
+  views::Label* description_ptr = body_->AddChildView(
       views::Builder<views::Label>()
           .SetText(description)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
@@ -215,6 +239,7 @@ void PasswordChangeRunView::SetDescription(const std::u16string& description) {
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetID(static_cast<int>(ChildrenViewsIds::kDescription))
           .Build());
+  description_ptr->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 void PasswordChangeRunView::SetProgressBarStep(
@@ -285,14 +310,15 @@ void PasswordChangeRunView::ShowUseGeneratedPasswordPrompt(
     const PromptChoice& manual_password_choice,
     const PromptChoice& generated_password_choice) {
   SetTitle(title);
-  title_container_->AddChildView(
+  views::Label* suggested_password_ptr = title_container_->AddChildView(
       views::Builder<views::Label>()
           .SetText(suggested_password)
           .SetTextStyle(views::style::STYLE_SECONDARY)
           .SetTextContext(views::style::CONTEXT_LABEL)
           .SetID(static_cast<int>(ChildrenViewsIds::kSuggestedPassword))
           .Build());
-
+  suggested_password_ptr->SetFocusBehavior(
+      View::FocusBehavior::ACCESSIBLE_ONLY);
   SetDescription(description);
   password_change_run_progress_->PauseIconAnimation();
 

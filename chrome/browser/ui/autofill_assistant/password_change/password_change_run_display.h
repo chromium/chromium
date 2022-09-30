@@ -79,6 +79,7 @@ class PasswordChangeRunDisplay {
   // Pauses and resumes the icon animation of the progress bar.
   virtual void PauseProgressBarAnimation() = 0;
   virtual void ResumeProgressBarAnimation() = 0;
+  virtual void SetFocus() = 0;
 
   // Notifies the view that the controller was destroyed so that the view
   // can close itself.

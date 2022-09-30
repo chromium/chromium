@@ -128,8 +128,11 @@ void ApcExternalActionDelegate::OnTouchableAreaChanged(
     apc_scrim_manager_->Hide();
     PauseProgressBarAnimation();
   } else {
+    // When there is no area to be showcasted both show the scrim
+    // and redirect focus (accessibility only) to the password change ui.
     apc_scrim_manager_->Show();
     ResumeProgressBarAnimation();
+    password_change_run_display_->SetFocus();
   }
 }
 
