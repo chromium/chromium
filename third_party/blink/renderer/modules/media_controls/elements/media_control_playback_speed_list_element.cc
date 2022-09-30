@@ -186,8 +186,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   auto playback_speed_label = GetLocale().QueryString(display_name);
   auto* playback_speed_label_span =
       MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  playback_speed_label_span->setInnerText(playback_speed_label,
-                                          ASSERT_NO_EXCEPTION);
+  playback_speed_label_span->setInnerText(playback_speed_label);
   playback_speed_label_span->setAttribute(html_names::kAriaHiddenAttr, "true");
   playback_speed_item->setAttribute(html_names::kAriaLabelAttr,
                                     WTF::AtomicString(playback_speed_label));

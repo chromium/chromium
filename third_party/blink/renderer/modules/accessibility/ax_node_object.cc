@@ -3252,14 +3252,7 @@ bool AXNodeObject::OnNativeSetValueAction(const String& string) {
   }
 
   if (HasContentEditableAttributeSet()) {
-    ExceptionState exception_state(v8::Isolate::GetCurrent(),
-                                   ExceptionState::kUnknownContext, nullptr,
-                                   nullptr);
-    To<HTMLElement>(GetNode())->setInnerText(string, exception_state);
-    if (exception_state.HadException()) {
-      exception_state.ClearException();
-      return false;
-    }
+    To<HTMLElement>(GetNode())->setInnerText(string);
     return true;
   }
 

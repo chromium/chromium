@@ -931,15 +931,14 @@ void HTMLElement::setInnerTextForBinding(
       value = string_or_trusted_script->GetAsTrustedScript()->toString();
       break;
   }
-  setInnerText(value, exception_state);
+  setInnerText(value);
 }
 
 String HTMLElement::innerText() {
   return Element::innerText();
 }
 
-void HTMLElement::setInnerText(const String& text,
-                               ExceptionState& exception_state) {
+void HTMLElement::setInnerText(const String& text) {
   // FIXME: This doesn't take whitespace collapsing into account at all.
 
   if (!text.Contains('\n') && !text.Contains('\r')) {
@@ -947,14 +946,13 @@ void HTMLElement::setInnerText(const String& text,
       RemoveChildren();
       return;
     }
-    ReplaceChildrenWithText(this, text, exception_state);
+    ReplaceChildrenWithText(this, text, ASSERT_NO_EXCEPTION);
     return;
   }
 
   // Add text nodes and <br> elements.
-  DocumentFragment* fragment = TextToFragment(text, exception_state);
-  if (!exception_state.HadException())
-    ReplaceChildrenWithFragment(this, fragment, exception_state);
+  DocumentFragment* fragment = TextToFragment(text, ASSERT_NO_EXCEPTION);
+  ReplaceChildrenWithFragment(this, fragment, ASSERT_NO_EXCEPTION);
 }
 
 void HTMLElement::setOuterText(const String& text,

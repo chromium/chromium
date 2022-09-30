@@ -34,7 +34,7 @@ MediaControlTimeDisplayElement::MediaControlTimeDisplayElement(
 void MediaControlTimeDisplayElement::SetCurrentValue(double time) {
   current_value_ = time;
   String formatted_time = FormatTime();
-  setInnerText(formatted_time, ASSERT_NO_EXCEPTION);
+  setInnerText(formatted_time);
 }
 
 double MediaControlTimeDisplayElement::CurrentValue() const {

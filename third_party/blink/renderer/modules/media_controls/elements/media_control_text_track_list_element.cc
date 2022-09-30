@@ -146,7 +146,7 @@ Element* MediaControlTextTrackListElement::CreateTextTrackListItem(
   String track_label =
       GetMediaControls().GetTextTrackManager().GetTextTrackLabel(track);
   auto* track_label_span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  track_label_span->setInnerText(track_label, ASSERT_NO_EXCEPTION);
+  track_label_span->setInnerText(track_label);
   track_label_span->setAttribute(html_names::kAriaHiddenAttr, "true");
   track_item->setAttribute(html_names::kAriaLabelAttr,
                            WTF::AtomicString(track_label));

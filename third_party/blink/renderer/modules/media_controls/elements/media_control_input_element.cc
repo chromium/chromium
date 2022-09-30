@@ -63,8 +63,7 @@ HTMLElement* MediaControlInputElement::CreateOverflowElement(
   button->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
 
   overflow_menu_text_ = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-  overflow_menu_text_->setInnerText(button->GetOverflowMenuString(),
-                                    ASSERT_NO_EXCEPTION);
+  overflow_menu_text_->setInnerText(button->GetOverflowMenuString());
 
   overflow_label_element_ =
       MakeGarbageCollected<HTMLLabelElement>(GetDocument());
@@ -114,12 +113,12 @@ void MediaControlInputElement::UpdateOverflowSubtitleElement(String text) {
 
   if (overflow_menu_subtitle_) {
     // If element exists, just update the text.
-    overflow_menu_subtitle_->setInnerText(text, ASSERT_NO_EXCEPTION);
+    overflow_menu_subtitle_->setInnerText(text);
   } else {
     // Otherwise, create a new element.
     overflow_menu_subtitle_ =
         MakeGarbageCollected<HTMLSpanElement>(GetDocument());
-    overflow_menu_subtitle_->setInnerText(text, ASSERT_NO_EXCEPTION);
+    overflow_menu_subtitle_->setInnerText(text);
     overflow_menu_subtitle_->setAttribute(
         "class", AtomicString(kOverflowSubtitleCSSClass));
 
@@ -178,8 +177,7 @@ void MediaControlInputElement::UpdateOverflowString() {
     return;
 
   DCHECK(overflow_element_);
-  overflow_menu_text_->setInnerText(GetOverflowMenuString(),
-                                    ASSERT_NO_EXCEPTION);
+  overflow_menu_text_->setInnerText(GetOverflowMenuString());
 
   UpdateOverflowSubtitleElement(GetOverflowMenuSubtitleString());
 }

@@ -168,7 +168,7 @@ void HTMLScriptElement::setInnerTextForBinding(
   // https://w3c.github.io/webappsec-trusted-types/dist/spec/#setting-slot-values
   // On setting, the innerText [...] perform the regular steps, and then set
   // content object's [[ScriptText]] internal slot value [...].
-  HTMLElement::setInnerText(value, exception_state);
+  HTMLElement::setInnerText(value);
   script_text_internal_slot_ = ParkableString(value.Impl());
 }
 

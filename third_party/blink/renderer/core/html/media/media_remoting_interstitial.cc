@@ -63,15 +63,11 @@ void MediaRemotingInterstitial::Show(
   if (IsVisible())
     return;
   if (remote_device_friendly_name.IsEmpty()) {
-    cast_text_message_->setInnerText(
-        GetVideoElement().GetLocale().QueryString(
-            IDS_MEDIA_REMOTING_CAST_TO_UNKNOWN_DEVICE_TEXT),
-        ASSERT_NO_EXCEPTION);
+    cast_text_message_->setInnerText(GetVideoElement().GetLocale().QueryString(
+        IDS_MEDIA_REMOTING_CAST_TO_UNKNOWN_DEVICE_TEXT));
   } else {
-    cast_text_message_->setInnerText(
-        GetVideoElement().GetLocale().QueryString(IDS_MEDIA_REMOTING_CAST_TEXT,
-                                                  remote_device_friendly_name),
-        ASSERT_NO_EXCEPTION);
+    cast_text_message_->setInnerText(GetVideoElement().GetLocale().QueryString(
+        IDS_MEDIA_REMOTING_CAST_TEXT, remote_device_friendly_name));
   }
   if (toggle_interstitial_timer_.IsActive())
     toggle_interstitial_timer_.Stop();
@@ -97,7 +93,7 @@ void MediaRemotingInterstitial::Hide(int error_code) {
       stop_text = GetVideoElement().GetLocale().QueryString(error_code) + ", " +
                   stop_text;
     }
-    toast_message_->setInnerText(stop_text, ASSERT_NO_EXCEPTION);
+    toast_message_->setInnerText(stop_text);
     state_ = kToast;
   }
   SetInlineStyleProperty(CSSPropertyID::kOpacity, 0,
@@ -119,7 +115,7 @@ void MediaRemotingInterstitial::ToggleInterstitialTimerFired(TimerBase*) {
                            CSSPrimitiveValue::UnitType::kNumber);
   } else if (state_ == kHidden) {
     SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
-    toast_message_->setInnerText(WebString(), ASSERT_NO_EXCEPTION);
+    toast_message_->setInnerText(WebString());
   } else {
     // Show |toast_message_| only.
     toast_message_->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);

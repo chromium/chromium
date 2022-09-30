@@ -80,10 +80,8 @@ PictureInPictureInterstitial::PictureInPictureInterstitial(
   message_element_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   message_element_->SetShadowPseudoId(
       AtomicString("-internal-picture-in-picture-interstitial-message"));
-  message_element_->setInnerText(
-      GetVideoElement().GetLocale().QueryString(
-          IDS_MEDIA_PICTURE_IN_PICTURE_INTERSTITIAL_TEXT),
-      ASSERT_NO_EXCEPTION);
+  message_element_->setInnerText(GetVideoElement().GetLocale().QueryString(
+      IDS_MEDIA_PICTURE_IN_PICTURE_INTERSTITIAL_TEXT));
   ParserAppendChild(message_element_);
 
   resize_observer_->observe(video_element_);
