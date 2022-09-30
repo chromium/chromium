@@ -221,6 +221,9 @@ class WaylandWindow : public PlatformWindow,
   struct WindowStates {
     bool is_maximized = false;
     bool is_fullscreen = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    bool is_immersive_fullscreen = false;
+#endif
     bool is_activated = false;
     bool is_snapped_primary = false;
     bool is_snapped_secondary = false;

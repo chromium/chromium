@@ -2701,4 +2701,25 @@ TEST_F(ShellSurfaceTest, ConfigureOnlySentOnceForBoundsAndWindowStateChange) {
   EXPECT_EQ(times_configured, 1);
 }
 
+TEST_F(ShellSurfaceTest, SetImmersiveModeTriggersConfigure) {
+  int times_configured = 0;
+  auto test_callback = base::BindRepeating(
+      [](int* times_configured, const gfx::Rect&,
+         chromeos::WindowStateType new_type, bool, bool,
+         const gfx::Vector2d&) -> uint32_t {
+        ++(*times_configured);
+        return 0;
+      },
+      &times_configured);
+
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({1, 1}).BuildShellSurface();
+
+  shell_surface->set_configure_callback(test_callback);
+
+  shell_surface->SetUseImmersiveForFullscreen(true);
+
+  EXPECT_EQ(times_configured, 1);
+}
+
 }  // namespace exo
