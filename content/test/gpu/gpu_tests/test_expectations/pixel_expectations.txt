@@ -434,6 +434,10 @@ crbug.com/1203317 [ android android-pixel-6 android-chromium ] Pixel_OffscreenCa
 
 crbug.com/1287249 [ android android-pixel-6 passthrough renderer-skia-vulkan android-chromium ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
 
+# Flaking on Linux FYI Release (AMD RX 5500 XT)
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_WebGLContextRestored [ RetryOnFailure ]
+crbug.com/1340081 [ linux release amd-0x7340 renderer-skia-vulkan ] Pixel_WebGLSadCanvas [ RetryOnFailure ]
+
 # Flakes on Mac Release (Intel)
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_BackgroundImage [ RetryOnFailure ]
 crbug.com/982292 [ mac release intel-0x3e9b ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
