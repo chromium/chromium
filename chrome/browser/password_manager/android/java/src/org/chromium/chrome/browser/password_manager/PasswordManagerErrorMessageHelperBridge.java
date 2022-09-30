@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -48,6 +49,11 @@ public class PasswordManagerErrorMessageHelperBridge {
      */
     @CalledByNative
     static boolean shouldShowErrorUi() {
+        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES,
+                    "ignore_auth_error_message_timeouts", false)) {
+            return true;
+        }
         PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         long lastShownTimestamp =
                 Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));

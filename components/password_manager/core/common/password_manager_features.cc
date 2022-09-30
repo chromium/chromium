@@ -298,6 +298,12 @@ extern const base::FeatureParam<int> kMaxUPMReenrollments = {
 // avoid wasting resources of users who have persistent errors.
 extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts = {
     &kUnifiedPasswordManagerReenrollment, "max_reenrollment_attempts", 0};
+
+// Whether to ignore the 24h timeout in between auth error messages as
+// well as the 30 mins distance to sync error messages.
+extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts = {
+    &kUnifiedPasswordManagerErrorMessages, "ignore_auth_error_message_timeouts",
+    false};
 #endif
 
 // Field trial identifier for password generation requirements.

@@ -120,6 +120,8 @@ constexpr base::FeatureParam<UpmExperimentVariation>
 
 extern const base::FeatureParam<int> kMaxUPMReenrollments;
 extern const base::FeatureParam<int> kMaxUPMReenrollmentAttempts;
+
+extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts;
 #endif
 
 // Field trial and corresponding parameters.
