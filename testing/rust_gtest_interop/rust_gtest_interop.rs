@@ -130,11 +130,7 @@ pub mod __private {
     /// TODO(danakj): We should be able to pass a `c_int` directly to C++:
     /// https://github.com/dtolnay/cxx/issues/1015.
     pub fn add_failure_at(file: &'static str, line: u32, message: &str) {
-        // TODO(danakj): Our own file!() macro should strip "../../" from the front of the string.
-        let file = file.replace("../", "");
-        // TODO(danakj): Write a file!() macro that null-terminates the string so we can use it here
-        // directly and also for constructing base::Location. Then.. pass a base::Location here?
-        let null_term_file = std::ffi::CString::new(file).unwrap();
+        let null_term_file = std::ffi::CString::new(make_canonical_file_path(file)).unwrap();
         unsafe {
             ffi::rust_gtest_add_failure_at(
                 null_term_file.as_ptr() as *const u8,
@@ -142,6 +138,46 @@ pub mod __private {
                 message,
             )
         }
+    }
+
+    /// Turn a file!() string for a source file into a path from the root of the source tree.
+    pub fn make_canonical_file_path(file: &str) -> String {
+        // The path of the file here is relative to and prefixed with the crate root's source file
+        // with the current directory being the build's output directory. So for a generated crate
+        // root at gen/foo/, the file path would look like `gen/foo/../../../../real/path.rs`. The
+        // last two `../` move up from the build output directory to the source tree root. As such,
+        // we need to strip pairs of `something/../` until there are none left, and remove the
+        // remaining `../` path components up to the source tree root.
+        //
+        // Note that std::fs::canonicalize() does not work here since it requires the file to
+        // exist, but we're working with a relative path that is rooted in the build directory, not
+        // the current directory. We could try to get the path to the build directory.. but this is
+        // simple enough.
+        let (keep_rev, _) = std::path::Path::new(file).iter().rev().fold(
+            (Vec::new(), 0),
+            // Build the set of path components we want to keep, which we do by keeping a count of
+            // the `..` components and then dropping stuff that comes before them.
+            |(mut keep, dotdot_count), path_component| {
+                if path_component == ".." {
+                    // The `..` component will skip the next downward component.
+                    (keep, dotdot_count + 1)
+                } else if dotdot_count > 0 {
+                    // Skip the component as we drop it with `..` later in the path.
+                    (keep, dotdot_count - 1)
+                } else {
+                    // Keep this component.
+                    keep.push(path_component);
+                    (keep, dotdot_count)
+                }
+            },
+        );
+        // Reverse the path components, join them together, and write them into a string.
+        keep_rev
+            .into_iter()
+            .rev()
+            .fold(std::path::PathBuf::new(), |path, path_component| path.join(path_component))
+            .to_string_lossy()
+            .to_string()
     }
 
     /// Wrapper that calls C++ rust_gtest_default_factory().

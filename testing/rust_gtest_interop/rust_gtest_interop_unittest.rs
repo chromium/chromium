@@ -113,3 +113,28 @@ fn test(mut suite: Pin<&mut rust_gtest_interop_test_support::TestSubclassWithCus
     expect_eq!(4, suite.as_mut().get_four());
     expect_eq!(2, suite.as_ref().num_calls());
 }
+
+#[gtest(Test, Paths)]
+fn test() {
+    expect_eq!(rust_gtest_interop::__private::make_canonical_file_path("foo/bar.rs"), "foo/bar.rs");
+    expect_eq!(
+        rust_gtest_interop::__private::make_canonical_file_path("../foo/bar.rs"),
+        "foo/bar.rs"
+    );
+    expect_eq!(
+        rust_gtest_interop::__private::make_canonical_file_path("../../foo/bar.rs"),
+        "foo/bar.rs"
+    );
+    expect_eq!(
+        rust_gtest_interop::__private::make_canonical_file_path("a/../foo/bar.rs"),
+        "foo/bar.rs"
+    );
+    expect_eq!(
+        rust_gtest_interop::__private::make_canonical_file_path("a/../../../foo/bar.rs"),
+        "foo/bar.rs"
+    );
+    expect_eq!(
+        rust_gtest_interop::__private::make_canonical_file_path("a/../b/../../foo/bar.rs"),
+        "foo/bar.rs"
+    );
+}

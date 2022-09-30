@@ -12,7 +12,7 @@
 #include <iostream>
 
 // Update this when adding a new test to rust_test_interop_unittest.rs.
-int kNumTests = 11;
+int kNumTests = 12;
 
 bool is_subprocess() {
   // The test launching process spawns a subprocess to run tests, and it
