@@ -68,13 +68,10 @@ std::vector<Frame> CaptureScenario(
 }  // namespace
 
 // Checks that the expected information is present in sampled frames.
-#if defined(ADDRESS_SANITIZER)
-// TODO(https://crbug.com/1147315): Fix, re-enable.
-#define MAYBE_PlainFunction DISABLED_PlainFunction
-#else
-#define MAYBE_PlainFunction PlainFunction
-#endif
-TEST(LibunwindstackUnwinderAndroidTest, MAYBE_PlainFunction) {
+// TODO(https://crbug.com/1147315): Fix, re-enable  on all ASAN bots.
+// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
+// if defined(ADDRESS_SANITIZER).
+TEST(LibunwindstackUnwinderAndroidTest, DISABLED_PlainFunction) {
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
 
   ModuleCache module_cache;
@@ -104,13 +101,10 @@ TEST(LibunwindstackUnwinderAndroidTest, MAYBE_PlainFunction) {
 
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
-#if defined(ADDRESS_SANITIZER)
-// TODO(https://crbug.com/1147315): Fix, re-enable.
-#define MAYBE_Alloca DISABLED_Alloca
-#else
-#define MAYBE_Alloca Alloca
-#endif
-TEST(LibunwindstackUnwinderAndroidTest, MAYBE_Alloca) {
+// TODO(https://crbug.com/1147315): Fix, re-enable  on all ASAN bots.
+// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
+// if defined(ADDRESS_SANITIZER).
+TEST(LibunwindstackUnwinderAndroidTest, DISABLED_Alloca) {
   UnwindScenario scenario(BindRepeating(&CallWithAlloca));
 
   ModuleCache module_cache;
@@ -140,13 +134,10 @@ TEST(LibunwindstackUnwinderAndroidTest, MAYBE_Alloca) {
 
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
-#if defined(ADDRESS_SANITIZER)
-// TODO(https://crbug.com/1147315): Fix, re-enable.
-#define MAYBE_OtherLibrary DISABLED_OtherLibrary
-#else
-#define MAYBE_OtherLibrary OtherLibrary
-#endif
-TEST(LibunwindstackUnwinderAndroidTest, MAYBE_OtherLibrary) {
+// TODO(https://crbug.com/1147315): Fix, re-enable  on all ASAN bots.
+// TODO(https://crbug.com/1368981): After fix, re-enable on all bots except
+// if defined(ADDRESS_SANITIZER).
+TEST(LibunwindstackUnwinderAndroidTest, DISABLED_OtherLibrary) {
   NativeLibrary other_library = LoadOtherLibrary();
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
