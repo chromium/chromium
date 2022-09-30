@@ -57,6 +57,19 @@ MessagePort::MessagePort(ExecutionContext& execution_context)
 
 MessagePort::~MessagePort() {
   DCHECK(!started_ || !IsEntangled());
+
+  // Mojo resources can't be destroyed or otherwise operating on at non-deterministic
+  // points, so leak them if necessary.
+  if (recordreplay::AreEventsDisallowed()) {
+    if (connector_) {
+      connector_->set_incoming_receiver(nullptr);
+      connector_->set_connection_error_handler(base::OnceClosure());
+      connector_.release();
+    }
+    new MessagePortDescriptor(std::move(port_));
+    return;
+  }
+
   if (!IsNeutered()) {
     // Disentangle before teardown. The MessagePortDescriptor will blow up if it
     // hasn't had its underlying handle returned to it before teardown.
