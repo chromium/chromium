@@ -49,7 +49,7 @@ class NGGridLineResolver {
       const ComputedStyle&,
       GridTrackSizingDirection,
       wtf_size_t auto_repeat_tracks_count,
-      bool is_parent_grid_container = false,
+      bool is_subgridded_to_parent = false,
       wtf_size_t subgrid_span_size = kNotFound) const;
 
  private:
@@ -79,7 +79,7 @@ class NGGridLineResolver {
   int ResolveGridPositionFromStyle(const GridPosition& position,
                                    GridPositionSide side,
                                    wtf_size_t auto_repeat_tracks_count,
-                                   bool is_parent_grid_container,
+                                   bool is_subgridded_to_parent,
                                    wtf_size_t subgrid_span_size) const;
 
   wtf_size_t ExplicitGridSizeForSide(GridPositionSide side,

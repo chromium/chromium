@@ -15,24 +15,24 @@ namespace blink {
 struct CORE_EXPORT NGGridPlacementData {
   NGGridPlacementData() = default;
 
-  NGGridPlacementData(bool is_parent_grid_container,
+  NGGridPlacementData(bool is_subgridded_to_parent,
                       const ComputedStyle& grid_style)
       : line_resolver(grid_style),
-        is_parent_grid_container(is_parent_grid_container) {}
+        is_subgridded_to_parent(is_subgridded_to_parent) {}
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
-  NGGridPlacementData(bool is_parent_grid_container,
+  NGGridPlacementData(bool is_subgridded_to_parent,
                       const ComputedStyle& grid_style,
                       const NGGridLineResolver& parent_line_resolver)
       : line_resolver(grid_style, parent_line_resolver),
-        is_parent_grid_container(is_parent_grid_container) {}
+        is_subgridded_to_parent(is_subgridded_to_parent) {}
 
   // Do not check `line_resolver` for comparison, as it's used to generate
   // `grid_item_positions` and isn't shared between equivalent instances.
   bool operator==(const NGGridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
-           is_parent_grid_container == other.is_parent_grid_container &&
+           is_subgridded_to_parent == other.is_subgridded_to_parent &&
            column_subgrid_span_size == other.column_subgrid_span_size &&
            row_subgrid_span_size == other.row_subgrid_span_size &&
            column_auto_repetitions == other.column_auto_repetitions &&
@@ -61,7 +61,7 @@ struct CORE_EXPORT NGGridPlacementData {
   NGGridLineResolver line_resolver;
   Vector<GridArea> grid_item_positions;
 
-  bool is_parent_grid_container : 1;
+  bool is_subgridded_to_parent : 1;
 
   wtf_size_t column_subgrid_span_size{kNotFound};
   wtf_size_t row_subgrid_span_size{kNotFound};

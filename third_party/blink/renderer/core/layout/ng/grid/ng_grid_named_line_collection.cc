@@ -20,7 +20,7 @@ NGGridNamedLineCollection::NGGridNamedLineCollection(
     const ComputedGridTrackList& computed_grid_track_list,
     wtf_size_t last_line,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_parent_grid_container)
+    bool is_subgridded_to_parent)
     : last_line_(last_line),
       auto_repeat_total_tracks_(auto_repeat_tracks_count) {
   is_standalone_grid_ =
@@ -31,7 +31,7 @@ NGGridNamedLineCollection::NGGridNamedLineCollection(
   // https://www.w3.org/TR/css-grid-2/#subgrid-listing
   bool are_named_lines_valid = true;
   if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled())
-    are_named_lines_valid = is_parent_grid_container || is_standalone_grid_;
+    are_named_lines_valid = is_subgridded_to_parent || is_standalone_grid_;
 
   const NamedGridLinesMap& auto_repeat_grid_line_names =
       computed_grid_track_list.auto_repeat_named_grid_lines;

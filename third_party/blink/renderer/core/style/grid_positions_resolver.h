@@ -22,7 +22,7 @@ class NamedLineCollection {
                       GridTrackSizingDirection,
                       wtf_size_t last_line,
                       wtf_size_t auto_repeat_tracks_count,
-                      bool is_parent_grid_container = false);
+                      bool is_subgridded_to_parent = false);
 
   bool HasNamedLines();
   wtf_size_t FirstPosition();
@@ -70,7 +70,7 @@ class GridPositionsResolver {
       const ComputedStyle&,
       GridTrackSizingDirection,
       wtf_size_t auto_repeat_tracks_count,
-      bool is_parent_grid_container = false,
+      bool is_subgridded_to_parent = false,
       wtf_size_t subgrid_span_size = kNotFound);
 };
 

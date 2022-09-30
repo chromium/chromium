@@ -346,7 +346,7 @@ int NGGridLineResolver::ResolveGridPositionFromStyle(
     const GridPosition& position,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_parent_grid_container,
+    bool is_subgridded_to_parent,
     wtf_size_t subgrid_span_size) const {
   switch (position.GetType()) {
     case kExplicitPosition: {
@@ -397,7 +397,7 @@ int NGGridLineResolver::ResolveGridPositionFromStyle(
       NGGridNamedLineCollection explicit_lines(
           named_grid_line, track_direction, implicit_grid_line_names,
           explicit_grid_line_names, track_list, last_line,
-          auto_repeat_tracks_count, is_parent_grid_container);
+          auto_repeat_tracks_count, is_subgridded_to_parent);
       if (explicit_lines.HasNamedLines())
         return explicit_lines.FirstPosition();
 
@@ -420,7 +420,7 @@ GridSpan NGGridLineResolver::ResolveGridPositionsFromStyle(
     const ComputedStyle& grid_item_style,
     GridTrackSizingDirection track_direction,
     wtf_size_t auto_repeat_tracks_count,
-    bool is_parent_grid_container,
+    bool is_subgridded_to_parent,
     wtf_size_t subgrid_span_size) const {
   GridPosition initial_position, final_position;
   InitialAndFinalPositionsFromStyle(grid_item_style, track_direction,
@@ -449,7 +449,7 @@ GridSpan NGGridLineResolver::ResolveGridPositionsFromStyle(
     // 2 / 3' case).
     int end_line = ResolveGridPositionFromStyle(
         final_position, final_side, auto_repeat_tracks_count,
-        is_parent_grid_container, subgrid_span_size);
+        is_subgridded_to_parent, subgrid_span_size);
     return ResolveGridPositionAgainstOppositePosition(
         end_line, initial_position, initial_side, auto_repeat_tracks_count,
         subgrid_span_size);
@@ -460,7 +460,7 @@ GridSpan NGGridLineResolver::ResolveGridPositionsFromStyle(
     // span 2' case).
     int start_line = ResolveGridPositionFromStyle(
         initial_position, initial_side, auto_repeat_tracks_count,
-        is_parent_grid_container, subgrid_span_size);
+        is_subgridded_to_parent, subgrid_span_size);
     return ResolveGridPositionAgainstOppositePosition(
         start_line, final_position, final_side, auto_repeat_tracks_count,
         subgrid_span_size);
@@ -468,10 +468,10 @@ GridSpan NGGridLineResolver::ResolveGridPositionsFromStyle(
 
   int start_line = ResolveGridPositionFromStyle(
       initial_position, initial_side, auto_repeat_tracks_count,
-      is_parent_grid_container, subgrid_span_size);
+      is_subgridded_to_parent, subgrid_span_size);
   int end_line = ResolveGridPositionFromStyle(
       final_position, final_side, auto_repeat_tracks_count,
-      is_parent_grid_container, subgrid_span_size);
+      is_subgridded_to_parent, subgrid_span_size);
 
   if (end_line < start_line)
     std::swap(end_line, start_line);
