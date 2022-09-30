@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
@@ -281,6 +282,8 @@ class DropdownItemViewInfoListBuilder {
             final AutocompleteMatch suggestion = suggestionAndProcessorPair.first;
             final SuggestionProcessor processor = suggestionAndProcessorPair.second;
 
+            // Note: with suggestion grouping in place, the condition below also
+            // determines rounding boundaries of suggestion group.
             if (currentGroup != suggestion.getGroupId()) {
                 currentGroup = suggestion.getGroupId();
                 final GroupDetails details =
@@ -288,8 +291,9 @@ class DropdownItemViewInfoListBuilder {
 
                 // Only add the Header Group when both ID and details are specified.
                 // Note that despite GroupsDetails map not holding <null> values,
-                // a group definition for specific ID may be unavailable.
-                if (details != null) {
+                // a group definition for specific ID may be unavailable, or the group
+                // header text may be empty.
+                if (details != null && !TextUtils.isEmpty(details.title)) {
                     final PropertyModel model = mHeaderProcessor.createModel();
                     mHeaderProcessor.populateModel(model, currentGroup, details.title);
                     viewInfoList.add(

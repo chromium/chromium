@@ -14,9 +14,10 @@
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
-// The relevance score for verbatim match.
-// Must outrank the QueryTiles relevance score.
-const int kVerbatimMatchRelevanceScore = 1600;
+// Verbatim Match is placed in a dedicated SECTION_MOBILE_VERBATIM
+// This section may be occupied only by Clipboard suggestion on
+// so the relevance score here must outrank this of the Clipboard.
+const int kVerbatimMatchRelevanceScore = 2;
 
 // Returns whether specific context is eligible for a verbatim match.
 // Only offer verbatim match on a site visit and SRP (no NTP etc).
@@ -32,6 +33,13 @@ bool IsVerbatimMatchEligible(
          context == metrics::OmniboxEventProto::OTHER;
 }
 
+// Builds SuggestionGroup data used to decide where and how to present related
+// suggestions.
+omnibox::SuggestionGroup BuildSuggestionGroup() {
+  omnibox::SuggestionGroup group_details;
+  group_details.set_section(omnibox::SECTION_MOBILE_VERBATIM);
+  return group_details;
+}
 }  // namespace
 
 ZeroSuggestVerbatimMatchProvider::ZeroSuggestVerbatimMatchProvider(
@@ -73,6 +81,7 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
                           input.current_title(), kVerbatimMatchRelevanceScore);
   // Make sure the URL is formatted the same was as most visited sites.
   auto format_types = AutocompleteMatch::GetFormatTypes(false, false);
+  match.suggestion_group_id = omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX;
   match.contents = url_formatter::FormatUrl(page_url, format_types,
                                             base::UnescapeRule::SPACES, nullptr,
                                             nullptr, nullptr);
@@ -95,4 +104,6 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
 
   match.provider = this;
   matches_.push_back(match);
+  suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX,
+                                 BuildSuggestionGroup());
 }

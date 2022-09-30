@@ -197,6 +197,70 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     @SmallTest
+    public void headers_ignoreGroupHeadersWithNoTitle() {
+        final List<AutocompleteMatch> actualList = new ArrayList<>();
+        final SparseArray<GroupDetails> groupsDetails = new SparseArray<>();
+        groupsDetails.put(1, new GroupDetails(null, false));
+        groupsDetails.put(2, new GroupDetails("Header 2", false));
+
+        when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
+        AutocompleteMatch suggestionWithNoGroup =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+        AutocompleteMatch suggestionForGroup1 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
+        AutocompleteMatch suggestionForGroup2 =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(2)
+                        .build();
+
+        actualList.add(suggestionWithNoGroup);
+        actualList.add(suggestionForGroup1);
+        actualList.add(suggestionForGroup1);
+        actualList.add(suggestionForGroup2);
+        actualList.add(suggestionForGroup2);
+
+        final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
+        final List<DropdownItemViewInfo> model = mBuilder.buildDropdownViewInfoList(
+                AutocompleteResult.fromCache(actualList, groupsDetails));
+
+        verifier.verify(mMockSuggestionProcessor, times(1))
+                .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
+        verifier.verify(mMockSuggestionProcessor, times(1))
+                .populateModel(eq(suggestionForGroup1), any(), eq(1));
+        verifier.verify(mMockSuggestionProcessor, times(1))
+                .populateModel(eq(suggestionForGroup1), any(), eq(2));
+        verifier.verify(mMockHeaderProcessor, times(1)).populateModel(any(), eq(2), eq("Header 2"));
+        verifier.verify(mMockSuggestionProcessor, times(1))
+                .populateModel(eq(suggestionForGroup2), any(), eq(3));
+        verifier.verify(mMockSuggestionProcessor, times(1))
+                .populateModel(eq(suggestionForGroup2), any(), eq(4));
+
+        // Make sure no other headers were ever constructed.
+        verify(mMockHeaderProcessor, times(1)).populateModel(any(), anyInt(), any());
+
+        Assert.assertEquals(6, model.size()); // 1 header + 5 suggestions.
+
+        Assert.assertEquals(model.get(0).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(model.get(0).groupId, -1);
+
+        Assert.assertEquals(model.get(1).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(model.get(1).groupId, 1);
+        Assert.assertEquals(model.get(2).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(model.get(2).groupId, 1);
+
+        Assert.assertEquals(model.get(3).type, OmniboxSuggestionUiType.HEADER);
+        Assert.assertEquals(model.get(3).groupId, 2);
+        Assert.assertEquals(model.get(4).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(model.get(4).groupId, 2);
+        Assert.assertEquals(model.get(5).type, OmniboxSuggestionUiType.DEFAULT);
+        Assert.assertEquals(model.get(5).groupId, 2);
+    }
+
+    @Test
+    @SmallTest
     public void builder_propagatesFocusChangeEvents() {
         mBuilder.onUrlFocusChange(true);
         verify(mMockHeaderProcessor, times(1)).onUrlFocusChange(eq(true));

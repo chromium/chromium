@@ -19,20 +19,32 @@ enum GroupSection {
   // The default section. Any group with this section is placed above all other
   // groups. Must not be removed or renumbered and must have the lowest value.
   SECTION_DEFAULT = 0;
+
+  // Mobile-specific auxiliary suggestions. These suggestions are sourced on
+  // device, and appear above any other content.
+  // SECTION_MOBILE_VERBATIM hosts:
+  // - Search Ready Omnibox / Verbatim match
+  // - Clipboard suggestions
+  SECTION_MOBILE_VERBATIM = 1;
+  // SECTION_MOBILE_MOST_VISITED hosts a horizontal carousel with:
+  // - Most Visited Tiles
+  // - Organic Repeatable Queries
+  SECTION_MOBILE_MOST_VISITED = 2;
+
   // A contiguous range reserved for remote zero-prefix suggestions.
   // The sections are dynamically assigned to the groups found in the server
   // response based on the order in which they appear in the results.
   // Accommodates up to 10 distinct suggestion groups in the server response.
-  SECTION_REMOTE_ZPS_1 = 1;
-  SECTION_REMOTE_ZPS_2 = 2;
-  SECTION_REMOTE_ZPS_3 = 3;
-  SECTION_REMOTE_ZPS_4 = 4;
-  SECTION_REMOTE_ZPS_5 = 5;
-  SECTION_REMOTE_ZPS_6 = 6;
-  SECTION_REMOTE_ZPS_7 = 7;
-  SECTION_REMOTE_ZPS_8 = 8;
-  SECTION_REMOTE_ZPS_9 = 9;
-  SECTION_REMOTE_ZPS_10 = 10;
+  SECTION_REMOTE_ZPS_1 = 3;
+  SECTION_REMOTE_ZPS_2 = 4;
+  SECTION_REMOTE_ZPS_3 = 5;
+  SECTION_REMOTE_ZPS_4 = 6;
+  SECTION_REMOTE_ZPS_5 = 7;
+  SECTION_REMOTE_ZPS_6 = 8;
+  SECTION_REMOTE_ZPS_7 = 9;
+  SECTION_REMOTE_ZPS_8 = 10;
+  SECTION_REMOTE_ZPS_9 = 11;
+  SECTION_REMOTE_ZPS_10 = 12;
 }
 
 // Contains information about a suggestion group.

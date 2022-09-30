@@ -42,9 +42,10 @@ namespace {
 
 const size_t kMaxClipboardSuggestionShownNumTimesSimpleSize = 20;
 
-// Clipboard suggestions should be placed above search and url suggestions
-// (including MostVisited tiles), but below query tiles.
-const int kClipboardMatchRelevanceScore = 1501;
+// Clipboard suggestion is placed in a dedicated SECTION_MOBILE_VERBATIM
+// The section is shared with Verbatim Match, and Clipboard should be
+// placed directly below, so its relative relevance score must be lower.
+const int kClipboardMatchRelevanceScore = 1;
 
 bool IsMatchDeletionEnabled() {
   return base::FeatureList::IsEnabled(
@@ -119,6 +120,13 @@ void RecordDeletingClipboardSuggestionMetrics(
   }
 }
 
+// Builds SuggestionGroup data used to decide where and how to present related
+// suggestions.
+omnibox::SuggestionGroup BuildSuggestionGroup() {
+  omnibox::SuggestionGroup suggestion_group;
+  suggestion_group.set_section(omnibox::SECTION_MOBILE_VERBATIM);
+  return suggestion_group;
+}
 }  // namespace
 
 ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
@@ -263,6 +271,8 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
                                            clipboard_contents_age);
 
   matches_.push_back(match);
+  suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_CLIPBOARD,
+                                 BuildSuggestionGroup());
 }
 
 bool ClipboardProvider::TemplateURLSupportsTextSearch() {
@@ -447,6 +457,7 @@ AutocompleteMatch ClipboardProvider::NewBlankURLMatch() {
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_URL);
 
+  match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
   match.description.assign(l10n_util::GetStringUTF16(IDS_LINK_FROM_CLIPBOARD));
   if (!match.description.empty())
     match.description_class.push_back({0, ACMatchClassification::NONE});
@@ -468,6 +479,7 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_TEXT);
 
+  match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
   match.description.assign(l10n_util::GetStringUTF16(IDS_TEXT_FROM_CLIPBOARD));
   if (!match.description.empty())
     match.description_class.push_back({0, ACMatchClassification::NONE});
@@ -491,6 +503,7 @@ AutocompleteMatch ClipboardProvider::NewBlankImageMatch() {
                           IsMatchDeletionEnabled(),
                           AutocompleteMatchType::CLIPBOARD_IMAGE);
 
+  match.suggestion_group_id = omnibox::GROUP_MOBILE_CLIPBOARD;
   match.description.assign(l10n_util::GetStringUTF16(IDS_IMAGE_FROM_CLIPBOARD));
   if (!match.description.empty())
     match.description_class.push_back({0, ACMatchClassification::NONE});
