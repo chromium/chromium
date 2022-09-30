@@ -2838,17 +2838,6 @@
           'all'
         ],
       },
-      'Linux Builder (py2 less)': {
-        'mixins': [
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_linux_scripts',
-        }
-      },
       'Linux CFI (reclient shadow)': {
         'mixins': [
           'linux-bionic',
@@ -2888,16 +2877,6 @@
         'args': [
           '--test-launcher-print-test-stdio=always',
         ],
-      },
-      'Linux Tests (py2 less)': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-        },
       },
       'Linux Viz': {
         'mixins': [
@@ -2941,17 +2920,6 @@
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
         }
       },
-      'Mac12 Tests (py2 less)': {
-        # Copied from 'Mac12 Tests'.
-        'mixins': [
-            'mac_12_x64',
-            'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-        },
-      },
       'Site Isolation Android': {
         'additional_compile_targets': [
           'content_browsertests',
@@ -2990,14 +2958,6 @@
           'gtest_tests': 'chromium_win_gtests',
         },
         'use_swarming': False,
-      },
-      'Win x64 Builder (py2 less)': {
-        'additional_compile_targets': [
-          'all'
-        ],
-        'test_suites': {
-          'scripts': 'chromium_win_scripts',
-        },
       },
       'Win x64 Builder (reclient compare)': {
         # Copied from
@@ -3067,19 +3027,6 @@
         ],
         'test_suites': {
           'scripts': 'chromium_win_scripts',
-        },
-      },
-      'Win10 Tests x64 (py2 less)': {
-        # Copied from
-        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=6193;drc=e40c45d7cb85fa476e0946b56a0fdcbb7d764134
-        'mixins': [
-          'x86-64',
-          'win10',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
       'android-backuprefptr-arm-fyi-rel': {

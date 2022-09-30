@@ -1574,46 +1574,6 @@ ci.builder(
     execution_timeout = 14 * time.hour,
 )
 
-ci.builder(
-    name = "Linux Builder (py2 less)",
-    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Linux%20Builder\">Linux Builder</a>, but runs on bots not having python2.",
-    builder_spec = builder_config.copy_from("ci/Linux Builder", lambda spec: structs.evolve(
-        spec,
-        build_gs_bucket = "chromium-fyi-archive",
-    )),
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "lin",
-        short_name = "py3",
-    ),
-    cores = 8,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    os = os.LINUX_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
-)
-
-ci.builder(
-    name = "Linux Tests (py2 less)",
-    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Linux%20Tests\">Linux Tests</a>, but runs on bots not having python2.",
-    builder_spec = builder_config.copy_from("ci/Linux Tests", lambda spec: structs.evolve(
-        spec,
-        build_gs_bucket = "chromium-fyi-archive",
-    )),
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "lin",
-        short_name = "py3",
-    ),
-    os = os.LINUX_DEFAULT,
-    triggered_by = ["ci/Linux Builder"],
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
-)
-
 # Start - Reclient migration, phase 2, block 1 shadow builders
 ci.builder(
     name = "Linux CFI (reclient shadow)",
@@ -1687,46 +1647,6 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
 )
 
-ci.builder(
-    name = "Win x64 Builder (py2 less)",
-    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win%20x64%20Builder\">Win x64 Builder</a>, but runs on bots not having python2.",
-    builder_spec = builder_config.copy_from("ci/Win x64 Builder", lambda spec: structs.evolve(
-        spec,
-        build_gs_bucket = "chromium-fyi-archive",
-    )),
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "win",
-        short_name = "py3",
-    ),
-    cores = 8,
-    goma_backend = None,
-    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
-    os = os.WINDOWS_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
-)
-
-ci.builder(
-    name = "Win10 Tests x64 (py2 less)",
-    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win10%20Tests%20x64\">Win10 Tests x64</a>, but runs on bots not having python2.",
-    builder_spec = builder_config.copy_from("ci/Win10 Tests x64", lambda spec: structs.evolve(
-        spec,
-        build_gs_bucket = "chromium-fyi-archive",
-    )),
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "win",
-        short_name = "py3",
-    ),
-    os = os.WINDOWS_DEFAULT,
-    triggered_by = ["ci/Win x64 Builder"],
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
-)
-
 fyi_mac_builder(
     name = "Mac Builder (reclient)",
     builderless = True,
@@ -1754,23 +1674,6 @@ fyi_mac_builder(
     reclient_ensure_verified = True,
     description_html = "verify artifacts. should be removed after the migration. crbug.com/1260232",
     execution_timeout = 14 * time.hour,
-)
-
-fyi_mac_builder(
-    name = "Mac12 Tests (py2 less)",
-    builder_spec = builder_config.copy_from("ci/Mac12 Tests", lambda spec: structs.evolve(
-        spec,
-        build_gs_bucket = "chromium-fyi-archive",
-    )),
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "py3",
-    ),
-    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Mac12%20Tests\">Mac12 Tests</a>, but runs on bots not having python2.",
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
-    triggered_by = ["ci/Mac Builder"],
 )
 
 fyi_mac_builder(

@@ -398,16 +398,6 @@
       "use_remoteexec": true
     }
   },
-  "Linux Builder (py2 less)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_remoteexec": true
-    }
-  },
   "Linux Builder (reclient compare)": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -554,17 +544,6 @@
       "dcheck_always_on": true,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "Win x64 Builder (py2 less)": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
       "symbol_level": 1,
       "use_remoteexec": true
     }
