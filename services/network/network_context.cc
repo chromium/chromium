@@ -59,7 +59,6 @@
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
-#include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/dns/host_cache.h"
@@ -626,9 +625,6 @@ NetworkContext::~NetworkContext() {
   // May be nullptr in tests.
   if (network_service_)
     network_service_->DeregisterNetworkContext(this);
-
-  if (cert_net_fetcher_)
-    cert_net_fetcher_->Shutdown();
 
   if (domain_reliability_monitor_)
     domain_reliability_monitor_->Shutdown();
@@ -2732,9 +2728,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     proxy_delegate_->SetProxyResolutionService(
         result.url_request_context->proxy_resolution_service());
   }
-
-  if (cert_net_fetcher_)
-    cert_net_fetcher_->SetURLRequestContext(result.url_request_context.get());
 
   return result;
 }

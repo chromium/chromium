@@ -77,8 +77,6 @@ class UnguessableToken;
 }  // namespace base
 
 namespace net {
-class CertNetFetcher;
-class CertNetFetcherURLRequest;
 class CertVerifier;
 class HostPortPair;
 class IsolationInfo;
@@ -831,11 +829,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // directories used by this NetworkClosure.
   std::vector<base::OnceClosure> dismount_closures_;
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
-
-  // CertNetFetcher used by the context's CertVerifier. May be nullptr if
-  // CertNetFetcher is not used by the current platform, or if the actual
-  // net::CertVerifier is instantiated outside of the network service.
-  scoped_refptr<net::CertNetFetcherURLRequest> cert_net_fetcher_;
 
   // Created on-demand. Null if unused.
   std::unique_ptr<HostResolver> internal_host_resolver_;
