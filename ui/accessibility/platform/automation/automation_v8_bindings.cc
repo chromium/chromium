@@ -488,6 +488,11 @@ void AutomationV8Bindings::AddV8Routes() {
   ROUTE_FUNCTION(DestroyAccessibilityTree);
   ROUTE_FUNCTION(AddTreeChangeObserver);
   ROUTE_FUNCTION(RemoveTreeChangeObserver);
+  ROUTE_FUNCTION(IsInteractPermitted);
+  ROUTE_FUNCTION(GetSchemaAdditions);
+  ROUTE_FUNCTION(GetState);
+  ROUTE_FUNCTION(StartCachingAccessibilityTrees);
+  ROUTE_FUNCTION(StopCachingAccessibilityTrees);
 
   // Bindings that take a Tree ID and return a property of the tree.
 
@@ -1393,6 +1398,10 @@ void AutomationV8Bindings::AddV8Routes() {
   RouteNodeIDFunction("GetMarkers",
                       base::BindRepeating(&AutomationV8Bindings::GetMarkers,
                                           base::Unretained(this)));
+  RouteNodeIDFunction(
+      "GetImageAnnotation",
+      base::BindRepeating(&AutomationV8Bindings::GetImageAnnotation,
+                          base::Unretained(this)));
 }
 
 void AutomationV8Bindings::RouteTreeIDFunction(const std::string& name,
@@ -1589,8 +1598,8 @@ void AutomationV8Bindings::DestroyAccessibilityTree(
     return;
   }
 
-  ui::AXTreeID tree_id = ui::AXTreeID::FromString(
-      *v8::String::Utf8Value(args.GetIsolate(), args[0]));
+  AXTreeID tree_id =
+      AXTreeID::FromString(*v8::String::Utf8Value(args.GetIsolate(), args[0]));
   automation_tree_manager_owner_->DestroyAccessibilityTree(tree_id);
 }
 
@@ -1712,6 +1721,7 @@ void AutomationV8Bindings::GetSentenceStartOffsets(
           tree_wrapper, node, true /* start_boundary */);
   result.Set(gin::ConvertToV8(isolate, sentence_starts));
 }
+
 void AutomationV8Bindings::GetSentenceEndOffsets(
     v8::Isolate* isolate,
     v8::ReturnValue<v8::Value> result,
@@ -1906,8 +1916,8 @@ void AutomationV8Bindings::EventListenerRemoved(
 
 void AutomationV8Bindings::GetMarkers(v8::Isolate* isolate,
                                       v8::ReturnValue<v8::Value> result,
-                                      ui::AutomationAXTreeWrapper* tree_wrapper,
-                                      ui::AXNode* node) {
+                                      AutomationAXTreeWrapper* tree_wrapper,
+                                      AXNode* node) {
   if (!node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts) ||
       !node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds) ||
       !node->HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes)) {
@@ -1945,6 +1955,129 @@ void AutomationV8Bindings::GetMarkers(v8::Isolate* isolate,
   }
 
   result.Set(gin::ConvertToV8(isolate, markers));
+}
+
+void AutomationV8Bindings::IsInteractPermitted(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  bool permitted = automation_v8_router_->IsInteractPermitted();
+  args.GetReturnValue().Set(
+      v8::Boolean::New(automation_v8_router_->GetIsolate(), permitted));
+}
+
+void AutomationV8Bindings::GetSchemaAdditions(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = automation_v8_router_->GetIsolate();
+
+  gin::DataObjectBuilder name_from_type(isolate);
+  for (int32_t i = static_cast<int32_t>(ax::mojom::NameFrom::kNone);
+       i <= static_cast<int32_t>(ax::mojom::NameFrom::kMaxValue); ++i) {
+    name_from_type.Set(
+        i, base::StringPiece(ToString(static_cast<ax::mojom::NameFrom>(i))));
+  }
+
+  gin::DataObjectBuilder restriction(isolate);
+  for (int32_t i = static_cast<int32_t>(ax::mojom::Restriction::kNone);
+       i <= static_cast<int32_t>(ax::mojom::Restriction::kMaxValue); ++i) {
+    restriction.Set(
+        i, base::StringPiece(ToString(static_cast<ax::mojom::Restriction>(i))));
+  }
+
+  gin::DataObjectBuilder description_from_type(isolate);
+  for (int32_t i = static_cast<int32_t>(ax::mojom::DescriptionFrom::kNone);
+       i <= static_cast<int32_t>(ax::mojom::DescriptionFrom::kMaxValue); ++i) {
+    description_from_type.Set(
+        i, base::StringPiece(
+               ToString(static_cast<ax::mojom::DescriptionFrom>(i))));
+  }
+
+  args.GetReturnValue().Set(
+      gin::DataObjectBuilder(isolate)
+          .Set("NameFromType", name_from_type.Build())
+          .Set("Restriction", restriction.Build())
+          .Set("DescriptionFromType", description_from_type.Build())
+          .Build());
+}
+
+void AutomationV8Bindings::GetState(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = automation_v8_router_->GetIsolate();
+  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
+    automation_v8_router_->ThrowInvalidArgumentsException();
+
+  AXTreeID tree_id =
+      AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
+  int node_id =
+      args[1]->Int32Value(automation_v8_router_->GetContext()).FromMaybe(0);
+
+  bool offscreen = false;
+  bool focused = false;
+  uint32_t node_state;
+  if (!automation_tree_manager_owner_->CalculateNodeState(
+          tree_id, node_id, &node_state, &offscreen, &focused)) {
+    return;
+  }
+
+  gin::DataObjectBuilder state(isolate);
+  uint32_t state_pos = 0, state_shifter = node_state;
+  while (state_shifter) {
+    if (state_shifter & 1)
+      state.Set(ToString(static_cast<ax::mojom::State>(state_pos)), true);
+    state_shifter = state_shifter >> 1;
+    state_pos++;
+  }
+
+  if (focused) {
+    state.Set(automation_v8_router_->GetFocusedStateString(), true);
+  }
+  if (offscreen)
+    state.Set(automation_v8_router_->GetOffscreenStateString(), true);
+
+  args.GetReturnValue().Set(state.Build());
+}
+
+void AutomationV8Bindings::GetImageAnnotation(
+    v8::Isolate* isolate,
+    v8::ReturnValue<v8::Value> result,
+    ui::AutomationAXTreeWrapper* tree_wrapper,
+    ui::AXNode* node) {
+  std::string status_string = std::string();
+  auto status = node->data().GetImageAnnotationStatus();
+  switch (status) {
+    case ax::mojom::ImageAnnotationStatus::kNone:
+    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+      break;
+
+    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+      status_string =
+          automation_v8_router_->GetLocalizedStringForImageAnnotationStatus(
+              status);
+      break;
+    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      status_string = node->GetStringAttribute(
+          ax::mojom::StringAttribute::kImageAnnotation);
+      break;
+  }
+  if (status_string.empty())
+    return;
+  result.Set(
+      v8::String::NewFromUtf8(isolate, status_string.c_str()).ToLocalChecked());
+}
+
+void AutomationV8Bindings::StartCachingAccessibilityTrees(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  automation_v8_router_->StartCachingAccessibilityTrees();
+}
+
+void AutomationV8Bindings::StopCachingAccessibilityTrees(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  automation_v8_router_->StopCachingAccessibilityTrees();
+  automation_tree_manager_owner_->ClearCachedAccessibilityTrees();
 }
 
 }  // namespace ui

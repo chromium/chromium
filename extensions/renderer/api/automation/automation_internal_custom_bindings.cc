@@ -30,7 +30,6 @@
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "extensions/renderer/script_context.h"
-#include "gin/data_object_builder.h"
 #include "ipc/message_filter.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -122,33 +121,11 @@ AutomationInternalCustomBindings::AutomationInternalCustomBindings(
 AutomationInternalCustomBindings::~AutomationInternalCustomBindings() {}
 
 void AutomationInternalCustomBindings::AddRoutes() {
-// It's safe to use base::Unretained(this) here because these bindings
-// will only be called on a valid AutomationInternalCustomBindings instance
-// and none of the functions have any side effects.
-// TODO(crbug.com/1357889): Move ROUTE_FUNCTION functions into
-// ui::AutomationV8Bindings if possible.
-#define ROUTE_FUNCTION(FN)                                       \
-  ObjectBackedNativeHandler::RouteHandlerFunction(               \
-      #FN, "automation",                                         \
-      base::BindRepeating(&AutomationInternalCustomBindings::FN, \
-                          base::Unretained(this)))
-  ROUTE_FUNCTION(IsInteractPermitted);
-  ROUTE_FUNCTION(GetSchemaAdditions);
-  ROUTE_FUNCTION(StartCachingAccessibilityTrees);
-  ROUTE_FUNCTION(StopCachingAccessibilityTrees);
-  ROUTE_FUNCTION(GetState);
-#undef ROUTE_FUNCTION
-
   // This should only be called once.
   DCHECK(!automation_v8_bindings_);
   automation_v8_bindings_ =
       std::make_unique<ui::AutomationV8Bindings>(this, this);
   automation_v8_bindings_->AddV8Routes();
-
-  automation_v8_bindings_->RouteNodeIDFunction(
-      "GetImageAnnotation",
-      base::BindRepeating(&AutomationInternalCustomBindings::GetImageAnnotation,
-                          base::Unretained(this)));
 }
 
 void AutomationInternalCustomBindings::Invalidate() {
@@ -170,18 +147,15 @@ void AutomationInternalCustomBindings::OnMessageReceived(
   IPC_END_MESSAGE_MAP()
 }
 
-void AutomationInternalCustomBindings::IsInteractPermitted(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+bool AutomationInternalCustomBindings::IsInteractPermitted() const {
   const Extension* extension = context()->extension();
   CHECK(extension);
   const AutomationInfo* automation_info = AutomationInfo::Get(extension);
   CHECK(automation_info);
-  args.GetReturnValue().Set(
-      v8::Boolean::New(GetIsolate(), automation_info->interact));
+  return automation_info->interact;
 }
 
-void AutomationInternalCustomBindings::StartCachingAccessibilityTrees(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+void AutomationInternalCustomBindings::StartCachingAccessibilityTrees() {
   if (should_ignore_context_)
     return;
 
@@ -194,128 +168,9 @@ void AutomationInternalCustomBindings::StartCachingAccessibilityTrees(
   }
 }
 
-void AutomationInternalCustomBindings::StopCachingAccessibilityTrees(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+void AutomationInternalCustomBindings::StopCachingAccessibilityTrees() {
   message_filter_->Detach();
   message_filter_.reset();
-  ClearCachedAccessibilityTrees();
-}
-
-void AutomationInternalCustomBindings::GetSchemaAdditions(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = GetIsolate();
-
-  gin::DataObjectBuilder name_from_type(isolate);
-  for (int32_t i = static_cast<int32_t>(ax::mojom::NameFrom::kNone);
-       i <= static_cast<int32_t>(ax::mojom::NameFrom::kMaxValue); ++i) {
-    name_from_type.Set(
-        i,
-        base::StringPiece(ui::ToString(static_cast<ax::mojom::NameFrom>(i))));
-  }
-
-  gin::DataObjectBuilder restriction(isolate);
-  for (int32_t i = static_cast<int32_t>(ax::mojom::Restriction::kNone);
-       i <= static_cast<int32_t>(ax::mojom::Restriction::kMaxValue); ++i) {
-    restriction.Set(i, base::StringPiece(ui::ToString(
-                           static_cast<ax::mojom::Restriction>(i))));
-  }
-
-  gin::DataObjectBuilder description_from_type(isolate);
-  for (int32_t i = static_cast<int32_t>(ax::mojom::DescriptionFrom::kNone);
-       i <= static_cast<int32_t>(ax::mojom::DescriptionFrom::kMaxValue); ++i) {
-    description_from_type.Set(
-        i, base::StringPiece(
-               ui::ToString(static_cast<ax::mojom::DescriptionFrom>(i))));
-  }
-
-  args.GetReturnValue().Set(
-      gin::DataObjectBuilder(isolate)
-          .Set("NameFromType", name_from_type.Build())
-          .Set("Restriction", restriction.Build())
-          .Set("DescriptionFromType", description_from_type.Build())
-          .Build());
-}
-
-void AutomationInternalCustomBindings::GetState(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = GetIsolate();
-  if (args.Length() < 2 || !args[0]->IsString() || !args[1]->IsNumber())
-    ThrowInvalidArgumentsException();
-
-  ui::AXTreeID tree_id =
-      ui::AXTreeID::FromString(*v8::String::Utf8Value(isolate, args[0]));
-  int node_id = args[1]->Int32Value(context()->v8_context()).FromMaybe(0);
-
-  ui::AutomationAXTreeWrapper* tree_wrapper =
-      GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  if (!tree_wrapper)
-    return;
-
-  ui::AXNode* node =
-      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
-  if (!node)
-    return;
-
-  gin::DataObjectBuilder state(isolate);
-  uint32_t state_pos = 0, state_shifter = node->data().state;
-  while (state_shifter) {
-    if (state_shifter & 1)
-      state.Set(ui::ToString(static_cast<ax::mojom::State>(state_pos)), true);
-    state_shifter = state_shifter >> 1;
-    state_pos++;
-  }
-  ui::AutomationAXTreeWrapper* top_tree_wrapper = nullptr;
-  ui::AutomationAXTreeWrapper* walker = tree_wrapper;
-  while (walker && walker != top_tree_wrapper) {
-    top_tree_wrapper = walker;
-    GetParent(walker->ax_tree()->root(), &walker);
-  }
-
-  const bool focused = tree_wrapper->IsInFocusChain(node->id());
-  if (focused) {
-    state.Set(api::automation::ToString(api::automation::STATE_TYPE_FOCUSED),
-              true);
-  }
-
-  bool offscreen = false;
-  ComputeGlobalNodeBounds(tree_wrapper, node, gfx::RectF(), &offscreen);
-  if (offscreen)
-    state.Set(api::automation::ToString(api::automation::STATE_TYPE_OFFSCREEN),
-              true);
-
-  args.GetReturnValue().Set(state.Build());
-}
-
-void AutomationInternalCustomBindings::GetImageAnnotation(
-    v8::Isolate* isolate,
-    v8::ReturnValue<v8::Value> result,
-    ui::AutomationAXTreeWrapper* tree_wrapper,
-    ui::AXNode* node) {
-  std::string status_string = std::string();
-  auto status = node->data().GetImageAnnotationStatus();
-  switch (status) {
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
-
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      status_string = GetLocalizedStringForImageAnnotationStatus(status);
-      break;
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      status_string = node->GetStringAttribute(
-          ax::mojom::StringAttribute::kImageAnnotation);
-      break;
-  }
-  if (status_string.empty())
-    return;
-  result.Set(
-      v8::String::NewFromUtf8(isolate, status_string.c_str()).ToLocalChecked());
 }
 
 //
@@ -580,6 +435,14 @@ AutomationInternalCustomBindings::ParseTreeChangeObserverFilter(
 std::string AutomationInternalCustomBindings::GetMarkerTypeString(
     ax::mojom::MarkerType type) const {
   return api::automation::ToString(ConvertMarkerTypeFromAXToAutomation(type));
+}
+
+std::string AutomationInternalCustomBindings::GetFocusedStateString() const {
+  return api::automation::ToString(api::automation::STATE_TYPE_FOCUSED);
+}
+
+std::string AutomationInternalCustomBindings::GetOffscreenStateString() const {
+  return api::automation::ToString(api::automation::STATE_TYPE_OFFSCREEN);
 }
 
 void AutomationInternalCustomBindings::DispatchEvent(

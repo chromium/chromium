@@ -143,6 +143,15 @@ class AX_EXPORT AutomationTreeManagerOwner {
                                  ui::AXTree* tree,
                                  ui::AXNode* node) const;
   void DestroyAccessibilityTree(const ui::AXTreeID& tree_id);
+  void ClearCachedAccessibilityTrees();
+
+  // Calculate the state of the node with ID |node_id|, or returns false if the
+  // node cannot be found in the tree with ID |tree_id|.
+  bool CalculateNodeState(const ui::AXTreeID& tree_id,
+                          int node_id,
+                          uint32_t* node_state,
+                          bool* offscreen,
+                          bool* focused) const;
 
   const AXTreeID& accessibility_focused_tree_id() const {
     return accessibility_focused_tree_id_;
@@ -158,8 +167,6 @@ class AX_EXPORT AutomationTreeManagerOwner {
   void CacheAutomationTreeWrapperForTreeID(
       const AXTreeID& tree_id,
       AutomationAXTreeWrapper* tree_wrapper);
-
-  void ClearCachedAccessibilityTrees();
 
   // Invalidates this AutomationTreeManagerOnwer.
   void Invalidate();

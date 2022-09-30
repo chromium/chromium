@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
+#include <set>
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_tree.h"
 #include "ui/accessibility/ax_event.h"
@@ -708,6 +709,35 @@ void AutomationTreeManagerOwner::DestroyAccessibilityTree(
 
   RemoveAutomationTreeWrapperFromCache(tree_id);
   trees_with_event_listeners_.erase(tree_id);
+}
+
+bool AutomationTreeManagerOwner::CalculateNodeState(const ui::AXTreeID& tree_id,
+                                                    int node_id,
+                                                    uint32_t* node_state,
+                                                    bool* offscreen,
+                                                    bool* focused) const {
+  ui::AutomationAXTreeWrapper* tree_wrapper =
+      GetAutomationAXTreeWrapperFromTreeID(tree_id);
+  if (!tree_wrapper)
+    return false;
+
+  ui::AXNode* node =
+      tree_wrapper->GetNodeFromTree(tree_wrapper->GetTreeID(), node_id);
+  if (!node)
+    return false;
+
+  *node_state = node->data().state;
+
+  ui::AutomationAXTreeWrapper* top_tree_wrapper = nullptr;
+  ui::AutomationAXTreeWrapper* walker = tree_wrapper;
+  while (walker && walker != top_tree_wrapper) {
+    top_tree_wrapper = walker;
+    GetParent(walker->ax_tree()->root(), &walker);
+  }
+
+  *focused = tree_wrapper->IsInFocusChain(node->id());
+  ComputeGlobalNodeBounds(tree_wrapper, node, gfx::RectF(), offscreen);
+  return true;
 }
 
 void AutomationTreeManagerOwner::CacheAutomationTreeWrapperForTreeID(

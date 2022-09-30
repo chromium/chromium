@@ -88,45 +88,25 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
   ui::TreeChangeObserverFilter ParseTreeChangeObserverFilter(
       const std::string& filter) const override;
   std::string GetMarkerTypeString(ax::mojom::MarkerType type) const override;
+  std::string GetFocusedStateString() const override;
+  std::string GetOffscreenStateString() const override;
+  std::string GetLocalizedStringForImageAnnotationStatus(
+      ax::mojom::ImageAnnotationStatus status) const override;
   void DispatchEvent(const std::string& event_name,
                      const base::Value::List& event_args) const override;
+  bool IsInteractPermitted() const override;
+  // This enables the MessageFilter that allows us to listen to accessibility
+  // events forwarded to this process.
+  void StartCachingAccessibilityTrees() override;
+  // This disables the MessageFilter that allows us to listen to accessibility
+  // events forwarded to this process.
+  void StopCachingAccessibilityTrees() override;
 
  private:
   friend class AutomationInternalCustomBindingsTest;
 
   // ObjectBackedNativeHandler overrides:
   void Invalidate() override;
-
-  // Returns whether this extension has the "interact" permission set (either
-  // explicitly or implicitly after manifest parsing).
-  void IsInteractPermitted(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Returns an object with bindings that will be added to the
-  // chrome.automation namespace.
-  void GetSchemaAdditions(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // This is called by automation_internal_custom_bindings.js to indicate
-  // that an API was called that needs access to accessibility trees. This
-  // enables the MessageFilter that allows us to listen to accessibility
-  // events forwarded to this process.
-  void StartCachingAccessibilityTrees(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // This is called by automation_internal_custom_bindings.js to indicate
-  // that an API was called that turns off accessibility trees. This
-  // disables the MessageFilter that allows us to listen to accessibility
-  // events forwarded to this process and clears all existing tree state.
-  void StopCachingAccessibilityTrees(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Args: string ax_tree_id, int node_id
-  // Returns: JS object with a string key for each state flag that's set.
-  void GetState(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  void GetImageAnnotation(v8::Isolate* isolate,
-                          v8::ReturnValue<v8::Value> result,
-                          ui::AutomationAXTreeWrapper* tree_wrapper,
-                          ui::AXNode* node);
 
   //
   // Helper functions.
@@ -141,9 +121,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler,
       const ExtensionMsg_AccessibilityLocationChangeParams& params);
 
   void SendChildTreeIDEvent(ui::AXTreeID child_tree_id);
-
-  std::string GetLocalizedStringForImageAnnotationStatus(
-      ax::mojom::ImageAnnotationStatus status) const;
 
   void MaybeSendOnAllAutomationEventListenersRemoved();
 

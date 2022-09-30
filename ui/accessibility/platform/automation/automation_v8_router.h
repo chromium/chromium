@@ -27,6 +27,20 @@ class AX_EXPORT AutomationV8Router {
   // Gets the V8 script context.
   virtual v8::Local<v8::Context> GetContext() const = 0;
 
+  // Returns whether this extension has the "interact" permission set (either
+  // explicitly or implicitly after manifest parsing).
+  // TODO(crbug.com/1357889): This is specific to the extensions system and
+  // should be removed from this more generic location.
+  virtual bool IsInteractPermitted() const = 0;
+
+  virtual void StartCachingAccessibilityTrees() = 0;
+
+  virtual void StopCachingAccessibilityTrees() = 0;
+
+  //
+  // Methods converting to and from strings
+  //
+
   // Parses a string representing an event type into an Event tuple.
   virtual std::tuple<ax::mojom::Event, AXEventGenerator::Event> ParseEventType(
       const std::string& event_type) const = 0;
@@ -37,6 +51,14 @@ class AX_EXPORT AutomationV8Router {
 
   // Converts an ax::mojom::MarkerType into a string.
   virtual std::string GetMarkerTypeString(ax::mojom::MarkerType type) const = 0;
+  virtual std::string GetFocusedStateString() const = 0;
+  virtual std::string GetOffscreenStateString() const = 0;
+  virtual std::string GetLocalizedStringForImageAnnotationStatus(
+      ax::mojom::ImageAnnotationStatus status) const = 0;
+
+  //
+  // Methods for routing Javascript methods to C++.
+  //
 
   using HandlerFunction =
       base::RepeatingCallback<void(const v8::FunctionCallbackInfo<v8::Value>&)>;
@@ -45,6 +67,10 @@ class AX_EXPORT AutomationV8Router {
   virtual void RouteHandlerFunction(const std::string& name,
                                     const std::string& api_name,
                                     HandlerFunction handler_function) = 0;
+
+  //
+  // Methods for passing information from C++ to Javascript.
+  //
 
   // Dispatches an event with the given name and arguments.
   virtual void DispatchEvent(const std::string& event_name,

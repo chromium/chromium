@@ -205,6 +205,34 @@ class AX_EXPORT AutomationV8Bindings {
   void CreateAutomationPosition(
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
+  void IsInteractPermitted(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Returns an object with bindings that will be added to the
+  // chrome.automation namespace.
+  // TODO(crbug.com/1357889): This may be specific to the extensions system in
+  // which case it should be removed from here.
+  void GetSchemaAdditions(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // Args: string ax_tree_id, int node_id
+  // Returns: JS object with a string key for each state flag that's set.
+  void GetState(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  void GetImageAnnotation(v8::Isolate* isolate,
+                          v8::ReturnValue<v8::Value> result,
+                          ui::AutomationAXTreeWrapper* tree_wrapper,
+                          ui::AXNode* node);
+
+  // This is called by automation_internal_custom_bindings.js to indicate
+  // that an API was called that needs access to accessibility trees.
+  void StartCachingAccessibilityTrees(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  // This is called by automation_internal_custom_bindings.js to indicate
+  // that an API was called that turns off accessibility trees. This clears all
+  // existing tree state.
+  void StopCachingAccessibilityTrees(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+
   AutomationTreeManagerOwner* automation_tree_manager_owner_;
   AutomationV8Router* automation_v8_router_;
 };
