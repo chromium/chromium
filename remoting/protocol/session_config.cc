@@ -4,10 +4,10 @@
 
 #include "remoting/protocol/session_config.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -16,11 +16,6 @@ namespace remoting::protocol {
 
 namespace {
 
-bool IsChannelConfigSupported(const std::list<ChannelConfig>& list,
-                              const ChannelConfig& value) {
-  return std::find(list.begin(), list.end(), value) != list.end();
-}
-
 bool SelectCommonChannelConfig(const std::list<ChannelConfig>& host_configs,
                                const std::list<ChannelConfig>& client_configs,
                                ChannelConfig* config) {
@@ -28,7 +23,7 @@ bool SelectCommonChannelConfig(const std::list<ChannelConfig>& host_configs,
   // over all of them is not a problem.
   std::list<ChannelConfig>::const_iterator it;
   for (it = client_configs.begin(); it != client_configs.end(); ++it) {
-    if (IsChannelConfigSupported(host_configs, *it)) {
+    if (base::Contains(host_configs, *it)) {
       *config = *it;
       return true;
     }
@@ -207,11 +202,10 @@ bool CandidateSessionConfig::IsSupported(const SessionConfig& config) const {
   switch (config.protocol()) {
     case SessionConfig::Protocol::ICE:
       return ice_supported() &&
-             IsChannelConfigSupported(control_configs_,
-                                      config.control_config()) &&
-             IsChannelConfigSupported(event_configs_, config.event_config()) &&
-             IsChannelConfigSupported(video_configs_, config.video_config()) &&
-             IsChannelConfigSupported(audio_configs_, config.audio_config());
+             base::Contains(control_configs_, config.control_config()) &&
+             base::Contains(event_configs_, config.event_config()) &&
+             base::Contains(video_configs_, config.video_config()) &&
+             base::Contains(audio_configs_, config.audio_config());
 
     case SessionConfig::Protocol::WEBRTC:
       return webrtc_supported();

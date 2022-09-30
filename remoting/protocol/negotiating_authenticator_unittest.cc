@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -88,14 +89,14 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
 
   void DisableMethodOnClient(NegotiatingAuthenticatorBase::Method method) {
     auto* methods = &(client_as_negotiating_authenticator_->methods_);
-    auto iter = std::find(methods->begin(), methods->end(), method);
+    auto iter = base::ranges::find(*methods, method);
     ASSERT_TRUE(iter != methods->end());
     methods->erase(iter);
   }
 
   void DisableMethodOnHost(NegotiatingAuthenticatorBase::Method method) {
     auto* methods = &(host_as_negotiating_authenticator_->methods_);
-    auto iter = std::find(methods->begin(), methods->end(), method);
+    auto iter = base::ranges::find(*methods, method);
     ASSERT_TRUE(iter != methods->end());
     methods->erase(iter);
   }

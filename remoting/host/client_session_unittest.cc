@@ -6,13 +6,13 @@
 
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -78,8 +78,7 @@ MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
                         base::SPLIT_WANT_NONEMPTY);
 
   for (const auto& word : words_expected) {
-    if (std::find(words_args.begin(), words_args.end(), word) ==
-        words_args.end()) {
+    if (!base::Contains(words_args, word)) {
       return false;
     }
   }

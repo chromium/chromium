@@ -4,7 +4,6 @@
 
 #include "remoting/protocol/negotiating_client_authenticator.h"
 
-#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -62,7 +62,7 @@ void NegotiatingClientAuthenticator::ProcessMessage(
     // The host must pick a method that is valid and supported by the client,
     // and it must not change methods after it has picked one.
     if (method_set_by_host_ || method == Method::INVALID ||
-        std::find(methods_.begin(), methods_.end(), method) == methods_.end()) {
+        !base::Contains(methods_, method)) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
       std::move(resume_callback).Run();
@@ -184,9 +184,7 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
 }
 
 void NegotiatingClientAuthenticator::CreatePreferredAuthenticator() {
-  if (is_paired() &&
-      std::find(methods_.begin(), methods_.end(), Method::PAIRED_SPAKE2_P224) !=
-          methods_.end()) {
+  if (is_paired() && base::Contains(methods_, Method::PAIRED_SPAKE2_P224)) {
     PairingClientAuthenticator* pairing_authenticator =
         new PairingClientAuthenticator(
             config_, base::BindRepeating(&V2Authenticator::CreateForClient));

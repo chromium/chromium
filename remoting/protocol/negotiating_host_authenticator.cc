@@ -4,7 +4,6 @@
 
 #include "remoting/protocol/negotiating_host_authenticator.h"
 
-#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <utility>
@@ -12,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/rsa_key_pair.h"
@@ -103,8 +103,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   // If the client did not specify a preferred auth method, or specified an
   // unknown or unsupported method, then select the first known method from
   // the supported-methods attribute.
-  if (method == Method::INVALID ||
-      std::find(methods_.begin(), methods_.end(), method) == methods_.end()) {
+  if (method == Method::INVALID || !base::Contains(methods_, method)) {
     method = Method::INVALID;
 
     std::string supported_methods_attr =
@@ -125,8 +124,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       Method list_value = ParseMethodString(method_str);
       if (list_value != Method::INVALID &&
-          std::find(methods_.begin(), methods_.end(), list_value) !=
-              methods_.end()) {
+          base::Contains(methods_, list_value)) {
         // Found common method.
         method = list_value;
         break;
