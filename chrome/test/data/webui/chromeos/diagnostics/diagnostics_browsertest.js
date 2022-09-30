@@ -109,6 +109,7 @@ const debug_suites_list = [
   'RoutineSection',
   'SystemPage',
   'TextBadge',
+  'TouchscreenTester',
   'WifiInfo',
 ];
 

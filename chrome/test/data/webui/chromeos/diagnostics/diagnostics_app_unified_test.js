@@ -36,6 +36,7 @@ import {routineResultListTestSuite} from './routine_result_list_test.js';
 import {routineSectionTestSuite} from './routine_section_test.js';
 import {systemPageTestSuite} from './system_page_test.js';
 import {textBadgeTestSuite} from './text_badge_test.js';
+import {touchscreenTesterTestSuite} from './touchscreen_tester_test.js';
 import {wifiInfoTestSuite} from './wifi_info_test.js';
 
 window.isNetworkEnabled = window.loadTimeData.getBoolean('isNetworkingEnabled');
@@ -87,4 +88,5 @@ runSuite('RoutineResultList', routineResultListTestSuite);
 runSuite('RoutineSection', routineSectionTestSuite);
 runSuite('SystemPage', systemPageTestSuite);
 runSuite('TextBadge', textBadgeTestSuite);
+runSuite('TouchscreenTester', touchscreenTesterTestSuite, 'input');
 runSuite('WifiInfo', wifiInfoTestSuite, 'network');

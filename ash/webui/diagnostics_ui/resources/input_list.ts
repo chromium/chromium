@@ -5,6 +5,7 @@
 import './diagnostics_shared.css.js';
 import './input_card.js';
 import './keyboard_tester.js';
+import './touchscreen_tester.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
