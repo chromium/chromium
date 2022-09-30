@@ -67,7 +67,7 @@
       },
       'android-nougat-x86-rel': {
         'swarming': {
-          'shards': 2,
+          'shards': 3,
         },
       },
       'android-pie-arm64-rel': {
@@ -1591,6 +1591,11 @@
       'android-marshmallow-arm64-rel': {
         'swarming': {
           'quickrun_shards': 2,
+        },
+      },
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'shards': 2,
         },
       },
     },
@@ -4207,6 +4212,11 @@
         },
       },
       'android-marshmallow-x86-rel': {
+        'swarming': {
+          'shards': 9,
+        },
+      },
+      'android-nougat-x86-rel': {
         'swarming': {
           'shards': 9,
         },
