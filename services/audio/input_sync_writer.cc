@@ -111,12 +111,6 @@ InputSyncWriter::~InputSyncWriter() {
   if (write_count_ == 0)
     return;
 
-  base::UmaHistogramPercentage("Media.AudioCapturerMissedReadDeadline",
-                               100.0 * write_to_fifo_count_ / write_count_);
-
-  base::UmaHistogramPercentage("Media.AudioCapturerDroppedData",
-                               100.0 * write_error_count_ / write_count_);
-
   base::UmaHistogramEnumeration("Media.AudioCapturerAudioGlitches",
                                 write_error_count_ == 0
                                     ? AudioGlitchResult::kNoGlitches
