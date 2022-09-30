@@ -28,6 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -654,7 +656,8 @@ final class FakeUrlRequest extends UrlRequestBase {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     final class FakeDataSink extends JavaUploadDataSinkBase {
-        private final ByteArrayOutputStream mTotalUploadStream = new ByteArrayOutputStream();
+        private final ByteArrayOutputStream mBodyStream = new ByteArrayOutputStream();
+        private final WritableByteChannel mBodyChannel = Channels.newChannel(mBodyStream);
 
         FakeDataSink(final Executor userExecutor, Executor executor, UploadDataProvider provider) {
             super(userExecutor, executor, provider);
@@ -692,8 +695,7 @@ final class FakeUrlRequest extends UrlRequestBase {
 
         @Override
         protected int processSuccessfulRead(ByteBuffer buffer) throws IOException {
-            mTotalUploadStream.write(buffer.array(), buffer.arrayOffset(), buffer.remaining());
-            return buffer.remaining();
+            return mBodyChannel.write(buffer);
         }
 
         /**
@@ -703,7 +705,7 @@ final class FakeUrlRequest extends UrlRequestBase {
         @Override
         protected void finish() throws IOException {
             synchronized (mLock) {
-                mRequestBody = mTotalUploadStream.toByteArray();
+                mRequestBody = mBodyStream.toByteArray();
                 fakeConnect();
             }
         }
