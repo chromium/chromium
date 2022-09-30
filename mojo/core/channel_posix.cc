@@ -155,6 +155,9 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
+  // https://linear.app/replay/issue/RUN-618
+  recordreplay::Assert("ChannelPosix::Write Start");
+
   UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
                               message->data_num_bytes());
   UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
@@ -167,6 +170,8 @@ void ChannelPosix::Write(MessagePtr message) {
     if (reject_writes_)
       return;
     if (outgoing_messages_.empty()) {
+      // https://linear.app/replay/issue/RUN-618
+      recordreplay::Assert("ChannelPosix::Write #1");
       if (!WriteNoLock(MessageView(std::move(message), 0)))
         reject_writes_ = write_error = true;
     } else {

@@ -166,10 +166,12 @@ void TaskQueue::TaskTiming::RecordTaskEnd(LazyNow* now) {
   state_ = State::Finished;
 
   if (has_wall_time()) {
+    // https://linear.app/replay/issue/RUN-618
     recordreplay::Assert("TaskQueue::TaskTiming::RecordTaskEnd #1");
     end_time_ = now->Now();
   }
   if (has_thread_time()) {
+    // https://linear.app/replay/issue/RUN-618
     recordreplay::Assert("TaskQueue::TaskTiming::RecordTaskEnd #2");
     end_thread_time_ = base::ThreadTicks::Now();
   }
