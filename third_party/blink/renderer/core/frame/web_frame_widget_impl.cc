@@ -2198,7 +2198,8 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
                                   commit_start_time, commit_finish_time);
   commit_compositor_frame_start_time_ =
-      std::move(next_commit_compositor_frame_start_time_);
+      next_commit_compositor_frame_start_time_;
+  next_commit_compositor_frame_start_time_.reset();
 }
 
 void WebFrameWidgetImpl::ApplyViewportChanges(
