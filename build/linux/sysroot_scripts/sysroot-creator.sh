@@ -484,8 +484,9 @@ InstallIntoSysroot() {
     dpkg-deb -e ${package} ${INSTALL_ROOT}/debian/${base_package}/DEBIAN
   done
 
-  # Prune /usr/share, leaving only pkgconfig.
-  ls -d ${INSTALL_ROOT}/usr/share/* | grep -v "/pkgconfig$" | xargs rm -r
+  # Prune /usr/share, leaving only pkgconfig and wayland-protocols.
+  ls -d ${INSTALL_ROOT}/usr/share/* | \
+    grep -v "/\(pkgconfig\|wayland-protocols\)$" | xargs rm -r
 }
 
 
