@@ -277,6 +277,9 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardMultipasteSuggestion",
   "peripherals.LaunchAppFromSettings.diagnostics",
   "peripherals.LaunchAppFromSettings.print_management",
+
+  # https://crbug.com/1368315
+  "lockscreen.CloseLid",
 ]
 
 # To create filters to be used on specific builders add them like this:
