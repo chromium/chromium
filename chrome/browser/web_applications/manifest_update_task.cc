@@ -149,6 +149,19 @@ bool NeedsAppIdentityUpdateDialog(bool title_changing,
                                   bool icons_changing,
                                   const AppId& app_id,
                                   const WebAppRegistrar& registrar) {
+  // Shortcut apps can trigger the update check (https://crbug.com/1366600) on
+  // subsequent runs of the app, if the user changed the title of the app when
+  // creating the shortcut. But we should never run the App Identity dialog for
+  // shortcut apps. Also, ideally we should just use IsShortcutApp here instead
+  // of checking the install source, but as per https://crbug.com/1368592 there
+  // is a bug with that where it returns the wrong thing for Shortcut apps that
+  // specify `scope`.
+  if (registrar.IsShortcutApp(app_id) ||
+      registrar.GetAppInstallSourceForMetrics(app_id) ==
+          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
+    return false;
+  }
+
   if (title_changing && !AllowUnpromptedNameUpdate(app_id, registrar))
     return true;
   if (icons_changing && !AllowUnpromptedIconUpdate(app_id, registrar))

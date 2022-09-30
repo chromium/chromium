@@ -38,6 +38,7 @@ namespace {
 
 bool g_auto_accept_web_app_for_testing = false;
 bool g_auto_check_open_in_window_for_testing = false;
+const char* g_title_to_use_for_app = nullptr;
 
 bool ShowRadioButtons() {
   // This UI is only for prototyping and is not intended for shipping.
@@ -121,16 +122,18 @@ WebAppConfirmationView::WebAppConfirmationView(
           .set_margins(layout_provider->GetDialogInsetsForContentType(
               views::DialogContentType::kControl,
               views::DialogContentType::kText))
-          .AddChildren(
-              views::Builder<views::ImageView>()
-                  .SetImageSize(image_size)
-                  .SetImage(image),
-              views::Builder<views::Textfield>()
-                  .CopyAddressTo(&title_tf_)
-                  .SetText(NormalizeSuggestedAppTitle(web_app_info_->title))
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
-                  .SetController(this));
+          .AddChildren(views::Builder<views::ImageView>()
+                           .SetImageSize(image_size)
+                           .SetImage(image),
+                       views::Builder<views::Textfield>()
+                           .CopyAddressTo(&title_tf_)
+                           .SetText(NormalizeSuggestedAppTitle(
+                               g_title_to_use_for_app != nullptr
+                                   ? base::ASCIIToUTF16(g_title_to_use_for_app)
+                                   : web_app_info_->title))
+                           .SetAccessibleName(l10n_util::GetStringUTF16(
+                               IDS_BOOKMARK_APP_AX_BUBBLE_NAME_LABEL))
+                           .SetController(this));
 
   const auto display_mode = web_app_info_->user_display_mode;
   // Build the content child views.
@@ -258,6 +261,10 @@ void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,
                                          bool auto_open_in_window) {
   g_auto_accept_web_app_for_testing = auto_accept;
   g_auto_check_open_in_window_for_testing = auto_open_in_window;
+}
+
+void SetOverrideTitleForTesting(const char* title_to_use) {
+  g_title_to_use_for_app = title_to_use;
 }
 
 }  // namespace chrome
