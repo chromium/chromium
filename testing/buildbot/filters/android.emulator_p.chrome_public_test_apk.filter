@@ -40,9 +40,6 @@
 # crbug.com/1041822
 -org.chromium.chrome.browser.offlinepages.OfflinePageAutoFetchTest.testAutoFetchTriggersOnDNSErrorWhenOffline
 
-# crbug.com/1061177
--org.chromium.chrome.browser.payments.PaymentRequestPaymentAppsSortingTest.testPaymentAppsSortingByFrecency
-
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
 

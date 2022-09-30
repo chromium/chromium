@@ -20,9 +20,6 @@
 # crbug.com/1060724
 -org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorWhenTemporarilyPaused
 
-# crbug.com/1061177
--org.chromium.chrome.browser.payments.PaymentRequestPaymentAppsSortingTest.testPaymentAppsSortingByFrecency
-
 # crbug.com/1041822
 -org.chromium.chrome.browser.offlinepages.OfflinePageAutoFetchTest.testAutoFetchTriggersOnDNSErrorWhenOffline
 
