@@ -2302,11 +2302,6 @@
       name: "SecureContextFixForSharedWorkers",
       status: "experimental",
     },
-    {
-      name: "SecureContextFixForWorkers",
-      status: "stable",
-      base_feature: "SecureContextFixForWorkers",
-    },
     // SecurePaymentConfirmation has shipped on some platforms, but its
     // availability is controlled by the browser process (via the
     // SecurePaymentConfirmationBrowser feature), as it requires browser

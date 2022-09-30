@@ -179,7 +179,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   struct ParsedCreationParams {
     std::unique_ptr<GlobalScopeCreationParams> creation_params;
     ExecutionContextToken parent_context_token;
-    bool starter_secure_context = false;
   };
 
   static ParsedCreationParams ParseCreationParams(
