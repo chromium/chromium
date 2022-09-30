@@ -11,7 +11,8 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {createDefaultAccelerator, createUserAccelerator} from './shortcut_customization_test_util.js';
 

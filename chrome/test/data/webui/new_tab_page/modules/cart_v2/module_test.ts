@@ -9,8 +9,9 @@ import {ChromeCartProxy, chromeCartV2Descriptor, ChromeCartV2ModuleElement, Modu
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {fakeMetricsPrivate, MetricsTracker} from '../../metrics_test_support.js';
 import {assertNotStyle, installMock} from '../../test_support.js';

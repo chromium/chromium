@@ -6,7 +6,8 @@ import 'chrome://history/history.js';
 
 import {BrowserServiceImpl, HistoryItemElement} from 'chrome://history/history.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry} from './test_util.js';

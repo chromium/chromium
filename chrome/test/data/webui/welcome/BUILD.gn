@@ -42,7 +42,6 @@ ts_library("build_ts") {
     "..:build_ts",
     "//chrome/browser/resources/welcome:build_ts",
   ]
-  extra_deps = [ "..:generate_definitions" ]
 }
 
 generate_grd("build_grdp") {

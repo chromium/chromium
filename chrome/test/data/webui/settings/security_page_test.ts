@@ -11,7 +11,8 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyPageBrowserP
 import {OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 // </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 // <if expr="chrome_root_store_supported">

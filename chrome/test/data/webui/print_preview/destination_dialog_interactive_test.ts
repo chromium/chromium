@@ -5,9 +5,9 @@
 import {NativeLayerImpl, PrintPreviewDestinationDialogElement, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
+import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {NativeLayerStub} from './native_layer_stub.js';
 import {setupTestListenerElement} from './print_preview_test_utils.js';

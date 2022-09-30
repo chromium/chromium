@@ -5,9 +5,9 @@
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType, MeasurementSystem, MeasurementSystemUnitType, PrintPreviewMarginControlContainerElement, PrintPreviewMarginControlElement, PrintPreviewModelElement, Size, State} from 'chrome://print/print_preview.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
+import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 const custom_margins_test = {
   suiteName: 'CustomMarginsTest',

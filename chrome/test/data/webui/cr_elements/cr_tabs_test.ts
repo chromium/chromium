@@ -6,11 +6,10 @@
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrTabsElement} from 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
-
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-
 import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 // clang-format on
 
 suite('cr_tabs_test', function() {

@@ -14,7 +14,7 @@ import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import { createOriginInfo,createSiteGroup} from './test_util.js';
+import {createOriginInfo,createSiteGroup} from './test_util.js';
 
 // clang-format on
 

@@ -13,7 +13,7 @@ import {ChooserException, ChooserExceptionListElement, ChooserType, ContentSetti
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
-import { createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs,SiteSettingsPref} from './test_util.js';
+import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs,SiteSettingsPref} from './test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for chooser-exception-list. */

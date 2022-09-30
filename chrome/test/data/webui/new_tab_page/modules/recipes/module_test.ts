@@ -4,13 +4,14 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {DismissModuleEvent, RecipesModuleElement, RecipesHandlerProxy, recipeTasksDescriptor} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, RecipesHandlerProxy, RecipesModuleElement, recipeTasksDescriptor} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {RecipesHandlerRemote} from 'chrome://new-tab-page/recipes.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 

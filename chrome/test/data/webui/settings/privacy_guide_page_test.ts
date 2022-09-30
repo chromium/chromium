@@ -9,9 +9,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {CookiePrimarySetting, PrivacyGuideCompletionFragmentElement, PrivacyGuideHistorySyncFragmentElement, PrivacyGuideStep, PrivacyGuideWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyGuideDialogElement, SettingsPrivacyGuidePageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, SettingsPrefsElement, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
-import {getSyncAllPrefs} from './sync_test_util.js';
+import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
+import {getSyncAllPrefs} from './sync_test_util.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 

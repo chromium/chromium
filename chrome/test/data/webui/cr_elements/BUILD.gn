@@ -103,7 +103,6 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy",
     ":preprocess",
-    "..:generate_definitions",
   ]
 }
 

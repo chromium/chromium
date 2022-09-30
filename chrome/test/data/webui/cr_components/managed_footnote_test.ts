@@ -11,7 +11,7 @@ import {ManagedFootnoteElement} from 'chrome://resources/cr_components/managed_f
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import { assertEquals,assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals,assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 

@@ -11,7 +11,8 @@ import 'chrome://print/pdf/pdf_viewer_wrapper.js';
 import {pdfCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {PDFViewerPPElement} from 'chrome://print/pdf/pdf_viewer_pp.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 const pdf_viewer_test = {
   suiteName: 'PdfViewerTest',

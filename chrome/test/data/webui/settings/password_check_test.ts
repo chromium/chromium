@@ -15,10 +15,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {PasswordCheckListItemElement, SettingsPasswordCheckElement, SettingsPasswordRemoveConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {OpenWindowProxyImpl, PasswordCheckInteraction, PasswordManagerImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 // <if expr="chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
-import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {makeInsecureCredential, makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs, simulateSyncStatus} from './sync_test_util.js';
