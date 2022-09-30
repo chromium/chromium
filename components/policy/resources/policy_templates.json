@@ -22049,6 +22049,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Require site isolation for all websites',
+        },
+        {
+          'value': False,
+          'caption': 'Enable site isolation for all websites, but allow the user to opt out',
+        },
+      ],
       'example_value': True,
       'id': 399,
       'caption': '''Require Site Isolation for every site''',
@@ -22095,6 +22105,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Require site isolation for the sign-in screen',
+        },
+        {
+          'value': False,
+          'caption': 'Use the default site isolation settings for the sign-in screen',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 418,
@@ -22143,7 +22163,22 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Require site isolation for all websites',
+        },
+        {
+          'value': False,
+          'caption': 'Disable site isolation for all websites, but allow the user to enable it',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 446,
       'caption': '''Enable Site Isolation for every site''',
       'tags': ['system-security'],
@@ -22313,6 +22348,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow WebDriver to override incompatible policies',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow WebDriver to override incompatible policies',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 414,
@@ -22577,6 +22622,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Prevent third party code from being injected into Chrome',
+        },
+        {
+          'value': False,
+          'caption': 'Allow third party code to be injected into Chrome',
+        },
+      ],
       'example_value': False,
       'id': 407,
       'caption': '''Enable third party software injection blocking''',
@@ -22892,6 +22947,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the device to run virtual machines',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow the device to run virtual machines',
+        },
+      ],
       'example_value': True,
       'default_for_managed_devices_doc_only': False,
       'id': 421,
@@ -22911,6 +22976,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use virtual machines needed to support Linux apps',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to use virtual machines needed to support Linux apps',
+        },
+      ],
       'example_value': False,
       'id': 481,
       'caption': '''User is enabled to run Crostini''',
@@ -22927,6 +23002,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow unaffiliated users to use virtual machines needed to support Linux apps',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow unaffiliated users to use virtual machines needed to support Linux apps',
+        },
+      ],
       'example_value': False,
       'id': 482,
       'caption': '''Allow unaffiliated users to use Crostini''',
@@ -22943,6 +23028,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Linux virtual machine backup and restore',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Linux virtual machine backup and restore',
+        },
+      ],
       'example_value': False,
       'id': 523,
       'caption': '''User is enabled to export / import Crostini containers via the UI''',
@@ -22959,6 +23054,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable root access to Linux virtual machines',
+        },
+        {
+          'value': False,
+          'caption': 'Disable root access to Linux virtual machines',
+        },
+      ],
       'example_value': False,
       'id': 576,
       'caption': '''User is allowed to have root access to Crostini containers''',
