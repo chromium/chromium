@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@3.22.1.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@3.25.0.cr1
 package: chromium/third_party/android_deps/libs/org_checkerframework_checker_util
 description: "Checker Util"
 data:
-- file: checker-util-3.22.1.jar
+- file: checker-util-3.25.0.jar

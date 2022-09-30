@@ -145,7 +145,7 @@ dependencies {
     // Used by downstream targets.
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
     compile 'org.checkerframework:checker-compat-qual:2.5.3'
-    compile 'org.checkerframework:checker-util:3.22.1'
+    compile 'org.checkerframework:checker-util:3.25.0'
     compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
 
     // Dedicated configuration to avoid using higher version number. The 9999 version is empty.
@@ -186,7 +186,7 @@ dependencies {
 
     androidTestCompile "org.mockito:mockito-core:4.7.0"
     // Depended on by downstream guava_java rewrite.
-    androidTestCompile "org.checkerframework:checker-qual:3.22.1"
+    androidTestCompile "org.checkerframework:checker-qual:3.25.0"
 
     String robolectricVersion = '4.8.1'
     // Use testCompile to avoid having support_android = true set on
