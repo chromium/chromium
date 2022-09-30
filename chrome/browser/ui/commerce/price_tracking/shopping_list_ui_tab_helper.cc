@@ -163,6 +163,10 @@ void ShoppingListUiTabHelper::UpdatePriceTrackingIconView() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   DCHECK(browser);
 
+  if (!browser || !browser->window()) {
+    return;
+  }
+
   browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceTracking);
 }
 
