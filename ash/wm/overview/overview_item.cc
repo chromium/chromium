@@ -1444,15 +1444,23 @@ aura::Window::Windows OverviewItem::GetWindowsForHomeGesture() {
 void OverviewItem::HideWindowInOverview() {
   ScopedOverviewHideWindows* hide_windows =
       overview_session_->hide_windows_for_saved_desks_grid();
-  if (hide_windows && !hide_windows->HasWindow(GetWindow()))
+  DCHECK(hide_windows);
+
+  if (!hide_windows->HasWindow(GetWindow()))
     hide_windows->AddWindow(GetWindow());
+  if (item_widget_ && !hide_windows->HasWindow(item_widget_->GetNativeWindow()))
+    hide_windows->AddWindow(item_widget_->GetNativeWindow());
 }
 
 void OverviewItem::ShowWindowInOverview() {
   ScopedOverviewHideWindows* hide_windows =
       overview_session_->hide_windows_for_saved_desks_grid();
-  if (hide_windows && hide_windows->HasWindow(GetWindow()))
+  DCHECK(hide_windows);
+
+  if (hide_windows->HasWindow(GetWindow()))
     hide_windows->RemoveWindow(GetWindow());
+  if (item_widget_ && hide_windows->HasWindow(item_widget_->GetNativeWindow()))
+    hide_windows->RemoveWindow(item_widget_->GetNativeWindow());
 }
 
 }  // namespace ash

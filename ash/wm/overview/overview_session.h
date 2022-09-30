@@ -483,9 +483,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   std::unique_ptr<ScopedOverviewHideWindows> hide_overview_windows_;
 
-  // Scoped windows to hide for saved desks grid. For now, this contains only
-  // the real window in the overview to make sure it's not shown via other
-  // events for saved desks grid.
+  // Scoped windows to hide for saved desks grid. For now, this contains the
+  // overview item window and its corresponding real window to make sure such
+  // windows are not shown via other events for saved desks grid.
   std::unique_ptr<ScopedOverviewHideWindows> hide_windows_for_saved_desks_grid_;
 
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
