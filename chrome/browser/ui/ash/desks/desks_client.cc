@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/desk_template.h"
@@ -13,6 +14,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -523,6 +525,19 @@ void DesksClient::SetAllDeskPropertyByBrowserSessionId(
                           ? aura::client::kWindowWorkspaceVisibleOnAllWorkspaces
                           : aura::client::kWindowWorkspaceUnassignedWorkspace);
   std::move(callback).Run("");
+}
+
+base::GUID DesksClient::GetActiveDesk() {
+  return desks_controller_->GetTargetActiveDesk()->uuid();
+}
+
+std::string DesksClient::SwitchDesk(const base::GUID& desk_uuid) {
+  ash::Desk* desk = desks_controller_->GetDeskByUuid(desk_uuid);
+  if (!desk) {
+    return kNoSuchDeskError;
+  }
+  desks_controller_->ActivateDesk(desk, ash::DesksSwitchSource::kApi);
+  return {};
 }
 
 void DesksClient::OnGetTemplateForDeskLaunch(

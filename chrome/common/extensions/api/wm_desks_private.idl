@@ -84,5 +84,12 @@ namespace wmDesksPrivate {
     // Launches a saved desk from the library back to active desk.
     [supportsPromises] static void recallSavedDesk(DOMString savedDeskUuid,
                                                    DeskIdCallback callback);
+
+    // Retrieves the UUID of the current active desk.
+    [supportsPromises] static void getActiveDesk(DeskIdCallback callback);
+
+    // Switches to the target desk.
+    [supportsPromises] static void switchDesk(
+        DOMString deskUuid, VoidCallback callback);
   };
 };

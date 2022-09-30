@@ -102,4 +102,30 @@ chrome.test.runTests([
     chrome.test.assertTrue(uuidRegex.test(newDeskUuid));
     chrome.test.succeed();
   },
+
+  // Tests switches to current desk.
+  async function testSwitchToCurrentDesk() {
+    const activeDesk = await chrome.wmDesksPrivate.getActiveDesk();
+    await chrome.wmDesksPrivate.switchDesk(
+      activeDesk);
+    const activeDesk1 = await chrome.wmDesksPrivate.getActiveDesk();
+    chrome.test.assertEq(activeDesk, activeDesk1);
+    chrome.test.succeed();
+  },
+
+  // Tests switches to a different desk.
+  async function testSwitchToDifferentDesk() {
+    const activeDesk = await chrome.wmDesksPrivate.getActiveDesk();
+    await chrome.windows.create();
+
+    // Launch a new desk.
+    await chrome.wmDesksPrivate.launchDesk({ deskName: "test" });
+    await chrome.windows.create();
+
+    // Wait for launch Desk animation to settle.
+    chrome.wmDesksPrivate.switchDesk(activeDesk);
+    const activeDesk1 = await chrome.wmDesksPrivate.getActiveDesk();
+    chrome.test.assertEq(activeDesk, activeDesk1);
+    chrome.test.succeed();
+  },
 ]);

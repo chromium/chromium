@@ -24880,6 +24880,7 @@ Called by update_debug_scenarios.py.-->
   <int value="8" label="User switch by launching a template"/>
   <int value="9" label="User switch via indexed keyboard shorcuts"/>
   <int value="10" label="User switch by restoring removed desk"/>
+  <int value="11" label="Desk switch by API"/>
 </enum>
 
 <enum name="DesktopCaptureCounters">
@@ -35683,6 +35684,8 @@ Called by update_extension_histograms.py.-->
   <int value="1716" label="ACTION_ISENABLED"/>
   <int value="1717"
       label="PASSWORDSPRIVATE_SWITCHBIOMETRICAUTHBEFOREFILLINGSTATE"/>
+  <int value="1718" label="WMDESKSPRIVATE_GETACTIVEDESK"/>
+  <int value="1719" label="WMDESKSPRIVATE_SWITCHDESK"/>
 </enum>
 
 <enum name="ExtensionIconState">

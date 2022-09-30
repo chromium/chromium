@@ -270,4 +270,54 @@ void WmDesksPrivateRecallSavedDeskFunction::OnRecalledSavedDesk(
       desk_Id.AsLowercaseString())));
 }
 
+WmDesksPrivateGetActiveDeskFunction::WmDesksPrivateGetActiveDeskFunction() =
+    default;
+WmDesksPrivateGetActiveDeskFunction::~WmDesksPrivateGetActiveDeskFunction() =
+    default;
+
+ExtensionFunction::ResponseAction WmDesksPrivateGetActiveDeskFunction::Run() {
+  base::GUID desk_id = DesksClient::Get()->GetActiveDesk();
+  OnGetActiveDesk({}, desk_id);
+  return AlreadyResponded();
+}
+
+// Error is always empty right now. The interface is to keep compatible
+// with future lacros implementation.
+void WmDesksPrivateGetActiveDeskFunction::OnGetActiveDesk(
+    std::string error_string,
+    const base::GUID& desk_Id) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  Respond(ArgumentList(api::wm_desks_private::GetActiveDesk::Results::Create(
+      desk_Id.AsLowercaseString())));
+}
+
+WmDesksPrivateSwitchDeskFunction::WmDesksPrivateSwitchDeskFunction() = default;
+WmDesksPrivateSwitchDeskFunction::~WmDesksPrivateSwitchDeskFunction() = default;
+
+ExtensionFunction::ResponseAction WmDesksPrivateSwitchDeskFunction::Run() {
+  std::unique_ptr<api::wm_desks_private::SwitchDesk::Params> params(
+      api::wm_desks_private::SwitchDesk::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::GUID uuid = base::GUID::ParseCaseInsensitive(params->desk_uuid);
+  if (!uuid.is_valid())
+    return RespondNow(Error(kInvalidUuidError));
+
+  std::string error = DesksClient::Get()->SwitchDesk(uuid);
+  OnSwitchDesk(error);
+  return AlreadyResponded();
+}
+
+// The interface is to keep compatible with future lacros implementation.
+void WmDesksPrivateSwitchDeskFunction::OnSwitchDesk(std::string error_string) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+  Respond(NoArguments());
+}
+
 }  // namespace extensions

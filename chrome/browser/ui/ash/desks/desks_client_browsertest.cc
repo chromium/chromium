@@ -2550,6 +2550,45 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, RecallSavedDesk) {
   loop.Run();
 }
 
+// Tests switch to current desk should be no ops.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SwitchToCurrentDesk) {
+  base::GUID current_desk_uuid;
+  current_desk_uuid = DesksClient::Get()->GetActiveDesk();
+
+  std::string error = DesksClient::Get()->SwitchDesk(current_desk_uuid);
+  EXPECT_TRUE(error.empty());
+
+  base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
+  EXPECT_EQ(current_desk_uuid, desk_uuid);
+}
+
+// Tests switch to invalid desk should return error.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SwitchToInvalidDesk) {
+  std::string error = DesksClient::Get()->SwitchDesk({});
+  EXPECT_EQ("The desk cannot be found.", error);
+}
+
+// Tests switch to different desk should be trigger desk animation.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SwitchToDifferentDesk) {
+  base::GUID desk_uuid = DesksClient::Get()->GetActiveDesk();
+
+  // Launches a new desk.
+  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
+      [&](std::string error, const base::GUID& desk_uuid) {
+        EXPECT_TRUE(error.empty());
+      }));
+
+  // Switches to previous desk.
+  std::string error = DesksClient::Get()->SwitchDesk(desk_uuid);
+  EXPECT_TRUE(error.empty());
+
+  // Wait for desk switch animation.
+  ash::DeskSwitchAnimationWaiter waiter;
+  waiter.Wait();
+  base::GUID desk_uuid_ = DesksClient::Get()->GetActiveDesk();
+  EXPECT_EQ(desk_uuid_, desk_uuid);
+}
+
 class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientLacrosTest() {

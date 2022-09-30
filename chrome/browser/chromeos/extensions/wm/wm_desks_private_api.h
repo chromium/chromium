@@ -176,6 +176,46 @@ class WmDesksPrivateRecallSavedDeskFunction : public ExtensionFunction {
   void OnRecalledSavedDesk(std::string error_string, const base::GUID& desk_Id);
 };
 
+class WmDesksPrivateGetActiveDeskFunction : public ExtensionFunction {
+ public:
+  WmDesksPrivateGetActiveDeskFunction();
+  WmDesksPrivateGetActiveDeskFunction(
+      const WmDesksPrivateGetActiveDeskFunction&) = delete;
+  WmDesksPrivateGetActiveDeskFunction& operator=(
+      const WmDesksPrivateGetActiveDeskFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.getActiveDesk",
+                             WMDESKSPRIVATE_GETACTIVEDESK)
+
+ protected:
+  ~WmDesksPrivateGetActiveDeskFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnGetActiveDesk(std::string error_string, const base::GUID& desk_Id);
+};
+
+class WmDesksPrivateSwitchDeskFunction : public ExtensionFunction {
+ public:
+  WmDesksPrivateSwitchDeskFunction();
+  WmDesksPrivateSwitchDeskFunction(const WmDesksPrivateSwitchDeskFunction&) =
+      delete;
+  WmDesksPrivateSwitchDeskFunction& operator=(
+      const WmDesksPrivateSwitchDeskFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.switchDesk",
+                             WMDESKSPRIVATE_SWITCHDESK)
+
+ protected:
+  ~WmDesksPrivateSwitchDeskFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  void OnSwitchDesk(std::string error_string);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WM_WM_DESKS_PRIVATE_API_H_

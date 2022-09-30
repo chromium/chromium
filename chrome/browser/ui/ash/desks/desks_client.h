@@ -165,6 +165,12 @@ class DesksClient : public ash::SessionObserver {
                                             bool all_desk,
                                             ErrorHandlingCallBack);
 
+  // Returns the UUID of active desk.
+  base::GUID GetActiveDesk();
+
+  // Switches to the target desk, returns error string if operation fails.
+  std::string SwitchDesk(const base::GUID& desk_uuid);
+
  private:
   class LaunchPerformanceTracker;
   friend class DesksTemplatesClientTest;
