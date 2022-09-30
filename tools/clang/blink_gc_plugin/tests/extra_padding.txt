@@ -1,0 +1,7 @@
+extra_padding.cpp:17:1: warning: [blink-gc] Additional padding causes the sizeof(DisallowNewWithPadding) to grow by 8. Consider reordering fields.
+struct DisallowNewWithPadding {
+^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+extra_padding.cpp:63:10: warning: [blink-gc] Additional padding causes the sizeof(DisallowNewWithPaddingTemplate) to grow by 8. Consider reordering fields.
+template struct DisallowNewWithPaddingTemplate<int>;
+~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 warnings generated.

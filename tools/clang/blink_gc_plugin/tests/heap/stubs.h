@@ -6,6 +6,7 @@
 #define HEAP_STUBS_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 namespace WTF {
 
@@ -325,6 +326,9 @@ public:
     operator T*() const { return 0; }
     T* operator->() const { return 0; }
     bool operator!() const { return false; }
+
+   private:
+    uint32_t compressed;
 };
 
 template<typename T> class WeakMember {

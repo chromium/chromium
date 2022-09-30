@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-blink-gc-plugin -Xclang enable-extra-padding-check --target=x86_64-unknown-linux-gnu

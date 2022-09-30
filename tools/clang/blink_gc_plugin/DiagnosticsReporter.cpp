@@ -141,6 +141,10 @@ const char kMemberOnStack[] =
     "[blink-gc] Member variable %0 declared on stack here (use raw pointer or "
     "reference instead):";
 
+const char kAdditionalPadding[] =
+    "[blink-gc] Additional padding causes the sizeof(%0) to grow by %1. "
+    "Consider reordering fields.";
+
 const char kUniquePtrUsedWithGC[] =
     "[blink-gc] Disallowed use of %0 found; %1 is a garbage-collected type. "
     "std::unique_ptr cannot hold garbage-collected objects.";
@@ -221,6 +225,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kMemberInStackAllocated);
   diag_member_on_stack_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kMemberOnStack);
+  diag_additional_padding_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kAdditionalPadding);
 
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
@@ -581,4 +587,10 @@ void DiagnosticsReporter::VariantUsedWithGC(
 void DiagnosticsReporter::MemberOnStack(const clang::VarDecl* var) {
   ReportDiagnostic(var->getBeginLoc(), diag_member_on_stack_)
       << var->getName() << var->getSourceRange();
+}
+
+void DiagnosticsReporter::AdditionalPadding(const clang::RecordDecl* record,
+                                            size_t padding_size) {
+  ReportDiagnostic(record->getBeginLoc(), diag_additional_padding_)
+      << record->getName() << padding_size << record->getSourceRange();
 }
