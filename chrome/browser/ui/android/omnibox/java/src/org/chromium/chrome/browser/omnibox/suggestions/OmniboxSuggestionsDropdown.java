@@ -197,12 +197,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         boolean shouldShowModernizeVisualUpdate =
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(context);
         final Resources resources = context.getResources();
-        int paddingSide = shouldShowModernizeVisualUpdate
-                ? resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_side)
-                : 0;
         int paddingBottom =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
-        ViewCompat.setPaddingRelative(this, paddingSide, 0, paddingSide, paddingBottom);
+        ViewCompat.setPaddingRelative(this, 0, 0, 0, paddingBottom);
 
         mStandardBgColor = shouldShowModernizeVisualUpdate
                 ? ChromeColors.getSurfaceColor(

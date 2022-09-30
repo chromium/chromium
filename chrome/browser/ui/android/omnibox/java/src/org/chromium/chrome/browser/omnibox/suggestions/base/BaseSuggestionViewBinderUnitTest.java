@@ -293,11 +293,15 @@ public class BaseSuggestionViewBinderUnitTest {
         Assert.assertNotNull(mBaseView.getBackground());
 
         verify(mBaseView).setLayoutParams(any());
+        int verticalSpacing = mBaseView.getContext().getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_vertical_spacing);
+        int sideSpacing = mBaseView.getContext().getResources().getDimensionPixelOffset(
+                R.dimen.omnibox_suggestion_side_spacing);
         MarginLayoutParams layoutParams = (MarginLayoutParams) mBaseView.getLayoutParams();
         Assert.assertNotNull(layoutParams);
-        Assert.assertEquals(0, layoutParams.leftMargin);
-        Assert.assertNotEquals(0, layoutParams.topMargin);
-        Assert.assertEquals(0, layoutParams.rightMargin);
+        Assert.assertEquals(sideSpacing, layoutParams.leftMargin);
+        Assert.assertEquals(verticalSpacing, layoutParams.topMargin);
+        Assert.assertEquals(sideSpacing, layoutParams.rightMargin);
         Assert.assertEquals(0, layoutParams.bottomMargin);
     }
 

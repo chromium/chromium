@@ -292,7 +292,10 @@ public final class BaseSuggestionViewBinder<T extends View>
         if (layoutParams instanceof MarginLayoutParams) {
             int verticalSpacing = view.getContext().getResources().getDimensionPixelSize(
                     R.dimen.omnibox_suggestion_vertical_spacing);
-            ((MarginLayoutParams) layoutParams).setMargins(0, verticalSpacing, 0, 0);
+            int sideSpacing = view.getContext().getResources().getDimensionPixelOffset(
+                    R.dimen.omnibox_suggestion_side_spacing);
+            ((MarginLayoutParams) layoutParams)
+                    .setMargins(sideSpacing, verticalSpacing, sideSpacing, 0);
         }
         view.setLayoutParams(layoutParams);
     }

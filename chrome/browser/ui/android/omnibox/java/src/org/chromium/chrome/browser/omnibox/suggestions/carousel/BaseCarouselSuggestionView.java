@@ -62,7 +62,7 @@ public class BaseCarouselSuggestionView extends LinearLayout {
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         mRecyclerView.setClipToPadding(false);
         mRecyclerView.setPaddingRelative(
-                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_list_padding_side),
+                getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_side_spacing),
                 mRecyclerView.getPaddingTop(), mRecyclerView.getPaddingEnd(),
                 mRecyclerView.getPaddingBottom());
 
