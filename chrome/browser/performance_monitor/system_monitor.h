@@ -159,7 +159,7 @@ class SystemMonitor {
     using ObserverArgType =
         typename std::conditional<std::is_scalar<T>::value, T, const T&>::type;
 
-    MetricEvaluatorImpl<T>(
+    MetricEvaluatorImpl(
         Type type,
         base::OnceCallback<absl::optional<T>()> evaluate_function,
         void (SystemObserver::*notify_function)(ObserverArgType));
