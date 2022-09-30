@@ -121,6 +121,11 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
     kOk,
     kErrorRequestKeyFrame,
   };
+  enum class Status : uint8_t {
+    kOk = 0,            // Status other than kNeedKeyFrame and kError.
+    kNeedKeyFrame = 1,  // A decoder needs a key frame.
+    kError = 2,         // A decoder will never be able to decode frames.
+  };
 
   // Called on the worker thread.
   RTCVideoDecoderAdapter(media::GpuVideoAcceleratorFactories* gpu_factories,
@@ -151,6 +156,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   bool ReinitializeSync(const media::VideoDecoderConfig& config);
   void FlushOnMediaThread(FlushDoneCB flush_success_cb,
                           FlushDoneCB flush_fail_cb);
+  void ChangeStatus(Status new_status) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Construction parameters.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
@@ -167,14 +173,13 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
       GUARDED_BY_CONTEXT(media_sequence_checker_);
 
   // Decoding thread members.
-  bool key_frame_required_ = true;
   // Has anything been sent to Decode() yet?
   bool have_started_decoding_ = false;
 
   // Shared members.
   base::Lock lock_;
   int32_t consecutive_error_count_ = 0;
-  bool has_error_ = false;
+  Status status_ GUARDED_BY(lock_){Status::kNeedKeyFrame};
   webrtc::DecodedImageCallback* decode_complete_callback_ = nullptr;
   // Requests that have not been submitted to the decoder yet.
   WTF::Deque<scoped_refptr<media::DecoderBuffer>> pending_buffers_;
