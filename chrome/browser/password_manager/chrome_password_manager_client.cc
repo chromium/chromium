@@ -290,7 +290,6 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
         log_manager_.get());
     logger.LogBoolean(Logger::STRING_SSL_ERRORS_PRESENT, ssl_errors);
   }
-
   return !ssl_errors && IsPasswordManagementEnabledForCurrentPage(url);
 }
 
@@ -402,8 +401,9 @@ void ChromePasswordManagerClient::FocusedInputChanged(
   password_manager::ContentPasswordManagerDriver* content_driver =
       static_cast<password_manager::ContentPasswordManagerDriver*>(driver);
   if (!PasswordAccessoryControllerImpl::ShouldAcceptFocusEvent(
-          web_contents(), content_driver, focused_field_type))
+          web_contents(), content_driver, focused_field_type)) {
     return;
+  }
 
   if (!content_driver->CanShowAutofillUi())
     return;
@@ -412,9 +412,16 @@ void ChromePasswordManagerClient::FocusedInputChanged(
     return;
 
   if (web_contents()->GetFocusedFrame()) {
+    bool manual_generation_available =
+        password_manager_util::ManualPasswordGenerationEnabled(driver);
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
+      manual_generation_available =
+          manual_generation_available &&
+          password_manager_.HaveFormManagersReceivedData(driver);
+    }
     GetOrCreatePasswordAccessory()->RefreshSuggestionsForField(
-        focused_field_type,
-        password_manager_util::ManualPasswordGenerationEnabled(driver));
+        focused_field_type, manual_generation_available);
   }
 
   PasswordGenerationController::GetOrCreate(web_contents())
