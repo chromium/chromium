@@ -305,7 +305,6 @@ export const CommandCategory = {
  *                  announce: boolean,
  *                  category: (undefined|!CommandCategory),
  *                  findNext: (undefined|string),
- *                  doDefault: (undefined|boolean),
  *                  msgId: (undefined|string),
  *                  allowEvents: (undefined|boolean),
  *                  denySignedOut: (undefined|boolean)}>}
@@ -314,8 +313,6 @@ export const CommandCategory = {
  *  findNext: The id from the map above if this command is used for
  *            finding next/previous of something.
  *  category: The command's category.
- *  doDefault: Whether to do the default action. This means that keys will be
- *             passed through to the usual DOM capture/bubble phases.
  *  msgId: The message resource describing the command.
  *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
  *             other signed-out contexts. Defaults to false.
@@ -336,7 +333,6 @@ CommandStore.CMD_ALLOWLIST = {
 
   [Command.STOP_SPEECH]: {
     announce: false,
-    doDefault: true,
     msgId: 'stop_speech_key',
     category: CommandCategory.CONTROLLING_SPEECH,
   },
