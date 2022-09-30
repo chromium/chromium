@@ -21,7 +21,6 @@ group("polymer3_elements") {
     ":guest_tos_module",
     ":hw_data_collection_module",
     ":multidevice_setup_module",
-    ":offline_ad_login_module",
     ":os_trial_module",
     ":recommend_apps_module",
     ":signin_fatal_error_module",
@@ -65,7 +64,7 @@ js_type_check("closure_compile_local") {
     ":local_state_error",
     ":managed_terms_of_service",
     ":marketing_opt_in",
-    ":offline_ad_login.m",
+    ":offline_ad_login",
     ":oobe_eula",
     ":oobe_reset",
     ":os_install",
@@ -272,8 +271,8 @@ js_library("gesture_navigation") {
 js_library("gaia_signin.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.m.js" ]
   deps = [
-    "../..:display_manager.m",
     "../../../../gaia_auth_host:authenticator",
+    "../..:display_manager.m",
     "../../components:gaia_dialog.m",
     "../../components:notification_card.m",
     "../../components:oobe_types.m",
@@ -392,8 +391,8 @@ js_library("multidevice_setup.m") {
   extra_deps = [ ":multidevice_setup_module" ]
 }
 
-js_library("offline_ad_login.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.m.js" ]
+js_library("offline_ad_login") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.js" ]
   deps = [
     "../../components:oobe_a11y_option.m",
     "../../components:oobe_select.m",
@@ -410,7 +409,7 @@ js_library("offline_ad_login.m") {
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
-  extra_deps = [ ":offline_ad_login_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_eula") {
@@ -741,15 +740,6 @@ polymer_modulizer("multidevice_setup") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("offline_ad_login") {
-  js_file = "offline_ad_login.js"
-  html_file = "offline_ad_login.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("os_trial") {
   js_file = "os_trial.js"
   html_file = "os_trial.html"
@@ -818,6 +808,7 @@ html_to_js("web_components") {
     "local_state_error.js",
     "managed_terms_of_service.js",
     "marketing_opt_in.js",
+    "offline_ad_login.js",
     "oobe_eula.js",
     "oobe_reset.js",
     "os_install.js",

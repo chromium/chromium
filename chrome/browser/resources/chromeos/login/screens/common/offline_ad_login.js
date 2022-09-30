@@ -7,7 +7,28 @@
  * Authenticate user screens.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/md_select.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/buttons/oobe_text_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+
+import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeA11yOption} from '../../components/oobe_a11y_option.m.js';
+import {getSelectedTitle, getSelectedValue, SelectListType, setupSelect} from '../../components/oobe_select.m.js';
+
 
 // The definitions below (JoinConfigType, ActiveDirectoryErrorState) are
 // used in enterprise_enrollment.js as well.
@@ -17,14 +38,14 @@
  *             computer_ou: ?string, encryption_types: ?string,
  *             computer_name_validation_regex: ?string}}
  */
-/* #export */ var JoinConfigType;
+export var JoinConfigType;
 
 // Possible error states of the screen. Must be in the same order as
 // ActiveDirectoryErrorState enum values. Used in enterprise_enrollment
 /**
  * @enum {number}
  */
-/* #export */ const ActiveDirectoryErrorState = {
+export const ActiveDirectoryErrorState = {
   NONE: 0,
   MACHINE_NAME_INVALID: 1,
   MACHINE_NAME_TOO_LONG: 2,
@@ -34,7 +55,7 @@
 };
 
 // Used by enterprise_enrollment.js
-/* #export */ const ADLoginStep = {
+export const ADLoginStep = {
   UNLOCK: 'unlock',
   CREDS: 'creds',
 };
@@ -54,9 +75,8 @@ var EncryptionSelectListType;
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const OfflineAdLoginBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
-    Polymer.Element);
+const OfflineAdLoginBase = mixinBehaviors(
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior], PolymerElement);
 
 /**
  * @typedef {{
@@ -75,7 +95,9 @@ class OfflineAdLogin extends OfflineAdLoginBase {
     return 'offline-ad-login-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
