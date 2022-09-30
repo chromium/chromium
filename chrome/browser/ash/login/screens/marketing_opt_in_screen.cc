@@ -223,10 +223,11 @@ void MarketingOptInScreen::SetA11yButtonVisibilityForTest(bool shown) {
 }
 
 void MarketingOptInScreen::OnA11yShelfNavigationButtonPrefChanged() {
-  if (view_) {
-    ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-        prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled);
-  }
+  if (!view_)
+    return;
+  view_->UpdateA11yShelfNavigationButtonToggle(
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
+          prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled));
 }
 
 bool MarketingOptInScreen::IsCurrentUserManaged() {
