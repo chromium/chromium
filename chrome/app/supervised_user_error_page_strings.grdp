@@ -20,7 +20,7 @@
         You need permission to visit this site
       </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
-        A parent or guardian has to say that it's OK for you to visit this website.
+        A parent or guardian has to say that it's OK for you to visit this website
       </message>
       <message name="IDS_BLOCK_INTERSTITIAL_MESSAGE_SUPERVISED_USERS_DEPRECATED" desc="Message to be shown to a supervised user directing them to the supervisor.">
         Questions? Contact the person who supervises your profile.
