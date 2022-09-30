@@ -271,6 +271,11 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
       (old_style.ScrollTimelineAxis() != new_style.ScrollTimelineAxis())) {
     return true;
   }
+  if ((old_style.ViewTimelineName() != new_style.ViewTimelineName()) ||
+      (old_style.ViewTimelineAxis() != new_style.ViewTimelineAxis()) ||
+      (old_style.ViewTimelineInset() != new_style.ViewTimelineInset())) {
+    return true;
+  }
   return false;
 }
 
@@ -278,10 +283,14 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
 // if they reference a named timeline which appeared/disappeared.
 static bool AffectsScrollAnimations(const ComputedStyle* old_style,
                                     const ComputedStyle* new_style) {
-  if (old_style && !old_style->ScrollTimelineName().empty())
+  if (old_style && !(old_style->ScrollTimelineName().empty() &&
+                     old_style->ViewTimelineName().empty())) {
     return true;
-  if (new_style && !new_style->ScrollTimelineName().empty())
+  }
+  if (new_style && !(new_style->ScrollTimelineName().empty() &&
+                     new_style->ViewTimelineName().empty())) {
     return true;
+  }
   return false;
 }
 
