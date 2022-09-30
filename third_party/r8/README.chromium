@@ -120,6 +120,29 @@ How to file bugs against R8:
   * The r8inputs.zip from --dump-inputs
   * Any relevant dexdump analysis
 
+Example R8 git-bisect script:
+```
+set -x
+CHROMIUM_SRC=/media/mheikal/code/clankium/src
+tools/gradle.py r8 || exit -1
+chmod +r $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+cp build/libs/r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+
+cd $CHROMIUM_SRC
+exec tools/autotest.py --out-dir out/Release <Test Here>
+```
+
+You can run this script like so:
+```
+cd $R8_REPO
+git bisect start <known_good_rev> <known_bad_rev>
+git bisect run <path_to_script.sh>
+```
+Tip: When you are done, you can delete the r8 jar and gclient sync to get back
+     to ToT R8.
+     `rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar && gclient sync`
+
 How to submit CLs to R8:
 * Request to be added to their allowlist in order to upload CLs.
 * After CLs are submitted, check the bots for build breakage.
