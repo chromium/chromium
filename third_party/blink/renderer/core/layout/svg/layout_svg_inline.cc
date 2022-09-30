@@ -182,7 +182,7 @@ void LayoutSVGInline::AddOutlineRects(Vector<PhysicalRect>& rect_list,
 
 void LayoutSVGInline::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearClipPathFilterMask(To<SVGElement>(*GetNode()), Style());
+  SVGResources::ClearEffects(To<SVGElement>(*GetNode()), Style());
   SVGResources::ClearPaints(To<SVGElement>(*GetNode()), Style());
   LayoutInline::WillBeDestroyed();
 }
@@ -202,8 +202,8 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
   if (diff.NeedsFullLayout())
     SetNeedsBoundariesUpdate();
 
-  SVGResources::UpdateClipPathFilterMask(To<SVGElement>(*GetNode()), old_style,
-                                         StyleRef());
+  SVGResources::UpdateEffects(To<SVGElement>(*GetNode()), old_style,
+                              StyleRef());
   SVGResources::UpdatePaints(To<SVGElement>(*GetNode()), old_style, StyleRef());
 
   if (!Parent())

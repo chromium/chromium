@@ -47,10 +47,10 @@ class SVGResources {
   static SVGElementResourceClient* GetClient(const LayoutObject&);
   static gfx::RectF ReferenceBoxForEffects(const LayoutObject&);
 
-  static void UpdateClipPathFilterMask(SVGElement&,
-                                       const ComputedStyle* old_style,
-                                       const ComputedStyle&);
-  static void ClearClipPathFilterMask(SVGElement&, const ComputedStyle*);
+  static void UpdateEffects(SVGElement&,
+                            const ComputedStyle* old_style,
+                            const ComputedStyle&);
+  static void ClearEffects(SVGElement&, const ComputedStyle*);
   static void UpdatePaints(SVGElement&,
                            const ComputedStyle* old_style,
                            const ComputedStyle&);

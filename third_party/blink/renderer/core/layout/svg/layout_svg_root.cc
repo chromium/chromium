@@ -311,7 +311,7 @@ void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,
 
 void LayoutSVGRoot::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearClipPathFilterMask(To<SVGSVGElement>(*GetNode()), Style());
+  SVGResources::ClearEffects(To<SVGSVGElement>(*GetNode()), Style());
   LayoutReplaced::WillBeDestroyed();
 }
 
@@ -364,8 +364,8 @@ void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();
 
-  SVGResources::UpdateClipPathFilterMask(To<SVGSVGElement>(*GetNode()),
-                                         old_style, StyleRef());
+  SVGResources::UpdateEffects(To<SVGSVGElement>(*GetNode()), old_style,
+                              StyleRef());
 
   if (diff.TransformChanged()) {
     for (auto& svg_text : text_set_) {

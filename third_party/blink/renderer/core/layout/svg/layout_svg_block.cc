@@ -48,7 +48,7 @@ SVGElement* LayoutSVGBlock::GetElement() const {
 
 void LayoutSVGBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearClipPathFilterMask(*GetElement(), Style());
+  SVGResources::ClearEffects(*GetElement(), Style());
   LayoutBlockFlow::WillBeDestroyed();
 }
 
@@ -126,7 +126,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdateEffects(*GetElement(), old_style, StyleRef());
 
   if (!Parent())
     return;

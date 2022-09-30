@@ -62,43 +62,56 @@ gfx::RectF SVGResources::ReferenceBoxForEffects(
   return obb_layout_object->ObjectBoundingBox();
 }
 
-void SVGResources::UpdateClipPathFilterMask(SVGElement& element,
-                                            const ComputedStyle* old_style,
-                                            const ComputedStyle& style) {
+void SVGResources::UpdateEffects(SVGElement& element,
+                                 const ComputedStyle* old_style,
+                                 const ComputedStyle& style) {
   const bool had_client = element.GetSVGResourceClient();
   if (auto* reference_clip =
-          DynamicTo<ReferenceClipPathOperation>(style.ClipPath()))
+          DynamicTo<ReferenceClipPathOperation>(style.ClipPath())) {
     reference_clip->AddClient(element.EnsureSVGResourceClient());
+  }
   if (style.HasFilter()) {
     SVGElementResourceClient& client = element.EnsureSVGResourceClient();
     style.Filter().AddClient(client);
     LayoutObject* layout_object = element.GetLayoutObject();
     // This is called from StyleDidChange so we should have a LayoutObject.
     DCHECK(layout_object);
-    // TODO(fs): Reorganise the code so that we don't need to invalidate this
-    // again in SVGResourcesCache::ClientStyleChanged (and potentially avoid
-    // redundant invalidations).
     layout_object->SetNeedsPaintPropertyUpdate();
     client.MarkFilterDataDirty();
   }
   if (StyleSVGResource* masker_resource = style.MaskerResource())
     masker_resource->AddClient(element.EnsureSVGResourceClient());
-  if (had_client)
-    ClearClipPathFilterMask(element, old_style);
+  if (!old_style || !had_client)
+    return;
+  SVGElementResourceClient* client = element.GetSVGResourceClient();
+  if (auto* old_reference_clip =
+          DynamicTo<ReferenceClipPathOperation>(old_style->ClipPath())) {
+    old_reference_clip->RemoveClient(*client);
+  }
+  if (old_style->HasFilter()) {
+    old_style->Filter().RemoveClient(*client);
+    client->InvalidateFilterData();
+  }
+  if (StyleSVGResource* masker_resource = old_style->MaskerResource())
+    masker_resource->RemoveClient(*client);
 }
 
-void SVGResources::ClearClipPathFilterMask(SVGElement& element,
-                                           const ComputedStyle* style) {
+void SVGResources::ClearEffects(SVGElement& element,
+                                const ComputedStyle* style) {
   if (!style)
     return;
   SVGElementResourceClient* client = element.GetSVGResourceClient();
   if (!client)
     return;
   if (auto* old_reference_clip =
-          DynamicTo<ReferenceClipPathOperation>(style->ClipPath()))
+          DynamicTo<ReferenceClipPathOperation>(style->ClipPath())) {
     old_reference_clip->RemoveClient(*client);
+  }
   if (style->HasFilter()) {
     style->Filter().RemoveClient(*client);
+    // TODO(fs): We need to invalidate filter data here because the resource
+    // client is owned by the Element - thus staying alive with it even when
+    // the LayoutObject is detached. Move ownership to the LayoutObject.
     client->InvalidateFilterData();
   }
   if (StyleSVGResource* masker_resource = style->MaskerResource())
