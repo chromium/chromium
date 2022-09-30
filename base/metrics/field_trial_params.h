@@ -229,7 +229,7 @@ struct FeatureParam<bool> {
 //         &kPerAgentSchedulingExperiments, "delay", base::TimeDelta()};
 //
 // If the parameter is not set, or set to an invalid value (as defined by
-// base::TimeDelta::FromString()), then Get() will return the default value.
+// base::TimeDeltaFromString()), then Get() will return the default value.
 template <>
 struct FeatureParam<base::TimeDelta> {
   constexpr FeatureParam(const Feature* feature,
