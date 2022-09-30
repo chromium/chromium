@@ -149,6 +149,11 @@ const char* kDeniedAppsForDiacritics[] = {
     "algkcnfjnajfhgimadimbjhmpaeohhln",  // SSH app (dev)
 };
 
+const char* kDeniedUrlsForDiacritics[] = {
+    "chrome-untrusted://crosh/",     // Crosh app
+    "chrome-untrusted://terminal/",  // Terminal app
+};
+
 bool IsTestUrl(const absl::optional<GURL>& url) {
   if (!url)
     return false;
@@ -198,6 +203,20 @@ bool IsMatchedUrlWithPathPrefix(const char* (&expected_domains_and_paths)[N][2],
 }
 
 template <size_t N>
+bool IsMatchedExactUrl(const char* (&expected_urls)[N],
+                       const absl::optional<GURL>& url) {
+  if (!url)
+    return false;
+  for (size_t i = 0; i < N; i++) {
+    auto expected_url = expected_urls[i];
+    if (base::CompareCaseInsensitiveASCII(url->spec(), expected_url) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+template <size_t N>
 bool IsMatchedApp(const char* (&expected_app_ids_or_package_names)[N],
                   WindowProperties w) {
   if (!w.arc_package_name.empty() &&
@@ -223,7 +242,8 @@ void ReturnEnabledSuggestions(
   bool diacritic_suggestions_allowed =
       !IsMatchedApp(kDeniedAppsForDiacritics, window_properties) &&
       !IsMatchedUrlWithPathPrefix(kDeniedDomainAndPathsForDiacritics,
-                                  current_url);
+                                  current_url) &&
+      !IsMatchedExactUrl(kDeniedUrlsForDiacritics, current_url);
 
   // TODO(b/245469813): Investigate if denied is intentional for suggesters
   // below is intentional.
