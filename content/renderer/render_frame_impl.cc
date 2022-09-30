@@ -145,7 +145,6 @@
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
-#include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -3595,7 +3594,7 @@ void RenderFrameImpl::DidAddMessageToConsole(
     for (auto& observer : observers_) {
       observer.DetailedConsoleMessageAdded(
           message.text.Utf16(), source_name.Utf16(), stack_trace.Utf16(),
-          source_line, blink::ConsoleMessageLevelToLogSeverity(message.level));
+          source_line, message.level);
     }
   }
 }

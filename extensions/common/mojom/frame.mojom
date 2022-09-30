@@ -9,9 +9,12 @@ import "extensions/common/mojom/extra_response_data.mojom";
 import "extensions/common/mojom/host_id.mojom";
 import "extensions/common/mojom/injection_type.mojom";
 import "extensions/common/mojom/run_location.mojom";
+import "extensions/common/mojom/stack_frame.mojom";
 import "extensions/common/mojom/view_type.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
+import "third_party/blink/public/mojom/devtools/console_message.mojom";
 
 // Allows an extension to execute code in a tab.
 struct ExecuteCodeParams {
@@ -144,4 +147,10 @@ interface LocalFrameHost {
   // * Something changed on an existing frame causing the set of matching
   //   searches to change.
   WatchedPageChange(array<string> css_selectors);
+
+  // Tells listeners that a detailed message was reported to the console.
+  DetailedConsoleMessageAdded(mojo_base.mojom.String16 message,
+                              mojo_base.mojom.String16 source,
+                              array<StackFrame> stack_trace,
+                              blink.mojom.ConsoleMessageLevel level);
 };

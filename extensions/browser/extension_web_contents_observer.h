@@ -140,11 +140,6 @@ class ExtensionWebContentsObserver
   void PepperInstanceCreated() override;
   void PepperInstanceDeleted() override;
 
-  // Returns the extension id associated with the given |render_frame_host|, or
-  // the empty string if there is none.
-  std::string GetExtensionIdFromFrame(
-      content::RenderFrameHost* render_frame_host) const;
-
  private:
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;
 

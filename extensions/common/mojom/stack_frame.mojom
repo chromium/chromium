@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+// Corresponds to `extensions::StackFrame` in extensions/common/stack_frame.h
+struct StackFrame {
+  uint32 line_number;
+  uint32 column_number;
+  mojo_base.mojom.String16 source;
+  mojo_base.mojom.String16 function;
+};

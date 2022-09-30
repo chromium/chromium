@@ -10,7 +10,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/content_script_tracker.h"
@@ -319,21 +318,11 @@ void ExtensionWebContentsObserver::PepperInstanceDeleted() {
   }
 }
 
-std::string ExtensionWebContentsObserver::GetExtensionIdFromFrame(
-    content::RenderFrameHost* render_frame_host) const {
-  DCHECK(initialized_);
-  const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
-  if (!site.SchemeIs(kExtensionScheme))
-    return std::string();
-
-  return site.host();
-}
-
 const Extension* ExtensionWebContentsObserver::GetExtensionFromFrame(
     content::RenderFrameHost* render_frame_host,
     bool verify_url) const {
   DCHECK(initialized_);
-  std::string extension_id = GetExtensionIdFromFrame(render_frame_host);
+  std::string extension_id = util::GetExtensionIdFromFrame(render_frame_host);
   if (extension_id.empty())
     return nullptr;
 

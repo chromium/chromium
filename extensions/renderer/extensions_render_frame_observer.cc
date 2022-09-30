@@ -14,9 +14,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/renderer/render_frame.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/logging_constants.h"
 #include "extensions/common/stack_frame.h"
+#include "extensions/renderer/extension_frame_helper.h"
+#include "third_party/blink/public/common/logging/logging_utils.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -116,8 +117,8 @@ void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
     const std::u16string& source,
     const std::u16string& stack_trace_string,
     uint32_t line_number,
-    int32_t severity_level) {
-  if (severity_level <
+    blink::mojom::ConsoleMessageLevel level) {
+  if (blink::ConsoleMessageLevelToLogSeverity(level) <
       static_cast<int32_t>(extension_misc::kMinimumSeverityToReportError)) {
     // We don't report certain low-severity errors.
     return;
@@ -129,8 +130,10 @@ void ExtensionsRenderFrameObserver::DetailedConsoleMessageAdded(
       source,
       stack_trace_string,
       line_number);
-  Send(new ExtensionHostMsg_DetailedConsoleMessageAdded(
-      routing_id(), trimmed_message, source, stack_trace, severity_level));
+  ExtensionFrameHelper::Get(render_frame())
+      ->GetLocalFrameHost()
+      ->DetailedConsoleMessageAdded(trimmed_message, source, stack_trace,
+                                    level);
 }
 
 void ExtensionsRenderFrameObserver::OnDestruct() {

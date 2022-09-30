@@ -35,11 +35,12 @@ class ExtensionsRenderFrameObserver : public content::RenderFrameObserver,
   void SetVisuallyDeemphasized(bool deemphasized) override;
 
   // RenderFrameObserver implementation.
-  void DetailedConsoleMessageAdded(const std::u16string& message,
-                                   const std::u16string& source,
-                                   const std::u16string& stack_trace,
-                                   uint32_t line_number,
-                                   int32_t severity_level) override;
+  void DetailedConsoleMessageAdded(
+      const std::u16string& message,
+      const std::u16string& source,
+      const std::u16string& stack_trace,
+      uint32_t line_number,
+      blink::mojom::ConsoleMessageLevel level) override;
   void OnDestruct() override;
 
   // true if webview is overlayed with grey color.

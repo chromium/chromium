@@ -11,6 +11,7 @@
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/url_constants.h"
@@ -275,6 +276,15 @@ ExtensionId GetExtensionIdForSiteInstance(
   DCHECK(crx_file::id_util::IdIsValid(maybe_extension_id))
       << "; maybe_extension_id = " << maybe_extension_id;
   return maybe_extension_id;
+}
+
+std::string GetExtensionIdFromFrame(
+    content::RenderFrameHost* render_frame_host) {
+  const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
+  if (!site.SchemeIs(kExtensionScheme))
+    return std::string();
+
+  return site.host();
 }
 
 bool CanRendererHostExtensionOrigin(int render_process_id,

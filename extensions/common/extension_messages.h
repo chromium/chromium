@@ -43,7 +43,6 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
-#include "extensions/common/stack_frame.h"
 #include "extensions/common/user_script.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_message_start.h"
@@ -231,13 +230,6 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::SocketPermissionData)
   IPC_STRUCT_TRAITS_MEMBER(entry())
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(extensions::StackFrame)
-  IPC_STRUCT_TRAITS_MEMBER(line_number)
-  IPC_STRUCT_TRAITS_MEMBER(column_number)
-  IPC_STRUCT_TRAITS_MEMBER(source)
-  IPC_STRUCT_TRAITS_MEMBER(function)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(extensions::UsbDevicePermissionData)
   IPC_STRUCT_TRAITS_MEMBER(vendor_id())
   IPC_STRUCT_TRAITS_MEMBER(product_id())
@@ -420,14 +412,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_AddDOMActionToActivityLog,
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
                      int /* request_id */,
                      std::string /* extension_id */)
-
-// Tells listeners that a detailed message was reported to the console by
-// WebKit.
-IPC_MESSAGE_ROUTED4(ExtensionHostMsg_DetailedConsoleMessageAdded,
-                    std::u16string /* message */,
-                    std::u16string /* source */,
-                    extensions::StackTrace /* stack trace */,
-                    int32_t /* severity level */)
 
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START

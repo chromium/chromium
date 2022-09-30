@@ -90,6 +90,7 @@ mojom("mojom") {
     "mojom/permission_set.mojom",
     "mojom/renderer.mojom",
     "mojom/run_location.mojom",
+    "mojom/stack_frame.mojom",
     "mojom/url_pattern_set.mojom",
     "mojom/view_type.mojom",
   ]
@@ -174,6 +175,18 @@ mojom("mojom") {
           [ "//extensions/common/mojom/activation_sequence_mojom_traits.h" ]
       traits_sources =
           [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "extensions.mojom.StackFrame"
+          cpp = "::extensions::StackFrame"
+        },
+      ]
+      traits_headers =
+          [ "//extensions/common/mojom/stack_frame_mojom_traits.h" ]
+      traits_sources =
+          [ "//extensions/common/mojom/stack_frame_mojom_traits.cc" ]
     },
   ]
   overridden_deps = [ "//content/public/common:interfaces" ]
