@@ -185,6 +185,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 && isSigninSupported();
     }
 
+    /** Returns true if sign out can be started now. */
+    @Override
+    public boolean isSignOutAllowed() {
+        return mSignOutState == null && mSignInState == null
+                && mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN) != null
+                && !Profile.getLastUsedRegularProfile().isChild();
+    }
+
     /**
      * Returns true if signin is disabled by policy.
      */
@@ -230,6 +238,14 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             for (SignInStateObserver observer : mSignInStateObservers) {
                 observer.onSignInAllowedChanged();
+            }
+        });
+    }
+
+    private void notifySignOutAllowedChanged() {
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+            for (SignInStateObserver observer : mSignInStateObservers) {
+                observer.onSignOutAllowedChanged();
             }
         });
     }
@@ -358,6 +374,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         mSignInState = null;
         notifyCallbacksWaitingForOperation();
         notifySignInAllowedChanged();
+        notifySignOutAllowedChanged();
 
         for (SignInStateObserver observer : mSignInStateObservers) {
             observer.onSignedIn();
@@ -392,6 +409,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                             getManagementDomain() != null
                                     ? SignOutState.DataWipeAction.WIPE_ALL_PROFILE_DATA
                                     : SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
+                    notifySignOutAllowedChanged();
                 }
 
                 // TODO(https://crbug.com/1091858): Remove this after migrating the legacy code that
@@ -407,6 +425,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                         // Don't wipe data as the user is not syncing.
                         mSignOutState = new SignOutState(
                                 null, SignOutState.DataWipeAction.WIPE_SIGNIN_DATA_ONLY);
+                        notifySignOutAllowedChanged();
                     }
                     disableSyncAndWipeData(this::finishSignOut);
                 }
@@ -482,14 +501,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
-     * Returns true if sign out can be started now.
-     */
-    @Override
-    public boolean isSignOutAllowed() {
-        return !Profile.getLastUsedRegularProfile().isChild();
-    }
-
-    /**
      * Signs out of Chrome. This method clears the signed-in username, stops sync and sends out a
      * sign-out notification on the native side.
      *
@@ -524,6 +535,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
                 // Android has just a single-profile which is never deleted upon
                 // sign-out.
                 SignoutDelete.IGNORE_METRIC);
+        notifySignOutAllowedChanged();
     }
 
     /**

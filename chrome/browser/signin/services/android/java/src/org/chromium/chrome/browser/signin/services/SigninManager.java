@@ -44,6 +44,9 @@ public interface SigninManager {
          * Invoked once all startup checks are done and signing-in becomes allowed, or disallowed.
          */
         default void onSignInAllowedChanged() {}
+
+        /** Notifies observers when {@link #isSignOutAllowed()} value changes. */
+        default void onSignOutAllowedChanged() {}
     }
 
     /**
@@ -176,7 +179,6 @@ public interface SigninManager {
 
     /**
      * Returns true if sign out can be started now.
-     * TODO(https://crbug.com/1334918): Add onSignOutAllowedChanged() in SignInStateObserver
      */
     boolean isSignOutAllowed();
 
