@@ -2534,6 +2534,8 @@ static_library("ui") {
       "views/arc_data_removal_dialog_view.cc",
       "views/borealis/borealis_installer_disallowed_dialog.cc",
       "views/borealis/borealis_installer_disallowed_dialog.h",
+      "views/borealis/borealis_installer_error_dialog.cc",
+      "views/borealis/borealis_installer_error_dialog.h",
       "views/borealis/borealis_installer_view.cc",
       "views/borealis/borealis_installer_view.h",
       "views/borealis/borealis_splash_screen_view.cc",

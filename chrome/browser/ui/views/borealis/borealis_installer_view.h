@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
+#include "chrome/browser/ui/views/borealis/borealis_installer_error_dialog.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -65,7 +67,6 @@ class BorealisInstallerView : public views::DialogDelegateView,
     kConfirmInstall,  // Waiting for user to start installation.
     kInstalling,      // Installation in progress.
     kCompleted,       // Installation process completed.
-    kError,           // Something unexpected happened.
   };
 
   ~BorealisInstallerView() override;
@@ -77,6 +78,9 @@ class BorealisInstallerView : public views::DialogDelegateView,
   // Returns the label for a dialog |button|, based on the current |state_|
   // and error |reason_| (if relevant).
   std::u16string GetCurrentDialogButtonLabel(ui::DialogButton button) const;
+
+  // Called by the error dialog when the user closes it.
+  void OnErrorDialogDismissed(views::borealis::ErrorDialogChoice choice);
 
   void OnStateUpdated();
 
@@ -105,6 +109,8 @@ class BorealisInstallerView : public views::DialogDelegateView,
   base::ScopedObservation<borealis::BorealisInstaller,
                           borealis::BorealisInstaller::Observer>
       observation_;
+
+  base::WeakPtrFactory<BorealisInstallerView> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_

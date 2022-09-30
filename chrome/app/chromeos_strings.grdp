@@ -5862,9 +5862,6 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_INSTALLER_ENVIRONMENT_SETTING_TITLE" desc="Title for installer while Steam (noun, name of app) is installing.">
     Setting up Steam
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_ERROR_TITLE" desc="Title for installer when Steam (noun, name of app) fails to install.">
-    There was a problem with Steam setup
-  </message>
   <message name="IDS_BOREALIS_INSTALLER_FINISHED_TITLE" desc="Title for installer when installation for Steam (noun, name of app) completes succesfully.">
     You’re all set!
   </message>
@@ -5874,46 +5871,41 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_BOREALIS_INSTALLER_IMPORTED_MESSAGE" desc="Title for Steam (noun, name of app) installer when installation suceeded.">
     Enjoy your gaming on your Chromebook
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_RETRY_BUTTON" desc="Button for Steam (noun, name of app) installer to retry after failing.">
-    Retry
-  </message>
   <message name="IDS_BOREALIS_INSTALLER_LAUNCH_BUTTON" desc="Button in Steam (noun, name of app) installer to launch Steam.">
     Launch
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_NOT_ALLOWED_TITLE" desc="Title for Steam (noun, name of app) installer when it does not have permission to install.">
-    Steam does not have permission to run
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_TITLE" desc="Title for installer when Steam (noun, name of app) fails to install.">
+    There was a problem setting up Steam on Chromebook
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_NOT_ALLOWED_MESSAGE" desc="Body for Steam (noun, name of app) installer when it does not have permission to install. Error code is an integer.">
-    Steam isn't allowed on this device. Contact your administrator to get permission
-    Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_DISALLOWED" desc="Title for Steam (noun, name of app) installer when it does not have permission to install.">
+    Steam could not be installed on this device
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_OFFLINE_MESSAGE" desc="Body for Steam (noun, name of app)  installer when installation fails due to being offline.">
-    Please ensure that your device is connected to the internet.
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_PROGRESS" desc="Body for Steam (noun, name of app) when installation fails due to another process already running.">
+    Another Steam setup is running. Please wait for it to complete before trying again
   </message>
-  <message name="IDS_BOREALIS_DLC_INTERNAL_FAILED_MESSAGE" desc="Body for Steam (noun, name of app) installer when installation fails due to device being out of date.">
-    Ensure that your device is up to date and please try again
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_DLC_INTERNAL" desc="Body for Steam (noun, name of app) installer when installation fails due to device being out of date.">
+    Ensure that your device is up to date and try again
   </message>
-  <message name="IDS_BOREALIS_DLC_BUSY_FAILED_MESSAGE" desc="Body for Steam (noun, name of app) installer when installation fails with suggestion to try again.">
-    Please wait a few minutes and run Steam again
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_DLC_BUSY" desc="Body for Steam (noun, name of app) installer when installation fails with suggestion to try again.">
+    Please wait a few minutes and try again
   </message>
-  <message name="IDS_BOREALIS_DLC_NEED_REBOOT_FAILED_MESSAGE" desc="Body for Steam (noun, name of app) installer when a restart is needed.">
-    Please restart your device to use Steam
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_REBOOT" desc="Body for Steam (noun, name of app) installer when a restart is needed.">
+    Please restart your device to use Steam on Chromebook
   </message>
-  <message name="IDS_BOREALIS_DLC_NEED_UPDATE_FAILED_MESSAGE" desc="Body for Steam (noun, name of app) installer when installation fails due to device being out of date.">
-    Please ensure that your device is up to date and try again
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_SPACE" desc="Body for Steam (noun, name of app) installer when installation fails due to low space.">
+    There is not enough available storage to complete setup. Please free up storage and try again
   </message>
-  <message name="IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_TITLE" desc="Title for Steam (noun, name of app) installer when installation fails due to low space.">
-    Your available device storage is too low to finish setup
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_DLC_UNKNOWN" desc="Body for Steam (noun, name of app) installer when installation fails due to an unknown dlc-related reason">
+    Please restart your device and try again
   </message>
-  <message name="IDS_BOREALIS_INSUFFICIENT_DISK_SPACE_MESSAGE" desc="Body for Steam (noun, name of app) installer when installation fails due to low space.">
-    To increase free space, delete files from device
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_OFFLINE" desc="Body for Steam (noun, name of app) installer when installation fails due to being offline.">
+    Please ensure that your device is connected to the internet
   </message>
-  <message name="IDS_BOREALIS_GENERIC_ERROR_MESSAGE" desc="Body for Steam (noun, name of app) installer when installation fails. Error code is an integer.">
-    If the problem persists, try restarting your device
-    Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_STARTUP" desc="Body for Steam (noun, name of app) installer when installation fails trying to start up after installing">
+    Couldn't launch Steam on Chromebook. Please try again
   </message>
-  <message name="IDS_BOREALIS_INSTALLER_IN_PROGRESS_ERROR_MESSAGE" desc="Body for Steam (noun, name of app) when installation fails due to another process already running.">
-    Another Steam setup is running. Please wait for it to complete before running setup again.
+  <message name="IDS_BOREALIS_INSTALLER_ERROR_RETRY" desc="Button for Steam (noun, name of app) installer to retry after failing.">
+    Retry
   </message>
   <message name="IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY" desc="Confirmation dialog for uninstalling Steam (name of app).">
       Any games and apps installed via Steam will also be removed from this device
