@@ -3,6 +3,10 @@
     border-top: 1px solid var(--cr-separator-color);
     margin: 0 22px;
   }
+
+  .icon-tracked {
+    --power-bookmark-chip-icon-image: url(../images/bookmarks_icon_tracked.svg);
+  }
 </style>
 
 <div id="bookmarksContainer">
@@ -11,6 +15,12 @@
       <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
           description="[[getBookmarkDescription_(item)]]"
           compact="[[compact_]]">
+          <div slot="extra-content-container">
+            <power-bookmark-chip>
+              <div class="icon icon-tracked"></div>
+              <div>$200</div>
+            </power-bookmark-chip>
+          </div>
       </power-bookmark-row>
     </template>
   </template>

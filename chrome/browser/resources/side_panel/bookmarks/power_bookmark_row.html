@@ -1,23 +1,29 @@
 <style include="mwb-element-shared-style cr-shared-style">
   :host {
-    --image-size: 56px;
-    --row-height: 68px;
+    --power-bookmark-row-image-size: 56px;
+    --power-bookmark-row-height: 68px;
     display: block;
     user-select: none;
     white-space: nowrap;
   }
 
   :host([compact]) {
-    --image-size: 16px;
-    --row-height: 32px;
+    --power-bookmark-row-image-size: 16px;
+    --power-bookmark-row-height: 32px;
+  }
+
+  :host ::slotted([slot=extra-content-container]) {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
   }
 
   .bookmark-image {
     border-radius: 6px;
     grid-area: image;
-    height: var(--image-size);
+    height: var(--power-bookmark-row-image-size);
     justify-self: center;
-    width: var(--image-size);
+    width: var(--power-bookmark-row-image-size);
   }
 
   .content {
@@ -35,12 +41,12 @@
     -webkit-mask-image: var(--cr-icon-image);
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
-    -webkit-mask-size: var(--image-size);
+    -webkit-mask-size: var(--power-bookmark-row-image-size);
     background-color: var(--cr-primary-text-color);
   }
 
   .row {
-    --image-padding: 32px;
+    --power-bookmark-row-image-padding: 32px;
     align-items: center;
     appearance: none;
     background: transparent;
@@ -50,8 +56,9 @@
     display: grid;
     font-size: var(--mwb-primary-text-font-size);
     grid-template-areas: 'image content';
-    grid-template-columns: calc(var(--image-size) + var(--image-padding)) auto;
-    height: var(--row-height);
+    grid-template-columns: calc(var(--power-bookmark-row-image-size) +
+                                var(--power-bookmark-row-image-padding)) auto;
+    height: var(--power-bookmark-row-height);
     padding: 0;
     text-align: start;
     width: 100%;
@@ -80,7 +87,7 @@
   }
 
   .text-container {
-    align-items: flex-start;
+    align-items: center;
     display: flex;
     flex-direction: column;
     gap: 2px;
@@ -96,7 +103,7 @@
   .url-icon {
     background-position: center;
     background-repeat: no-repeat;
-    background-size: var(--image-size);
+    background-size: var(--power-bookmark-row-image-size);
   }
 </style>
 <div id="container" role="treeitem">
@@ -107,6 +114,7 @@
     <div class="text-container">
       <div class="content">[[bookmark.title]]</div>
       <div class="content description">[[description]]</div>
+      <slot name="extra-content-container"></slot>
     </div>
   </button>
 </div>

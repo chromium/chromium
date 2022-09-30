@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './power_bookmark_chip.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
