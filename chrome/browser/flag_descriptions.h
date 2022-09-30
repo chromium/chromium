@@ -815,6 +815,9 @@ extern const char kExtensionContentVerificationEnforceStrict[];
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
+
+extern const char kExtensionsFSPInServiceWorkersName[];
+extern const char kExtensionsFSPInServiceWorkersDescription[];
 #endif
 
 extern const char kExtensionsOnChromeUrlsName[];

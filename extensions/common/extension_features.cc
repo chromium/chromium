@@ -130,4 +130,10 @@ BASE_FEATURE(kExtensionSidePanelIntegration,
              "ExtensionSidePanelIntegration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable fileSystemProvider and fileSystemProviderInternal APIs in service
+// workers.
+BASE_FEATURE(kExtensionsFSPInServiceWorkers,
+             "ExtensionsFSPInServiceWorkers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace extensions_features

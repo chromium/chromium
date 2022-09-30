@@ -8693,6 +8693,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExtensionsMenuAccessControlName,
      flag_descriptions::kExtensionsMenuAccessControlDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(extensions_features::kExtensionsMenuAccessControl)},
+
+    {"extensions-fsp-in-service-workers",
+     flag_descriptions::kExtensionsFSPInServiceWorkersName,
+     flag_descriptions::kExtensionsFSPInServiceWorkersDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(extensions_features::kExtensionsFSPInServiceWorkers)},
 #endif
 
     {"persistent-quota-is-temporary-quota",
