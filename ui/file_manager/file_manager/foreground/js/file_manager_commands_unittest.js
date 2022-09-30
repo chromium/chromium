@@ -414,6 +414,7 @@ export async function testRenameCommand(done) {
     directoryModel: {
       isOnNative: () => true,
       isReadOnly: () => false,
+      getCurrentRootType: () => null,
     },
     getCurrentDirectoryEntry: () => recentEntry,
     getSelection: () => currentSelection,

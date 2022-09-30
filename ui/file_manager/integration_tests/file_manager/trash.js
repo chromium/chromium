@@ -957,7 +957,6 @@ testcase.trashTogglingTrashEnabledNavigatesAwayFromTrashRoot = async () => {
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My files');
 };
 
-
 /**
  * Verify that files that have their parents trashed show an alert dialog to
  * indicate that restoration is not possible.
@@ -1000,4 +999,32 @@ testcase.trashCantRestoreWhenParentDoesntExist = async () => {
   // removed.
   await remoteCall.waitAndClickElement(appId, '#restore-from-trash-button');
   await remoteCall.waitForElement(appId, '.files-alert-dialog');
+};
+
+/**
+ * Verify that files within Trash root can't be renamed.
+ */
+testcase.trashCantRenameFilesInTrashRoot = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+
+  const fileSelector = '#file-list [file-name="hello.txt"]';
+
+  // Select hello.txt and send it to the Trash.
+  await remoteCall.waitAndClickElement(appId, fileSelector);
+  await clickTrashButton(appId);
+  await remoteCall.waitForElementLost(appId, fileSelector);
+
+  // Navigate to the Trash root.
+  await navigateWithDirectoryTree(appId, '/Trash');
+
+  // Wait for the element to appear in the Trash and right click it to get
+  // access to the context menu.
+  await remoteCall.waitAndRightClick(appId, fileSelector);
+
+  // Ensure the rename command is disabled.
+  const contextMenuSelector = '#file-context-menu:not([hidden])';
+  await remoteCall.waitForElement(appId, contextMenuSelector);
+  await remoteCall.waitForElement(
+      appId, contextMenuSelector + ' [command="#rename"][disabled][hidden]');
 };

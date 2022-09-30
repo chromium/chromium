@@ -1735,7 +1735,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("trashCantRestoreWhenParentDoesntExist").EnableTrash(),
         TestCase(
             "trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton")
-            .EnableTrash()));
+            .EnableTrash(),
+        TestCase("trashCantRenameFilesInTrashRoot").EnableTrash()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

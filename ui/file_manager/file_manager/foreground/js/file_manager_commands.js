@@ -1613,6 +1613,10 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
     if (util.isNonModifiable(fileManager.volumeManager, entry)) {
       return;
     }
+    const currentRootType = fileManager.directoryModel.getCurrentRootType();
+    if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
+      return;
+    }
     let isRemovableRoot = false;
     let volumeInfo = null;
     if (entry) {
@@ -1651,6 +1655,16 @@ CommandHandler.COMMANDS_['rename'] = new (class extends FilesCommand {
         event.command.setHidden(true);
         return;
       }
+    }
+
+    // Items in Trash are a fake representation of a file + it's metadata. These
+    // items can't be renamed whilst in Trash and should be restored to enable
+    // renaming.
+    const currentRootType = fileManager.directoryModel.getCurrentRootType();
+    if (currentRootType === VolumeManagerCommon.RootType.TRASH) {
+      event.canExecute = false;
+      event.command.setHidden(true);
+      return;
     }
 
     // Check if it is removable drive
