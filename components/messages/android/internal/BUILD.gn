@@ -43,6 +43,7 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/components/messages/MessageAnimationCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
     "java/src/org/chromium/components/messages/MessageBannerCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
