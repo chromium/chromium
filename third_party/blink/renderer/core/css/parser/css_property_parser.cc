@@ -185,6 +185,57 @@ static inline bool IsExposedInMode(const ExecutionContext* execution_context,
                               : property.IsWebExposed(execution_context);
 }
 
+// Take the given string, lowercase it (with possible caveats;
+// see comments on the LChar version), convert it to ASCII and store it into
+// the buffer together with a zero terminator. The string and zero terminator
+// is assumed to fit.
+//
+// Returns false if the string is outside the allowed range of ASCII, so that
+// it could never match any CSS properties or values.
+static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
+                                            unsigned length,
+                                            char* dst) {
+  for (unsigned i = 0; i < length; ++i) {
+    UChar c = src[i];
+    if (c == 0 || c >= 0x7F)  // illegal character
+      return false;
+    dst[i] = ToASCIILower(c);
+  }
+  dst[length] = '\0';
+  return true;
+}
+
+// Fast-path version for LChar strings. This uses the fact that all
+// CSS properties and values are restricted to [a-zA-Z0-9-]. Crucially,
+// this means we can do whatever we want to the six characters @[\]^_,
+// because they cannot match any known values anyway. We use this to
+// get a faster lowercasing than ToASCIILower() (which uses a table)
+// can give us; we take anything in the range [0x40, 0x7f] and just
+// set the 0x20 bit. This converts A-Z to a-z and messes up @[\]^_
+// (so that they become `{|}~<DEL>, respectively). Things outside this
+// range, such as 0-9 and -, are unchanged.
+//
+// This version never returns false, since the [0x80, 0xff] range
+// won't match anything anyway (it is really only needed for UChar,
+// since otherwise we could have e.g. U+0161 be downcasted to 0x61).
+static inline bool QuasiLowercaseIntoBuffer(const LChar* src,
+                                            unsigned length,
+                                            char* dst) {
+  unsigned i;
+  for (i = 0; i < (length & ~3); i += 4) {
+    uint32_t x;
+    memcpy(&x, src + i, sizeof(x));
+    x |= (x & 0x40404040) >> 1;
+    memcpy(dst + i, &x, sizeof(x));
+  }
+  for (; i < length; ++i) {
+    LChar c = src[i];
+    dst[i] = c | ((c & 0x40) >> 1);
+  }
+  dst[length] = '\0';
+  return true;
+}
+
 template <typename CharacterType>
 static CSSPropertyID UnresolvedCSSPropertyID(
     const ExecutionContext* execution_context,
@@ -199,19 +250,22 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     return CSSPropertyID::kInvalid;
 
   char buffer[kMaxCSSPropertyNameLength + 1];  // 1 for null character
-
-  for (unsigned i = 0; i != length; ++i) {
-    CharacterType c = property_name[i];
-    if (c == 0 || c >= 0x7F)
-      return CSSPropertyID::kInvalid;  // illegal character
-    buffer[i] = ToASCIILower(c);
+  if (!QuasiLowercaseIntoBuffer(property_name, length, buffer)) {
+    return CSSPropertyID::kInvalid;
   }
-  buffer[length] = '\0';
 
   const char* name = buffer;
   const Property* hash_table_entry = FindProperty(name, length);
-  if (!hash_table_entry)
+#if DCHECK_IS_ON()
+  // Verify that we get the same answer with standard lowercasing.
+  for (unsigned i = 0; i < length; ++i) {
+    buffer[i] = ToASCIILower(property_name[i]);
+  }
+  DCHECK_EQ(hash_table_entry, FindProperty(buffer, length));
+#endif
+  if (!hash_table_entry) {
     return CSSPropertyID::kInvalid;
+  }
 
   CSSPropertyID property_id = static_cast<CSSPropertyID>(hash_table_entry->id);
   if (kKnownExposedProperties.Has(property_id)) {
@@ -253,16 +307,18 @@ template <typename CharacterType>
 static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
                                     unsigned length) {
   char buffer[maxCSSValueKeywordLength + 1];  // 1 for null character
-
-  for (unsigned i = 0; i != length; ++i) {
-    CharacterType c = value_keyword[i];
-    if (c == 0 || c >= 0x7F)
-      return CSSValueID::kInvalid;  // illegal character
-    buffer[i] = WTF::ToASCIILower(c);
+  if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
+    return CSSValueID::kInvalid;
   }
-  buffer[length] = '\0';
 
   const Value* hash_table_entry = FindValue(buffer, length);
+#if DCHECK_IS_ON()
+  // Verify that we get the same answer with standard lowercasing.
+  for (unsigned i = 0; i < length; ++i) {
+    buffer[i] = ToASCIILower(value_keyword[i]);
+  }
+  DCHECK_EQ(hash_table_entry, FindValue(buffer, length));
+#endif
   return hash_table_entry ? static_cast<CSSValueID>(hash_table_entry->id)
                           : CSSValueID::kInvalid;
 }
