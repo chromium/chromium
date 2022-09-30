@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -163,7 +164,7 @@ const std::u16string GetMessageForFiles(
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE,
-              options.confidential_contents.GetContents().size()),
+              options.confidential_files.size()),
           base::UTF8ToUTF16(options.destination_pattern.value()),
           /*offset=*/nullptr);
     case DlpFilesController::FileAction::kTransfer:
@@ -181,7 +182,7 @@ const std::u16string GetMessageForFiles(
       return base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE,
-              options.confidential_contents.GetContents().size()),
+              options.confidential_files.size()),
           destination,
           /*offset=*/nullptr);
   }
@@ -238,9 +239,8 @@ const std::u16string GetTitle(DlpWarnDialog::DlpWarnDialogOptions options) {
       return l10n_util::GetStringUTF16(IDS_POLICY_DLP_SCREEN_SHARE_WARN_TITLE);
     case DlpWarnDialog::Restriction::kFiles:
       DCHECK(options.files_action.has_value());
-      return GetTitleForFiles(
-          options.files_action.value(),
-          options.confidential_contents.GetContents().size());
+      return GetTitleForFiles(options.files_action.value(),
+                              options.confidential_files.size());
   }
 }
 
@@ -338,10 +338,10 @@ int GetMaxConfidentialTitleWidth() {
   return total_width - margin_width - image_width - spacing;
 }
 
-// Adds icon and title pair of the |confidential_content| to the container.
-void AddConfidentialContentRow(
-    views::View* container,
-    const DlpConfidentialContent& confidential_content) {
+// Adds |confidential_icon| and |confidential_title| to the container.
+void AddConfidentialContentRow(views::View* container,
+                               const gfx::ImageSkia& confidential_icon,
+                               const std::u16string& confidential_title) {
 // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When #dark-light-mode flag is disabled (default setting), the color mode is
@@ -359,10 +359,10 @@ void AddConfidentialContentRow(
   views::ImageView* icon =
       row->AddChildView(std::make_unique<views::ImageView>());
   icon->SetImageSize(gfx::Size(kFaviconSize, kFaviconSize));
-  icon->SetImage(confidential_content.icon);
+  icon->SetImage(confidential_icon);
 
-  views::Label* title = row->AddChildView(
-      std::make_unique<views::Label>(confidential_content.title));
+  views::Label* title =
+      row->AddChildView(std::make_unique<views::Label>(confidential_title));
   title->SetMultiLine(true);
   // TODO(crbug.com/682266) Remove the next line that sets the line size.
   title->SetMaximumWidth(GetMaxConfidentialTitleWidth());
@@ -379,12 +379,21 @@ void AddConfidentialContentRow(
 }
 
 // Adds a scrollable child view to |parent| that lists the information from
-// |confidential_contents|. No-op if no contents are given.
-void MaybeAddConfidentialContent(
+// |confidential_files| if |restriction| is kFiles, otherwise from
+// |confidential_contents|. No-op if no contents or files are given.
+void MaybeAddConfidentialRows(
     views::View* parent,
-    const DlpConfidentialContents& confidential_contents) {
-  if (confidential_contents.IsEmpty())
+    DlpWarnDialog::Restriction restriction,
+    const DlpConfidentialContents& confidential_contents,
+    const std::vector<DlpConfidentialFile>& confidential_files) {
+  if (restriction == DlpWarnDialog::Restriction::kFiles &&
+      confidential_files.empty()) {
     return;
+  }
+  if (restriction != DlpWarnDialog::Restriction::kFiles &&
+      confidential_contents.IsEmpty()) {
+    return;
+  }
 
   views::ScrollView* scroll_view =
       parent->AddChildView(std::make_unique<views::ScrollView>());
@@ -398,9 +407,17 @@ void MaybeAddConfidentialContent(
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  for (const DlpConfidentialContent& confidential_content :
-       confidential_contents.GetContents()) {
-    AddConfidentialContentRow(container, confidential_content);
+  if (restriction == DlpWarnDialog::Restriction::kFiles) {
+    for (const DlpConfidentialFile& confidential_file : confidential_files) {
+      AddConfidentialContentRow(container, confidential_file.icon,
+                                confidential_file.title);
+    }
+  } else {
+    for (const DlpConfidentialContent& confidential_content :
+         confidential_contents.GetContents()) {
+      AddConfidentialContentRow(container, confidential_content.icon,
+                                confidential_content.title);
+    }
   }
 }
 
@@ -425,15 +442,17 @@ DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     Restriction restriction,
-    DlpConfidentialContents confidential_contents,
+    const std::vector<DlpConfidentialFile>& confidential_files,
     absl::optional<DlpRulesManager::Component> dst_component,
     const std::string& destination_pattern,
     DlpFilesController::FileAction files_action)
     : restriction(restriction),
-      confidential_contents(confidential_contents),
+      confidential_files(confidential_files),
       destination_component(dst_component),
       destination_pattern(destination_pattern),
-      files_action(files_action) {}
+      files_action(files_action) {
+  DCHECK(restriction == Restriction::kFiles);
+}
 
 DlpWarnDialog::DlpWarnDialogOptions::DlpWarnDialogOptions(
     const DlpWarnDialogOptions& other) = default;
@@ -466,7 +485,9 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
       views::BoxLayout::Orientation::kVertical));
 
   AddGeneralInformation(AddChildView(std::make_unique<views::View>()), options);
-  MaybeAddConfidentialContent(this, options.confidential_contents);
+  MaybeAddConfidentialRows(this, options.restriction,
+                           options.confidential_contents,
+                           options.confidential_files);
 }
 
 BEGIN_METADATA(DlpWarnDialog, views::DialogDelegateView)

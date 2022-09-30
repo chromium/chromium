@@ -5461,6 +5461,8 @@ static_library("browser") {
       "chromeos/policy/dlp/dlp_clipboard_notifier.h",
       "chromeos/policy/dlp/dlp_confidential_contents.cc",
       "chromeos/policy/dlp/dlp_confidential_contents.h",
+      "chromeos/policy/dlp/dlp_confidential_file.cc",
+      "chromeos/policy/dlp/dlp_confidential_file.h",
       "chromeos/policy/dlp/dlp_content_manager.cc",
       "chromeos/policy/dlp/dlp_content_manager.h",
       "chromeos/policy/dlp/dlp_content_manager_lacros.cc",

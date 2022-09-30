@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -51,7 +52,7 @@ class DlpWarnDialog : public views::DialogDelegateView {
                          const std::u16string& application_title);
     DlpWarnDialogOptions(
         Restriction restriction,
-        DlpConfidentialContents confidential_contents,
+        const std::vector<DlpConfidentialFile>& confidential_files,
         absl::optional<DlpRulesManager::Component> dst_component,
         const std::string& destination_pattern,
         DlpFilesController::FileAction files_action);
@@ -69,7 +70,9 @@ class DlpWarnDialog : public views::DialogDelegateView {
              a.destination_component == b.destination_component &&
              a.destination_pattern == b.destination_pattern &&
              a.files_action == b.files_action &&
-             EqualWithTitles(a.confidential_contents, b.confidential_contents);
+             EqualWithTitles(a.confidential_contents,
+                             b.confidential_contents) &&
+             a.confidential_files == b.confidential_files;
     }
     friend bool operator!=(const DlpWarnDialogOptions& a,
                            const DlpWarnDialogOptions& b) {
@@ -77,7 +80,10 @@ class DlpWarnDialog : public views::DialogDelegateView {
     }
 
     Restriction restriction;
+    // May have content only if the |restriction| is not kFiles.
     DlpConfidentialContents confidential_contents;
+    // May have files only if the |restriction| is kFiles.
+    std::vector<DlpConfidentialFile> confidential_files;
     absl::optional<std::u16string> application_title;
 
     // May have value only if the |restriction| is kFiles.

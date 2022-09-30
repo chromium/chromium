@@ -20,7 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -30,7 +30,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "chromeos/ui/base/file_icon_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
@@ -353,7 +352,7 @@ void DlpFilesController::IsFilesTransferRestricted(
 
   std::vector<FileDaemonInfo> restricted_files;
   std::vector<FileDaemonInfo> warned_files;
-  DlpConfidentialContents dialog_files;
+  std::vector<DlpConfidentialFile> dialog_files;
   std::string destination_pattern;
   std::vector<std::string> warned_source_patterns;
   for (const auto& file : transferred_files) {
@@ -384,10 +383,7 @@ void DlpFilesController::IsFilesTransferRestricted(
       warned_files.push_back(file);
       warned_source_patterns.emplace_back(source_pattern);
       if (files_action != FileAction::kDownload) {
-        dialog_files.Add(
-            // TODO(crbug.com/1357593): Pass the proper |dark_background|
-            chromeos::GetIconForPath(file.path, /*dark_background=*/false),
-            file.path.BaseName().LossyDisplayName(), GURL(file.source_url));
+        dialog_files.emplace_back(file.path);
       }
       DlpHistogramEnumeration(dlp::kFileActionWarnedUMA, files_action);
     }

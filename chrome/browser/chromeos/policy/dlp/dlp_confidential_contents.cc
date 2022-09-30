@@ -59,11 +59,6 @@ DlpConfidentialContent::DlpConfidentialContent(aura::Window* window,
       title(window->GetTitle()),
       url(GetWithoutRef(url)) {}
 
-DlpConfidentialContent::DlpConfidentialContent(const gfx::ImageSkia& icon,
-                                               const std::u16string& title,
-                                               const GURL& url)
-    : icon(icon), title(title), url(url) {}
-
 DlpConfidentialContent::DlpConfidentialContent(
     const DlpConfidentialContent& other) = default;
 DlpConfidentialContent& DlpConfidentialContent::operator=(
@@ -130,12 +125,6 @@ void DlpConfidentialContents::Add(content::WebContents* web_contents) {
 
 void DlpConfidentialContents::Add(aura::Window* window, const GURL& url) {
   contents_.insert(DlpConfidentialContent(window, url));
-}
-
-void DlpConfidentialContents::Add(const gfx::ImageSkia& icon,
-                                  const std::u16string& title,
-                                  const GURL& url) {
-  contents_.insert(DlpConfidentialContent(icon, title, url));
 }
 
 void DlpConfidentialContents::ClearAndAdd(content::WebContents* web_contents) {

@@ -1065,20 +1065,14 @@ TEST_P(DlpFilesWarningDialogContentTest,
       std::make_unique<MockDlpWarnNotifier>(false);
   MockDlpWarnNotifier* mock_dlp_warn_notifier = wrapper.get();
   files_controller_->SetWarnNotifierForTesting(std::move(wrapper));
-  DlpConfidentialContents expected_contents;
+  std::vector<DlpConfidentialFile> expected_files;
 
   if (transfer_info.files_action != DlpFilesController::FileAction::kDownload) {
-    for (size_t i = 0; i < transfer_info.file_sources.size(); ++i) {
-      expected_contents.Add(
-          chromeos::GetIconForPath(
-              base::FilePath(std::string(transfer_info.file_paths[i])),
-              /*dark_background=*/false),
-          base::UTF8ToUTF16(transfer_info.file_paths[i]),
-          GURL(transfer_info.file_sources[i]));
-    }
+    for (const auto& file_path : transfer_info.file_paths)
+      expected_files.emplace_back(base::FilePath(file_path));
   }
   DlpWarnDialog::DlpWarnDialogOptions expected_dialog_options(
-      DlpWarnDialog::Restriction::kFiles, expected_contents,
+      DlpWarnDialog::Restriction::kFiles, expected_files,
       DlpRulesManager::Component::kUsb, /*destination_pattern=*/"",
       transfer_info.files_action);
 
