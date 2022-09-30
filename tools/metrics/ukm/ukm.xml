@@ -15387,6 +15387,14 @@ be describing additional metrics about the same event.
       start to the time the parser started, for main frame documents.
     </summary>
   </metric>
+  <metric name="RefreshRateThrottled" enum="Boolean">
+    <summary>
+      Records whether the refresh rate is throttled (capped to 30Hz) by Power
+      Saver Mode for this Page Load, when the navigation starts. It is possible
+      but very unlikely for this to change mid navigation, for instance due to a
+      change by the user in settings or the battery being recharged above 20%.
+    </summary>
+  </metric>
   <metric name="SiteEngagementScore">
     <owner>mcrouse@chromium.org</owner>
     <owner>tbansal@chromium.org</owner>

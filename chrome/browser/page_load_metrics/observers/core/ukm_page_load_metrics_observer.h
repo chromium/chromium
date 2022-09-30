@@ -327,6 +327,12 @@ class UkmPageLoadMetricsObserver
   // navigation and a scoped search would have been possible.
   bool was_scoped_search_like_navigation_ = false;
 
+  // True if the refresh rate is capped at 30Hz because of power saver mode when
+  // navigation starts. It is possible but very unlikely for this to change mid
+  // navigation, for instance due to a change by the user in settings or the
+  // battery being recharged above 20%.
+  bool refresh_rate_throttled_ = false;
+
   base::WeakPtrFactory<UkmPageLoadMetricsObserver> weak_factory_{this};
 };
 

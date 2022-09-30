@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -246,6 +247,8 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
       navigation_handle->GetWebContents()->GetBrowserContext(),
       navigation_handle->GetURL());
   was_discarded_ = navigation_handle->ExistingDocumentWasDiscarded();
+  refresh_rate_throttled_ =
+      performance_manager::user_tuning::IsRefreshRateThrottled();
 
   return CONTINUE_OBSERVING;
 }
@@ -871,6 +874,9 @@ void UkmPageLoadMetricsObserver::RecordPageLoadMetrics(
   }
   if (GetDelegate().DidCommit() && was_discarded_) {
     builder.SetWasDiscarded(true);
+  }
+  if (GetDelegate().DidCommit() && refresh_rate_throttled_) {
+    builder.SetRefreshRateThrottled(true);
   }
   if (GetDelegate().DidCommit() && navigation_is_cross_process_) {
     builder.SetIsCrossProcessNavigation(navigation_is_cross_process_);

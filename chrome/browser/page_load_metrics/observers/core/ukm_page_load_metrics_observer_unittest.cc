@@ -21,6 +21,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
+#include "chrome/browser/performance_manager/test_support/test_user_performance_tuning_manager_environment.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -41,7 +42,10 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/page_visit_final_status.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
+#include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -360,6 +364,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, Basic) {
         kv.second.get(), PageLoad::kPageTiming_ForegroundDurationName));
     EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
         kv.second.get(), PageLoad::kWasDiscardedName));
+    EXPECT_FALSE(tester()->test_ukm_recorder().EntryHasMetric(
+        kv.second.get(), PageLoad::kRefreshRateThrottledName));
   }
   std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> pagevisit_entries =
       tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -3064,3 +3070,38 @@ TEST_F(UkmPageLoadMetricsObserverTest, TestWasDiscarded) {
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kWasDiscardedName, 1);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// Power saver mode only exists on desktop.
+TEST_F(UkmPageLoadMetricsObserverTest, TestRefreshRateThrottled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      performance_manager::features::kBatterySaverModeAvailable);
+
+  TestingPrefServiceSimple local_state;
+  performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
+      local_state.registry());
+  local_state.SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
+  performance_manager::user_tuning::TestUserPerformanceTuningManagerEnvironment
+      uptm_environment;
+  uptm_environment.SetUp(&local_state);
+
+  NavigateAndCommit(GURL(kTestUrl1));
+
+  // Simulate closing the tab.
+  DeleteContents();
+
+  const auto& ukm_recorder = tester()->test_ukm_recorder();
+  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> merged_entries =
+      ukm_recorder.GetMergedEntriesByName(PageLoad::kEntryName);
+  EXPECT_EQ(1ul, merged_entries.size());
+  const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
+  tester()->test_ukm_recorder().ExpectEntryMetric(
+      entry, PageLoad::kRefreshRateThrottledName, 1);
+
+  uptm_environment.TearDown();
+}
+#endif
