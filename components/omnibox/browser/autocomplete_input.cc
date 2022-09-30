@@ -303,7 +303,9 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
 
   // Treat javascript: scheme queries followed by things that are unlikely to
   // be code as UNKNOWN, rather than script to execute (URL).
-  if (RE2::FullMatch(base::UTF16ToUTF8(text), "(?i)javascript:([^;=().\"]*)")) {
+  if (base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8,
+                                       url::kJavaScriptScheme) &&
+      RE2::FullMatch(base::UTF16ToUTF8(text), "(?i)javascript:([^;=().\"]*)")) {
     return metrics::OmniboxInputType::UNKNOWN;
   }
 
