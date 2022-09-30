@@ -1821,6 +1821,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         float delta = (numMarginsToSlide * mTabMarginWidth);
         float startValue = mScrollOffset - startMarginDelta;
         float endValue = startValue - delta;
+
+        if (startValue < mMinScrollOffset) return;
+
         if (animationList != null) {
             CompositorAnimator scrollAnimator =
                     CompositorAnimator.ofFloatProperty(mUpdateHost.getAnimationHandler(), this,

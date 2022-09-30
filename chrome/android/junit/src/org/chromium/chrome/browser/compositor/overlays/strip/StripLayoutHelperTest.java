@@ -1111,14 +1111,14 @@ public class StripLayoutHelperTest {
     @Test
     @Feature("Tab Groups on Tab Strip")
     public void testTabGroupMargins_ScrollOnReorder() {
-        // Mock 1 tab to the right of 2 tab groups with 2 tabs each.
-        initializeTest(false, false, true, 0, 5);
+        // Mock 6 tabs to the right of 2 tab groups with 2 tabs each.
+        initializeTest(false, false, true, 0, 10);
         groupTabs(0, 2);
         groupTabs(2, 4);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         mStripLayoutHelper.testSetScrollOffset(0);
 
-        // Start reorder on rightmost tab. 2 margins to left of tab, so should scroll.
+        // Start reorder on tab to the right of groups. 2 margins to left of tab, so should scroll.
         // Verify the scroll offset is 2 * (-marginWidth) + startMargin = 2 * -95 + -95 = -285
         float expectedOffset = -285f;
         mStripLayoutHelper.startReorderModeAtIndexForTesting(4);
@@ -1134,14 +1134,14 @@ public class StripLayoutHelperTest {
     @Test
     @Feature("Tab Groups on Tab Strip")
     public void testTabGroupMargins_ScrollOnReorder_Animated() {
-        // Mock 1 tab to the right of 2 tab groups with 2 tabs each.
-        initializeTest(false, false, false, 0, 5);
+        // Mock 6 tabs to the right of 2 tab groups with 2 tabs each.
+        initializeTest(false, false, false, 0, 10);
         groupTabs(0, 2);
         groupTabs(2, 4);
         mStripLayoutHelper.onSizeChanged(SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP);
         mStripLayoutHelper.testSetScrollOffset(0);
 
-        // Start reorder on rightmost tab. 2 margins to left of tab, so should scroll.
+        // Start reorder on tab to the right of groups. 2 margins to left of tab, so should scroll.
         // Verify the scroll offset has not yet changed.
         mStripLayoutHelper.startReorderModeAtIndexForTesting(4);
         assertEquals("The scroller has not finished yet, so the offset shouldn't change.", 0f,
