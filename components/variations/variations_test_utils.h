@@ -109,6 +109,10 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data);
 // are stored as process singleton.
 void ResetVariations();
 
+// A no-op UIStringOverrideCallback implementation.
+inline void NoopUIStringOverrideCallback(uint32_t hash,
+                                         const std::u16string& string) {}
+
 // Create a ClientFilterableState with valid, but unimportant values.
 // Tests that actually expect specific values should set them on the result.
 std::unique_ptr<ClientFilterableState> CreateDummyClientFilterableState();

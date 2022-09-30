@@ -205,6 +205,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "active_field_trials_unittest.cc",
+    "antishuffle_unittest.cc",
     "child_process_field_trial_syncer_unittest.cc",
     "client_filterable_state_unittest.cc",
     "entropy_provider_unittest.cc",
