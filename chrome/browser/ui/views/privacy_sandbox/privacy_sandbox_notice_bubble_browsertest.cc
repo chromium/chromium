@@ -54,14 +54,6 @@ class PrivacySandboxNoticeBubbleBrowserTest : public DialogBrowserTest {
             base::BindRepeating(&BuildMockPrivacySandboxService)));
   }
 
-  void SetUp() override {
-    const base::FieldTrialParams params = {
-        {privacy_sandbox::kPrivacySandboxSettings3NewNotice.name, "true"}};
-    feature_list_.InitWithFeaturesAndParameters(
-        {{privacy_sandbox::kPrivacySandboxSettings3, params}}, {});
-    InProcessBrowserTest::SetUp();
-  }
-
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override { ShowBubble(browser()); }
 

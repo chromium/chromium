@@ -53,7 +53,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
-    ShowPrivacySandboxPrompt(browser(), prompt_type);
+    ShowPrivacySandboxDialog(browser(), prompt_type);
     waiter.WaitIfNeededAndGet();
 
     base::RunLoop().RunUntilIdle();

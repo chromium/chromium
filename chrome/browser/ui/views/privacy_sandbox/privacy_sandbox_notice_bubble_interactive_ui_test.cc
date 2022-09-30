@@ -59,14 +59,6 @@ class PrivacySandboxNoticeBubbleInteractiveUiTest
             base::BindRepeating(&BuildMockPrivacySandboxService)));
   }
 
-  void SetUp() override {
-    const base::FieldTrialParams params = {
-        {privacy_sandbox::kPrivacySandboxSettings3NewNotice.name, "true"}};
-    feature_list_.InitWithFeaturesAndParameters(
-        {{privacy_sandbox::kPrivacySandboxSettings3, params}}, {});
-    InProcessBrowserTest::SetUp();
-  }
-
   MockPrivacySandboxService* mock_service() { return mock_service_; }
 
   ui::TrackedElement* GetElement(ui::ElementIdentifier id) {

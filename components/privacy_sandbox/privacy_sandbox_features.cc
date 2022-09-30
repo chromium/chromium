@@ -18,8 +18,6 @@ const base::FeatureParam<bool> kPrivacySandboxSettings3ConsentRequired{
     &kPrivacySandboxSettings3, "consent-required", false};
 const base::FeatureParam<bool> kPrivacySandboxSettings3NoticeRequired{
     &kPrivacySandboxSettings3, "notice-required", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3NewNotice{
-    &kPrivacySandboxSettings3, "new-notice", false};
 
 const base::FeatureParam<bool>
     kPrivacySandboxSettings3ForceShowConsentForTesting{

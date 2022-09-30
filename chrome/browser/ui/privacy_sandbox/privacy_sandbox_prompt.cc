@@ -8,8 +8,7 @@
 
 void ShowPrivacySandboxPrompt(Browser* browser,
                               PrivacySandboxService::PromptType prompt_type) {
-  if (privacy_sandbox::kPrivacySandboxSettings3NewNotice.Get() &&
-      prompt_type == PrivacySandboxService::PromptType::kNotice) {
+  if (prompt_type == PrivacySandboxService::PromptType::kNotice) {
     ShowPrivacySandboxNoticeBubble(browser);
   } else {
     ShowPrivacySandboxDialog(browser, prompt_type);
