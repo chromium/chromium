@@ -1,1 +1,1 @@
-mixins: "//chrome/browser/ui/webui/chromeos/edu_coexistence/COMMON_METADATA"
+mixins: "//chrome/browser/ash/child_accounts/COMMON_METADATA"
