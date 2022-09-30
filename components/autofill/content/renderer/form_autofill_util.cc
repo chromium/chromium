@@ -1322,22 +1322,22 @@ FormFieldData* SearchForFormControlByName(
   return it != end ? it->first : nullptr;
 }
 
-// Updates the FormFieldData::label of each field in `field_set` according to
-// the <label> descendant of |form_or_fieldset|, if there is any. The extracted
-// label is label.firstChild().nodeValue() of the label element.
+// Considers all <label> descendents of `root`, looks at their corresponding
+// control and matches them to the fields in `field_set`. The corresponding
+// control is either a descendent of the label or an input specified by id in
+// the label's for-attribute.
+// In case no corresponding control exists, but a for-attribute is specified,
+// we look for fields with matching name as a fallback. Moreover, the ids and
+// names of shadow root ancestors of the fields are considered as a fallback.
 void MatchLabelsAndFields(
-    const WebElement& form_or_fieldset,
+    const WebNode& root,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      features::kAutofillImprovedLabelForInference));
-
   static base::NoDestructor<WebString> kLabel("label");
   static base::NoDestructor<WebString> kFor("for");
   static base::NoDestructor<WebString> kHidden("hidden");
 
-  WebElementCollection labels =
-      form_or_fieldset.GetElementsByHTMLTagName(*kLabel);
+  WebElementCollection labels = root.GetElementsByHTMLTagName(*kLabel);
   DCHECK(!labels.IsNull());
 
   for (WebElement item = labels.FirstItem(); !item.IsNull();
@@ -1479,17 +1479,27 @@ bool FormOrFieldsetsToFormData(
   }
 
   // Extracts field labels from the <label for="..."> tags.
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillImprovedLabelForInference)) {
-    std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
-    DCHECK_EQ(form->fields.size(), shadow_fields.size());
-    for (size_t i = 0; i < form->fields.size(); i++) {
-      items.emplace_back(&form->fields[i], std::move(shadow_fields[i]));
-    }
-    base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
-                   CompareByRendererId>
-        field_set(std::move(items));
+  // This is done by iterating through all <label>s and looking them up in the
+  // `field_set` built below.
+  // Iterating through the fields and looking at their `WebElement::Labels()`
+  // unfortunately doesn't scale, as each call corresponds to a DOM traverse.
+  std::vector<std::pair<FormFieldData*, ShadowFieldData>> items;
+  DCHECK_EQ(form->fields.size(), shadow_fields.size());
+  for (size_t i = 0; i < form->fields.size(); i++)
+    items.emplace_back(&form->fields[i], std::move(shadow_fields[i]));
+  base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
+                 CompareByRendererId>
+      field_set(std::move(items));
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillImprovedLabelForInference)) {
+    // All `control_elements` share the same document. By providing it as the
+    // `root` of `MatchLabelsAndFields()` all label tags are considered. This is
+    // necessary to support label-for inference in unowned forms and in owned
+    // forms utilizing the form-attribute.
+    if (!control_elements.empty())
+      MatchLabelsAndFields(control_elements[0].GetDocument(), field_set);
+  } else {
     if (form_element) {
       MatchLabelsAndFields(*form_element, field_set);
     } else {
@@ -1628,22 +1638,6 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
     return "x-max-data-length-exceeded";
   }
   return autocomplete_attribute;
-}
-
-// Returns the concatenated label text of all labels assigned to the `element`
-// using <label for=`element.GetIdAttribute()`>, separated by a space.
-std::u16string GetAssignedLabel(const WebFormControlElement& element) {
-  std::u16string concatenated_labels;
-  for (const auto& label : element.Labels()) {
-    if (auto label_text = FindChildText(label); !label_text.empty()) {
-      if (!concatenated_labels.empty())
-        concatenated_labels.push_back(' ');
-      concatenated_labels.append(std::move(label_text));
-      base::UmaHistogramEnumeration(kAssignedLabelSourceHistogram,
-                                    AssignedLabelSource::kId);
-    }
-  }
-  return concatenated_labels;
 }
 
 void FindFormElementUpShadowRoots(const WebElement& element,
@@ -1965,12 +1959,6 @@ void WebFormControlElementToFormField(
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
   field->parsed_autocomplete = ParseAutocompleteAttribute(
       field->autocomplete_attribute, field->max_length);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillImprovedLabelForInference)) {
-    field->label = GetAssignedLabel(element);
-    if (!field->label.empty())
-      field->label_source = FormFieldData::LabelSource::kFor;
-  }
   if (base::EqualsCaseInsensitiveASCII(element.GetAttribute(*kRole).Utf16(),
                                        "presentation")) {
     field->role = FormFieldData::RoleAttribute::kPresentation;

@@ -2351,31 +2351,6 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormField) {
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result2);
 }
 
-// <label for=fieldId> elements are correctly assigned to their inputs. Multiple
-// labels are separated with a space.
-TEST_F(FormAutofillTest, WebFormControlElementToFormField_LabelFor) {
-  base::test::ScopedFeatureList improved_label_for_inference;
-  improved_label_for_inference.InitAndEnableFeature(
-      features::kAutofillImprovedLabelForInference);
-
-  LoadHTML(R"(
-    <label for=fieldId>foo</label>
-    <label for=fieldId>bar</label>
-    <input id=fieldId>
-  )");
-  ASSERT_NE(GetMainFrame(), nullptr);
-
-  base::HistogramTester histogram_tester;
-  FormFieldData form_field_data;
-  WebFormControlElementToFormField(FormRendererId(),
-                                   GetFormControlElementById("fieldId"),
-                                   nullptr, EXTRACT_NONE, &form_field_data);
-  EXPECT_EQ(form_field_data.label, u"foo bar");
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kAssignedLabelSourceHistogram),
-      testing::UnorderedElementsAre(base::Bucket(AssignedLabelSource::kId, 2)));
-}
-
 // We should be able to extract a text field with autocomplete="off".
 TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompleteOff) {
   LoadHTML("<INPUT type='text' id='element' value='value'"
@@ -3582,6 +3557,39 @@ TEST_F(FormAutofillTest, Labels) {
       "    <INPUT type='text' id='email' value='john@example.com'/>"
       "  <INPUT type='submit' name='reply-send' value='Send'/>"
       "</FORM>");
+}
+
+// <label for=fieldId> elements are correctly assigned to their inputs. Multiple
+// labels are separated with a space.
+// TODO(crbug.com/1339277): Simplify the test using `ExpectLabels()`. This
+// requires some refactoring of the fixture, as only owned forms are supported
+// at the moment. Moreover, it seems like the form is parsed multiple times, so
+// checking for metrics is tricky.
+TEST_F(FormAutofillTest, LabelForAttribute) {
+  base::test::ScopedFeatureList improved_label_for_inference;
+  improved_label_for_inference.InitAndEnableFeature(
+      features::kAutofillImprovedLabelForInference);
+
+  LoadHTML(R"(
+    <label for=fieldId>foo</label>
+    <label for=fieldId>bar</label>
+    <input id=fieldId>
+  )");
+  ASSERT_NE(GetMainFrame(), nullptr);
+
+  base::HistogramTester histogram_tester;
+  FormData form;
+  // Simulate seeing an unowned form containing just the input "fieldID".
+  UnownedFormElementsAndFieldSetsToFormData(
+      {}, {GetFormControlElementById("fieldId")}, {}, nullptr,
+      GetMainFrame()->GetDocument(), nullptr, EXTRACT_NONE, &form, nullptr);
+  ASSERT_EQ(form.fields.size(), 1u);
+  FormFieldData& form_field_data = form.fields[0];
+
+  EXPECT_EQ(form_field_data.label, u"foo bar");
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kAssignedLabelSourceHistogram),
+      testing::UnorderedElementsAre(base::Bucket(AssignedLabelSource::kId, 2)));
 }
 
 TEST_F(FormAutofillTest, LabelsWithSpans) {
@@ -5383,17 +5391,18 @@ TEST_F(FormAutofillTest,
   const ExtractMask extract_mask =
       static_cast<ExtractMask>(EXTRACT_VALUE | EXTRACT_OPTIONS);
 
-  LoadHTML("<HEAD><TITLE>shipping details</TITLE></HEAD>"
-           "<DIV>"
-           "  <FIELDSET>"
-           "    <LABEL for='firstname'>First name:</LABEL>"
-           "    <LABEL for='lastname'>Last name:</LABEL>"
-           "    <INPUT type='text' id='firstname' value='John'/>"
-           "    <INPUT type='text' id='lastname' value='Smith'/>"
-           "    <LABEL for='email'>Email:</LABEL>"
-           "  </FIELDSET>"
-           "  <INPUT type='text' id='email' value='john@example.com'/>"
-           "</DIV>");
+  LoadHTML(
+      "<HEAD><TITLE>shipping details</TITLE></HEAD>"
+      "<DIV>"
+      "  <FIELDSET>"
+      "    <LABEL for='firstname'>First name:</LABEL>"
+      "    <LABEL for='lastname'>Last name:</LABEL>"
+      "    <INPUT type='text' id='firstname' value='John'/>"
+      "    <INPUT type='text' id='lastname' value='Smith'/>"
+      "  </FIELDSET>"
+      "  <DIV><LABEL for='email'>Email:</LABEL></DIV>"
+      "  <INPUT type='text' id='email' value='john@example.com'/>"
+      "</DIV>");
 
   WebLocalFrame* frame = GetMainFrame();
   ASSERT_NE(nullptr, frame);
@@ -5435,7 +5444,14 @@ TEST_F(FormAutofillTest,
   expected.id_attribute = u"email";
   expected.name = expected.id_attribute;
   expected.value = u"john@example.com";
-  expected.label = u"Email:";
+  // With AutofillImprovedLabelForInference, labels assigned with the for-
+  // attribute are even associated outside of fieldsets. Otherwise, the logic
+  // defaults to div-label inference here, which is broken in many ways.
+  // TODO(crbug.com/1368977): Improve div-label inference.
+  expected.label =
+      base::FeatureList::IsEnabled(features::kAutofillImprovedLabelForInference)
+          ? u"Email:"
+          : u"First name: Last name: Email:";
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, fields[2]);
 }
 
