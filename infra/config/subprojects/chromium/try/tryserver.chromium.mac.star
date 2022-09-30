@@ -324,29 +324,8 @@ ios_builder(
     cpu = cpu.ARM64,
 )
 
-ios_builder(
-    name = "ios-simulator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    mirrors = [
-        "ci/ios-simulator",
-    ],
-    check_for_flakiness = True,
-    main_list_view = "try",
-    use_clang_coverage = True,
-    coverage_exclude_sources = "ios_test_files_and_test_utils",
-    coverage_test_types = ["overall", "unit"],
-    tryjob = try_.job(),
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
-    },
-)
-
-# TODO (crbug.com/1298112): Change name to ios-simulator once we verify that
-# it's safe to move
 try_.orchestrator_builder(
-    name = "ios-simulator-orchestrator",
+    name = "ios-simulator",
     compilator = "ios-simulator-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
@@ -357,6 +336,7 @@ try_.orchestrator_builder(
     use_clang_coverage = True,
     coverage_exclude_sources = "ios_test_files_and_test_utils",
     coverage_test_types = ["overall", "unit"],
+    tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
