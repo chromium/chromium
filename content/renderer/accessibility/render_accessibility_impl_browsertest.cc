@@ -1147,11 +1147,6 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   }
   EXPECT_TRUE(input_range.IsFocused());
 
-  // Increment/decrement actions produce synthesized keydown and keyup events,
-  // and the keyup event is delayed 100ms to look more natural. We need to wait
-  // for them to happen to finish the test cleanly in the TearDown phase.
-  task_environment_.FastForwardBy(base::Seconds(1));
-
   gfx::RectF expected_bounds;
   blink::WebAXObject offset_container;
   gfx::Transform container_transform;
