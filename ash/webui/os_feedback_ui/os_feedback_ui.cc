@@ -103,6 +103,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"bluetoothLogsMessage", IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE},
       {"includeAssistantLogsCheckboxLabel",
        IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_CHECKBOX},
+      {"assistantLogsMessage", IDS_FEEDBACK_TOOL_ASSISTANT_LOGS_MESSAGE},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);

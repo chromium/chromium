@@ -755,6 +755,34 @@ export function shareDataPageTestSuite() {
   });
 
   /**
+   * Test that clicking the #assistantLogsLink will open the dialog and set the
+   * focus on the close dialog icon button.
+   */
+  test('openAssistantLogsDialog', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    // The assistant dialog is not visible as default.
+    const closeDialogButton = getElement('#assistantDialogDoneButton');
+    assertFalse(isVisible(closeDialogButton));
+
+    // After clicking the #bluetoothLogsLink, the dialog pops up.
+    getElement('#assistantLogsLink').click();
+    assertTrue(isVisible(closeDialogButton));
+
+    // The preview dialog's close icon button is focused.
+    assertEquals(closeDialogButton, getDeepActiveElement());
+
+    // Press enter should close the preview dialog.
+    closeDialogButton.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    // The preview dialog's close icon button is not visible now.
+    assertFalse(isVisible(closeDialogButton));
+  });
+
+  /**
    * Test that sendBluetoothLogs flag is true and categoryTag is marked as
    * 'BluetoothReportWithLogs' when bluetooth logs checkbox is checked.
    */

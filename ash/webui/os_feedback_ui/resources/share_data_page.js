@@ -232,6 +232,26 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    * @param {!Event} e
    * @protected
    */
+  handleOpenAssistantLogsDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
+
+    this.getElement_('#assistantDialog').showModal();
+    this.getElement_('#assistantDialogDoneButton').focus();
+  }
+
+  /** @protected */
+  handleCloseAssistantDialogClicked_() {
+    this.getElement_('#assistantDialog').close();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
   handleBackButtonClicked_(e) {
     e.stopPropagation();
 
@@ -397,8 +417,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   setAssistantLogsCheckboxLabelAndAttributes_() {
     this.assistantLogsCheckboxLabel_ =
         this.i18nAdvanced('includeAssistantLogsCheckboxLabel', {attrs: ['id']});
-    // TODO(yyhyyh): Clicking the link will open a dialog showing assistant
-    // log message.
+
+    const assistantLogsLink = this.getElement_('#assistantLogsLink');
+    // Setting href causes <a> tag to display as link.
+    assistantLogsLink.setAttribute('href', '#');
+    assistantLogsLink.addEventListener(
+        'click', (e) => void this.handleOpenAssistantLogsDialog_(e));
   }
 
   /** @private */
