@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/examples/browser/content_browser_client.h"
@@ -18,6 +19,11 @@ MainDelegate::MainDelegate() = default;
 MainDelegate::~MainDelegate() = default;
 
 absl::optional<int> MainDelegate::BasicStartupComplete() {
+  logging::LoggingSettings settings;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+  CHECK(logging::InitLogging(settings));
+
   content_client_ = std::make_unique<ContentClient>();
   content::SetContentClient(content_client_.get());
   return absl::nullopt;
