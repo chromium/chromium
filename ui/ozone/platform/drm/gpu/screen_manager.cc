@@ -19,6 +19,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/values.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/display/types/display_snapshot.h"

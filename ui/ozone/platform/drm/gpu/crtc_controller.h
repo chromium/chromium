@@ -11,7 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"

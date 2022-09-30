@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"

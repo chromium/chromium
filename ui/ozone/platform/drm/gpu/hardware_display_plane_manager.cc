@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
