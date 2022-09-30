@@ -91,7 +91,7 @@ std::u16string DesksTextfield::GetTooltipText(const gfx::Point& p) const {
 
 void DesksTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->SetName(GetAccessibleName());
+  node_data->SetNameChecked(GetAccessibleName());
 }
 
 void DesksTextfield::OnMouseEntered(const ui::MouseEvent& event) {
