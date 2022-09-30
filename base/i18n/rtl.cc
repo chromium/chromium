@@ -37,9 +37,15 @@ std::string GetLocaleString(const icu::Locale& locale) {
   const char* language = locale.getLanguage();
   const char* country = locale.getCountry();
   const char* variant = locale.getVariant();
+  const char* script = locale.getScript();
 
   std::string result =
       (language != nullptr && *language != '\0') ? language : "und";
+
+  if (script != nullptr && *script != '\0') {
+    result += '-';
+    result += script;
+  }
 
   if (country != nullptr && *country != '\0') {
     result += '-';
