@@ -4778,6 +4778,16 @@ void BrowserView::OnImmersiveRevealEnded() {
   ReparentTopContainerForEndOfImmersive();
   InvalidateLayout();
   GetWidget()->GetRootView()->Layout();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ensure that entering/exiting tablet mode on ChromeOS also updates Window
+  // Controls Overlay (WCO). This forces a re-check of the immersive mode flag.
+  // Tablet mode implies immersive mode, so if tablet mode is enabled, this will
+  // automatically disable WCO, and vice versa.
+  if (AppUsesWindowControlsOverlay()) {
+    UpdateWindowControlsOverlayEnabled();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserView::OnImmersiveFullscreenExited() {
