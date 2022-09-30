@@ -1,7 +1,7 @@
 Name: web-platform-tests - Test Suites for Web Platform specifications
 Short Name: wpt
 URL: https://github.com/web-platform-tests/wpt/
-Version: 51db59883b991bd9226d0ab6087b0ec3360f2ef7
+Version: de412c4b68d8d5e5d331fa485e200464b28cf1fa
 License: LICENSES FOR W3C TEST SUITES (https://www.w3.org/Consortium/Legal/2008/03-bsd-license.html)
 License File: NOT_SHIPPED
 Security Critical: no
