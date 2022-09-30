@@ -7,6 +7,10 @@ let showDetails = false;
 let localWebApprovalsEnabled = false;
 let interstitialRefreshEnabled = false;
 
+function $(id) {
+  return document.body.querySelector(`#${id}`);
+}
+
 function updateDetails() {
   $('details').hidden = !showDetails;
 }

@@ -67,15 +67,17 @@ preprocess_if_expr("preprocess_src") {
     "static_types.js",
     "test_loader.js",
     "test_loader_util.js",
-
-    # Used by security interstitials and ios inspect UI
-    "util_deprecated.js",
     "util.js",
     "webui_resource_test.js",
   ]
 
   if (is_chromeos) {
     in_files += [ "os_about.js" ]
+  }
+
+  if (is_chromeos_ash || is_ios) {
+    # Used by ChromeOS UIs and ios inspect and omaha UIs
+    in_files += [ "util_deprecated.js" ]
   }
 
   if (is_ios) {

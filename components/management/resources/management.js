@@ -4,8 +4,8 @@
 
 document.addEventListener('DOMContentLoaded', function() {
   if (isManaged()) {
-    $('managed-info').classList.remove('hidden');
+    document.body.querySelector('#managed-info').classList.remove('hidden');
   } else {
-    $('unmanaged-info').classList.remove('hidden');
+    document.body.querySelector('#unmanaged-info').classList.remove('hidden');
   }
 });
