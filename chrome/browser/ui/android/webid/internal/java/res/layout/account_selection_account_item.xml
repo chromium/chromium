@@ -15,7 +15,9 @@ found in the LICENSE file.
     android:paddingBottom="@dimen/account_selection_sheet_item_padding"
     android:paddingTop="@dimen/account_selection_sheet_item_padding"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:layoutDirection="locale"
+    android:textDirection="locale">
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/start_icon"
