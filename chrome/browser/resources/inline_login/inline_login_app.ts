@@ -21,6 +21,7 @@ import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manag
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {isRTL} from 'chrome://resources/js/util.js';
+import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
@@ -72,6 +73,7 @@ interface SigninErrorPageData {
 export interface InlineLoginAppElement {
   $: {
     signinFrame: WebViewElement,
+    spinner: PaperSpinnerLiteElement,
     viewManager: CrViewManagerElement,
   };
 }
@@ -541,7 +543,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   }
   // </if>
 
-  private setAuthExtHostForTest(authExtHost: Authenticator) {
+  setAuthExtHostForTest(authExtHost: Authenticator) {
     this.authExtHost_ = authExtHost;
     this.addAuthExtHostListeners_();
   }

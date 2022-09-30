@@ -91,8 +91,8 @@
     </if>
 
     <div id="[[viewEnum_.ADD_ACCOUNT]]" slot="view">
-      <paper-spinner-lite
-        active="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
+      <paper-spinner-lite id="spinner"
+          active="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
       </paper-spinner-lite>
       <if expr="chromeos_ash">
         <p hidden$="[[!verifyingAccount_]]">
@@ -110,7 +110,7 @@
 
 <if expr="chromeos_ash">
   <div class="buttons"
-    hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
+      hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
     <cr-button class="back-button"
         aria-label="$i18n{accessibleBackButtonLabel}"
         on-click="handleGoBack_"

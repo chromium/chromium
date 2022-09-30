@@ -12,51 +12,38 @@ import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_b
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {assertDeepEquals, assertEquals} from '../chai_assert.js';
-import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from '../chromeos/arc_account_picker/test_util.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {getFakeAccountsNotAvailableInArcList, setTestArcAccountPickerBrowserProxy, TestArcAccountPickerBrowserProxy} from 'chrome://webui-test/chromeos/arc_account_picker/test_util.js';
 
 import {fakeAuthExtensionData, fakeAuthExtensionDataWithEmail, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
-window.arc_account_picker_page_test = {};
-const arc_account_picker_page_test = window.arc_account_picker_page_test;
-arc_account_picker_page_test.suiteName = 'InlineLoginArcPickerPageTest';
-
-/** @enum {string} */
-arc_account_picker_page_test.TestNames = {
-  ArcPickerActive: 'ArcPickerActive',
-  ArcPickerHiddenForReauth: 'ArcPickerHiddenForReauth',
-  ArcPickerHiddenNoAccounts: 'ArcPickerHiddenNoAccounts',
-  AddAccount: 'AddAccount',
-  MakeAvailableInArc: 'MakeAvailableInArc',
+const arc_account_picker_page_test = {
+  suiteName: 'InlineLoginArcPickerPageTest',
+  TestNames: {
+    ArcPickerActive: 'ArcPickerActive',
+    ArcPickerHiddenForReauth: 'ArcPickerHiddenForReauth',
+    ArcPickerHiddenNoAccounts: 'ArcPickerHiddenNoAccounts',
+    AddAccount: 'AddAccount',
+    MakeAvailableInArc: 'MakeAvailableInArc',
+  },
 };
+Object.assign(window, {arc_account_picker_page_test});
 
 suite(arc_account_picker_page_test.suiteName, () => {
-  /** @type {ArcAccountPickerAppElement} */
-  let arcAccountPickerComponent;
-  /** @type {InlineLoginAppElement} */
-  let inlineLoginComponent;
-  /** @type {TestInlineLoginBrowserProxy} */
-  let testBrowserProxy;
-  /** @type {TestArcAccountPickerBrowserProxy} */
-  let testArcBrowserProxy;
+  let arcAccountPickerComponent: ArcAccountPickerAppElement;
+  let inlineLoginComponent: InlineLoginAppElement;
+  let testBrowserProxy: TestInlineLoginBrowserProxy;
+  let testArcBrowserProxy: TestArcAccountPickerBrowserProxy;
 
-  /**
-   * @return {string} id of the active view.
-   */
-  function getActiveViewId() {
-    return inlineLoginComponent.shadowRoot
-        .querySelector('div.active[slot="view"]')
-        .id;
+  /** @return id of the active view. */
+  function getActiveViewId(): string {
+    return inlineLoginComponent.shadowRoot!
+        .querySelector('div.active[slot="view"]')!.id;
   }
 
-  /**
-   * @param {?AccountAdditionOptions} dialogArgs
-   * @param {!Array<Account>} accountsNotAvailableInArc
-   * @param {!Object} authExtensionData
-   */
   async function testSetup(
-      dialogArgs, accountsNotAvailableInArc, authExtensionData) {
+      dialogArgs: AccountAdditionOptions|null,
+      accountsNotAvailableInArc: Account[], authExtensionData: object) {
     document.body.innerHTML = '';
 
     testBrowserProxy = new TestInlineLoginBrowserProxy();
@@ -67,18 +54,17 @@ suite(arc_account_picker_page_test.suiteName, () => {
     testArcBrowserProxy.setAccountsNotAvailableInArc(accountsNotAvailableInArc);
     setTestArcAccountPickerBrowserProxy(testArcBrowserProxy);
 
-    inlineLoginComponent = /** @type {InlineLoginAppElement} */ (
-        document.createElement('inline-login-app'));
+    inlineLoginComponent = document.createElement('inline-login-app');
     document.body.appendChild(inlineLoginComponent);
     inlineLoginComponent.setAuthExtHostForTest(new TestAuthenticator());
     flush();
-    arcAccountPickerComponent = /** @type {ArcAccountPickerAppElement} */ (
-        inlineLoginComponent.shadowRoot.querySelector(
-            'arc-account-picker-app'));
+    arcAccountPickerComponent = inlineLoginComponent.shadowRoot!.querySelector(
+        'arc-account-picker-app')!;
 
-    const switchViewPromise = new Promise(
-        resolve => inlineLoginComponent.addEventListener(
-            'switch-view-notify-for-testing', () => resolve()));
+    const switchViewPromise = new Promise<void>(resolve => {
+      inlineLoginComponent.addEventListener(
+          'switch-view-notify-for-testing', () => resolve());
+    });
     webUIListenerCallback('load-auth-extension', authExtensionData);
     await switchViewPromise;
     flush();
@@ -98,7 +84,8 @@ suite(arc_account_picker_page_test.suiteName, () => {
             'ARC account picker screen should be active');
 
         const uiAccounts = [
-          ...arcAccountPickerComponent.root.querySelectorAll('.account-item'),
+          ...arcAccountPickerComponent.shadowRoot!.querySelectorAll(
+              '.account-item'),
         ].filter(item => item.id !== 'addAccountButton');
         assertEquals(
             getFakeAccountsNotAvailableInArcList().length, uiAccounts.length);
@@ -143,8 +130,11 @@ suite(arc_account_picker_page_test.suiteName, () => {
         View.ARC_ACCOUNT_PICKER, getActiveViewId(),
         'ARC account picker screen should be active');
 
-    arcAccountPickerComponent.shadowRoot.querySelector('#addAccountButton')
-        .click();
+    const button =
+        arcAccountPickerComponent.shadowRoot!.querySelector<HTMLElement>(
+            '#addAccountButton');
+    assertTrue(!!button);
+    button.click();
     assertEquals(
         View.WELCOME, getActiveViewId(),
         'Welcome screen should be active after Add account button click');
@@ -164,9 +154,11 @@ suite(arc_account_picker_page_test.suiteName, () => {
             'ARC account picker screen should be active');
 
         const expectedAccount = getFakeAccountsNotAvailableInArcList()[0];
-        arcAccountPickerComponent.shadowRoot
-            .querySelectorAll('.account-item')[0]
-            .click();
+        const accountItem =
+            arcAccountPickerComponent.shadowRoot!.querySelector<HTMLElement>(
+                '.account-item');
+        assertTrue(!!accountItem);
+        accountItem.click();
         const account =
             await testArcBrowserProxy.whenCalled('makeAvailableInArc');
         assertDeepEquals(expectedAccount, account);

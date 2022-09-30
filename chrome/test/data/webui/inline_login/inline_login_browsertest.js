@@ -50,6 +50,12 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
 });
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
+TEST_F('InlineLoginBrowserTest', 'OkButton', function() {
+  this.runMochaTest(inline_login_test.TestNames.OkButton);
+});
+GEN('#endif')
+
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 // TODO(crbug.com/1347746): Merge this test suite with the test above after the
 // feature is launched.
 var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =

@@ -6,13 +6,13 @@
 import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
 // </if>
 
-import {AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import {InlineLoginBrowserProxy} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
+import {AuthCompletedCredentials, AuthMode, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
-import {TestBrowserProxy} from '../test_browser_proxy.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @return {!Array<string>} */
-export function getFakeAccountsList() {
+export function getFakeAccountsList(): string[] {
   return ['test@gmail.com', 'test2@gmail.com', 'test3@gmail.com'];
 }
 
@@ -41,45 +41,37 @@ export const fakeSigninBlockedByPolicyData = {
 };
 
 export class TestAuthenticator extends EventTarget {
-  constructor() {
-    super();
-    /**
-     * @type {?AuthMode}
-     */
-    this.authMode = null;
-    /**
-     * @type {?AuthParams}
-     */
-    this.data = null;
-    /** @type {number} */
-    this.loadCalls = 0;
-    /** @type {number} */
-    this.getAccountsResponseCalls = 0;
-    /** @type {Array<string>} */
-    this.getAccountsResponseResult = null;
-  }
+  authMode: AuthMode|null = null;
+  data: AuthParams|null = null;
+  loadCalls: number = 0;
+  getAccountsResponseCalls: number = 0;
+  getAccountsResponseResult: string[]|null = null;
 
   /**
-   * @param {AuthMode} authMode Authorization mode.
-   * @param {AuthParams} data Parameters for the authorization flow.
+   * @param authMode Authorization mode.
+   * @param data Parameters for the authorization flow.
    */
-  load(authMode, data) {
+  load(authMode: AuthMode, data: AuthParams) {
     this.loadCalls++;
     this.authMode = authMode;
     this.data = data;
   }
 
   /**
-   * @param {Array<string>} accounts list of emails.
+   * @param accounts list of emails.
    */
-  getAccountsResponse(accounts) {
+  getAccountsResponse(accounts: string[]) {
     this.getAccountsResponseCalls++;
     this.getAccountsResponseResult = accounts;
   }
 }
 
-/** @implements {InlineLoginBrowserProxy} */
-export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
+export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
+    InlineLoginBrowserProxy {
+  // <if expr="chromeos_ash">
+  private dialogArguments_: AccountAdditionOptions|null = null;
+  // </if>
+
   constructor() {
     super([
       'initialize',
@@ -97,82 +89,60 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy {
       'getDialogArguments',
       // </if>
     ]);
-
-    // <if expr="chromeos_ash">
-    /**
-     * @private {?AccountAdditionOptions}
-     */
-    this.dialogArguments_ = null;
-    // </if>
   }
 
   // <if expr="chromeos_ash">
-  /**
-   * @param {?AccountAdditionOptions} dialogArguments
-   */
-  setDialogArguments(dialogArguments) {
+  setDialogArguments(dialogArguments: AccountAdditionOptions|null) {
     this.dialogArguments_ = dialogArguments;
   }
   // </if>
 
-  /** @override */
   initialize() {
     this.methodCalled('initialize');
   }
 
-  /** @override */
   authExtensionReady() {
     this.methodCalled('authExtensionReady');
   }
 
-  /** @override */
-  switchToFullTab(url) {
+  switchToFullTab(url: string) {
     this.methodCalled('switchToFullTab', url);
   }
 
-  /** @override */
-  completeLogin(credentials) {
+  completeLogin(credentials: AuthCompletedCredentials) {
     this.methodCalled('completeLogin', credentials);
   }
 
-  /** @override */
-  lstFetchResults(arg) {
+  lstFetchResults(arg: string) {
     this.methodCalled('lstFetchResults', arg);
   }
 
-  /** @override */
-  recordAction(metricsAction) {
+  recordAction(metricsAction: string) {
     this.methodCalled('metricsHandler:recordAction', metricsAction);
   }
 
-  /** @override */
   showIncognito() {
     this.methodCalled('showIncognito');
   }
 
-  /** @override */
   getAccounts() {
     this.methodCalled('getAccounts');
     return Promise.resolve(getFakeAccountsList());
   }
 
-  /** @override */
   dialogClose() {
     this.methodCalled('dialogClose');
   }
 
   // <if expr="chromeos_ash">
-  /** @override */
-  skipWelcomePage(skip) {
+  skipWelcomePage(skip: boolean) {
     this.methodCalled('skipWelcomePage', skip);
   }
 
-  /** @override */
   openGuestWindow() {
     this.methodCalled('openGuestWindow');
   }
 
-  /** @override */
   getDialogArguments() {
     return JSON.stringify(this.dialogArguments_);
   }

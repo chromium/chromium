@@ -24,6 +24,7 @@ build_webui("build") {
 
   non_web_component_files = [ "inline_login_browser_proxy.ts" ]
 
+  ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/polymer/v3_0:library",
