@@ -754,7 +754,9 @@ void ShelfWidget::SetLoginShelfButtonOpacity(float target_opacity) {
 ShelfWidget::ShelfWidget(Shelf* shelf)
     : shelf_(shelf),
       background_animator_(shelf_, Shell::Get()->wallpaper_controller()),
-      shelf_layout_manager_(new ShelfLayoutManager(this, shelf)),
+      shelf_layout_manager_owned_(
+          std::make_unique<ShelfLayoutManager>(this, shelf)),
+      shelf_layout_manager_(shelf_layout_manager_owned_.get()),
       delegate_view_(new DelegateView(this, shelf_)),
       scoped_session_observer_(this) {
   DCHECK(shelf_);
@@ -793,7 +795,7 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
   SetContentsView(delegate_view_);
 
   shelf_layout_manager_->AddObserver(this);
-  shelf_container->SetLayoutManager(shelf_layout_manager_);
+  shelf_container->SetLayoutManager(std::move(shelf_layout_manager_owned_));
   shelf_layout_manager_->InitObservers();
   background_animator_.Init(ShelfBackgroundType::kDefaultBg);
   background_animator_.PaintBackground(

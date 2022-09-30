@@ -205,6 +205,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   gfx::Rect target_bounds_;
   ShelfBackgroundAnimator background_animator_;
 
+  // Set only during initialization.
+  std::unique_ptr<ShelfLayoutManager> shelf_layout_manager_owned_;
+
   // Owned by the shelf container's window.
   ShelfLayoutManager* shelf_layout_manager_;
 
