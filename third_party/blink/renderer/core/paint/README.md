@@ -462,9 +462,9 @@ if an object changes style and creates a self-painting-layer, we copy the flags
 from its containing self-painting layer to this layer, assuming that this layer
 needs all paint phases that its container self-painting layer needs.
 
-### Transform update optimization
+### Property tree update optimization
 
-In specific cases of a transform update, we can directly update the property
+In some specific cases of style updates, we can directly update the property
 tree without needing to run the property tree builder (Which requires a layout
 tree walk). During `PaintLayer::StyleDidChange` we check if this update meets
 the requirements for a quick update, and if so we add it to a list of pending
@@ -472,9 +472,13 @@ updates (Those updates can't be executed on the fly because then paint offset
 changes can't be detected correctly).
 
 The updates are executed later in `PrePaintTreeWalk::WalkTree` using the
-`LocalFrameView::UpdateAllPendingTransforms`. If at some point during pre-paint
-we reach a node that has a pending update, we mark that node as needs full
-update, and remove the pending update from the list.
+the designated functions (For example -
+`LocalFrameView::UpdateAllPendingTransforms`). If at some point during
+pre-paint we reach a node that has a pending update, we mark that node as needs
+full update, and remove the pending update from the list.
+
+Current updates that are checked for an optimized update are transform updates
+and opacity updates.
 
 ### Hit test information recording
 

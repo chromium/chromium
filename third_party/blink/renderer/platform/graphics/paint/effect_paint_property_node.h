@@ -132,6 +132,22 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     PaintPropertyChangeType ComputeChange(
         const State& other,
         const AnimationState& animation_state) const;
+
+    PaintPropertyChangeType ComputeOpacityChange(
+        float opacity,
+        const AnimationState& animation_state) const;
+
+    // Opacity change is simple if
+    // - opacity doesn't change from or to 1, or
+    // - there was and is active opacity animation, or
+    // TODO(crbug.com/1285498): Optimize for will-change: opacity.
+    // The rule is because whether opacity is 1 affects whether the effect
+    // should create a render surface if there is no active opacity animation.
+    static bool IsOpacityChangeSimple(
+        float opacity,
+        float new_opacity,
+        CompositingReasons direct_compositing_reasons,
+        CompositingReasons new_direct_compositing_reasons);
   };
 
   // This node is really a sentinel, and does not represent a real effect.
@@ -156,6 +172,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
     }
     return std::max(parent_changed, state_changed);
   }
+
+  PaintPropertyChangeType DirectlyUpdateOpacity(
+      float opacity,
+      const AnimationState& animation_state);
 
   const EffectPaintPropertyNode& Unalias() const = delete;
   bool IsParentAlias() const = delete;

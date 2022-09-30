@@ -321,6 +321,12 @@ class CORE_EXPORT ObjectPaintProperties {
         std::move(transform_and_origin), animation_state);
   }
 
+  PaintPropertyChangeType DirectlyUpdateOpacity(
+      float opacity,
+      const EffectPaintPropertyNode::AnimationState& animation_state) {
+    return effect_->DirectlyUpdateOpacity(opacity, animation_state);
+  }
+
  private:
   // Return true if the property tree structure changes (an existing node was
   // deleted), and false otherwise. See the class-level comment ("update & clear

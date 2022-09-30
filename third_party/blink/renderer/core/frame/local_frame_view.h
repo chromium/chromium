@@ -769,7 +769,11 @@ class CORE_EXPORT LocalFrameView final
 
   void AddPendingTransformUpdate(LayoutObject& object);
   bool RemovePendingTransformUpdate(const LayoutObject& object);
-  void UpdateAllPendingTransforms();
+  bool UpdateAllPendingTransforms();
+
+  void AddPendingOpacityUpdate(LayoutObject& object);
+  bool RemovePendingOpacityUpdate(const LayoutObject& object);
+  bool UpdateAllPendingOpacityUpdates();
 
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;
@@ -1176,7 +1180,9 @@ class CORE_EXPORT LocalFrameView final
   // possible, avoids needing to walk the tree to update them. See:
   // https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/paint/README.md#Transform-update-optimization
   // for more on the fast path
+  // TODO(yotha): unify these into one HeapHashMap.
   Member<HeapHashSet<Member<LayoutObject>>> pending_transform_updates_;
+  Member<HeapHashSet<Member<LayoutObject>>> pending_opacity_updates_;
 
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;
