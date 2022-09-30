@@ -517,20 +517,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.DirectComposition.CompositionMode2.MainBuffer.{Damage}"
-    enum="DxgiFramePresentationMode" expires_after="2021-12-31">
-  <owner>zmo@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    How the Desktop Window Manager presented Chrome's main DirectComposition
-    layer to the screen using {Damage}. Only recorded on Windows.
-  </summary>
-  <token key="Damage">
-    <variant name="FullDamage" summary="full damage"/>
-    <variant name="PartialDamage" summary="partial damage"/>
-  </token>
-</histogram>
-
 <histogram name="GPU.DirectComposition.CompositionMode2.VideoOrCanvas"
     enum="DxgiFramePresentationMode" expires_after="2021-12-31">
   <owner>sunnyps@chromium.org</owner>

@@ -78,7 +78,6 @@ GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kDisableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kUseAdapterLuid[];
 
-GL_EXPORT extern const char kDirectCompositionForceFullDamageForTesting[];
 GL_EXPORT extern const char kDirectCompositionVideoSwapChainFormat[];
 
 // These flags are used by the test harness code, not passed in by users.
@@ -94,7 +93,6 @@ namespace features {
 
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferRootSwapChain);
 GL_EXPORT BASE_DECLARE_FEATURE(kDCompTripleBufferVideoSwapChain);
-GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionForceFullDamage);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionGpuVSync);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionLowLatencyPresentation);
 GL_EXPORT BASE_DECLARE_FEATURE(kDirectCompositionVerifyDrawOffset);

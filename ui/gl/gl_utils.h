@@ -50,10 +50,6 @@ GL_EXPORT unsigned int FrameRateToPresentDuration(float frame_rate);
 // BufferCount for the root surface swap chain.
 GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();
 
-// Whether to use full damage when direct compostion root surface presents.
-// This function is thread safe.
-GL_EXPORT bool ShouldForceDirectCompositionRootSurfaceFullDamage();
-
 // Labels swapchain with the name_prefix and ts buffers buffers with the string
 // name_prefix + _Buffer_ + <buffer_number>.
 void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,

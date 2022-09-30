@@ -129,28 +129,6 @@ unsigned int DirectCompositionRootSurfaceBufferCount() {
              : 2u;
 }
 
-bool ShouldForceDirectCompositionRootSurfaceFullDamage() {
-  static bool should_force = []() {
-    const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-    if (cmd_line->HasSwitch(
-            switches::kDirectCompositionForceFullDamageForTesting)) {
-      return true;
-    }
-    UINT brga_flags =
-        GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT_B8G8R8A8_UNORM);
-    constexpr UINT kSupportBits =
-        DXGI_OVERLAY_SUPPORT_FLAG_DIRECT | DXGI_OVERLAY_SUPPORT_FLAG_SCALING;
-    if ((brga_flags & kSupportBits) == 0)
-      return false;
-    if (!base::FeatureList::IsEnabled(
-            features::kDirectCompositionForceFullDamage)) {
-      return false;
-    }
-    return true;
-  }();
-  return should_force;
-}
-
 // Labels swapchain buffers with the string name_prefix + _Buffer_ +
 // <buffer_number>
 void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,

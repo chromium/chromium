@@ -186,16 +186,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               success_eval_func='CheckOverlayMode',
               other_args=p.other_args)
       ])
-    for p in namespace.RootSwapChainPages('SwapChainTraceTest'):
-      yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
-          _TraceTestArguments(
-              browser_args=p.browser_args,
-              category='gpu',
-              test_harness_script=basic_test_harness_script,
-              finish_js_condition='domAutomationController._finished',
-              success_eval_func='CheckRootSwapChainPath',
-              other_args=p.other_args)
-      ])
 
     for p in namespace.VideoFromCanvasPages('WebGLCanvasCaptureTraceTest'):
       yield (p.name, posixpath.join(gpu_data_relative_path, p.url), [
@@ -526,51 +516,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail(
           'Overlay not expected but found: matching %s events were found' %
           _PRESENT_TO_SWAP_CHAIN_EVENT_NAME)
-
-  def _EvaluateSuccess_CheckRootSwapChainPath(self, category: str,
-                                              event_iterator: Iterator,
-                                              other_args: dict) -> None:
-    """Verified that Chrome's main swap chain is presented with full damage."""
-    os_name = self.browser.platform.GetOSName()
-    assert os_name and os_name.lower() == 'win'
-
-    overlay_bot_config = self._GetOverlayBotConfig()
-    if overlay_bot_config is None:
-      self.fail('Overlay bot config can not be determined')
-    assert overlay_bot_config.get('direct_composition', False)
-
-    expect_full_damage = other_args and other_args.get('full_damage', False)
-    expect_has_alpha = other_args and other_args.get('has_alpha', False)
-
-    partial_damage_encountered = False
-    full_damage_encountered = False
-    # Verify expectations through captured trace events.
-    for event in event_iterator:
-      if event.category != category:
-        continue
-      if event.name != _PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME:
-        continue
-      dirty_rect = event.args.get('dirty_rect', None)
-      if dirty_rect is not None:
-        if dirty_rect == 'full_damage':
-          full_damage_encountered = True
-        else:
-          partial_damage_encountered = True
-
-      got_has_alpha = event.args.get('has_alpha', None)
-      if got_has_alpha is not None and expect_has_alpha != got_has_alpha:
-        self.fail(
-            'Expected events with name %s with has_alpha expected %s, got %s' %
-            (_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME, expect_has_alpha,
-             got_has_alpha))
-
-    # Today Chrome either run with full damage or partial damage, but not both.
-    # This may change in the future.
-    if (expect_full_damage != full_damage_encountered
-        or expect_full_damage == partial_damage_encountered):
-      self.fail('Expected events with name %s of %s, got others' %
-                (_PRESENT_ROOT_SWAP_CHAIN_EVENT_NAME,
-                 'full damage' if expect_full_damage else 'partial damage'))
 
   def _EvaluateSuccess_CheckWebGLCanvasCapture(self, category: str,
                                                event_iterator: Iterator,

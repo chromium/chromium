@@ -51,8 +51,6 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
     bool disable_vp_super_resolution = false;
     size_t max_pending_frames = 2;
     bool use_angle_texture_offset = false;
-    bool force_root_surface_full_damage = false;
-    bool force_root_surface_full_damage_always = false;
     bool no_downscaled_overlay_promotion = false;
   };
 

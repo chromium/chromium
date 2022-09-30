@@ -3687,21 +3687,6 @@
       ]
     },
     {
-      "id": 375,
-      "cr_bugs": [1212825],
-      "description": "Always force direct composition full damage on older Windows 10 releases",
-      "os": {
-        "type": "win",
-        "version": {
-          "op": "<",
-          "value": "10.0.19041.508"
-        }
-      },
-      "features": [
-        "force_direct_composition_full_damage_always"
-      ]
-    },
-    {
       "id": 376,
       "cr_bugs": [1219028],
       "description": "Don't use Media Foundation hardware security on Turing-architecture NVIDIA GPUs.",

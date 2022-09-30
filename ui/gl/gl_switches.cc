@@ -162,11 +162,6 @@ const char kDisableDirectCompositionVideoOverlays[] =
 // only used on Windows, as LUID is a Windows specific structure.
 const char kUseAdapterLuid[] = "use-adapter-luid";
 
-// Enable kDirectCompositionForceFullDamage feature regardless of overlay
-// support.
-const char kDirectCompositionForceFullDamageForTesting[] =
-    "direct-composition-force-full-damage-for-testing";
-
 // Used for overriding the swap chain format for direct composition SDR video
 // overlays.
 const char kDirectCompositionVideoSwapChainFormat[] =
@@ -192,7 +187,6 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kDisableDirectComposition,
     kEnableDirectCompositionVideoOverlays,
     kDisableDirectCompositionVideoOverlays,
-    kDirectCompositionForceFullDamageForTesting,
     kDirectCompositionVideoSwapChainFormat,
 };
 const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
@@ -210,13 +204,6 @@ BASE_FEATURE(kDCompTripleBufferRootSwapChain,
 // Use BufferCount of 3 for direct composition video swap chains.
 BASE_FEATURE(kDCompTripleBufferVideoSwapChain,
              "DCompTripleBufferVideoSwapChain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Forces Chrome's main backbuffer to full damage if the actual damage
-// is large enough and allows DWM to consider the main backbuffer as an
-// an overlay candidate.
-BASE_FEATURE(kDirectCompositionForceFullDamage,
-             "DirectCompositionForceFullDamage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use presentation feedback event queries (must be enabled) to limit latency.

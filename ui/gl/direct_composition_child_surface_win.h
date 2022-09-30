@@ -18,9 +18,7 @@ namespace gl {
 class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
  public:
   DirectCompositionChildSurfaceWin(GLDisplayEGL* display,
-                                   bool use_angle_texture_offset,
-                                   bool force_full_damage,
-                                   bool force_full_damage_always);
+                                   bool use_angle_texture_offset);
 
   DirectCompositionChildSurfaceWin(const DirectCompositionChildSurfaceWin&) =
       delete;
@@ -115,8 +113,6 @@ class GL_EXPORT DirectCompositionChildSurfaceWin : public GLSurfaceEGL {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> offscreen_texture_;
 
   const bool use_angle_texture_offset_;
-  const bool force_full_damage_;
-  const bool force_full_damage_always_;
 };
 
 }  // namespace gl

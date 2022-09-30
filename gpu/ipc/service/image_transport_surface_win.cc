@@ -35,10 +35,6 @@ CreateDirectCompositionSurfaceSettings(
   settings.disable_vp_super_resolution =
       workarounds.disable_vp_super_resolution;
   settings.use_angle_texture_offset = true;
-  settings.force_root_surface_full_damage =
-      gl::ShouldForceDirectCompositionRootSurfaceFullDamage();
-  settings.force_root_surface_full_damage_always =
-      workarounds.force_direct_composition_full_damage_always;
   return settings;
 }
 }  // namespace

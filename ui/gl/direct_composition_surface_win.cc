@@ -55,9 +55,7 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
       max_pending_frames_(settings.max_pending_frames),
       root_surface_(new DirectCompositionChildSurfaceWin(
           display,
-          settings.use_angle_texture_offset,
-          settings.force_root_surface_full_damage,
-          settings.force_root_surface_full_damage_always)),
+          settings.use_angle_texture_offset)),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
           settings.disable_vp_scaling,

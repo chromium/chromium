@@ -9,8 +9,6 @@ AUTOPLAY_POLICY_NO_USER_GESTURE_REQUIRED =\
     '--autoplay-policy=no-user-gesture-required'
 DISABLE_ACCELERATED_2D_CANVAS = '--disable-accelerated-2d-canvas'
 DISABLE_DEVICE_DISCOVERY_NOTIFICATIONS = '--disable-features=MediaRouter'
-DISABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE =\
-    '--disable-features=DirectCompositionForceFullDamage'
 DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--disable-direct-composition-video-overlays'
 DISABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=1'
@@ -22,8 +20,6 @@ DISABLE_GPU_PROCESS_CRASH_LIMIT = '--disable-gpu-process-crash-limit'
 DISABLE_SOFTWARE_COMPOSITING_FALLBACK =\
     '--disable-software-compositing-fallback'
 DISABLE_SOFTWARE_RASTERIZER = '--disable-software-rasterizer'
-ENABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE =\
-    '--direct-composition-force-full-damage-for-testing'
 ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--enable-direct-composition-video-overlays'
 ENABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=0'
