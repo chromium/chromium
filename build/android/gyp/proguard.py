@@ -11,7 +11,6 @@ import os
 import re
 import shutil
 import sys
-import tempfile
 import zipfile
 
 import dex
@@ -21,6 +20,12 @@ from util import diff_utils
 
 sys.path.insert(1, os.path.dirname(os.path.dirname(__file__)))
 from pylib.dex import dex_parser
+
+_BLOCKLISTED_EXPECTATION_PATHS = [
+    # A separate expectation file is created for these files.
+    'clank/third_party/google3/pg_confs/'
+]
+
 
 def _ParseOptions():
   args = build_utils.ExpandFileArgs(sys.argv[1:])
@@ -546,6 +551,10 @@ def _CombineConfigs(configs,
   ret = []
   for config in sorted(configs, key=sort_key):
     if exclude_generated and config.endswith('.resources.proguard.txt'):
+      continue
+
+    # Exclude some confs from expectations.
+    if any(entry in config for entry in _BLOCKLISTED_EXPECTATION_PATHS):
       continue
 
     with open(config) as config_file:
