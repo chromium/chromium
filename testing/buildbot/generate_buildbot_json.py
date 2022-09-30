@@ -117,6 +117,9 @@ class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
     for test in isolated_scripts:
       if 'swarming' in test:
         test['swarming'] = {'can_use_on_swarming_builders': False}
+      if 'isolate_name' in test:
+        test['test'] = test['isolate_name']
+        del test['isolate_name']
     return isolated_scripts
 
 

@@ -1892,7 +1892,6 @@ GPU_TELEMETRY_TEST_OUTPUT_SKYLAB = """\
           "-v",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc"
         ],
-        "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1902,6 +1901,7 @@ GPU_TELEMETRY_TEST_OUTPUT_SKYLAB = """\
         "swarming": {
           "can_use_on_swarming_builders": false
         },
+        "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]
