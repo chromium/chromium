@@ -51,8 +51,6 @@ public class LaunchesWithColorSchemeTest {
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @After
     public void tearDown() {

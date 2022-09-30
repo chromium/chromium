@@ -37,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -166,8 +165,6 @@ public class HistoryClustersCoordinatorTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
     @Rule
     public JniMocker jniMocker = new JniMocker();
 

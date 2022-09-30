@@ -76,8 +76,6 @@ Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_
 public class OptionalNewTabButtonControllerActivityTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     /**
      * Shadow of {@link OptionalNewTabButtonController.Delegate}. Injects testing values into every

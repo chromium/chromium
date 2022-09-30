@@ -14,9 +14,7 @@ import android.os.Bundle;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
@@ -37,9 +35,6 @@ import org.chromium.webapk.test.WebApkTestHelper;
 public class WebappLauncherActivityTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String START_URL = "https://www.google.com/scope/a_is_for_apple";
-
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Before
     public void setUp() {

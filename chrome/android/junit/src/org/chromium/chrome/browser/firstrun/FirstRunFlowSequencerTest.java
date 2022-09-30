@@ -58,9 +58,6 @@ public class FirstRunFlowSequencerTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Rule
-    public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
-
-    @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule

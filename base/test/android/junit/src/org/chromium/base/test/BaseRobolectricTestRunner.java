@@ -12,11 +12,11 @@ import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.TestLifecycle;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
@@ -38,7 +38,8 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
                     ApplicationProvider.getApplicationContext());
             ApplicationStatus.initialize(ApplicationProvider.getApplicationContext());
             UmaRecorderHolder.resetForTesting();
-            CommandLine.init(null);
+            CommandLineFlags.setUpClass(method.getDeclaringClass());
+            CommandLineFlags.setUpMethod(method);
             super.beforeTest(method);
         }
 
@@ -47,6 +48,8 @@ public class BaseRobolectricTestRunner extends LocalRobolectricTestRunner {
             try {
                 LifetimeAssert.assertAllInstancesDestroyedForTesting();
             } finally {
+                CommandLineFlags.tearDownMethod();
+                CommandLineFlags.tearDownClass();
                 ApplicationStatus.destroyForJUnitTests();
                 ContextUtils.clearApplicationContextForTests();
                 PathUtils.resetForTesting();

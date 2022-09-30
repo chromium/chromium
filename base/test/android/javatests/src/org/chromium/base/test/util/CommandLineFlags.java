@@ -123,7 +123,7 @@ public final class CommandLineFlags {
      * and {@link CommandLineFlags.Remove} to the {@link org.chromium.base.CommandLine}. Note that
      * trying to remove a flag set externally, i.e. by the command-line flags file, will not work.
      */
-    private static void setUpClass(Class<?> clazz) {
+    public static void setUpClass(Class<?> clazz) {
         // The command line may already have been initialized by Application-level init. We need to
         // re-initialize it with test flags.
         if (!sInitializedForTest) {
@@ -139,7 +139,7 @@ public final class CommandLineFlags {
         applyFlags(flags, null, sClassFlagsToRemove, sClassFlagsToAdd);
     }
 
-    private static void tearDownClass() {
+    public static void tearDownClass() {
         if (ApplicationStatus.isInitialized()) {
             for (Activity a : ApplicationStatus.getRunningActivities()) {
                 if (ApplicationStatus.getStateForActivity(a) < ActivityState.RESUMED) {
@@ -154,7 +154,7 @@ public final class CommandLineFlags {
         sClassFlagsToAdd = null;
     }
 
-    private static void setUpMethod(Method method) {
+    public static void setUpMethod(Method method) {
         Set<String> flagsToAdd = new HashSet<>();
         Set<String> flagsToRemove = new HashSet<>();
         updateFlagsForMethod(method, flagsToAdd, flagsToRemove);
@@ -163,18 +163,18 @@ public final class CommandLineFlags {
         applyFlags(flagsToAdd, flagsToRemove, sMethodFlagsToRemove, sMethodFlagsToAdd);
     }
 
-    private static void tearDownMethod() {
+    public static void tearDownMethod() {
         restoreFlags(sMethodFlagsToRemove, sMethodFlagsToAdd);
         sMethodFlagsToRemove = null;
         sMethodFlagsToAdd = null;
     }
 
     private static void restoreFlags(Set<String> flagsToRemove, Map<String, String> flagsToAdd) {
-        for (String flag : flagsToRemove) {
-            CommandLine.getInstance().removeSwitch(flag);
-        }
         for (Entry<String, String> flag : flagsToAdd.entrySet()) {
             CommandLine.getInstance().appendSwitchWithValue(flag.getKey(), flag.getValue());
+        }
+        for (String flag : flagsToRemove) {
+            CommandLine.getInstance().removeSwitch(flag);
         }
     }
 

@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -156,8 +155,6 @@ public class ChromeSurveyControllerFlowTest {
     public MockitoRule mRule = MockitoJUnit.rule();
     @Rule
     public JniMocker mocker = new JniMocker();
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     @Mock
     TabModelSelector mMockModelSelector;

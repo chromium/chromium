@@ -16,15 +16,14 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.favicon.IconType;
@@ -43,8 +42,6 @@ import org.chromium.url.JUnitTestGURLs;
         sdk = Build.VERSION_CODES.N_MR1, shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
-    private static final String IS_LOW_END_DEVICE_SWITCH =
-            "--" + BaseSwitches.ENABLE_LOW_END_DEVICE_MODE;
 
     private final Bitmap mFavicon = Bitmap.createBitmap(192, 192, Bitmap.Config.ARGB_8888);
     private GURL mFaviconUrl;
@@ -86,12 +83,6 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
         mFaviconUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
     }
 
-    @Override
-    @After
-    public void tearDown() {
-        CommandLine.reset();
-    }
-
     @Test
     public void testSetNotificationIcon() {
         mTabHolder.simulateMediaSessionStateChanged(true, false);
@@ -101,10 +92,8 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.N_MR1)
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testSetNotificationIcon_lowMem_preO() {
-        // Run tests as a low-end device.
-        CommandLine.init(new String[] {"testcommand", IS_LOW_END_DEVICE_SWITCH});
-
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
         assertEquals(mFavicon, getDisplayedIcon());
@@ -112,10 +101,8 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
 
     // TODO(crbug.com/729029): Specify O-SDK.
     @Test
+    @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testSetNotificationIcon_lowMem_O() {
-        // Run tests as a low-end device.
-        CommandLine.init(new String[] {"testcommand", IS_LOW_END_DEVICE_SWITCH});
-
         mTabHolder.simulateMediaSessionStateChanged(true, false);
         mTabHolder.simulateFaviconUpdated(mFavicon, mFaviconUrl);
         assertEquals(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? null : mFavicon,

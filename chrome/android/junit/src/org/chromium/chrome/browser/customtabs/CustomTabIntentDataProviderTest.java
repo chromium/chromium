@@ -63,8 +63,6 @@ import java.util.Collections;
 public class CustomTabIntentDataProviderTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
 
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
 

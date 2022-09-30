@@ -42,9 +42,6 @@ public class TabSuggestionsClientFetcherTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
-
     @Mock
     TabContext mTabContext;
 

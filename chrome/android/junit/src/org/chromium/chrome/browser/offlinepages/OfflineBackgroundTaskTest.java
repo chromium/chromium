@@ -33,10 +33,10 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
@@ -54,6 +54,7 @@ import org.chromium.net.ConnectionType;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowDeviceConditions.class})
+@CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
 public class OfflineBackgroundTaskTest {
     private static final boolean REQUIRE_POWER = true;
     private static final boolean REQUIRE_UNMETERED = true;
@@ -62,9 +63,6 @@ public class OfflineBackgroundTaskTest {
     private static final boolean METERED = true;
     private static final boolean SCREEN_ON_AND_UNLOCKED = true;
     private static final int MINIMUM_BATTERY_LEVEL = 33;
-    private static final String IS_LOW_END_DEVICE_SWITCH =
-            "--" + BaseSwitches.ENABLE_LOW_END_DEVICE_MODE;
-
 
     private Bundle mTaskExtras;
     private long mTestTime;
@@ -105,9 +103,6 @@ public class OfflineBackgroundTaskTest {
         TaskExtrasPacker.packTimeInBundle(mTaskExtras);
         TaskExtrasPacker.packTriggerConditionsInBundle(mTaskExtras, mTriggerConditions);
 
-        // Run tests as a low-end device.
-        CommandLine.init(new String[] {"testcommand", IS_LOW_END_DEVICE_SWITCH});
-
         // Set up single, stopped Activity.
         mTestActivity = new Activity();
         ApplicationStatus.onStateChangeForTesting(mTestActivity, ActivityState.CREATED);
@@ -117,7 +112,6 @@ public class OfflineBackgroundTaskTest {
     @After
     public void tearDown() {
         // Clean up static state for subsequent Robolectric tests.
-        CommandLine.reset();
         SysUtils.resetForTesting();
     }
 

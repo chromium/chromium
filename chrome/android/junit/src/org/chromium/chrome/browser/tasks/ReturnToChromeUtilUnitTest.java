@@ -29,7 +29,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -131,7 +130,6 @@ public class ReturnToChromeUtilUnitTest {
 
     @After
     public void tearDown() {
-        CommandLine.reset();
         SysUtils.resetForTesting();
     }
 

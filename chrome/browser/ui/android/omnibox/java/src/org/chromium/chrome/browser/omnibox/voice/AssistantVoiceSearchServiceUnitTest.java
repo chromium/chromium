@@ -83,9 +83,6 @@ public class AssistantVoiceSearchServiceUnitTest {
     public final AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);
 
-    @Rule
-    public TestRule mCommandLineFlagsRule = CommandLineFlags.getTestRule();
-
     @Mock
     GSAState mGsaState;
     @Mock
