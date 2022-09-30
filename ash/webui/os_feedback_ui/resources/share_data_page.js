@@ -137,6 +137,16 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    * @return {boolean}
    * @protected
    */
+  shouldShowPerformanceTraceCheckbox_() {
+    return (
+        this.feedbackContext !== null && this.feedbackContext.traceId !== 0);
+  }
+
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
   hasScreenshot_() {
     return !!this.screenshotUrl;
   }

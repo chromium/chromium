@@ -71,6 +71,7 @@ void FeedbackServiceProvider::GetFeedbackContext(
   FeedbackContextPtr feedback_context = FeedbackContext::New();
   feedback_context->page_url = feedback_delegate_->GetLastActivePageUrl();
   feedback_context->email = feedback_delegate_->GetSignedInUserEmail();
+  feedback_context->trace_id = feedback_delegate_->GetPerformanceTraceId();
 
   feedback_context->is_internal_account =
       IsInternalAccount(feedback_context->email);

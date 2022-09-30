@@ -250,6 +250,24 @@ export function shareDataPageTestSuite() {
     fakeFeedbackContext.pageUrl.url = 'chrome://tab/';
   });
 
+  // Test that the performanceTraceContainer section is hidden when the trace id
+  // is zero.
+  test('performanceTraceContainerHidden', async () => {
+    await initializePage();
+    // Trace id will be zero in this context.
+    page.feedbackContext = fakeEmptyFeedbackContext;
+
+    // The performanceTraceContainer section should be hidden
+    const performanceTraceContainer = getElement('#performanceTraceContainer');
+    assertTrue(!!performanceTraceContainer);
+    assertFalse(isVisible(performanceTraceContainer));
+
+    // Now use the context with a non-zero trace id.
+    page.feedbackContext = fakeFeedbackContext;
+    // The performanceTraceContainer section should be visible
+    assertTrue(isVisible(performanceTraceContainer));
+  });
+
   /**
    * Test that when when the send button is clicked, an on-continue is fired.
    * Case 1: Share pageUrl, do not share system logs.

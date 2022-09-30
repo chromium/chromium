@@ -139,6 +139,7 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
             internal_feedback_context->email.value());
   EXPECT_EQ(kPageUrl, internal_feedback_context->page_url.value().spec());
   EXPECT_EQ(kIsInternalEmail, internal_feedback_context->is_internal_account);
+  EXPECT_EQ(kPerformanceTraceId, internal_feedback_context->trace_id);
 
   kUseInternalUserEmail = false;
   auto feedback_context = GetFeedbackContextAndWait();
@@ -146,6 +147,7 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
   EXPECT_EQ(kSignedInUserEmail, feedback_context->email.value());
   EXPECT_EQ(kPageUrl, feedback_context->page_url.value().spec());
   EXPECT_EQ(kIsNotInternalEmail, feedback_context->is_internal_account);
+  EXPECT_EQ(kPerformanceTraceId, feedback_context->trace_id);
 }
 
 // Test that GetScreenshotPng returns a response with correct status.

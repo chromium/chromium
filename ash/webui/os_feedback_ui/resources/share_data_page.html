@@ -254,7 +254,8 @@
         <label id="bluetoothInfoLabel" inner-h-t-m-l="[[bluetoothLogsCheckboxLabel_]]"></label>
       </div>
       <!-- Performance trace -->
-      <div id="performanceTraceContainer" class="checkbox-field-container">
+      <div id="performanceTraceContainer" class="checkbox-field-container"
+          hidden="[[!shouldShowPerformanceTraceCheckbox_(feedbackContext)]]">
         <cr-checkbox id="performanceTraceCheckbox"
             aria-labelledby="performanceTraceCheckboxLabel" checked>
         </cr-checkbox>

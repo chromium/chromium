@@ -86,6 +86,8 @@ struct FeedbackContext {
   // When a report is sent with bluetooth logs, the category_tag will be set
   // to BluetoothReportWithLogs.
   string? category_tag;
+  // The performance trace id.
+  int32 trace_id;
 };
 
 // Status of the sending of a feedback report.
