@@ -166,7 +166,7 @@ scoped_refptr<media::DecoderBuffer> ConvertToDecoderBuffer(
 
 void RTCVideoDecoderAdapter::InitializeOnMediaThread(
     const media::VideoDecoderConfig& config,
-    InitCB init_cb,
+    CrossThreadOnceFunction<void(bool)> init_cb,
     base::TimeTicks start_time,
     std::string* decoder_name) {
   DVLOG(3) << __func__;
@@ -343,8 +343,9 @@ void RTCVideoDecoderAdapter::DecodeOnMediaThread() {
   }
 }
 
-void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
-                                                FlushDoneCB flush_fail_cb) {
+void RTCVideoDecoderAdapter::FlushOnMediaThread(
+    WTF::CrossThreadOnceClosure flush_success_cb,
+    WTF::CrossThreadOnceClosure flush_fail_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Remove any pending tasks.
@@ -357,7 +358,8 @@ void RTCVideoDecoderAdapter::FlushOnMediaThread(FlushDoneCB flush_success_cb,
   video_decoder_->Decode(
       media::DecoderBuffer::CreateEOSBuffer(),
       WTF::BindOnce(
-          [](FlushDoneCB flush_success, FlushDoneCB flush_fail,
+          [](WTF::CrossThreadOnceClosure flush_success,
+             WTF::CrossThreadOnceClosure flush_fail,
              media::DecoderStatus status) {
             if (status.is_ok())
               std::move(flush_success).Run();
@@ -534,9 +536,6 @@ bool RTCVideoDecoderAdapter::InitializeSync(
   }
 
   decoder_info_.implementation_name = "ExternalDecoder (" + decoder_name + ")";
-
-  base::AutoLock auto_lock(lock_);
-  ChangeStatus(Status::kNeedKeyFrame);
   return result;
 }
 
@@ -671,12 +670,12 @@ bool RTCVideoDecoderAdapter::ReinitializeSync(
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result));
   std::string decoder_name;
-  FlushDoneCB flush_success_cb = CrossThreadBindOnce(
+  WTF::CrossThreadOnceClosure flush_success_cb = CrossThreadBindOnce(
       &RTCVideoDecoderAdapter::InitializeOnMediaThread, weak_this_, config,
       std::move(init_cb),
       /*start_time=*/base::TimeTicks(),
       /*decoder_name=*/CrossThreadUnretained(&decoder_name));
-  FlushDoneCB flush_fail_cb =
+  WTF::CrossThreadOnceClosure flush_fail_cb =
       CrossThreadBindOnce(&FinishWait, CrossThreadUnretained(&waiter),
                           CrossThreadUnretained(&result), false);
   if (PostCrossThreadTask(

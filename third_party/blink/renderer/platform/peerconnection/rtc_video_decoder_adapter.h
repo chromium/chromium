@@ -111,12 +111,6 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   static bool Vp9HwSupportForSpatialLayers();
 
  private:
-  using CreateVideoDecoderCB =
-      base::RepeatingCallback<std::unique_ptr<media::VideoDecoder>(
-          media::MediaLog*)>;
-  using InitCB = CrossThreadOnceFunction<void(bool)>;
-  using FlushDoneCB = CrossThreadOnceFunction<void()>;
-
   enum class DecodeResult {
     kOk,
     kErrorRequestKeyFrame,
@@ -133,7 +127,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
 
   bool InitializeSync(const media::VideoDecoderConfig& config);
   void InitializeOnMediaThread(const media::VideoDecoderConfig& config,
-                               InitCB init_cb,
+                               CrossThreadOnceFunction<void(bool)> init_cb,
                                base::TimeTicks start_time,
                                std::string* decoder_name);
   absl::optional<RTCVideoDecoderFallbackReason>
@@ -154,8 +148,8 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   bool ShouldReinitializeForSettingHDRColorSpace(
       const webrtc::EncodedImage& input_image) const;
   bool ReinitializeSync(const media::VideoDecoderConfig& config);
-  void FlushOnMediaThread(FlushDoneCB flush_success_cb,
-                          FlushDoneCB flush_fail_cb);
+  void FlushOnMediaThread(WTF::CrossThreadOnceClosure flush_success_cb,
+                          WTF::CrossThreadOnceClosure flush_fail_cb);
   void ChangeStatus(Status new_status) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Construction parameters.
