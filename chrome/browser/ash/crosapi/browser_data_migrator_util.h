@@ -180,7 +180,8 @@ constexpr const char* const kLacrosDataPaths[]{
     "Top Sites",
     "Visited Links",
     "Web Applications",
-    "Web Data"};
+    "Web Data",
+    "WebStorage"};
 
 // The base names of files/dirs that are required by both ash and lacros and
 // thus should be copied to lacros while keeping the original files/dirs in ash
