@@ -280,6 +280,9 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1368315
   "lockscreen.CloseLid",
+
+  # https://crbug.com/1362413
+  "terminal.Crosh",
 ]
 
 # To create filters to be used on specific builders add them like this:
