@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/ios_sdk.gni")
+import("//build/toolchain/apple/toolchain.gni")
 import("//build/toolchain/goma.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -150,30 +151,34 @@ config("ios_dynamic_flags") {
 
   # The path to the Swift compatibility libraries (required to run code built
   # with version N of the SDK on older version of the OS) is relative to the
-  # toolchains directory and changes with the environment.
-  _swift_compatibility_libs_dir_prefix = "$ios_toolchains_path/usr/lib/swift"
+  # toolchains directory and changes with the environment when using the
+  # system toolchain. When using the hermetic swift toolchain instead, those
+  # libraries are relative to $swift_toolchain_path.
+  if (swift_toolchain_path == "") {
+    _swift_compatibility_libs_prefix = ios_toolchains_path
+  } else {
+    _swift_compatibility_libs_prefix = swift_toolchain_path
+  }
+
   if (target_environment == "simulator") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/iphonesimulator"
+    _swift_compatibility_libs_suffix = "iphonesimulator"
   } else if (target_environment == "device") {
-    _swift_compatibility_libs_dir =
-        "$_swift_compatibility_libs_dir_prefix/iphoneos"
+    _swift_compatibility_libs_suffix = "iphoneos"
   } else if (target_environment == "catalyst") {
     # The Swift compatibility libraries have changed location starting with
     # Xcode 13.0, so check the version of Xcode when deciding which path to
     # use.
     if (xcode_version_int >= 1300) {
-      _swift_compatibility_libs_dir =
-          "$_swift_compatibility_libs_dir_prefix/macosx"
+      _swift_compatibility_libs_suffix = "macosx"
     } else {
-      _swift_compatibility_libs_dir =
-          "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+      _swift_compatibility_libs_suffix = "maccatalyst"
     }
   }
 
   lib_dirs = [
     "$ios_sdk_path/usr/lib/swift",
-    _swift_compatibility_libs_dir,
+    "$_swift_compatibility_libs_prefix/usr/lib/swift/" +
+        "$_swift_compatibility_libs_suffix",
   ]
 
   # When building for catalyst, some Swift support libraries are in a
