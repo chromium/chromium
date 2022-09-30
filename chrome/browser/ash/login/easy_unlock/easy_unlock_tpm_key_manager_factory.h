@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_TPM_KEY_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_TPM_KEY_MANAGER_FACTORY_H_
 
-#include <string>
-
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+class AccountId;
 
 namespace content {
 class BrowserContext;
@@ -27,7 +28,7 @@ class EasyUnlockTpmKeyManagerFactory : public ProfileKeyedServiceFactory {
   static EasyUnlockTpmKeyManagerFactory* GetInstance();
 
   static EasyUnlockTpmKeyManager* Get(content::BrowserContext* context);
-  static EasyUnlockTpmKeyManager* GetForUser(const std::string& user_id);
+  static EasyUnlockTpmKeyManager* GetForAccountId(const AccountId& account_id);
 
   EasyUnlockTpmKeyManagerFactory(const EasyUnlockTpmKeyManagerFactory&) =
       delete;

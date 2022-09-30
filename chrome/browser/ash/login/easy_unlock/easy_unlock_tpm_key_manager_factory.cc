@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -36,12 +35,10 @@ EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::Get(
           ->GetServiceForBrowserContext(browser_context, true));
 }
 
-EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForUser(
-    const std::string& user_id) {
+EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForAccountId(
+    const AccountId& account_id) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* user =
-      user_manager->FindUser(user_manager::known_user::GetAccountId(
-          user_id, std::string() /* id */, AccountType::UNKNOWN));
+  const user_manager::User* user = user_manager->FindUser(account_id);
   if (!user)
     return nullptr;
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
@@ -55,7 +52,7 @@ EasyUnlockTpmKeyManagerFactory::EasyUnlockTpmKeyManagerFactory()
           "EasyUnlockTpmKeyManager",
           ProfileSelections::BuildRedirectedInIncognito()) {}
 
-EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() {}
+EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() = default;
 
 KeyedService* EasyUnlockTpmKeyManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {

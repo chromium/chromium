@@ -18,16 +18,16 @@
 
 namespace ash {
 
-EasyUnlockKeyManager::EasyUnlockKeyManager() {}
+EasyUnlockKeyManager::EasyUnlockKeyManager() = default;
 
-EasyUnlockKeyManager::~EasyUnlockKeyManager() {}
+EasyUnlockKeyManager::~EasyUnlockKeyManager() = default;
 
 void EasyUnlockKeyManager::RefreshKeys(const UserContext& user_context,
                                        const base::Value::List& remote_devices,
                                        RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
-      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
-          user_context.GetAccountId().GetUserEmail());
+      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForAccountId(
+          user_context.GetAccountId());
   if (!tpm_key_manager) {
     PA_LOG(ERROR) << "No TPM key manager.";
     std::move(callback).Run(false);
@@ -62,8 +62,8 @@ void EasyUnlockKeyManager::RefreshKeysWithTpmKeyPresent(
     base::Value::List remote_devices,
     RefreshKeysCallback callback) {
   EasyUnlockTpmKeyManager* tpm_key_manager =
-      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForUser(
-          user_context.GetAccountId().GetUserEmail());
+      EasyUnlockTpmKeyManagerFactory::GetInstance()->GetForAccountId(
+          user_context.GetAccountId());
   const std::string tpm_public_key =
       tpm_key_manager->GetPublicTpmKey(user_context.GetAccountId());
 
