@@ -96977,6 +96977,11 @@ would be helpful to identify which type is being sent.
   <int value="2" label="ECDSA"/>
 </enum>
 
+<enum name="TPMTakeOwnershipResult">
+  <int value="0" label="TPM Take Ownership Success"/>
+  <int value="1" label="TPM Take Ownership Failed"/>
+</enum>
+
 <enum name="TPMVersionFingerprint">
 <!--
 Full version information for the fingerprint enum values:

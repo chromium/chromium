@@ -1483,6 +1483,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.TPM.TakeOwnershipResult"
+    enum="TPMTakeOwnershipResult" expires_after="2023-03-29">
+  <owner>yich@google.com</owner>
+  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
+  <summary>
+    Report the TPM ownership can be take or not for each TPM initialization
+    process. The process usually happen at the first boot of device.
+  </summary>
+</histogram>
+
 <histogram name="Platform.TPM.TimeToTakeOwnership" units="ms"
     expires_after="2023-02-12">
   <owner>yich@google.com</owner>
