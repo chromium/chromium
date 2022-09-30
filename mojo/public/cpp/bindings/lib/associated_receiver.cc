@@ -55,7 +55,12 @@ void AssociatedReceiverBase::FlushForTesting() {
   endpoint_client_->FlushForTesting();  // IN-TEST
 }
 
-AssociatedReceiverBase::~AssociatedReceiverBase() = default;
+AssociatedReceiverBase::~AssociatedReceiverBase() {
+  // Leak the endpoint client if necessary, as in reset().
+  if (recordreplay::AreEventsDisallowed()) {
+    endpoint_client_.release();
+  }
+}
 
 void AssociatedReceiverBase::BindImpl(
     ScopedInterfaceEndpointHandle handle,
