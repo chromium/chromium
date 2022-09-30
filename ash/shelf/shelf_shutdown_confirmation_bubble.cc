@@ -204,7 +204,7 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
 void ShelfShutdownConfirmationBubble::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(title_->GetText());
+  node_data->SetNameChecked(title_->GetText());
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()
