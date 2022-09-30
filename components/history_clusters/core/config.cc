@@ -264,7 +264,7 @@ Config::Config() {
     DCHECK_GE(has_page_title_ranking_weight, 0.0f);
   }
 
-  // The `kJourneysCategoryFiltering` feature and child parans.
+  // The `kJourneysCategoryFiltering` feature and child params.
   {
     should_use_categories_to_filter_on_prominent_ui_surfaces =
         base::FeatureList::IsEnabled(
@@ -316,6 +316,11 @@ Config::Config() {
         features::kOnDeviceClusteringContentClustering,
         "content_clustering_intersection_threshold",
         cluster_interaction_threshold);
+
+    content_cluster_using_cosine_similarity = GetFieldTrialParamByFeatureAsBool(
+        features::kOnDeviceClusteringContentClustering,
+        "use_content_clustering_cosine_similarity",
+        content_cluster_using_cosine_similarity);
 
     exclude_entities_that_have_no_collections_from_content_clustering =
         GetFieldTrialParamByFeatureAsBool(

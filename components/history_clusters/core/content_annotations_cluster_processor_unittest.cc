@@ -156,6 +156,113 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
                           ElementsAre(testing::VisitResult(12, 1.0))));
 }
 
+class ContentAnnotationsClusterProcessorCosineSimilarityTest
+    : public ContentAnnotationsClusterProcessorTest {
+ public:
+  ContentAnnotationsClusterProcessorCosineSimilarityTest() {
+    config_.content_clustering_enabled = true;
+    config_.content_cluster_on_intersection_similarity = false;
+    config_.content_clustering_similarity_threshold = 0.5;
+    config_.exclude_entities_that_have_no_collections_from_content_clustering =
+        false;
+    config_.collections_to_block_from_content_clustering = {};
+    config_.content_cluster_using_cosine_similarity = true;
+    SetConfigForTesting(config_);
+  }
+
+ private:
+  Config config_;
+};
+
+TEST_F(ContentAnnotationsClusterProcessorCosineSimilarityTest, AboveThreshold) {
+  std::vector<history::Cluster> clusters;
+
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  visit.content_annotations.model_annotations.entities = {{"github", 1}};
+  visit.content_annotations.model_annotations.categories = {{"category", 1}};
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  visit2.content_annotations.model_annotations.entities = {{"github", 1}};
+  history::AnnotatedVisit visit4 =
+      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  visit4.content_annotations.model_annotations.entities = {{"github", 1}};
+  history::Cluster cluster1;
+  cluster1.visits = {testing::CreateClusterVisit(visit),
+                     testing::CreateClusterVisit(visit2),
+                     testing::CreateClusterVisit(visit4)};
+  clusters.push_back(cluster1);
+
+  // After the context clustering, visit5 will not be in the same cluster as
+  // visit, visit2, and visit4 but all of the visits have the same entity
+  // so they will be clustered in the content pass.
+  history::AnnotatedVisit visit5 = testing::CreateDefaultAnnotatedVisit(
+      10, GURL("https://nonexistentreferrer.com/"));
+  visit5.content_annotations.model_annotations.entities = {{"github", 1}};
+  visit5.content_annotations.model_annotations.categories = {{"category", 1}};
+  history::Cluster cluster2;
+  cluster2.visits = {testing::CreateClusterVisit(visit5)};
+  clusters.push_back(cluster2);
+
+  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
+  EXPECT_THAT(
+      testing::ToVisitResults(result_clusters),
+      ElementsAre(ElementsAre(
+          testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
+          testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0))));
+  ASSERT_EQ(result_clusters.size(), 1u);
+}
+
+TEST_F(ContentAnnotationsClusterProcessorCosineSimilarityTest, BelowThreshold) {
+  std::vector<history::Cluster> clusters;
+
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://github.com/"));
+  visit.content_annotations.model_annotations.entities = {{"github", 1}};
+  visit.content_annotations.model_annotations.categories = {{"category", 1}};
+
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/"));
+  visit2.visit_row.visit_duration = base::Seconds(20);
+  history::Cluster cluster1;
+  cluster1.visits = {testing::CreateClusterVisit(visit),
+                     testing::CreateClusterVisit(visit2)};
+  clusters.push_back(cluster1);
+
+  // After the context clustering, visit4 will not be in the same cluster as
+  // visit and visit2 but should be clustered together since they have the same
+  // entities.
+  history::AnnotatedVisit visit4 =
+      testing::CreateDefaultAnnotatedVisit(4, GURL("https://github.com/"));
+  visit4.content_annotations.model_annotations.entities = {{"github", 1}};
+  history::Cluster cluster2;
+  cluster2.visits = {testing::CreateClusterVisit(visit4)};
+  clusters.push_back(cluster2);
+
+  // This visit has no entities and shouldn't be grouped with the others.
+  history::AnnotatedVisit visit6 =
+      testing::CreateDefaultAnnotatedVisit(11, GURL("https://othervisit.com/"));
+  history::Cluster cluster4;
+  cluster4.visits = {testing::CreateClusterVisit(visit6)};
+  clusters.push_back(cluster4);
+
+  // This visit has no content annotations and shouldn't be grouped with the
+  // others.
+  history::AnnotatedVisit visit7 = testing::CreateDefaultAnnotatedVisit(
+      12, GURL("https://nocontentannotations.com/"));
+  history::Cluster cluster5;
+  cluster5.visits = {testing::CreateClusterVisit(visit7)};
+  clusters.push_back(cluster5);
+
+  std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
+                                      testing::VisitResult(2, 1.0),
+                                      testing::VisitResult(4, 1.0)),
+                          ElementsAre(testing::VisitResult(11, 1.0)),
+                          ElementsAre(testing::VisitResult(12, 1.0))));
+}
+
 class ContentAnnotationsClusterProcessorIntersectionMetricTest
     : public ContentAnnotationsClusterProcessorTest {
  public:

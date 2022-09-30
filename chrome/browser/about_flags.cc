@@ -1189,13 +1189,21 @@ const FeatureEntry::FeatureVariation
          kSidePanelJourneysOpensFromOmniboxParams,
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysContentClusteringParams[] = {
+const FeatureEntry::FeatureParam kJourneysJaccardSimilarityParams[] = {
     {"collections_blocklist", "/collection/software"},
     {"exclude_entities_that_have_no_collections", "true"},
+    {"use_content_clustering_cosine_similarity", "false"},
+};
+const FeatureEntry::FeatureParam kJourneysCosineSimilarityParams[] = {
+    {"collections_blocklist", "/collection/software"},
+    {"exclude_entities_that_have_no_collections", "true"},
+    {"use_content_clustering_cosine_similarity", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
-    {"With Blocklist", kJourneysContentClusteringParams,
-     std::size(kJourneysContentClusteringParams), nullptr},
+    {"Jaccard Similarity With Blocklist", kJourneysJaccardSimilarityParams,
+     std::size(kJourneysJaccardSimilarityParams), nullptr},
+    {"Cosine Similarity With Blocklist", kJourneysCosineSimilarityParams,
+     std::size(kJourneysCosineSimilarityParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},

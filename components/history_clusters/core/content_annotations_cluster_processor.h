@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "components/history_clusters/core/cluster_processor.h"
 
 namespace optimization_guide {
@@ -30,9 +30,9 @@ class ContentAnnotationsClusterProcessor : public ClusterProcessor {
       const std::vector<history::Cluster>& clusters) override;
 
  private:
-  // Creates a bag of words for `cluster` of the set
-  // of unique entities, respectively, from each visit.
-  base::flat_set<std::u16string> CreateBoWForCluster(
+  // Creates an occurrence map for `cluster` of the set
+  // of entities from each visit.
+  base::flat_map<std::string, float> CreateOccurrenceMapForCluster(
       const history::Cluster& cluster);
 
   // The map from entity ID to entity metadata.

@@ -272,15 +272,16 @@ struct Config {
   float content_visibility_threshold = 0.7;
 
   // Returns true if content clustering should use the intersection similarity
-  // score. Note, if this is used, the threshold used for clustering by content
-  // score should be < .5 (see ContentClusteringSimilarityThreshold above) or
-  // the weightings between entity and category content similarity scores should
-  // be adjusted.
+  // score.
   bool content_cluster_on_intersection_similarity = false;
 
   // Returns the threshold, in terms of the number of overlapping keywords, to
   // use when clustering based on intersection score.
   int cluster_interaction_threshold = 2;
+
+  // Returns true if content clustering should use the cosine similarity
+  // algorithm.
+  bool content_cluster_using_cosine_similarity = false;
 
   // Returns whether we should exclude entities that do not have associated
   // collections from content clustering.
