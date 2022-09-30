@@ -8,12 +8,15 @@
 #include <map>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/dns/address_sorter.h"
+#include "net/socket/datagram_client_socket.h"
 
 namespace net {
 
@@ -71,12 +74,14 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
 
  private:
   friend class AddressSorterPosixTest;
+  class SortContext;
 
   // NetworkChangeNotifier::IPAddressObserver:
   void OnIPAddressChanged() override;
-
   // Fills |info| with values for |address| from policy tables.
   void FillPolicy(const IPAddress& address, SourceAddressInfo* info) const;
+
+  void FinishedSort(SortContext* sort_context) const;
 
   // Mutable to allow using default values for source addresses which were not
   // found in most recent OnIPAddressChanged.
@@ -86,6 +91,13 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   PolicyTable precedence_table_;
   PolicyTable label_table_;
   PolicyTable ipv4_scope_table_;
+
+  // SortContext stores data for an outstanding Sort() that is completing
+  // asynchronously. Mutable to allow pushing a new SortContext when Sort is
+  // called. Since Sort can be called multiple times, a container is necessary
+  // to track different SortContexts.
+  mutable std::set<std::unique_ptr<SortContext>, base::UniquePtrComparator>
+      sort_contexts_;
 
   THREAD_CHECKER(thread_checker_);
 };

@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -42,8 +43,10 @@ IPAddress ParseIP(const std::string& str) {
 // A mock socket which binds to source address according to AddressMapping.
 class TestUDPClientSocket : public DatagramClientSocket {
  public:
-  explicit TestUDPClientSocket(const AddressMapping* mapping)
-      : mapping_(mapping) {}
+  enum class ConnectMode { kSynchronous, kAsynchronous, kAsynchronousManual };
+  explicit TestUDPClientSocket(const AddressMapping* mapping,
+                               ConnectMode connect_mode)
+      : mapping_(mapping), connect_mode_(connect_mode) {}
 
   TestUDPClientSocket(const TestUDPClientSocket&) = delete;
   TestUDPClientSocket& operator=(const TestUDPClientSocket&) = delete;
@@ -95,8 +98,19 @@ class TestUDPClientSocket : public DatagramClientSocket {
 
   int ConnectAsync(const IPEndPoint& address,
                    CompletionOnceCallback callback) override {
-    NOTIMPLEMENTED();
-    return ERR_NOT_IMPLEMENTED;
+    DCHECK(callback);
+    int rv = Connect(address);
+    finish_connect_callback_ =
+        base::BindOnce(&TestUDPClientSocket::RunConnectCallback,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback), rv);
+    if (connect_mode_ == ConnectMode::kAsynchronous) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(finish_connect_callback_));
+      return ERR_IO_PENDING;
+    } else if (connect_mode_ == ConnectMode::kAsynchronousManual) {
+      return ERR_IO_PENDING;
+    }
+    return rv;
   }
 
   int ConnectUsingNetworkAsync(handles::NetworkHandle network,
@@ -132,11 +146,20 @@ class TestUDPClientSocket : public DatagramClientSocket {
 
   const NetLogWithSource& NetLog() const override { return net_log_; }
 
+  void FinishConnect() { std::move(finish_connect_callback_).Run(); }
+
  private:
+  void RunConnectCallback(CompletionOnceCallback callback, int rv) {
+    std::move(callback).Run(rv);
+  }
   NetLogWithSource net_log_;
   raw_ptr<const AddressMapping> mapping_;
   bool connected_ = false;
   IPEndPoint local_endpoint_;
+  ConnectMode connect_mode_;
+  base::OnceClosure finish_connect_callback_;
+
+  base::WeakPtrFactory<TestUDPClientSocket> weak_ptr_factory_{this};
 };
 
 // Creates TestUDPClientSockets and maintains an AddressMapping.
@@ -153,7 +176,12 @@ class TestSocketFactory : public ClientSocketFactory {
       DatagramSocket::BindType,
       NetLog*,
       const NetLogSource&) override {
-    return std::make_unique<TestUDPClientSocket>(&mapping_);
+    auto new_socket =
+        std::make_unique<TestUDPClientSocket>(&mapping_, connect_mode_);
+    if (socket_create_callback_) {
+      socket_create_callback_.Run(new_socket.get());
+    }
+    return new_socket;
   }
   std::unique_ptr<TransportClientSocket> CreateTransportClientSocket(
       const AddressList&,
@@ -175,16 +203,28 @@ class TestSocketFactory : public ClientSocketFactory {
   void AddMapping(const IPAddress& dst, const IPAddress& src) {
     mapping_[dst] = src;
   }
+  void SetConnectMode(TestUDPClientSocket::ConnectMode connect_mode) {
+    connect_mode_ = connect_mode;
+  }
+  void SetSocketCreateCallback(
+      base::RepeatingCallback<void(TestUDPClientSocket*)>
+          socket_create_callback) {
+    socket_create_callback_ = std::move(socket_create_callback);
+  }
 
  private:
   AddressMapping mapping_;
+  TestUDPClientSocket::ConnectMode connect_mode_;
+  base::RepeatingCallback<void(TestUDPClientSocket*)> socket_create_callback_;
 };
 
-void OnSortComplete(std::vector<IPEndPoint>* sorted_buf,
+void OnSortComplete(bool& completed,
+                    std::vector<IPEndPoint>* sorted_buf,
                     CompletionOnceCallback callback,
                     bool success,
                     std::vector<IPEndPoint> sorted) {
   EXPECT_TRUE(success);
+  completed = true;
   if (success)
     *sorted_buf = std::move(sorted);
   std::move(callback).Run(OK);
@@ -196,20 +236,48 @@ void OnSortComplete(std::vector<IPEndPoint>* sorted_buf,
 // constructor of AddressSorterPosix.
 class AddressSorterPosixTest : public TestWithTaskEnvironment {
  protected:
-  AddressSorterPosixTest() : sorter_(&socket_factory_) {}
+  AddressSorterPosixTest()
+      : sorter_(std::make_unique<AddressSorterPosix>(&socket_factory_)) {}
 
   void AddMapping(const std::string& dst, const std::string& src) {
     socket_factory_.AddMapping(ParseIP(dst), ParseIP(src));
   }
 
+  void SetSocketCreateCallback(
+      base::RepeatingCallback<void(TestUDPClientSocket*)>
+          socket_create_callback) {
+    socket_factory_.SetSocketCreateCallback(std::move(socket_create_callback));
+  }
+
+  void SetConnectMode(TestUDPClientSocket::ConnectMode connect_mode) {
+    socket_factory_.SetConnectMode(connect_mode);
+  }
+
   AddressSorterPosix::SourceAddressInfo* GetSourceInfo(
       const std::string& addr) {
     IPAddress address = ParseIP(addr);
-    AddressSorterPosix::SourceAddressInfo* info = &sorter_.source_map_[address];
+    AddressSorterPosix::SourceAddressInfo* info =
+        &sorter_->source_map_[address];
     if (info->scope == AddressSorterPosix::SCOPE_UNDEFINED)
-      sorter_.FillPolicy(address, info);
+      sorter_->FillPolicy(address, info);
     return info;
   }
+
+  TestSocketFactory socket_factory_;
+  std::unique_ptr<AddressSorterPosix> sorter_;
+  bool completed_ = false;
+
+ private:
+  friend class AddressSorterPosixSyncOrAsyncTest;
+};
+
+// Parameterized subclass of AddressSorterPosixTest. Necessary because not every
+// test needs to be parameterized.
+class AddressSorterPosixSyncOrAsyncTest
+    : public AddressSorterPosixTest,
+      public testing::WithParamInterface<TestUDPClientSocket::ConnectMode> {
+ protected:
+  AddressSorterPosixSyncOrAsyncTest() { SetConnectMode(GetParam()); }
 
   // Verify that NULL-terminated |addresses| matches (-1)-terminated |order|
   // after sorting.
@@ -222,8 +290,9 @@ class AddressSorterPosixTest : public TestWithTaskEnvironment {
 
     std::vector<IPEndPoint> sorted;
     TestCompletionCallback callback;
-    sorter_.Sort(endpoints,
-                 base::BindOnce(&OnSortComplete, &sorted, callback.callback()));
+    sorter_->Sort(endpoints,
+                  base::BindOnce(&OnSortComplete, std::ref(completed_), &sorted,
+                                 callback.callback()));
     callback.WaitForResult();
 
     for (size_t i = 0; (i < sorted.size()) || (order[i] >= 0); ++i) {
@@ -234,14 +303,18 @@ class AddressSorterPosixTest : public TestWithTaskEnvironment {
           << "  Actual: " << actual.ToString() << "\n"
           << "Expected: " << expected.ToString();
     }
+    EXPECT_TRUE(completed_);
   }
-
-  TestSocketFactory socket_factory_;
-  AddressSorterPosix sorter_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    AddressSorterPosix,
+    AddressSorterPosixSyncOrAsyncTest,
+    ::testing::Values(TestUDPClientSocket::ConnectMode::kSynchronous,
+                      TestUDPClientSocket::ConnectMode::kAsynchronous));
+
 // Rule 1: Avoid unusable destinations.
-TEST_F(AddressSorterPosixTest, Rule1) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule1) {
   AddMapping("10.0.0.231", "10.0.0.1");
   const char* const addresses[] = {"::1", "10.0.0.231", "127.0.0.1", nullptr};
   const int order[] = { 1, -1 };
@@ -249,7 +322,7 @@ TEST_F(AddressSorterPosixTest, Rule1) {
 }
 
 // Rule 2: Prefer matching scope.
-TEST_F(AddressSorterPosixTest, Rule2) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule2) {
   AddMapping("3002::1", "4000::10");      // matching global
   AddMapping("ff32::1", "fe81::10");      // matching link-local
   AddMapping("fec1::1", "fec1::10");      // matching node-local
@@ -267,7 +340,7 @@ TEST_F(AddressSorterPosixTest, Rule2) {
 }
 
 // Rule 3: Avoid deprecated addresses.
-TEST_F(AddressSorterPosixTest, Rule3) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule3) {
   // Matching scope.
   AddMapping("3002::1", "4000::10");
   GetSourceInfo("4000::10")->deprecated = true;
@@ -278,7 +351,7 @@ TEST_F(AddressSorterPosixTest, Rule3) {
 }
 
 // Rule 4: Prefer home addresses.
-TEST_F(AddressSorterPosixTest, Rule4) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule4) {
   AddMapping("3002::1", "4000::10");
   AddMapping("3002::2", "4000::20");
   GetSourceInfo("4000::20")->home = true;
@@ -288,7 +361,7 @@ TEST_F(AddressSorterPosixTest, Rule4) {
 }
 
 // Rule 5: Prefer matching label.
-TEST_F(AddressSorterPosixTest, Rule5) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule5) {
   AddMapping("::1", "::1");                       // matching loopback
   AddMapping("::ffff:1234:1", "::ffff:1234:10");  // matching IPv4-mapped
   AddMapping("2001::1", "::ffff:1234:10");        // Teredo vs. IPv4-mapped
@@ -305,7 +378,7 @@ TEST_F(AddressSorterPosixTest, Rule5) {
 }
 
 // Rule 6: Prefer higher precedence.
-TEST_F(AddressSorterPosixTest, Rule6) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule6) {
   AddMapping("::1", "::1");                       // loopback
   AddMapping("ff32::1", "fe81::10");              // multicast
   AddMapping("::ffff:1234:1", "::ffff:1234:10");  // IPv4-mapped
@@ -317,7 +390,7 @@ TEST_F(AddressSorterPosixTest, Rule6) {
 }
 
 // Rule 7: Prefer native transport.
-TEST_F(AddressSorterPosixTest, Rule7) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule7) {
   AddMapping("3002::1", "4000::10");
   AddMapping("3002::2", "4000::20");
   GetSourceInfo("4000::20")->native = true;
@@ -327,7 +400,7 @@ TEST_F(AddressSorterPosixTest, Rule7) {
 }
 
 // Rule 8: Prefer smaller scope.
-TEST_F(AddressSorterPosixTest, Rule8) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule8) {
   // Matching scope. Should precede the others by Rule 2.
   AddMapping("fe81::1", "fe81::10");  // link-local
   AddMapping("3000::1", "4000::10");  // global
@@ -342,7 +415,7 @@ TEST_F(AddressSorterPosixTest, Rule8) {
 }
 
 // Rule 9: Use longest matching prefix.
-TEST_F(AddressSorterPosixTest, Rule9) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule9) {
   AddMapping("3000::1", "3000:ffff::10");  // 16 bit match
   GetSourceInfo("3000:ffff::10")->prefix_length = 16;
   AddMapping("4000::1", "4000::10");       // 123 bit match, limited to 15
@@ -356,7 +429,7 @@ TEST_F(AddressSorterPosixTest, Rule9) {
 }
 
 // Rule 10: Leave the order unchanged.
-TEST_F(AddressSorterPosixTest, Rule10) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, Rule10) {
   AddMapping("4000::1", "4000::10");
   AddMapping("4000::2", "4000::10");
   AddMapping("4000::3", "4000::10");
@@ -365,7 +438,7 @@ TEST_F(AddressSorterPosixTest, Rule10) {
   Verify(addresses, order);
 }
 
-TEST_F(AddressSorterPosixTest, MultipleRules) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, MultipleRules) {
   AddMapping("::1", "::1");           // loopback
   AddMapping("ff32::1", "fe81::10");  // link-local multicast
   AddMapping("ff3e::1", "4000::10");  // global multicast
@@ -378,7 +451,7 @@ TEST_F(AddressSorterPosixTest, MultipleRules) {
   Verify(addresses, order);
 }
 
-TEST_F(AddressSorterPosixTest, InputPortsAreMaintained) {
+TEST_P(AddressSorterPosixSyncOrAsyncTest, InputPortsAreMaintained) {
   AddMapping("::1", "::1");
   AddMapping("::2", "::2");
   AddMapping("::3", "::3");
@@ -390,11 +463,67 @@ TEST_F(AddressSorterPosixTest, InputPortsAreMaintained) {
   std::vector<IPEndPoint> input = {endpoint1, endpoint2, endpoint3};
   std::vector<IPEndPoint> sorted;
   TestCompletionCallback callback;
-  sorter_.Sort(input,
-               base::BindOnce(&OnSortComplete, &sorted, callback.callback()));
+  sorter_->Sort(input, base::BindOnce(&OnSortComplete, std::ref(completed_),
+                                      &sorted, callback.callback()));
   callback.WaitForResult();
 
   EXPECT_THAT(sorted, testing::ElementsAre(endpoint1, endpoint2, endpoint3));
+}
+
+TEST_P(AddressSorterPosixSyncOrAsyncTest, AddressSorterPosixDestroyed) {
+  AddMapping("::1", "::1");
+  AddMapping("::2", "::2");
+  AddMapping("::3", "::3");
+
+  IPEndPoint endpoint1(ParseIP("::1"), /*port=*/111);
+  IPEndPoint endpoint2(ParseIP("::2"), /*port=*/222);
+  IPEndPoint endpoint3(ParseIP("::3"), /*port=*/333);
+
+  std::vector<IPEndPoint> input = {endpoint1, endpoint2, endpoint3};
+  std::vector<IPEndPoint> sorted;
+  TestCompletionCallback callback;
+  sorter_->Sort(input, base::BindOnce(&OnSortComplete, std::ref(completed_),
+                                      &sorted, callback.callback()));
+  sorter_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  TestUDPClientSocket::ConnectMode connect_mode = GetParam();
+  if (connect_mode == TestUDPClientSocket::ConnectMode::kAsynchronous) {
+    EXPECT_FALSE(completed_);
+  } else {
+    EXPECT_TRUE(completed_);
+  }
+}
+
+TEST_F(AddressSorterPosixTest, RandomAsyncSocketOrder) {
+  SetConnectMode(TestUDPClientSocket::ConnectMode::kAsynchronousManual);
+  std::vector<TestUDPClientSocket*> created_sockets;
+  SetSocketCreateCallback(base::BindRepeating(
+      [](std::vector<TestUDPClientSocket*>& created_sockets,
+         TestUDPClientSocket* socket) { created_sockets.push_back(socket); },
+      std::ref(created_sockets)));
+
+  AddMapping("::1", "::1");
+  AddMapping("::2", "::2");
+  AddMapping("::3", "::3");
+
+  IPEndPoint endpoint1(ParseIP("::1"), /*port=*/111);
+  IPEndPoint endpoint2(ParseIP("::2"), /*port=*/222);
+  IPEndPoint endpoint3(ParseIP("::3"), /*port=*/333);
+
+  std::vector<IPEndPoint> input = {endpoint1, endpoint2, endpoint3};
+  std::vector<IPEndPoint> sorted;
+  TestCompletionCallback callback;
+  sorter_->Sort(input, base::BindOnce(&OnSortComplete, std::ref(completed_),
+                                      &sorted, callback.callback()));
+
+  ASSERT_EQ(created_sockets.size(), 3u);
+  created_sockets[1]->FinishConnect();
+  created_sockets[2]->FinishConnect();
+  created_sockets[0]->FinishConnect();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(completed_);
 }
 
 }  // namespace net

@@ -25,6 +25,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/containers/cxx20_erase_vector.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "net/base/ip_endpoint.h"
@@ -38,12 +40,11 @@
 #endif
 
 namespace net {
-
 namespace {
-
 // Address sorting is performed according to RFC3484 with revisions.
 // http://tools.ietf.org/html/draft-ietf-6man-rfc3484bis-06
-// Precedence and label are separate to support override through /etc/gai.conf.
+// Precedence and label are separate to support override through
+// /etc/gai.conf.
 
 // Returns true if |p1| should precede |p2| in the table.
 // Sorts table by decreasing prefix size to allow longest prefix matching.
@@ -138,7 +139,8 @@ const AddressSorterPosix::PolicyEntry kDefaultPrecedenceTable[] = {
     {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xFF, 0xFF}, 96, 35},
     // 2002::/16 -- 6to4
     {{
-         0x20, 0x02,
+         0x20,
+         0x02,
      },
      16,
      30},
@@ -163,7 +165,8 @@ const AddressSorterPosix::PolicyEntry kDefaultLabelTable[] = {
     {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xFF, 0xFF}, 96, 4},
     // 2002::/16 -- 6to4
     {{
-         0x20, 0x02,
+         0x20,
+         0x02,
      },
      16,
      2},
@@ -196,7 +199,9 @@ struct DestinationInfo {
   unsigned precedence;
   unsigned label;
   raw_ptr<const AddressSorterPosix::SourceAddressInfo> src;
+  std::unique_ptr<DatagramClientSocket> socket;
   size_t common_prefix_length;
+  bool failed = false;
 };
 
 // Returns true iff |dst_a| should precede |dst_b| in the address list.
@@ -253,6 +258,84 @@ bool CompareDestinations(const std::unique_ptr<DestinationInfo>& dst_a,
 
 }  // namespace
 
+class AddressSorterPosix::SortContext {
+ public:
+  SortContext(size_t in_num_endpoints,
+              AddressSorter::CallbackType callback,
+              const AddressSorterPosix* sorter)
+      : num_endpoints_(in_num_endpoints),
+        callback_(std::move(callback)),
+        sorter_(sorter) {}
+  ~SortContext() = default;
+  void DidCompleteConnect(IPEndPoint dest, size_t info_index, int rv) {
+    ++num_completed_;
+    if (rv != OK) {
+      VLOG(1) << "Could not connect to " << dest.ToStringWithoutPort()
+              << " reason " << rv;
+      sort_list_[info_index]->failed = true;
+      MaybeFinishSort();
+      return;
+    }
+    // Filter out unusable destinations.
+    IPEndPoint src;
+    rv = sort_list_[info_index]->socket->GetLocalAddress(&src);
+    if (rv != OK) {
+      LOG(WARNING) << "Could not get local address for "
+                   << dest.ToStringWithoutPort() << " reason " << rv;
+      sort_list_[info_index]->failed = true;
+      MaybeFinishSort();
+      return;
+    }
+
+    AddressSorterPosix::SourceAddressInfo& src_info =
+        sorter_->source_map_[src.address()];
+    if (src_info.scope == AddressSorterPosix::SCOPE_UNDEFINED) {
+      // If |source_info_| is out of date, |src| might be missing, but we still
+      // want to sort, even though the HostCache will be cleared soon.
+      sorter_->FillPolicy(src.address(), &src_info);
+    }
+    sort_list_[info_index]->src = &src_info;
+
+    if (sort_list_[info_index]->endpoint.address().size() ==
+        src.address().size()) {
+      sort_list_[info_index]->common_prefix_length = std::min(
+          CommonPrefixLength(sort_list_[info_index]->endpoint.address(),
+                             src.address()),
+          sort_list_[info_index]->src->prefix_length);
+    }
+    MaybeFinishSort();
+  }
+
+  std::vector<std::unique_ptr<DestinationInfo>>& sort_list() {
+    return sort_list_;
+  }
+
+ private:
+  void MaybeFinishSort() {
+    // Sort the list of endpoints only after each Connect call has been made.
+    if (num_completed_ != num_endpoints_) {
+      return;
+    }
+    base::EraseIf(sort_list_, [](auto& element) { return element->failed; });
+    std::stable_sort(sort_list_.begin(), sort_list_.end(), CompareDestinations);
+
+    std::vector<IPEndPoint> sorted_result;
+    for (const auto& info : sort_list_)
+      sorted_result.push_back(info->endpoint);
+
+    CallbackType callback = std::move(callback_);
+    sorter_->FinishedSort(this);  // deletes this
+    std::move(callback).Run(true, std::move(sorted_result));
+  }
+
+  const size_t num_endpoints_;
+  size_t num_completed_ = 0;
+  std::vector<std::unique_ptr<DestinationInfo>> sort_list_;
+  AddressSorter::CallbackType callback_;
+
+  const AddressSorterPosix* sorter_;
+};
+
 AddressSorterPosix::AddressSorterPosix(ClientSocketFactory* socket_factory)
     : socket_factory_(socket_factory),
       precedence_table_(LoadPolicy(kDefaultPrecedenceTable,
@@ -273,8 +356,9 @@ AddressSorterPosix::~AddressSorterPosix() {
 void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
                               CallbackType callback) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<std::unique_ptr<DestinationInfo>> sort_list;
-
+  sort_contexts_.insert(std::make_unique<SortContext>(
+      endpoints.size(), std::move(callback), this));
+  auto* sort_context = sort_contexts_.rbegin()->get();
   for (const IPEndPoint& endpoint : endpoints) {
     auto info = std::make_unique<DestinationInfo>();
     info->endpoint = endpoint;
@@ -284,53 +368,25 @@ void AddressSorterPosix::Sort(const std::vector<IPEndPoint>& endpoints,
     info->label = GetPolicyValue(label_table_, info->endpoint.address());
 
     // Each socket can only be bound once.
-    std::unique_ptr<DatagramClientSocket> socket(
-        socket_factory_->CreateDatagramClientSocket(
-            DatagramSocket::DEFAULT_BIND, nullptr /* NetLog */,
-            NetLogSource()));
-
+    info->socket = socket_factory_->CreateDatagramClientSocket(
+        DatagramSocket::DEFAULT_BIND, nullptr /* NetLog */, NetLogSource());
     IPEndPoint dest = info->endpoint;
     // Even though no packets are sent, cannot use port 0 in Connect.
-    if (dest.port() == 0)
+    if (dest.port() == 0) {
       dest = IPEndPoint(dest.address(), /*port=*/80);
-    int rv = socket->Connect(dest);
-    if (rv != OK) {
-      VLOG(1) << "Could not connect to " << dest.ToStringWithoutPort()
-              << " reason " << rv;
-      continue;
     }
-    // Filter out unusable destinations.
-    IPEndPoint src;
-    rv = socket->GetLocalAddress(&src);
-    if (rv != OK) {
-      LOG(WARNING) << "Could not get local address for "
-                   << dest.ToStringWithoutPort() << " reason " << rv;
-      continue;
+    auto* info_ptr = info.get();
+    sort_context->sort_list().push_back(std::move(info));
+    size_t info_index = sort_context->sort_list().size() - 1;
+    // Destroying a SortContext destroys the underlying socket.
+    int rv = info_ptr->socket->ConnectAsync(
+        dest,
+        base::BindOnce(&AddressSorterPosix::SortContext::DidCompleteConnect,
+                       base::Unretained(sort_context), dest, info_index));
+    if (rv != ERR_IO_PENDING) {
+      sort_context->DidCompleteConnect(dest, info_index, rv);
     }
-
-    SourceAddressInfo& src_info = source_map_[src.address()];
-    if (src_info.scope == SCOPE_UNDEFINED) {
-      // If |source_info_| is out of date, |src| might be missing, but we still
-      // want to sort, even though the HostCache will be cleared soon.
-      FillPolicy(src.address(), &src_info);
-    }
-    info->src = &src_info;
-
-    if (info->endpoint.address().size() == src.address().size()) {
-      info->common_prefix_length =
-          std::min(CommonPrefixLength(info->endpoint.address(), src.address()),
-                   info->src->prefix_length);
-    }
-    sort_list.push_back(std::move(info));
   }
-
-  std::stable_sort(sort_list.begin(), sort_list.end(), CompareDestinations);
-
-  std::vector<IPEndPoint> sorted_result;
-  for (const auto& info : sort_list)
-    sorted_result.push_back(info->endpoint);
-
-  std::move(callback).Run(true, std::move(sorted_result));
 }
 
 void AddressSorterPosix::OnIPAddressChanged() {
@@ -407,6 +463,11 @@ void AddressSorterPosix::FillPolicy(const IPAddress& address,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   info->scope = GetScope(ipv4_scope_table_, address);
   info->label = GetPolicyValue(label_table_, address);
+}
+
+void AddressSorterPosix::FinishedSort(SortContext* sort_context) const {
+  auto it = sort_contexts_.find(sort_context);
+  sort_contexts_.erase(it);
 }
 
 // static
