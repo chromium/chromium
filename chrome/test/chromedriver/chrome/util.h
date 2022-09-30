@@ -7,10 +7,11 @@
 
 #include <string>
 
-namespace base {
-class Value;
-}
+#include "base/values.h"
+#include "chrome/test/chromedriver/chrome/status.h"
 
-std::string SerializeValue(const base::Value* value);
+Status SerializeAsJson(const base::Value::Dict& value, std::string* json);
+
+Status SerializeAsJson(const base::Value& value, std::string* json);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_UTIL_H_

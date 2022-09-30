@@ -21,6 +21,7 @@ class StubDevToolsClient : public DevToolsClient {
 
   // Overridden from DevToolsClient:
   const std::string& GetId() override;
+  const std::string& SessionId() const override;
   bool IsNull() const override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
@@ -56,6 +57,7 @@ class StubDevToolsClient : public DevToolsClient {
 
  protected:
   const std::string id_;
+  std::string session_id_;
   std::list<DevToolsEventListener*> listeners_;
 };
 

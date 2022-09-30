@@ -139,6 +139,9 @@ DevToolsClientImpl::DevToolsClientImpl(const std::string& id,
       is_main_page_(false) {}
 
 DevToolsClientImpl::~DevToolsClientImpl() {
+  if (IsNull()) {
+    return;
+  }
   if (parent_ != nullptr) {
     parent_->children_.erase(session_id_);
   } else {
@@ -161,6 +164,10 @@ void DevToolsClientImpl::SetFrontendCloserFunc(
 
 const std::string& DevToolsClientImpl::GetId() {
   return id_;
+}
+
+const std::string& DevToolsClientImpl::SessionId() const {
+  return session_id_;
 }
 
 bool DevToolsClientImpl::WasCrashed() {
@@ -213,6 +220,10 @@ Status DevToolsClientImpl::AttachTo(DevToolsClientImpl* parent) {
 Status DevToolsClientImpl::ConnectIfNecessary() {
   if (stack_count_)
     return Status(kUnknownError, "cannot connect when nested");
+
+  if (IsNull()) {
+    return Status(kUnknownError, "cannot connect without a socket");
+  }
 
   if (parent_ == nullptr) {
     // This is the browser level DevToolsClient
@@ -500,20 +511,27 @@ Status DevToolsClientImpl::SendCommandInternal(const std::string& method,
   // |client_command_id| will be 0 for commands sent by ChromeDriver
   int command_id =
       client_command_id ? client_command_id : AdvanceNextMessageId();
-  base::DictionaryValue command;
-  command.SetInteger("id", command_id);
-  command.SetString("method", method);
-  command.SetKey("params", base::Value(params.Clone()));
+  base::Value::Dict command;
+  command.Set("id", command_id);
+  command.Set("method", method);
+  command.Set("params", params.Clone());
   if (!session_id_.empty()) {
-    command.SetString("sessionId", session_id_);
+    command.Set("sessionId", session_id_);
   }
-  std::string message = SerializeValue(&command);
+
+  std::string message;
+  {
+    Status status = SerializeAsJson(command, &message);
+    if (status.IsError()) {
+      return status;
+    }
+  }
 
   if (IsVLogOn(1)) {
     // Note: ChromeDriver log-replay depends on the format of this logging.
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Command: " << method << " (id=" << command_id
-            << ")" << SessionId(session_id_) << " " << id_ << " "
+            << ")" << ::SessionId(session_id_) << " " << id_ << " "
             << FormatValueForDisplay(base::Value(params.Clone()));
   }
   SyncWebSocket* socket =
@@ -702,7 +720,7 @@ Status DevToolsClientImpl::ProcessEvent(const internal::InspectorEvent& event) {
     // Note: ChromeDriver log-replay depends on the format of this logging.
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Event: " << event.method
-            << SessionId(session_id_) << " " << id_ << " "
+            << ::SessionId(session_id_) << " " << id_ << " "
             << FormatValueForDisplay(*event.params);
   }
   unnotified_event_listeners_ = listeners_;
@@ -758,7 +776,7 @@ Status DevToolsClientImpl::ProcessCommandResponse(
     // Note: ChromeDriver log-replay depends on the format of this logging.
     // see chromedriver/log_replay/devtools_log_reader.cc.
     VLOG(1) << "DevTools WebSocket Response: " << method
-            << " (id=" << response.id << ")" << SessionId(session_id_) << " "
+            << " (id=" << response.id << ")" << ::SessionId(session_id_) << " "
             << id_ << " " << result;
   }
 

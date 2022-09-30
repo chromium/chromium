@@ -100,6 +100,8 @@ class DevToolsClientImpl : public DevToolsClient {
 
   // Overridden from DevToolsClient:
   const std::string& GetId() override;
+  // Session id used to annotate the CDP commands.
+  const std::string& SessionId() const override;
   // If the object IsNull then it cannot be connected to the remote end.
   // Such an object needs to be attached to some !IsNull() parent first.
   // Postcondition: IsNull() == (socket == nullptr && parent == nullptr)

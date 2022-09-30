@@ -1477,7 +1477,7 @@ Status ExecuteBidiCommand(Session* session,
 
   std::string msg;
   if (!base::JSONWriter::Write(data, &msg)) {
-    return Status(kUnknownError, "cannot serialize be BiDi command: " + data);
+    return Status(kUnknownError, "cannot serialize the BiDi command: " + data);
   }
   std::string expression = "onBidiMessage(" + msg + ")";
 

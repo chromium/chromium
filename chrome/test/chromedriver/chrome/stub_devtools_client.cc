@@ -19,6 +19,10 @@ const std::string& StubDevToolsClient::GetId() {
   return id_;
 }
 
+const std::string& StubDevToolsClient::SessionId() const {
+  return session_id_;
+}
+
 bool StubDevToolsClient::IsNull() const {
   return false;
 }

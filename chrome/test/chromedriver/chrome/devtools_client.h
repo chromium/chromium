@@ -26,6 +26,9 @@ class DevToolsClient {
 
   virtual const std::string& GetId() = 0;
 
+  // Session id used to annotate the CDP commands.
+  virtual const std::string& SessionId() const = 0;
+
   virtual bool WasCrashed() = 0;
 
   virtual bool IsNull() const = 0;
