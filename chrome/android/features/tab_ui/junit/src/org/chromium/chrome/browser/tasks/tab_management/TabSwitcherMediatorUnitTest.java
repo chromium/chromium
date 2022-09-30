@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -447,38 +446,6 @@ public class TabSwitcherMediatorUnitTest {
 
         // Switching TabModels by itself shouldn't cause visibility changes.
         assertThat(mModel.get(TabListContainerProperties.IS_VISIBLE), equalTo(false));
-    }
-
-    @Test
-    public void hidesPreviouslySelectedTabAfterNewTabModelSelected_regularToEmptyIncognito() {
-        initAndAssertAllProperties();
-        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
-
-        TabModel incognitoTabModel = mock(TabModel.class);
-        doReturn(0).when(incognitoTabModel).getCount();
-        doReturn(true).when(incognitoTabModel).isIncognito();
-
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
-        verify(/* mTab3 is the current tab. */ mTab3).hide(TabHidingType.CHANGED_TABS);
-    }
-
-    @Test
-    public void noHidesPreviouslySelectedTabAfterNewTabModelSelected_incognitoToEmptyRegular() {
-        // The tab shouldn't be hidden when moving from incognito to the regular tab switcher.
-        initAndAssertAllProperties();
-        mModel.set(TabListContainerProperties.IS_VISIBLE, true);
-
-        Tab tab = mock(Tab.class);
-        TabModel incognitoTabModel = mock(TabModel.class);
-        doReturn(0).when(mTabModel).getCount();
-        doReturn(0).when(mTabModel).index();
-        doReturn(1).when(incognitoTabModel).getCount();
-        doReturn(0).when(mTabModel).index();
-        doReturn(true).when(incognitoTabModel).isIncognito();
-        doReturn(tab).when(incognitoTabModel).getTabAt(0);
-
-        mTabModelSelectorObserverCaptor.getValue().onTabModelSelected(incognitoTabModel, mTabModel);
-        verify(/* mTab3 is the current tab. */ mTab3, times(0)).hide(TabHidingType.CHANGED_TABS);
     }
 
     @Test

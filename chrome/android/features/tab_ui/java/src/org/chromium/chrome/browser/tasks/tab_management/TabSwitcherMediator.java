@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
-import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -291,13 +290,6 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
                 }
                 if (!mContainerViewModel.get(IS_VISIBLE)) return;
                 mResetHandler.resetWithTabList(currentTabModelFilter, false, mShowTabsInMruOrder);
-
-                // Hide the currently selected tab when moving to an empty incognito model.
-                // TODO(crbug.com/1082612): If the need arises, generalize this solution in the
-                // IncognitoTabModel.
-                if (newModel.isIncognito() && newModel.getCount() == 0 && oldModel.getCount() > 0) {
-                    oldModel.getTabAt(oldModel.index()).hide(TabHidingType.CHANGED_TABS);
-                }
                 setInitialScrollIndexOffset();
             }
         };

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -39,18 +42,22 @@ public class IncognitoTabModelTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private TabModel mTabModel;
+    private TabModel mRegularTabModel;
+    private TabModel mIncognitoTabModel;
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mTabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
+        mRegularTabModel =
+                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get().getModel(false);
+        mIncognitoTabModel =
+                mActivityTestRule.getActivity().getTabModelSelectorSupplier().get().getModel(true);
     }
 
     private class CloseAllDuringAddTabTabModelObserver implements TabModelObserver {
         @Override
         public void willAddTab(Tab tab, @TabLaunchType int type) {
-            mTabModel.closeAllTabs();
+            mIncognitoTabModel.closeAllTabs();
         }
     }
 
@@ -72,12 +79,12 @@ public class IncognitoTabModelTest {
     @Feature({"OffTheRecord"})
     public void testCloseAllDuringAddTabDoesNotCrash() {
         createTabOnUiThread();
-        Assert.assertEquals(1, mTabModel.getCount());
+        Assert.assertEquals(1, mIncognitoTabModel.getCount());
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver()));
+                () -> mIncognitoTabModel.addObserver(new CloseAllDuringAddTabTabModelObserver()));
 
         createTabOnUiThread();
-        Assert.assertEquals(1, mTabModel.getCount());
+        Assert.assertEquals(1, mIncognitoTabModel.getCount());
     }
 
     @Test
@@ -106,7 +113,7 @@ public class IncognitoTabModelTest {
         CallbackHelper tabRemovedCallbackHelper = new CallbackHelper();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabModel.addObserver(new TabModelObserver() {
+            mIncognitoTabModel.addObserver(new TabModelObserver() {
                 @Override
                 public void tabRemoved(Tab tab) {
                     tabRemovedCallbackHelper.notifyCalled();
@@ -130,12 +137,28 @@ public class IncognitoTabModelTest {
                 "TabModelObserver#didAddTab should have been called", 0);
 
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
-        Assert.assertTrue(tab.isIncognito());
+        assertTrue(tab.isIncognito());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabModel.removeTab(tab);
+            mIncognitoTabModel.removeTab(tab);
             tab.destroy();
         });
         tabRemovedCallbackHelper.waitForCallback(
                 "TabModelObserver#tabRemoved should have been called", 0);
+    }
+
+    @Test
+    @SmallTest
+    public void testHideLastRegularTab_OnModelChange() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assert mRegularTabModel == mActivityTestRule.getActivity().getCurrentTabModel();
+            // In setup we create a blank tab.
+            assert mRegularTabModel.getCount() == 1;
+            assert mIncognitoTabModel.getCount() == 0;
+
+            Tab mTab = mRegularTabModel.getTabAt(0);
+            assertFalse(mTab.isHidden());
+            mActivityTestRule.getActivity().getTabModelSelectorSupplier().get().selectModel(true);
+            assertTrue(mTab.isHidden());
+        });
     }
 }
