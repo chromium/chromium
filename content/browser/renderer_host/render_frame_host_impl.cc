@@ -1613,6 +1613,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     LifecycleStateImpl lifecycle_state,
     scoped_refptr<BrowsingContextState> browsing_context_state,
     blink::FrameOwnerElementType frame_owner_element_type,
+    RenderFrameHostImpl* parent,
     FencedFrameStatus fenced_frame_status)
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
@@ -1623,7 +1624,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       frame_tree_node_(frame_tree_node),
       browsing_context_state_(std::move(browsing_context_state)),
       frame_owner_element_type_(frame_owner_element_type),
-      parent_(frame_tree_node_->parent()),
+      parent_(parent),
       depth_(parent_ ? parent_->GetFrameDepth() + 1 : 0),
       last_committed_site_info_(site_instance_->GetBrowserContext()),
       routing_id_(routing_id),

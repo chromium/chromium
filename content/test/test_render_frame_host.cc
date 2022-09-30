@@ -87,6 +87,7 @@ TestRenderFrameHost::TestRenderFrameHost(
                           lifecycle_state,
                           browsing_context_state,
                           frame_tree_node->frame_owner_element_type(),
+                          frame_tree_node->parent(),
                           frame_tree_node->fenced_frame_status()),
       child_creation_observer_(
           WebContents::FromRenderViewHost(render_view_host.get())),
