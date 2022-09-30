@@ -53,7 +53,7 @@ void PriceTrackingIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {
   if (profile_->GetPrefs()->GetBoolean(prefs::kShouldShowPriceTrackFUEBubble)) {
     bubble_coordinator_.Show(
-        GetWebContents(),
+        GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
         base::BindOnce(&PriceTrackingIconView::UpdatePriceTrackingState,
                        base::Unretained(this)),
         PriceTrackingBubbleDialogView::Type::TYPE_FUE);
@@ -61,9 +61,8 @@ void PriceTrackingIconView::OnExecuting(
     if (!IsPriceTracking()) {
       UpdatePriceTrackingState(true);
     }
-
     bubble_coordinator_.Show(
-        GetWebContents(),
+        GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
         base::BindOnce(&PriceTrackingIconView::UpdatePriceTrackingState,
                        base::Unretained(this)),
         PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);

@@ -12,6 +12,13 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class GURL;
+class Profile;
+
+namespace views {
+class StyledLabel;
+}  // namespace views
+
 class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
  public:
   using OnTrackPriceCallback = base::OnceCallback<void(bool)>;
@@ -20,16 +27,23 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
 
   PriceTrackingBubbleDialogView(View* anchor_view,
                                 content::WebContents* web_contents,
+                                Profile* profile,
+                                const GURL& url,
                                 OnTrackPriceCallback on_track_price_callback,
                                 Type type);
   ~PriceTrackingBubbleDialogView() override;
 
   Type GetTypeForTesting() { return type_; }
+  views::StyledLabel* GetBodyLabelForTesting() { return body_label_.get(); }
 
  private:
-  Type type_;
+  void ShowBookmarkEditor();
+
+  const raw_ptr<Profile> profile_;
+  const GURL url_;
   OnTrackPriceCallback action_callback_;
-  views::Label* body_label_;
+  const Type type_;
+  raw_ptr<views::StyledLabel> body_label_;
 
   base::WeakPtrFactory<PriceTrackingBubbleDialogView> weak_factory_{this};
 };
@@ -40,6 +54,8 @@ class PriceTrackingBubbleCoordinator {
   ~PriceTrackingBubbleCoordinator();
 
   void Show(content::WebContents* web_contents,
+            Profile* profile,
+            const GURL& url,
             PriceTrackingBubbleDialogView::OnTrackPriceCallback callback,
             PriceTrackingBubbleDialogView::Type type);
 
