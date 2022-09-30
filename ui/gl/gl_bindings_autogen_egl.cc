@@ -298,6 +298,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
       gfx::HasExtension(extensions, "EGL_ANGLE_display_texture_share_group");
   b_EGL_ANGLE_external_context_and_surface =
       gfx::HasExtension(extensions, "EGL_ANGLE_external_context_and_surface");
+  b_EGL_ANGLE_iosurface_client_buffer =
+      gfx::HasExtension(extensions, "EGL_ANGLE_iosurface_client_buffer");
   b_EGL_ANGLE_keyed_mutex =
       gfx::HasExtension(extensions, "EGL_ANGLE_keyed_mutex");
   b_EGL_ANGLE_power_preference =

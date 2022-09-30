@@ -722,7 +722,7 @@ GLDisplayEGL::GLDisplayEGL(uint64_t system_device_id)
 
 GLDisplayEGL::~GLDisplayEGL() = default;
 
-EGLDisplay GLDisplayEGL::GetDisplay() {
+EGLDisplay GLDisplayEGL::GetDisplay() const {
   return display_;
 }
 
@@ -746,7 +746,7 @@ void GLDisplayEGL::Shutdown() {
   egl_android_native_fence_sync_supported_ = false;
 }
 
-bool GLDisplayEGL::IsInitialized() {
+bool GLDisplayEGL::IsInitialized() const {
   return display_ != EGL_NO_DISPLAY;
 }
 
@@ -1027,13 +1027,13 @@ GLDisplayX11::GLDisplayX11(uint64_t system_device_id)
 
 GLDisplayX11::~GLDisplayX11() = default;
 
-void* GLDisplayX11::GetDisplay() {
+void* GLDisplayX11::GetDisplay() const {
   return x11::Connection::Get()->GetXlibDisplay();
 }
 
 void GLDisplayX11::Shutdown() {}
 
-bool GLDisplayX11::IsInitialized() {
+bool GLDisplayX11::IsInitialized() const {
   return true;
 }
 #endif  // defined(USE_GLX)

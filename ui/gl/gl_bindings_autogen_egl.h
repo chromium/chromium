@@ -353,6 +353,7 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANGLE_display_semaphore_share_group;
   bool b_EGL_ANGLE_display_texture_share_group;
   bool b_EGL_ANGLE_external_context_and_surface;
+  bool b_EGL_ANGLE_iosurface_client_buffer;
   bool b_EGL_ANGLE_keyed_mutex;
   bool b_EGL_ANGLE_power_preference;
   bool b_EGL_ANGLE_program_cache_control;

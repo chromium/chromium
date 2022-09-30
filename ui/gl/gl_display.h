@@ -97,9 +97,9 @@ class GL_EXPORT GLDisplay {
 
   virtual ~GLDisplay();
 
-  virtual void* GetDisplay() = 0;
+  virtual void* GetDisplay() const = 0;
   virtual void Shutdown() = 0;
-  virtual bool IsInitialized() = 0;
+  virtual bool IsInitialized() const = 0;
 
   template <typename GLDisplayPlatform>
   GLDisplayPlatform* GetAs();
@@ -121,9 +121,9 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
 
   static GLDisplayEGL* GetDisplayForCurrentContext();
 
-  EGLDisplay GetDisplay() override;
+  EGLDisplay GetDisplay() const override;
   void Shutdown() override;
-  bool IsInitialized() override;
+  bool IsInitialized() const override;
 
   void SetDisplay(EGLDisplay display);
   EGLDisplayPlatform GetNativeDisplay() const;
@@ -179,9 +179,9 @@ class GL_EXPORT GLDisplayX11 : public GLDisplay {
 
   ~GLDisplayX11() override;
 
-  void* GetDisplay() override;
+  void* GetDisplay() const override;
   void Shutdown() override;
-  bool IsInitialized() override;
+  bool IsInitialized() const override;
 
  private:
   friend class GLDisplayManager<GLDisplayX11>;
