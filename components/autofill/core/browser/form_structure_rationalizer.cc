@@ -170,7 +170,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   bool keep_cc_fields =
       cc_num_found || num_cc_fields_found >= 3 || num_other_fields_found == 0;
 
-  if (!keep_cc_fields && num_cc_fields_found && log_manager) {
+  if (!keep_cc_fields && num_cc_fields_found > 0) {
     LOG_AF(log_manager)
         << LoggingScope::kRationalization << LogMessage::kRationalization
         << "Credit card rationalization: Did not find credit card number, did "
@@ -218,7 +218,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
         //       that also has one or more quantity fields. Suppress the expiry
         //       month field(s) not immediately preceding an expiry year field.
         if (!keep_cc_fields || !cc_date_found) {
-          if (!cc_date_found && log_manager) {
+          if (!cc_date_found) {
             LOG_AF(log_manager)
                 << LoggingScope::kRationalization
                 << LogMessage::kRationalization
@@ -229,7 +229,6 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
         } else if (num_months_found > 1) {
           auto it2 = it + 1;
           if (it2 == fields_.end()) {
-            field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
             LOG_AF(log_manager)
                 << LoggingScope::kRationalization
                 << LogMessage::kRationalization
@@ -240,15 +239,15 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
             ServerFieldType next_field_type = (*it2)->Type().GetStorableType();
             if (next_field_type != CREDIT_CARD_EXP_2_DIGIT_YEAR &&
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
+              LOG_AF(log_manager)
+                  << LoggingScope::kRationalization
+                  << LogMessage::kRationalization
+                  << "Credit card rationalization: Found multiple expiration "
+                     "months and the field following one is not an "
+                     "expiration year but "
+                  << FieldTypeToStringPiece(next_field_type) << ".";
               field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
             }
-            LOG_AF(log_manager)
-                << LoggingScope::kRationalization
-                << LogMessage::kRationalization
-                << "Credit card rationalization: Found multiple expiration "
-                   "months and the field following one is not an "
-                   "expiration year but "
-                << FieldTypeToStringPiece(next_field_type) << ".";
           }
         }
         break;
@@ -256,7 +255,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
       case CREDIT_CARD_EXP_4_DIGIT_YEAR:
         if (!keep_cc_fields || !cc_date_found) {
           field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
-          if (!cc_date_found && log_manager) {
+          if (!cc_date_found) {
             LOG_AF(log_manager)
                 << LoggingScope::kRationalization
                 << LogMessage::kRationalization
@@ -292,12 +291,10 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
             features::kAutofillRationalizeStreetAddressAndAddressLine)) {
       continue;
     }
-    if (log_manager) {
-      LOG_AF(log_manager)
-          << LoggingScope::kRationalization << LogMessage::kRationalization
-          << "Street Address Rationalization: Converting sequence of (street "
-             "address, address line 2) to (address line 1, address line 2)";
-    }
+    LOG_AF(log_manager)
+        << LoggingScope::kRationalization << LogMessage::kRationalization
+        << "Street Address Rationalization: Converting sequence of (street "
+           "address, address line 2) to (address line 1, address line 2)";
     previous_field.SetTypeTo(AutofillType(ADDRESS_HOME_LINE1));
   }
 }
