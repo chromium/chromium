@@ -109,6 +109,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.TEST_DEFAULT_ENABLED, true)
                     .put(ChromeFeatureList.TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false)
                     .put(ChromeFeatureList.USE_CHIME_ANDROID_SDK, false)
+                    .put(ChromeFeatureList.USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true)
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .build();
     /**

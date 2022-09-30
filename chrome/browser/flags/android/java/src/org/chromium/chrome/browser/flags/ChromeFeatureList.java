@@ -609,6 +609,8 @@ public abstract class ChromeFeatureList {
             "UpdateHistoryEntryPointsInIncognito";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
     public static final String USE_CLIENT_CONFIG_IPH = "UseClientConfigIPH";
+    public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
+            "UseLibunwindstackNativeUnwinderAndroid";
     public static final String VOICE_SEARCH_AUDIO_CAPTURE_POLICY = "VoiceSearchAudioCapturePolicy";
     public static final String VOICE_BUTTON_IN_TOP_TOOLBAR = "VoiceButtonInTopToolbar";
     public static final String VR_BROWSING_FEEDBACK = "VrBrowsingFeedback";
@@ -737,6 +739,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(TOOLBAR_USE_HARDWARE_BITMAP_DRAW, false);
     public static final CachedFlag sUseChimeAndroidSdk =
             new CachedFlag(USE_CHIME_ANDROID_SDK, false);
+    public static final CachedFlag sUseLibunwindstackNativeUnwinderAndroid =
+            new CachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sWebApkTrampolineOnInitialIntent =
             new CachedFlag(WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true);
 

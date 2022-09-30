@@ -326,6 +326,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUmaBackgroundSessions,
     &kUpdateHistoryEntryPointsInIncognito,
     &kUpdateNotificationScheduleServiceImmediateShowOption,
+    &kUseLibunwindstackNativeUnwinderAndroid,
     &kVoiceSearchAudioCapturePolicy,
     &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
@@ -1096,6 +1097,15 @@ BASE_FEATURE(kUpdateHistoryEntryPointsInIncognito,
 BASE_FEATURE(kUpdateNotificationScheduleServiceImmediateShowOption,
              "UpdateNotificationScheduleServiceImmediateShowOption",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use the LibunwindstackNativeUnwinderAndroid for only browser main thread, and
+// only on Android.
+//
+// Enable by default to collect stack java samples for scroll jank effort as
+// soon as possible.
+BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
+             "UseLibunwindstackNativeUnwinderAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",

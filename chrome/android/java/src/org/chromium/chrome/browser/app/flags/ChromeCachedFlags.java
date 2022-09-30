@@ -130,6 +130,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sTabToGTSAnimation);
                 add(ChromeFeatureList.sToolbarUseHardwareBitmapDraw);
                 add(ChromeFeatureList.sUseChimeAndroidSdk);
+                add(ChromeFeatureList.sUseLibunwindstackNativeUnwinderAndroid);
                 add(ChromeFeatureList.sWebApkTrampolineOnInitialIntent);
             }
         };

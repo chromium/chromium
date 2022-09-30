@@ -203,7 +203,10 @@ static_library("test_support") {
   }
 
   if (is_android) {
-    deps += [ "//components/crash/android:crash_android" ]
+    deps += [
+      "//chrome/browser/flags:flags_android",
+      "//components/crash/android:crash_android",
+    ]
   }
 
   if (is_mac) {

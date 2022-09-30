@@ -1687,7 +1687,10 @@ if (is_android) {
     }
 
     if (is_android) {
-      deps += [ "//components/crash/android:crash_android" ]
+      deps += [
+        "//chrome/browser/flags:flags_android",
+        "//components/crash/android:crash_android",
+      ]
     }
 
     if (is_chromeos_ash) {
