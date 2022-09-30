@@ -216,6 +216,17 @@ static bool BorderOrPaddingLogicalDimensionChanged(
          old_style.PaddingBottom() != new_style.PaddingBottom();
 }
 
+// Compute a local version of the "font size scale factor" used by SVG
+// <text>. Squared to avoid computing the square root. See
+// SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
+static double ComputeSquaredLocalFontSizeScalingFactor(
+    const TransformationMatrix* transform) {
+  if (!transform)
+    return 1;
+  const auto affine = transform->ToAffineTransform();
+  return affine.XScaleSquared() + affine.YScaleSquared();
+}
+
 void LayoutBlock::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -223,10 +234,8 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
   // updates Layer()->Transform().
   double old_squared_scale = 1;
   if (Layer() && diff.TransformChanged() && has_svg_text_descendants_) {
-    if (TransformationMatrix* old_transform = Layer()->Transform()) {
-      const auto transform = old_transform->ToAffineTransform();
-      old_squared_scale = transform.XScaleSquared() + transform.YScaleSquared();
-    }
+    old_squared_scale =
+        ComputeSquaredLocalFontSizeScalingFactor(Layer()->Transform());
   }
 
   LayoutBox::StyleDidChange(diff, old_style);
@@ -278,14 +287,10 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
                                              kLogicalHeight);
 
   if (diff.TransformChanged() && has_svg_text_descendants_) {
-    const TransformationMatrix* new_transform =
-        Layer() ? Layer()->Transform() : nullptr;
-    const auto new_affine_transform =
-        new_transform ? new_transform->ToAffineTransform() : AffineTransform();
-    // Compare XScaleSquared()+YScaleSquared().
-    // See SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
-    if (old_squared_scale != new_affine_transform.XScaleSquared() +
-                                 new_affine_transform.YScaleSquared()) {
+    const double new_squared_scale = ComputeSquaredLocalFontSizeScalingFactor(
+        Layer() ? Layer()->Transform() : nullptr);
+    // Compare local scale before and after.
+    if (old_squared_scale != new_squared_scale) {
       for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this))
         To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
     }
