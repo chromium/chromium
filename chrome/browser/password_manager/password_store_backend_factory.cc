@@ -48,6 +48,10 @@ std::unique_ptr<PasswordStoreBackend> PasswordStoreBackend::Create(
         "PasswordManager.PasswordStore.TimesReenrolledInUPM",
         prefs->GetInteger(
             password_manager::prefs::kTimesReenrolledToGoogleMobileServices));
+    base::UmaHistogramCounts100(
+        "PasswordManager.PasswordStore.TimesAttemptedToReenrollInUPM",
+        prefs->GetInteger(password_manager::prefs::
+                              kTimesAttemptedToReenrollToGoogleMobileServices));
     return std::make_unique<PasswordStoreBackendMigrationDecorator>(
         std::make_unique<PasswordStoreBuiltInBackend>(
             CreateLoginDatabaseForProfileStorage(login_db_path)),

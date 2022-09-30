@@ -46,6 +46,12 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
                                           "testaccount@gmail.com");
     prefs_.registry()->RegisterBooleanPref(
         prefs::kUnenrolledFromGoogleMobileServicesDueToErrors, false);
+    prefs_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kTimesReenrolledToGoogleMobileServices, 0);
+    prefs_.registry()->RegisterIntegerPref(
+        password_manager::prefs::
+            kTimesAttemptedToReenrollToGoogleMobileServices,
+        0);
 
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{features::kUnifiedPasswordManagerAndroid,
@@ -526,6 +532,90 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
   sync_service().SetActiveDataTypes({});
   sync_service().SetAuthError(
       GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR));
+
+  // Reenrolling migration attempt should not happen, logins should not be
+  // retrieved.
+  EXPECT_CALL(*built_in_backend(), GetAllLoginsAsync).Times(0);
+  EXPECT_CALL(*android_backend(), GetAllLoginsAsync).Times(0);
+
+  // Imitate successfully completing a sync cycle.
+  sync_service().FireSyncCycleCompleted();
+  FastForwardUntilNoTasksRemain();
+
+  // Verify that migration attempt did not happen by checking that the time of
+  // the last migration attempt did not change.
+  EXPECT_EQ(
+      prefs().GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt),
+      kLastMigrationAttemptTime);
+}
+
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       ReenrollmentAttemptDoesNotStartWhenTooManyReenrollmentAttempts) {
+  // Imitate reaching max reenrollemnt attempts.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      /*feature=*/features::kUnifiedPasswordManagerReenrollment,
+      {{"max_reenrollment_attempts", "1"}});
+  prefs().SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                     true);
+  prefs().SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices, 1);
+
+  // Init backend.
+  EXPECT_CALL(*built_in_backend(), InitBackend);
+  EXPECT_CALL(*android_backend(), InitBackend);
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
+  backend_migration_decorator()->InitBackend(
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/mock_completion_callback.Get());
+
+  // Set password sync to be active and have no auth errors.
+  InitSyncService(/*is_password_sync_enabled=*/true);
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().SetAuthError(
+      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+
+  // Reenrolling migration attempt should not happen, logins should not be
+  // retrieved.
+  EXPECT_CALL(*built_in_backend(), GetAllLoginsAsync).Times(0);
+  EXPECT_CALL(*android_backend(), GetAllLoginsAsync).Times(0);
+
+  // Imitate successfully completing a sync cycle.
+  sync_service().FireSyncCycleCompleted();
+  FastForwardUntilNoTasksRemain();
+
+  // Verify that migration attempt did not happen by checking that the time of
+  // the last migration attempt did not change.
+  EXPECT_EQ(
+      prefs().GetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt),
+      kLastMigrationAttemptTime);
+}
+
+TEST_F(PasswordStoreBackendMigrationDecoratorTest,
+       ReenrollmentAttemptDoesNotStartWhenTooManyReenrollments) {
+  // Imitate reaching max reenrollemnts.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      /*feature=*/features::kUnifiedPasswordManagerReenrollment,
+      {{"max_reenrollments", "1"}});
+  prefs().SetBoolean(prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+                     true);
+  prefs().SetInteger(prefs::kTimesReenrolledToGoogleMobileServices, 1);
+
+  // Init backend.
+  EXPECT_CALL(*built_in_backend(), InitBackend);
+  EXPECT_CALL(*android_backend(), InitBackend);
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_completion_callback;
+  backend_migration_decorator()->InitBackend(
+      /*remote_form_changes_received=*/base::DoNothing(),
+      /*sync_enabled_or_disabled_cb=*/base::DoNothing(),
+      /*completion=*/mock_completion_callback.Get());
+
+  // Set password sync to be active and have no auth errors.
+  InitSyncService(/*is_password_sync_enabled=*/true);
+  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().SetAuthError(
+      GoogleServiceAuthError(GoogleServiceAuthError::NONE));
 
   // Reenrolling migration attempt should not happen, logins should not be
   // retrieved.

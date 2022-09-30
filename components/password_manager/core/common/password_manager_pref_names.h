@@ -111,9 +111,14 @@ extern const char kUnenrolledFromGoogleMobileServicesWithErrorListVersion[];
 extern const char kUPMErrorUIShownTimestamp[];
 
 // Integer value indicating the number of times the client was reenrolled into
-// the UPM experiment after expriencing user-unresolvable errors in
+// the UPM experiment after experiencing user-unresolvable errors in
 // communication with Google Mobile Services.
 extern const char kTimesReenrolledToGoogleMobileServices[];
+
+// Integer value indicating the number of times the client has attempted a
+// migration in an attempt to reenroll into the UPM experiment. Reset to zero
+// after a successful reenrollment.
+extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
 #endif
 
 #if BUILDFLAG(IS_WIN)

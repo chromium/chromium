@@ -65,6 +65,9 @@ PasswordManagerEvictionUtilTest::PasswordManagerEvictionUtilTest() {
       0);
   test_pref_service_.registry()->RegisterIntegerPref(
       password_manager::prefs::kTimesReenrolledToGoogleMobileServices, 0);
+  test_pref_service_.registry()->RegisterIntegerPref(
+      password_manager::prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+      0);
 
   test_pref_service_.registry()->RegisterIntegerPref(
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
@@ -151,6 +154,11 @@ TEST_F(PasswordManagerEvictionUtilTest, ReenrollsUser) {
       password_manager::prefs::
           kUnenrolledFromGoogleMobileServicesWithErrorListVersion,
       kTestErrorListVersion);
+  pref_service()->SetInteger(
+      password_manager::prefs::kTimesReenrolledToGoogleMobileServices, 1);
+  pref_service()->SetInteger(
+      password_manager::prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+      1);
 
   password_manager_upm_eviction::ReenrollCurrentUser(pref_service());
 
@@ -163,6 +171,14 @@ TEST_F(PasswordManagerEvictionUtilTest, ReenrollsUser) {
   EXPECT_EQ(pref_service()->GetInteger(
                 password_manager::prefs::
                     kUnenrolledFromGoogleMobileServicesWithErrorListVersion),
+            0);
+  EXPECT_EQ(
+      pref_service()->GetInteger(
+          password_manager::prefs::kTimesReenrolledToGoogleMobileServices),
+      0);
+  EXPECT_EQ(pref_service()->GetInteger(
+                password_manager::prefs::
+                    kTimesAttemptedToReenrollToGoogleMobileServices),
             0);
 }
 

@@ -29,10 +29,31 @@ constexpr int kMigrationToAndroidBackendDelay = 30;
 
 // Check the experiment stage allows migration and that user wasn't kicked out
 // from the experiment after receiving errors from the backend.
-bool ShouldAttemptMigration(PrefService* prefs) {
+bool ShouldAttemptMigration(const PrefService* prefs) {
   return features::RequiresMigrationForUnifiedPasswordManager() &&
          !prefs->GetBoolean(
              prefs::kUnenrolledFromGoogleMobileServicesDueToErrors);
+}
+
+// Returns if the limit of automatic reenrollment attempts if set, and, if yes,
+// whether the user has reached the limit.
+bool ReachedReenrollmentAttemptsLimit(const PrefService* prefs) {
+  int max_reenrollement_attempts =
+      password_manager::features::kMaxUPMReenrollmentAttempts.Get();
+  return max_reenrollement_attempts &&
+         prefs->GetInteger(
+             prefs::kTimesAttemptedToReenrollToGoogleMobileServices) >=
+             max_reenrollement_attempts;
+}
+
+// Returns if the limit of automatic reenrollments if set, and, if yes,
+// whether the user has reached the limit.
+bool ReachedReenrollmentsLimit(const PrefService* prefs) {
+  int max_reenrollements =
+      password_manager::features::kMaxUPMReenrollments.Get();
+  return max_reenrollements &&
+         prefs->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) >=
+             max_reenrollements;
 }
 
 }  // namespace
@@ -108,22 +129,24 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     return;
   }
 
-  int max_reenrollement_attempts =
-      password_manager::features::kMaxUPMReenrollmentAttempts.Get();
-  if (max_reenrollement_attempts &&
-      prefs_->GetInteger(prefs::kTimesReenrolledToGoogleMobileServices) >=
-          max_reenrollement_attempts) {
+  if (ReachedReenrollmentAttemptsLimit(prefs_) ||
+      ReachedReenrollmentsLimit(prefs_)) {
     return;
   }
 
   if (sync_util::IsPasswordSyncActive(sync) &&
       (sync->GetAuthError() ==
        GoogleServiceAuthError(GoogleServiceAuthError::NONE))) {
+    int reenrollment_attempts = prefs_->GetInteger(
+        prefs::kTimesAttemptedToReenrollToGoogleMobileServices);
+    prefs_->SetInteger(prefs::kTimesAttemptedToReenrollToGoogleMobileServices,
+                       reenrollment_attempts + 1);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
             &BuiltInBackendToAndroidBackendMigrator::StartMigrationIfNecessary,
-            migrator_->GetWeakPtr(), /*should_attempt_reenrollment=*/true),
+            migrator_->GetWeakPtr(),
+            /*should_attempt_reenrollment=*/true),
         base::Seconds(kMigrationToAndroidBackendDelay));
   }
 }
