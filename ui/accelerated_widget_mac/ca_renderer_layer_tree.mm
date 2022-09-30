@@ -914,29 +914,11 @@ void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
 
 void CARendererLayerTree::TransformLayer::AddContentLayer(
     const CARendererLayerParams& params) {
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
-  gfx::ColorSpace io_surface_color_space;
-  if (params.image) {
-    gl::GLImageIOSurface* io_surface_image =
-        gl::GLImageIOSurface::FromGLImage(params.image);
-    DCHECK(io_surface_image);
-    io_surface = io_surface_image->io_surface();
-    // Temporary investagtive fix for https://crbug.com/702369. It appears upon
-    // investigation that not using the original CVPixelBufferRef which came
-    // from the VTDecompressionSession prevents or minimizes flashing of
-    // incorrect content. Disable the CVPixelBufferRef path for the moment to
-    // determine if this fixes the bug for users.
-    // TODO(ccameron): If this indeed causes the bug to disappear, then
-    // extirpate the CVPixelBufferRef path.
-    // cv_pixel_buffer = io_surface_image->cv_pixel_buffer();
-    io_surface_color_space = params.image->color_space();
-  }
   content_layers_.emplace_back(
-      this, io_surface, cv_pixel_buffer, params.contents_rect, params.rect,
-      params.background_color, io_surface_color_space, params.edge_aa_mask,
-      params.opacity, params.filter, params.hdr_metadata,
-      params.protected_video_type);
+      this, params.io_surface, base::ScopedCFTypeRef<CVPixelBufferRef>(),
+      params.contents_rect, params.rect, params.background_color,
+      params.io_surface_color_space, params.edge_aa_mask, params.opacity,
+      params.filter, params.hdr_metadata, params.protected_video_type);
 }
 
 void CARendererLayerTree::RootLayer::CommitToCA(CALayer* superlayer,

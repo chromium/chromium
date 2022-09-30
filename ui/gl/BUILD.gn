@@ -58,8 +58,6 @@ component("gl") {
   sources = [
     "buffer_format_utils.cc",
     "buffer_format_utils.h",
-    "ca_renderer_layer_params.cc",
-    "ca_renderer_layer_params.h",
     "dc_renderer_layer_params.cc",
     "dc_renderer_layer_params.h",
     "dual_gpu_state.cc",
@@ -395,6 +393,8 @@ component("gl") {
   }
   if (is_mac) {
     sources += [
+      "ca_renderer_layer_params.cc",
+      "ca_renderer_layer_params.h",
       "dual_gpu_state_mac.cc",
       "dual_gpu_state_mac.h",
       "gl_context_cgl.cc",
