@@ -12,7 +12,7 @@ BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
 BASE_DECLARE_FEATURE(kSearchPrefetchBlockBeforeHeaders);
 
-extern const base::Feature kSearchPrefetchSkipsCancel;
+BASE_DECLARE_FEATURE(kSearchPrefetchSkipsCancel);
 
 // Whether matching prefetches can block navigation until they are determined to
 // be serve-able or not based on headers.
