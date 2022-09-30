@@ -279,33 +279,6 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# crbug.com/1270571: Experimental bot to test pre-warming
-try_.orchestrator_builder(
-    name = "linux-rel-warmed",
-    compilator = "linux-rel-warmed-compilator",
-    mirrors = [
-        "ci/Linux Builder",
-        "ci/Linux Tests",
-        "ci/GPU Linux Builder",
-        "ci/Linux Release (NVIDIA)",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    main_list_view = "try",
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-)
-
-# crbug.com/1270571: Experimental bot to test pre-warming
-try_.compilator_builder(
-    name = "linux-rel-warmed-compilator",
-    main_list_view = "try",
-    builder_cache_name = "linux_rel_warmed_compilator_warmed_cache",
-)
-
 try_.builder(
     name = "linux-wayland-rel",
     branch_selector = branches.STANDARD_MILESTONE,
