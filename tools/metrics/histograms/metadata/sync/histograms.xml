@@ -102,6 +102,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.BackedOffModelType" enum="SyncModelTypes"
+    expires_after="2023-02-12">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Logged when a data type is backed off.
+
+    This histogram can help explain changes in
+    Sync.PostedClientToServerMessageError2::PARTIAL_FAILURE.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarkEntityReuploadNeeded.On{UpdateType}"
     enum="Boolean" expires_after="2023-10-30">
   <owner>rushans@google.com</owner>
@@ -1296,6 +1309,35 @@ chromium-metrics-reviews@google.com.
     Whether a Sync stopped event URL fetch timed out or not. Note that this
     records true on timeout and false on success, but doesn't record anything if
     the fetch failed for any other reason.
+  </summary>
+</histogram>
+
+<histogram name="Sync.ThrottledAllModelTypes" enum="Boolean"
+    expires_after="2023-02-12">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Logged when the server instructs the client to throttle all its data types.
+    See also Sync.ThrottledSomeModelTypes which records a different event.
+
+    This histogram can help explain changes in
+    Sync.PostedClientToServerMessageError2::THROTTLED.
+  </summary>
+</histogram>
+
+<histogram name="Sync.ThrottledSomeModelTypes" enum="SyncModelTypes"
+    expires_after="2023-02-12">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Logged when the sync server instructs this client to throttle a special list
+    of data types. See also Sync.ThrottledAllModelTypes which records a
+    different event.
+
+    This histogram can help explain changes in
+    Sync.PostedClientToServerMessageError2::THROTTLED.
   </summary>
 </histogram>
 

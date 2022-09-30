@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -779,6 +779,7 @@ bool SyncSchedulerImpl::IsGlobalBackoff() const {
 
 void SyncSchedulerImpl::OnThrottled(const base::TimeDelta& throttle_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean("Sync.ThrottledAllModelTypes", true);
   wait_interval_ = std::make_unique<WaitInterval>(
       WaitInterval::BlockingMode::kThrottled, throttle_duration);
   for (SyncEngineEventListener& observer : *cycle_context_->listeners()) {
@@ -793,6 +794,10 @@ void SyncSchedulerImpl::OnTypesThrottled(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SDVLOG(1) << "Throttling " << ModelTypeSetToDebugString(types) << " for "
             << throttle_duration.InSeconds() << " seconds.";
+  for (ModelType type : types) {
+    base::UmaHistogramEnumeration("Sync.ThrottledSomeModelTypes",
+                                  ModelTypeHistogramValue(type));
+  }
   nudge_tracker_.SetTypesThrottledUntil(types, throttle_duration,
                                         TimeTicks::Now());
   RestartWaiting();
@@ -801,6 +806,8 @@ void SyncSchedulerImpl::OnTypesThrottled(
 void SyncSchedulerImpl::OnTypesBackedOff(ModelTypeSet types) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (ModelType type : types) {
+    base::UmaHistogramEnumeration("Sync.BackedOffModelType",
+                                  ModelTypeHistogramValue(type));
     base::TimeDelta last_backoff_time = kInitialBackoffRetryTime;
     if (nudge_tracker_.GetTypeBlockingMode(type) ==
         WaitInterval::BlockingMode::kExponentialBackoffRetrying) {

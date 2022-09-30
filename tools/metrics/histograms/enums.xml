@@ -94825,7 +94825,11 @@ would be helpful to identify which type is being sent.
     </obsolete>
   </int>
   <int value="2" label="NOT_MY_BIRTHDAY"/>
-  <int value="3" label="THROTTLED"/>
+  <int value="3" label="THROTTLED">
+    You might want to look at Sync.ThrottledSomeModelTypes to correlate this
+    with throttling of a specific data type, or Sync.ThrottledAllModelTypes for
+    throttling of the whole client.
+  </int>
   <int value="4" label="DEPRECATED_AUTH_EXPIRED">
     <obsolete>
       Obsolete value.
@@ -94850,7 +94854,10 @@ would be helpful to identify which type is being sent.
       Obsolete value.
     </obsolete>
   </int>
-  <int value="12" label="PARTIAL_FAILURE"/>
+  <int value="12" label="PARTIAL_FAILURE">
+    You might want to look at Sync.BackedOffModelType to see the per-type effect
+    of this.
+  </int>
   <int value="13" label="CLIENT_DATA_OBSOLETE"/>
   <int value="100" label="UNKNOWN"/>
 </enum>
