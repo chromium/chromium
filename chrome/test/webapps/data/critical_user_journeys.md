@@ -60,6 +60,7 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_or_shortcut(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_omnibox_icon(Screenshots) |
 | WMLC | install_or_shortcut_by_user_windowed | check_window_created |
 | WMLC | install_no_shortcut | check_platform_shortcut_not_exists |
 | WMLC | install_no_shortcut(NotPromotable) | check_platform_shortcut_not_exists(NotPromotable) |

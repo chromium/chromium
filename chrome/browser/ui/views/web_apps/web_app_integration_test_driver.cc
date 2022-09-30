@@ -179,6 +179,8 @@ Site InstallableSiteToSite(InstallableSite site) {
       return Site::kNoServiceWorker;
     case InstallableSite::kNotInstalled:
       return Site::kNotInstalled;
+    case InstallableSite::kScreenshots:
+      return Site::kScreenshots;
   }
 }
 
@@ -222,8 +224,8 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
      {.relative_url = "/webapps_integration/standalone/basic.html",
       .relative_manifest_id = "webapps_integration/standalone/basic.html",
       .app_name = "Site A",
-      // WCO disabled is the defaulting state so the title when disabled should
-      // match with the app's name.
+      // WCO disabled is the defaulting state so the title when disabled
+      // should match with the app's name.
       .wco_not_enabled_title = u"Site A",
       .icon_color = SK_ColorGREEN,
       .alternate_titles = {"Site A - Updated name"}}},
@@ -293,6 +295,12 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
           "webapps_integration/standalone/not_start_url/basic.html",
       .app_name = "Not Start URL",
       .wco_not_enabled_title = u"Not Start URL",
+      .icon_color = SK_ColorGREEN}},
+    {Site::kScreenshots,
+     {.relative_url = "/webapps_integration/screenshots/basic.html",
+      .relative_manifest_id = "webapps_integration/screenshots/basic.html",
+      .app_name = "Site With Screenshots",
+      .wco_not_enabled_title = u"Site With Screenshots",
       .icon_color = SK_ColorGREEN}},
 };
 
@@ -593,6 +601,16 @@ void ActivateBrowserAndWait(Browser* browser) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
+void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
+  std::string widget_name = site == InstallableSite::kScreenshots
+                                ? "WebAppDetailedInstallDialog"
+                                : "PWAConfirmationBubbleView";
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       widget_name);
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  views::test::AcceptDialog(widget);
+}
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -728,7 +746,10 @@ std::ostream& operator<<(std::ostream& os, const StateSnapshot& snapshot) {
 }
 
 WebAppIntegrationTestDriver::WebAppIntegrationTestDriver(TestDelegate* delegate)
-    : delegate_(delegate) {}
+    : delegate_(delegate) {
+  scoped_feature_list_.InitAndEnableFeature(
+      webapps::features::kDesktopPWAsDetailedInstallDialog);
+}
 
 WebAppIntegrationTestDriver::~WebAppIntegrationTestDriver() = default;
 
@@ -936,11 +957,17 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
   MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
-  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(/*auto_accept=*/true);
   BrowserAddedWaiter browser_added_waiter;
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
+
   CHECK(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
+
+  DCHECK_NE(site, InstallableSite::kScreenshots)
+      << "Installing via menu option with detailed dialog not supported, as "
+         "waiting for a worker is impossible here. https://crbug.com/1368324.";
+  WaitForAndAcceptInstallDialogForSite(site);
+
   browser_added_waiter.Wait();
   active_app_id_ = install_observer.Wait();
   app_browser_ = browser_added_waiter.browser_added();
@@ -980,7 +1007,6 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   if (!BeforeStateChangeAction(__FUNCTION__))
     return;
   MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
-  chrome::SetAutoAcceptPWAInstallConfirmationForTesting(true);
 
   auto* app_banner_manager =
       webapps::TestAppBannerManagerDesktop::FromWebContents(
@@ -1001,6 +1027,8 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   WebAppTestInstallWithOsHooksObserver install_observer(profile());
   install_observer.BeginListening();
   pwa_install_view()->ExecuteForTesting();
+
+  WaitForAndAcceptInstallDialogForSite(site);
 
   run_loop.Run();
   browser_added_waiter.Wait();

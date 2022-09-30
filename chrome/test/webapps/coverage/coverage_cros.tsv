@@ -1,5 +1,5 @@
 # This is a generated file.
-# Full coverage: 50%, with partial coverage: 69%
+# Full coverage: 51%, with partial coverage: 69%
 create_shortcut_Standalone_Windowed🌕	launch_from_menu_option_Standalone🌕	check_app_title_Standalone_StandaloneOriginal🌑
 create_shortcut_Standalone_Windowed🌕	launch_from_launch_icon_Standalone🌕	check_app_title_Standalone_StandaloneOriginal🌑
 create_shortcut_Standalone_Windowed🌕	launch_from_chrome_apps_Standalone🌓	check_app_title_Standalone_StandaloneOriginal🌑
@@ -72,6 +72,7 @@ install_policy_app_Standalone_NoShortcut_Windowed_WebApp🌓	check_app_title_Sta
 install_policy_app_Standalone_WithShortcut_Browser_WebApp🌓	check_app_title_Standalone_StandaloneUpdated🌑
 install_policy_app_Standalone_NoShortcut_Browser_WebApp🌓	check_app_title_Standalone_StandaloneUpdated🌑
 install_menu_option_Standalone🌕	check_app_title_Standalone_StandaloneUpdated🌑
+install_omnibox_icon_Screenshots🌕
 create_shortcut_Standalone_Windowed🌕	check_window_created🌕
 install_omnibox_icon_Standalone🌕	check_window_created🌕
 install_menu_option_Standalone🌕	check_window_created🌕

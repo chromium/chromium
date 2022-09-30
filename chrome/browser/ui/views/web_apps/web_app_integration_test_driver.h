@@ -53,6 +53,7 @@ enum class Site {
   kFileHandler,
   kNoServiceWorker,
   kNotInstalled,
+  kScreenshots
 };
 
 enum class InstallableSite {
@@ -66,6 +67,7 @@ enum class InstallableSite {
   kFileHandler,
   kNoServiceWorker,
   kNotInstalled,
+  kScreenshots
 };
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
@@ -385,6 +387,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   PageActionIconView* intent_picker_view();
 
   const net::EmbeddedTestServer& GetTestServerForSiteMode(Site site_mode) const;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   base::flat_set<AppId> previous_manifest_updates_;
 
