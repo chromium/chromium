@@ -40,24 +40,14 @@ class SavedDeskSaveDeskButton;
 class SavedDeskSaveDeskButtonContainer;
 class SavedDeskLibraryView;
 
-// Represents a grid of windows in the Overview Mode in a particular root
-// window, and manages a selection widget that can be moved with the arrow keys.
-// The idea behind the movement strategy is that it should be possible to access
-// any window pressing a given arrow key repeatedly.
-// +-------+  +-------+  +-------+
-// |   0   |  |   1   |  |   2   |
-// +-------+  +-------+  +-------+
-// +-------+  +-------+  +-------+
-// |   3   |  |   4   |  |   5   |
-// +-------+  +-------+  +-------+
-// +-------+
-// |   6   |
-// +-------+
-// Example sequences:
-//  - Going right to left
-//    0, 1, 2, 3, 4, 5, 6
-// The selector is switched to the next window grid (if available) or wrapped if
-// it reaches the end of its movement sequence.
+// Manages and positions the overview UI on a per root window basis. Overview UI
+// elements include:
+//   - Desks bar view which contains a desk preview and desk name per desk.
+//   - Splitview indicators for snapping windows in overview.
+//   - Overview items representing each application window associated with the
+//     root window of the grid.
+//   - Saved desk UI elements to create saved desks and display saved desks.
+//   - etc.
 class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                                 public ScreenRotationAnimatorObserver,
                                 public WallpaperControllerObserver {
@@ -427,8 +417,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const DesksBarView* desks_bar_view() const { return desks_bar_view_; }
   DesksBarView* desks_bar_view() { return desks_bar_view_; }
 
-  const gfx::Rect bounds() const { return bounds_; }
-
   bool should_animate_when_exiting() const {
     return should_animate_when_exiting_;
   }
@@ -436,8 +424,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void set_suspend_reposition(bool value) { suspend_reposition_ = value; }
 
   views::Widget* drop_target_widget() { return drop_target_widget_.get(); }
-
-  float scroll_offset() const { return scroll_offset_; }
 
   OverviewGridEventHandler* grid_event_handler() {
     return grid_event_handler_.get();
@@ -454,6 +440,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   int num_incognito_windows() const { return num_incognito_windows_; }
 
   int num_unsupported_windows() const { return num_unsupported_windows_; }
+
+  const gfx::Rect bounds_for_testing() const { return bounds_; }
+  float scroll_offset_for_testing() const { return scroll_offset_; }
 
  private:
   class TargetWindowObserver;

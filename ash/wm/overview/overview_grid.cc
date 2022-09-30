@@ -2098,7 +2098,6 @@ void OverviewGrid::OnScreenCopiedBeforeRotation() {
   Shell::Get()->overview_controller()->PauseOcclusionTracker();
 
   for (auto& window : window_list()) {
-    window->set_disable_mask(true);
     window->UpdateRoundedCornersAndShadow();
     window->StopWidgetAnimation();
   }
@@ -2107,8 +2106,6 @@ void OverviewGrid::OnScreenCopiedBeforeRotation() {
 void OverviewGrid::OnScreenRotationAnimationFinished(
     ScreenRotationAnimator* animator,
     bool canceled) {
-  for (auto& window : window_list())
-    window->set_disable_mask(false);
   Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
   Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
       kOcclusionUnpauseDurationForRotation);

@@ -9,9 +9,8 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
-#include "ash/wm/overview/overview_constants.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 
 namespace ash {
 
@@ -97,9 +96,9 @@ void OverviewWallpaperController::UpdateWallpaper(
     const bool should_animate = ShouldAnimateWallpaper(root);
     // On adding blur, we want to blur immediately if there are no animations
     // and blur after the rest of the overview animations have completed if
-    // there is to be wallpaper animations. |UpdateWallpaper| will get called
-    // twice when blurring, but only change the wallpaper when |should_animate|
-    // matches |animate|.
+    // there is to be wallpaper animations. `UpdateWallpaper` will get called
+    // twice when blurring, but only change the wallpaper when `should_animate`
+    // matches `animate`.
     if (should_blur && should_animate != animate.value())
       continue;
 

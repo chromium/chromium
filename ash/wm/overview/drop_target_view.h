@@ -8,6 +8,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class ImageView;
+}
+
 namespace ash {
 
 // DropTargetView represents a transparent view with border in overview. It
@@ -30,10 +34,8 @@ class DropTargetView : public views::View {
   void Layout() override;
 
  private:
-  class PlusIconView;
-
   views::View* background_view_ = nullptr;
-  PlusIconView* plus_icon_ = nullptr;
+  views::ImageView* plus_icon_ = nullptr;
 };
 
 }  // namespace ash

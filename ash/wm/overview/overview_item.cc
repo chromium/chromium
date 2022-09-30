@@ -289,31 +289,30 @@ void OverviewItem::RestoreWindow(bool reset_transform,
   }
 
   GetWindow()->ClearProperty(kForceVisibleInMiniViewKey);
-  for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow())) {
+  for (aura::Window* transient_child : GetTransientTreeIterator(GetWindow()))
     transient_child->ClearProperty(kForceVisibleInMiniViewKey);
-  }
 
   overview_item_view_->OnOverviewItemWindowRestoring();
   transform_window_.RestoreWindow(reset_transform,
                                   was_desks_templates_grid_showing);
 
-  if (transform_window_.IsMinimized()) {
-    const auto enter_exit_type = overview_session_->enter_exit_overview_type();
+  if (!transform_window_.IsMinimized())
+    return;
 
-    if (is_moving_to_another_desk_ ||
-        enter_exit_type == OverviewEnterExitType::kImmediateExit) {
-      overview_session_->highlight_controller()->OnViewDestroyingOrDisabling(
-          overview_item_view_);
-      ImmediatelyCloseWidgetOnExit(std::move(item_widget_));
-      overview_item_view_ = nullptr;
-      return;
-    }
-
-    OverviewAnimationType animation_type =
-        GetExitOverviewAnimationTypeForMinimizedWindow(
-            enter_exit_type, should_animate_when_exiting_);
-    FadeOutWidgetFromOverview(std::move(item_widget_), animation_type);
+  const auto enter_exit_type = overview_session_->enter_exit_overview_type();
+  if (is_moving_to_another_desk_ ||
+      enter_exit_type == OverviewEnterExitType::kImmediateExit) {
+    overview_session_->highlight_controller()->OnViewDestroyingOrDisabling(
+        overview_item_view_);
+    ImmediatelyCloseWidgetOnExit(std::move(item_widget_));
+    overview_item_view_ = nullptr;
+    return;
   }
+
+  OverviewAnimationType animation_type =
+      GetExitOverviewAnimationTypeForMinimizedWindow(
+          enter_exit_type, should_animate_when_exiting_);
+  FadeOutWidgetFromOverview(std::move(item_widget_), animation_type);
 }
 
 void OverviewItem::EnsureVisible() {
@@ -761,8 +760,7 @@ void OverviewItem::UpdateRoundedCornersAndShadow() {
   const bool is_shutting_down =
       !overview_controller || !overview_controller->InOverviewSession();
   const bool should_show_rounded_corners =
-      !disable_mask_ && !is_shutting_down &&
-      !overview_controller->IsInStartAnimation();
+      !is_shutting_down && !overview_controller->IsInStartAnimation();
 
   if (transform_window_.IsMinimized()) {
     overview_item_view_->UpdatePreviewRoundedCorners(

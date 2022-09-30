@@ -118,9 +118,11 @@ class ASH_EXPORT OverviewWindowDragController {
 
   OverviewItem* item() { return item_; }
 
-  DragBehavior current_drag_behavior() { return current_drag_behavior_; }
-
   bool is_touch_dragging() const { return is_touch_dragging_; }
+
+  DragBehavior current_drag_behavior_for_testing() const {
+    return current_drag_behavior_;
+  }
 
  private:
   enum NormalDragAction {

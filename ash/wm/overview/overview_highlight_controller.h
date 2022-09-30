@@ -18,8 +18,27 @@ class OverviewSession;
 class ScopedA11yOverrideWindowSetter;
 
 // Manages highlighting items while in overview. Responsible for telling
-// overview items to show or hide their focus ring borders, when tabbing through
-// overview items with arrow keys and trackpad swipes, or when tab dragging.
+// highlightable items to show or hide their focus ring borders, when tabbing
+// through highlightable items with arrow keys and trackpad swipes, or when tab
+// dragging. In this context, an highlightable item can represent anything
+// focusable in overview mode such as a desk textfield, saved desk button and an
+// `OverviewItem`. The idea behind the movement strategy is that it should be
+// possible to access any highlightable view via keyboard by pressing the tab or
+// arrow keys repeatedly.
+// +-------+  +-------+  +-------+
+// |   0   |  |   1   |  |   2   |
+// +-------+  +-------+  +-------+
+// +-------+  +-------+  +-------+
+// |   3   |  |   4   |  |   5   |
+// +-------+  +-------+  +-------+
+// +-------+
+// |   6   |
+// +-------+
+// Example sequences:
+//  - Going right to left
+//    0, 1, 2, 3, 4, 5, 6
+// The highlight is switched to the next window grid (if available) or wrapped
+// if it reaches the end of its movement sequence.
 class ASH_EXPORT OverviewHighlightController {
  public:
   explicit OverviewHighlightController(OverviewSession* overview_session);

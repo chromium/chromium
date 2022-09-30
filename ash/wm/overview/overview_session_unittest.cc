@@ -2870,8 +2870,8 @@ TEST_P(OverviewSessionTest, PositionWindows) {
 
   // Verify that items that are animating before closing are ignored by
   // PositionWindows.
-  item1->set_animating_to_close(true);
-  item2->set_animating_to_close(true);
+  item1->set_animating_to_close_for_testing(true);
+  item2->set_animating_to_close_for_testing(true);
   GetOverviewSession()->PositionWindows(/*animate=*/false);
   EXPECT_EQ(bounds1, item1->target_bounds());
   EXPECT_EQ(bounds2, item2->target_bounds());
@@ -3840,7 +3840,7 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
   // there may not be enough time passed to decay the velocity so the scroll
   // offset will not change, but the overall change should be substantial.
   constexpr int kMaxLoops = 10;
-  const float initial_scroll_offset = grid->scroll_offset();
+  const float initial_scroll_offset = grid->scroll_offset_for_testing();
   float previous_scroll_offset = initial_scroll_offset;
   for (int i = 0;
        i < kMaxLoops && grid_event_handler->IsFlingInProgressForTesting();
@@ -3848,12 +3848,12 @@ TEST_F(OverviewSessionFlingTest, BasicFling) {
     task_environment()->FastForwardBy(base::Milliseconds(50));
     ui::DrawWaiterForTest::WaitForCompositingStarted(compositor);
 
-    float scroll_offset = grid->scroll_offset();
+    float scroll_offset = grid->scroll_offset_for_testing();
     EXPECT_LE(scroll_offset, previous_scroll_offset);
     previous_scroll_offset = scroll_offset;
   }
 
-  EXPECT_LT(grid->scroll_offset(), initial_scroll_offset - 100.f);
+  EXPECT_LT(grid->scroll_offset_for_testing(), initial_scroll_offset - 100.f);
 }
 
 // Tests that a vertical scroll sequence will close the window it is scrolled
@@ -4552,12 +4552,13 @@ TEST_F(SplitViewOverviewSessionTest, OverviewDragControllerBehavior) {
       GetOverviewSession()->window_drag_controller();
   ASSERT_TRUE(drag_controller);
   EXPECT_EQ(DragBehavior::kNormalDrag,
-            drag_controller->current_drag_behavior());
+            drag_controller->current_drag_behavior_for_testing());
   generator->MoveTouchBy(20, 0);
   EXPECT_EQ(DragBehavior::kNormalDrag,
-            drag_controller->current_drag_behavior());
+            drag_controller->current_drag_behavior_for_testing());
   generator->ReleaseTouch();
-  EXPECT_EQ(DragBehavior::kNoDrag, drag_controller->current_drag_behavior());
+  EXPECT_EQ(DragBehavior::kNoDrag,
+            drag_controller->current_drag_behavior_for_testing());
 
   // Verify that if a drag is orginally vertical, the drag behavior is drag to
   // close.
@@ -4572,7 +4573,7 @@ TEST_F(SplitViewOverviewSessionTest, OverviewDragControllerBehavior) {
   // A new instance of drag controller gets created each time a drag starts.
   drag_controller = GetOverviewSession()->window_drag_controller();
   EXPECT_EQ(DragBehavior::kDragToClose,
-            drag_controller->current_drag_behavior());
+            drag_controller->current_drag_behavior_for_testing());
 }
 
 // Verify the window grid size changes as expected when dragging items around in
@@ -5489,14 +5490,16 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->set_current_screen_location(drag_starting_point);
   generator->PressLeftButton();
   using DragBehavior = OverviewWindowDragController::DragBehavior;
-  EXPECT_EQ(
-      DragBehavior::kUndefined,
-      GetOverviewSession()->window_drag_controller()->current_drag_behavior());
+  EXPECT_EQ(DragBehavior::kUndefined,
+            GetOverviewSession()
+                ->window_drag_controller()
+                ->current_drag_behavior_for_testing());
   EXPECT_EQ(1.f, unsnappable_layer->opacity());
   generator->MoveMouseBy(0, 20);
-  EXPECT_EQ(
-      DragBehavior::kNormalDrag,
-      GetOverviewSession()->window_drag_controller()->current_drag_behavior());
+  EXPECT_EQ(DragBehavior::kNormalDrag,
+            GetOverviewSession()
+                ->window_drag_controller()
+                ->current_drag_behavior_for_testing());
   EXPECT_EQ(0.f, unsnappable_layer->opacity());
   generator->ReleaseLeftButton();
   EXPECT_EQ(1.f, unsnappable_layer->opacity());
@@ -5511,9 +5514,10 @@ TEST_F(SplitViewOverviewSessionTest,
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
   }
-  EXPECT_EQ(
-      DragBehavior::kNormalDrag,
-      GetOverviewSession()->window_drag_controller()->current_drag_behavior());
+  EXPECT_EQ(DragBehavior::kNormalDrag,
+            GetOverviewSession()
+                ->window_drag_controller()
+                ->current_drag_behavior_for_testing());
   EXPECT_EQ(0.f, unsnappable_layer->opacity());
   generator->MoveTouchBy(20, 0);
   generator->ReleaseTouch();
@@ -5532,9 +5536,10 @@ TEST_F(SplitViewOverviewSessionTest,
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
     run_loop.Run();
   }
-  EXPECT_EQ(
-      DragBehavior::kNormalDrag,
-      GetOverviewSession()->window_drag_controller()->current_drag_behavior());
+  EXPECT_EQ(DragBehavior::kNormalDrag,
+            GetOverviewSession()
+                ->window_drag_controller()
+                ->current_drag_behavior_for_testing());
   EXPECT_EQ(0.f, unsnappable_layer->opacity());
   generator->ReleaseTouch();
   EXPECT_EQ(1.f, unsnappable_layer->opacity());
@@ -5545,9 +5550,10 @@ TEST_F(SplitViewOverviewSessionTest,
   // Use small increments otherwise a fling event will be fired.
   for (int j = 0; j < 20; ++j)
     generator->MoveTouchBy(0, 1);
-  EXPECT_EQ(
-      DragBehavior::kDragToClose,
-      GetOverviewSession()->window_drag_controller()->current_drag_behavior());
+  EXPECT_EQ(DragBehavior::kDragToClose,
+            GetOverviewSession()
+                ->window_drag_controller()
+                ->current_drag_behavior_for_testing());
   // Drag-to-close mode affects the opacity of the whole overview item,
   // including the unsnappable label.
   EXPECT_EQ(unsnappable_overview_item->GetWindow()->layer()->opacity(),
@@ -6005,8 +6011,8 @@ TEST_F(SplitViewOverviewSessionTest,
   // Tests that near the right edge, the grid bounds are fixed at 200 and are
   // partially off screen to the right.
   generator->MoveMouseTo(580, 0);
-  EXPECT_EQ(200, grid->bounds().width());
-  EXPECT_GT(grid->bounds().right(), 600);
+  EXPECT_EQ(200, grid->bounds_for_testing().width());
+  EXPECT_GT(grid->bounds_for_testing().right(), 600);
   generator->ReleaseLeftButton();
   SkipDividerSnapAnimation();
 
@@ -6029,8 +6035,8 @@ TEST_F(SplitViewOverviewSessionTest,
   generator->MoveMouseTo(20, 0);
   // Tests that near the left edge, the grid bounds are fixed at 200 and are
   // partially off screen to the left.
-  EXPECT_EQ(200, grid->bounds().width());
-  EXPECT_LT(grid->bounds().x(), 0);
+  EXPECT_EQ(200, grid->bounds_for_testing().width());
+  EXPECT_LT(grid->bounds_for_testing().x(), 0);
   generator->ReleaseLeftButton();
   SkipDividerSnapAnimation();
 }
@@ -7398,7 +7404,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
                 ->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kPrimary,
                     /*window_for_minimum_size=*/nullptr),
-            grid_on_root2->bounds());
+            grid_on_root2->bounds_for_testing());
   GetOverviewSession()->CompleteDrag(item1, right_snap_point);
   EXPECT_EQ(SplitViewController::State::kSecondarySnapped,
             split_view_controller->state());
@@ -7461,10 +7467,12 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
                                      /*is_touch_dragging=*/false);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root2->current_window_dragging_state());
-  EXPECT_EQ(display_with_root2.work_area(), grid_on_root2->bounds());
+  EXPECT_EQ(display_with_root2.work_area(),
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root1_left_snap_point(0.f, 300.f);
   GetOverviewSession()->Drag(item1, root1_left_snap_point);
@@ -7474,19 +7482,22 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
                 ->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
                     /*window_for_minimum_size=*/nullptr),
-            grid_on_root1->bounds());
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
-  EXPECT_EQ(display_with_root2.work_area(), grid_on_root2->bounds());
+  EXPECT_EQ(display_with_root2.work_area(),
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root1_middle_point(400.f, 300.f);
   GetOverviewSession()->Drag(item1, root1_middle_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
-  EXPECT_EQ(display_with_root2.work_area(), grid_on_root2->bounds());
+  EXPECT_EQ(display_with_root2.work_area(),
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root1_right_snap_point(799.f, 300.f);
   GetOverviewSession()->Drag(item1, root1_right_snap_point);
@@ -7496,67 +7507,75 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
                 ->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kPrimary,
                     /*window_for_minimum_size=*/nullptr),
-            grid_on_root1->bounds());
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root2->current_window_dragging_state());
-  EXPECT_EQ(display_with_root2.work_area(), grid_on_root2->bounds());
+  EXPECT_EQ(display_with_root2.work_area(),
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_left_snap_point(800.f, 300.f);
   cursor_manager->SetDisplay(display_with_root2);
   GetOverviewSession()->Drag(item1, root2_left_snap_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(SplitViewController::Get(root_windows[1])
                 ->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
                     /*window_for_minimum_size=*/nullptr),
-            grid_on_root2->bounds());
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_left_snap_point_away_from_edge(816.f, 300.f);
   GetOverviewSession()->Drag(item1, root2_left_snap_point_away_from_edge);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapPrimary,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(SplitViewController::Get(root_windows[1])
                 ->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
                     /*window_for_minimum_size=*/nullptr),
-            grid_on_root2->bounds());
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_right_snap_point(1599.f, 300.f);
   GetOverviewSession()->Drag(item1, root2_right_snap_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kToSnapSecondary,
             indicators_on_root2->current_window_dragging_state());
   EXPECT_EQ(SplitViewController::Get(root_windows[1])
                 ->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kPrimary,
                     /*window_for_minimum_size=*/nullptr),
-            grid_on_root2->bounds());
+            grid_on_root2->bounds_for_testing());
 
   const gfx::PointF root2_middle_point(1200.f, 300.f);
   GetOverviewSession()->Drag(item1, root2_middle_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kOtherDisplay,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kFromOverview,
             indicators_on_root2->current_window_dragging_state());
-  EXPECT_EQ(display_with_root2.work_area(), grid_on_root2->bounds());
+  EXPECT_EQ(display_with_root2.work_area(),
+            grid_on_root2->bounds_for_testing());
 
   GetOverviewSession()->CompleteDrag(item1, root2_middle_point);
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root1->current_window_dragging_state());
-  EXPECT_EQ(display_with_root1.work_area(), grid_on_root1->bounds());
+  EXPECT_EQ(display_with_root1.work_area(),
+            grid_on_root1->bounds_for_testing());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             indicators_on_root2->current_window_dragging_state());
-  EXPECT_EQ(display_with_root2.work_area(), grid_on_root2->bounds());
+  EXPECT_EQ(display_with_root2.work_area(),
+            grid_on_root2->bounds_for_testing());
 }
 
 // Verify the drop target positions for multi-display dragging.

@@ -4713,7 +4713,8 @@ TEST_F(DesksTest, ClickingOverviewGridUnfocusesDeskNameView) {
   // Click the center of the overview grid. This should not close overview mode
   // and should remove focus from the focused `desk_name_view`.
   auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(overview_grid->bounds().CenterPoint());
+  event_generator->MoveMouseTo(
+      overview_grid->bounds_for_testing().CenterPoint());
   event_generator->ClickLeftButton();
   EXPECT_FALSE(desk_name_view->HasFocus());
   EXPECT_TRUE(overview_controller->InOverviewSession());

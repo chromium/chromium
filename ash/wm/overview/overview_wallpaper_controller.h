@@ -14,7 +14,7 @@ namespace ash {
 // Class that controls when and how to apply blur and dimming wallpaper upon
 // entering and exiting overview mode. Blurs the wallpaper automatically if the
 // wallpaper is not visible prior to entering overview mode (covered by a
-// window), otherwise animates the blur and dim.
+// window), otherwise animates the blur.
 class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
  public:
   OverviewWallpaperController();
@@ -36,13 +36,13 @@ class ASH_EXPORT OverviewWallpaperController : public TabletModeObserver {
 
  private:
   // Called when the wallpaper is to be changed and updates all root windows.
-  // Based on the |animate| paramter, several things can happen:
+  // Based on the `animate` parameter, several things can happen:
   //   - nullopt: Apply the blur immediately.
   //   - true/false: Animates and applies the blur only if this value matches
   //     whether animations are allowed based on each root window.
   void UpdateWallpaper(bool should_blur, absl::optional<bool> animate);
 
-  // Tracks if the wallpaper blur should be applied.
+  // Tracks if the wallpaper blur is applied.
   bool wallpaper_blurred_ = false;
 };
 

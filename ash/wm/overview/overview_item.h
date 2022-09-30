@@ -259,10 +259,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
     should_restack_on_animation_end_ = val;
   }
 
-  void set_animating_to_close(bool val) { animating_to_close_ = val; }
   bool animating_to_close() const { return animating_to_close_; }
-
-  void set_disable_mask(bool disable) { disable_mask_ = disable; }
 
   void set_unclipped_size(absl::optional<gfx::Size> unclipped_size) {
     unclipped_size_ = unclipped_size;
@@ -279,8 +276,12 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   RoundedLabelWidget* cannot_snap_widget_for_testing() {
     return cannot_snap_widget_.get();
   }
+
   void set_target_bounds_for_testing(const gfx::RectF& target_bounds) {
     target_bounds_ = target_bounds;
+  }
+  void set_animating_to_close_for_testing(bool val) {
+    animating_to_close_ = val;
   }
 
  private:
@@ -431,9 +432,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
 
   // True if this overview item is currently being dragged around.
   bool is_being_dragged_ = false;
-
-  // True to always disable mask regardless of the state.
-  bool disable_mask_ = false;
 
   bool prepared_for_overview_ = false;
 

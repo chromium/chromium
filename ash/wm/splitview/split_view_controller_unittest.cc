@@ -4407,7 +4407,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
           window1.get());
   const gfx::Rect expected_grid_bounds =
       ShrinkBoundsByHotseatInset(work_area_bounds);
-  EXPECT_EQ(expected_grid_bounds, current_grid->bounds());
+  EXPECT_EQ(expected_grid_bounds, current_grid->bounds_for_testing());
 
   auto target_opacity = [](views::Widget* widget) {
     return widget->GetNativeWindow()->layer()->GetTargetOpacity();
@@ -4425,7 +4425,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
   // Now drag |window1| to the left preview split area.
   DragWindowTo(resizer.get(),
                gfx::Point(0, work_area_bounds.CenterPoint().y()));
-  EXPECT_EQ(current_grid->bounds(),
+  EXPECT_EQ(current_grid->bounds_for_testing(),
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
@@ -4434,13 +4434,13 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
 
   // Drag it to middle.
   DragWindowTo(resizer.get(), work_area_bounds.CenterPoint());
-  EXPECT_EQ(expected_grid_bounds, current_grid->bounds());
+  EXPECT_EQ(expected_grid_bounds, current_grid->bounds_for_testing());
   EXPECT_EQ(1.f, target_opacity(drop_target_widget));
 
   // Drag |window1| to the right preview split area.
   DragWindowTo(resizer.get(), gfx::Point(work_area_bounds.right(),
                                          work_area_bounds.CenterPoint().y()));
-  EXPECT_EQ(current_grid->bounds(),
+  EXPECT_EQ(current_grid->bounds_for_testing(),
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kPrimary,
@@ -4476,7 +4476,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
   EXPECT_EQ(drop_target_widget->GetNativeWindow()->bounds(),
             GetDropTargetBoundsDuringDrag(window1.get()));
   EXPECT_NE(drop_target_widget->GetNativeWindow()->bounds(), window1->bounds());
-  EXPECT_EQ(current_grid->bounds(),
+  EXPECT_EQ(current_grid->bounds_for_testing(),
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
@@ -4487,7 +4487,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
                                          work_area_bounds.CenterPoint().y()));
 
   // Overview bounds stays the same.
-  EXPECT_EQ(current_grid->bounds(),
+  EXPECT_EQ(current_grid->bounds_for_testing(),
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
@@ -4497,7 +4497,7 @@ TEST_F(SplitViewTabDraggingTest, AdjustOverviewBoundsDuringDragging) {
   // Drag |window1| to the left preview split area.
   DragWindowTo(resizer.get(),
                gfx::Point(0, work_area_bounds.CenterPoint().y()));
-  EXPECT_EQ(current_grid->bounds(),
+  EXPECT_EQ(current_grid->bounds_for_testing(),
             ShrinkBoundsByHotseatInset(
                 split_view_controller()->GetSnappedWindowBoundsInScreen(
                     SplitViewController::SnapPosition::kSecondary,
