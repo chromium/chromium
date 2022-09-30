@@ -73,6 +73,7 @@ public interface ContextualSearchPanelInterface {
     boolean isPeeking();
     WebContents getWebContents();
     ViewGroup getContainerView();
+    void setCanHideAndroidBrowserControls(boolean canHideAndroidBrowserControls);
 
     /** {@link OverlayPanelBase} methods */
     boolean isPanelOpened();
@@ -84,4 +85,6 @@ public interface ContextualSearchPanelInterface {
     void showPanel(@StateChangeReason int reason);
     @PanelState
     int getPanelState();
+    @VisibleForTesting
+    boolean getCanHideAndroidBrowserControls();
 }

@@ -973,6 +973,20 @@ public class ContextualSearchManager
         getSearchPanelWebContents().stop();
     }
 
+    /**
+     * Tells the Panel whether it can ever hide the Browser Controls (Toolbar).
+     * This is set to false by a Partial-height Chrome Custom Tab, and defaults to true.
+     * @param canHideAndroidBrowserControls whether hiding is ever allowed.
+     */
+    public void setCanHideAndroidBrowserControls(boolean canHideAndroidBrowserControls) {
+        mSearchPanel.setCanHideAndroidBrowserControls(canHideAndroidBrowserControls);
+    }
+
+    @VisibleForTesting
+    public boolean getCanHideAndroidBrowserControls() {
+        return mSearchPanel.getCanHideAndroidBrowserControls();
+    }
+
     // ============================================================================================
     // Observers
     // ============================================================================================

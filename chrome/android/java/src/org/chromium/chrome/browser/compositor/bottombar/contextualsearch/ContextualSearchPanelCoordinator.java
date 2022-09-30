@@ -300,6 +300,9 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     }
 
     @Override
+    public void setCanHideAndroidBrowserControls(boolean canHideAndroidBrowserControls) {}
+
+    @Override
     public boolean isPanelOpened() {
         return mBottomSheetController.isSheetOpen();
     }
@@ -327,6 +330,12 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
     @Override
     public @PanelState int getPanelState() {
         return PanelState.UNDEFINED;
+    }
+
+    @Override
+    @VisibleForTesting
+    public boolean getCanHideAndroidBrowserControls() {
+        return false;
     }
 
     // ---------------------------------------------------------------------------------------------

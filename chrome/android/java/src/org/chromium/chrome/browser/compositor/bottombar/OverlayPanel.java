@@ -966,7 +966,7 @@ public class OverlayPanel extends OverlayPanelAnimation
 
     @Override
     public boolean shouldHideAndroidBrowserControls() {
-        return isPanelOpened();
+        return isPanelOpened() && mCanHideAndroidBrowserControls;
     }
 
     @Override

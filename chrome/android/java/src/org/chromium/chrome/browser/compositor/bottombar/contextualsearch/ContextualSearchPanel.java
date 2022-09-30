@@ -1299,4 +1299,10 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 break;
         }
     }
+
+    @Override
+    @VisibleForTesting
+    public boolean getCanHideAndroidBrowserControls() {
+        return super.getCanHideAndroidBrowserControls();
+    }
 }
