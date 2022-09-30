@@ -128,8 +128,11 @@ bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
   if (include_psl) {
     const std::u16string psl_regex =
         UTF8ToUTF16(GetRegexForPSLMatching(form_to_match.signon_realm));
-    if (MatchesRegexWithCache(retrieved_login_signon_realm, psl_regex))
-      return true;
+    if (MatchesRegexWithCache(retrieved_login_signon_realm, psl_regex)) {
+      // Ensure match qualifies as PSL Match.
+      return IsPublicSuffixDomainMatch(retrieved_login.signon_realm,
+                                       form_to_match.signon_realm);
+    }
     if (include_federated) {
       const std::u16string psl_federated_regex = UTF8ToUTF16(
           GetRegexForPSLFederatedMatching(form_to_match.signon_realm));
