@@ -15,7 +15,9 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_constants.h"
 #include "chrome/grit/component_extension_resources.h"
+#include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
@@ -333,16 +335,21 @@ ReadAnythingLetterSpacingModel::GetLetterSpacingAt(size_t index) {
 // TODO (crbug.com/1266555): Change to translatable messages
 std::u16string ReadAnythingLetterSpacingModel::GetLetterSpacingName(
     read_anything::mojom::LetterSpacing letter_spacing) const {
+  int label;
   switch (letter_spacing) {
     case read_anything::mojom::LetterSpacing::kTight:
-      return u"Tight";
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_TIGHT;
+      break;
     case read_anything::mojom::LetterSpacing::kDefault:
-      return u"Default";
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_DEFAULT;
+      break;
     case read_anything::mojom::LetterSpacing::kLoose:
-      return u"Loose";
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE;
+      break;
     case read_anything::mojom::LetterSpacing::kVeryLoose:
-      return u"Very Loose";
+      label = IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE;
   }
+  return l10n_util::GetStringUTF16(label);
 }
 
 std::u16string ReadAnythingLetterSpacingModel::GetDropDownTextAt(

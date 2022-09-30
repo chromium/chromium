@@ -7163,6 +7163,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL" desc="Accessibility label for the letter spacing combobox of the Read Anything feature." translateable="false">
         Letter spacing
       </message>
+      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_TIGHT" desc="Combobox option for setting letter and line spacing of text in the Read Anything feature. Tight means that letters/lines are spaced closely together." translateable="false">
+        Tight
+      </message>
+      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_DEFAULT" desc="Combobox option for setting letter and line spacing of text in the Read Anything feature. Default means that leters/lines are spaced in a standard manner." translateable="false">
+        Default
+      </message>
+      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_LOOSE" desc="Combobox option for setting letter and line spacing of text in the Read Anything feature. Loose means that letters/lines are spaced far apart." translateable="false">
+        Loose
+      </message>
+      <message name="IDS_READ_ANYTHING_SPACING_COMBOBOX_VERY_LOOSE" desc="Combobox option for setting letter and line spacing of text in the Read Anything feature. Very loose means that letters/lines are spaced very far apart." translateable="false">
+        Very loose
+      </message>
 
       <!-- User note strings -->
       <message name="IDS_USER_NOTE_TITLE" desc="Title of the User note feature, which gives users access to private user notes.">
