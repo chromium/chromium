@@ -8,7 +8,7 @@ namespace enterprise_signals::features {
 
 BASE_FEATURE(kNewEvSignalsEnabled,
              "NewEvSignalsEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDisableFileSystemInfo{
     &kNewEvSignalsEnabled, "DisableFileSystemInfo", false};
@@ -42,9 +42,11 @@ bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
       disable_function = kDisableSettings.Get();
       break;
     case NewEvFunction::kAntiVirus:
-      return !kDisableAntiVirus.Get();
+      disable_function = kDisableAntiVirus.Get();
+      break;
     case NewEvFunction::kHotfix:
-      return !kDisableHotfix.Get();
+      disable_function = kDisableHotfix.Get();
+      break;
   }
 
   if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {

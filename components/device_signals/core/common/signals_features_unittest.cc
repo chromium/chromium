@@ -9,11 +9,6 @@
 
 namespace enterprise_signals::features {
 
-bool IsHotfixOrAntiVirus(int i) {
-  return i == static_cast<int>(NewEvFunction::kHotfix) ||
-         i == static_cast<int>(NewEvFunction::kAntiVirus);
-}
-
 class SignalsFeaturesTest : public testing::Test {
  protected:
   const int min_enum_value_ = static_cast<int>(NewEvFunction::kFileSystemInfo);
@@ -26,8 +21,7 @@ class SignalsFeaturesTest : public testing::Test {
 TEST_F(SignalsFeaturesTest, DisabledFeature) {
   scoped_features_.InitAndDisableFeature(kNewEvSignalsEnabled);
   for (int i = min_enum_value_; i <= max_enum_value_; i++) {
-    EXPECT_EQ(IsNewFunctionEnabled(static_cast<NewEvFunction>(i)),
-              IsHotfixOrAntiVirus(i));
+    EXPECT_FALSE(IsNewFunctionEnabled(static_cast<NewEvFunction>(i)));
   }
 }
 
