@@ -8,8 +8,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/downloads_section.h"
 #include "ash/system/holding_space/screen_captures_section.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -56,8 +58,8 @@ std::unique_ptr<views::View> RecentFilesBubble::CreatePlaceholder() {
           views::Builder<views::Label>(
               bubble_utils::CreateLabel(
                   bubble_utils::LabelStyle::kSubheader,
-                  u"[i18n]Your recently downloaded files and screen captures "
-                  u"would show up here"))
+                  l10n_util::GetStringUTF16(
+                      IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER)))
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
               .SetMultiLine(true))
       .Build();
