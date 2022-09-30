@@ -37,6 +37,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioMute[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioOutputAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioVolumePercent[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioDevicesState[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAudioInputDevicesUserPriority[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAudioOutputDevicesUserPriority[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEduCoexistenceId[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEduCoexistenceToSVersion[];

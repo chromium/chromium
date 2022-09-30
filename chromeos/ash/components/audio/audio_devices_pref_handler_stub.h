@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   using AudioDeviceMute = std::map<uint64_t, bool>;
   using AudioDeviceVolumeGain = std::map<uint64_t, int>;
   using AudioDeviceStateMap = std::map<uint64_t, DeviceState>;
+  using AudioDeviceUserPriority = std::map<uint64_t, int>;
 
   AudioDevicesPrefHandlerStub();
 
@@ -46,6 +47,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   bool GetDeviceActive(const AudioDevice& device,
                        bool* active,
                        bool* activate_by_user) override;
+  void SetUserPriorityHigherThan(const AudioDevice& target,
+                                 const AudioDevice& base) override;
+  int32_t GetUserPriority(const AudioDevice& device) override;
   bool GetAudioOutputAllowedValue() const override;
   void AddAudioPrefObserver(AudioPrefObserver* observer) override;
   void RemoveAudioPrefObserver(AudioPrefObserver* observer) override;
@@ -62,6 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   AudioDeviceMute audio_device_mute_map_;
   AudioDeviceVolumeGain audio_device_volume_gain_map_;
   AudioDeviceStateMap audio_device_state_map_;
+  AudioDeviceUserPriority user_priority_map_;
 
   base::ObserverList<AudioPrefObserver>::Unchecked observers_;
 

@@ -229,6 +229,58 @@ bool AudioDevicesPrefHandlerImpl::GetDeviceActive(const AudioDevice& device,
   return true;
 }
 
+void AudioDevicesPrefHandlerImpl::SetUserPriorityHigherThan(
+    const AudioDevice& target,
+    const AudioDevice& base) {
+  int t = GetUserPriority(target);
+  int b = GetUserPriority(base);
+
+  // Don't need to update the user priority of `target` if it's already has
+  // higher priority than base.
+  if (t > b)
+    return;
+
+  auto target_id = GetDeviceIdString(target);
+  base::Value::Dict& priority_prefs =
+      target.is_input ? input_device_user_priority_settings_
+                      : output_device_user_priority_settings_;
+
+  if (t != kUserPriorityNone) {
+    for (auto it = priority_prefs.begin(); it != priority_prefs.end(); ++it) {
+      if (it->second.GetInt() > t && it->second.GetInt() <= b)
+        it->second = base::Value(it->second.GetInt() - 1);
+    }
+    priority_prefs.Set(target_id, b);
+  } else {
+    for (auto it = priority_prefs.begin(); it != priority_prefs.end(); ++it) {
+      if (it->second.GetInt() > b)
+        it->second = base::Value(it->second.GetInt() + 1);
+    }
+    priority_prefs.Set(target_id, b + 1);
+  }
+
+  if (target.is_input) {
+    SaveInputDevicesUserPriorityPref();
+  } else {
+    SaveOutputDevicesUserPriorityPref();
+  }
+}
+
+int32_t AudioDevicesPrefHandlerImpl::GetUserPriority(
+    const AudioDevice& device) {
+  if (device.is_input) {
+    return input_device_user_priority_settings_
+        .FindInt(GetDeviceIdString(device))
+        .value_or(kUserPriorityNone);
+    ;
+  } else {
+    return output_device_user_priority_settings_
+        .FindInt(GetDeviceIdString(device))
+        .value_or(kUserPriorityNone);
+    ;
+  }
+}
+
 bool AudioDevicesPrefHandlerImpl::GetAudioOutputAllowedValue() const {
   return local_state_->GetBoolean(prefs::kAudioOutputAllowed);
 }
@@ -288,6 +340,8 @@ AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
   LoadDevicesVolumePref();
   LoadDevicesGainPref();
   LoadDevicesStatePref();
+  LoadInputDevicesUserPriorityPref();
+  LoadOutputDevicesUserPriorityPref();
 }
 
 AudioDevicesPrefHandlerImpl::~AudioDevicesPrefHandlerImpl() = default;
@@ -344,6 +398,30 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
 void AudioDevicesPrefHandlerImpl::SaveDevicesStatePref() {
   DictionaryPrefUpdate dict_update(local_state_, prefs::kAudioDevicesState);
   dict_update->GetDict() = device_state_settings_.Clone();
+}
+
+void AudioDevicesPrefHandlerImpl::LoadInputDevicesUserPriorityPref() {
+  const base::Value::Dict& priority_prefs =
+      local_state_->GetDict(prefs::kAudioInputDevicesUserPriority);
+  input_device_user_priority_settings_ = priority_prefs.Clone();
+}
+
+void AudioDevicesPrefHandlerImpl::SaveInputDevicesUserPriorityPref() {
+  DictionaryPrefUpdate dict_update(local_state_,
+                                   prefs::kAudioInputDevicesUserPriority);
+  dict_update->GetDict() = input_device_user_priority_settings_.Clone();
+}
+
+void AudioDevicesPrefHandlerImpl::LoadOutputDevicesUserPriorityPref() {
+  const base::Value::Dict& priority_prefs =
+      local_state_->GetDict(prefs::kAudioOutputDevicesUserPriority);
+  output_device_user_priority_settings_ = priority_prefs.Clone();
+}
+
+void AudioDevicesPrefHandlerImpl::SaveOutputDevicesUserPriorityPref() {
+  DictionaryPrefUpdate dict_update(local_state_,
+                                   prefs::kAudioOutputDevicesUserPriority);
+  dict_update->GetDict() = output_device_user_priority_settings_.Clone();
 }
 
 bool AudioDevicesPrefHandlerImpl::MigrateDevicesStatePref(
@@ -405,6 +483,10 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDoublePref(prefs::kAudioVolumePercent,
                                kDefaultOutputVolumePercent);
   registry->RegisterIntegerPref(prefs::kAudioMute, kPrefMuteOff);
+
+  registry->RegisterDictionaryPref(prefs::kAudioInputDevicesUserPriority);
+
+  registry->RegisterDictionaryPref(prefs::kAudioOutputDevicesUserPriority);
 }
 
 }  // namespace ash

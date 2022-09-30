@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
                        bool* active,
                        bool* activate_by_user) override;
 
+  void SetUserPriorityHigherThan(const AudioDevice& target,
+                                 const AudioDevice& base) override;
+  int32_t GetUserPriority(const AudioDevice& device) override;
+
   bool GetNoiseCancellationState() override;
   void SetNoiseCancellationState(bool noise_cancellation_state) override;
 
@@ -79,6 +83,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   // Load and save methods for the active state for all devices.
   void LoadDevicesStatePref();
   void SaveDevicesStatePref();
+
+  // Load and save methods for the user priority for all input devices.
+  void LoadInputDevicesUserPriorityPref();
+  void SaveInputDevicesUserPriorityPref();
+
+  // Load and save methods for the user priority for all output devices.
+  void LoadOutputDevicesUserPriorityPref();
+  void SaveOutputDevicesUserPriorityPref();
 
   double GetOutputVolumePrefValue(const AudioDevice& device);
   double GetInputGainPrefValue(const AudioDevice& device);
@@ -118,6 +130,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
   base::Value::Dict device_volume_settings_;
   base::Value::Dict device_gain_settings_;
   base::Value::Dict device_state_settings_;
+  base::Value::Dict input_device_user_priority_settings_;
+  base::Value::Dict output_device_user_priority_settings_;
 
   PrefService* local_state_;  // not owned
 

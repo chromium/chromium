@@ -82,6 +82,18 @@ const char kAudioVolumePercent[] = "settings.audio.volume_percent";
 // as the active one for audio I/O, or it's a new plugged device.
 const char kAudioDevicesState[] = "settings.audio.device_state";
 
+// A dictionary maps each input device to a unique natural number
+// representing the user preference priority among all.
+// E.g {(0x9a, 1), (0xab, 2), (0xbc, 3), (0xcd, 4)}
+const char kAudioInputDevicesUserPriority[] =
+    "settings.audio.input_user_priority";
+
+// A dictionary maps each input device to a unique natural number
+// representing the user preference priority among all.
+// E.g {(0x9a, 1), (0xab, 2), (0xbc, 3), (0xcd, 4)}
+const char kAudioOutputDevicesUserPriority[] =
+    "settings.audio.output_user_priority";
+
 // A string pref storing an identifier that is getting sent with parental
 // consent in EDU account addition flow.
 const char kEduCoexistenceId[] = "account_manager.edu_coexistence_id";

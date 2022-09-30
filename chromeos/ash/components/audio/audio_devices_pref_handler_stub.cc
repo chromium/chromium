@@ -70,6 +70,40 @@ bool AudioDevicesPrefHandlerStub::GetDeviceActive(const AudioDevice& device,
       audio_device_state_map_[device.stable_device_id].activate_by_user;
   return true;
 }
+
+void AudioDevicesPrefHandlerStub::SetUserPriorityHigherThan(
+    const AudioDevice& target,
+    const AudioDevice& base) {
+  int t = user_priority_map_[target.stable_device_id];
+  int b = user_priority_map_[base.stable_device_id];
+
+  // Don't need to update the user priority of `target` if it's already has
+  // higher priority than base.
+  if (t > b)
+    return;
+  if (t != kUserPriorityNone) {
+    for (auto& it : user_priority_map_) {
+      if (it.second > t && it.second <= b)
+        user_priority_map_[it.first] -= 1;
+    }
+    user_priority_map_[target.stable_device_id] = b;
+  } else {
+    for (auto& it : user_priority_map_) {
+      if (it.second > b)
+        user_priority_map_[it.first] += 1;
+    }
+    user_priority_map_[target.stable_device_id] = b + 1;
+  }
+}
+
+int32_t AudioDevicesPrefHandlerStub::GetUserPriority(
+    const AudioDevice& device) {
+  if (user_priority_map_.find(device.stable_device_id) ==
+      user_priority_map_.end())
+    return kUserPriorityNone;
+  return user_priority_map_[device.stable_device_id];
+}
+
 bool AudioDevicesPrefHandlerStub::GetNoiseCancellationState() {
   return noise_cancellation_state_;
 }
