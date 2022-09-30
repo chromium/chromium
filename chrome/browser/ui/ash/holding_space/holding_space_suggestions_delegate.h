@@ -31,6 +31,11 @@ class HoldingSpaceSuggestionsDelegate
 
  private:
   // HoldingSpaceKeyedServiceDelegate:
+  void OnHoldingSpaceItemsAdded(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+  void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
   void OnPersistenceRestored() override;
 
   // app_list::FileSuggestKeyedService::Observer:

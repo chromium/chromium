@@ -21,6 +21,28 @@ HoldingSpaceItem::Type GetItemTypeFromSuggestionType(
   }
 }
 
+// Returns whether `item` represents a pinned file that also exists as a
+// suggested file in `suggestions_by_type`.
+bool ItemIsPinnedSuggestion(
+    const HoldingSpaceItem* item,
+    const std::map<app_list::FileSuggestionType,
+                   std::vector<app_list::FileSuggestData>>&
+        suggestions_by_type) {
+  if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+    return false;
+
+  for (const auto& [_, raw_suggestions] : suggestions_by_type) {
+    if (base::Contains(raw_suggestions, item->file_path(),
+                       [](const app_list::FileSuggestData& suggestion) {
+                         return suggestion.file_path;
+                       })) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 HoldingSpaceSuggestionsDelegate::HoldingSpaceSuggestionsDelegate(
@@ -31,6 +53,32 @@ HoldingSpaceSuggestionsDelegate::HoldingSpaceSuggestionsDelegate(
 }
 
 HoldingSpaceSuggestionsDelegate::~HoldingSpaceSuggestionsDelegate() = default;
+
+void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
+        return item->IsInitialized() &&
+               ItemIsPinnedSuggestion(item, suggestions_by_type_);
+      })) {
+    UpdateSuggestionsInModel();
+  }
+}
+
+void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsRemoved(
+    const std::vector<const HoldingSpaceItem*>& items) {
+  if (base::ranges::any_of(items, [&](const HoldingSpaceItem* item) {
+        return item->IsInitialized() &&
+               ItemIsPinnedSuggestion(item, suggestions_by_type_);
+      })) {
+    UpdateSuggestionsInModel();
+  }
+}
+
+void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemInitialized(
+    const HoldingSpaceItem* item) {
+  if (ItemIsPinnedSuggestion(item, suggestions_by_type_))
+    UpdateSuggestionsInModel();
+}
 
 void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
   file_suggest_service_observation_.Observe(
@@ -86,8 +134,12 @@ void HoldingSpaceSuggestionsDelegate::UpdateSuggestionsInModel() {
       suggestion_items;
   for (const auto& [type, raw_suggestions] : suggestions_by_type_) {
     HoldingSpaceItem::Type item_type = GetItemTypeFromSuggestionType(type);
-    for (const auto& suggestion : raw_suggestions)
-      suggestion_items.emplace_back(item_type, suggestion.file_path);
+    for (const auto& suggestion : raw_suggestions) {
+      if (!model()->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
+                                 suggestion.file_path)) {
+        suggestion_items.emplace_back(item_type, suggestion.file_path);
+      }
+    }
   }
 
   service()->SetSuggestions(suggestion_items);
