@@ -65,8 +65,8 @@ struct FirstPartySetsContextConfig {
 };
 
 // This struct must match the class fields defined in
-// //net/first_party_sets/public_sets.h.
-struct PublicFirstPartySets {
+// //net/first_party_sets/global_first_party_sets.h.
+struct GlobalFirstPartySets {
   // The mapping from site to FPS entry.
   map<SchemefulSite, FirstPartySetEntry> sets;
 

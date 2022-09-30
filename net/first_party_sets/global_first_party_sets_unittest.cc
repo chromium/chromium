@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 
 #include <set>
 #include <string>
@@ -35,25 +35,25 @@ const SchemefulSite kAssociated3(GURL("https://associated3.test"));
 const SchemefulSite kAssociated4(GURL("https://associated4.test"));
 const SchemefulSite kService(GURL("https://service.test"));
 
-class PublicSetsTest : public ::testing::Test {
+class GlobalFirstPartySetsTest : public ::testing::Test {
  public:
-  PublicSetsTest() = default;
+  GlobalFirstPartySetsTest() = default;
 };
 
-TEST_F(PublicSetsTest, FindEntry_Nonexistent) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_Nonexistent) {
   SchemefulSite example(GURL("https://example.test"));
 
-  EXPECT_THAT(PublicSets().FindEntry(example, /*config=*/nullptr),
+  EXPECT_THAT(GlobalFirstPartySets().FindEntry(example, /*config=*/nullptr),
               absl::nullopt);
 }
 
-TEST_F(PublicSetsTest, FindEntry_Exists) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_Exists) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite decoy_site(GURL("https://decoy.test"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry decoy_entry(example, SiteType::kAssociated, 1);
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, entry},
                       {decoy_site, decoy_entry},
@@ -63,12 +63,12 @@ TEST_F(PublicSetsTest, FindEntry_Exists) {
               Optional(entry));
 }
 
-TEST_F(PublicSetsTest, FindEntry_ExistsWhenNormalized) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsWhenNormalized) {
   SchemefulSite https_example(GURL("https://example.test"));
   SchemefulSite wss_example(GURL("wss://example.test"));
   FirstPartySetEntry entry(https_example, SiteType::kPrimary, absl::nullopt);
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {https_example, entry},
                   },
@@ -77,14 +77,14 @@ TEST_F(PublicSetsTest, FindEntry_ExistsWhenNormalized) {
               Optional(entry));
 }
 
-TEST_F(PublicSetsTest, FindEntry_ExistsViaOverride) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
   FirstPartySetEntry override_entry(example, SiteType::kAssociated, 1);
 
   FirstPartySetsContextConfig config({{example, override_entry}});
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, public_entry},
                   },
@@ -93,13 +93,13 @@ TEST_F(PublicSetsTest, FindEntry_ExistsViaOverride) {
               Optional(override_entry));
 }
 
-TEST_F(PublicSetsTest, FindEntry_RemovedViaOverride) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverride) {
   SchemefulSite example(GURL("https://example.test"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
 
   FirstPartySetsContextConfig config({{example, absl::nullopt}});
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, public_entry},
                   },
@@ -108,12 +108,12 @@ TEST_F(PublicSetsTest, FindEntry_RemovedViaOverride) {
               absl::nullopt);
 }
 
-TEST_F(PublicSetsTest, FindEntry_ExistsViaAlias) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaAlias) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry entry(example, SiteType::kPrimary, absl::nullopt);
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, entry},
                   },
@@ -122,7 +122,7 @@ TEST_F(PublicSetsTest, FindEntry_ExistsViaAlias) {
               Optional(entry));
 }
 
-TEST_F(PublicSetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
@@ -130,7 +130,7 @@ TEST_F(PublicSetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
 
   FirstPartySetsContextConfig config({{example_cctld, override_entry}});
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, public_entry},
                   },
@@ -139,14 +139,14 @@ TEST_F(PublicSetsTest, FindEntry_ExistsViaOverrideWithDecoyAlias) {
               Optional(override_entry));
 }
 
-TEST_F(PublicSetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
 
   FirstPartySetsContextConfig config({{example_cctld, absl::nullopt}});
 
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, public_entry},
                   },
@@ -155,7 +155,7 @@ TEST_F(PublicSetsTest, FindEntry_RemovedViaOverrideWithDecoyAlias) {
               absl::nullopt);
 }
 
-TEST_F(PublicSetsTest, FindEntry_AliasesIgnoredForConfig) {
+TEST_F(GlobalFirstPartySetsTest, FindEntry_AliasesIgnoredForConfig) {
   SchemefulSite example(GURL("https://example.test"));
   SchemefulSite example_cctld(GURL("https://example.cctld"));
   FirstPartySetEntry public_entry(example, SiteType::kPrimary, absl::nullopt);
@@ -165,7 +165,7 @@ TEST_F(PublicSetsTest, FindEntry_AliasesIgnoredForConfig) {
 
   // FindEntry should ignore aliases when using the customizations. Public
   // aliases only apply to sites in the public sets.
-  EXPECT_THAT(PublicSets(
+  EXPECT_THAT(GlobalFirstPartySets(
                   {
                       {example, public_entry},
                   },
@@ -174,13 +174,13 @@ TEST_F(PublicSetsTest, FindEntry_AliasesIgnoredForConfig) {
               public_entry);
 }
 
-TEST_F(PublicSetsTest, Empty_Empty) {
-  EXPECT_TRUE(PublicSets().empty());
+TEST_F(GlobalFirstPartySetsTest, Empty_Empty) {
+  EXPECT_TRUE(GlobalFirstPartySets().empty());
 }
 
-TEST_F(PublicSetsTest, Empty_NonemptyEntries) {
+TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyEntries) {
   EXPECT_FALSE(
-      PublicSets(
+      GlobalFirstPartySets(
           {
               {kPrimary,
                FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
@@ -191,20 +191,20 @@ TEST_F(PublicSetsTest, Empty_NonemptyEntries) {
           .empty());
 }
 
-TEST_F(PublicSetsTest, Empty_NonemptyManualSet) {
-  PublicSets public_sets;
-  public_sets.ApplyManuallySpecifiedSet({
+TEST_F(GlobalFirstPartySetsTest, Empty_NonemptyManualSet) {
+  GlobalFirstPartySets sets;
+  sets.ApplyManuallySpecifiedSet({
       {kPrimary,
        FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
       {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
   });
-  EXPECT_FALSE(public_sets.empty());
+  EXPECT_FALSE(sets.empty());
 }
 
-class PopulatedPublicSetsTest : public PublicSetsTest {
+class PopulatedGlobalFirstPartySetsTest : public GlobalFirstPartySetsTest {
  public:
-  PopulatedPublicSetsTest()
-      : public_sets_(
+  PopulatedGlobalFirstPartySetsTest()
+      : global_sets_(
             {
                 {kPrimary, FirstPartySetEntry(kPrimary,
                                               SiteType::kPrimary,
@@ -226,24 +226,24 @@ class PopulatedPublicSetsTest : public PublicSetsTest {
                 {kAssociated1Cctld, kAssociated1},
             }) {}
 
-  PublicSets& public_sets() { return public_sets_; }
+  GlobalFirstPartySets& global_sets() { return global_sets_; }
 
  private:
-  PublicSets public_sets_;
+  GlobalFirstPartySets global_sets_;
 };
 
-TEST_F(PopulatedPublicSetsTest,
+TEST_F(PopulatedGlobalFirstPartySetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesPrimaryPrimary) {
   // kPrimary overlaps as primary of both sets, so the existing set should be
   // wiped out.
-  public_sets().ApplyManuallySpecifiedSet({
+  global_sets().ApplyManuallySpecifiedSet({
       {kPrimary,
        FirstPartySetEntry(kPrimary, SiteType::kPrimary, absl::nullopt)},
       {kAssociated4, FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
   });
 
   EXPECT_THAT(
-      public_sets().FindEntries(
+      global_sets().FindEntries(
           {
               kPrimary,
               kAssociated1,
@@ -260,18 +260,18 @@ TEST_F(PopulatedPublicSetsTest,
                FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0))));
 }
 
-TEST_F(PopulatedPublicSetsTest,
+TEST_F(PopulatedGlobalFirstPartySetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesPrimaryNonprimary) {
   // kPrimary overlaps as a primary of the public set and non-primary of the CLI
   // set, so the existing set should be wiped out.
-  public_sets().ApplyManuallySpecifiedSet({
+  global_sets().ApplyManuallySpecifiedSet({
       {kPrimary3,
        FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
       {kPrimary, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
   });
 
   EXPECT_THAT(
-      public_sets().FindEntries(
+      global_sets().FindEntries(
           {
               kPrimary,
               kAssociated1,
@@ -289,12 +289,12 @@ TEST_F(PopulatedPublicSetsTest,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
-TEST_F(PopulatedPublicSetsTest,
+TEST_F(PopulatedGlobalFirstPartySetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesNonprimaryPrimary) {
   // kAssociated1 overlaps as a non-primary of the public set and primary of the
   // CLI set, so the CLI set should steal it and wipe out its alias, but
   // otherwise leave the set intact.
-  public_sets().ApplyManuallySpecifiedSet({
+  global_sets().ApplyManuallySpecifiedSet({
       {kAssociated1,
        FirstPartySetEntry(kAssociated1, SiteType::kPrimary, absl::nullopt)},
       {kAssociated4,
@@ -302,7 +302,7 @@ TEST_F(PopulatedPublicSetsTest,
   });
 
   EXPECT_THAT(
-      public_sets().FindEntries(
+      global_sets().FindEntries(
           {
               kPrimary,
               kAssociated1,
@@ -327,18 +327,18 @@ TEST_F(PopulatedPublicSetsTest,
                FirstPartySetEntry(kAssociated1, SiteType::kAssociated, 0))));
 }
 
-TEST_F(PopulatedPublicSetsTest,
+TEST_F(PopulatedGlobalFirstPartySetsTest,
        ApplyManuallySpecifiedSet_DeduplicatesNonprimaryNonprimary) {
   // kAssociated1 overlaps as a non-primary of the public set and non-primary of
   // the CLI set, so the CLI set should steal it and wipe out its alias.
-  public_sets().ApplyManuallySpecifiedSet({
+  global_sets().ApplyManuallySpecifiedSet({
       {kPrimary3,
        FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
       {kAssociated1, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
   });
 
   EXPECT_THAT(
-      public_sets().FindEntries(
+      global_sets().FindEntries(
           {
               kPrimary,
               kAssociated1,
@@ -362,25 +362,26 @@ TEST_F(PopulatedPublicSetsTest,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
-TEST_F(PopulatedPublicSetsTest,
+TEST_F(PopulatedGlobalFirstPartySetsTest,
        ApplyManuallySpecifiedSet_PrunesInducedSingletons) {
   // Steal kAssociated3, so that kPrimary2 becomes a singleton, and verify that
   // kPrimary2 is no longer considered in a set.
-  public_sets().ApplyManuallySpecifiedSet({
+  global_sets().ApplyManuallySpecifiedSet({
       {kPrimary3,
        FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
       {kAssociated3, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
   });
 
-  EXPECT_THAT(public_sets().FindEntries({kPrimary2}, /*config=*/nullptr),
+  EXPECT_THAT(global_sets().FindEntries({kPrimary2}, /*config=*/nullptr),
               IsEmpty());
 }
 
-TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
+TEST_F(PopulatedGlobalFirstPartySetsTest,
+       ApplyManuallySpecifiedSet_RespectsManualAlias) {
   // Both the public sets and the locally-defined set define an alias for
   // kAssociated1, but both define a different set for that site too.  Only the
   // locally-defined alias should be observable.
-  public_sets().ApplyManuallySpecifiedSet({
+  global_sets().ApplyManuallySpecifiedSet({
       {kPrimary3,
        FirstPartySetEntry(kPrimary3, SiteType::kPrimary, absl::nullopt)},
       {kAssociated1, FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0)},
@@ -389,7 +390,7 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
   });
 
   EXPECT_THAT(
-      public_sets().FindEntries(
+      global_sets().FindEntries(
           {
               kAssociated1,
               kAssociated1Cctld,
@@ -403,9 +404,9 @@ TEST_F(PopulatedPublicSetsTest, ApplyManuallySpecifiedSet_RespectsManualAlias) {
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated, 0))));
 }
 
-TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_FullIteration) {
+TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntry_FullIteration) {
   int count = 0;
-  EXPECT_TRUE(public_sets().ForEachPublicSetEntry(
+  EXPECT_TRUE(global_sets().ForEachPublicSetEntry(
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
         ++count;
         return true;
@@ -413,9 +414,9 @@ TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_FullIteration) {
   EXPECT_EQ(count, 7);
 }
 
-TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_EarlyReturn) {
+TEST_F(PopulatedGlobalFirstPartySetsTest, ForEachPublicSetEntry_EarlyReturn) {
   int count = 0;
-  EXPECT_FALSE(public_sets().ForEachPublicSetEntry(
+  EXPECT_FALSE(global_sets().ForEachPublicSetEntry(
       [&](const SchemefulSite& site, const FirstPartySetEntry& entry) {
         ++count;
         return count < 4;
@@ -423,8 +424,8 @@ TEST_F(PopulatedPublicSetsTest, ForEachPublicSetEntry_EarlyReturn) {
   EXPECT_EQ(count, 4);
 }
 
-TEST_F(PublicSetsTest, ComputeConfig_Empty) {
-  EXPECT_EQ(PublicSets(
+TEST_F(GlobalFirstPartySetsTest, ComputeConfig_Empty) {
+  EXPECT_EQ(GlobalFirstPartySets(
                 /*entries=*/
                 {
                     {kPrimary, FirstPartySetEntry(kPrimary, SiteType::kPrimary,
@@ -437,8 +438,9 @@ TEST_F(PublicSetsTest, ComputeConfig_Empty) {
             FirstPartySetsContextConfig());
 }
 
-TEST_F(PublicSetsTest, ComputeConfig_Replacements_NoIntersection_NoRemoval) {
-  PublicSets public_sets(
+TEST_F(GlobalFirstPartySetsTest,
+       ComputeConfig_Replacements_NoIntersection_NoRemoval) {
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -447,7 +449,7 @@ TEST_F(PublicSetsTest, ComputeConfig_Replacements_NoIntersection_NoRemoval) {
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/
       {
           {
@@ -460,7 +462,7 @@ TEST_F(PublicSetsTest, ComputeConfig_Replacements_NoIntersection_NoRemoval) {
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      public_sets.FindEntries({kAssociated2, kPrimary2}, &config),
+      sets.FindEntries({kAssociated2, kPrimary2}, &config),
       UnorderedElementsAre(
           Pair(kAssociated2,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -472,9 +474,9 @@ TEST_F(PublicSetsTest, ComputeConfig_Replacements_NoIntersection_NoRemoval) {
 // The common associated site between the policy and existing set is removed
 // from its previous set.
 TEST_F(
-    PublicSetsTest,
+    GlobalFirstPartySetsTest,
     ComputeConfig_Replacements_ReplacesExistingAssociatedSite_RemovedFromFormerSet) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -485,7 +487,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/
       {
           {
@@ -498,7 +500,7 @@ TEST_F(
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      public_sets.FindEntries({kPrimary2, kAssociated2}, &config),
+      sets.FindEntries({kPrimary2, kAssociated2}, &config),
       UnorderedElementsAre(
           Pair(kAssociated2,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -510,9 +512,9 @@ TEST_F(
 // The common primary between the policy and existing set is removed and its
 // former associated sites are removed since they are now unowned.
 TEST_F(
-    PublicSetsTest,
+    GlobalFirstPartySetsTest,
     ComputeConfig_Replacements_ReplacesExistingPrimary_RemovesFormerAssociatedSites) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -523,7 +525,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/
       {
           {
@@ -535,8 +537,8 @@ TEST_F(
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      public_sets.FindEntries(
-          {kAssociated3, kPrimary, kAssociated1, kAssociated2}, &config),
+      sets.FindEntries({kAssociated3, kPrimary, kAssociated1, kAssociated2},
+                       &config),
       UnorderedElementsAre(
           Pair(kAssociated3, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
                                                 absl::nullopt)),
@@ -547,9 +549,9 @@ TEST_F(
 // The common associated site between the policy and existing set is removed and
 // any leftover singletons are deleted.
 TEST_F(
-    PublicSetsTest,
+    GlobalFirstPartySetsTest,
     ComputeConfig_Replacements_ReplacesExistingAssociatedSite_RemovesSingletons) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -558,7 +560,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/
       {
           {
@@ -571,7 +573,7 @@ TEST_F(
       },
       /*addition_sets=*/{});
   EXPECT_THAT(
-      public_sets.FindEntries({kAssociated1, kPrimary3, kPrimary}, &config),
+      sets.FindEntries({kAssociated1, kPrimary3, kPrimary}, &config),
       UnorderedElementsAre(
           Pair(kAssociated1,
                FirstPartySetEntry(kPrimary3, SiteType::kAssociated,
@@ -582,9 +584,9 @@ TEST_F(
 
 // The policy set and the existing set have nothing in common so the policy set
 // gets added in without updating the existing set.
-TEST_F(PublicSetsTest,
+TEST_F(GlobalFirstPartySetsTest,
        ComputeConfig_Additions_NoIntersection_AddsWithoutUpdating) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -593,7 +595,7 @@ TEST_F(PublicSetsTest,
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {
@@ -605,7 +607,7 @@ TEST_F(PublicSetsTest,
           },
       });
   EXPECT_THAT(
-      public_sets.FindEntries({kAssociated2, kPrimary2}, &config),
+      sets.FindEntries({kAssociated2, kPrimary2}, &config),
       UnorderedElementsAre(
           Pair(kAssociated2,
                FirstPartySetEntry(kPrimary2, SiteType::kAssociated,
@@ -618,9 +620,9 @@ TEST_F(PublicSetsTest,
 // The policy set absorbs all sites in the existing set into its
 // associated sites.
 TEST_F(
-    PublicSetsTest,
+    GlobalFirstPartySetsTest,
     ComputeConfig_Additions_PolicyPrimaryIsExistingAssociatedSite_PolicySetAbsorbsExistingSet) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -629,7 +631,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {
@@ -645,8 +647,8 @@ TEST_F(
           },
       });
   EXPECT_THAT(
-      public_sets.FindEntries(
-          {kPrimary, kAssociated2, kAssociated3, kAssociated1}, &config),
+      sets.FindEntries({kPrimary, kAssociated2, kAssociated3, kAssociated1},
+                       &config),
       UnorderedElementsAre(
           Pair(kPrimary, FirstPartySetEntry(kAssociated1, SiteType::kAssociated,
                                             absl::nullopt)),
@@ -665,9 +667,9 @@ TEST_F(
 // The policy set absorbs all of its primary's existing associated sites into
 // its associated sites.
 TEST_F(
-    PublicSetsTest,
+    GlobalFirstPartySetsTest,
     ComputeConfig_Additions_PolicyPrimaryIsExistingPrimary_PolicySetAbsorbsExistingAssociatedSites) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -678,7 +680,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/{},
       /*addition_sets=*/{{
           {kPrimary,
@@ -687,8 +689,8 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, absl::nullopt)},
       }});
   EXPECT_THAT(
-      public_sets.FindEntries(
-          {kAssociated1, kAssociated2, kAssociated3, kPrimary}, &config),
+      sets.FindEntries({kAssociated1, kAssociated2, kAssociated3, kPrimary},
+                       &config),
       UnorderedElementsAre(
           Pair(kAssociated1, FirstPartySetEntry(kPrimary, SiteType::kAssociated,
                                                 absl::nullopt)),
@@ -702,9 +704,9 @@ TEST_F(
 
 // Existing set overlaps with both replacement and addition set.
 TEST_F(
-    PublicSetsTest,
+    GlobalFirstPartySetsTest,
     ComputeConfig_ReplacementsAndAdditions_SetListsOverlapWithSameExistingSet) {
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {kPrimary,
@@ -715,7 +717,7 @@ TEST_F(
            FirstPartySetEntry(kPrimary, SiteType::kAssociated, 1)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/
       {
           {
@@ -735,7 +737,7 @@ TEST_F(
           },
       });
   EXPECT_THAT(
-      public_sets.FindEntries(
+      sets.FindEntries(
           {kAssociated1, kAssociated2, kAssociated3, kPrimary, kPrimary2},
           &config),
       UnorderedElementsAre(
@@ -752,7 +754,7 @@ TEST_F(
                                              absl::nullopt))));
 }
 
-TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonPrimaries) {
+TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonPrimaries) {
   SchemefulSite primary0(GURL("https://primary0.test"));
   SchemefulSite associated_site0(GURL("https://associatedsite0.test"));
   SchemefulSite primary1(GURL("https://primary1.test"));
@@ -765,7 +767,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonPrimaries) {
   // transitively overlap with the existing set. primary1 takes primaryship of
   // the normalized addition set since it was provided first. The other addition
   // sets are unaffected.
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {primary1,
@@ -773,7 +775,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonPrimaries) {
           {primary2, FirstPartySetEntry(primary1, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {{primary0,
@@ -798,7 +800,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonPrimaries) {
                                absl::nullopt)}},
       });
   EXPECT_THAT(
-      public_sets.FindEntries(
+      sets.FindEntries(
           {
               associated_site0,
               associated_site1,
@@ -833,7 +835,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonPrimaries) {
                                              absl::nullopt))));
 }
 
-TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
+TEST_F(GlobalFirstPartySetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
   SchemefulSite primary0(GURL("https://primary0.test"));
   SchemefulSite associated_site0(GURL("https://associatedsite0.test"));
   SchemefulSite primary1(GURL("https://primary1.test"));
@@ -846,7 +848,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
   // transitively overlap with the existing set. primary2 takes primaryship of
   // the normalized addition set since it was provided first. The other addition
   // sets are unaffected.
-  PublicSets public_sets(
+  GlobalFirstPartySets sets(
       /*entries=*/
       {
           {primary2,
@@ -854,7 +856,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
           {primary1, FirstPartySetEntry(primary2, SiteType::kAssociated, 0)},
       },
       /*aliases=*/{});
-  FirstPartySetsContextConfig config = public_sets.ComputeConfig(
+  FirstPartySetsContextConfig config = sets.ComputeConfig(
       /*replacement_sets=*/{},
       /*addition_sets=*/{
           {{primary0,
@@ -879,7 +881,7 @@ TEST_F(PublicSetsTest, TransitiveOverlap_TwoCommonAssociatedSites) {
                                absl::nullopt)}},
       });
   EXPECT_THAT(
-      public_sets.FindEntries(
+      sets.FindEntries(
           {
               associated_site0,
               associated_site1,

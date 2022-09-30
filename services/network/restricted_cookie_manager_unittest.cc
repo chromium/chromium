@@ -35,7 +35,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/cookie_access_delegate_impl.h"
 #include "services/network/cookie_settings.h"
@@ -472,7 +472,7 @@ class SamePartyEnabledRestrictedCookieManagerTest
                 .BindNewPipeAndPassReceiver(),
             CreateFirstPartySetsAccessDelegateParams(),
             &first_party_sets_manager_) {
-    first_party_sets_manager_.SetCompleteSets(net::PublicSets(
+    first_party_sets_manager_.SetCompleteSets(net::GlobalFirstPartySets(
         /*entries=*/
         {
             {net::SchemefulSite(GURL("https://example.com")),

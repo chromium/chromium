@@ -19,7 +19,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
@@ -133,7 +133,7 @@ FirstPartySetsDatabase::~FirstPartySetsDatabase() {
 bool FirstPartySetsDatabase::PersistSets(
     const std::string& browser_context_id,
     const base::Version& public_sets_version,
-    const net::PublicSets& sets,
+    const net::GlobalFirstPartySets& sets,
     const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit())
@@ -153,7 +153,7 @@ bool FirstPartySetsDatabase::PersistSets(
 bool FirstPartySetsDatabase::SetPublicSets(
     const std::string& browser_context_id,
     const base::Version& sets_version,
-    const net::PublicSets& sets) {
+    const net::GlobalFirstPartySets& sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(db_status_, InitStatus::kSuccess);
 
@@ -312,7 +312,7 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
   return transaction.Commit();
 }
 
-net::PublicSets FirstPartySetsDatabase::GetPublicSets(
+net::GlobalFirstPartySets FirstPartySetsDatabase::GetPublicSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -362,7 +362,7 @@ net::PublicSets FirstPartySetsDatabase::GetPublicSets(
     return {};
 
   // TODO(crbug.com/1363707): query & apply manual set.
-  return net::PublicSets(entries, /*aliases=*/{});
+  return net::GlobalFirstPartySets(entries, /*aliases=*/{});
 }
 
 std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(

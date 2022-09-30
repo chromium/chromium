@@ -51,7 +51,7 @@
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 #include "net/dns/test_dns_config_service.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/log/file_net_log_observer.h"
 #include "net/log/net_log.h"
@@ -790,7 +790,7 @@ void NetworkService::BindTestInterface(
   }
 }
 
-void NetworkService::SetFirstPartySets(net::PublicSets sets) {
+void NetworkService::SetFirstPartySets(net::GlobalFirstPartySets sets) {
   first_party_sets_manager_->SetCompleteSets(std::move(sets));
 }
 

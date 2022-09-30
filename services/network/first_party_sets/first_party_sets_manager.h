@@ -21,7 +21,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
@@ -61,7 +61,7 @@ class FirstPartySetsManager {
   //
   // Only the first call to SetCompleteSets can have any effect; subsequent
   // invocations are ignored.
-  void SetCompleteSets(net::PublicSets public_sets);
+  void SetCompleteSets(net::GlobalFirstPartySets sets);
 
   // Sets the enabled_ attribute for testing.
   void SetEnabledForTesting(bool enabled);
@@ -144,11 +144,12 @@ class FirstPartySetsManager {
   // initialized.
   void InvokePendingQueries();
 
-  // The actual public sets data.
+  // The global First-Party Sets data.
   //
   // Optional because it is unset until the data has been received from the
   // browser process.
-  absl::optional<net::PublicSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::optional<net::GlobalFirstPartySets> sets_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 

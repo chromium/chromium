@@ -13,7 +13,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
@@ -262,7 +262,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   const std::string site = "https://aaa.test";
   const std::string primary = "https://bbb.test";
 
-  net::PublicSets input(
+  net::GlobalFirstPartySets input(
       /*entries=*/{{net::SchemefulSite(GURL(site)),
                     net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
                                             net::SiteType::kAssociated,
@@ -342,7 +342,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
 
-  net::PublicSets input(
+  net::GlobalFirstPartySets input(
       /*entries=*/{{net::SchemefulSite(GURL(site)),
                     net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
                                             net::SiteType::kAssociated,
@@ -417,7 +417,7 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
 
-  net::PublicSets input(
+  net::GlobalFirstPartySets input(
       /*entries=*/{{net::SchemefulSite(GURL(site)),
                     net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
                                             net::SiteType::kAssociated,
@@ -469,7 +469,7 @@ TEST_F(FirstPartySetsDatabaseTest, SetPublicSets_InvalidVersion) {
     ASSERT_EQ(2u, CountPublicSetsEntries(&db));
   }
   const std::string browser_context_id = "b";
-  const net::PublicSets input;
+  const net::GlobalFirstPartySets input;
   const base::Version invalid_version;
 
   OpenDatabase();

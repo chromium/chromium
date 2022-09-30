@@ -25,7 +25,7 @@
 #include "net/first_party_sets/addition_overlaps_union_find.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -67,7 +67,7 @@ void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
     const base::Value::Dict& policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (public_sets_.has_value()) {
+  if (global_sets_.has_value()) {
     std::move(callback).Run(GetContextConfigForPolicyInternal(policy));
     return;
   }
@@ -84,9 +84,9 @@ void FirstPartySetsHandlerImpl::GetContextConfigForPolicy(
 
 net::FirstPartySetsContextConfig
 FirstPartySetsHandlerImpl::ComputeEnterpriseContextConfig(
-    const net::PublicSets& public_sets,
+    const net::GlobalFirstPartySets& global_sets,
     const FirstPartySetParser::ParsedPolicySetLists& policy) {
-  return public_sets.ComputeConfig(
+  return global_sets.ComputeConfig(
       /*replacement_sets=*/policy.replacements,
       /*addition_sets=*/
       policy.additions);
@@ -107,12 +107,12 @@ FirstPartySetsHandlerImpl::FirstPartySetsHandlerImpl(
 
 FirstPartySetsHandlerImpl::~FirstPartySetsHandlerImpl() = default;
 
-absl::optional<net::PublicSets> FirstPartySetsHandlerImpl::GetSets(
+absl::optional<net::GlobalFirstPartySets> FirstPartySetsHandlerImpl::GetSets(
     SetsReadyOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsEnabled());
-  if (public_sets_.has_value())
-    return public_sets_->Clone();
+  if (global_sets_.has_value())
+    return global_sets_->Clone();
 
   if (!callback.is_null()) {
     // base::Unretained(this) is safe here because this is a static singleton.
@@ -139,7 +139,7 @@ void FirstPartySetsHandlerImpl::Init(const base::FilePath& user_data_dir,
       sets_loader_->SetComponentSets(base::File());
     }
   } else {
-    SetCompleteSets(net::PublicSets());
+    SetCompleteSets(net::GlobalFirstPartySets());
   }
 }
 
@@ -175,13 +175,14 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
                      // this is a static singleton.
                      base::Unretained(this)));
   on_sets_ready_callbacks_.clear();
-  public_sets_ = absl::nullopt;
+  global_sets_ = absl::nullopt;
   db_helper_.Reset();
 }
 
 void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
     const std::string& browser_context_id,
-    base::OnceCallback<void(absl::optional<net::PublicSets>)> callback) {
+    base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
   if (db_helper_.is_null()) {
@@ -194,10 +195,11 @@ void FirstPartySetsHandlerImpl::GetPersistedPublicSetsForTesting(
       .Then(std::move(callback));
 }
 
-void FirstPartySetsHandlerImpl::SetCompleteSets(net::PublicSets public_sets) {
+void FirstPartySetsHandlerImpl::SetCompleteSets(
+    net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!public_sets_.has_value());
-  public_sets_ = std::move(public_sets);
+  DCHECK(!global_sets_.has_value());
+  global_sets_ = std::move(sets);
 
   if (IsEnabled())
     InvokePendingQueries();
@@ -229,10 +231,10 @@ void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   }
 }
 
-net::PublicSets FirstPartySetsHandlerImpl::GetPublicSetsSync() const {
+net::GlobalFirstPartySets FirstPartySetsHandlerImpl::GetPublicSetsSync() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(public_sets_.has_value());
-  return public_sets_->Clone();
+  DCHECK(global_sets_.has_value());
+  return global_sets_->Clone();
 }
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
@@ -242,7 +244,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (public_sets_.has_value()) {
+  if (global_sets_.has_value()) {
     ClearSiteDataOnChangedSetsForContextInternal(
         browser_context_getter, browser_context_id, context_config,
         std::move(callback));
@@ -277,7 +279,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     const net::FirstPartySetsContextConfig* context_config,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(public_sets_.has_value());
+  DCHECK(global_sets_.has_value());
   DCHECK(!browser_context_id.empty());
 
   if (!db_helper_.is_null()) {
@@ -285,7 +287,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     // TODO(https://crbug.com/1219656): don't invoke `callback` until site state
     // clearing is complete.
     db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
-        .WithArgs(browser_context_id, version_, public_sets_->Clone(),
+        .WithArgs(browser_context_id, version_, global_sets_->Clone(),
                   context_config == nullptr ? net::FirstPartySetsContextConfig()
                                             : context_config->Clone());
   }
@@ -301,7 +303,7 @@ FirstPartySetsHandlerImpl::GetContextConfigForPolicyInternal(
   // Provide empty customization if the policy is malformed.
   return parsed_or_error.has_value()
              ? FirstPartySetsHandlerImpl::ComputeEnterpriseContextConfig(
-                   public_sets_.value(), parsed_or_error.value().first)
+                   global_sets_.value(), parsed_or_error.value().first)
              : net::FirstPartySetsContextConfig();
 }
 

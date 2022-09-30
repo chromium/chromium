@@ -24,7 +24,7 @@ class Version;
 
 namespace net {
 class FirstPartySetEntry;
-class PublicSets;
+class GlobalFirstPartySets;
 class SchemefulSite;
 }  // namespace net
 
@@ -77,7 +77,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool PersistSets(
       const std::string& browser_context_id,
       const base::Version& public_sets_version,
-      const net::PublicSets& sets,
+      const net::GlobalFirstPartySets& sets,
       const net::FirstPartySetsContextConfig& config);
 
   // Stores the `sites` to be cleared for the `browser_context_id` into
@@ -104,7 +104,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // fetching methods when having query errors
 
   // Gets the public First-Party Sets used by `browser_context_id`.
-  [[nodiscard]] net::PublicSets GetPublicSets(
+  [[nodiscard]] net::GlobalFirstPartySets GetPublicSets(
       const std::string& browser_context_id);
 
   // Gets the list of sites to clear for the `browser_context_id`.
@@ -131,7 +131,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // the sets version used by `browser_context_id`. Returns true on success.
   [[nodiscard]] bool SetPublicSets(const std::string& browser_context_id,
                                    const base::Version& sets_version,
-                                   const net::PublicSets& sets);
+                                   const net::GlobalFirstPartySets& sets);
 
   // Called at the start of each public operation, and initializes the database
   // if it isn't already initialized.

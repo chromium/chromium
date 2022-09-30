@@ -22,7 +22,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -43,7 +43,7 @@ FirstPartySetsManager::FirstPartySetsManager(bool enabled)
           enabled ? std::make_unique<base::circular_deque<base::OnceClosure>>()
                   : nullptr) {
   if (!enabled)
-    SetCompleteSets(net::PublicSets());
+    SetCompleteSets(net::GlobalFirstPartySets());
 }
 
 FirstPartySetsManager::~FirstPartySetsManager() {
@@ -230,11 +230,11 @@ void FirstPartySetsManager::InvokePendingQueries() {
   }
 }
 
-void FirstPartySetsManager::SetCompleteSets(net::PublicSets public_sets) {
+void FirstPartySetsManager::SetCompleteSets(net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (sets_.has_value())
     return;
-  sets_ = std::move(public_sets);
+  sets_ = std::move(sets);
   InvokePendingQueries();
 }
 

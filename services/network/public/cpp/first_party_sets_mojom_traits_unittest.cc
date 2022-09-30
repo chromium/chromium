@@ -11,7 +11,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "services/network/public/mojom/first_party_sets.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -118,7 +118,7 @@ TEST(FirstPartySetsTraitsTest, Roundtrips_FirstPartySetMetadata) {
   EXPECT_EQ(round_tripped, make_metadata());
 }
 
-TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
+TEST(FirstPartySetsTraitsTest, RoundTrips_GlobalFirstPartySets) {
   net::SchemefulSite a(GURL("https://a.test"));
   net::SchemefulSite b(GURL("https://b.test"));
   net::SchemefulSite b_cctld(GURL("https://b.cctld"));
@@ -126,7 +126,7 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
 
   net::FirstPartySetsContextConfig manual_config({{c, absl::nullopt}});
 
-  const net::PublicSets original(
+  const net::GlobalFirstPartySets original(
       /*entries=*/
       {
           {a,
@@ -137,10 +137,10 @@ TEST(FirstPartySetsTraitsTest, RoundTrips_PublicFirstPartySets) {
       },
       /*aliases=*/{{b_cctld, b}}, manual_config.Clone());
 
-  net::PublicSets round_tripped;
+  net::GlobalFirstPartySets round_tripped;
 
   EXPECT_TRUE(
-      mojo::test::SerializeAndDeserialize<network::mojom::PublicFirstPartySets>(
+      mojo::test::SerializeAndDeserialize<network::mojom::GlobalFirstPartySets>(
           original, round_tripped));
 
   EXPECT_EQ(original, round_tripped);

@@ -16,7 +16,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,7 +44,7 @@ class FirstPartySetsManagerTest : public ::testing::Test {
       const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
           content,
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& aliases) {
-    manager_.SetCompleteSets(net::PublicSets(content, aliases));
+    manager_.SetCompleteSets(net::GlobalFirstPartySets(content, aliases));
   }
 
   net::FirstPartySetMetadata ComputeMetadataAndWait(

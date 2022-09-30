@@ -15,7 +15,7 @@
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,11 +51,11 @@ class FirstPartySetsLoaderTest : public ::testing::Test {
 
   FirstPartySetsLoader& loader() { return loader_; }
 
-  net::PublicSets WaitAndGetResult() { return future_.Take(); }
+  net::GlobalFirstPartySets WaitAndGetResult() { return future_.Take(); }
 
  private:
   base::test::TaskEnvironment env_;
-  base::test::TestFuture<net::PublicSets> future_;
+  base::test::TestFuture<net::GlobalFirstPartySets> future_;
   FirstPartySetsLoader loader_;
 };
 

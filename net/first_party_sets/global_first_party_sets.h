@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_FIRST_PARTY_SETS_PUBLIC_SETS_H_
-#define NET_FIRST_PARTY_SETS_PUBLIC_SETS_H_
+#ifndef NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_
+#define NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
@@ -19,33 +19,37 @@ template <typename DataViewType, typename T>
 struct StructTraits;
 }  // namespace mojo
 namespace network::mojom {
-class PublicFirstPartySetsDataView;
+class GlobalFirstPartySetsDataView;
 }  // namespace network::mojom
 
 namespace net {
 
-// This class holds all of the info associated with the public First-Party
-// Sets, after they've been parsed. This is suitable for plumbing from the
-// browser process to the network service, or for answering queries.
-class NET_EXPORT PublicSets {
+// This class holds all of the info associated with the First-Party Sets known
+// to this browser, after they've been parsed. This is suitable for plumbing
+// from the browser process to the network service, or for answering queries.
+// This class does not contain per-BrowserContext customizations, but supports
+// application of those customizations.
+class NET_EXPORT GlobalFirstPartySets {
  public:
-  PublicSets();
-  PublicSets(base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
-             base::flat_map<SchemefulSite, SchemefulSite> aliases);
-  PublicSets(base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
-             base::flat_map<SchemefulSite, SchemefulSite> aliases,
-             FirstPartySetsContextConfig manual_config);
+  GlobalFirstPartySets();
+  GlobalFirstPartySets(
+      base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+  GlobalFirstPartySets(
+      base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases,
+      FirstPartySetsContextConfig manual_config);
 
-  PublicSets(PublicSets&&);
-  PublicSets& operator=(PublicSets&&);
+  GlobalFirstPartySets(GlobalFirstPartySets&&);
+  GlobalFirstPartySets& operator=(GlobalFirstPartySets&&);
 
-  ~PublicSets();
+  ~GlobalFirstPartySets();
 
-  bool operator==(const PublicSets& other) const;
-  bool operator!=(const PublicSets& other) const;
+  bool operator==(const GlobalFirstPartySets& other) const;
+  bool operator!=(const GlobalFirstPartySets& other) const;
 
   // Creates a clone of this instance.
-  PublicSets Clone() const;
+  GlobalFirstPartySets Clone() const;
 
   // Returns a FirstPartySetsContextConfig suitable for passing into
   // FindEntries, in order to respect the overrides given by `replacement_sets`
@@ -88,22 +92,21 @@ class NET_EXPORT PublicSets {
       base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)>
           f) const;
 
-  // Whether the content of public sets is empty (including the manual set
-  // entries).
+  // Whether the global sets are empty.
   bool empty() const { return entries_.empty() && manual_config_.empty(); }
 
  private:
   // mojo (de)serialization needs access to private details.
-  friend struct mojo::StructTraits<network::mojom::PublicFirstPartySetsDataView,
-                                   PublicSets>;
+  friend struct mojo::StructTraits<network::mojom::GlobalFirstPartySetsDataView,
+                                   GlobalFirstPartySets>;
 
   friend NET_EXPORT std::ostream& operator<<(std::ostream& os,
-                                             const PublicSets& ps);
+                                             const GlobalFirstPartySets& sets);
 
   // Preprocesses a collection of "addition" sets, such that any sets that
   // transitively overlap (when taking the current `entries_` of this map, plus
   // the manual config, into account) are unioned together. I.e., this ensures
-  // that at most one addition set intersects with any given public/manual set.
+  // that at most one addition set intersects with any given global set.
   std::vector<base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
   NormalizeAdditionSets(
       const std::vector<
@@ -135,8 +138,9 @@ class NET_EXPORT PublicSets {
   FirstPartySetsContextConfig manual_config_;
 };
 
-NET_EXPORT std::ostream& operator<<(std::ostream& os, const PublicSets& ps);
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const GlobalFirstPartySets& sets);
 
 }  // namespace net
 
-#endif  // NET_FIRST_PARTY_SETS_FIRST_PARTY_SET_ENTRY_H_
+#endif  // NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_

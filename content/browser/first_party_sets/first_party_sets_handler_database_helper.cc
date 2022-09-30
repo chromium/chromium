@@ -11,7 +11,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 
 namespace content {
 
@@ -27,9 +27,9 @@ FirstPartySetsHandlerDatabaseHelper::~FirstPartySetsHandlerDatabaseHelper() =
 // static
 base::flat_set<net::SchemefulSite>
 FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
-    const net::PublicSets& old_sets,
+    const net::GlobalFirstPartySets& old_sets,
     const net::FirstPartySetsContextConfig& old_config,
-    const net::PublicSets& current_sets,
+    const net::GlobalFirstPartySets& current_sets,
     const net::FirstPartySetsContextConfig& current_config) {
   // TODO(https://crbug.com/1219656): For now we don't clear site data if FPSs
   // is disabled. This may change with future feature ruquest.
@@ -71,7 +71,7 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
 std::vector<net::SchemefulSite>
 FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
     const std::string& browser_context_id,
-    const net::PublicSets& current_sets,
+    const net::GlobalFirstPartySets& current_sets,
     const net::FirstPartySetsContextConfig& current_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
@@ -101,7 +101,7 @@ void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(
 void FirstPartySetsHandlerDatabaseHelper::PersistSets(
     const std::string& browser_context_id,
     const base::Version& version,
-    const net::PublicSets& sets,
+    const net::GlobalFirstPartySets& sets,
     const net::FirstPartySetsContextConfig& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
@@ -109,7 +109,8 @@ void FirstPartySetsHandlerDatabaseHelper::PersistSets(
     DVLOG(1) << "Failed to write public sets into the database.";
 }
 
-net::PublicSets FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets(
+net::GlobalFirstPartySets
+FirstPartySetsHandlerDatabaseHelper::GetPersistedPublicSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());

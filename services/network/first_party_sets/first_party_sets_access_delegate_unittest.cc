@@ -17,7 +17,7 @@
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -73,7 +73,7 @@ class NoopFirstPartySetsAccessDelegateTest : public ::testing::Test {
             /*receiver=*/mojo::NullReceiver(),
             /*params=*/nullptr,
             &first_party_sets_manager_) {
-    first_party_sets_manager_.SetCompleteSets(net::PublicSets(
+    first_party_sets_manager_.SetCompleteSets(net::GlobalFirstPartySets(
         /*entries=*/
         {
             {kSet1Member1, net::FirstPartySetEntry(
@@ -131,7 +131,7 @@ class FirstPartySetsAccessDelegateTest : public ::testing::Test {
         delegate_(delegate_remote_.BindNewPipeAndPassReceiver(),
                   CreateFirstPartySetsAccessDelegateParams(enabled),
                   &first_party_sets_manager_) {
-    first_party_sets_manager_.SetCompleteSets(net::PublicSets(
+    first_party_sets_manager_.SetCompleteSets(net::GlobalFirstPartySets(
         /*entries=*/
         {
             {kSet1Member1, net::FirstPartySetEntry(

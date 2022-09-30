@@ -343,17 +343,11 @@ interface NetworkService {
   // environments.
   BindTestInterface(pending_receiver<NetworkServiceTest> receiver);
 
-  // Sets the First-Party Sets data. First-Party Sets are a collection of set
-  // declarations defined in the document:
-  // https://github.com/privacycg/first-party-sets. Each set is indicated by the
-  // primary site, and member sites. |sets| contains the mapping of site ->
-  // entry, where keys are sites in the sets, and values are entries containing
-  // site metadata (such as the primary site in the set). Primary sites are
-  // included as keys of the map.
+  // Sets the global First-Party Sets data.
   //
   // Only the first call can have any effect, subsequent invocations are
   // ignored.
-  SetFirstPartySets(PublicFirstPartySets sets);
+  SetFirstPartySets(GlobalFirstPartySets sets);
 
   // Sets the list of ports which will be permitted even if they normally would
   // be restricted.

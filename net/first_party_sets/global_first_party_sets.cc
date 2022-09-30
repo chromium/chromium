@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 
 #include <tuple>
 
@@ -63,16 +63,16 @@ const SchemefulSite& ProjectKey(
 
 }  // namespace
 
-PublicSets::PublicSets() = default;
+GlobalFirstPartySets::GlobalFirstPartySets() = default;
 
-PublicSets::PublicSets(
+GlobalFirstPartySets::GlobalFirstPartySets(
     base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases)
-    : PublicSets(std::move(entries),
-                 std::move(aliases),
-                 FirstPartySetsContextConfig()) {}
+    : GlobalFirstPartySets(std::move(entries),
+                           std::move(aliases),
+                           FirstPartySetsContextConfig()) {}
 
-PublicSets::PublicSets(
+GlobalFirstPartySets::GlobalFirstPartySets(
     base::flat_map<SchemefulSite, FirstPartySetEntry> entries,
     base::flat_map<SchemefulSite, SchemefulSite> aliases,
     FirstPartySetsContextConfig manual_config)
@@ -84,25 +84,26 @@ PublicSets::PublicSets(
     DCHECK(!entries_.empty());
 }
 
-PublicSets::PublicSets(PublicSets&&) = default;
-PublicSets& PublicSets::operator=(PublicSets&&) = default;
+GlobalFirstPartySets::GlobalFirstPartySets(GlobalFirstPartySets&&) = default;
+GlobalFirstPartySets& GlobalFirstPartySets::operator=(GlobalFirstPartySets&&) =
+    default;
 
-PublicSets::~PublicSets() = default;
+GlobalFirstPartySets::~GlobalFirstPartySets() = default;
 
-bool PublicSets::operator==(const PublicSets& other) const {
+bool GlobalFirstPartySets::operator==(const GlobalFirstPartySets& other) const {
   return std::tie(entries_, aliases_, manual_config_) ==
          std::tie(other.entries_, other.aliases_, other.manual_config_);
 }
 
-bool PublicSets::operator!=(const PublicSets& other) const {
+bool GlobalFirstPartySets::operator!=(const GlobalFirstPartySets& other) const {
   return !(*this == other);
 }
 
-PublicSets PublicSets::Clone() const {
-  return PublicSets(entries_, aliases_, manual_config_.Clone());
+GlobalFirstPartySets GlobalFirstPartySets::Clone() const {
+  return GlobalFirstPartySets(entries_, aliases_, manual_config_.Clone());
 }
 
-absl::optional<FirstPartySetEntry> PublicSets::FindEntry(
+absl::optional<FirstPartySetEntry> GlobalFirstPartySets::FindEntry(
     const SchemefulSite& site,
     const FirstPartySetsContextConfig* fps_context_config) const {
   const SchemefulSite normalized_site = NormalizeScheme(site);
@@ -133,7 +134,8 @@ absl::optional<FirstPartySetEntry> PublicSets::FindEntry(
   return absl::nullopt;
 }
 
-base::flat_map<SchemefulSite, FirstPartySetEntry> PublicSets::FindEntries(
+base::flat_map<SchemefulSite, FirstPartySetEntry>
+GlobalFirstPartySets::FindEntries(
     const base::flat_set<SchemefulSite>& sites,
     const FirstPartySetsContextConfig* config) const {
   std::vector<std::pair<SchemefulSite, FirstPartySetEntry>> sites_to_entries;
@@ -146,7 +148,7 @@ base::flat_map<SchemefulSite, FirstPartySetEntry> PublicSets::FindEntries(
   return sites_to_entries;
 }
 
-void PublicSets::ApplyManuallySpecifiedSet(
+void GlobalFirstPartySets::ApplyManuallySpecifiedSet(
     const base::flat_map<SchemefulSite, FirstPartySetEntry>& manual_entries) {
   DCHECK(manual_config_.empty());
   // We handle the manually-specified set the same way as we handle
@@ -155,7 +157,7 @@ void PublicSets::ApplyManuallySpecifiedSet(
       /*replacement_sets=*/{manual_entries}, /*addition_sets=*/{});
 }
 
-FirstPartySetsContextConfig PublicSets::ComputeConfig(
+FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     const std::vector<SingleSet>& replacement_sets,
     const std::vector<SingleSet>& addition_sets) const {
   // Maps a site to its new entry if it has one.
@@ -265,7 +267,7 @@ FirstPartySetsContextConfig PublicSets::ComputeConfig(
 }
 
 std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
-PublicSets::NormalizeAdditionSets(
+GlobalFirstPartySets::NormalizeAdditionSets(
     const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
         addition_sets) const {
   // Find all the addition sets that intersect with any given public set.
@@ -309,7 +311,7 @@ PublicSets::NormalizeAdditionSets(
   return normalized_additions;
 }
 
-bool PublicSets::ForEachPublicSetEntry(
+bool GlobalFirstPartySets::ForEachPublicSetEntry(
     base::FunctionRef<bool(const SchemefulSite&, const FirstPartySetEntry&)> f)
     const {
   for (const auto& [site, entry] : entries_) {
@@ -325,13 +327,13 @@ bool PublicSets::ForEachPublicSetEntry(
   return true;
 }
 
-std::ostream& operator<<(std::ostream& os, const PublicSets& ps) {
+std::ostream& operator<<(std::ostream& os, const GlobalFirstPartySets& sets) {
   os << "{entries = {";
-  for (const auto& [site, entry] : ps.entries()) {
+  for (const auto& [site, entry] : sets.entries()) {
     os << "{" << site.Serialize() << ": " << entry << "}, ";
   }
   os << "}, aliases = {";
-  for (const auto& [alias, canonical] : ps.aliases()) {
+  for (const auto& [alias, canonical] : sets.aliases()) {
     os << "{" << alias.Serialize() << ": " << canonical.Serialize() << "}, ";
   }
   os << "}}";

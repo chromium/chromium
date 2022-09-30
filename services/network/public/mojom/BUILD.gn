@@ -819,8 +819,8 @@ mojom("mojom_first_party_sets") {
               move_only = true
             },
             {
-              mojom = "network.mojom.PublicFirstPartySets"
-              cpp = "::net::PublicSets"
+              mojom = "network.mojom.GlobalFirstPartySets"
+              cpp = "::net::GlobalFirstPartySets"
               move_only = true
             },
             {

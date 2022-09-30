@@ -25,7 +25,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -41,7 +41,8 @@ class BrowserContext;
 // the current First-Party Sets data to disk.
 class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
  public:
-  using SetsReadyOnceCallback = base::OnceCallback<void(net::PublicSets)>;
+  using SetsReadyOnceCallback =
+      base::OnceCallback<void(net::GlobalFirstPartySets)>;
 
   static FirstPartySetsHandlerImpl* GetInstance();
 
@@ -63,17 +64,17 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void Init(const base::FilePath& user_data_dir,
             const LocalSetDeclaration& local_set);
 
-  // Returns the fully-parsed and validated public First-Party Sets data.
+  // Returns the fully-parsed and validated global First-Party Sets data.
   // Returns the data synchronously via an optional if it's already available,
   // or via an asynchronously-invoked callback if the data is not ready yet.
   //
-  // This function makes a clone of the public First-Party Sets.
+  // This function makes a clone of the underlying data.
   //
   // If `callback` is null, it will not be invoked, even if the First-Party Sets
   // data is not ready yet.
   //
   // Must not be called if First-Party Sets is disabled.
-  [[nodiscard]] absl::optional<net::PublicSets> GetSets(
+  [[nodiscard]] absl::optional<net::GlobalFirstPartySets> GetSets(
       SetsReadyOnceCallback callback);
 
   // FirstPartySetsHandler
@@ -105,13 +106,14 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   void GetPersistedPublicSetsForTesting(
       const std::string& browser_context_id,
-      base::OnceCallback<void(absl::optional<net::PublicSets>)> callback);
+      base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
+          callback);
 
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
   // setting for the per-profile FirstPartySetsOverrides policy.
   static net::FirstPartySetsContextConfig ComputeEnterpriseContextConfig(
-      const net::PublicSets& public_sets,
+      const net::GlobalFirstPartySets& browser_sets,
       const FirstPartySetParser::ParsedPolicySetLists& policy);
 
  private:
@@ -120,8 +122,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   FirstPartySetsHandlerImpl(bool enabled,
                             bool embedder_will_provide_public_sets);
 
-  // Sets the public First-Party Sets data. Must be called exactly once.
-  void SetCompleteSets(net::PublicSets public_sets);
+  // Sets the global First-Party Sets data. Must be called exactly once.
+  void SetCompleteSets(net::GlobalFirstPartySets sets);
 
   // Sets `db_helper_`, which will initialize the underlying First-Party Sets
   // database under `user_data_dir`. Must be called exactly once.
@@ -130,11 +132,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Invokes any pending queries.
   void InvokePendingQueries();
 
-  // Returns the list of public First-Party Sets. This clones the underlying
+  // Returns the global First-Party Sets. This clones the underlying
   // data.
   //
   // Must be called after the list has been initialized.
-  net::PublicSets GetPublicSetsSync() const;
+  net::GlobalFirstPartySets GetPublicSetsSync() const;
 
   // An adaptor to kick off the state clearing process from a
   // asynchronously-invoked callback.
@@ -153,23 +155,23 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::OnceClosure callback);
 
   // Parses the policy and computes the config that represents the changes
-  // needed to apply `policy` to `public_sets_`.
+  // needed to apply `policy` to `global_sets_`.
   net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
       const base::Value::Dict& policy) const;
 
   // Whether Init has been called already or not.
   bool initialized_ = false;
 
-  // The public First-Party Sets, after parsing and validation.
+  // The global First-Party Sets, after parsing and validation.
   //
   // This is nullopt until all of the required inputs have been received.
-  absl::optional<net::PublicSets> public_sets_
+  absl::optional<net::GlobalFirstPartySets> global_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The version of the public First-Party Sets. It is invalid until the
   // `SetPublicFirstPartySets()` is called with a valid version.
   //
-  // TODO(crbug.com/1219656): bundle `version_` with `public_sets_` to
+  // TODO(crbug.com/1219656): bundle `version_` with `global_sets_` to
   // guarantee that we have both or neither.
   base::Version version_;
 

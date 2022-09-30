@@ -12,7 +12,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
-#include "net/first_party_sets/public_sets.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,7 +37,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesJoined) {
   net::SchemefulSite member2(GURL("https://member2.test"));
   net::SchemefulSite member3(GURL("https://member3.test"));
 
-  net::PublicSets old_sets(
+  net::GlobalFirstPartySets old_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -47,7 +47,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesJoined) {
                                  example, net::SiteType::kAssociated, 1)}},
       /*aliases=*/{});
 
-  net::PublicSets current_sets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/
       {
           {example, net::FirstPartySetEntry(example, net::SiteType::kPrimary,
@@ -79,7 +79,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesLeft) {
   net::SchemefulSite member2(GURL("https://member2.test"));
   net::SchemefulSite member3(GURL("https://member3.test"));
 
-  net::PublicSets old_sets(
+  net::GlobalFirstPartySets old_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -93,7 +93,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_SitesLeft) {
                                  foo, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
-  net::PublicSets current_sets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -117,7 +117,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
   net::SchemefulSite member2(GURL("https://member2.test"));
   net::SchemefulSite member3(GURL("https://member3.test"));
 
-  net::PublicSets old_sets(
+  net::GlobalFirstPartySets old_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -131,7 +131,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerChanged) {
                                  foo, net::SiteType::kAssociated, 1)}},
       /*aliases=*/{});
 
-  net::PublicSets current_sets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -158,7 +158,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite bar(GURL("https://bar.test"));
 
-  net::PublicSets old_sets(
+  net::GlobalFirstPartySets old_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -168,7 +168,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerLeft) {
                              example, net::SiteType::kAssociated, 1)}},
       /*aliases=*/{});
 
-  net::PublicSets current_sets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/{{foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
                                                  absl::nullopt)},
                    {bar, net::FirstPartySetEntry(
@@ -191,7 +191,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerMemberRotate) {
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite foo(GURL("https://foo.test"));
 
-  net::PublicSets old_sets(
+  net::GlobalFirstPartySets old_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -199,7 +199,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_OwnerMemberRotate) {
                              example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
-  net::PublicSets current_sets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/{{example, net::FirstPartySetEntry(
                                  foo, net::SiteType::kAssociated, 0)},
                    {foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
@@ -221,7 +221,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyOldSets) {
   net::SchemefulSite member1(GURL("https://member1.test"));
 
   // Empty old_sets.
-  net::PublicSets current_sets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -231,7 +231,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyOldSets) {
 
   EXPECT_THAT(
       FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
-          /*old_sets=*/net::PublicSets(),
+          /*old_sets=*/net::GlobalFirstPartySets(),
           /*old_config=*/net::FirstPartySetsContextConfig(), current_sets,
           /*current_config=*/net::FirstPartySetsContextConfig()),
       IsEmpty());
@@ -242,7 +242,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyCurrentSets) {
   net::SchemefulSite member1(GURL("https://member1.test"));
 
   // Empty current sets.
-  net::PublicSets old_sets(
+  net::GlobalFirstPartySets old_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -252,7 +252,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_EmptyCurrentSets) {
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
                   old_sets, /*old_config=*/net::FirstPartySetsContextConfig(),
-                  /*current_sets=*/net::PublicSets(),
+                  /*current_sets=*/net::GlobalFirstPartySets(),
                   /*current_config=*/net::FirstPartySetsContextConfig()),
               IsEmpty());
 }
@@ -271,8 +271,9 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicySitesJoined) {
   // enterprise policy. We don't clear site data upon joining, so the computed
   // diff should be empty.
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
-                  /*old_sets=*/net::PublicSets(), /*old_config=*/current_config,
-                  /*current_sets=*/net::PublicSets(), current_config),
+                  /*old_sets=*/net::GlobalFirstPartySets(),
+                  /*old_config=*/current_config,
+                  /*current_sets=*/net::GlobalFirstPartySets(), current_config),
               IsEmpty());
 }
 
@@ -282,7 +283,7 @@ TEST(FirstPartySetsHandlerDatabaseHelper,
   net::SchemefulSite foo(GURL("https://foo.test"));
   net::SchemefulSite member1(GURL("https://member1.test"));
 
-  net::PublicSets sets(
+  net::GlobalFirstPartySets sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},
@@ -334,8 +335,8 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyMemberLeft) {
   });
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
-                  /*old_sets=*/net::PublicSets(), old_config,
-                  /*current_sets=*/net::PublicSets(), current_config),
+                  /*old_sets=*/net::GlobalFirstPartySets(), old_config,
+                  /*current_sets=*/net::GlobalFirstPartySets(), current_config),
               UnorderedElementsAre(member2));
 }
 
@@ -367,10 +368,11 @@ TEST(FirstPartySetsHandlerDatabaseHelper, ComputeSetsDiff_PolicyOwnerLeft) {
   // It would be valid to only have example.test in the diff, but our logic
   // isn't sophisticated enough yet to know that member1.test and member2.test
   // don't need to be included in the result.
-  EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
-                  /*old_sets=*/net::PublicSets(), /*old_config=*/old_config,
-                  /*current_sets=*/net::PublicSets(), current_config),
-              UnorderedElementsAre(example, member1, member2));
+  EXPECT_THAT(
+      FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
+          /*old_sets=*/net::GlobalFirstPartySets(), /*old_config=*/old_config,
+          /*current_sets=*/net::GlobalFirstPartySets(), current_config),
+      UnorderedElementsAre(example, member1, member2));
 }
 
 TEST(FirstPartySetsHandlerDatabaseHelper,
@@ -399,8 +401,8 @@ TEST(FirstPartySetsHandlerDatabaseHelper,
   });
 
   EXPECT_THAT(FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
-                  /*old_sets=*/net::PublicSets(), old_config,
-                  /*current_sets=*/net::PublicSets(), current_config),
+                  /*old_sets=*/net::GlobalFirstPartySets(), old_config,
+                  /*current_sets=*/net::GlobalFirstPartySets(), current_config),
               UnorderedElementsAre(member1, member2));
 }
 
@@ -430,7 +432,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
 
   db_helper_->PersistSets(
       browser_context_id, base::Version("0.0.1"),
-      net::PublicSets(
+      net::GlobalFirstPartySets(
           /*entries=*/{{example,
                         net::FirstPartySetEntry(
                             example, net::SiteType::kPrimary, absl::nullopt)},
@@ -445,7 +447,7 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
           /*aliases=*/{}),
       /*config=*/net::FirstPartySetsContextConfig());
 
-  net::PublicSets current_sets = net::PublicSets(
+  net::GlobalFirstPartySets current_sets(
       /*entries=*/{{example,
                     net::FirstPartySetEntry(example, net::SiteType::kPrimary,
                                             absl::nullopt)},

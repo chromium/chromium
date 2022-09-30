@@ -22,7 +22,7 @@ class Version;
 
 namespace net {
 class FirstPartySetsContextConfig;
-class PublicSets;
+class GlobalFirstPartySets;
 class SchemefulSite;
 }  // namespace net
 
@@ -59,9 +59,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // This method assumes that the sites were normalized properly when the maps
   // were created. Made public only for testing,
   static base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const net::PublicSets& old_sets,
+      const net::GlobalFirstPartySets& old_sets,
       const net::FirstPartySetsContextConfig& old_config,
-      const net::PublicSets& current_sets,
+      const net::GlobalFirstPartySets& current_sets,
       const net::FirstPartySetsContextConfig& current_config);
 
   // Gets the list of sites to clear for the `browser_context_id`. This method
@@ -72,7 +72,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // stored during previous browser runs that did not have state cleared.
   std::vector<net::SchemefulSite> UpdateAndGetSitesToClearForContext(
       const std::string& browser_context_id,
-      const net::PublicSets& current_sets,
+      const net::GlobalFirstPartySets& current_sets,
       const net::FirstPartySetsContextConfig& current_config);
 
   // Wraps FirstPartySetsDatabase::InsertBrowserContextCleared.
@@ -83,11 +83,12 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // Wraps FirstPartySetsDatabase::PersistSets.
   void PersistSets(const std::string& browser_context_id,
                    const base::Version& version,
-                   const net::PublicSets& sets,
+                   const net::GlobalFirstPartySets& sets,
                    const net::FirstPartySetsContextConfig& config);
 
   // Wraps FirstPartySetsDatabase::GetPublicSets.
-  net::PublicSets GetPersistedPublicSets(const std::string& browser_context_id);
+  net::GlobalFirstPartySets GetPersistedPublicSets(
+      const std::string& browser_context_id);
 
  private:
   std::unique_ptr<FirstPartySetsDatabase> db_
