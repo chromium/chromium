@@ -179,6 +179,9 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
     return has_focusgroup_attribute_on_descendant_;
   }
 
+  void SetRegistry(CustomElementRegistry*);
+  CustomElementRegistry* registry() const { return registry_; }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   StyleSheetList& StyleSheets();
@@ -212,6 +215,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
   Member<StyleSheetList> style_sheet_list_;
   Member<SlotAssignment> slot_assignment_;
+  Member<CustomElementRegistry> registry_;
   unsigned child_shadow_root_count_ : 16;
   unsigned type_ : 2;
   unsigned registered_with_parent_shadow_root_ : 1;

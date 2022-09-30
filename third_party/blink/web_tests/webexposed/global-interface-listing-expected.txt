@@ -8658,6 +8658,7 @@ interface ShadowRoot : DocumentFragment
     getter onslotchange
     getter pictureInPictureElement
     getter pointerLockElement
+    getter registry
     getter slotAssignment
     getter styleSheets
     method constructor

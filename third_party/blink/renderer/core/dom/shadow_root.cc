@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -48,7 +49,7 @@
 namespace blink {
 
 struct SameSizeAsShadowRoot : public DocumentFragment, public TreeScope {
-  Member<void*> member[2];
+  Member<void*> member[3];
   unsigned flags[1];
 };
 
@@ -250,9 +251,17 @@ StyleSheetList& ShadowRoot::StyleSheets() {
   return *style_sheet_list_;
 }
 
+void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
+  DCHECK(!registry_);
+  DCHECK(!registry ||
+         RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  registry_ = registry;
+}
+
 void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);
+  visitor->Trace(registry_);
   TreeScope::Trace(visitor);
   DocumentFragment::Trace(visitor);
 }

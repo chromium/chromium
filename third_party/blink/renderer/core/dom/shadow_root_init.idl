@@ -11,4 +11,5 @@ dictionary ShadowRootInit {
     required ShadowRootMode mode;
     boolean delegatesFocus;
     SlotAssignmentMode slotAssignment;
+    [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
 };
