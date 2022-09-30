@@ -28,7 +28,10 @@ class MockPasswordChangeRunController : public PasswordChangeRunController {
               SetTopIcon,
               (autofill_assistant::password_change::TopIcon),
               (override));
-  MOCK_METHOD(void, SetTitle, (const std::u16string&), (override));
+  MOCK_METHOD(void,
+              SetTitle,
+              (const std::u16string&, const std::u16string&),
+              (override));
   MOCK_METHOD(void, SetDescription, (const std::u16string&), (override));
   MOCK_METHOD(void,
               SetProgressBarStep,

@@ -40,6 +40,7 @@ using TopIcon = autofill_assistant::password_change::TopIcon;
 namespace {
 
 constexpr char kTitle[] = "Sample title";
+constexpr char kAccessibilityTitle[] = "Accessibility sample title";
 constexpr char kDescription[] = "Sample description";
 constexpr char kPromptOutputKey[] = "external_output_key";
 constexpr char kPromptText1[] = "Choice 1";
@@ -191,27 +192,32 @@ class ApcExternalActionDelegateTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(ApcExternalActionDelegateTest, StartAndFinishInterrupt) {
   // Simulate state prior to the interrupt.
-  action_delegate()->SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle)));
+  action_delegate()->SetTitle(
+      base::UTF8ToUTF16(base::StringPiece(kTitle)),
+      base::UTF8ToUTF16(base::StringPiece(kAccessibilityTitle)));
   action_delegate()->SetDescription(
       base::UTF8ToUTF16(base::StringPiece(kDescription)));
   action_delegate()->SetTopIcon(kTopIcon);
   action_delegate()->SetProgressBarStep(kStep);
 
   // The interrupt clears model state apart from the progress step.
-  EXPECT_CALL(*display(), SetTitle(std::u16string()));
+  EXPECT_CALL(*display(), SetTitle(std::u16string(), std::u16string()));
   EXPECT_CALL(*display(), SetDescription(std::u16string()));
   action_delegate()->OnInterruptStarted();
 
   // Simulate calls during interrupt.
-  EXPECT_CALL(*display(), SetTitle(std::u16string(kInterruptTitle)));
+  EXPECT_CALL(*display(),
+              SetTitle(std::u16string(kInterruptTitle), std::u16string()));
   EXPECT_CALL(*display(),
               SetDescription(std::u16string(kInterruptDescription)));
   action_delegate()->SetTitle(kInterruptTitle);
   action_delegate()->SetDescription(kInterruptDescription);
 
   // Expect the state to be restored when the interrupt finishes.
-  EXPECT_CALL(*display(),
-              SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle))));
+  EXPECT_CALL(
+      *display(),
+      SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle)),
+               base::UTF8ToUTF16(base::StringPiece(kAccessibilityTitle))));
   EXPECT_CALL(
       *display(),
       SetDescription(base::UTF8ToUTF16(base::StringPiece(kDescription))));
@@ -622,8 +628,8 @@ TEST_F(ApcExternalActionDelegateTest, ReceiveUpdateSidePanelAction) {
   EXPECT_CALL(*display(), SetTopIcon(kTopIcon));
   EXPECT_CALL(*display(), SetProgressBarStep(kStep));
   EXPECT_CALL(*display(), SetDescription).Times(0);
-  EXPECT_CALL(*display(),
-              SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle))));
+  EXPECT_CALL(*display(), SetTitle(base::UTF8ToUTF16(base::StringPiece(kTitle)),
+                                   std::u16string()));
 
   autofill_assistant::external::Result result;
   EXPECT_CALL(result_callback, Run).WillOnce(SaveArg<0>(&result));

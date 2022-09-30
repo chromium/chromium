@@ -65,6 +65,9 @@ message BasePromptSpecification {
   // List of available choices in a prompt.
   repeated Choice choices = 3;
 
+  // The title announced by screen readers.
+  optional string accessibility_title = 5;
+
   // Result message for the base prompt.
   message Result {
     // The tag corresponding to the selected `Choice`.

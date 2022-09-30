@@ -976,6 +976,7 @@ static_library("ui") {
       "autofill_assistant/password_change/assistant_onboarding_prompt.h",
       "autofill_assistant/password_change/assistant_side_panel_coordinator.h",
       "autofill_assistant/password_change/assistant_stopped_bubble_coordinator.h",
+      "autofill_assistant/password_change/password_change_run_controller.cc",
       "autofill_assistant/password_change/password_change_run_controller.h",
       "autofill_assistant/password_change/password_change_run_display.h",
       "blocked_content/framebust_block_tab_helper.cc",

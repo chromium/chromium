@@ -202,7 +202,9 @@ void PasswordChangeRunView::SetTopIcon(TopIcon top_icon) {
                                      ui::kColorWindowBackground, kTopIconSize));
 }
 
-void PasswordChangeRunView::SetTitle(const std::u16string& title) {
+void PasswordChangeRunView::SetTitle(
+    const std::u16string& title,
+    const std::u16string& accessibility_title) {
   title_container_->RemoveAllChildViews();
 
   views::Label* title_ptr = title_container_->AddChildView(
@@ -224,6 +226,7 @@ void PasswordChangeRunView::SetTitle(const std::u16string& title) {
     }
   }
 }
+
 void PasswordChangeRunView::SetDescription(const std::u16string& description) {
   body_->RemoveAllChildViews();
   if (description.empty()) {

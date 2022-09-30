@@ -61,7 +61,9 @@ class PasswordChangeRunView : public views::View,
   void Show() override;
   void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) override;
-  void SetTitle(const std::u16string& title) override;
+  void SetTitle(
+      const std::u16string& title,
+      const std::u16string& accessibility_title = std::u16string()) override;
   void SetDescription(const std::u16string& progress_description) override;
   void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) override;

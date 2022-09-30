@@ -109,7 +109,7 @@ void ApcExternalActionDelegate::OnInterruptFinished() {
   // the view is informed about the updates.
   PasswordChangeRunController::Model model = model_before_interrupt_.value();
   SetTopIcon(model.top_icon);
-  SetTitle(model.title);
+  SetTitle(model.title, model.accessibility_title);
   SetDescription(model.description);
   if (model.progress_bar_animation_is_paused) {
     PauseProgressBarAnimation();
@@ -144,10 +144,14 @@ void ApcExternalActionDelegate::SetTopIcon(
   password_change_run_display_->SetTopIcon(top_icon);
 }
 
-void ApcExternalActionDelegate::SetTitle(const std::u16string& title) {
+void ApcExternalActionDelegate::SetTitle(
+    const std::u16string& title,
+    const std::u16string& accessibility_title) {
   DCHECK(password_change_run_display_);
   model_.title = title;
-  password_change_run_display_->SetTitle(title);
+  model_.accessibility_title = accessibility_title;
+
+  password_change_run_display_->SetTitle(title, accessibility_title);
 }
 
 void ApcExternalActionDelegate::SetDescription(
@@ -179,7 +183,8 @@ void ApcExternalActionDelegate::ShowBasePrompt(
     base_prompt_return_values_.push_back(choice.tag());
   }
 
-  SetTitle(base::UTF8ToUTF16(base_prompt.title()));
+  SetTitle(base::UTF8ToUTF16(base_prompt.title()),
+           base::UTF8ToUTF16(base_prompt.accessibility_title()));
   if (base_prompt.has_description()) {
     model_.description = base::UTF8ToUTF16(base_prompt.description());
     password_change_run_display_->ShowBasePrompt(

@@ -44,7 +44,11 @@ class PasswordChangeRunDisplay {
   // sibling view methods.
   virtual void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) = 0;
-  virtual void SetTitle(const std::u16string& title) = 0;
+  // Sets the title shown in the side panel. If `accessibility_title` is not set
+  // defaults to `title`.
+  virtual void SetTitle(
+      const std::u16string& title,
+      const std::u16string& accessibility_title = std::u16string()) = 0;
   virtual void SetDescription(const std::u16string& progress_description) = 0;
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
