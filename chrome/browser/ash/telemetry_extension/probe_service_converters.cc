@@ -35,6 +35,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kTimezone;
     case crosapi::mojom::ProbeCategoryEnum::kMemory:
       return cros_healthd::mojom::ProbeCategoryEnum::kMemory;
+    case crosapi::mojom::ProbeCategoryEnum::kNetwork:
+      return cros_healthd::mojom::ProbeCategoryEnum::kNetwork;
     case crosapi::mojom::ProbeCategoryEnum::kBacklight:
       return cros_healthd::mojom::ProbeCategoryEnum::kBacklight;
     case crosapi::mojom::ProbeCategoryEnum::kFan:
@@ -45,8 +47,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kBluetooth;
     case crosapi::mojom::ProbeCategoryEnum::kSystem:
       return cros_healthd::mojom::ProbeCategoryEnum::kSystem;
-    case crosapi::mojom::ProbeCategoryEnum::kNetwork:
-      return cros_healthd::mojom::ProbeCategoryEnum::kNetwork;
+    case crosapi::mojom::ProbeCategoryEnum::kTpm:
+      return cros_healthd::mojom::ProbeCategoryEnum::kTpm;
   }
   NOTREACHED();
 }
@@ -362,6 +364,50 @@ UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultPtr input) {
   }
 }
 
+crosapi::mojom::ProbeTpmVersionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmVersionPtr input) {
+  return crosapi::mojom::ProbeTpmVersion::New(
+      Convert(input->gsc_version), Convert(input->family),
+      Convert(input->spec_level), Convert(input->manufacturer),
+      Convert(input->tpm_model), Convert(input->firmware_version),
+      input->vendor_specific);
+}
+
+crosapi::mojom::ProbeTpmStatusPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmStatusPtr input) {
+  return crosapi::mojom::ProbeTpmStatus::New(
+      Convert(input->enabled), Convert(input->owned),
+      Convert(input->owner_password_is_present));
+}
+
+crosapi::mojom::ProbeTpmDictionaryAttackPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmDictionaryAttackPtr input) {
+  return crosapi::mojom::ProbeTpmDictionaryAttack::New(
+      Convert(input->counter), Convert(input->threshold),
+      Convert(input->lockout_in_effect),
+      Convert(input->lockout_seconds_remaining));
+}
+
+crosapi::mojom::ProbeTpmInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmInfoPtr input) {
+  return crosapi::mojom::ProbeTpmInfo::New(
+      ConvertProbePtr(std::move(input->version)),
+      ConvertProbePtr(std::move(input->status)),
+      ConvertProbePtr(std::move(input->dictionary_attack)));
+}
+
+crosapi::mojom::ProbeTpmResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmResultPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::TpmResult::Tag::kTpmInfo:
+      return crosapi::mojom::ProbeTpmResult::NewTpmInfo(
+          ConvertProbePtr(std::move(input->get_tpm_info())));
+    case cros_healthd::mojom::TpmResult::Tag::kError:
+      return crosapi::mojom::ProbeTpmResult::NewError(
+          ConvertProbePtr(std::move(input->get_error())));
+  }
+}
+
 crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
   auto system_result_output =
@@ -379,7 +425,8 @@ crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->stateful_partition_result)),
       ConvertProbePtr(std::move(input->bluetooth_result)),
       std::move(system_result_output.second),
-      ConvertProbePtr(std::move(input->network_result)));
+      ConvertProbePtr(std::move(input->network_result)),
+      ConvertProbePtr(std::move(input->tpm_result)));
 }
 
 }  // namespace unchecked
@@ -411,6 +458,19 @@ crosapi::mojom::ProbeCpuArchitectureEnum Convert(
       return crosapi::mojom::ProbeCpuArchitectureEnum::kAArch64;
     case cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
       return crosapi::mojom::ProbeCpuArchitectureEnum::kArmv7l;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::ProbeTpmGSCVersion Convert(
+    cros_healthd::mojom::TpmGSCVersion input) {
+  switch (input) {
+    case cros_healthd::mojom::TpmGSCVersion::kNotGSC:
+      return crosapi::mojom::ProbeTpmGSCVersion::kNotGSC;
+    case cros_healthd::mojom::TpmGSCVersion::kCr50:
+      return crosapi::mojom::ProbeTpmGSCVersion::kCr50;
+    case cros_healthd::mojom::TpmGSCVersion::kTi50:
+      return crosapi::mojom::ProbeTpmGSCVersion::kTi50;
   }
   NOTREACHED();
 }

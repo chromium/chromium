@@ -118,6 +118,21 @@ std::pair<crosapi::mojom::ProbeCachedVpdResultPtr,
           crosapi::mojom::ProbeSystemResultPtr>
 UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultPtr input);
 
+crosapi::mojom::ProbeTpmVersionPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmVersionPtr input);
+
+crosapi::mojom::ProbeTpmStatusPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmStatusPtr input);
+
+crosapi::mojom::ProbeTpmDictionaryAttackPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmDictionaryAttackPtr input);
+
+crosapi::mojom::ProbeTpmInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmInfoPtr input);
+
+crosapi::mojom::ProbeTpmResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TpmResultPtr input);
+
 crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input);
 
@@ -127,6 +142,9 @@ crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType type);
 
 crosapi::mojom::ProbeCpuArchitectureEnum Convert(
     cros_healthd::mojom::CpuArchitectureEnum input);
+
+crosapi::mojom::ProbeTpmGSCVersion Convert(
+    cros_healthd::mojom::TpmGSCVersion input);
 
 crosapi::mojom::BoolValuePtr Convert(bool input);
 

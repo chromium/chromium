@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,7 +45,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
       crosapi::mojom::ProbeCategoryEnum::kStatefulPartition,
       crosapi::mojom::ProbeCategoryEnum::kBluetooth,
       crosapi::mojom::ProbeCategoryEnum::kSystem,
-      crosapi::mojom::ProbeCategoryEnum::kNetwork};
+      crosapi::mojom::ProbeCategoryEnum::kNetwork,
+      crosapi::mojom::ProbeCategoryEnum::kTpm};
   EXPECT_THAT(
       ConvertCategoryVector(kInput),
       ElementsAre(
@@ -60,7 +62,8 @@ TEST(ProbeServiceConverters, ConvertCategoryVector) {
           cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition,
           cros_healthd::mojom::ProbeCategoryEnum::kBluetooth,
           cros_healthd::mojom::ProbeCategoryEnum::kSystem,
-          cros_healthd::mojom::ProbeCategoryEnum::kNetwork));
+          cros_healthd::mojom::ProbeCategoryEnum::kNetwork,
+          cros_healthd::mojom::ProbeCategoryEnum::kTpm));
 }
 
 TEST(ProbeServiceConverters, ErrorType) {
@@ -593,6 +596,190 @@ TEST(ProbeServiceConverters, StatefulPartitionInfoPtr) {
                 crosapi::mojom::UInt64Value::New(kTotalSpace)));
 }
 
+TEST(ProbeServiceConverters, ProbeTpmGSCVersion) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::TpmGSCVersion::kNotGSC),
+            crosapi::mojom::ProbeTpmGSCVersion::kNotGSC);
+  EXPECT_EQ(Convert(cros_healthd::mojom::TpmGSCVersion::kCr50),
+            crosapi::mojom::ProbeTpmGSCVersion::kCr50);
+  EXPECT_EQ(Convert(cros_healthd::mojom::TpmGSCVersion::kTi50),
+            crosapi::mojom::ProbeTpmGSCVersion::kTi50);
+}
+
+TEST(ProbeServiceConverters, ProbeTpmVersionPtr) {
+  constexpr uint32_t kFamily = 0x322e3000;
+  constexpr uint64_t kSpecLevel = 1000;
+  constexpr uint32_t kManufacturer = 42;
+  constexpr uint32_t kTpmModel = 101;
+  constexpr uint64_t kFirmwareVersion = 1001;
+  constexpr char kVendorSpecific[] = "info";
+
+  auto input = cros_healthd::mojom::TpmVersion::New();
+  input->gsc_version = cros_healthd::mojom::TpmGSCVersion::kCr50;
+  input->family = kFamily;
+  input->spec_level = kSpecLevel;
+  input->manufacturer = kManufacturer;
+  input->tpm_model = kTpmModel;
+  input->firmware_version = kFirmwareVersion;
+  input->vendor_specific = kVendorSpecific;
+
+  auto result = ConvertProbePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(crosapi::mojom::ProbeTpmGSCVersion::kCr50, result->gsc_version);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kFamily), result->family);
+  EXPECT_EQ(crosapi::mojom::UInt64Value::New(kSpecLevel), result->spec_level);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kManufacturer),
+            result->manufacturer);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kTpmModel), result->tpm_model);
+  EXPECT_EQ(crosapi::mojom::UInt64Value::New(kFirmwareVersion),
+            result->firmware_version);
+
+  ASSERT_TRUE(result->vendor_specific.has_value());
+  EXPECT_EQ(kVendorSpecific, result->vendor_specific.value());
+}
+
+TEST(ProbeServiceConverters, ProbeTpmStatusPtr) {
+  constexpr bool kEnabled = true;
+  constexpr bool kOwned = false;
+  constexpr bool kOwnerPasswortIsPresent = false;
+
+  auto input = cros_healthd::mojom::TpmStatus::New();
+  input->enabled = kEnabled;
+  input->owned = kOwned;
+  input->owner_password_is_present = kOwnerPasswortIsPresent;
+
+  auto result = ConvertProbePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kEnabled), result->enabled);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kOwned), result->owned);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kOwnerPasswortIsPresent),
+            result->owner_password_is_present);
+}
+
+TEST(ProbeServiceConverters, ProbeTpmDictionaryAttackPtr) {
+  constexpr uint32_t kCounter = 42;
+  constexpr uint32_t kThreshold = 100;
+  constexpr bool kLockOutInEffect = true;
+  constexpr uint32_t kLockoutSecondsRemaining = 5;
+
+  auto input = cros_healthd::mojom::TpmDictionaryAttack::New();
+  input->counter = kCounter;
+  input->threshold = kThreshold;
+  input->lockout_in_effect = kLockOutInEffect;
+  input->lockout_seconds_remaining = kLockoutSecondsRemaining;
+
+  auto result = ConvertProbePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kCounter), result->counter);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kThreshold), result->threshold);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kLockOutInEffect),
+            result->lockout_in_effect);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kLockoutSecondsRemaining),
+            result->lockout_seconds_remaining);
+}
+
+TEST(ProbeServiceConverters, ProbeTpmInfoPtr) {
+  // TPM Version fields.
+  constexpr uint32_t kFamily = 0x322e3000;
+  constexpr uint64_t kSpecLevel = 1000;
+  constexpr uint32_t kManufacturer = 42;
+  constexpr uint32_t kTpmModel = 101;
+  constexpr uint64_t kFirmwareVersion = 1001;
+  constexpr char kVendorSpecific[] = "info";
+
+  // TPM Status fields.
+  constexpr bool kEnabled = true;
+  constexpr bool kOwned = false;
+  constexpr bool kOwnerPasswortIsPresent = false;
+
+  // TPM dictionary attack fields.
+  constexpr uint32_t kCounter = 42;
+  constexpr uint32_t kThreshold = 100;
+  constexpr bool kLockOutInEffect = true;
+  constexpr uint32_t kLockoutSecondsRemaining = 5;
+
+  auto tpm_version = cros_healthd::mojom::TpmVersion::New();
+  tpm_version->gsc_version = cros_healthd::mojom::TpmGSCVersion::kCr50;
+  tpm_version->family = kFamily;
+  tpm_version->spec_level = kSpecLevel;
+  tpm_version->manufacturer = kManufacturer;
+  tpm_version->tpm_model = kTpmModel;
+  tpm_version->firmware_version = kFirmwareVersion;
+  tpm_version->vendor_specific = kVendorSpecific;
+
+  auto tpm_status = cros_healthd::mojom::TpmStatus::New();
+  tpm_status->enabled = kEnabled;
+  tpm_status->owned = kOwned;
+  tpm_status->owner_password_is_present = kOwnerPasswortIsPresent;
+
+  auto dictonary_attack = cros_healthd::mojom::TpmDictionaryAttack::New();
+  dictonary_attack->counter = kCounter;
+  dictonary_attack->threshold = kThreshold;
+  dictonary_attack->lockout_in_effect = kLockOutInEffect;
+  dictonary_attack->lockout_seconds_remaining = kLockoutSecondsRemaining;
+
+  auto input = cros_healthd::mojom::TpmInfo::New();
+  input->version = std::move(tpm_version);
+  input->status = std::move(tpm_status);
+  input->dictionary_attack = std::move(dictonary_attack);
+
+  auto result = ConvertProbePtr(std::move(input));
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->version);
+
+  auto tpm_version_result = std::move(result->version);
+  EXPECT_EQ(crosapi::mojom::ProbeTpmGSCVersion::kCr50,
+            tpm_version_result->gsc_version);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kFamily),
+            tpm_version_result->family);
+  EXPECT_EQ(crosapi::mojom::UInt64Value::New(kSpecLevel),
+            tpm_version_result->spec_level);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kManufacturer),
+            tpm_version_result->manufacturer);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kTpmModel),
+            tpm_version_result->tpm_model);
+  EXPECT_EQ(crosapi::mojom::UInt64Value::New(kFirmwareVersion),
+            tpm_version_result->firmware_version);
+  ASSERT_TRUE(tpm_version_result->vendor_specific.has_value());
+  EXPECT_EQ(kVendorSpecific, tpm_version_result->vendor_specific.value());
+
+  ASSERT_TRUE(result->status);
+  auto tpm_status_result = std::move(result->status);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kEnabled),
+            tpm_status_result->enabled);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kOwned), tpm_status_result->owned);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kOwnerPasswortIsPresent),
+            tpm_status_result->owner_password_is_present);
+
+  ASSERT_TRUE(result->dictionary_attack);
+  auto dictonary_attack_result = std::move(result->dictionary_attack);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kCounter),
+            dictonary_attack_result->counter);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kThreshold),
+            dictonary_attack_result->threshold);
+  EXPECT_EQ(crosapi::mojom::BoolValue::New(kLockOutInEffect),
+            dictonary_attack_result->lockout_in_effect);
+  EXPECT_EQ(crosapi::mojom::UInt32Value::New(kLockoutSecondsRemaining),
+            dictonary_attack_result->lockout_seconds_remaining);
+}
+
+TEST(ProbeServiceConverters, ProbeTpmResultPtrInfo) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::TpmResult::NewTpmInfo(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_tpm_info());
+}
+
+TEST(ProbeServiceConverters, ProbeTpmResultPtrError) {
+  const auto output =
+      ConvertProbePtr(cros_healthd::mojom::CpuResult::NewError(nullptr));
+  ASSERT_TRUE(output);
+  EXPECT_TRUE(output->is_error());
+}
+
 TEST(ProbeServiceConverters, StatefulPartitionResultPtrInfo) {
   const auto output = ConvertProbePtr(
       cros_healthd::mojom::StatefulPartitionResult::NewPartitionInfo(nullptr));
@@ -848,6 +1035,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
     input->network_result =
         cros_healthd::mojom::NetworkResult::NewNetworkHealth(
             chromeos::network_health::mojom::NetworkHealthState::New());
+    input->tpm_result = cros_healthd::mojom::TpmResult::NewTpmInfo(
+        cros_healthd::mojom::TpmInfo::New());
   }
 
   EXPECT_EQ(
@@ -891,7 +1080,9 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNotNullFields) {
               crosapi::mojom::ProbeSystemInfo::New(
                   crosapi::mojom::ProbeOsInfo::New())),
           crosapi::mojom::ProbeNetworkResult::NewNetworkHealth(
-              chromeos::network_health::mojom::NetworkHealthState::New())));
+              chromeos::network_health::mojom::NetworkHealthState::New()),
+          crosapi::mojom::ProbeTpmResult::NewTpmInfo(
+              crosapi::mojom::ProbeTpmInfo::New())));
 }
 
 TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
@@ -908,7 +1099,8 @@ TEST(ProbeServiceConverters, TelemetryInfoPtrWithNullFields) {
                 crosapi::mojom::ProbeStatefulPartitionResultPtr(nullptr),
                 crosapi::mojom::ProbeBluetoothResultPtr(nullptr),
                 crosapi::mojom::ProbeSystemResultPtr(nullptr),
-                crosapi::mojom::ProbeNetworkResultPtr(nullptr)));
+                crosapi::mojom::ProbeNetworkResultPtr(nullptr),
+                crosapi::mojom::ProbeTpmResultPtr(nullptr)));
 }
 
 }  // namespace ash::converters

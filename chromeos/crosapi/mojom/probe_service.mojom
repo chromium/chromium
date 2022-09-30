@@ -71,7 +71,7 @@ interface TelemetryProbeService {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// Next ID: 13
+// Next ID: 14
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 11,
@@ -87,6 +87,7 @@ enum ProbeCategoryEnum {
   kBluetooth = 9,
   kSystem = 10,
   kNetwork = 12,
+  kTpm = 13,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -423,6 +424,96 @@ union ProbeStatefulPartitionResult {
   ProbeError error;
 };
 
+// The version of Google security chip(GSC).
+//
+// Next ID: 3
+[Stable, Extensible]
+enum ProbeTpmGSCVersion {
+  // For the devices which cannot be classified.
+  [Default] kNotGSC = 0,
+  // Devices with Cr50 firmware.
+  kCr50 = 1,
+  // Devices with Ti50 firmware.
+  kTi50 = 2,
+};
+
+// TPM version related information.
+//
+// Next ID: 7
+[Stable]
+struct ProbeTpmVersion {
+  // GSC version.
+  ProbeTpmGSCVersion gsc_version@0;
+  // TPM family. We use the TPM 2.0 style encoding, e.g.:
+  //  * TPM 1.2: "1.2" -> 0x312e3200
+  //  * TPM 2.0: "2.0" -> 0x322e3000
+  UInt32Value? family@1;
+  // TPM spec level.
+  UInt64Value? spec_level@2;
+  // Manufacturer code.
+  UInt32Value? manufacturer@3;
+  // TPM model number.
+  UInt32Value? tpm_model@4;
+  // Firmware version.
+  UInt64Value? firmware_version@5;
+  // Vendor specific information.
+  string? vendor_specific@6;
+};
+
+// TPM status related information.
+//
+// Next ID: 3
+[Stable]
+struct ProbeTpmStatus {
+  // Whether a TPM is enabled on the system.
+  BoolValue? enabled@0;
+  // Whether the TPM has been owned.
+  BoolValue? owned@1;
+  // Whether the owner password is still retained.
+  BoolValue? owner_password_is_present@2;
+};
+
+// TPM dictionary attack (DA) related information.
+//
+// Next ID: 4
+[Stable]
+struct ProbeTpmDictionaryAttack {
+  // The current dictionary attack counter value.
+  UInt32Value? counter@0;
+  // The current dictionary attack counter threshold.
+  UInt32Value? threshold@1;
+  // Whether the TPM is in some form of dictionary attack lockout.
+  BoolValue? lockout_in_effect@2;
+  // The number of seconds remaining in the lockout.
+  UInt32Value? lockout_seconds_remaining@3;
+};
+
+// Information of the Trusted Platform Module (TPM).
+// For more information on TPM and this struct, visit:
+//   - go/cros-tdm-tpm-telemetry
+//   - https://www.chromium.org/developers/design-documents/tpm-usage
+//
+// Next ID: 3
+[Stable]
+struct ProbeTpmInfo {
+  // TPM version related information.
+  ProbeTpmVersion? version@0;
+  // TPM status related information.
+  ProbeTpmStatus? status@1;
+  // TPM dictionary attack (DA) related information.
+  ProbeTpmDictionaryAttack? dictionary_attack@2;
+};
+
+// TPM probe result. Can either be populated with the TpmInfo or an error
+// retrieving the information.
+[Stable]
+union ProbeTpmResult {
+  // Valid TpmInfo.
+  ProbeTpmInfo tpm_info;
+  // The error that occurred attempting to retrieve the TpmInfo.
+  ProbeError error;
+};
+
 // Information related to one of a device's Bluetooth adapters.
 //
 // Next ID: 4
@@ -507,7 +598,7 @@ union ProbeNetworkResult {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// Next ID: 12
+// Next ID: 13
 [Stable]
 struct ProbeTelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -549,6 +640,9 @@ struct ProbeTelemetryInfo {
   // system. Only present when kNetwork was included in the categories input to
   // ProbeTelemetryInfo.
   ProbeNetworkResult? network_result@11;
+  // Information about the TPM. Only present when kTpm was included in
+  // the categories input to ProbeTelemetryInfo.
+  ProbeTpmResult? tpm_result@12;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.
