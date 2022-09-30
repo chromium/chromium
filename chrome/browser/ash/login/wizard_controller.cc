@@ -1875,7 +1875,19 @@ void WizardController::OnDeviceModificationCanceled() {
     return;
   }
 
-  ShowPackagedLicenseScreen();
+  // No previous screen found. Most likely the device is owned,
+  // in which case the login screen is the default.
+  if (ash::InstallAttributes::Get()->IsDeviceLocked()) {
+    ShowLoginScreen();
+    return;
+  }
+
+  LOG(WARNING) << "No previous screen on unowned device";
+  if (prescribed_enrollment_config_.should_enroll()) {
+    ShowPackagedLicenseScreen();
+  } else {
+    ShowLoginScreen();
+  }
 }
 
 void WizardController::OnManagementTransitionScreenExit() {
