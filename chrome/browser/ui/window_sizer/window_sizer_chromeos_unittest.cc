@@ -418,8 +418,9 @@ TEST_F(WindowSizerChromeOSTest, PlaceNewWindows) {
 
   // Make sure that popups do not get changed.
   {
-    Browser::CreateParams params_popup(Browser::TYPE_POPUP, &profile_, true);
-    auto new_popup = CreateWindowlessBrowser(params_popup);
+    Browser::CreateParams params_new_popup(Browser::TYPE_POPUP, &profile_,
+                                           true);
+    auto new_popup = CreateWindowlessBrowser(params_new_popup);
     gfx::Rect window_bounds;
     GetWindowBounds(new_popup.get(), gfx::Rect(), display_id,
                     gfx::Rect(50, 100, 300, 150), bottom_s1600x1200, PERSISTED,
@@ -757,14 +758,16 @@ TEST_F(WindowSizerChromeOSTest, DefaultStateBecomesMaximized) {
 TEST_F(WindowSizerChromeOSTest, DefaultBoundsInTargetDisplay) {
   UpdateDisplay("500x500,600x600");
 
-  // By default windows are placed on the primary display.
-  aura::Window* first_root = ash::Shell::GetAllRootWindows()[0];
-  EXPECT_EQ(first_root, ash::Shell::GetRootWindowForNewWindows());
-  gfx::Rect bounds;
-  ui::WindowShowState show_state;
-  WindowSizer::GetBrowserWindowBoundsAndShowState(gfx::Rect(), nullptr, &bounds,
-                                                  &show_state);
-  EXPECT_TRUE(first_root->GetBoundsInScreen().Contains(bounds));
+  {
+    // By default windows are placed on the primary display.
+    aura::Window* first_root = ash::Shell::GetAllRootWindows()[0];
+    EXPECT_EQ(first_root, ash::Shell::GetRootWindowForNewWindows());
+    gfx::Rect bounds;
+    ui::WindowShowState show_state;
+    WindowSizer::GetBrowserWindowBoundsAndShowState(gfx::Rect(), nullptr,
+                                                    &bounds, &show_state);
+    EXPECT_TRUE(first_root->GetBoundsInScreen().Contains(bounds));
+  }
 
   {
     // When the second display is active new windows are placed there.

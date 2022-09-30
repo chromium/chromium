@@ -373,8 +373,8 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   if (!arc_tracker)
     return;
 
-  for (const auto& app_id : prefs->GetAppsForPackage(package_name.value()))
-    arc_tracker->CloseWindows(app_id);
+  for (const auto& id : prefs->GetAppsForPackage(package_name.value()))
+    arc_tracker->CloseWindows(id);
 }
 
 void ArcOpenUrlDelegateImpl::OpenArcCustomTab(

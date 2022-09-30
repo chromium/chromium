@@ -106,15 +106,12 @@ bool ArcAppLauncher::MaybeLaunchApp(const std::string& app_id,
       return false;
     }
 
-    auto readiness = apps::Readiness::kUnknown;
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&readiness](const apps::AppUpdate& update) {
           readiness = update.Readiness();
         });
-
-    if (readiness != apps::Readiness::kReady)
-      return false;
-  } else if (readiness != apps::Readiness::kReady) {
+  }
+  if (readiness != apps::Readiness::kReady) {
     return false;
   }
 

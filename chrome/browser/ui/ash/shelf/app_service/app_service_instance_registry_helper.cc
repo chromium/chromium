@@ -271,8 +271,8 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     return;
   }
 
-  apps::InstanceState state = CalculateVisibilityState(window, visible);
-  OnInstances(app_constants::kChromeAppId, window, std::string(), state);
+  OnInstances(app_constants::kChromeAppId, window, std::string(),
+              CalculateVisibilityState(window, visible));
 
   if (!base::Contains(browser_window_to_tab_windows_, window))
     return;
@@ -283,8 +283,8 @@ void AppServiceInstanceRegistryHelper::OnWindowVisibilityChanged(
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
-    apps::InstanceState state = CalculateVisibilityState(it, visible);
-    OnInstances(app_id, it, std::string(), state);
+    OnInstances(app_id, it, std::string(),
+                CalculateVisibilityState(it, visible));
   }
 }
 
@@ -317,8 +317,8 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     return;
   }
 
-  apps::InstanceState state = CalculateActivatedState(window, active);
-  OnInstances(app_constants::kChromeAppId, window, std::string(), state);
+  OnInstances(app_constants::kChromeAppId, window, std::string(),
+              CalculateActivatedState(window, active));
 
   if (!base::Contains(browser_window_to_tab_windows_, window))
     return;
@@ -335,7 +335,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     if (!contents)
       return;
 
-    apps::InstanceState state = static_cast<apps::InstanceState>(
+    constexpr auto kState = static_cast<apps::InstanceState>(
         apps::InstanceState::kStarted | apps::InstanceState::kRunning |
         apps::InstanceState::kActive | apps::InstanceState::kVisible);
     auto* contents_window = GetWindow(contents);
@@ -351,7 +351,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     // browser window.
     UpdateTabWindow(app_id, contents_window);
 
-    OnInstances(app_id, contents_window, std::string(), state);
+    OnInstances(app_id, contents_window, std::string(), kState);
     return;
   }
 
@@ -361,8 +361,7 @@ void AppServiceInstanceRegistryHelper::SetWindowActivated(
     const std::string app_id = GetAppId(it);
     if (app_id.empty())
       continue;
-    apps::InstanceState state = CalculateActivatedState(it, active);
-    OnInstances(app_id, it, std::string(), state);
+    OnInstances(app_id, it, std::string(), CalculateActivatedState(it, active));
   }
 }
 

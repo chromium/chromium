@@ -445,22 +445,23 @@ void AppLaunchEventLogger::LogClicksEachHour(
 }
 
 void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
-  auto app = app_features_map_.find(app_launch_event.app_id());
-  if (app == app_features_map_.end()) {
+  auto app_iter = app_features_map_.find(app_launch_event.app_id());
+  if (app_iter == app_features_map_.end()) {
     RecordAppTypeClicked(AppLaunchEvent_AppType_OTHER);
     return;
   }
-  RecordAppTypeClicked(app->second.app_type());
+  const AppLaunchFeatures& features = app_iter->second;
+  RecordAppTypeClicked(features.app_type());
   ukm::SourceId launch_source_id =
-      GetSourceId(app->second.app_type(), app_launch_event.app_id(),
-                  app->second.arc_package_name(), app->second.pwa_url());
+      GetSourceId(features.app_type(), app_launch_event.app_id(),
+                  features.arc_package_name(), features.pwa_url());
 
   base::Time now(base::Time::Now());
   const base::TimeDelta duration = now - start_time_;
   all_clicks_last_hour_->Log(duration);
   all_clicks_last_24_hours_->Log(duration);
 
-  if (app->second.is_policy_compliant() &&
+  if (features.is_policy_compliant() &&
       launch_source_id != ukm::kInvalidSourceId) {
     ukm::builders::AppListAppLaunch app_launch(launch_source_id);
     if (app_launch_event.launched_from() ==
@@ -469,7 +470,7 @@ void AppLaunchEventLogger::Log(AppLaunchEvent app_launch_event) {
             AppLaunchEvent_LaunchedFrom_SEARCH_BOX) {
       app_launch.SetPositionIndex(app_launch_event.index());
     }
-    app_launch.SetAppType(app->second.app_type())
+    app_launch.SetAppType(features.app_type())
         .SetLaunchedFrom(app_launch_event.launched_from())
         .SetDayOfWeek(DayOfWeek(now))
         .SetHourOfDay(HourOfDay(now))

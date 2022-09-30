@@ -78,18 +78,19 @@ base::Value BuildTracingModel(
       &common_model.system_model().memory_events(),
       arc::ArcValueEvent::Type::kWakenessfullMode);
   for (const auto& wakefulness_mode_event : wakefulness_mode_events) {
-    const int64_t timestamp =
+    const int64_t wakefulness_mode_timestamp =
         (wakefulness_mode_event.first - base::TimeTicks()).InMicroseconds();
-    wakenessfull_mode.MaybeAdd(timestamp,
+    wakenessfull_mode.MaybeAdd(wakefulness_mode_timestamp,
                                static_cast<int>(wakefulness_mode_event.second));
   }
   arc::ArcValueEventTrimmer throttling(
       &common_model.system_model().memory_events(),
       arc::ArcValueEvent::Type::kThrottlingMode);
   for (const auto& throttling_event : throttling_events) {
-    const int64_t timestamp =
+    const int64_t throttling_timestamp =
         (throttling_event.first - base::TimeTicks()).InMicroseconds();
-    throttling.MaybeAdd(timestamp, static_cast<int>(throttling_event.second));
+    throttling.MaybeAdd(throttling_timestamp,
+                        static_cast<int>(throttling_event.second));
   }
 
   // Flush automatically normalizes the model.

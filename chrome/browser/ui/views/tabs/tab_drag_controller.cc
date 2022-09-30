@@ -2059,21 +2059,21 @@ void TabDragController::MaximizeAttachedWindow() {
 
 void TabDragController::BringWindowUnderPointToFront(
     const gfx::Point& point_in_screen) {
-  gfx::NativeWindow window;
-  if (GetLocalProcessWindow(point_in_screen, true, &window) ==
+  gfx::NativeWindow native_window;
+  if (GetLocalProcessWindow(point_in_screen, true, &native_window) ==
       Liveness::DELETED) {
     return;
   }
 
   // Only bring browser windows to front - only windows with a
   // TabDragContext can be tab drag targets.
-  if (!CanAttachTo(window))
+  if (!CanAttachTo(native_window))
     return;
 
-  if (window &&
+  if (native_window &&
       !base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
     views::Widget* widget_window =
-        views::Widget::GetWidgetForNativeWindow(window);
+        views::Widget::GetWidgetForNativeWindow(native_window);
     if (!widget_window)
       return;
 

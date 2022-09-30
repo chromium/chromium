@@ -112,8 +112,7 @@ base::Value::List GetLanguageList(
   std::set<std::string> language_codes;
   // Collect the language codes from the supported input methods.
   for (const auto& descriptor : descriptors) {
-    const std::vector<std::string>& languages = descriptor.language_codes();
-    for (const auto& language : languages)
+    for (const auto& language : descriptor.language_codes())
       language_codes.insert(language);
   }
 

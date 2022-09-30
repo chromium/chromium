@@ -116,7 +116,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
  protected:
   void SetupESimNetwork() {
-    const char kCellularEsimServicePath[] = "/service/cellular_esim1";
     const char kTestEuiccPath[] = "euicc_path";
     const char kTestEidName[] = "eid";
     const char kTestIccid[] = "iccid";
