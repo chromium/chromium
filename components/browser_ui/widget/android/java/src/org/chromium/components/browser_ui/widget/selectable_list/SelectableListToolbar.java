@@ -408,7 +408,7 @@ public class SelectableListToolbar<E>
 
         if (mIsDestroyed) return;
 
-        mSelectionDelegate.clearSelection();
+        if (mSelectionDelegate != null) mSelectionDelegate.clearSelection();
         if (mIsSearching) hideSearchView();
     }
 
