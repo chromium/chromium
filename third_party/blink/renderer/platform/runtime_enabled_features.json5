@@ -1505,7 +1505,8 @@
     {
       name: "LayoutNGPrinting",
       depends_on: ["LayoutNG","LayoutNGBlockFragmentation"],
-      status: "test",
+      status: "stable",
+      base_feature: "LayoutNGPrinting",
     },
     {
       name: "LayoutNGSubgrid",
