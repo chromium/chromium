@@ -20,7 +20,6 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "base/callback_helpers.h"
 #include "components/live_caption/views/caption_bubble.h"
@@ -122,11 +121,11 @@ void ShowNotification(
 }  // namespace
 
 // static
-void ProjectorUiController::ShowFailureNotification(int message_id) {
+void ProjectorUiController::ShowFailureNotification(int message_id,
+                                                    int title_id) {
   RecordCreationFlowError(message_id);
   ShowNotification(
-      kProjectorErrorNotificationId, IDS_ASH_PROJECTOR_FAILURE_TITLE,
-      message_id,
+      kProjectorErrorNotificationId, title_id, message_id,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 }
 

@@ -4578,6 +4578,14 @@ Here are some things you can try to get started.
         Something went wrong. Try again.
       </message>
 
+      <message name="IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TITLE" desc="The title of the notification when Projector session is aborted due to audio capture policy disabled.">
+        Can’t create screencast
+      </message>
+
+      <message name="IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TEXT" desc="The text of the notification when Projector session is aborted due to audio capture policy disabled.">
+        Your administrator doesn’t allow audio capture. Contact your administrator for more info.
+      </message>
+
       <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION" desc="The test of the notification when Projector transcription fails.">
         Can't generate transcript
       </message>

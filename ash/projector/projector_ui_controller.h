@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/projector/projector_session.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/scoped_observation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -26,7 +27,9 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
  public:
   // Shows a notification informing the user that a Projector error has
   // occurred.
-  static void ShowFailureNotification(int message_id);
+  static void ShowFailureNotification(
+      int message_id,
+      int title_id = IDS_ASH_PROJECTOR_FAILURE_TITLE);
 
   // Shows a notification informing the user that a Projector save error has
   // occurred.

@@ -252,6 +252,45 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
                                     /*count=*/2);
 }
 
+TEST_F(ProjectorUiControllerTest, ShowFailureNotificationWithTitle) {
+  base::HistogramTester histogram_tester;
+
+  MockMessageCenterObserver mock_message_center_observer;
+  message_center::MessageCenter::Get()->AddObserver(
+      &mock_message_center_observer);
+
+  EXPECT_CALL(
+      mock_message_center_observer,
+      OnNotificationAdded(/*notification_id=*/"projector_error_notification"))
+      .Times(1);
+  EXPECT_CALL(mock_message_center_observer,
+              OnNotificationDisplayed(
+                  /*notification_id=*/"projector_error_notification",
+                  message_center::DisplaySource::DISPLAY_SOURCE_POPUP));
+
+  ProjectorUiController::ShowFailureNotification(
+      IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TEXT,
+      IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TITLE);
+
+  const message_center::NotificationList::Notifications& notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  EXPECT_EQ(notifications.size(), 1u);
+  EXPECT_EQ((*notifications.begin())->id(), "projector_error_notification");
+  EXPECT_EQ(
+      (*notifications.begin())->message(),
+      l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TEXT));
+  EXPECT_EQ(
+      (*notifications.begin())->title(),
+      l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TITLE));
+
+  histogram_tester.ExpectBucketCount(
+      kProjectorCreationFlowErrorHistogramName,
+      ProjectorCreationFlowError::kSessionAbortedByAudioPolicyDisabled,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(kProjectorCreationFlowErrorHistogramName,
+                                    /*count=*/1);
+}
+
 TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
   base::HistogramTester histogram_tester;
 

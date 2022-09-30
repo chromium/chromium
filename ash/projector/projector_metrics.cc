@@ -78,6 +78,9 @@ void RecordCreationFlowError(int message_id) {
     case IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION:
       error = ProjectorCreationFlowError::kTranscriptionError;
       break;
+    case IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TEXT:
+      error = ProjectorCreationFlowError::kSessionAbortedByAudioPolicyDisabled;
+      break;
     default:
       NOTREACHED();
       break;

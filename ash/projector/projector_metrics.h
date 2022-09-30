@@ -87,10 +87,11 @@ enum class ProjectorCreationFlow {
 enum class ProjectorCreationFlowError {
   kSaveError = 0,
   kTranscriptionError = 1,
+  kSessionAbortedByAudioPolicyDisabled = 2,
   // Add future entries above this comment, in sync with
   // "ProjectorCreationFlowError" in src/tools/metrics/histograms/enums.xml.
   // Update kMaxValue to the last value.
-  kMaxValue = kTranscriptionError
+  kMaxValue = kSessionAbortedByAudioPolicyDisabled
 };
 
 // These enum values represent potential error that occurs at policy value

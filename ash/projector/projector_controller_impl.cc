@@ -374,6 +374,13 @@ void ProjectorControllerImpl::OnRecordingStartAborted() {
 
   projector_session_->Stop();
 
+  auto* capture_mode_controller = CaptureModeController::Get();
+  if (capture_mode_controller->IsAudioCaptureDisabledByPolicy()) {
+    ui_controller_->ShowFailureNotification(
+        IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TEXT,
+        IDS_ASH_PROJECTOR_ABORT_BY_AUDIO_POLICY_TITLE);
+  }
+
   if (client_)
     client_->OpenProjectorApp();
 
