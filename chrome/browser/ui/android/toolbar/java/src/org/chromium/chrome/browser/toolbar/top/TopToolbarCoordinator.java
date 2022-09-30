@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
@@ -393,6 +394,15 @@ public class TopToolbarCoordinator implements Toolbar {
     public void updateButtonVisibility() {
         mToolbarLayout.updateButtonVisibility();
         mOptionalButtonController.updateButtonVisibility();
+    }
+
+    /**
+     * Gets the {@link AdaptiveToolbarButtonVariant} of the currently shown optional button. {@code
+     * AdaptiveToolbarButtonVariant.NONE} is returned if there's no visible optional button.
+     * @return A value from {@link AdaptiveToolbarButtonVariant}.
+     */
+    public @AdaptiveToolbarButtonVariant int getCurrentOptionalButtonVariant() {
+        return mOptionalButtonController.getCurrentButtonVariant();
     }
 
     /**
