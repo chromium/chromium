@@ -87,6 +87,11 @@ def ci_builder(
     if not branches.matches(branch_selector):
         return
 
+    experiments = experiments or {}
+
+    # TODO(crbug.com/1346781): Enable everywhere.
+    experiments.setdefault("chromium_swarming.expose_merge_script_failures", 10)
+
     try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]
     if try_only_kwargs:
         fail("CI builders cannot specify the following try-only arguments: {}".format(try_only_kwargs))

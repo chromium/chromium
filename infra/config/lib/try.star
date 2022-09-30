@@ -145,7 +145,7 @@ def try_builder(
     experiments = experiments or {}
 
     # TODO(crbug.com/1346781): Enable everywhere.
-    experiments.setdefault("chromium_swarming.expose_merge_script_failures", 10)
+    experiments.setdefault("chromium_swarming.expose_merge_script_failures", 20)
 
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(

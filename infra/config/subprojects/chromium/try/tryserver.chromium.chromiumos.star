@@ -61,7 +61,6 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     experiments = {
-        "chromium_swarming.expose_merge_script_failures": 1,
         "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
