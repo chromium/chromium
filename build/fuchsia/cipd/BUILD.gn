@@ -14,10 +14,22 @@ import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
 
 visibility = [ ":*" ]
 
-if (is_chrome_branded) {
-  package_base_path = "chrome_internal/fuchsia"
+# Allows a builder to explicitly declare the CIPD path. The base path is what
+# comes after `.../p/` in the CIPD URL.
+declare_args() {
+  fuchsia_cipd_package_base_path = ""
+}
+
+# TODO(zijiehe): Eliminate the use of 'package_base_path' during the
+# refactoring.
+if (fuchsia_cipd_package_base_path == "") {
+  if (is_chrome_branded) {
+    package_base_path = "chrome_internal/fuchsia"
+  } else {
+    package_base_path = "chromium/fuchsia"
+  }
 } else {
-  package_base_path = "chromium/fuchsia"
+  package_base_path = fuchsia_cipd_package_base_path
 }
 
 # Archives related specifically to `fuchsia.web`
