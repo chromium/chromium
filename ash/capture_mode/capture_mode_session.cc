@@ -229,23 +229,6 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
   return params;
 }
 
-// Gets the root window associated |location_in_screen| if given, otherwise gets
-// the root window associated with the CursorManager.
-aura::Window* GetPreferredRootWindow(
-    absl::optional<gfx::Point> location_in_screen = absl::nullopt) {
-  int64_t display_id =
-      (location_in_screen
-           ? display::Screen::GetScreen()->GetDisplayNearestPoint(
-                 *location_in_screen)
-           : Shell::Get()->cursor_manager()->GetDisplay())
-          .id();
-
-  // The Display object returned by CursorManager::GetDisplay may be stale, but
-  // will have the correct id.
-  DCHECK_NE(display::kInvalidDisplayId, display_id);
-  return Shell::GetRootWindowForDisplayId(display_id);
-}
-
 // In fullscreen or window capture mode, the mouse will change to a camera
 // image icon if we're capturing image, or a video record image icon if we're
 // capturing video.
@@ -253,7 +236,7 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
   ui::Cursor cursor(ui::mojom::CursorType::kCustom);
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(
-          GetPreferredRootWindow());
+          capture_mode_util::GetPreferredRootWindow());
   const float device_scale_factor = display.device_scale_factor();
   const gfx::ImageSkia* icon =
       ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -429,7 +412,8 @@ class CaptureModeSession::CursorSetter {
     const CaptureModeType capture_type = CaptureModeController::Get()->type();
     const float device_scale_factor =
         display::Screen::GetScreen()
-            ->GetDisplayNearestWindow(GetPreferredRootWindow())
+            ->GetDisplayNearestWindow(
+                capture_mode_util::GetPreferredRootWindow())
             .device_scale_factor();
 
     // For custom cursors, update the cursor if we need to change between image
@@ -593,7 +577,7 @@ class CaptureModeSession::ParentContainerObserver
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
                                        bool projector_mode)
     : controller_(controller),
-      current_root_(GetPreferredRootWindow()),
+      current_root_(capture_mode_util::GetPreferredRootWindow()),
       magnifier_glass_(kMagnifierParams),
       is_in_projector_mode_(projector_mode),
       cursor_setter_(std::make_unique<CursorSetter>()),
@@ -1916,7 +1900,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   const bool can_change_root = !is_capture_region || is_press_event;
 
   if (can_change_root)
-    MaybeChangeRoot(GetPreferredRootWindow(screen_location));
+    MaybeChangeRoot(capture_mode_util::GetPreferredRootWindow(screen_location));
 
   // The root may have switched while pressing the mouse down. Move the capture
   // bar to the current display if that is the case and make sure it is stacked

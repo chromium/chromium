@@ -14,7 +14,9 @@
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/models/image_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -45,10 +47,13 @@ class WmModeTests : public AshTestBase {
 TEST_F(WmModeTests, Basic) {
   auto* controller = WmModeController::Get();
   EXPECT_FALSE(controller->is_active());
+  EXPECT_FALSE(controller->layer());
   controller->Toggle();
   EXPECT_TRUE(controller->is_active());
+  EXPECT_TRUE(controller->layer());
   controller->Toggle();
   EXPECT_FALSE(controller->is_active());
+  EXPECT_FALSE(controller->layer());
 }
 
 TEST_F(WmModeTests, ToggleFromTray) {
@@ -118,6 +123,7 @@ TEST_F(WmModeTests, ScreenDimming) {
 
   controller->Toggle();
   EXPECT_TRUE(controller->IsRootWindowDimmedForTesting(roots[0]));
+  EXPECT_TRUE(roots[0]->layer()->Contains(controller->layer()));
 
   // Add a new display while the mode is active, and expect that it gets dimmed.
   display_manager()->AddRemoveDisplay();
@@ -130,6 +136,63 @@ TEST_F(WmModeTests, ScreenDimming) {
   controller->Toggle();
   EXPECT_FALSE(controller->IsRootWindowDimmedForTesting(roots[0]));
   EXPECT_FALSE(controller->IsRootWindowDimmedForTesting(roots[1]));
+}
+
+TEST_F(WmModeTests, WindowSelection) {
+  // Create 2 displays with one window on each.
+  UpdateDisplay("800x700,801+0-800x700");
+  auto roots = Shell::GetAllRootWindows();
+  EXPECT_EQ(roots.size(), 2u);
+  auto win1 = CreateTestWindow(gfx::Rect(50, 60, 400, 400));
+  auto win2 = CreateTestWindow(gfx::Rect(1000, 200, 400, 400));
+
+  auto* controller = WmModeController::Get();
+  controller->Toggle();
+  EXPECT_TRUE(controller->is_active());
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseToCenterOf(win2.get());
+  EXPECT_EQ(controller->selected_window(), win2.get());
+  EXPECT_TRUE(roots[1]->layer()->Contains(controller->layer()));
+
+  // Moving the cursor outside the bounds of any window will remove any window
+  // selection. However, the layer remains parented to the same root window.
+  event_generator->MoveMouseTo(win2->GetBoundsInScreen().bottom_right() +
+                               gfx::Vector2d(20, 20));
+  EXPECT_FALSE(controller->selected_window());
+  EXPECT_TRUE(roots[1]->layer()->Contains(controller->layer()));
+
+  // The layer will change roots once cursor moves to its display even if there
+  // is no selected window.
+  event_generator->MoveMouseTo(gfx::Point(0, 0));
+  EXPECT_FALSE(controller->selected_window());
+  EXPECT_TRUE(roots[0]->layer()->Contains(controller->layer()));
+
+  event_generator->MoveMouseToCenterOf(win1.get());
+  EXPECT_EQ(controller->selected_window(), win1.get());
+}
+
+TEST_F(WmModeTests, RemovingSelectedRoot) {
+  display_manager()->AddRemoveDisplay();
+  auto roots = Shell::GetAllRootWindows();
+  EXPECT_EQ(roots.size(), 2u);
+  auto* controller = WmModeController::Get();
+  controller->Toggle();
+  EXPECT_TRUE(controller->is_active());
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(roots[1]->GetBoundsInScreen().CenterPoint());
+  EXPECT_TRUE(roots[1]->layer()->Contains(controller->layer()));
+
+  // Remove the second display (which is currently selected), and expect that
+  // the controller's layer will move to the primary display's root layer.
+  display_manager()->AddRemoveDisplay();
+  roots = Shell::GetAllRootWindows();
+  EXPECT_EQ(roots.size(), 1u);
+  EXPECT_TRUE(roots[0]->layer()->Contains(controller->layer()));
+
+  controller->Toggle();
+  EXPECT_FALSE(controller->is_active());
 }
 
 }  // namespace ash

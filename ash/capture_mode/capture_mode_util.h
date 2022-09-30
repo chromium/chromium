@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace aura {
@@ -19,7 +20,6 @@ class Window;
 }  // namespace aura
 
 namespace gfx {
-class Point;
 class Rect;
 class Transform;
 }  // namespace gfx
@@ -161,6 +161,11 @@ struct AnimationParams {
 bool SetWidgetVisibility(views::Widget* widget,
                          bool target_visibility,
                          absl::optional<AnimationParams> animation_params);
+
+// Gets the root window associated with `location_in_screen` if given, otherwise
+// gets the root window associated with the `CursorManager`.
+aura::Window* GetPreferredRootWindow(
+    absl::optional<gfx::Point> location_in_screen = absl::nullopt);
 
 }  // namespace capture_mode_util
 
