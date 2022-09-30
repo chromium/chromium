@@ -1035,6 +1035,11 @@ video::-internal-media-controls-overflow-menu-list-item:focus {
   outline: none;
 }
 
+audio::-internal-media-controls-overflow-menu-list-item:focus-visible,
+video::-internal-media-controls-overflow-menu-list-item:focus-visible {
+  border: 1px solid currentColor;
+}
+
 audio::-internal-media-controls-overflow-menu-list-item:active,
 video::-internal-media-controls-overflow-menu-list-item:active {
   background-color: -internal-light-dark(#e0e0e0, #454545);
