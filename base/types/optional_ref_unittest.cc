@@ -25,6 +25,7 @@ static_assert(
     !std::is_constructible_v<optional_ref<int>, const absl::optional<int>&>);
 static_assert(!std::is_constructible_v<optional_ref<int>, const int*>);
 static_assert(!std::is_constructible_v<optional_ref<int>, const int&>);
+static_assert(!std::is_constructible_v<optional_ref<int>, int&&>);
 static_assert(!std::is_constructible_v<optional_ref<int>, const int>);
 static_assert(
     !std::is_constructible_v<optional_ref<int>, optional_ref<const int>>);
@@ -181,6 +182,11 @@ TEST(OptionalRefTest, FromConstValue) {
     EXPECT_TRUE(r.has_value());
     EXPECT_EQ(6, r.value());
   }(value);
+
+  [](optional_ref<const int> r) {
+    EXPECT_TRUE(r.has_value());
+    EXPECT_EQ(6, r.value());
+  }(6);
 
   // Mutable case covered by static_assert test above.
 }
@@ -403,6 +409,47 @@ TEST(OptionalRefDeathTest, ValueOnEmpty) {
   [](optional_ref<TestClass> r) {
     EXPECT_CHECK_DEATH(r.value());
   }(absl::nullopt);
+}
+
+TEST(OptionalRefTest, ClassTemplateArgumentDeduction) {
+  static_assert(
+      std::is_same_v<decltype(optional_ref{int()}), optional_ref<const int>>);
+
+  {
+    const int i = 0;
+    static_assert(
+        std::is_same_v<decltype(optional_ref(i)), optional_ref<const int>>);
+  }
+
+  {
+    int i = 0;
+    static_assert(std::is_same_v<decltype(optional_ref(i)), optional_ref<int>>);
+  }
+
+  static_assert(std::is_same_v<decltype(optional_ref(absl::optional<int>())),
+                               optional_ref<const int>>);
+
+  {
+    const absl::optional<int> o;
+    static_assert(
+        std::is_same_v<decltype(optional_ref(o)), optional_ref<const int>>);
+  }
+
+  {
+    absl::optional<int> o;
+    static_assert(std::is_same_v<decltype(optional_ref(o)), optional_ref<int>>);
+  }
+
+  {
+    const int* p = nullptr;
+    static_assert(
+        std::is_same_v<decltype(optional_ref(p)), optional_ref<const int>>);
+  }
+
+  {
+    int* p = nullptr;
+    static_assert(std::is_same_v<decltype(optional_ref(p)), optional_ref<int>>);
+  }
 }
 
 }  // namespace
