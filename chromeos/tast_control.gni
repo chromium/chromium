@@ -278,6 +278,9 @@ tast_disabled_tests_from_chrome_all = [
   "peripherals.LaunchAppFromSettings.diagnostics",
   "peripherals.LaunchAppFromSettings.print_management",
 
+  # b/249879125
+  "launcher.SearchBuiltInApps.tablet_mode",
+
   # https://crbug.com/1368315
   "lockscreen.CloseLid",
 
