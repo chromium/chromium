@@ -335,17 +335,6 @@ void SyncTest::PostRunTestOnMainThread() {
 }
 
 void SyncTest::SetUpCommandLine(base::CommandLine* cl) {
-  AddTestSwitches(cl);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
-  cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
-  cl->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
-  arc::SetArcAvailableCommandLineForTesting(cl);
-#endif
-}
-
-void SyncTest::AddTestSwitches(base::CommandLine* cl) {
   // Disable non-essential access of external network resources.
   if (!cl->HasSwitch(switches::kDisableBackgroundNetworking)) {
     cl->AppendSwitch(switches::kDisableBackgroundNetworking);
@@ -372,6 +361,13 @@ void SyncTest::AddTestSwitches(base::CommandLine* cl) {
     // Effectively disables kSyncTrustedVaultPassphraseRecovery for E2E tests.
     cl->AppendSwitchASCII(syncer::kTrustedVaultServiceURL, "broken_url");
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  cl->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
+  cl->AppendSwitch(ash::switches::kDisableArcOptInVerification);
+  cl->AppendSwitch(ash::switches::kDisableLacrosKeepAliveForTesting);
+  arc::SetArcAvailableCommandLineForTesting(cl);
+#endif
 }
 
 void SyncTest::BeforeSetupClient(int index,

@@ -272,9 +272,6 @@ class SyncTest : public PlatformBrowserTest {
   std::string GetCacheGuid(size_t profile_index) const;
 
  protected:
-  // Add custom switches needed for running the test.
-  void AddTestSwitches(base::CommandLine* cl);
-
   // BrowserTestBase implementation:
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;

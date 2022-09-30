@@ -369,19 +369,4 @@ IN_PROC_BROWSER_TEST_F(MigrationTwoClientTest, MigrationHellWithNigori) {
   RunTwoClientMigrationTest(migration_list, MODIFY_BOOKMARK);
 }
 
-class MigrationReconfigureTest : public MigrationTwoClientTest {
- public:
-  MigrationReconfigureTest() = default;
-
-  void SetUpCommandLine(base::CommandLine* cl) override {
-    AddTestSwitches(cl);
-    // Do not add optional datatypes.
-  }
-
-  MigrationReconfigureTest(const MigrationReconfigureTest&) = delete;
-  MigrationReconfigureTest& operator=(const MigrationReconfigureTest&) = delete;
-
-  ~MigrationReconfigureTest() override = default;
-};
-
 }  // namespace
