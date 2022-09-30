@@ -54,10 +54,9 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
   if (!IsVerbatimMatchEligible(input.current_page_classification()))
     return;
 
-  // Only offer verbatim match after the user just focused the Omnibox,
-  // or if the input field is empty.
-  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
-      input.focus_type() == metrics::OmniboxFocusType::INTERACTION_CLOBBER)
+  // Only offer verbatim match after the user just focused the Omnibox on NTP,
+  // SRP, or existing website view, or if the input field is empty.
+  if (input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT)
     return;
 
   // For consistency with other zero-prefix providers.

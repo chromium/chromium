@@ -142,13 +142,13 @@ BASE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore,
 // eligible to send the current page URL to the suggest server.
 BASE_FEATURE(kClobberTriggersContextualWebZeroSuggest,
              "OmniboxClobberTriggersContextualWebZeroSuggest",
-             enabled_by_default_desktop_only);
+             enabled_by_default_desktop_android);
 
 // Enables on-clobber (i.e., when the user clears the whole omnibox text)
 // zero-prefix suggestions on the SRP.
 BASE_FEATURE(kClobberTriggersSRPZeroSuggest,
              "OmniboxClobberTriggersSRPZeroSuggest",
-             enabled_by_default_desktop_only);
+             enabled_by_default_desktop_android);
 
 // Enables on-focus zero-prefix suggestions on the Open Web, that are contextual
 // to the current URL. Will only work if user is signed-in and syncing, or is
@@ -181,6 +181,12 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
 // parameter, OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
 BASE_FEATURE(kOmniboxLocalZeroSuggestAgeThreshold,
              "OmniboxLocalZeroSuggestAgeThreshold",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
+// requests with an empty input on Web/SRP on Android platform.
+BASE_FEATURE(kOmniboxOnClobberFocusTypeOnAndroid,
+             "OmniboxOnClobberFocusTypeOnAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables on-focus zero-prefix suggestions on the NTP for signed-out users.

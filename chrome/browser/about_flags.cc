@@ -5481,6 +5481,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription,
      kOsAll, FEATURE_VALUE_TYPE(omnibox::kLocalHistoryZeroSuggestBeyondNTP)},
 
+    {"omnibox-on-clobber-focus-type-on-android",
+     flag_descriptions::kOmniboxOnClobberFocusTypeOnAndroidName,
+     flag_descriptions::kOmniboxOnClobberFocusTypeOnAndroidDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxOnClobberFocusTypeOnAndroid)},
+
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxFocusTriggersContextualWebZeroSuggestName,
      flag_descriptions::

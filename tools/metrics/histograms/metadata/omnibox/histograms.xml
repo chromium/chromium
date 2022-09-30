@@ -2122,6 +2122,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ZeroPrefixOnFocusType" enum="OmniboxFocusType"
+    expires_after="2023-04-26">
+  <owner>rongtan@google.com</owner>
+  <owner>ender@google.com</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Counts the type (concept ID) of omnibox zero-prefix on-focus type requests.
+    The omnibox of Chrome on Android measures use of different focus types while
+    retrieving zero prefix suggestions on supported platforms, and records
+    exactly once per every zero prefix suggestions request.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggest.Eligible.OnFocusV2"
     enum="ZeroSuggestEligibleOnFocus" expires_after="2022-12-25">
   <obsolete>

@@ -1156,6 +1156,9 @@ extern const char kOmniboxMostVisitedTilesFadingOnTabletDescription[];
 extern const char kOmniboxMostVisitedTilesOnSrpName[];
 extern const char kOmniboxMostVisitedTilesOnSrpDescription[];
 
+extern const char kOmniboxOnClobberFocusTypeOnAndroidName[];
+extern const char kOmniboxOnClobberFocusTypeOnAndroidDescription[];
+
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];
 

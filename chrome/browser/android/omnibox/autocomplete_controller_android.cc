@@ -233,6 +233,12 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
 
   auto page_class =
       OmniboxEventProto::PageClassification(j_page_classification);
+  bool interaction_clobber_focus_type =
+      base::FeatureList::IsEnabled(
+          omnibox::kOmniboxOnClobberFocusTypeOnAndroid) &&
+      !BaseSearchProvider::IsNTPPage(page_class);
+  if (interaction_clobber_focus_type)
+    omnibox_text.clear();
 
   // Proactively start up a renderer, to reduce the time to display search
   // results, especially if a Service Worker is used. This is done in a PostTask
@@ -255,7 +261,17 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
                              ChromeAutocompleteSchemeClassifier(profile_));
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
-  input_.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  // Assign focus type to INTERACTION_CLOBBER to non-NTP zero-prefix requests
+  input_.set_focus_type(interaction_clobber_focus_type
+                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
+                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  base::UmaHistogramEnumeration("Omnibox.ZeroPrefixFocusType",
+                                input_.focus_type(),
+                                static_cast<metrics::OmniboxFocusType>(
+                                    metrics::OmniboxFocusType_MAX + 1));
+
   autocomplete_controller_->Start(input_);
 }
 
