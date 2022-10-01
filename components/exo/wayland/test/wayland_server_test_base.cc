@@ -11,22 +11,13 @@
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/process/process_handle.h"
-#include "base/run_loop.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
-#include "base/threading/thread.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
 #include "components/exo/test/exo_test_base_views.h"
 #include "components/exo/test/test_security_delegate.h"
 #include "components/exo/wayland/server.h"
-#include "components/exo/wayland/server_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace exo {
@@ -70,31 +61,6 @@ std::unique_ptr<Server> WaylandServerTestBase::CreateServer(
   if (!security_delegate)
     security_delegate = std::make_unique<::exo::test::TestSecurityDelegate>();
   return Server::Create(display_.get(), std::move(security_delegate));
-}
-
-WaylandClientRunner::WaylandClientRunner(Server* server,
-                                         const std::string& name)
-    : base::Thread(name),
-      server_(server),
-      event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-             base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  Start();
-}
-
-void WaylandClientRunner::RunAndWait(base::OnceClosure callback) {
-  event_.Reset();
-
-  task_runner()->PostTask(
-      FROM_HERE,
-      (base::BindOnce(
-          [](base::OnceClosure callback, base::WaitableEvent* event) {
-            std::move(callback).Run();
-            event->Signal();
-          },
-          std::move(callback), &event_)));
-
-  while (!event_.IsSignaled())
-    server_->Dispatch(base::Milliseconds(10));
 }
 
 }  // namespace test

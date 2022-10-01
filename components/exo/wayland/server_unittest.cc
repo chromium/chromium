@@ -6,17 +6,18 @@
 
 #include <stdlib.h>
 
-#include <wayland-client-core.h>
-
 #include <memory>
 
-#include "base/atomic_sequence_num.h"
+#include <wayland-client-core.h>
+#include <wayland-server-core.h>
+
 #include "base/bind.h"
-#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/threading/thread.h"
 #include "components/exo/display.h"
 #include "components/exo/security_delegate.h"
 #include "components/exo/wayland/server_util.h"
@@ -24,10 +25,25 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace exo {
-namespace wayland {
+namespace exo::wayland {
 
 using ServerTest = test::WaylandServerTestBase;
+
+struct TestListener {
+ public:
+  TestListener();
+
+  wl_listener listener;
+  bool notified = false;
+};
+
+TestListener::TestListener() {
+  listener.notify = [](wl_listener* listener, void* data) {
+    TestListener* test_listener;
+    test_listener = wl_container_of(listener, test_listener, listener);
+    test_listener->notified = true;
+  };
+}
 
 TEST_F(ServerTest, AddSocket) {
   auto server = CreateServer(SecurityDelegate::GetDefaultSecurityDelegate());
@@ -96,20 +112,50 @@ TEST_F(ServerTest, Dispatch) {
   bool rv = server->AddSocket(socket_name);
   EXPECT_TRUE(rv);
 
-  test::WaylandClientRunner client(server.get(), "client-" + socket_name);
-  wl_display* client_display;
+  base::Thread client_thread("client-" + socket_name);
+  client_thread.Start();
 
-  // Post a task that connects server on the created thread.
+  TestListener client_creation_listener;
+  wl_display_add_client_created_listener(server->GetWaylandDisplayForTesting(),
+                                         &client_creation_listener.listener);
+
+  base::Lock lock;
+  wl_display* client_display = nullptr;
   bool connected_to_server = false;
-  client.RunAndWait(base::BindLambdaForTesting([&]() {
-    client_display = wl_display_connect(socket_name.c_str());
-    connected_to_server = !!client_display;
-  }));
 
-  EXPECT_TRUE(connected_to_server);
+  client_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // As soon as wl_display_connect() is executed, the server side could
+        // notify client creation and exit the while-loop. Therefore, the lock
+        // is required to ensure `connected_to_server` is set before it is
+        // accessed on the main thread.
+        base::AutoLock locker(lock);
+        client_display = wl_display_connect(socket_name.c_str());
+        connected_to_server = !!client_display;
+      }));
 
-  client.RunAndWait(base::BindLambdaForTesting(
-      [&]() { wl_display_disconnect(client_display); }));
+  while (!client_creation_listener.notified)
+    server->Dispatch(base::Milliseconds(10));
+
+  {
+    base::AutoLock locker(lock);
+    EXPECT_TRUE(connected_to_server);
+  }
+
+  wl_list* all_clients =
+      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
+  ASSERT_FALSE(wl_list_empty(all_clients));
+  wl_client* client = wl_client_from_link(all_clients->next);
+
+  TestListener client_destruction_listener;
+  wl_client_add_destroy_listener(client, &client_destruction_listener.listener);
+
+  client_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting(
+                     [&]() { wl_display_disconnect(client_display); }));
+
+  while (!client_destruction_listener.notified)
+    server->Dispatch(base::Milliseconds(10));
 }
 
 TEST_F(ServerTest, Flush) {
@@ -122,5 +168,4 @@ TEST_F(ServerTest, Flush) {
   server->Flush();
 }
 
-}  // namespace wayland
-}  // namespace exo
+}  // namespace exo::wayland

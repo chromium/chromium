@@ -7,9 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/test/exo_test_base.h"
 
@@ -45,22 +43,6 @@ class WaylandServerTestBase : public TestBase {
  protected:
   std::unique_ptr<Display> display_;
   base::ScopedTempDir xdg_temp_dir_;
-};
-
-// A class to support a client side code on a separate thread.
-// TODO(yzshen): Remove this class.
-class WaylandClientRunner : base::Thread {
- public:
-  WaylandClientRunner(Server* server, const std::string& name);
-  WaylandClientRunner(const WaylandClientRunner&) = delete;
-  WaylandClientRunner& operator=(const WaylandClientRunner&) = delete;
-  ~WaylandClientRunner() override = default;
-
-  void RunAndWait(base::OnceClosure callback);
-
- private:
-  Server* server_;  // not owned. server must outlive WaylandClientRunner.
-  base::WaitableEvent event_;
 };
 
 }  // namespace test
