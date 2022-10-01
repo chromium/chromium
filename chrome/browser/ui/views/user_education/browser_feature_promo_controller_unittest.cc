@@ -63,18 +63,24 @@ using ::testing::Ref;
 using ::testing::Return;
 
 namespace {
-base::Feature kTestIPHFeature{"TestIPHFeature",
-                              base::FEATURE_ENABLED_BY_DEFAULT};
-base::Feature kOneOffIPHFeature("AnyContextIPHFeature",
-                                base::FEATURE_ENABLED_BY_DEFAULT);
-base::Feature kTutorialIPHFeature{"TutorialTestIPHFeature",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
-base::Feature kCustomActionIPHFeature{"CustomActionTestIPHFeature",
-                                      base::FEATURE_ENABLED_BY_DEFAULT};
-base::Feature kDefaultCustomActionIPHFeature{
-    "DefaultCustomActionTestIPHFeature", base::FEATURE_ENABLED_BY_DEFAULT};
-base::Feature kCustomActionIPHFeature2{"CustomActionTestIPHFeature2",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestIPHFeature,
+             "TestIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kOneOffIPHFeature,
+             "AnyContextIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTutorialIPHFeature,
+             "TutorialTestIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCustomActionIPHFeature,
+             "CustomActionTestIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDefaultCustomActionIPHFeature,
+             "DefaultCustomActionTestIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCustomActionIPHFeature2,
+             "CustomActionTestIPHFeature2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr char kTestTutorialIdentifier[] = "Test Tutorial";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOneOffIPHElementId);
 }  // namespace

@@ -422,8 +422,9 @@ BASE_FEATURE(kEnableWebHidOnExtensionServiceWorker,
 #endif
 
 // Enable WebUSB on extension service workers.
-const base::Feature kEnableWebUsbOnExtensionServiceWorker{
-    "EnableWebUsbOnExtensionServiceWorker", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableWebUsbOnExtensionServiceWorker,
+             "EnableWebUsbOnExtensionServiceWorker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Lazy initialize IndividualSettings for extensions from enterprise policy

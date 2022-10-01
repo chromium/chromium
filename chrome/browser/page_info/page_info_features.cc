@@ -40,8 +40,9 @@ bool IsPersistentSidePanelEntryFeatureEnabled() {
              page_info::kAboutThisSitePersistentSidePanelEntry);
 }
 
-const base::Feature kAboutThisSitePersistentSidePanelEntry{
-    "AboutThisSitePersistentSidePanelEntry", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAboutThisSitePersistentSidePanelEntry,
+             "AboutThisSitePersistentSidePanelEntry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace page_info

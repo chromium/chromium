@@ -22,7 +22,7 @@ bool IsDescriptionPlaceholderFeatureEnabled();
 bool IsPersistentSidePanelEntryFeatureEnabled();
 
 // Enables the persistent "About this site" entry in the side panel.
-extern const base::Feature kAboutThisSitePersistentSidePanelEntry;
+BASE_DECLARE_FEATURE(kAboutThisSitePersistentSidePanelEntry);
 #endif
 
 }  // namespace page_info

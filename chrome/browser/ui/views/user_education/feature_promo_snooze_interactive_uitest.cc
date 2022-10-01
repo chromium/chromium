@@ -43,8 +43,9 @@ using ::testing::Ref;
 using ::testing::Return;
 
 namespace {
-base::Feature kSnoozeTestFeature("SnoozeTestFeature",
-                                 base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSnoozeTestFeature,
+             "SnoozeTestFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }
 
 class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {

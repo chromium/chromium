@@ -238,7 +238,7 @@ BASE_DECLARE_FEATURE(kEnableWebHidOnExtensionServiceWorker);
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kEnableWebUsbOnExtensionServiceWorker;
+BASE_DECLARE_FEATURE(kEnableWebUsbOnExtensionServiceWorker);
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -376,7 +376,7 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kHappinessTrackingPhotosExperience);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kHappinessTrackingGeneralCamera;
+BASE_DECLARE_FEATURE(kHappinessTrackingGeneralCamera);
 
 #endif
 
