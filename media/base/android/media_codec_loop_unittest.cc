@@ -91,7 +91,7 @@ class MediaCodecLoopTest : public testing::Test {
   }
 
   void ConstructCodecLoop() {
-    int sdk_int = base::android::SDK_VERSION_MARSHMALLOW;
+    int sdk_int = base::android::SDK_VERSION_NOUGAT;
     auto codec = std::make_unique<MockMediaCodecBridge>();
     // Since we're providing a codec, we do not expect an error.
     EXPECT_CALL(*client_, OnCodecLoopError()).Times(0);
@@ -199,7 +199,7 @@ class MediaCodecLoopTest : public testing::Test {
 TEST_F(MediaCodecLoopTest, TestConstructionWithNullCodec) {
   std::unique_ptr<MediaCodecBridge> codec;
   EXPECT_CALL(*client_, OnCodecLoopError()).Times(1);
-  const int sdk_int = base::android::SDK_VERSION_MARSHMALLOW;
+  const int sdk_int = base::android::SDK_VERSION_NOUGAT;
   codec_loop_ = std::make_unique<MediaCodecLoop>(
       sdk_int, client_.get(), std::move(codec),
       scoped_refptr<base::SingleThreadTaskRunner>());

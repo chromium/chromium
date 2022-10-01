@@ -23,14 +23,14 @@ using ::testing::StrictMock;
 
 namespace media {
 
-#define EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(a)                              \
-  do {                                                                    \
-    if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {      \
-      VLOG(0) << "Widevine not supported on device.";                     \
-      EXPECT_FALSE(a);                                                    \
-    } else {                                                              \
-      EXPECT_TRUE(a);                                                     \
-    }                                                                     \
+#define EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(a)                         \
+  do {                                                               \
+    if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) { \
+      VLOG(0) << "Widevine not supported on device.";                \
+      EXPECT_FALSE(a);                                               \
+    } else {                                                         \
+      EXPECT_TRUE(a);                                                \
+    }                                                                \
   } while (0)
 
 const char kAudioMp4[] = "audio/mp4";
@@ -128,11 +128,10 @@ TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
   EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(
       IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoMp4));
 
-
   EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(
-        IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioWebM));
+      IsKeySystemSupportedWithType(kWidevineKeySystem, kAudioWebM));
   EXPECT_TRUE_IF_WIDEVINE_AVAILABLE(
-        IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoWebM));
+      IsKeySystemSupportedWithType(kWidevineKeySystem, kVideoWebM));
 
   EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "unknown"));
   EXPECT_FALSE(IsKeySystemSupportedWithType(kWidevineKeySystem, "video/avi"));
@@ -183,16 +182,6 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
   // if it's not supported.
   if (!MediaDrmBridge::IsPerOriginProvisioningSupported()) {
     VLOG(0) << "Origin isolated storage not supported on device.";
-    return;
-  }
-
-  // On Android M occasionally MediaDrm.getProvisionRequest() throws and thus a
-  // request can not be generated. This has been fixed in Android N. As Android
-  // M is unlikely to be fixed, disabling this test if running on Android M.
-  // http://crbug.com/973096#c21
-  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    VLOG(0) << "Disabled for Android M.";
     return;
   }
 
