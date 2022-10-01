@@ -39,7 +39,6 @@ struct FieldTemplate {
   std::string autocomplete_section = "";
   HtmlFieldMode autocomplete_mode = HtmlFieldMode::kNone;
   bool is_focusable = true;
-  bool is_visible = true;
 };
 
 // Returns fields to be sectioned.
@@ -60,7 +59,6 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
           .section = t.autocomplete_section, .mode = t.autocomplete_mode};
     }
     f->is_focusable = t.is_focusable;
-    f->is_visible = t.is_visible;
   }
   return result;
 }
@@ -80,15 +78,16 @@ class FormStructureSectioningTest : public testing::Test {
 
 // This refers to the example from the code comment in form_sectioning_util.h.
 std::vector<std::unique_ptr<AutofillField>> CreateExampleFields() {
-  return CreateFields({{.field_type = NAME_FULL},
-                       {.field_type = ADDRESS_HOME_COUNTRY},
-                       {.field_type = NAME_FULL, .autocomplete_section = "A"},
-                       {.field_type = ADDRESS_HOME_STREET_NAME},
-                       {.field_type = CREDIT_CARD_NUMBER},
-                       {.field_type = CREDIT_CARD_NUMBER, .is_visible = false},
-                       {.field_type = NAME_FULL},
-                       {.field_type = ADDRESS_HOME_COUNTRY},
-                       {.field_type = CREDIT_CARD_NUMBER}});
+  return CreateFields(
+      {{.field_type = NAME_FULL},
+       {.field_type = ADDRESS_HOME_COUNTRY},
+       {.field_type = NAME_FULL, .autocomplete_section = "A"},
+       {.field_type = ADDRESS_HOME_STREET_NAME},
+       {.field_type = CREDIT_CARD_NUMBER},
+       {.field_type = CREDIT_CARD_NUMBER, .is_focusable = false},
+       {.field_type = NAME_FULL},
+       {.field_type = ADDRESS_HOME_COUNTRY},
+       {.field_type = CREDIT_CARD_NUMBER}});
 }
 
 TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
