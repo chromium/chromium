@@ -146,6 +146,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win10-wpt-content-shell-fyi-rel",
+    mirrors = [
+        "ci/win10-wpt-content-shell-fyi-rel",
+    ],
+    os = os.WINDOWS_10,
+)
+
+try_.builder(
     name = "win11-x64-fyi-rel",
     mirrors = [
         "ci/Win x64 Builder",
