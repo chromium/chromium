@@ -429,7 +429,7 @@ class UpdateServiceProxyImpl
             std::move(callback)));
     if (HRESULT hr = get_interface()->FetchPolicies(callback_wrapper.Get());
         FAILED(hr)) {
-      VLOG(2) << "Failed to call IUpdater::FetchPolicies" << std::hex << hr;
+      VLOG(2) << "Failed to call IUpdater::FetchPolicies, " << std::hex << hr;
       callback_wrapper->Disconnect().Run(hr);
       return;
     }

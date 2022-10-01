@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
@@ -178,6 +179,7 @@ HRESULT UpdaterImpl::FetchPolicies(IUpdaterCallback* callback) {
 }
 
 HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 

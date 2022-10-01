@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -354,13 +355,18 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
   }
 
   // Overrides for IAppWeb.
-  IFACEMETHODIMP get_appId(BSTR* app_id) override { return E_NOTIMPL; }
+  IFACEMETHODIMP get_appId(BSTR* app_id) override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP get_currentVersionWeb(IDispatch** current) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_nextVersionWeb(IDispatch** next) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
@@ -369,7 +375,10 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
         command, GetUpdaterScope(), base::UTF8ToWide(app_id_), command_id);
   }
 
-  IFACEMETHODIMP cancel() override { return E_NOTIMPL; }
+  IFACEMETHODIMP cancel() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP get_currentState(IDispatch** current_state) override {
     DCHECK(current_state);
@@ -469,15 +478,23 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
         /* post_install_action = */ 0);
   }
 
-  IFACEMETHODIMP launch() override { return E_NOTIMPL; }
+  IFACEMETHODIMP launch() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
-  IFACEMETHODIMP uninstall() override { return E_NOTIMPL; }
+  IFACEMETHODIMP uninstall() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP get_serverInstallDataIndex(BSTR* language) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP put_serverInstallDataIndex(BSTR language) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
@@ -521,6 +538,7 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
                            BSTR brand_code,
                            BSTR language,
                            BSTR ap) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
@@ -533,9 +551,13 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(&app_web_, app_id);
   }
 
-  IFACEMETHODIMP createAllInstalledApps() override { return E_NOTIMPL; }
+  IFACEMETHODIMP createAllInstalledApps() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP get_displayLanguage(BSTR* language) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
@@ -543,7 +565,10 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
 
   IFACEMETHODIMP put_parentHWND(ULONG_PTR hwnd) override { return S_OK; }
 
-  IFACEMETHODIMP get_length(int* number) override { return E_NOTIMPL; }
+  IFACEMETHODIMP get_length(int* number) override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP get_appWeb(int index, IDispatch** app_web) override {
     base::AutoLock lock{lock_};
@@ -566,21 +591,35 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     return app_web_->CheckForUpdate();
   }
 
-  IFACEMETHODIMP download() override { return E_NOTIMPL; }
+  IFACEMETHODIMP download() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP install() override { return S_OK; }
 
-  IFACEMETHODIMP pause() override { return E_NOTIMPL; }
+  IFACEMETHODIMP pause() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
-  IFACEMETHODIMP resume() override { return E_NOTIMPL; }
+  IFACEMETHODIMP resume() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
-  IFACEMETHODIMP cancel() override { return E_NOTIMPL; }
+  IFACEMETHODIMP cancel() override {
+    NOTIMPLEMENTED();
+    return E_NOTIMPL;
+  }
 
   IFACEMETHODIMP downloadPackage(BSTR app_id, BSTR package_name) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
   IFACEMETHODIMP get_currentState(VARIANT* current_state) override {
+    NOTIMPLEMENTED();
     return E_NOTIMPL;
   }
 
@@ -612,6 +651,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLine(const WCHAR* cmd_line) {
 
 STDMETHODIMP LegacyProcessLauncherImpl::LaunchBrowser(DWORD browser_type,
                                                       const WCHAR* url) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -659,6 +699,7 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
     DWORD* server_proc_id,
     ULONG_PTR* proc_handle,
     ULONG_PTR* stdout_handle) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -701,6 +742,7 @@ STDMETHODIMP LegacyAppCommandWebImpl::get_exitCode(DWORD* exit_code) {
 }
 
 STDMETHODIMP LegacyAppCommandWebImpl::get_output(BSTR* output) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -1163,10 +1205,12 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
 
 // TODO(crbug.com/1344200): Implement the IDispatch methods.
 STDMETHODIMP PolicyStatusImpl::GetTypeInfoCount(UINT*) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
 STDMETHODIMP PolicyStatusImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -1175,6 +1219,7 @@ STDMETHODIMP PolicyStatusImpl::GetIDsOfNames(REFIID,
                                              UINT,
                                              LCID,
                                              DISPID*) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -1186,6 +1231,7 @@ STDMETHODIMP PolicyStatusImpl::Invoke(DISPID,
                                       VARIANT*,
                                       EXCEPINFO*,
                                       UINT*) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -1263,10 +1309,12 @@ STDMETHODIMP PolicyStatusValueImpl::get_conflictValue(BSTR* conflict_value) {
 
 // TODO(crbug.com/1344200): Implement the IDispatch methods.
 STDMETHODIMP PolicyStatusValueImpl::GetTypeInfoCount(UINT*) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
 STDMETHODIMP PolicyStatusValueImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -1275,6 +1323,7 @@ STDMETHODIMP PolicyStatusValueImpl::GetIDsOfNames(REFIID,
                                                   UINT,
                                                   LCID,
                                                   DISPID*) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
@@ -1286,6 +1335,7 @@ STDMETHODIMP PolicyStatusValueImpl::Invoke(DISPID,
                                            VARIANT*,
                                            EXCEPINFO*,
                                            UINT*) {
+  NOTIMPLEMENTED();
   return E_NOTIMPL;
 }
 
