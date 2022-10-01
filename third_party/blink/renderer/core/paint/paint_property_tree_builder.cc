@@ -851,24 +851,6 @@ static void DirectlyUpdateCcTransform(
   }
 }
 
-static void DirectlyUpdateCcOpacity(const LayoutObject& object,
-                                    ObjectPaintProperties& properties,
-                                    PaintPropertyChangeType& change_type) {
-  if (change_type == PaintPropertyChangeType::kChangedOnlySimpleValues &&
-      properties.Effect()->HasDirectCompositingReasons()) {
-    if (auto* paint_artifact_compositor =
-            object.GetFrameView()->GetPaintArtifactCompositor()) {
-      bool updated =
-          paint_artifact_compositor->DirectlyUpdateCompositedOpacityValue(
-              *properties.Effect());
-      if (updated) {
-        change_type = PaintPropertyChangeType::kChangedOnlyCompositedValues;
-        properties.Effect()->CompositorSimpleValuesUpdated();
-      }
-    }
-  }
-}
-
 // TODO(dbaron): Remove this function when we can remove the
 // BackfaceVisibilityInteropEnabled() check, and have the caller use
 // CompositingReason::kDirectReasonsForTransformProperty directly.
@@ -1464,9 +1446,6 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
 
 void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
   DCHECK(properties_);
-  // Since we're doing a full update, clear list of objects waiting for a
-  // deferred update
-  object_.GetFrameView()->RemovePendingOpacityUpdate(object_);
   const ComputedStyle& style = object_.StyleRef();
 
   if (NeedsPaintPropertyUpdate()) {
@@ -1578,7 +1557,25 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       // If we have simple value change, which means opacity, we should try to
       // directly update it on the PaintArtifactCompositor in order to avoid
       // doing a full rebuild.
-      DirectlyUpdateCcOpacity(object_, *properties_, effective_change_type);
+      if (effective_change_type ==
+              PaintPropertyChangeType::kChangedOnlySimpleValues &&
+          properties_->Effect()->HasDirectCompositingReasons() &&
+          // TODO(crbug.com/1253797): Due to the bug, we may create multiple
+          // cc effect nodes for one blink effect node of a fragmented object,
+          // and direct update would be incomplete in the case.
+          !object_.FirstFragment().NextFragment()) {
+        if (auto* paint_artifact_compositor =
+                object_.GetFrameView()->GetPaintArtifactCompositor()) {
+          bool updated =
+              paint_artifact_compositor->DirectlyUpdateCompositedOpacityValue(
+                  *properties_->Effect());
+          if (updated) {
+            effective_change_type =
+                PaintPropertyChangeType::kChangedOnlyCompositedValues;
+            properties_->Effect()->CompositorSimpleValuesUpdated();
+          }
+        }
+      }
       OnUpdateEffect(effective_change_type);
 
       auto mask_direct_compositing_reasons =
@@ -2930,8 +2927,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   // |translation_2d_to_layout_shift_root_delta|) is updated properly.
   // See: ../paint/README.md#Transform-update-optimization for more on
   // optimized transform updates
-  if (object_.GetFrameView()->RemovePendingTransformUpdate(object_) ||
-      object_.GetFrameView()->RemovePendingOpacityUpdate(object_))
+  if (object_.GetFrameView()->RemovePendingTransformUpdate(object_))
     object_.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
 
   if (box.Size() == box.PreviousSize())
@@ -4198,17 +4194,6 @@ bool PaintPropertyTreeBuilder::ScheduleDeferredTransformNodeUpdate(
   return false;
 }
 
-bool PaintPropertyTreeBuilder::ScheduleDeferredOpacityNodeUpdate(
-    LayoutObject& object) {
-  if (!base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates))
-    return false;
-  if (CanDoDeferredOpacityNodeUpdate(object)) {
-    object.GetFrameView()->AddPendingOpacityUpdate(object);
-    return true;
-  }
-  return false;
-}
-
 // Fast-path for directly updating transforms. Returns true if successful. This
 // is similar to |FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform|.
 void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
@@ -4264,34 +4249,6 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
     }
     OldCullRectUpdater::PaintPropertiesChanged(
         object, *box.Layer(), properties_changed, old_scroll_offset);
-  }
-}
-
-void PaintPropertyTreeBuilder::DirectlyUpdateOpacityValue(
-    const LayoutObject& object) {
-  DCHECK(CanDoDeferredOpacityNodeUpdate(object));
-  const ComputedStyle& style = object.StyleRef();
-
-  EffectPaintPropertyNode::AnimationState animation_state;
-  animation_state.is_running_opacity_animation_on_compositor =
-      style.IsRunningOpacityAnimationOnCompositor();
-  animation_state.is_running_backdrop_filter_animation_on_compositor =
-      style.IsRunningBackdropFilterAnimationOnCompositor();
-
-  FragmentData* fragment_data = &object.GetMutableForPainting().FirstFragment();
-  auto* properties = fragment_data->PaintProperties();
-  auto effective_change_type =
-      properties->DirectlyUpdateOpacity(style.Opacity(), animation_state);
-  // If we have simple value change, which means opacity, we should try to
-  // directly update it on the PaintArtifactCompositor in order to avoid
-  // needing to run the property tree builder at all.
-  DirectlyUpdateCcOpacity(object, *properties, effective_change_type);
-
-  if (effective_change_type >=
-      PaintPropertyChangeType::kChangedOnlySimpleValues) {
-    object.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate(
-        PaintArtifactCompositorUpdateReason::
-            kPaintPropertyTreeBuilderPaintPropertyChanged);
   }
 }
 
@@ -4398,35 +4355,6 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
   // Cannot directly update properties if they have not been created yet.
   if (!properties || !properties->Transform())
     return false;
-
-  return true;
-}
-
-bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
-    const LayoutObject& object) {
-  // If we already need a full update, do not do the direct update.
-  if (object.NeedsPaintPropertyUpdate() ||
-      object.DescendantNeedsPaintPropertyUpdate()) {
-    return false;
-  }
-
-  // This fast path does not support iterating over each fragment, so do not
-  // run the fast path in the presence of fragmentation.
-  if (object.FirstFragment().NextFragment())
-    return false;
-
-  auto* properties = object.FirstFragment().PaintProperties();
-  // Cannot directly update properties if they have not been created yet.
-  if (!properties || !properties->Effect())
-    return false;
-
-  // Descendant state depends on opacity being zero, so we can't do a direct
-  // update if it changes
-  bool old_opacity_is_zero = properties->Effect()->Opacity() == 0;
-  bool new_opacity_is_zero = object.Style()->Opacity() == 0;
-  if (old_opacity_is_zero != new_opacity_is_zero) {
-    return false;
-  }
 
   return true;
 }

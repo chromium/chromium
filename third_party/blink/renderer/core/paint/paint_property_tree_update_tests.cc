@@ -1973,25 +1973,4 @@ TEST_P(PaintPropertyTreeUpdateTest,
   EXPECT_EQ(200, div_properties->Transform()->Translation2D().x());
 }
 
-TEST_P(PaintPropertyTreeUpdateTest,
-       DirectOpacityUpdateSkipsPropertyTreeBuilder) {
-  SetBodyInnerHTML(R"HTML(
-      <div id='div' style="opacity:0.5"></div>
-  )HTML");
-
-  auto* div_properties = PaintPropertiesForElement("div");
-  ASSERT_TRUE(div_properties);
-  EXPECT_EQ(0.5, div_properties->Effect()->Opacity());
-  auto* div = GetDocument().getElementById("div");
-  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
-
-  div->setAttribute(html_names::kStyleAttr, "opacity:0.8");
-  GetDocument().View()->UpdateLifecycleToLayoutClean(
-      DocumentUpdateReason::kTest);
-  EXPECT_FALSE(div->GetLayoutObject()->NeedsPaintPropertyUpdate());
-
-  UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);
-}
-
 }  // namespace blink

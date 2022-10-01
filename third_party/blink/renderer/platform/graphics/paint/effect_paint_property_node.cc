@@ -42,8 +42,18 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
   }
   bool opacity_changed = opacity != other.opacity;
   bool opacity_change_is_simple =
-      IsOpacityChangeSimple(opacity, other.opacity, direct_compositing_reasons,
-                            other.direct_compositing_reasons);
+      opacity_changed &&
+      // Opacity change is simple if
+      // - opacity doesn't change from or to 1, or
+      // - there was and is active opacity animation, or
+      // TODO(crbug.com/1285498): Optimize for will-change: opacity.
+      // The rule is because whether opacity is 1 affects whether the effect
+      // should create a render surface if there is no active opacity animation.
+      ((opacity != 1.f && other.opacity != 1.f) ||
+       ((direct_compositing_reasons &
+         CompositingReason::kActiveOpacityAnimation) &&
+        (other.direct_compositing_reasons &
+         CompositingReason::kActiveOpacityAnimation)));
   if (opacity_changed && !opacity_change_is_simple) {
     DCHECK(!animation_state.is_running_opacity_animation_on_compositor);
     return PaintPropertyChangeType::kChangedOnlyValues;
@@ -82,19 +92,6 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
     return PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
   return PaintPropertyChangeType::kUnchanged;
-}
-
-bool EffectPaintPropertyNode::State::IsOpacityChangeSimple(
-    float opacity,
-    float new_opacity,
-    CompositingReasons direct_compositing_reasons,
-    CompositingReasons new_direct_compositing_reasons) {
-  bool opacity_changed = opacity != new_opacity;
-  return opacity_changed && ((opacity != 1.f && new_opacity != 1.f) ||
-                             ((direct_compositing_reasons &
-                               CompositingReason::kActiveOpacityAnimation) &&
-                              (new_direct_compositing_reasons &
-                               CompositingReason::kActiveOpacityAnimation)));
 }
 
 const EffectPaintPropertyNode& EffectPaintPropertyNode::Root() {
@@ -150,40 +147,6 @@ void EffectPaintPropertyNodeOrAlias::ClearChangedToRoot(
     if (const auto* output_clip = unaliased->OutputClip())
       output_clip->ClearChangedToRoot(sequence_number);
   }
-}
-
-PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeOpacityChange(
-    float new_opacity,
-    const AnimationState& animation_state) const {
-  bool opacity_changed = opacity != new_opacity;
-  bool opacity_change_is_simple = State::IsOpacityChangeSimple(
-      opacity, new_opacity, direct_compositing_reasons,
-      direct_compositing_reasons);
-  if (opacity_changed && !opacity_change_is_simple) {
-    DCHECK(!animation_state.is_running_opacity_animation_on_compositor);
-    return PaintPropertyChangeType::kChangedOnlyValues;
-  }
-
-  bool simple_values_changed =
-      opacity_change_is_simple &&
-      !animation_state.is_running_opacity_animation_on_compositor;
-  if (simple_values_changed) {
-    return PaintPropertyChangeType::kChangedOnlySimpleValues;
-  }
-  if (opacity_changed) {
-    return PaintPropertyChangeType::kChangedOnlyCompositedValues;
-  }
-  return PaintPropertyChangeType::kUnchanged;
-}
-
-PaintPropertyChangeType EffectPaintPropertyNode::DirectlyUpdateOpacity(
-    float opacity,
-    const AnimationState& animation_state) {
-  auto change = state_.ComputeOpacityChange(opacity, animation_state);
-  state_.opacity = opacity;
-  if (change != PaintPropertyChangeType::kUnchanged)
-    AddChanged(change);
-  return change;
 }
 
 gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
