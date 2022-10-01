@@ -78,13 +78,10 @@
     z-index: 1;  /* Needed so it layers on top of OneGoogleBar. */
   }
 
-  ntp-realbox {
+  #realboxContainer {
+    display: inherit;
     margin-bottom: 16px;
-  }
-
-  ntp-realbox {
-    flex-shrink: 0;
-    width: var(--ntp-search-box-width);
+    position: relative;
   }
 
   ntp-modules {
@@ -98,6 +95,7 @@
 
   ntp-realbox {
     visibility: hidden;
+    width: var(--ntp-search-box-width);
   }
 
   ntp-realbox[shown] {
@@ -294,6 +292,14 @@
   svg {
     position: fixed;
   }
+
+  ntp-lens-upload-dialog {
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 101;
+  }
 </style>
 <div id="content" style="
         --color-new-tab-page-attribution-foreground: [[rgbaOrInherit_(theme_.textColor)]];
@@ -315,10 +321,17 @@
       dark="[[theme_.isDark]]" background-color="[[backgroundColor_]]"
       hidden$="[[!logoEnabled_]]">
   </ntp-logo>
-  <ntp-realbox id="realbox" on-open-voice-search="onOpenVoiceSearch_"
-      is-dark="[[theme_.isDark]]"
-      shown$="[[realboxShown_]]">
-  </ntp-realbox>
+  <div id="realboxContainer">
+    <ntp-realbox id="realbox"
+        is-dark="[[theme_.isDark]]"
+        on-open-voice-search="onOpenVoiceSearch_"
+        shown$="[[realboxShown_]]">
+    </ntp-realbox>
+    <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+      <ntp-lens-upload-dialog>
+      </ntp-lens-upload-dialog>
+    </template>
+  </div>
   <dom-if if="[[lazyRender_]]" on-dom-change="onLazyRendered_">
     <template>
       <template is="dom-if" if="[[shortcutsEnabled_]]">

@@ -2528,4 +2528,72 @@ suite('NewTabPageRealboxTest', () => {
     });
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
   });
+
+  suite('Lens search', () => {
+    test('Lens search button does not show by default', () => {
+      // Assert
+      const lensButton =
+          realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+      assertFalse(!!lensButton);
+    });
+
+    test('Lens search button is visible when feature is flipped', async () => {
+      // Arrange.
+      loadTimeData.overrideValues({
+        realboxLensSearch: true,
+      });
+      document.body.innerHTML = '';
+      realbox = document.createElement('ntp-realbox');
+      document.body.appendChild(realbox);
+      await testProxy.callbackRouterRemote.$.flushForTesting();
+
+      // Assert
+      const lensButton =
+          realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+      assertTrue(!!lensButton);
+    });
+
+    test('clicking Lens search button hides matches', async () => {
+      // Arrange.
+      loadTimeData.overrideValues({
+        realboxLensSearch: true,
+      });
+      document.body.innerHTML = '';
+      realbox = document.createElement('ntp-realbox');
+      document.body.appendChild(realbox);
+
+      // Act.
+      realbox.$.input.value = 'hello';
+      realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+      const matches = [
+        createSearchMatch({
+          allowedToBeDefaultMatch: true,
+        }),
+        createUrlMatch(),
+      ];
+      testProxy.callbackRouterRemote.autocompleteResultChanged({
+        input: mojoString16(realbox.$.input.value.trimLeft()),
+        matches,
+        suggestionGroupsMap: {},
+      });
+      await testProxy.callbackRouterRemote.$.flushForTesting();
+
+      // Assert (consistency check).
+      assertTrue(areMatchesShowing());
+
+      // Act.
+      const lensButton =
+          realbox.shadowRoot!.querySelector('#lensSearchButton') as HTMLElement;
+      lensButton.click();
+
+      // Assert.
+      assertFalse(areMatchesShowing());
+
+      // Restore.
+      loadTimeData.overrideValues({
+        realboxImageSearch: false,
+      });
+    });
+  });
 });

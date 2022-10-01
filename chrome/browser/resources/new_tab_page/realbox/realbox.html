@@ -105,9 +105,7 @@
     right: 12px;
   }
 
-  #voiceSearchButton {
-    background: url(icons/googlemic_clr_24px.svg) no-repeat center;
-    background-size: 21px 21px;
+  .realbox-icon-button {
     border: none;
     border-radius: 2px;
     cursor: pointer;
@@ -120,16 +118,36 @@
     width: 26px;
   }
 
-  :host-context([dir='rtl']) #voiceSearchButton {
+  #voiceSearchButton {
+    background: url(icons/googlemic_clr_24px.svg) no-repeat center;
+    background-size: 21px 21px;
+  }
+
+  #lensSearchButton {
+    /* TODO: Update background to use Lens logo. See crbug.com/1370120 */
+    background: lime;
+    background-size: 21px 21px;
+  }
+
+  :host([realbox-lens-search-enabled_]):host-context([dir='rtl']) #voiceSearchButton {
+    left: 53px;
+    right: unset;
+  }
+
+  :host([realbox-lens-search-enabled_]) #voiceSearchButton {
+    right: 53px;
+  }
+
+  :host-context([dir='rtl']) .realbox-icon-button {
     left: 16px;
     right: unset;
   }
 
-  :host-context(.focus-outline-visible) #voiceSearchButton:focus {
+  :host-context(.focus-outline-visible) .realbox-icon-button:focus {
     box-shadow: var(--ntp-focus-shadow);
   }
 
-  :-webkit-any(input, ntp-realbox-icon, #voiceSearchButton) {
+  :-webkit-any(input, ntp-realbox-icon, .realbox-icon-button) {
    z-index: 100;
   }
 
@@ -153,9 +171,18 @@
   <ntp-realbox-icon id="icon" match="[[selectedMatch_]]"
       default-icon="[[realboxIcon_]]" in-searchbox>
   </ntp-realbox-icon>
-  <button id="voiceSearchButton" on-click="onVoiceSearchClick_"
+  <button id="voiceSearchButton"
+      class="realbox-icon-button" 
+      on-click="onVoiceSearchClick_"
       title="$i18n{voiceSearchButtonLabel}">
   </button>
+  <template is="dom-if" if="[[realboxLensSearchEnabled_]]">
+    <button id="lensSearchButton"
+        class="realbox-icon-button"
+        on-click="onLensSearchClick_"
+        title="$i18n{lensSearchButtonLabel}">
+    </button>
+  </template>
   <ntp-realbox-dropdown id="matches" role="listbox"
       result="[[result_]]" selected-match-index="{{selectedMatchIndex_}}"
       on-result-repaint="onResultRepaint_" on-match-focusin="onMatchFocusin_"

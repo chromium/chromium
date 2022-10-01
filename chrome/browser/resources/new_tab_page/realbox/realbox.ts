@@ -32,10 +32,10 @@ interface InputUpdate {
 
 export interface RealboxElement {
   $: {
+    icon: RealboxIconElement,
     input: HTMLInputElement,
     inputWrapper: HTMLElement,
     matches: RealboxDropdownElement,
-    icon: RealboxIconElement,
     voiceSearchButton: HTMLElement,
   };
 }
@@ -146,6 +146,15 @@ export class RealboxElement extends PolymerElement {
         value: () => loadTimeData.getString('realboxDefaultIcon'),
       },
 
+      /**
+       * Whether the Google Lens icon should be visible in the searchbox.
+       */
+      realboxLensSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxLensSearch'),
+        reflectToAttribute: true,
+      },
+
       result_: {
         type: Object,
       },
@@ -184,6 +193,7 @@ export class RealboxElement extends PolymerElement {
   private lastQueriedInput_: string|null;
   private pastedInInput_: boolean;
   private realboxIcon_: string;
+  private realboxLensSearchEnabled_: boolean;
   private result_: AutocompleteResult|null;
   private selectedMatch_: AutocompleteMatch|null;
   private selectedMatchIndex_: number;
@@ -461,7 +471,7 @@ export class RealboxElement extends PolymerElement {
     }
 
     if (e.defaultPrevented) {
-      // Ignore previousely handled events.
+      // Ignore previously handled events.
       return;
     }
 
@@ -603,6 +613,11 @@ export class RealboxElement extends PolymerElement {
 
   private onVoiceSearchClick_() {
     this.dispatchEvent(new Event('open-voice-search'));
+  }
+
+  private onLensSearchClick_() {
+    this.matchesAreVisible = false;
+    this.dispatchEvent(new Event('open-lens-search'));
   }
 
   //============================================================================

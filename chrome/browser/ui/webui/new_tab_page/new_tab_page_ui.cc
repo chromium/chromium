@@ -285,6 +285,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"voiceSearchButtonLabel", IDS_TOOLTIP_MIC_SEARCH},
       {"waiting", IDS_NEW_TAB_VOICE_WAITING},
 
+      // Lens image search.
+      {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
+
       // Logo/doodle.
       {"copyLink", IDS_NTP_DOODLE_SHARE_DIALOG_COPY_LABEL},
       {"doodleLink", IDS_NTP_DOODLE_SHARE_DIALOG_LINK_LABEL},

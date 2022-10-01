@@ -7259,6 +7259,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TOOLTIP_MIC_SEARCH" desc="The tooltip for search-by-voice button">
         Search by voice
       </message>
+      <message name="IDS_TOOLTIP_LENS_SEARCH" desc="The tooltip for search-by-image button">
+        Search by image
+      </message>
       <message name="IDS_TOOLTIP_SAVE_CREDIT_CARD" desc="The tooltip for the icon that shows the save credit card bubble">
         Save card
       </message>

@@ -152,6 +152,10 @@ TEST_F('NewTabPageRealboxTest', 'All', function() {
   mocha.run();
 });
 
+TEST_F('NewTabPageRealboxTest', 'LensSearch', function() {
+  runMochaSuite('NewTabPageRealboxTest Lens search');
+});
+
 var NewTabPageLogoTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

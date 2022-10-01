@@ -175,6 +175,11 @@ export class AppElement extends PolymerElement {
         type: Boolean,
       },
 
+      realboxLensSearchEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('realboxLensSearch'),
+      },
+
       realboxShown_: {
         type: Boolean,
         computed: 'computeRealboxShown_(theme_)',
@@ -284,6 +289,7 @@ export class AppElement extends PolymerElement {
   private customizeChromeSidePanelShowing_: boolean;
   private logoColor_: string;
   private singleColoredLogo_: boolean;
+  private realboxLensSearchEnabled_: boolean;
   private realboxShown_: boolean;
   private logoEnabled_: boolean;
   private oneGoogleBarEnabled_: boolean;
