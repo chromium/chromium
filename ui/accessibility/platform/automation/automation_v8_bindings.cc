@@ -489,7 +489,6 @@ void AutomationV8Bindings::AddV8Routes() {
   ROUTE_FUNCTION(AddTreeChangeObserver);
   ROUTE_FUNCTION(RemoveTreeChangeObserver);
   ROUTE_FUNCTION(IsInteractPermitted);
-  ROUTE_FUNCTION(GetSchemaAdditions);
   ROUTE_FUNCTION(GetState);
   ROUTE_FUNCTION(StartCachingAccessibilityTrees);
   ROUTE_FUNCTION(StopCachingAccessibilityTrees);
@@ -1962,40 +1961,6 @@ void AutomationV8Bindings::IsInteractPermitted(
   bool permitted = automation_v8_router_->IsInteractPermitted();
   args.GetReturnValue().Set(
       v8::Boolean::New(automation_v8_router_->GetIsolate(), permitted));
-}
-
-void AutomationV8Bindings::GetSchemaAdditions(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  v8::Isolate* isolate = automation_v8_router_->GetIsolate();
-
-  gin::DataObjectBuilder name_from_type(isolate);
-  for (int32_t i = static_cast<int32_t>(ax::mojom::NameFrom::kNone);
-       i <= static_cast<int32_t>(ax::mojom::NameFrom::kMaxValue); ++i) {
-    name_from_type.Set(
-        i, base::StringPiece(ToString(static_cast<ax::mojom::NameFrom>(i))));
-  }
-
-  gin::DataObjectBuilder restriction(isolate);
-  for (int32_t i = static_cast<int32_t>(ax::mojom::Restriction::kNone);
-       i <= static_cast<int32_t>(ax::mojom::Restriction::kMaxValue); ++i) {
-    restriction.Set(
-        i, base::StringPiece(ToString(static_cast<ax::mojom::Restriction>(i))));
-  }
-
-  gin::DataObjectBuilder description_from_type(isolate);
-  for (int32_t i = static_cast<int32_t>(ax::mojom::DescriptionFrom::kNone);
-       i <= static_cast<int32_t>(ax::mojom::DescriptionFrom::kMaxValue); ++i) {
-    description_from_type.Set(
-        i, base::StringPiece(
-               ToString(static_cast<ax::mojom::DescriptionFrom>(i))));
-  }
-
-  args.GetReturnValue().Set(
-      gin::DataObjectBuilder(isolate)
-          .Set("NameFromType", name_from_type.Build())
-          .Set("Restriction", restriction.Build())
-          .Set("DescriptionFromType", description_from_type.Build())
-          .Build());
 }
 
 void AutomationV8Bindings::GetState(

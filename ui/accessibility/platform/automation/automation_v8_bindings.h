@@ -207,12 +207,6 @@ class AX_EXPORT AutomationV8Bindings {
 
   void IsInteractPermitted(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  // Returns an object with bindings that will be added to the
-  // chrome.automation namespace.
-  // TODO(crbug.com/1357889): This may be specific to the extensions system in
-  // which case it should be removed from here.
-  void GetSchemaAdditions(const v8::FunctionCallbackInfo<v8::Value>& args);
-
   // Args: string ax_tree_id, int node_id
   // Returns: JS object with a string key for each state flag that's set.
   void GetState(const v8::FunctionCallbackInfo<v8::Value>& args);
