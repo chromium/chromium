@@ -41,7 +41,7 @@ namespace disk_cache {
 class BackendFileOperations;
 class UnboundBackendFileOperations;
 
-NET_EXPORT_PRIVATE extern const base::Feature kSimpleCachePrefetchExperiment;
+NET_EXPORT_PRIVATE BASE_DECLARE_FEATURE(kSimpleCachePrefetchExperiment);
 NET_EXPORT_PRIVATE extern const char kSimpleCacheFullPrefetchBytesParam[];
 NET_EXPORT_PRIVATE extern const char
     kSimpleCacheTrailerPrefetchSpeculativeBytesParam[];

@@ -20,7 +20,7 @@ namespace disk_cache {
 
 // Experiment to increase the cache size to see the impact on various
 // performance metrics.
-NET_EXPORT_PRIVATE extern const base::Feature kChangeDiskCacheSizeExperiment;
+NET_EXPORT_PRIVATE BASE_DECLARE_FEATURE(kChangeDiskCacheSizeExperiment);
 
 // Moves the cache files from the given path to another location.
 // Fails if the destination exists already, or if it doesn't have
