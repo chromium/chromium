@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEDULER_TASK_ATTRIBUTION_ID_H_
 
 #include <cstdint>
+#include "base/trace_event/trace_event.h"
 #include "base/types/strong_alias.h"
 
 namespace blink::scheduler {

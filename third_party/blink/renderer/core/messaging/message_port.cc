@@ -336,8 +336,9 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
       DCHECK(ThreadScheduler::Current());
       if (auto* tracker =
               ThreadScheduler::Current()->GetTaskAttributionTracker()) {
-        task_attribution_scope =
-            tracker->CreateTaskScope(script_state, message.parent_task_id);
+        task_attribution_scope = tracker->CreateTaskScope(
+            script_state, message.parent_task_id,
+            scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
       }
     }
   }

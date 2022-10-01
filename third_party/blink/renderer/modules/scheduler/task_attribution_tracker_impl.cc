@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_script_wrappable_task_attribution_id.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink::scheduler {
 
@@ -23,6 +26,21 @@ namespace {
 
 static unsigned Hash(TaskAttributionId id) {
   return id.value() % TaskAttributionTrackerImpl::kVectorSize;
+}
+
+perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
+    TaskAttributionTracker::TaskScopeType type) {
+  using ProtoType = perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType;
+  switch (type) {
+    case TaskAttributionTracker::TaskScopeType::kCallback:
+      return ProtoType::TASK_SCOPE_CALLBACK;
+    case TaskAttributionTracker::TaskScopeType::kScheduledAction:
+      return ProtoType::TASK_SCOPE_SCHEDULED_ACTION;
+    case TaskAttributionTracker::TaskScopeType::kScriptExecution:
+      return ProtoType::TASK_SCOPE_SCRIPT_EXECUTION;
+    case TaskAttributionTracker::TaskScopeType::kPostMessage:
+      return ProtoType::TASK_SCOPE_POST_MESSAGE;
+  }
 }
 
 }  // namespace
@@ -129,10 +147,12 @@ TaskAttributionTrackerImpl::HasAncestorInSet(
 std::unique_ptr<TaskAttributionTracker::TaskScope>
 TaskAttributionTrackerImpl::CreateTaskScope(
     ScriptState* script_state,
-    absl::optional<TaskAttributionId> parent_task_id) {
-  absl::optional<TaskAttributionId> previous_task_id = running_task_id_;
+    absl::optional<TaskAttributionId> parent_task_id,
+    TaskScopeType type) {
+  absl::optional<TaskAttributionId> running_task_id_to_be_restored =
+      running_task_id_;
   DCHECK(v8_adapter_);
-  absl::optional<TaskAttributionId> previous_v8_task_id =
+  absl::optional<TaskAttributionId> continuation_task_id_to_be_restored =
       v8_adapter_->GetValue(script_state);
 
   next_task_id_ = next_task_id_.NextId();
@@ -144,16 +164,17 @@ TaskAttributionTrackerImpl::CreateTaskScope(
   }
 
   SaveTaskIdStateInV8(script_state, next_task_id_);
-  return std::make_unique<TaskScopeImpl>(script_state, this, next_task_id_,
-                                         previous_task_id, previous_v8_task_id);
+  return std::make_unique<TaskScopeImpl>(
+      script_state, this, next_task_id_, running_task_id_to_be_restored,
+      continuation_task_id_to_be_restored, type, parent_task_id);
 }
 
 void TaskAttributionTrackerImpl::TaskScopeCompleted(
     const TaskScopeImpl& task_scope) {
   DCHECK(running_task_id_ == task_scope.GetTaskId());
-  running_task_id_ = task_scope.PreviousTaskAttributionId();
+  running_task_id_ = task_scope.RunningTaskIdToBeRestored();
   SaveTaskIdStateInV8(task_scope.GetScriptState(),
-                      task_scope.PreviousV8TaskAttributionId());
+                      task_scope.ContinuationTaskIdToBeRestored());
 }
 
 void TaskAttributionTrackerImpl::SaveTaskIdStateInV8(
@@ -169,16 +190,37 @@ TaskAttributionTrackerImpl::TaskScopeImpl::TaskScopeImpl(
     ScriptState* script_state,
     TaskAttributionTrackerImpl* task_tracker,
     TaskAttributionId scope_task_id,
-    absl::optional<TaskAttributionId> previous_task_id,
-    absl::optional<TaskAttributionId> previous_v8_task_id)
+    absl::optional<TaskAttributionId> running_task_id,
+    absl::optional<TaskAttributionId> continuation_task_id,
+    TaskScopeType type,
+    absl::optional<TaskAttributionId> parent_task_id)
     : task_tracker_(task_tracker),
       scope_task_id_(scope_task_id),
-      previous_task_id_(previous_task_id),
-      previous_v8_task_id_(previous_v8_task_id),
-      script_state_(script_state) {}
+      running_task_id_to_be_restored_(running_task_id),
+      continuation_task_id_to_be_restored_(continuation_task_id),
+      script_state_(script_state) {
+  TRACE_EVENT_BEGIN(
+      "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_blink_task_scope();
+        data->set_type(ToProtoEnum(type));
+        data->set_scope_task_id(scope_task_id_.value());
+        data->set_running_task_id_to_be_restored(
+            running_task_id_to_be_restored_
+                ? running_task_id_to_be_restored_.value().value()
+                : -1);
+        data->set_continuation_task_id_to_be_restored(
+            continuation_task_id_to_be_restored_
+                ? continuation_task_id_to_be_restored_.value().value()
+                : -1);
+        data->set_parent_task_id(parent_task_id ? parent_task_id.value().value()
+                                                : -1);
+      });
+}
 
 TaskAttributionTrackerImpl::TaskScopeImpl::~TaskScopeImpl() {
   task_tracker_->TaskScopeCompleted(*this);
+  TRACE_EVENT_END("scheduler");
 }
 
 // V8Adapter's implementation

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -111,7 +112,8 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
             callback_->CallbackRelevantScriptState());
       }
       task_attribution_scope_ = tracker->CreateTaskScope(
-          callback_->CallbackRelevantScriptState(), parent_id);
+          callback_->CallbackRelevantScriptState(), parent_id,
+          scheduler::TaskAttributionTracker::TaskScopeType::kCallback);
     }
   }
 

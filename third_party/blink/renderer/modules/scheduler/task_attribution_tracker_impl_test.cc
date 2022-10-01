@@ -41,7 +41,9 @@ class TaskAttributionTrackerTest : public PageTestBase {
     TaskAttributionId previous_id = TaskAttributionId(parent_to_assert);
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     for (unsigned i = 0; i < task_number; ++i) {
-      task_stack_.push_back(tracker.CreateTaskScope(script_state, previous_id));
+      task_stack_.push_back(tracker.CreateTaskScope(
+          script_state, previous_id,
+          TaskAttributionTracker::TaskScopeType::kScriptExecution));
       absl::optional<TaskAttributionId> running_id =
           tracker.RunningTaskAttributionId(script_state);
       if (i < number_to_assert) {
@@ -83,7 +85,8 @@ class TaskAttributionTrackerTest : public PageTestBase {
     ASSERT_EQ(half_queue, id.value());
     // Start the parent task, but don't complete it.
     task_stack_.push_back(tracker.CreateTaskScope(
-        script_state, tracker.RunningTaskAttributionId(script_state)));
+        script_state, tracker.RunningTaskAttributionId(script_state),
+        TaskAttributionTracker::TaskScopeType::kScriptExecution));
     // Get its ID.
     TaskAttributionId parent_id =
         tracker.RunningTaskAttributionId(script_state).value();
@@ -94,7 +97,8 @@ class TaskAttributionTrackerTest : public PageTestBase {
                              TaskAttributionTrackerImpl::kVectorSize)) {
       // Post another task.
       task_stack_.push_back(tracker.CreateTaskScope(
-          script_state, tracker.RunningTaskAttributionId(script_state)));
+          script_state, tracker.RunningTaskAttributionId(script_state),
+          TaskAttributionTracker::TaskScopeType::kScriptExecution));
 
       // Since it goes beyond the queue length and the parent task was
       // overwritten, we cannot track ancestry.
@@ -153,12 +157,16 @@ TEST_F(TaskAttributionTrackerTest, NotAncestor) {
 
   // Start a task, get its ID and complete it.
   {
-    auto scope = tracker.CreateTaskScope(script_state, absl::nullopt);
+    auto scope = tracker.CreateTaskScope(
+        script_state, absl::nullopt,
+        TaskAttributionTracker::TaskScopeType::kScriptExecution);
     first_id = tracker.RunningTaskAttributionId(script_state).value();
   }
 
   // Start an incomplete task.
-  auto scope = tracker.CreateTaskScope(script_state, absl::nullopt);
+  auto scope = tracker.CreateTaskScope(
+      script_state, absl::nullopt,
+      TaskAttributionTracker::TaskScopeType::kScriptExecution);
   // Make sure that the first task is not an ancestor.
   ASSERT_TRUE(tracker.IsAncestor(script_state, first_id) ==
               TaskAttributionTracker::AncestorStatus::kNotAncestor);

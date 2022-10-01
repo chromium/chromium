@@ -32,6 +32,7 @@
 
 #include <tuple>
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -160,8 +161,9 @@ void ScheduledAction::Execute(ExecutionContext* context) {
       task_attribution_scope;
   auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
   if (tracker && script_state->World().IsMainWorld()) {
-    task_attribution_scope =
-        tracker->CreateTaskScope(script_state, code_parent_task_id_);
+    task_attribution_scope = tracker->CreateTaskScope(
+        script_state, code_parent_task_id_,
+        scheduler::TaskAttributionTracker::TaskScopeType::kScheduledAction);
   }
 
   // We use |SanitizeScriptErrors::kDoNotSanitize| because muted errors flag is

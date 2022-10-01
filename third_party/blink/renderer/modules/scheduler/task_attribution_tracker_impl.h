@@ -40,7 +40,8 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState* script_state,
-      absl::optional<TaskAttributionId> parent_task_id) override;
+      absl::optional<TaskAttributionId> parent_task_id,
+      TaskScopeType type) override;
 
   // The vector size limits the amount of tasks we keep track of. Setting this
   // value too small can result in calls to `IsAncestor` returning an `Unknown`
@@ -76,31 +77,39 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   template <typename F>
   AncestorStatus IsAncestorInternal(ScriptState*, F callback);
 
+  // The TaskScope class maintains information about a task. The task's lifetime
+  // match those of TaskScope, and the task is considered terminated when
+  // TaskScope is destructed. TaskScope takes in the Task's ID, ScriptState, the
+  // ID of the running task (to restore as the running task once this task is
+  // done), and a continuation task ID (to restore in V8 once the current task
+  // is done).
   class TaskScopeImpl : public TaskScope {
    public:
     TaskScopeImpl(ScriptState*,
                   TaskAttributionTrackerImpl*,
                   TaskAttributionId scope_task_id,
-                  absl::optional<TaskAttributionId> previous_task_id,
-                  absl::optional<TaskAttributionId> previous_v8_task_id);
+                  absl::optional<TaskAttributionId> running_task_id,
+                  absl::optional<TaskAttributionId> continuation_task_id,
+                  TaskScopeType,
+                  absl::optional<TaskAttributionId> parent_task_id);
     ~TaskScopeImpl() override;
     TaskScopeImpl(const TaskScopeImpl&) = delete;
     TaskScopeImpl& operator=(const TaskScopeImpl&) = delete;
 
     TaskAttributionId GetTaskId() const { return scope_task_id_; }
-    absl::optional<TaskAttributionId> PreviousTaskAttributionId() const {
-      return previous_task_id_;
+    absl::optional<TaskAttributionId> RunningTaskIdToBeRestored() const {
+      return running_task_id_to_be_restored_;
     }
-    absl::optional<TaskAttributionId> PreviousV8TaskAttributionId() const {
-      return previous_v8_task_id_;
+    absl::optional<TaskAttributionId> ContinuationTaskIdToBeRestored() const {
+      return continuation_task_id_to_be_restored_;
     }
     ScriptState* GetScriptState() const { return script_state_; }
 
    private:
     TaskAttributionTrackerImpl* task_tracker_;
     TaskAttributionId scope_task_id_;
-    absl::optional<TaskAttributionId> previous_task_id_;
-    absl::optional<TaskAttributionId> previous_v8_task_id_;
+    absl::optional<TaskAttributionId> running_task_id_to_be_restored_;
+    absl::optional<TaskAttributionId> continuation_task_id_to_be_restored_;
     Persistent<ScriptState> script_state_;
   };
 

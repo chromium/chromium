@@ -29,6 +29,13 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     kUnknown,
   };
 
+  enum class TaskScopeType {
+    kCallback,
+    kScheduledAction,
+    kScriptExecution,
+    kPostMessage,
+  };
+
   // A class maintaining the scope of the current task. Keeping it alive ensures
   // that the current task is counted as a continuous one.
   class TaskScope {
@@ -51,7 +58,8 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Create a new task scope.
   virtual std::unique_ptr<TaskScope> CreateTaskScope(
       ScriptState*,
-      absl::optional<TaskAttributionId> parent_task_id) = 0;
+      absl::optional<TaskAttributionId> parent_task_id,
+      TaskScopeType type) = 0;
 
   // Get the ID of the currently running task.
   virtual absl::optional<TaskAttributionId> RunningTaskAttributionId(
