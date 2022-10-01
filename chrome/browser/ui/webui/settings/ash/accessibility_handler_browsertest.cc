@@ -100,7 +100,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
   }
 
   bool GetWebUIListenerArgumentListValue(const std::string& expected_listener,
-                                         base::Value::ConstListView* argument) {
+                                         const base::Value::List*& argument) {
     for (const std::unique_ptr<content::TestWebUI::CallData>& data :
          base::Reversed(web_ui_.call_data())) {
       std::string listener;
@@ -110,7 +110,7 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
           listener == expected_listener) {
         if (!data->arg2()->is_list())
           return false;
-        *argument = data->arg2()->GetListDeprecated();
+        argument = &data->arg2()->GetList();
         return true;
       }
     }
@@ -260,10 +260,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
 
     MaybeAddDictationLocales();
 
-    base::Value::ConstListView argument;
+    const base::Value::List* argument = nullptr;
     ASSERT_TRUE(
-        GetWebUIListenerArgumentListValue("dictation-locales-set", &argument));
-    for (auto& it : argument) {
+        GetWebUIListenerArgumentListValue("dictation-locales-set", argument));
+    for (auto& it : *argument) {
       const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(it);
       base::StringPiece language_code =
           language::SplitIntoMainAndTail(*(dict->FindStringPath("value")))
@@ -286,11 +286,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting(en_us());
   MaybeAddDictationLocales();
-  base::Value::ConstListView argument;
+  const base::Value::List* argument = nullptr;
   ASSERT_TRUE(
-      GetWebUIListenerArgumentListValue("dictation-locales-set", &argument));
+      GetWebUIListenerArgumentListValue("dictation-locales-set", argument));
 
-  for (auto& it : argument) {
+  for (auto& it : *argument) {
     const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(it);
     const std::string locale = *(dict->FindStringPath("value"));
     bool works_offline = dict->FindBoolKey("worksOffline").value();
