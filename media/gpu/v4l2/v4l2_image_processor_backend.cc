@@ -152,13 +152,17 @@ void V4L2ImageProcessorBackend::Destroy() {
   backend_weak_this_factory_.InvalidateWeakPtrs();
 
   if (input_queue_) {
-    input_queue_->Streamoff();
-    input_queue_->DeallocateBuffers();
+    if (!input_queue_->Streamoff())
+      VLOGF(1) << "Failed to turn stream off";
+    if (!input_queue_->DeallocateBuffers())
+      VLOGF(1) << "Failed to deallocate buffers";
     input_queue_ = nullptr;
   }
   if (output_queue_) {
-    output_queue_->Streamoff();
-    output_queue_->DeallocateBuffers();
+    if (!output_queue_->Streamoff())
+      VLOGF(1) << "Failed to turn stream off";
+    if (!output_queue_->DeallocateBuffers())
+      VLOGF(1) << "Failed to deallocate buffers";
     output_queue_ = nullptr;
   }
 
@@ -950,7 +954,11 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
                 .GetArea();
         buffer.SetPlaneBytesUsed(i, bytes_used);
       }
-      std::move(buffer).QueueUserPtr(user_ptrs);
+      if (!std::move(buffer).QueueUserPtr(user_ptrs)) {
+        VPLOGF(1) << "Failed to queue a DMABUF buffer to input queue";
+        NotifyError();
+        return false;
+      }
       break;
     }
     case V4L2_MEMORY_DMABUF: {
@@ -963,7 +971,12 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
 
       FillV4L2BufferByGpuMemoryBufferHandle(
           input_config_.fourcc, input_config_.size, *input_handle, &buffer);
-      std::move(buffer).QueueDMABuf(input_handle->native_pixmap_handle.planes);
+      if (!std::move(buffer).QueueDMABuf(
+              input_handle->native_pixmap_handle.planes)) {
+        VPLOGF(1) << "Failed to queue a DMABUF buffer to input queue";
+        NotifyError();
+        return false;
+      }
       break;
     }
     default:
