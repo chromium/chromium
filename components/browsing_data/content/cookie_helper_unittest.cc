@@ -156,38 +156,47 @@ class CookieHelperTest : public testing::Test {
                                        base::DoNothing());
   }
 
-  void FetchCallback(const net::CookieList& cookies) {
+  void FetchCallback(base::OnceClosure quit_closure,
+                     const net::CookieList& cookies) {
     cookie_list_ = cookies;
 
     AddCookieExpectation(nullptr, "www.google.com", nullptr, "A", nullptr);
     AddCookieExpectation(nullptr, "www.gmail.google.com", nullptr, "B",
                          nullptr);
     CheckCookieExpectations();
+    std::move(quit_closure).Run();
   }
 
-  void DomainCookieCallback(const net::CookieList& cookies) {
+  void DomainCookieCallback(base::OnceClosure quit_closure,
+                            const net::CookieList& cookies) {
     cookie_list_ = cookies;
 
     AddCookieExpectation(nullptr, "www.google.com", nullptr, "A", "1");
     AddCookieExpectation(nullptr, ".www.google.com", nullptr, "A", "2");
     CheckCookieExpectations();
+    std::move(quit_closure).Run();
   }
 
-  void DeleteCallback(const net::CookieList& cookies) {
+  void DeleteCallback(base::OnceClosure quit_closure,
+                      const net::CookieList& cookies) {
     cookie_list_ = cookies;
     AddCookieExpectation(nullptr, "www.gmail.google.com", nullptr, "B",
                          nullptr);
     CheckCookieExpectations();
+    std::move(quit_closure).Run();
   }
 
-  void CannedUniqueCallback(const net::CookieList& cookies) {
+  void CannedUniqueCallback(base::OnceClosure quit_closure,
+                            const net::CookieList& cookies) {
     cookie_list_ = cookies;
     AddCookieExpectation("http://www.google.com/", "www.google.com", "/", "A",
                          nullptr);
     CheckCookieExpectations();
+    std::move(quit_closure).Run();
   }
 
-  void CannedReplaceCookieCallback(const net::CookieList& cookies) {
+  void CannedReplaceCookieCallback(base::OnceClosure quit_closure,
+                                   const net::CookieList& cookies) {
     cookie_list_ = cookies;
     AddCookieExpectation("http://www.google.com/", "www.google.com", "/", "A",
                          "2");
@@ -200,19 +209,24 @@ class CookieHelperTest : public testing::Test {
     AddCookieExpectation("http://www.google.com/", ".www.google.com", "/", "A",
                          "10");
     CheckCookieExpectations();
+    std::move(quit_closure).Run();
   }
 
-  void CannedDomainCookieCallback(const net::CookieList& cookies) {
+  void CannedDomainCookieCallback(base::OnceClosure quit_closure,
+                                  const net::CookieList& cookies) {
     cookie_list_ = cookies;
     AddCookieExpectation("http://www.google.com/", "www.google.com", nullptr,
                          "A", nullptr);
     AddCookieExpectation("http://www.google.com/", ".www.google.com", nullptr,
                          "A", nullptr);
     CheckCookieExpectations();
+    std::move(quit_closure).Run();
   }
 
-  void CannedDifferentFramesCallback(const net::CookieList& cookie_list) {
+  void CannedDifferentFramesCallback(base::OnceClosure quit_closure,
+                                     const net::CookieList& cookie_list) {
     ASSERT_EQ(3U, cookie_list.size());
+    std::move(quit_closure).Run();
   }
 
   void DeleteCookie(CookieHelper* helper, const std::string& domain) {
@@ -239,19 +253,22 @@ TEST_F(CookieHelperTest, FetchData) {
   auto cookie_helper = base::MakeRefCounted<CookieHelper>(storage_partition(),
                                                           base::NullCallback());
 
-  cookie_helper->StartFetching(
-      base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  cookie_helper->StartFetching(base::BindOnce(&CookieHelperTest::FetchCallback,
+                                              base::Unretained(this),
+                                              run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 TEST_F(CookieHelperTest, DomainCookie) {
   CreateCookiesForDomainCookieTest();
   auto cookie_helper = base::MakeRefCounted<CookieHelper>(storage_partition(),
                                                           base::NullCallback());
-
-  cookie_helper->StartFetching(base::BindOnce(
-      &CookieHelperTest::DomainCookieCallback, base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  cookie_helper->StartFetching(
+      base::BindOnce(&CookieHelperTest::DomainCookieCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 TEST_F(CookieHelperTest, DeleteCookie) {
@@ -259,16 +276,24 @@ TEST_F(CookieHelperTest, DeleteCookie) {
   auto cookie_helper = base::MakeRefCounted<CookieHelper>(storage_partition(),
                                                           base::NullCallback());
 
-  cookie_helper->StartFetching(
-      base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    cookie_helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this),
+                       run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   net::CanonicalCookie cookie = cookie_list_[0];
   cookie_helper->DeleteCookie(cookie);
 
-  cookie_helper->StartFetching(base::BindOnce(&CookieHelperTest::DeleteCallback,
-                                              base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    cookie_helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::DeleteCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CookieHelperTest, DeleteCookieWithCallback) {
@@ -279,22 +304,34 @@ TEST_F(CookieHelperTest, DeleteCookieWithCallback) {
         return disable_delete;
       }));
 
-  cookie_helper->StartFetching(
-      base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    cookie_helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this),
+                       run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   net::CanonicalCookie cookie = cookie_list_[0];
   cookie_helper->DeleteCookie(cookie);
+  {
+    base::RunLoop run_loop;
+    cookie_helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this),
+                       run_loop.QuitClosure()));
 
-  cookie_helper->StartFetching(
-      base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+    run_loop.Run();
+  }
 
   disable_delete = false;
   cookie_helper->DeleteCookie(cookie);
-  cookie_helper->StartFetching(base::BindOnce(&CookieHelperTest::DeleteCallback,
-                                              base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    cookie_helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::DeleteCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CookieHelperTest, CannedDeleteCookie) {
@@ -322,19 +359,26 @@ TEST_F(CookieHelperTest, CannedDeleteCookie) {
                       origin2,
                       origin2,
                       {*cookie2}});
-
-  helper->StartFetching(
-      base::BindOnce(&CookieHelperTest::FetchCallback, base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(base::BindOnce(&CookieHelperTest::FetchCallback,
+                                         base::Unretained(this),
+                                         run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   EXPECT_EQ(2u, helper->GetCookieCount());
 
   DeleteCookie(helper.get(), origin1.host());
 
   EXPECT_EQ(1u, helper->GetCookieCount());
-  helper->StartFetching(base::BindOnce(&CookieHelperTest::DeleteCallback,
-                                       base::Unretained(this)));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(base::BindOnce(&CookieHelperTest::DeleteCallback,
+                                         base::Unretained(this),
+                                         run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CookieHelperTest, CannedDomainCookie) {
@@ -362,18 +406,27 @@ TEST_F(CookieHelperTest, CannedDomainCookie) {
                       origin,
                       origin,
                       {*cookie2}});
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::CannedDomainCookieCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
-  helper->StartFetching(base::BindOnce(
-      &CookieHelperTest::CannedDomainCookieCallback, base::Unretained(this)));
   cookie = cookie_list_;
-
   helper->Reset();
   ASSERT_TRUE(helper->empty());
 
   helper->AddCookies(
       {content::CookieAccessDetails::Type::kRead, origin, origin, cookie});
-  helper->StartFetching(base::BindOnce(
-      &CookieHelperTest::CannedDomainCookieCallback, base::Unretained(this)));
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::CannedDomainCookieCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CookieHelperTest, CannedUnique) {
@@ -391,8 +444,13 @@ TEST_F(CookieHelperTest, CannedUnique) {
       {content::CookieAccessDetails::Type::kChange, origin, origin, {*cookie}});
   helper->AddCookies(
       {content::CookieAccessDetails::Type::kChange, origin, origin, {*cookie}});
-  helper->StartFetching(base::BindOnce(&CookieHelperTest::CannedUniqueCallback,
-                                       base::Unretained(this)));
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::CannedUniqueCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   net::CookieList cookie_list = cookie_list_;
   helper->Reset();
@@ -402,8 +460,13 @@ TEST_F(CookieHelperTest, CannedUnique) {
       {content::CookieAccessDetails::Type::kRead, origin, origin, cookie_list});
   helper->AddCookies(
       {content::CookieAccessDetails::Type::kRead, origin, origin, cookie_list});
-  helper->StartFetching(base::BindOnce(&CookieHelperTest::CannedUniqueCallback,
-                                       base::Unretained(this)));
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::CannedUniqueCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CookieHelperTest, CannedReplaceCookie) {
@@ -502,9 +565,13 @@ TEST_F(CookieHelperTest, CannedReplaceCookie) {
                       origin,
                       origin,
                       {*cookie10}});
-
-  helper->StartFetching(base::BindOnce(
-      &CookieHelperTest::CannedReplaceCookieCallback, base::Unretained(this)));
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::CannedReplaceCookieCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 
   net::CookieList cookie_list = cookie_list_;
   helper->Reset();
@@ -514,8 +581,13 @@ TEST_F(CookieHelperTest, CannedReplaceCookie) {
       {content::CookieAccessDetails::Type::kRead, origin, origin, cookie_list});
   helper->AddCookies(
       {content::CookieAccessDetails::Type::kRead, origin, origin, cookie_list});
-  helper->StartFetching(base::BindOnce(
-      &CookieHelperTest::CannedReplaceCookieCallback, base::Unretained(this)));
+  {
+    base::RunLoop run_loop;
+    helper->StartFetching(
+        base::BindOnce(&CookieHelperTest::CannedReplaceCookieCallback,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
 }
 
 TEST_F(CookieHelperTest, CannedEmpty) {
@@ -586,9 +658,11 @@ TEST_F(CookieHelperTest, CannedDifferentFrames) {
                       request_url,
                       {*cookie3}});
 
+  base::RunLoop run_loop;
   helper->StartFetching(
       base::BindOnce(&CookieHelperTest::CannedDifferentFramesCallback,
-                     base::Unretained(this)));
+                     base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
 }
 
 TEST_F(CookieHelperTest, CannedGetCookieCount) {
