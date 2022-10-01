@@ -7375,6 +7375,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   }
 
   RenderFrameHostImpl* top_level_opener = GetMainFrame();
+  bool coop_is_inherited = true;
   if (IsAnonymous() || IsNestedWithinFencedFrame()) {
     params->opener_suppressed = true;
     params->frame_name.clear();
@@ -7382,8 +7383,10 @@ void RenderFrameHostImpl::CreateNewWindow(
     // Check that this RFH and its main document are same origin.
     if (!top_level_opener->GetLastCommittedOrigin().IsSameOriginWith(
             GetLastCommittedOrigin())) {
-      // The documents are cross origin, leave COOP of the popup to the default
-      // unsafe-none.
+      // The documents are cross origin, the PolicyContainer did not inherit the
+      // top-level COOP value, and the initial empty document will have a COOP
+      // value of unsafe-none.
+      coop_is_inherited = false;
       switch (top_level_opener->cross_origin_opener_policy().value) {
         // Those values are explicitly listed here, to force creator of new
         // values to make an explicit decision in the future.
@@ -7453,6 +7456,8 @@ void RenderFrameHostImpl::CreateNewWindow(
     return;
   }
 
+  DCHECK(!params->opener_suppressed);
+
   RenderFrameHostImpl* new_main_rfh =
       new_frame_tree->root()->current_frame_host();
 
@@ -7461,10 +7466,9 @@ void RenderFrameHostImpl::CreateNewWindow(
   new_main_rfh->soap_by_default_virtual_browsing_context_group_ =
       popup_soap_by_default_virtual_browsing_context_group;
 
-  // If inheriting coop (checking this via |opener_suppressed|) and the original
-  // coop page has a reporter we make sure the the newly created popup also has
-  // a reporter.
-  if (!params->opener_suppressed &&
+  // If COOP is inherited (via the PolicyContainer) by the initial empty
+  // document, inherit the COOP reporter as well.
+  if (coop_is_inherited &&
       GetMainFrame()->coop_access_report_manager()->coop_reporter()) {
     new_main_rfh->SetCrossOriginOpenerPolicyReporter(
         std::make_unique<CrossOriginOpenerPolicyReporter>(

@@ -3980,7 +3980,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
   create_params.initial_popup_url = params.target_url;
 
   // Even though all codepaths leading here are in response to a renderer
-  // tryng to open a new window, if the new window ends up in a different
+  // trying to open a new window, if the new window ends up in a different
   // browsing instance, then the RenderViewHost, RenderWidgetHost,
   // RenderFrameHost constellation is effectively browser initiated
   // the opener's process will not given the routing IDs for the new
