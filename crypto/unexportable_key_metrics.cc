@@ -166,8 +166,8 @@ void MeasureTpmOperationsInternalForTesting() {
 }  // namespace internal
 
 void MaybeMeasureTpmOperations() {
-  const base::Feature kTpmLatencyMetrics{"TpmLatencyMetrics",
-                                         base::FEATURE_ENABLED_BY_DEFAULT};
+  static BASE_FEATURE(kTpmLatencyMetrics, "TpmLatencyMetrics",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
   if (base::FeatureList::IsEnabled(kTpmLatencyMetrics)) {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
