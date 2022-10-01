@@ -500,15 +500,12 @@ TYPED_TEST(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
-  struct base::Feature kFeatureOffByDefault {
-    "kOff", base::FEATURE_DISABLED_BY_DEFAULT
-  };
-  struct base::Feature kFeatureOnByDefault {
-    "kOn", base::FEATURE_ENABLED_BY_DEFAULT
-  };
-  struct base::Feature kUnrelatedFeature {
-    "kUnrelated", base::FEATURE_DISABLED_BY_DEFAULT
-  };
+  static BASE_FEATURE(kFeatureOffByDefault, "kOff",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kFeatureOnByDefault, "kOn",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(kUnrelatedFeature, "kUnrelated",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
 
   struct {
     const char* enable_feature;
@@ -571,12 +568,10 @@ TYPED_TEST(VariationsSeedProcessorTest, FeatureEnabledOrDisableByTrial) {
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, FeatureAssociationAndForcing) {
-  struct base::Feature kFeatureOffByDefault {
-    "kFeatureOffByDefault", base::FEATURE_DISABLED_BY_DEFAULT
-  };
-  struct base::Feature kFeatureOnByDefault {
-    "kFeatureOnByDefault", base::FEATURE_ENABLED_BY_DEFAULT
-  };
+  static BASE_FEATURE(kFeatureOffByDefault, "kFeatureOffByDefault",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kFeatureOnByDefault, "kFeatureOnByDefault",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   enum OneHundredPercentGroup {
     DEFAULT_GROUP,
@@ -1183,9 +1178,8 @@ TYPED_TEST(VariationsSeedProcessorTest, StudyWithLowerEntropyThanLayer) {
 }
 
 TYPED_TEST(VariationsSeedProcessorTest, StudiesWithOverlappingEnabledFeatures) {
-  static struct base::Feature kFeature {
-    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
-  };
+  static BASE_FEATURE(kFeature, "FeatureName",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   VariationsSeed seed;
 
@@ -1225,9 +1219,8 @@ TYPED_TEST(VariationsSeedProcessorTest, StudiesWithOverlappingEnabledFeatures) {
 
 TYPED_TEST(VariationsSeedProcessorTest,
            StudiesWithOverlappingDisabledFeatures) {
-  static struct base::Feature kFeature {
-    "FeatureName", base::FEATURE_ENABLED_BY_DEFAULT
-  };
+  static BASE_FEATURE(kFeature, "FeatureName",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
 
   VariationsSeed seed;
 
