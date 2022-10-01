@@ -7690,7 +7690,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8284279544186306258">tots els llocs web de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="8286036467436129157">Inicia la sessió</translation>
-<translation id="828642162569365647">Aquesta contrasenya o aquest PIN protegeix les teves dades en aquest <ph name="DEVICE_TYPE" /> i la informació a què accedeixes des del telèfon. Hauràs de desbloquejar el dispositiu cada vegada que el teu <ph name="DEVICE_TYPE" /> s'activi.</translation>
+<translation id="828642162569365647">Aquesta contrasenya o aquest PIN protegeix les teves dades en aquest <ph name="DEVICE_TYPE" /> i la informació a què accedeixes des del telèfon. Hauràs de desbloquejar el teu <ph name="DEVICE_TYPE" /> cada vegada que s'activi des del mode Repòs.</translation>
 <translation id="8287902281644548111">Cerca per crida a l'API o URL</translation>
 <translation id="8288032458496410887">Desinstal·la <ph name="APP" />...</translation>
 <translation id="8289128870594824098">Mida del disc</translation>

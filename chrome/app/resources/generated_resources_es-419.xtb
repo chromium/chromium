@@ -7689,7 +7689,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="8286036467436129157">Acceder</translation>
-<translation id="828642162569365647">La contraseña o el PIN protegen tus datos en este dispositivo <ph name="DEVICE_TYPE" /> y cualquier información a la que accedas desde tu teléfono. Deberás desbloquear tu <ph name="DEVICE_TYPE" /> cada vez se active tras la suspensión.</translation>
+<translation id="828642162569365647">La contraseña o el PIN protegen tus datos en este dispositivo <ph name="DEVICE_TYPE" /> y cualquier información a la que accedas desde tu teléfono. Deberás desbloquear tu <ph name="DEVICE_TYPE" /> cada vez que se active tras la suspensión.</translation>
 <translation id="8287902281644548111">Busca por URL o llamada a la API</translation>
 <translation id="8288032458496410887">Desinstalar <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Tamaño del disco</translation>
