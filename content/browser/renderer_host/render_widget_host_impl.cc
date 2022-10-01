@@ -3761,7 +3761,7 @@ bool TransformPointAndRectToRootView(RenderWidgetHostViewBase* view,
     return false;
 
   if (transformed_point)
-    transform_to_main_frame.TransformPoint(transformed_point);
+    *transformed_point = transform_to_main_frame.MapPoint(*transformed_point);
 
   if (transformed_rect) {
     gfx::RectF transformed_rect_f(*transformed_rect);

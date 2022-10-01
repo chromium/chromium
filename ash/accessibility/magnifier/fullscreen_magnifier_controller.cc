@@ -68,9 +68,8 @@ constexpr int kCursorPanningMargin = 100;
 constexpr int kKeyboardBottomPanningMargin = 10;
 
 void MoveCursorTo(aura::WindowTreeHost* host, const gfx::Point& root_location) {
-  auto host_location_f = gfx::PointF(root_location);
-  host->GetRootTransform().TransformPoint(&host_location_f);
-  host->MoveCursorToLocationInPixels(gfx::ToCeiledPoint(host_location_f));
+  host->MoveCursorToLocationInPixels(gfx::ToCeiledPoint(
+      host->GetRootTransform().MapPoint(gfx::PointF(root_location))));
 }
 
 }  // namespace
@@ -761,8 +760,9 @@ bool FullscreenMagnifierController::ProcessGestures() {
       // Root transform does dip scaling, screen magnification scaling and
       // translation. Apply inverse transform to convert non-dip screen
       // coordinate to dip logical coordinate.
-      root_window_->GetHost()->GetInverseRootTransform().TransformPoint(
-          &gesture_center);
+      gesture_center =
+          root_window_->GetHost()->GetInverseRootTransform().MapPoint(
+              gesture_center);
 
       // Calcualte new origin to keep the distance between |gesture_center|
       // and |origin| same in screen coordinate. This means the following
@@ -797,8 +797,8 @@ bool FullscreenMagnifierController::ProcessGestures() {
       const bool result =
           rotation_transform.GetInverse(&rotation_inverse_transform);
       DCHECK(result);
-      gfx::PointF scroll(details.scroll_x(), details.scroll_y());
-      rotation_inverse_transform.TransformPoint(&scroll);
+      gfx::PointF scroll = rotation_inverse_transform.MapPoint(
+          gfx::PointF(details.scroll_x(), details.scroll_y()));
 
       // Divide by scale to keep scroll speed same at any scale.
       float new_x = origin_.x() + (-scroll.x() / scale_);

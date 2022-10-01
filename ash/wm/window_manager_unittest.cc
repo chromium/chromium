@@ -623,7 +623,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   w1->Show();
 
   gfx::Point miss_point(5, 5);
-  transform.TransformPoint(&miss_point);
+  miss_point = transform.MapPoint(miss_point);
   ui::MouseEvent mouseev1(ui::ET_MOUSE_PRESSED, miss_point, miss_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);
@@ -638,7 +638,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   ASSERT_FALSE(details.dispatcher_destroyed);
 
   gfx::Point hit_point(5, 15);
-  transform.TransformPoint(&hit_point);
+  hit_point = transform.MapPoint(hit_point);
   ui::MouseEvent mouseev2(ui::ET_MOUSE_PRESSED, hit_point, hit_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);

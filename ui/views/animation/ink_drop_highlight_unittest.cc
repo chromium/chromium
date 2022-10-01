@@ -210,8 +210,6 @@ TEST_F(InkDropHighlightTest, TransformIsPixelAligned) {
   constexpr gfx::Size kHighlightSize(10, 10);
   InitHighlight(std::make_unique<InkDropHighlight>(
       kHighlightSize, 3, gfx::PointF(3.5f, 3.5f), SK_ColorYELLOW));
-  const gfx::PointF layer_origin(
-      ink_drop_highlight()->layer()->bounds().origin());
   for (auto dsf : {1.25, 1.33, 1.5, 1.6, 1.75, 1.8, 2.25}) {
     SCOPED_TRACE(testing::Message()
                  << std::endl
@@ -219,14 +217,13 @@ TEST_F(InkDropHighlightTest, TransformIsPixelAligned) {
     ink_drop_highlight()->layer()->OnDeviceScaleFactorChanged(dsf);
 
     gfx::Transform transform = test_api()->CalculateTransform();
-    gfx::Point3F transformed_layer_origin(layer_origin.x(), layer_origin.y(),
-                                          0);
-    transform.TransformPoint(&transformed_layer_origin);
+    gfx::PointF transformed_layer_origin = transform.MapPoint(
+        gfx::PointF(ink_drop_highlight()->layer()->bounds().origin()));
 
     // Apply device scale factor to get the final offset.
     gfx::Transform dsf_transform;
     dsf_transform.Scale(dsf, dsf);
-    dsf_transform.TransformPoint(&transformed_layer_origin);
+    transformed_layer_origin = dsf_transform.MapPoint(transformed_layer_origin);
     EXPECT_NEAR(transformed_layer_origin.x(),
                 std::round(transformed_layer_origin.x()), kEpsilon);
     EXPECT_NEAR(transformed_layer_origin.y(),

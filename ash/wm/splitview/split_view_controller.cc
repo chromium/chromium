@@ -2852,10 +2852,11 @@ void SplitViewController::DoSplitDividerSpawnAnimation(aura::Window* window) {
   static const double value = gfx::Tween::CalculateValue(
       gfx::Tween::FAST_OUT_SLOW_IN,
       kSplitviewDividerSpawnDelay / kSplitviewWindowTransformDuration);
-  gfx::TransformAboutPivot(gfx::PointF(bounds.origin()),
-                           gfx::Tween::TransformValueBetween(
-                               value, window->transform(), gfx::Transform()))
-      .TransformPoint(&p);
+  p = gfx::TransformAboutPivot(
+          gfx::PointF(bounds.origin()),
+          gfx::Tween::TransformValueBetween(value, window->transform(),
+                                            gfx::Transform()))
+          .MapPoint(p);
   // Use a coordinate of the transformed |window| corner for spawn_position.
   split_view_divider_->DoSpawningAnimation(IsLayoutHorizontal(window) ? p.x()
                                                                       : p.y());

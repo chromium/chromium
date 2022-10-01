@@ -2248,9 +2248,9 @@ void SurfaceAggregator::TransformAndStoreDelegatedInkMetadata(
       return;
   }
 
-  gfx::PointF point(metadata->point());
   gfx::RectF area(metadata->presentation_area());
-  parent_quad_to_root_target_transform.TransformPoint(&point);
+  gfx::PointF point =
+      parent_quad_to_root_target_transform.MapPoint(metadata->point());
   parent_quad_to_root_target_transform.TransformRect(&area);
   delegated_ink_metadata_ = std::make_unique<gfx::DelegatedInkMetadata>(
       point, metadata->diameter(), metadata->color(), metadata->timestamp(),

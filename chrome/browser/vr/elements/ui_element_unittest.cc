@@ -89,7 +89,7 @@ TEST(UiElement, BoundsContainChildren) {
       gfx::RectF(grand_parent->local_origin(), grand_parent->size()), kEpsilon);
 
   gfx::Point3F p;
-  anchored_ptr->LocalTransform().TransformPoint(&p);
+  p = anchored_ptr->LocalTransform().MapPoint(p);
   EXPECT_FLOAT_EQ(-3.9, p.y());
 }
 
@@ -142,7 +142,7 @@ TEST(UiElement, IgnoringAsymmetricPadding) {
   a->UpdateWorldSpaceTransform(false);
 
   gfx::Point3F p;
-  a->world_space_transform().TransformPoint(&p);
+  p = a->world_space_transform().MapPoint(p);
 
   EXPECT_POINT3F_EQ(gfx::Point3F(), p);
 }
@@ -180,7 +180,7 @@ TEST(UiElement, BoundsContainPaddingWithAnchoring) {
     child_ptr->set_y_anchoring(test_case.y_anchoring);
     parent->SizeAndLayOut();
     gfx::Point3F p;
-    child_ptr->LocalTransform().TransformPoint(&p);
+    p = child_ptr->LocalTransform().MapPoint(p);
     EXPECT_POINT3F_EQ(test_case.expected_position, p);
   }
 }
@@ -221,9 +221,8 @@ TEST(UiElement, BoundsContainPaddingWithCentering) {
     child_ptr->set_x_centering(test_case.x_centering);
     child_ptr->set_y_centering(test_case.y_centering);
     parent->SizeAndLayOut();
-    gfx::Point3F p;
-    child_ptr->LocalTransform().TransformPoint(&p);
-    EXPECT_POINT3F_EQ(test_case.expected_position, p);
+    EXPECT_POINT3F_EQ(test_case.expected_position,
+                      child_ptr->LocalTransform().MapPoint(gfx::Point3F()));
   }
 }
 
@@ -282,14 +281,12 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
 
   base::TimeTicks start_time = gfx::MicrosecondsToTicks(1);
   EXPECT_TRUE(scene.OnBeginFrame(start_time, kStartHeadPose));
-  gfx::Point3F p;
-  rect_ptr->LocalTransform().TransformPoint(&p);
-  EXPECT_POINT3F_EQ(gfx::Point3F(10, 100, 1000), p);
-  p = gfx::Point3F();
+  EXPECT_POINT3F_EQ(gfx::Point3F(10, 100, 1000),
+                    rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
   EXPECT_TRUE(scene.OnBeginFrame(start_time + gfx::MicrosecondsToDelta(10000),
                                  kStartHeadPose));
-  rect_ptr->LocalTransform().TransformPoint(&p);
-  EXPECT_POINT3F_EQ(gfx::Point3F(20, 200, 2000), p);
+  EXPECT_POINT3F_EQ(gfx::Point3F(20, 200, 2000),
+                    rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
 }
 
 TEST(UiElement, HitTest) {

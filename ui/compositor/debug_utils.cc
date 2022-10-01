@@ -30,12 +30,9 @@ void PrintLayerHierarchyImp(const Layer* layer,
                             std::ostringstream* out) {
   std::string indent_str(indent, ' ');
 
-  gfx::Point transformed_mouse_location = mouse_location;
-  if (const absl::optional<gfx::Point> transformed =
-          layer->transform().TransformPointReverse(transformed_mouse_location);
-      transformed.has_value()) {
-    transformed_mouse_location = transformed.value();
-  }
+  gfx::Point transformed_mouse_location = layer->transform()
+                                              .InverseMapPoint(mouse_location)
+                                              .value_or(mouse_location);
   const bool mouse_inside_layer_bounds =
       layer->bounds().Contains(transformed_mouse_location);
   const gfx::Point mouse_location_in_layer =

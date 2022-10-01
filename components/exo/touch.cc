@@ -30,12 +30,7 @@ gfx::PointF EventLocationInWindow(ui::TouchEvent* event, aura::Window* window) {
   gfx::Transform transform;
   target->GetTargetTransformRelativeTo(root, &transform);
   gfx::PointF point = event->root_location_f();
-  if (const absl::optional<gfx::PointF> transformed_point =
-          transform.TransformPointReverse(point);
-      transformed_point.has_value()) {
-    return transformed_point.value();
-  }
-  return point;
+  return transform.InverseMapPoint(point).value_or(point);
 }
 
 }  // namespace

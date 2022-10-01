@@ -8609,11 +8609,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DelegatedInkMetadataTest) {
 
   // Update the expected metadata to reflect the transforms to point and area
   // that are expected to occur.
-  gfx::PointF pt = metadata.point();
+  gfx::PointF pt = root_frame.render_pass_list[0]
+                       ->shared_quad_state_list.ElementAt(0)
+                       ->quad_to_target_transform.MapPoint(metadata.point());
   gfx::RectF area = metadata.presentation_area();
-  root_frame.render_pass_list[0]
-      ->shared_quad_state_list.ElementAt(0)
-      ->quad_to_target_transform.TransformPoint(&pt);
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
@@ -8693,11 +8692,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   // Update the expected metadata to reflect the transforms to point and area
   // that are expected to occur.
-  gfx::PointF pt = metadata.point();
+  gfx::PointF pt = grandchild_frame.render_pass_list[0]
+                       ->shared_quad_state_list.ElementAt(0)
+                       ->quad_to_target_transform.MapPoint(metadata.point());
   gfx::RectF area = metadata.presentation_area();
-  grandchild_frame.render_pass_list[0]
-      ->shared_quad_state_list.ElementAt(0)
-      ->quad_to_target_transform.TransformPoint(&pt);
   grandchild_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
@@ -8721,9 +8719,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.Translate(36, 15);
 
-  child_frame.render_pass_list[0]
-      ->shared_quad_state_list.ElementAt(0)
-      ->quad_to_target_transform.TransformPoint(&pt);
+  pt = child_frame.render_pass_list[0]
+           ->shared_quad_state_list.ElementAt(0)
+           ->quad_to_target_transform.MapPoint(pt);
   child_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
@@ -8750,9 +8748,9 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.Translate(70, 240);
 
-  root_frame.render_pass_list[0]
-      ->shared_quad_state_list.ElementAt(0)
-      ->quad_to_target_transform.TransformPoint(&pt);
+  pt = root_frame.render_pass_list[0]
+           ->shared_quad_state_list.ElementAt(0)
+           ->quad_to_target_transform.MapPoint(pt);
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(0)
       ->quad_to_target_transform.TransformRect(&area);
@@ -8870,11 +8868,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   // Update the expected metadata to reflect the transforms to point and area
   // that are expected to occur.
-  gfx::PointF pt = metadata.point();
+  gfx::PointF pt = root_frame.render_pass_list[0]
+                       ->shared_quad_state_list.ElementAt(1)
+                       ->quad_to_target_transform.MapPoint(metadata.point());
   gfx::RectF area = metadata.presentation_area();
-  root_frame.render_pass_list[0]
-      ->shared_quad_state_list.ElementAt(1)
-      ->quad_to_target_transform.TransformPoint(&pt);
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(1)
       ->quad_to_target_transform.TransformRect(&area);
@@ -9007,11 +9004,11 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
   // Two surfaces have delegated ink metadata on them, and when this happens
   // on the metadata with the most recent timestamp should be used. Take this
   // metadata and transform it to what should be expected.
-  gfx::PointF pt = later_metadata.point();
+  gfx::PointF pt =
+      root_frame.render_pass_list[0]
+          ->shared_quad_state_list.ElementAt(1)
+          ->quad_to_target_transform.MapPoint(later_metadata.point());
   gfx::RectF area = later_metadata.presentation_area();
-  root_frame.render_pass_list[0]
-      ->shared_quad_state_list.ElementAt(1)
-      ->quad_to_target_transform.TransformPoint(&pt);
   root_frame.render_pass_list[0]
       ->shared_quad_state_list.ElementAt(1)
       ->quad_to_target_transform.TransformRect(&area);

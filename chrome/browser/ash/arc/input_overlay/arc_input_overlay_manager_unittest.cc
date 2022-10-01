@@ -380,10 +380,10 @@ TEST_F(ArcInputOverlayManagerTest, TestDisplayRotationChanged) {
   EXPECT_TRUE(injector->rotation_transform());
   EXPECT_EQ(injector->content_bounds(), gfx::RectF(10, 10, 100, 100));
   auto expected_pos = gfx::PointF(60, 60);
-  injector->rotation_transform()->TransformPoint(&expected_pos);
+  expected_pos = injector->rotation_transform()->MapPoint(expected_pos);
   EXPECT_EQ(injector->actions()[0]->touch_down_positions()[0], expected_pos);
   expected_pos = gfx::PointF(100, 100);
-  injector->rotation_transform()->TransformPoint(&expected_pos);
+  expected_pos = injector->rotation_transform()->MapPoint(expected_pos);
   EXPECT_EQ(injector->actions()[1]->touch_down_positions()[0], expected_pos);
 }
 

@@ -164,8 +164,7 @@ bool ContentElement::OnBeginFrame(const gfx::Transform& head_pose) {
   // set of animated properties.
   gfx::Transform target_transform = ComputeTargetWorldSpaceTransform();
 
-  gfx::Point3F target_center;
-  target_transform.TransformPoint(&target_center);
+  gfx::Point3F target_center = target_transform.MapPoint(gfx::Point3F());
   gfx::Vector3dF target_normal = GetNormalFromTransform(target_transform);
   float distance = gfx::DotProduct(target_center - kOrigin, -target_normal);
   gfx::SizeF screen_size =

@@ -399,11 +399,11 @@ void LocatedEvent::UpdateForRootTransform(
     const gfx::Transform& reversed_root_transform,
     const gfx::Transform& reversed_local_transform) {
   if (target()) {
-    reversed_local_transform.TransformPoint(&location_);
-    reversed_root_transform.TransformPoint(&root_location_);
+    location_ = reversed_local_transform.MapPoint(location_);
+    root_location_ = reversed_root_transform.MapPoint(root_location_);
   } else {
     // This mirrors what the code previously did.
-    reversed_root_transform.TransformPoint(&location_);
+    location_ = reversed_root_transform.MapPoint(location_);
     root_location_ = location_;
   }
 }

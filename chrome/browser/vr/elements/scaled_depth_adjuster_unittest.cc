@@ -16,9 +16,9 @@ namespace vr {
 
 void CheckScaleAndDepth(UiElement* element, float s) {
   EXPECT_POINT3F_EQ(gfx::Point3F(0, 0, -s), element->GetCenter());
-  gfx::Point3F x(1.0f, 0, 0);
-  element->world_space_transform().TransformPoint(&x);
-  EXPECT_POINT3F_EQ(gfx::Point3F(s, 0, -s), x);
+  EXPECT_POINT3F_EQ(
+      gfx::Point3F(s, 0, -s),
+      element->world_space_transform().MapPoint(gfx::Point3F(1.0f, 0, 0)));
 }
 
 // This test confirms that an element is both positioned the right distance from

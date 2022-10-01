@@ -42,9 +42,11 @@ bool GetCalibratedTransform(
   // If the calibration was performed at a resolution that is 0.5 times the
   // current resolution, then the display points (x, y) for a given touch point
   // now represents a display point at (2 * x, 2 * y). This and other kinds of
-  // similar tranforms can be applied using |pre_calibration_tm|.
-  for (int row = 0; row < 4; row++)
-    pre_calibration_tm.TransformPoint(&touch_point_pairs[row].first);
+  // similar transforms can be applied using |pre_calibration_tm|.
+  for (int row = 0; row < 4; row++) {
+    touch_point_pairs[row].first =
+        pre_calibration_tm.MapPoint(touch_point_pairs[row].first);
+  }
 
   // Vector of the X-coordinate of display points corresponding to each of the
   // touch points.

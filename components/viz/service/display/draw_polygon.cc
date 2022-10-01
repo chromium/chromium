@@ -148,12 +148,11 @@ void DrawPolygon::ApplyTransformToNormal(const gfx::Transform& transform) {
   DCHECK(inverted);
   if (!inverted)
     return;
-  inverse_transform.Transpose();
 
-  gfx::Point3F new_normal(normal_.x(), normal_.y(), normal_.z());
-  inverse_transform.TransformPoint(&new_normal);
+  inverse_transform.Transpose();
+  inverse_transform.TransformVector(&normal_);
+
   // Make sure our normal is still normalized.
-  normal_ = gfx::Vector3dF(new_normal.x(), new_normal.y(), new_normal.z());
   float normal_magnitude = normal_.Length();
   if (normal_magnitude != 0 && normal_magnitude != 1) {
     normal_.InvScale(normal_magnitude);
@@ -161,9 +160,8 @@ void DrawPolygon::ApplyTransformToNormal(const gfx::Transform& transform) {
 }
 
 void DrawPolygon::ApplyTransform(const gfx::Transform& transform) {
-  for (size_t i = 0; i < points_.size(); i++) {
-    transform.TransformPoint(&points_[i]);
-  }
+  for (auto& p : points_)
+    p = transform.MapPoint(p);
 }
 
 // TransformToScreenSpace assumes we're moving a layer from its layer space

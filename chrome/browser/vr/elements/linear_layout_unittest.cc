@@ -47,10 +47,10 @@ TEST(LinearLayout, HorizontalVerticalLayout) {
   layout.SizeAndLayOut();
 
   gfx::Point3F position_a;
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
 
   gfx::Point3F position_b;
-  rect_b->LocalTransform().TransformPoint(&position_b);
+  position_b = rect_b->LocalTransform().MapPoint(position_b);
 
   EXPECT_FLOAT_EQ(-15.0f, position_a.x());
   EXPECT_FLOAT_EQ(0.0f, position_a.y());
@@ -83,24 +83,24 @@ TEST(LinearLayout, Alignment) {
   gfx::Point3F position_a;
   rect_a->set_y_anchoring(TOP);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(9.5f, position_a.y());
   position_a = gfx::Point3F();
   rect_a->set_y_anchoring(BOTTOM);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(-9.5f, position_a.y());
 
   layout.set_direction(LinearLayout::kLeft);
   position_a = gfx::Point3F();
   rect_a->set_y_anchoring(TOP);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(9.5f, position_a.y());
   position_a = gfx::Point3F();
   rect_a->set_y_anchoring(BOTTOM);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(-9.5f, position_a.y());
 
   layout.set_direction(LinearLayout::kDown);
@@ -108,12 +108,12 @@ TEST(LinearLayout, Alignment) {
   rect_a->set_x_anchoring(LEFT);
   rect_a->set_y_anchoring(NONE);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(-9.5f, position_a.x());
   position_a = gfx::Point3F();
   rect_a->set_x_anchoring(RIGHT);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(9.5f, position_a.x());
 
   layout.set_direction(LinearLayout::kUp);
@@ -121,12 +121,12 @@ TEST(LinearLayout, Alignment) {
   rect_a->set_x_anchoring(LEFT);
   rect_a->set_y_anchoring(NONE);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(-9.5f, position_a.x());
   position_a = gfx::Point3F();
   rect_a->set_x_anchoring(RIGHT);
   layout.SizeAndLayOut();
-  rect_a->LocalTransform().TransformPoint(&position_a);
+  position_a = rect_a->LocalTransform().MapPoint(position_a);
   EXPECT_FLOAT_EQ(9.5f, position_a.x());
 }
 

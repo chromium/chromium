@@ -965,7 +965,7 @@ void RenderWidgetHostViewAura::DidStopFlinging() {
 void RenderWidgetHostViewAura::TransformPointToRootSurface(gfx::PointF* point) {
   aura::Window* root = window_->GetRootWindow();
   aura::Window::ConvertPointToTarget(window_, root, point);
-  root->GetRootWindow()->transform().TransformPoint(point);
+  *point = root->GetRootWindow()->transform().MapPoint(*point);
 }
 
 gfx::Rect RenderWidgetHostViewAura::GetBoundsInRootWindow() {

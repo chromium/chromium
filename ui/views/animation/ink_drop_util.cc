@@ -18,9 +18,7 @@ namespace views {
 
 gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
                                               float device_scale_factor) {
-  gfx::PointF origin;
-  transform.TransformPoint(&origin);
-
+  gfx::PointF origin = transform.MapPoint(gfx::PointF());
   const gfx::Vector2dF offset_in_dip = origin.OffsetFromOrigin();
 
   // Scale the origin to screen space
@@ -38,11 +36,10 @@ gfx::Transform GetTransformSubpixelCorrection(const gfx::Transform& transform,
   subpixel_correction.Translate(aligned_offset_in_dip - offset_in_dip);
 #if DCHECK_IS_ON()
   const float kEpsilon = 0.0001f;
-  gfx::Point3F offset;
 
   gfx::Transform transform_corrected(transform);
   transform_corrected.PostConcat(subpixel_correction);
-  transform_corrected.TransformPoint(&offset);
+  gfx::Point3F offset = transform_corrected.MapPoint(gfx::Point3F());
   offset.Scale(device_scale_factor);
 
   if (!std::isnan(offset.x()))

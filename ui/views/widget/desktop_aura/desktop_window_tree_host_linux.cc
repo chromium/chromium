@@ -187,12 +187,9 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
     ui::LocatedEvent* located_event = event->AsLocatedEvent();
     if (GetContentWindow() && GetContentWindow()->delegate()) {
       int flags = located_event->flags();
-      gfx::PointF location_in_dip = located_event->location_f();
-      if (const absl::optional<gfx::PointF> transformed =
-              GetRootTransform().TransformPointReverse(location_in_dip);
-          transformed.has_value()) {
-        location_in_dip = transformed.value();
-      }
+      gfx::PointF location = located_event->location_f();
+      gfx::PointF location_in_dip =
+          GetRootTransform().InverseMapPoint(location).value_or(location);
       hit_test_code = GetContentWindow()->delegate()->GetNonClientComponent(
           gfx::ToRoundedPoint(location_in_dip));
       if (hit_test_code != HTCLIENT && hit_test_code != HTNOWHERE)

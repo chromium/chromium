@@ -61,7 +61,8 @@ bool UnifiedMouseWarpController::WarpMouseCursor(ui::MouseEvent* event) {
   ::wm::ConvertPointToScreen(target, &point_in_unified_host);
   // The display bounds of the mirroring windows isn't scaled, so
   // transform back to the host coordinates.
-  target->GetHost()->GetRootTransform().TransformPoint(&point_in_unified_host);
+  point_in_unified_host =
+      target->GetHost()->GetRootTransform().MapPoint(point_in_unified_host);
 
   // A native event may not exist in unit test.
   if (!event->HasNativeEvent())

@@ -402,7 +402,7 @@ void BrowserCompositorMac::TransformPointToRootSurface(gfx::PointF* point) {
   gfx::Transform transform_to_root;
   if (parent_ui_layer_)
     parent_ui_layer_->GetTargetTransformRelativeTo(nullptr, &transform_to_root);
-  transform_to_root.TransformPoint(point);
+  *point = transform_to_root.MapPoint(*point);
 }
 
 void BrowserCompositorMac::LayerDestroyed(ui::Layer* layer) {

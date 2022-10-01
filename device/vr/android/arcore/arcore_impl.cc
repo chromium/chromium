@@ -1286,8 +1286,8 @@ ArCoreImpl::GetHitTestSubscriptionResult(
   // Transform the ray according to the latest transform based on the XRSpace
   // used in hit test subscription.
 
-  gfx::Point3F origin = native_origin_ray.origin;
-  mojo_from_native_origin.TransformPoint(&origin);
+  gfx::Point3F origin =
+      mojo_from_native_origin.MapPoint(native_origin_ray.origin);
 
   gfx::Vector3dF direction = native_origin_ray.direction;
   mojo_from_native_origin.TransformVector(&direction);
@@ -1315,8 +1315,9 @@ ArCoreImpl::GetTransientHitTestSubscriptionResult(
 
   for (const auto& input_source_id_and_mojo_from_input_source :
        input_source_ids_and_mojo_from_input_sources) {
-    gfx::Point3F origin = input_source_ray.origin;
-    input_source_id_and_mojo_from_input_source.second.TransformPoint(&origin);
+    gfx::Point3F origin =
+        input_source_id_and_mojo_from_input_source.second.MapPoint(
+            input_source_ray.origin);
 
     gfx::Vector3dF direction = input_source_ray.direction;
     input_source_id_and_mojo_from_input_source.second.TransformVector(

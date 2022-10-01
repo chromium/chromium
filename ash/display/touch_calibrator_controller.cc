@@ -288,12 +288,12 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
     // display is rotated or a device scale factor is applied. The display point
     // needs to have the root transform applied as well to correctly pair it
     // with the touch point.
-    Shell::Get()
-        ->window_tree_host_manager()
-        ->GetAshWindowTreeHostForDisplayId(target_display_.id())
-        ->AsWindowTreeHost()
-        ->GetRootTransform()
-        .TransformPoint(&display_point);
+    display_point = Shell::Get()
+                        ->window_tree_host_manager()
+                        ->GetAshWindowTreeHostForDisplayId(target_display_.id())
+                        ->AsWindowTreeHost()
+                        ->GetRootTransform()
+                        .MapPoint(display_point);
 
     // Why do we need this? To understand this we need to know the life of an
     // event location. The event location undergoes the following
@@ -334,8 +334,8 @@ void TouchCalibratorController::OnTouchEvent(ui::TouchEvent* touch) {
     // device was previously associated with. To solve this, we need to undo the
     // changes made to the event location by WindowEventDispatcher. This is what
     // is achieved by |event_transformer_|.
-    gfx::PointF event_location_f(touch->location_f());
-    event_transformer_.TransformPoint(&event_location_f);
+    gfx::PointF event_location_f =
+        event_transformer_.MapPoint(touch->location_f());
 
     touch_point_quad_[state_index] =
         std::make_pair(display_point, gfx::ToRoundedPoint(event_location_f));

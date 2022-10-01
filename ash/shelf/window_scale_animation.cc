@@ -55,12 +55,9 @@ gfx::Transform GetWindowTransformToShelf(aura::Window* window) {
   // window is calculated relative to the window bounds with no transforms
   // applied, and thus need the un-transformed window origin.
   const gfx::RectF window_bounds(window->GetBoundsInScreen());
-  gfx::PointF origin_without_transform = window_bounds.origin();
-  if (const absl::optional<gfx::PointF> transformed_point =
-          window->transform().TransformPointReverse(origin_without_transform);
-      transformed_point.has_value()) {
-    origin_without_transform = transformed_point.value();
-  }
+  gfx::PointF origin = window_bounds.origin();
+  gfx::PointF origin_without_transform =
+      window->transform().InverseMapPoint(origin).value_or(origin);
 
   gfx::Transform transform;
   Shelf* shelf = Shelf::ForWindow(window);

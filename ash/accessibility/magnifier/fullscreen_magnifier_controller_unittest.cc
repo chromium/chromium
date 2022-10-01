@@ -156,7 +156,7 @@ class FullscreenMagnifierControllerTest : public AshTestBase {
     const auto display = display_manager()->GetDisplayAt(0);
     gfx::Transform rotation_transform;
     rotation_transform.Rotate(display.PanelRotationAsDegree());
-    rotation_transform.TransformPoint(&offset);
+    offset = rotation_transform.MapPoint(offset);
 
     end1.Offset(offset.x(), offset.y());
     end2.Offset(offset.x(), offset.y());

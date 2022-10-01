@@ -39,9 +39,8 @@ namespace {
 void TransformEventTouchPositions(blink::WebTouchEvent* event,
                                   const gfx::Transform& transform) {
   for (unsigned i = 0; i < event->touches_length; ++i) {
-    gfx::PointF point(event->touches[i].PositionInWidget());
-    transform.TransformPoint(&point);
-    event->touches[i].SetPositionInWidget(point);
+    event->touches[i].SetPositionInWidget(
+        transform.MapPoint(event->touches[i].PositionInWidget()));
   }
 }
 

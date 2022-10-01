@@ -799,22 +799,21 @@ class AppListAnimationTest : public AshTestBase,
   }
 
   int GetAppListCurrentTop() {
-    gfx::Point app_list_top =
-        GetAppListView()->GetBoundsInScreen().top_center();
-    GetAppListView()->GetWidget()->GetLayer()->transform().TransformPoint(
-        &app_list_top);
-    return app_list_top.y();
+    return GetAppListView()
+        ->GetWidget()
+        ->GetLayer()
+        ->transform()
+        .MapPoint(GetAppListView()->GetBoundsInScreen().top_center())
+        .y();
   }
 
   int GetAppListTargetTop() {
-    gfx::Point app_list_top =
-        GetAppListView()->GetBoundsInScreen().top_center();
-    GetAppListView()
+    return GetAppListView()
         ->GetWidget()
         ->GetLayer()
         ->GetTargetTransform()
-        .TransformPoint(&app_list_top);
-    return app_list_top.y();
+        .MapPoint(GetAppListView()->GetBoundsInScreen().top_center())
+        .y();
   }
 
   int shown_shelf_top() const { return shown_shelf_bounds_.y(); }

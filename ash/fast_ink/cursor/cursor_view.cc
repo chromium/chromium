@@ -134,8 +134,7 @@ void CursorView::SetCursorImage(const gfx::ImageSkia& cursor_image,
 // ui::CursorController::CursorObserver overrides:
 
 void CursorView::OnCursorLocationChanged(const gfx::PointF& location) {
-  gfx::PointF new_location_f = location;
-  buffer_to_screen_transform_.TransformPoint(&new_location_f);
+  gfx::PointF new_location_f = buffer_to_screen_transform_.MapPoint(location);
   gfx::Point new_location = gfx::ToRoundedPoint(new_location_f);
 
   {

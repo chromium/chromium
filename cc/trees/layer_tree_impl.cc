@@ -2268,9 +2268,8 @@ static bool PointHitsRect(
     // To compute the distance to the camera, we have to take the planar point
     // and pull it back to world space and compute the displacement along the
     // z-axis.
-    gfx::Point3F planar_point_in_screen_space(planar_point);
-    local_space_to_screen_space_transform.TransformPoint(
-        &planar_point_in_screen_space);
+    gfx::Point3F planar_point_in_screen_space =
+        local_space_to_screen_space_transform.MapPoint(planar_point);
     *distance_to_camera = planar_point_in_screen_space.z();
   }
 

@@ -104,9 +104,8 @@ void AmbientAnimationAttributionTransformer::TransformTextBox(
   DCHECK(!view_bounds.IsEmpty())
       << "AnimatedImageView's content bounds must be initialized before "
          "transforming the text box.";
-  gfx::Point text_box_bottom_right =
-      view_bounds.bottom_right() - kTextBoxPaddingDip;
-  view_to_animation_transform.TransformPoint(&text_box_bottom_right);
+  gfx::Point text_box_bottom_right = view_to_animation_transform.MapPoint(
+      view_bounds.bottom_right() - kTextBoxPaddingDip);
   // In the majority of cases, the bottom-right of the text box will already be
   // within the boundaries of the original animation. There are some corner
   // cases though (ex: fitting a landscape animation file to portrait view)

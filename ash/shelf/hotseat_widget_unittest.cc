@@ -2300,7 +2300,8 @@ TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
             .GetViewAt(0)
             ->GetBoundsInScreen()
             .origin();
-    hotseat_widget->GetLayer()->transform().TransformPoint(&app_views_position);
+    app_views_position =
+        hotseat_widget->GetLayer()->transform().MapPoint(app_views_position);
     const bool position_changed = app_views_position != last_app_views_position;
     last_app_views_position = app_views_position;
     return position_changed;
@@ -2401,7 +2402,8 @@ TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
             .GetViewAt(0)
             ->GetBoundsInScreen()
             .origin();
-    hotseat_widget->GetLayer()->transform().TransformPoint(&app_views_position);
+    app_views_position =
+        hotseat_widget->GetLayer()->transform().MapPoint(app_views_position);
     const bool position_changed = app_views_position != last_app_views_position;
     last_app_views_position = app_views_position;
     return position_changed;

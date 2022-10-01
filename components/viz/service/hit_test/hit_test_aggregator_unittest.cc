@@ -690,7 +690,7 @@ TEST_F(HitTestAggregatorTest, ClippedChildWithTabAndTransparentBackground) {
   EXPECT_EQ(region.child_count, 2);
 
   EXPECT_EQ(gfx::Point(100, 200),
-            region.transform.TransformPointReverse(gfx::Point(300, 300)));
+            region.transform.InverseMapPoint(gfx::Point(300, 300)));
 
   region = host_regions()[2];
   EXPECT_EQ(HitTestRegionFlags::kHitTestChildSurface |

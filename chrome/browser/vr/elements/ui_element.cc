@@ -724,17 +724,14 @@ void UiElement::UpdateBindings() {
 }
 
 gfx::Point3F UiElement::GetCenter() const {
-  gfx::Point3F center;
-  world_space_transform_.TransformPoint(&center);
-  return center;
+  return world_space_transform_.MapPoint(gfx::Point3F());
 }
 
 gfx::PointF UiElement::GetUnitRectangleCoordinates(
     const gfx::Point3F& world_point) const {
-  gfx::Point3F origin;
   gfx::Vector3dF x_axis(1, 0, 0);
   gfx::Vector3dF y_axis(0, 1, 0);
-  world_space_transform_.TransformPoint(&origin);
+  gfx::Point3F origin = world_space_transform_.MapPoint(gfx::Point3F());
   world_space_transform_.TransformVector(&x_axis);
   world_space_transform_.TransformVector(&y_axis);
   gfx::Vector3dF origin_to_world = world_point - origin;
@@ -890,8 +887,8 @@ gfx::RectF UiElement::ComputeContributingChildrenBounds() {
     gfx::Point3F child_upper_left = child_center + corner_offset;
     gfx::Point3F child_lower_right = child_center - corner_offset;
 
-    child->LocalTransform().TransformPoint(&child_upper_left);
-    child->LocalTransform().TransformPoint(&child_lower_right);
+    child_upper_left = child->LocalTransform().MapPoint(child_upper_left);
+    child_lower_right = child->LocalTransform().MapPoint(child_lower_right);
     gfx::RectF local_rect =
         gfx::RectF(child_upper_left.x(), child_upper_left.y(),
                    child_lower_right.x() - child_upper_left.x(),

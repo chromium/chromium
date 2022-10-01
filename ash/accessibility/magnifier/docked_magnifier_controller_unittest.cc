@@ -132,7 +132,8 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
     // The magnifier layer's transform, when applied to the point of interest
     // (in root coordinates), should take it to the point at the center of the
     // viewport widget (also in root coordinates).
-    magnifier_layer->transform().TransformPoint(&point_of_interest_in_root_f);
+    point_of_interest_in_root_f =
+        magnifier_layer->transform().MapPoint(point_of_interest_in_root_f);
     const views::Widget* viewport_widget =
         controller()->GetViewportWidgetForTesting();
     const gfx::Point viewport_center_in_root =
@@ -801,8 +802,8 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
   viewport_top_edge_center.set_y(0);
   const ui::Layer* magnifier_layer =
       controller()->GetViewportMagnifierLayerForTesting();
-  magnifier_layer->transform().TransformPoint(&point_of_interest);
-  EXPECT_EQ(viewport_top_edge_center, point_of_interest);
+  EXPECT_EQ(viewport_top_edge_center,
+            magnifier_layer->transform().MapPoint(point_of_interest));
   // The minimum height for the point of interest is the bottom of the viewport
   // + the height of the separator + half the height of the viewport when scaled
   // back to the non-magnified space.
@@ -820,8 +821,8 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
   TestMagnifierLayerTransform(point_of_interest, root_windows[0]);
   point_of_interest.set_y(viewport_height +
                           DockedMagnifierController::kSeparatorHeight);
-  magnifier_layer->transform().TransformPoint(&point_of_interest);
-  EXPECT_EQ(viewport_top_edge_center, point_of_interest);
+  EXPECT_EQ(viewport_top_edge_center,
+            magnifier_layer->transform().MapPoint(point_of_interest));
 
   EXPECT_FLOAT_EQ(viewport_height +
                       DockedMagnifierController::kSeparatorHeight +

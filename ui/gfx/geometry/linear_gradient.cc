@@ -52,13 +52,11 @@ void LinearGradient::Transform(const gfx::Transform& transform) {
   if (transform.IsIdentity())
     return;
 
-  gfx::PointF origin, end;
   float radian = gfx::DegToRad(static_cast<float>(angle_));
   float y = -sin(radian);
   float x = cos(radian);
-  end.Offset(x, y);
-  transform.TransformPoint(&origin);
-  transform.TransformPoint(&end);
+  gfx::PointF origin = transform.MapPoint(gfx::PointF());
+  gfx::PointF end = transform.MapPoint(gfx::PointF(x, y));
   gfx::Vector2dF diff = end - origin;
   float new_angle = gfx::RadToDeg(atan2(diff.y(), diff.x()));
   angle_ = -static_cast<int16_t>(std::round(new_angle));

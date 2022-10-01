@@ -296,13 +296,15 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns the x and y scale components of the matrix.
   Vector2dF To2dScale() const { return gfx::Vector2dF(rc(0, 0), rc(1, 1)); }
 
+  // Returns the point with the transformation applied to |point|.
+  [[nodiscard]] Point3F MapPoint(const Point3F& point) const;
+  [[nodiscard]] PointF MapPoint(const PointF& point) const;
+  [[nodiscard]] Point MapPoint(const Point& point) const;
+
   // Applies the transformation to the point.
+  // TODO(crbug.com/1359528): Remove these in favor of MapPoint().
   void TransformPoint(Point3F* point) const;
-
-  // Applies the transformation to the point.
   void TransformPoint(PointF* point) const;
-
-  // Applies the transformation to the point.
   void TransformPoint(Point* point) const;
 
   // Applies the transformation to the vector.
@@ -313,16 +315,18 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
   // the transformation cannot be inverted.
-  absl::optional<PointF> TransformPointReverse(const PointF& point) const;
+  [[nodiscard]] absl::optional<PointF> InverseMapPoint(
+      const PointF& point) const;
 
   // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
   // the transformation cannot be inverted. Rounds the result to the nearest
   // point.
-  absl::optional<Point> TransformPointReverse(const Point& point) const;
+  [[nodiscard]] absl::optional<Point> InverseMapPoint(const Point& point) const;
 
   // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
   // the transformation cannot be inverted.
-  absl::optional<Point3F> TransformPointReverse(const Point3F& point) const;
+  [[nodiscard]] absl::optional<Point3F> InverseMapPoint(
+      const Point3F& point) const;
 
   // Applies transformation on the given rect. After the function completes,
   // |rect| will be the smallest axis aligned bounding rect containing the
@@ -418,13 +422,11 @@ class GEOMETRY_SKIA_EXPORT Transform {
   Transform(const Transform& lhs, const Transform& rhs)
       : matrix_(lhs.matrix_, rhs.matrix_) {}
 
-  Point TransformPointInternal(const Matrix44& xform, const Point& point) const;
+  Point MapPointInternal(const Matrix44& xform, const Point& point) const;
 
-  PointF TransformPointInternal(const Matrix44& xform,
-                                const PointF& point) const;
+  PointF MapPointInternal(const Matrix44& xform, const PointF& point) const;
 
-  Point3F TransformPointInternal(const Matrix44& xform,
-                                 const Point3F& point) const;
+  Point3F MapPointInternal(const Matrix44& xform, const Point3F& point) const;
 
   void TransformVectorInternal(const Matrix44& xform, Vector3dF* vector) const;
 

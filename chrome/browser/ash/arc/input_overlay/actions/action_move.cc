@@ -570,9 +570,8 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
   gfx::PointF location = touch_press_pos;
   if (rotation_transform) {
     if (const absl::optional<gfx::PointF> transformed_location =
-            rotation_transform->TransformPointReverse(location);
-        transformed_location.has_value()) {
-      location = transformed_location.value();
+            rotation_transform->InverseMapPoint(location)) {
+      location = *transformed_location;
     }
   }
   last_touch_root_location_ = location + move_vector_;
@@ -585,8 +584,10 @@ void ActionMove::CalculateMoveVector(gfx::PointF& touch_press_pos,
   last_touch_root_location_.set_y(
       base::clamp(y, content_bounds.y() * display_scale_factor,
                   content_bounds.bottom() * display_scale_factor));
-  if (rotation_transform)
-    rotation_transform->TransformPoint(&last_touch_root_location_);
+  if (rotation_transform) {
+    last_touch_root_location_ =
+        rotation_transform->MapPoint(last_touch_root_location_);
+  }
 }
 
 absl::optional<gfx::RectF> ActionMove::CalculateApplyArea(

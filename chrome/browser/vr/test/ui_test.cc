@@ -34,9 +34,8 @@ bool WillElementFaceCamera(const UiElement* element) {
   // Here we calculate the dot product of (origin - center) and normal. If the
   // result is greater than 0, it means the visible side of this element is
   // facing camera.
-  gfx::Point3F center;
   gfx::Transform transform = element->ComputeTargetWorldSpaceTransform();
-  transform.TransformPoint(&center);
+  gfx::Point3F center = transform.MapPoint(gfx::Point3F());
 
   gfx::Point3F origin;
   gfx::Vector3dF normal = ComputeNormal(transform);
@@ -214,9 +213,9 @@ void UiTest::GetBackgroundColor(SkColor* background_color) const {
 
 void UiTest::ClickElement(UiElement* element) {
   // Synthesize a controller vector targeting the element.
-  gfx::Point3F target;
-  element->ComputeTargetWorldSpaceTransform().TransformPoint(&target);
   gfx::Point3F origin;
+  gfx::Point3F target =
+      element->ComputeTargetWorldSpaceTransform().MapPoint(origin);
   gfx::Vector3dF direction(target - origin);
   direction.GetNormalized(&direction);
 

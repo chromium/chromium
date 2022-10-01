@@ -576,15 +576,13 @@ TEST_F(UnifiedRootWindowTransformersTest, HostBoundsAndTransform) {
   ASSERT_EQ(2u, hosts.size());
 
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), hosts[0]->window()->GetBoundsInScreen());
-  EXPECT_EQ(
-      absl::make_optional<gfx::Point>(),
-      hosts[0]->window()->transform().TransformPointReverse(gfx::Point()));
+  EXPECT_EQ(gfx::Point(),
+            hosts[0]->window()->transform().InverseMapPoint(gfx::Point()));
 
   EXPECT_EQ(gfx::Rect(800, 0, 800, 600),
             hosts[1]->window()->GetBoundsInScreen());
-  EXPECT_EQ(
-      gfx::Point(800, 0),
-      hosts[1]->window()->transform().TransformPointReverse(gfx::Point()));
+  EXPECT_EQ(gfx::Point(800, 0),
+            hosts[1]->window()->transform().InverseMapPoint(gfx::Point()));
 }
 
 TEST_F(UnifiedRootWindowTransformersTest,
@@ -612,25 +610,23 @@ TEST_F(UnifiedRootWindowTransformersTest,
 
   EXPECT_EQ(gfx::Rect(0, 0, 1080, 1920),
             hosts[0]->window()->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Point(),
+            hosts[0]->window()->transform().InverseMapPoint(gfx::Point()));
   EXPECT_EQ(
-      absl::make_optional<gfx::Point>(),
-      hosts[0]->window()->transform().TransformPointReverse(gfx::Point()));
-  EXPECT_EQ(gfx::Point(1000, 1900),
-            hosts[0]->window()->transform().TransformPointReverse(
-                gfx::Point(1000, 1900)));
+      gfx::Point(1000, 1900),
+      hosts[0]->window()->transform().InverseMapPoint(gfx::Point(1000, 1900)));
 
   EXPECT_EQ(gfx::Rect(1080, 0, 800, 600),
             hosts[1]->window()->GetBoundsInScreen());
-  EXPECT_EQ(
-      gfx::Point(1080, 0),
-      hosts[1]->window()->transform().TransformPointReverse(gfx::Point()));
+  EXPECT_EQ(gfx::Point(1080, 0),
+            hosts[1]->window()->transform().InverseMapPoint(gfx::Point()));
   // Since the first display is rotated, the unified height is 1920.
   // The 2nd display's height of 600 is scaled to this: 1920/600=3.2.
   // So the bottom right corner of the 2nd display has
   // x=1080+(800*3.2)=3640 and y=0+(600*3.2)=1920.
-  EXPECT_EQ(gfx::Point(3640, 1920),
-            hosts[1]->window()->transform().TransformPointReverse(
-                gfx::Point(800, 600)));
+  EXPECT_EQ(
+      gfx::Point(3640, 1920),
+      hosts[1]->window()->transform().InverseMapPoint(gfx::Point(800, 600)));
 
   // Mouse input on the 1st display.
   ui::test::EventGenerator generator0(hosts[0]->window());
@@ -685,25 +681,23 @@ TEST_F(UnifiedRootWindowTransformersTest,
 
   EXPECT_EQ(gfx::Rect(0, 0, 1920, 1080),
             hosts[0]->window()->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Point(),
+            hosts[0]->window()->transform().InverseMapPoint(gfx::Point()));
   EXPECT_EQ(
-      absl::make_optional<gfx::Point>(),
-      hosts[0]->window()->transform().TransformPointReverse(gfx::Point()));
-  EXPECT_EQ(gfx::Point(1900, 1000),
-            hosts[0]->window()->transform().TransformPointReverse(
-                gfx::Point(1900, 1000)));
+      gfx::Point(1900, 1000),
+      hosts[0]->window()->transform().InverseMapPoint(gfx::Point(1900, 1000)));
 
   EXPECT_EQ(gfx::Rect(1920, 0, 600, 800),
             hosts[1]->window()->GetBoundsInScreen());
-  EXPECT_EQ(
-      gfx::Point(1920, 0),
-      hosts[1]->window()->transform().TransformPointReverse(gfx::Point()));
+  EXPECT_EQ(gfx::Point(1920, 0),
+            hosts[1]->window()->transform().InverseMapPoint(gfx::Point()));
   // Since the 2nd display is rotated, its height is 800. This is scaled to the
   // height of the 1st display, which is 1080. So the 2nd display's scaling is
   // 1080/800=1.35. So the bottom right corner of the 2nd display has
   // x=1920+(600*1.35)=2730 and y=0+(800*1.35)=1080.
-  EXPECT_EQ(gfx::Point(2730, 1080),
-            hosts[1]->window()->transform().TransformPointReverse(
-                gfx::Point(600, 800)));
+  EXPECT_EQ(
+      gfx::Point(2730, 1080),
+      hosts[1]->window()->transform().InverseMapPoint(gfx::Point(600, 800)));
 
   // Mouse input on the 1st display.
   ui::test::EventGenerator generator0(hosts[0]->window());

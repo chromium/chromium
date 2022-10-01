@@ -535,8 +535,8 @@ absl::optional<gfx::Rect> SavedDeskLibraryView::GetDeskPreviewBoundsForLaunch(
 
   gfx::Rect desk_preview_bounds =
       mini_view->desk_preview()->GetBoundsInScreen();
-  gfx::Point desk_preview_origin = desk_preview_bounds.origin();
-  inversed.TransformPoint(&desk_preview_origin);
+  gfx::Point desk_preview_origin =
+      inversed.MapPoint(desk_preview_bounds.origin());
 
   return gfx::Rect(desk_preview_origin, desk_preview_bounds.size());
 }

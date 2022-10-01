@@ -288,7 +288,7 @@ void WindowTreeHost::ConvertDIPToPixels(gfx::Point* point) const {
 }
 
 void WindowTreeHost::ConvertDIPToPixels(gfx::PointF* point) const {
-  GetRootTransform().TransformPoint(point);
+  *point = GetRootTransform().MapPoint(*point);
 }
 
 void WindowTreeHost::ConvertPixelsToDIP(gfx::Point* point) const {
@@ -298,7 +298,7 @@ void WindowTreeHost::ConvertPixelsToDIP(gfx::Point* point) const {
 }
 
 void WindowTreeHost::ConvertPixelsToDIP(gfx::PointF* point) const {
-  GetInverseRootTransform().TransformPoint(point);
+  *point = GetInverseRootTransform().MapPoint(*point);
 }
 
 void WindowTreeHost::SetCursor(gfx::NativeCursor cursor) {

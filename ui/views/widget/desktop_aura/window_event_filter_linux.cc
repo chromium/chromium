@@ -129,13 +129,9 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
         break;
       // Controller requires locations to be in DIP, while |this| receives the
       // location in px.
-      gfx::PointF location = event->location_f();
-      if (const absl::optional<gfx::PointF> transformed =
-              desktop_window_tree_host_->GetRootTransform()
-                  .TransformPointReverse(location);
-          transformed.has_value()) {
-        location = transformed.value();
-      }
+      gfx::PointF location = desktop_window_tree_host_->GetRootTransform()
+                                 .InverseMapPoint(event->location_f())
+                                 .value_or(event->location_f());
       gfx::Point location_in_screen = gfx::ToRoundedPoint(location);
       views::View::ConvertPointToScreen(view, &location_in_screen);
       view->ShowContextMenu(location_in_screen, ui::MENU_SOURCE_MOUSE);

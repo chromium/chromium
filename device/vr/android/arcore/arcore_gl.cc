@@ -1709,7 +1709,7 @@ std::vector<mojom::XRInputSourceStatePtr> ArCoreGl::GetInputSourceStates() {
         (1.f - screen_last_touch.y() / screen_size_.height()) * 2.f - 1.f;
     gfx::Point3F touch_point(x_normalized, y_normalized, -1.f);
     DVLOG(3) << __func__ << ": touch_point=" << touch_point.ToString();
-    inverse_projection_.TransformPoint(&touch_point);
+    touch_point = inverse_projection_.MapPoint(touch_point);
     DVLOG(3) << __func__ << ": unprojected=" << touch_point.ToString();
 
     // Ray points along -Z in ray space, so we need to flip it to get

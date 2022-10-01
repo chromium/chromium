@@ -936,7 +936,7 @@ bool RenderWidgetHostViewBase::TransformPointToTargetCoordSpace(
   query->GetTransformToTarget(original_view->GetFrameSinkId(),
                               &transform_root_to_original);
   const absl::optional<gfx::PointF> point_in_pixels =
-      transform_root_to_original.TransformPointReverse(
+      transform_root_to_original.InverseMapPoint(
           gfx::ConvertPointToPixels(point, device_scale_factor));
   if (!point_in_pixels.has_value())
     return false;

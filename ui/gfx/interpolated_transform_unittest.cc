@@ -83,10 +83,10 @@ TEST(InterpolatedTransformTest, InterpolatedRotationAboutPivot) {
   EXPECT_TRANSFORM_EQ(gfx::Transform(), result);
   result = interpolated_xform.Interpolate(1.0f);
   gfx::Point expected_result = pivot;
-  result.TransformPoint(&pivot);
+  pivot = result.MapPoint(pivot);
   EXPECT_EQ(expected_result, pivot);
   expected_result = gfx::Point(0, 100);
-  result.TransformPoint(&above_pivot);
+  above_pivot = result.MapPoint(above_pivot);
   EXPECT_EQ(expected_result, above_pivot);
 }
 
@@ -100,10 +100,10 @@ TEST(InterpolatedTransformTest, InterpolatedScaleAboutPivot) {
   EXPECT_TRANSFORM_EQ(gfx::Transform(), result);
   result = interpolated_xform.Interpolate(1.0f);
   gfx::Point expected_result = pivot;
-  result.TransformPoint(&pivot);
+  pivot = result.MapPoint(pivot);
   EXPECT_EQ(expected_result, pivot);
   expected_result = gfx::Point(100, 300);
-  result.TransformPoint(&above_pivot);
+  above_pivot = result.MapPoint(above_pivot);
   EXPECT_EQ(expected_result, above_pivot);
 }
 

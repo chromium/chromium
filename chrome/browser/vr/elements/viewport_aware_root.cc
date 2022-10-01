@@ -49,8 +49,8 @@ bool ViewportAwareRoot::OnBeginFrame(const gfx::Transform& head_pose) {
     gfx::Transform world_from_head;
     bool invertable = head_pose.GetInverse(&world_from_head);
     DCHECK(invertable);  // Pose data has been validated already.
-    gfx::Point3F head_pos_in_world_space{0.f, 0.f, 0.f};
-    world_from_head.TransformPoint(&head_pos_in_world_space);
+    gfx::Point3F head_pos_in_world_space =
+        world_from_head.MapPoint(gfx::Point3F());
     changed = AdjustTranslation(head_pos_in_world_space.x(),
                                 head_pos_in_world_space.z(), changed);
   }
@@ -60,8 +60,8 @@ bool ViewportAwareRoot::OnBeginFrame(const gfx::Transform& head_pose) {
 bool ViewportAwareRoot::AdjustTranslation(float head_in_world_x,
                                           float head_in_world_z,
                                           bool did_rotate) {
-  gfx::Point3F center_point_in_world{0.f, 0.f, 0.f};
-  LocalTransform().TransformPoint(&center_point_in_world);
+  gfx::Point3F center_point_in_world =
+      LocalTransform().MapPoint(gfx::Point3F());
   gfx::Vector2dF offset = {head_in_world_x - center_point_in_world.x(),
                            head_in_world_z - center_point_in_world.z()};
 

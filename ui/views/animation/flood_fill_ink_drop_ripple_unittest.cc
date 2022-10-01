@@ -32,8 +32,8 @@ TEST(FloodFillInkDropRippleTest, TransformedCenterPointForIrregularClipBounds) {
                                 SK_ColorWHITE, 0.175f);
   FloodFillInkDropRippleTestApi test_api(&ripple);
 
-  gfx::Point3F actual_center(gfx::PointF(test_api.GetDrawnCenterPoint()));
-  test_api.TransformPoint(10, &actual_center);
+  gfx::Point3F actual_center = test_api.MapPoint(
+      10, gfx::Point3F(gfx::PointF(test_api.GetDrawnCenterPoint())));
 
   EXPECT_EQ(expected_center_point,
             gfx::ToRoundedPoint(actual_center.AsPointF()));
@@ -130,14 +130,13 @@ TEST(FloodFillInkDropRippleTest, TransformIsPixelAligned) {
                  << std::endl
                  << "Device Scale Factor: " << dsf << std::endl);
     ripple.GetRootLayer()->OnDeviceScaleFactorChanged(dsf);
-    gfx::Point3F ripple_origin;
-
-    test_api.TransformPoint(host_size.width() / 2, &ripple_origin);
+    gfx::Point3F ripple_origin =
+        test_api.MapPoint(host_size.width() / 2, gfx::Point3F());
 
     // Apply device scale factor to get the final offset.
     gfx::Transform dsf_transform;
     dsf_transform.Scale(dsf, dsf);
-    dsf_transform.TransformPoint(&ripple_origin);
+    ripple_origin = dsf_transform.MapPoint(ripple_origin);
 
     EXPECT_NEAR(ripple_origin.x(), std::round(ripple_origin.x()), kEpsilon);
     EXPECT_NEAR(ripple_origin.y(), std::round(ripple_origin.y()), kEpsilon);

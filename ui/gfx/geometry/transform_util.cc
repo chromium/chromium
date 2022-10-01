@@ -174,12 +174,11 @@ Transform ComposeTransform(const Transform& perspective,
 bool CheckViewportPointMapsWithinOnePixel(const Point& point,
                                           const Transform& transform) {
   auto point_original = Point3F(PointF(point));
-  auto point_transformed = Point3F(PointF(point));
 
   // Can't use TransformRect here since it would give us the axis-aligned
   // bounding rect of the 4 points in the initial rectable which is not what we
   // want.
-  transform.TransformPoint(&point_transformed);
+  auto point_transformed = transform.MapPoint(point_original);
 
   if ((point_transformed - point_original).Length() > 1.f) {
     // The changed distance should not be more than 1 pixel.

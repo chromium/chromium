@@ -1425,7 +1425,7 @@ TEST(TransformOperationTest, NonCommutativeRotations) {
   gfx::Transform blended_transform =
       operations_to.Blend(operations_from, max_progress).Apply();
   gfx::Point3F blended_point(0.9f, 0.9f, 0.0f);
-  blended_transform.TransformPoint(&blended_point);
+  blended_point = blended_transform.MapPoint(blended_point);
   gfx::BoxF expanded_bounds = bounds;
   expanded_bounds.ExpandTo(blended_point);
   EXPECT_EQ(bounds.ToString(), expanded_bounds.ToString());

@@ -127,9 +127,8 @@ void DeviceDataManager::ApplyTouchTransformer(int touch_device_id,
                                               float* y) {
   auto iter = touch_map_.find(touch_device_id);
   if (iter != touch_map_.end()) {
-    gfx::Point3F point(*x, *y, 0.0);
     const gfx::Transform& trans = iter->second.transform;
-    trans.TransformPoint(&point);
+    gfx::PointF point = trans.MapPoint(gfx::PointF(*x, *y));
     *x = point.x();
     *y = point.y();
   }

@@ -141,10 +141,8 @@ void DeJellyState::UpdateSharedQuadState(
   } else {
     // Calculate the delta of point (0, 0) from the previous frame.
     gfx::Transform previous_transform = found->second;
-    gfx::PointF new_point(0, 0);
-    transform.TransformPoint(&new_point);
-    gfx::PointF old_point(0, 0);
-    previous_transform.TransformPoint(&old_point);
+    gfx::PointF new_point = transform.MapPoint(gfx::PointF(0, 0));
+    gfx::PointF old_point = previous_transform.MapPoint(gfx::PointF(0, 0));
     delta_y = old_point.y() - new_point.y();
   }
 

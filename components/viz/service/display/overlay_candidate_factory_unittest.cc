@@ -175,9 +175,9 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   transform_y_flipped.Scale(1, -1);
   EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform),
             transform_y_flipped);
-  gfx::PointF display_rect_origin = candidate.display_rect.origin();
-  absl::get<gfx::Transform>(candidate.transform)
-      .TransformPoint(&display_rect_origin);
+  gfx::PointF display_rect_origin =
+      absl::get<gfx::Transform>(candidate.transform)
+          .MapPoint(candidate.display_rect.origin());
   EXPECT_EQ(display_rect_origin, gfx::PointF(0, 1));
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
 }

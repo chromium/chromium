@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   expected.Scale(device_scale_factor);
   gfx::Transform actual = filter->GetIntersectionState()->main_frame_transform;
   const absl::optional<gfx::PointF> viewport_offset_source_point =
-      actual.TransformPointReverse(gfx::PointF());
+      actual.InverseMapPoint(gfx::PointF());
   ASSERT_TRUE(viewport_offset_source_point.has_value());
   const gfx::Vector2dF viewport_offset =
       gfx::PointF() - viewport_offset_source_point.value();

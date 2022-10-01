@@ -473,7 +473,7 @@ void Action::UpdateTouchDownPositions() {
     point.Scale(scale);
     const auto root_point_pixel = point.ToString();
     if (touch_injector_->rotation_transform())
-      touch_injector_->rotation_transform()->TransformPoint(&point);
+      point = touch_injector_->rotation_transform()->MapPoint(point);
     touch_down_positions_.emplace_back(point);
 
     VLOG(1) << "Calculate touch position for location at index " << i

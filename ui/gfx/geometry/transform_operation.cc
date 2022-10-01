@@ -360,10 +360,8 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
 
   *box = gfx::BoxF();
 
-  gfx::Point3F point_rotated_from = point;
-  from_transform.TransformPoint(&point_rotated_from);
-  gfx::Point3F point_rotated_to = point;
-  to_transform.TransformPoint(&point_rotated_to);
+  gfx::Point3F point_rotated_from = from_transform.MapPoint(point);
+  gfx::Point3F point_rotated_to = to_transform.MapPoint(point);
 
   box->set_origin(point_rotated_from);
   box->ExpandTo(point_rotated_to);
@@ -435,8 +433,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
 
     gfx::Transform rotation;
     rotation.RotateAbout(axis, gfx::RadToDeg(radians));
-    gfx::Point3F rotated = point;
-    rotation.TransformPoint(&rotated);
+    gfx::Point3F rotated = rotation.MapPoint(point);
 
     box->ExpandTo(rotated);
   }

@@ -216,8 +216,7 @@ gfx::Point3F VrController::GetPointerStart() const {
   gfx::Transform pointer_transform;
   GetPointerTransform(&pointer_transform);
 
-  gfx::Point3F pointer_position;
-  pointer_transform.TransformPoint(&pointer_position);
+  gfx::Point3F pointer_position = pointer_transform.MapPoint(gfx::Point3F());
   return pointer_position;
 }
 
@@ -255,11 +254,8 @@ bool VrController::IsConnected() {
 
 void VrController::UpdateState(const gfx::Transform& head_pose) {
   gfx::Transform inv_pose;
-  if (head_pose.GetInverse(&inv_pose)) {
-    auto current_head_offset = gfx::Point3F();
-    inv_pose.TransformPoint(&current_head_offset);
-    head_offset_ = current_head_offset;
-  }
+  if (head_pose.GetInverse(&inv_pose))
+    head_offset_ = inv_pose.MapPoint(gfx::Point3F());
 
   gvr::Mat4f gvr_head_pose;
   TransformToGvrMat(head_pose, &gvr_head_pose);

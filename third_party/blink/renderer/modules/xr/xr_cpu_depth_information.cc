@@ -92,16 +92,13 @@ float XRCPUDepthInformation::getDepthInMeters(
     return 0.0;
   }
 
-  // Those coordinates are actually `norm_view_coordinates` before a series of
-  // transforms is applied, but they are modified in-place, so the name's in
-  // anticipation of those transforms.
-  gfx::Point3F depth_coordinates(x, y, 0.0);
+  gfx::PointF norm_view_coordinates(x, y);
 
-  // `norm_view_coordinates` becomes `norm_depth_coordinates`:
-  norm_depth_buffer_from_norm_view_.TransformPoint(&depth_coordinates);
+  gfx::PointF norm_depth_coordinates =
+      norm_depth_buffer_from_norm_view_.MapPoint(norm_view_coordinates);
 
-  // `norm_depth_coordinates` becomes `depth_coordinates`:
-  depth_coordinates.Scale(size_.width(), size_.height(), 1.0);
+  gfx::PointF depth_coordinates =
+      gfx::ScalePoint(norm_depth_coordinates, size_.width(), size_.height());
 
   uint32_t column = base::clamp<uint32_t>(
       static_cast<uint32_t>(depth_coordinates.x()), 0, size_.width() - 1);

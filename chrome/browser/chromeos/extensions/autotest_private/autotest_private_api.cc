@@ -842,7 +842,7 @@ bool IsFrameVisible(views::Widget* widget) {
 }
 
 void ConvertPointToHost(aura::Window* root_window, gfx::PointF* location) {
-  root_window->GetHost()->GetRootTransform().TransformPoint(location);
+  *location = root_window->GetHost()->GetRootTransform().MapPoint(*location);
 }
 
 int GetMouseEventFlags(api::autotest_private::MouseButton button) {

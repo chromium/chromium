@@ -250,12 +250,9 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
   // anchor for contextual nudges, and their bounds are set relative to the
   // handle bounds without transform (for example, for in-app to home nudge both
   // drag handle and the nudge will have non-indentity, identical transforms).
-  gfx::PointF origin_in_screen = gfx::PointF(anchor_bounds.origin());
-  if (const absl::optional<gfx::PointF> transformed_point =
-          layer()->transform().TransformPointReverse(origin_in_screen);
-      transformed_point.has_value()) {
-    origin_in_screen = transformed_point.value();
-  }
+  gfx::PointF origin(anchor_bounds.origin());
+  gfx::PointF origin_in_screen =
+      layer()->transform().InverseMapPoint(origin).value_or(origin);
 
   // If the parent widget has a transform set, it should be ignored as well (the
   // transform is set during shelf widget animations, and will animate to

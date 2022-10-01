@@ -29,9 +29,8 @@ TEST(TransformUtilTest, GetScaleTransform) {
   const int kOffset = 10;
   for (int sign_x = -1; sign_x <= 1; ++sign_x) {
     for (int sign_y = -1; sign_y <= 1; ++sign_y) {
-      Point test(kAnchor.x() + sign_x * kOffset,
-                 kAnchor.y() + sign_y * kOffset);
-      scale.TransformPoint(&test);
+      Point test = scale.MapPoint(Point(kAnchor.x() + sign_x * kOffset,
+                                        kAnchor.y() + sign_y * kOffset));
 
       EXPECT_EQ(Point(kAnchor.x() + sign_x * kOffset * kScale,
                       kAnchor.y() + sign_y * kOffset * kScale),
@@ -145,22 +144,16 @@ TEST(TransformUtilTest, SnapCompositeTransform) {
   bool snapped = SnapTransform(&result, transform, viewport);
   ASSERT_TRUE(snapped) << "Viewport should snap all components.";
 
-  Point3F point;
-
-  point = Point3F(PointF(viewport.origin()));
-  result.TransformPoint(&point);
+  Point3F point = result.MapPoint(Point3F(PointF(viewport.origin())));
   EXPECT_EQ(Point3F(31.f, 20.f, 10.f), point) << "Transformed origin";
 
-  point = Point3F(PointF(viewport.top_right()));
-  result.TransformPoint(&point);
+  point = result.MapPoint(Point3F(PointF(viewport.top_right())));
   EXPECT_EQ(Point3F(31.f, 1940.f, 10.f), point) << "Transformed top-right";
 
-  point = Point3F(PointF(viewport.bottom_left()));
-  result.TransformPoint(&point);
+  point = result.MapPoint(Point3F(PointF(viewport.bottom_left())));
   EXPECT_EQ(Point3F(-3569.f, 20.f, 10.f), point) << "Transformed bottom-left";
 
-  point = Point3F(PointF(viewport.bottom_right()));
-  result.TransformPoint(&point);
+  point = result.MapPoint(Point3F(PointF(viewport.bottom_right())));
   EXPECT_EQ(Point3F(-3569.f, 1940.f, 10.f), point)
       << "Transformed bottom-right";
 }
@@ -185,14 +178,10 @@ TEST(TransformUtilTest, TransformAboutPivot) {
   transform.Scale(3, 4);
   transform = TransformAboutPivot(PointF(7, 8), transform);
 
-  Point point;
-
-  point = Point(0, 0);
-  transform.TransformPoint(&point);
+  Point point = transform.MapPoint(Point(0, 0));
   EXPECT_EQ(Point(-14, -24).ToString(), point.ToString());
 
-  point = Point(1, 1);
-  transform.TransformPoint(&point);
+  point = transform.MapPoint(Point(1, 1));
   EXPECT_EQ(Point(-11, -20).ToString(), point.ToString());
 }
 

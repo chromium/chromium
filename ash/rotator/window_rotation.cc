@@ -74,9 +74,9 @@ void WindowRotation::InitTransform(ui::Layer* layer) {
   }
 
   // Convert points to world space.
-  current_transform.TransformPoint(&old_pivot);
-  current_transform.TransformPoint(&new_pivot);
-  current_transform.TransformPoint(&new_origin_);
+  old_pivot = current_transform.MapPoint(old_pivot);
+  new_pivot = current_transform.MapPoint(new_pivot);
+  new_origin_ = current_transform.MapPoint(new_origin_);
 
   std::unique_ptr<ui::InterpolatedTransform> rotation =
       std::make_unique<ui::InterpolatedTransformAboutPivot>(

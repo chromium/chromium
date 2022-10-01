@@ -9345,8 +9345,7 @@ void CheckLayerScrollOffset(LayerImpl* layer, gfx::Point scroll_offset) {
   const gfx::Transform target_space_transform =
       layer->draw_properties().target_space_transform;
   EXPECT_TRUE(target_space_transform.IsScaleOrTranslation());
-  gfx::Point translated_point;
-  target_space_transform.TransformPoint(&translated_point);
+  gfx::Point translated_point = target_space_transform.MapPoint(gfx::Point());
   EXPECT_EQ(-scroll_offset.x(), translated_point.x());
   EXPECT_EQ(-scroll_offset.y(), translated_point.y());
 }

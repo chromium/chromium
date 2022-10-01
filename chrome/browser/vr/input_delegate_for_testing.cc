@@ -29,7 +29,7 @@ void SetOriginAndTransform(vr::ControllerModel* model) {
       gfx::Transform(gfx::Quaternion(kForwardVector, model->laser_direction)));
   model->transform = mat;
   model->laser_origin = kLaserOriginOffset;
-  mat.TransformPoint(&model->laser_origin);
+  model->laser_origin = mat.MapPoint(model->laser_origin);
 }
 
 }  // namespace
