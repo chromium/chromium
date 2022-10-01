@@ -14,7 +14,7 @@ namespace features {
 
 {% for feature in features %}
 {% if feature.base_feature %}
-BLINK_COMMON_EXPORT extern const base::Feature k{{feature.base_feature}};
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(k{{feature.base_feature}});
 {% endif %}
 {% endfor %}
 
