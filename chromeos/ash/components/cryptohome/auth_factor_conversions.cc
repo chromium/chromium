@@ -15,6 +15,8 @@ namespace cryptohome {
 
 namespace {
 
+using ::ash::ChallengeResponseKey;
+
 user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
   switch (type) {
     case AuthFactorType::kUnknownLegacy:
@@ -28,8 +30,9 @@ user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
       return user_data_auth::AUTH_FACTOR_TYPE_CRYPTOHOME_RECOVERY;
     case AuthFactorType::kKiosk:
       return user_data_auth::AUTH_FACTOR_TYPE_KIOSK;
-    case AuthFactorType::kLegacyFingerprint:
     case AuthFactorType::kSmartCard:
+      return user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD;
+    case AuthFactorType::kLegacyFingerprint:
       NOTIMPLEMENTED() << "Auth factor " << static_cast<int>(type)
                        << " is not implemented in cryptohome yet.";
       return user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED;
@@ -51,10 +54,29 @@ AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type) {
       return AuthFactorType::kRecovery;
     case user_data_auth::AUTH_FACTOR_TYPE_KIOSK:
       return AuthFactorType::kKiosk;
+    case user_data_auth::AUTH_FACTOR_TYPE_SMART_CARD:
+      return AuthFactorType::kSmartCard;
     default:
       NOTREACHED() << "Unknown auth factor type " << static_cast<int>(type);
       return AuthFactorType::kUnknownLegacy;
   }
+}
+
+user_data_auth::SmartCardSignatureAlgorithm
+ChallengeSignatureAlgorithmToProtoEnum(
+    ChallengeResponseKey::SignatureAlgorithm algorithm) {
+  using Algorithm = ChallengeResponseKey::SignatureAlgorithm;
+  switch (algorithm) {
+    case Algorithm::kRsassaPkcs1V15Sha1:
+      return user_data_auth::CHALLENGE_RSASSA_PKCS1_V1_5_SHA1;
+    case Algorithm::kRsassaPkcs1V15Sha256:
+      return user_data_auth::CHALLENGE_RSASSA_PKCS1_V1_5_SHA256;
+    case Algorithm::kRsassaPkcs1V15Sha384:
+      return user_data_auth::CHALLENGE_RSASSA_PKCS1_V1_5_SHA384;
+    case Algorithm::kRsassaPkcs1V15Sha512:
+      return user_data_auth::CHALLENGE_RSASSA_PKCS1_V1_5_SHA512;
+  }
+  NOTREACHED();
 }
 
 void SerializeAuthFactor(const AuthFactor& factor,
@@ -78,11 +100,14 @@ void SerializeAuthFactor(const AuthFactor& factor,
     case AuthFactorType::kKiosk:
       out_proto->mutable_kiosk_metadata();
       break;
+    case AuthFactorType::kSmartCard:
+      out_proto->mutable_smart_card_metadata()->set_public_key_spki_der(
+          factor.GetSmartCardMetadata().public_key_spki_der);
+      break;
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";
       break;
     case AuthFactorType::kLegacyFingerprint:
-    case AuthFactorType::kSmartCard:
       NOTIMPLEMENTED() << "Auth factor "
                        << static_cast<int>(factor.ref().type())
                        << " is not implemented in cryptohome yet.";
@@ -117,11 +142,21 @@ void SerializeAuthInput(const AuthFactorRef& ref,
       // Just create an input.
       out_proto->mutable_kiosk_input();
       break;
+    case AuthFactorType::kSmartCard: {
+      auto* proto_input = out_proto->mutable_smart_card_input();
+      proto_input->set_key_delegate_dbus_service_name(
+          auth_input.GetSmartCardInput().key_delegate_dbus_service_name);
+      for (auto algorithm :
+           auth_input.GetSmartCardInput().signature_algorithms) {
+        proto_input->add_signature_algorithms(
+            ChallengeSignatureAlgorithmToProtoEnum(algorithm));
+      }
+      break;
+    }
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Unknown factor type should never be serialized";
       break;
     case AuthFactorType::kLegacyFingerprint:
-    case AuthFactorType::kSmartCard:
       NOTIMPLEMENTED() << "Auth factor "
                        << static_cast<int>(auth_input.GetType())
                        << " is not implemented in cryptohome yet.";
@@ -156,11 +191,19 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
       return AuthFactor(std::move(ref), std::move(common_metadata),
                         std::move(pin_status));
     }
+    case AuthFactorType::kSmartCard: {
+      DCHECK(proto.has_smart_card_metadata());
+      SmartCardMetadata smart_card_metadata;
+      smart_card_metadata.public_key_spki_der =
+          proto.smart_card_metadata().public_key_spki_der();
+      return AuthFactor(std::move(ref), std::move(common_metadata),
+                        std::move(smart_card_metadata));
+    }
+
     case AuthFactorType::kUnknownLegacy:
       LOG(FATAL) << "Should already be handled above";
       __builtin_unreachable();
     case AuthFactorType::kLegacyFingerprint:
-    case AuthFactorType::kSmartCard:
       NOTIMPLEMENTED() << "Auth factor " << static_cast<int>(type)
                        << " is not implemented in cryptohome yet.";
       return AuthFactor(std::move(ref), std::move(common_metadata));

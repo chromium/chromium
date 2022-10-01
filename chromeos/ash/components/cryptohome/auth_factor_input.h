@@ -6,12 +6,16 @@
 #define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
+#include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
+
+using ::ash::ChallengeResponseKey;
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
  public:
@@ -33,8 +37,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
   };
 
   struct SmartCard {
-    // (b/241259026): introdude proper enum instead of int.
-    int signature_algorithm;
+    explicit SmartCard();
+    SmartCard(const SmartCard& other);
+    SmartCard& operator=(const SmartCard&);
+    ~SmartCard();
+    std::vector<ChallengeResponseKey::SignatureAlgorithm> signature_algorithms;
     std::string key_delegate_dbus_service_name;
   };
 
