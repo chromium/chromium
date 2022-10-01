@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
@@ -33,50 +32,16 @@ double ComputeOffset(LayoutBox* subject,
     return point.y() - source_element->ClientTopNoLayout();
 }
 
-bool IsBlockDirection(ScrollTimeline::ScrollDirection direction,
-                      WritingMode writing_mode) {
-  using ScrollDirection = ScrollTimeline::ScrollDirection;
-  switch (direction) {
-    case ScrollDirection::kBlock:
-      return true;
-    case ScrollDirection::kInline:
-      return false;
-    case ScrollDirection::kHorizontal:
-      return !blink::IsHorizontalWritingMode(writing_mode);
-    case ScrollDirection::kVertical:
-      return blink::IsHorizontalWritingMode(writing_mode);
-  }
-}
-
-// ResolveAuto replaces any value 'auto' with the value of the corresponding
-// scroll-padding-* property. Note that 'auto' is a valid value for
-// scroll-padding-*, and therefore 'auto' (the "pointer" to the scroll-padding
-// value) may resolve to 'auto' (the actual value of the scroll-padding
-// property).
-//
-// https://drafts.csswg.org/scroll-animations-1/#valdef-view-timeline-inset-auto
-ViewTimeline::Inset ResolveAuto(const ViewTimeline::Inset& inset,
-                                Element& source,
-                                ScrollTimeline::ScrollDirection direction) {
-  const ComputedStyle* style = source.GetComputedStyle();
-  if (!style)
-    return inset;
-
-  const Length& start = inset.start_side;
-  const Length& end = inset.end_side;
-
-  if (IsBlockDirection(direction, style->GetWritingMode())) {
-    return ViewTimeline::Inset(
-        start.IsAuto() ? style->ScrollPaddingBlockStart() : start,
-        end.IsAuto() ? style->ScrollPaddingBlockEnd() : end);
-  }
-  return ViewTimeline::Inset(
-      start.IsAuto() ? style->ScrollPaddingInlineStart() : start,
-      end.IsAuto() ? style->ScrollPaddingInlineEnd() : end);
-}
-
-LayoutUnit ComputeInset(const Length& inset, LayoutUnit viewport_size) {
-  return MinimumValueForLength(inset, viewport_size);
+double ComputeInset(const Length& inset, double viewport_size) {
+  if (inset.IsFixed())
+    return inset.Pixels();
+  if (inset.IsPercent())
+    return (viewport_size * (inset.Percent() / 100.0));
+  if (inset.IsCalculated())
+    return inset.GetCalculationValue().Evaluate(ClampTo<float>(viewport_size));
+  // TODO(crbug.com/1344151): Support 'auto'.
+  DCHECK(inset.IsAuto());
+  return 0;
 }
 
 }  // end namespace
@@ -147,29 +112,24 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
   LayoutBox* source_layout = source->GetLayoutBox();
   DCHECK(source_layout);
 
-  LayoutUnit viewport_size;
-
   target_offset_ =
       ComputeOffset(layout_box, source_layout, physical_orientation);
   if (physical_orientation == kHorizontalScroll) {
     target_size_ = layout_box->Size().Width().ToDouble();
-    viewport_size = scrollable_area->LayoutContentRect().Width();
+    viewport_size_ = scrollable_area->LayoutContentRect().Width();
   } else {
     target_size_ = layout_box->Size().Height().ToDouble();
-    viewport_size = scrollable_area->LayoutContentRect().Height();
+    viewport_size_ = scrollable_area->LayoutContentRect().Height();
   }
 
-  viewport_size_ = viewport_size.ToDouble();
-
-  Inset inset = ResolveAuto(inset_, *source, GetOrientation());
   // Note that the end_side_inset is used to adjust the start offset,
   // and the start_side_inset is used to adjust the end offset.
   // This is because "start side" refers to logical start side [1] of the
   // source box, where as "start offset" refers to the start of the timeline,
   // and similarly for end side/offset.
   // [1] https://drafts.csswg.org/css-writing-modes-4/#css-start
-  end_side_inset_ = ComputeInset(inset.end_side, viewport_size);
-  start_side_inset_ = ComputeInset(inset.start_side, viewport_size);
+  end_side_inset_ = ComputeInset(inset_.end_side, viewport_size_);
+  start_side_inset_ = ComputeInset(inset_.start_side, viewport_size_);
 
   // TODO(crbug.com/1329159): If any of the sizes change we need to invalidate
   // timing normalization.
