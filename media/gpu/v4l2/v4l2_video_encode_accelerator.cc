@@ -1171,8 +1171,14 @@ void V4L2VideoEncodeAccelerator::Enqueue() {
     DCHECK(!output_queue_->IsStreaming() && !input_queue_->IsStreaming());
     // When VIDIOC_STREAMON can be executed in OUTPUT queue, it is fine to call
     // STREAMON in CAPTURE queue.
-    output_queue_->Streamon();
-    input_queue_->Streamon();
+    if (!output_queue_->Streamon()) {
+      NOTIFY_ERROR(kPlatformFailureError);
+      return;
+    }
+    if (!input_queue_->Streamon()) {
+      NOTIFY_ERROR(kPlatformFailureError);
+      return;
+    }
   }
 }
 
@@ -1400,13 +1406,22 @@ bool V4L2VideoEncodeAccelerator::EnqueueInputRecord(
             reinterpret_cast<std::intptr_t>(frame->data(0));
         user_ptrs[i] = writable_buffer.data() + plane_offset;
       }
-      std::move(input_buf).QueueUserPtr(std::move(user_ptrs));
+
+      if (!std::move(input_buf).QueueUserPtr(std::move(user_ptrs))) {
+        VPLOGF(1) << "Failed to queue a USRPTR buffer to input queue";
+        NOTIFY_ERROR(kPlatformFailureError);
+        return false;
+      }
       frame->AddDestructionObserver(base::BindOnce([](std::vector<uint8_t>) {},
                                                    std::move(writable_buffer)));
       break;
     }
     case V4L2_MEMORY_DMABUF: {
-      std::move(input_buf).QueueDMABuf(gmb_handle.native_pixmap_handle.planes);
+      if (!std::move(input_buf).QueueDMABuf(
+              gmb_handle.native_pixmap_handle.planes)) {
+        VPLOGF(1) << "Failed queue a DMABUF buffer to input queue";
+        return false;
+      }
       // Keep |gmb_handle| alive as long as |frame| is alive so that fds passed
       // to the driver are valid during encoding.
       frame->AddDestructionObserver(base::BindOnce(
@@ -1999,7 +2014,9 @@ void V4L2VideoEncodeAccelerator::DestroyInputBuffers() {
     return;
 
   DCHECK(!input_queue_->IsStreaming());
-  input_queue_->DeallocateBuffers();
+  if (!input_queue_->DeallocateBuffers())
+    VLOGF(1) << "Failed to deallocate V4L2 input buffers";
+
   input_buffer_map_.clear();
 }
 
@@ -2011,7 +2028,8 @@ void V4L2VideoEncodeAccelerator::DestroyOutputBuffers() {
     return;
 
   DCHECK(!output_queue_->IsStreaming());
-  output_queue_->DeallocateBuffers();
+  if (!output_queue_->DeallocateBuffers())
+    VLOGF(1) << "Failed to deallocate V4L2 output buffers";
 }
 
 }  // namespace media
