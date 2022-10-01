@@ -10,6 +10,7 @@ static_library("browser_sync") {
     "active_devices_provider_impl.cc",
     "active_devices_provider_impl.h",
     "browser_sync_client.h",
+    "browser_sync_switches.cc",
     "browser_sync_switches.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",

@@ -10,6 +10,7 @@ static_library("send_tab_to_self") {
   sources = [
     "entry_point_display_reason.cc",
     "entry_point_display_reason.h",
+    "features.cc",
     "features.h",
     "metrics_util.cc",
     "metrics_util.h",
