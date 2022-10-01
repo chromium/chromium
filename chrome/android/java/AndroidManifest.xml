@@ -194,6 +194,10 @@ by a child template that "extends" this file.
         android:enableOnBackInvokedCallback="true"
         {% block extra_application_attributes %}{% endblock %}>
 
+        {% if channel in ['canary', 'dev', 'default'] %}
+        <profileable android:shell="true"/>
+        {% endif %}
+
       {% macro application_definitions() %}
         <!-- Note: All activities directly or indirectly derived from ChromeActivity
              must specify android:hardwareAccelerated="false".
