@@ -34,8 +34,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.back_press.BackPressManager;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
-import org.chromium.chrome.browser.bookmarks.BookmarkBridgeJni;
+import org.chromium.chrome.browser.bookmarks.BookmarkNativesMockRule;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -105,6 +104,8 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+    @Rule
+    public BookmarkNativesMockRule mBookmarkNativesMockRule = new BookmarkNativesMockRule();
 
     private TabModelSelector mTabModelSelector;
     private ViewGroup mContainerView;
@@ -207,7 +208,6 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
 
         mJniMocker.mock(FaviconHelperJni.TEST_HOOKS, Mockito.mock(FaviconHelper.Natives.class));
-        mJniMocker.mock(BookmarkBridgeJni.TEST_HOOKS, Mockito.mock(BookmarkBridge.Natives.class));
         mJniMocker.mock(
                 FeedServiceBridgeJni.TEST_HOOKS, Mockito.mock(FeedServiceBridge.Natives.class));
         mJniMocker.mock(CookieControlsServiceBridgeJni.TEST_HOOKS,

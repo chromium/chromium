@@ -49,7 +49,7 @@ import java.util.List;
  * Provides the communication channel for Android to fetch and manipulate the
  * bookmark model stored in native.
  */
-public class BookmarkBridge {
+class BookmarkBridge {
     private final Profile mProfile;
     private boolean mIsDestroyed;
     private boolean mIsDoingExtensiveChanges;
