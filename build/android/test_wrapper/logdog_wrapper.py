@@ -28,8 +28,6 @@ from py_utils import tempfile_ext
 PROJECT = 'chromium'
 OUTPUT = 'logdog'
 COORDINATOR_HOST = 'luci-logdog.appspot.com'
-SERVICE_ACCOUNT_JSON = ('/creds/service_accounts'
-                        '/service-account-luci-logdog-publisher.json')
 LOGDOG_TERMINATION_TIMEOUT = 30
 
 
@@ -110,7 +108,6 @@ def main():
           '-project', PROJECT,
           '-output', OUTPUT,
           '-prefix', prefix,
-          '--service-account-json', SERVICE_ACCOUNT_JSON,
           '-coordinator-host', COORDINATOR_HOST,
           'serve',
           '-streamserver-uri', streamserver_uri]
