@@ -144,18 +144,9 @@ class LargestContentfulPaintHandler {
   const ContentfulPaintTimingInfo& MainFrameLargestContentfulPaint() const {
     return main_frame_contentful_paint_.MergeTextAndImageTiming();
   }
-  const ContentfulPaintTimingInfo& SubframesLargestContentfulPaint() const {
-    return subframe_contentful_paint_.MergeTextAndImageTiming();
-  }
   const ContentfulPaintTimingInfo& CrossSiteSubframesLargestContentfulPaint()
       const {
     return cross_site_subframe_contentful_paint_.MergeTextAndImageTiming();
-  }
-  const ContentfulPaintTimingInfo& MainFrameLargestImagePaint() const {
-    return main_frame_contentful_paint_.Image();
-  }
-  const ContentfulPaintTimingInfo& MainFrameLargestTextPaint() const {
-    return main_frame_contentful_paint_.Text();
   }
 
   // We merge the candidates from main frame and subframe to get the largest
