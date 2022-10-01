@@ -109,6 +109,13 @@ HomeButton::HomeButton(Shelf* shelf)
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   layer()->SetName("shelf/Homebutton");
+
+  if (features::IsHomeButtonWithTextEnabled()) {
+    // Directly shows the nudge label if the text-in-shelf feature is enabled.
+    CreateNudgeLabel();
+    label_container_->SetVisible(true);
+    shelf_->shelf_layout_manager()->LayoutShelf(false);
+  }
 }
 
 HomeButton::~HomeButton() = default;
@@ -180,6 +187,10 @@ void HomeButton::ButtonPressed(views::Button* sender,
 
   // If the home button is pressed, fade out the nudge label if it is showing.
   if (label_container_) {
+    // The label shouldn't be removed if the text-in-shelf feature is enabled.
+    if (features::IsHomeButtonWithTextEnabled())
+      return;
+
     if (!label_container_->GetVisible()) {
       // If the nudge label is not visible and will not be animating, directly
       // remove them as the nudge won't be showing anymore.
@@ -263,6 +274,11 @@ bool HomeButton::CanShowNudgeLabel() const {
 }
 
 void HomeButton::StartNudgeAnimation() {
+  // Don't animate the label as it is already visible when text-in-shelf is
+  // enabled.
+  if (features::IsHomeButtonWithTextEnabled())
+    return;
+
   // Ensure any in-progress nudge animations are completed before initializing
   // a new nudge animation, and creating a rippler layer. Nudge animation
   // callbacks may otherwise delete ripple layer mid new animation set up (and
@@ -371,6 +387,8 @@ void HomeButton::OnThemeChanged() {
         AshColorProvider::Get()->GetControlsLayerColor(
             AshColorProvider::ControlsLayerType::
                 kControlBackgroundColorInactive));
+    nudge_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
   SchedulePaint();
 }

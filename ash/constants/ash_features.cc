@@ -1081,6 +1081,11 @@ BASE_FEATURE(kHoldingSpaceSuggestions,
              "HoldingSpaceSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a call-to-action label beside the home button.
+BASE_FEATURE(kHomeButtonWithText,
+             "HomeButtonWithText",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Control whether the hotspot tethering is enabled. When enabled, it will allow
 // the Chromebook to share its cellular internet connection to other devices.
 BASE_FEATURE(kHotspot, "Hotspot", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2459,6 +2464,10 @@ bool IsHoldingSpaceRefreshEnabled() {
 
 bool IsHoldingSpaceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kHoldingSpaceSuggestions);
+}
+
+bool IsHomeButtonWithTextEnabled() {
+  return base::FeatureList::IsEnabled(kHomeButtonWithText);
 }
 
 bool IsHostnameSettingEnabled() {

@@ -294,6 +294,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHandwritingGestureEditing);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHandwritingLegacyRecognition);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonWithText);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kProductivityLauncherImageSearch);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLauncherItemColorSync);
@@ -674,6 +675,7 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpacePredictabilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceSuggestionsEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHotspotEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsImprovedDesksKeyboardShortcutsEnabled();
