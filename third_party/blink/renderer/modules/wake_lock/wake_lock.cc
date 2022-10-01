@@ -128,6 +128,14 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
                                         "The requesting page is not visible");
       return ScriptPromise();
     }
+
+    // Measure calls without transient activation as proposed in
+    // https://github.com/w3c/screen-wake-lock/pull/351.
+    if (type == V8WakeLockType::Enum::kScreen &&
+        !LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+      UseCounter::Count(
+          context, WebFeature::kWakeLockAcquireScreenLockWithoutActivation);
+    }
   }
 
   // 7. Let promise be a new promise.

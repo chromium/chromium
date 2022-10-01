@@ -3683,6 +3683,7 @@ enum WebFeature {
   kPermissionsPolicyUnload = 4362,
   kServiceWorkerSkippedForSubresourceLoad = 4363,
   kClientHintsPrefersReducedMotion = 4364,
+  kWakeLockAcquireScreenLockWithoutActivation = 4365,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
