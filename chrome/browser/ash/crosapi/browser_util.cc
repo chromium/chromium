@@ -793,9 +793,9 @@ void RecordDataVer(PrefService* local_state,
                    const std::string& user_id_hash,
                    const base::Version& version) {
   DCHECK(version.IsValid());
-  DictionaryPrefUpdate update(local_state, kDataVerPref);
-  base::Value* dict = update.Get();
-  dict->SetStringKey(user_id_hash, version.GetString());
+  ScopedDictPrefUpdate update(local_state, kDataVerPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Set(user_id_hash, version.GetString());
 }
 
 bool IsDataWipeRequired(PrefService* local_state,
@@ -963,31 +963,31 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
                                          const std::string& user_id_hash,
                                          MigrationMode mode) {
-  DictionaryPrefUpdate update(local_state,
+  ScopedDictPrefUpdate update(local_state,
                               kProfileMigrationCompletedForUserPref);
-  update.Get()->SetBoolKey(user_id_hash, true);
+  update->Set(user_id_hash, true);
 
   if (mode == MigrationMode::kMove) {
-    DictionaryPrefUpdate move_update(local_state,
+    ScopedDictPrefUpdate move_update(local_state,
                                      kProfileMoveMigrationCompletedForUserPref);
-    move_update.Get()->SetBoolKey(user_id_hash, true);
+    move_update->Set(user_id_hash, true);
   }
 }
 
 void ClearProfileMigrationCompletedForUser(PrefService* local_state,
                                            const std::string& user_id_hash) {
   {
-    DictionaryPrefUpdate update(local_state,
+    ScopedDictPrefUpdate update(local_state,
                                 kProfileMigrationCompletedForUserPref);
-    base::Value* dict = update.Get();
-    dict->RemoveKey(user_id_hash);
+    base::Value::Dict& dict = update.Get();
+    dict.Remove(user_id_hash);
   }
 
   {
-    DictionaryPrefUpdate update(local_state,
+    ScopedDictPrefUpdate update(local_state,
                                 kProfileMoveMigrationCompletedForUserPref);
-    base::Value* dict = update.Get();
-    dict->RemoveKey(user_id_hash);
+    base::Value::Dict& dict = update.Get();
+    dict.Remove(user_id_hash);
   }
 }
 

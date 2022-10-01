@@ -176,9 +176,9 @@ MoveMigrator::ResumeStep MoveMigrator::GetResumeStep(
 void MoveMigrator::SetResumeStep(PrefService* local_state,
                                  const std::string& user_id_hash,
                                  const ResumeStep step) {
-  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeStepPref);
-  base::Value* dict = update.Get();
-  dict->SetKey(user_id_hash, base::Value(static_cast<int>(step)));
+  ScopedDictPrefUpdate update(local_state, kMoveMigrationResumeStepPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Set(user_id_hash, static_cast<int>(step));
   local_state->CommitPendingWrite();
 }
 
@@ -189,26 +189,26 @@ int MoveMigrator::UpdateResumeAttemptCountForUser(
                   .FindIntByDottedPath(user_id_hash)
                   .value_or(0);
   count += 1;
-  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
-  base::Value* dict = update.Get();
-  dict->SetIntKey(user_id_hash, count);
+  ScopedDictPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Set(user_id_hash, count);
   return count;
 }
 
 void MoveMigrator::ClearResumeAttemptCountForUser(
     PrefService* local_state,
     const std::string& user_id_hash) {
-  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
-  base::Value* dict = update.Get();
-  dict->RemoveKey(user_id_hash);
+  ScopedDictPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Remove(user_id_hash);
 }
 
 // static
 void MoveMigrator::ClearResumeStepForUser(PrefService* local_state,
                                           const std::string& user_id_hash) {
-  DictionaryPrefUpdate update(local_state, kMoveMigrationResumeStepPref);
-  base::Value* dict = update.Get();
-  dict->RemoveKey(user_id_hash);
+  ScopedDictPrefUpdate update(local_state, kMoveMigrationResumeStepPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Remove(user_id_hash);
 }
 
 // static

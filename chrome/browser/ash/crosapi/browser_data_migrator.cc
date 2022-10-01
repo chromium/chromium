@@ -481,9 +481,9 @@ void BrowserDataMigratorImpl::UpdateMigrationAttemptCountForUser(
     const std::string& user_id_hash) {
   int count = GetMigrationAttemptCountForUser(local_state, user_id_hash);
   count += 1;
-  DictionaryPrefUpdate update(local_state, kMigrationAttemptCountPref);
-  base::Value* dict = update.Get();
-  dict->SetIntKey(user_id_hash, count);
+  ScopedDictPrefUpdate update(local_state, kMigrationAttemptCountPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Set(user_id_hash, count);
 }
 
 // static
@@ -499,9 +499,9 @@ int BrowserDataMigratorImpl::GetMigrationAttemptCountForUser(
 void BrowserDataMigratorImpl::ClearMigrationAttemptCountForUser(
     PrefService* local_state,
     const std::string& user_id_hash) {
-  DictionaryPrefUpdate update(local_state, kMigrationAttemptCountPref);
-  base::Value* dict = update.Get();
-  dict->RemoveKey(user_id_hash);
+  ScopedDictPrefUpdate update(local_state, kMigrationAttemptCountPref);
+  base::Value::Dict& dict = update.Get();
+  dict.Remove(user_id_hash);
 }
 
 }  // namespace ash
