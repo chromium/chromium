@@ -118,9 +118,9 @@ BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
              "SafeBrowsingExtensionTelemetryReportContactedHosts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kExtensionTelemetryPotentialPasswordTheft{
-    "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
+             "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",

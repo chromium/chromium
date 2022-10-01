@@ -111,7 +111,7 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
 
 // Enables collection of potential password theft data and uploads
 // telemetry reports to SB servers.
-extern const base::Feature kExtensionTelemetryPotentialPasswordTheft;
+BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 
 // Enables collection of arguments whenever an extension invokes the
 // cookies.getAll API call.

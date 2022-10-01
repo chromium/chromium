@@ -36,7 +36,7 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformPowerUserFeature);
 BASE_DECLARE_FEATURE(kContextualPageActions);
 
 // Feature flag for enabling search user segment.
-extern const base::Feature kSegmentationPlatformSearchUser;
+BASE_DECLARE_FEATURE(kSegmentationPlatformSearchUser);
 
 // Feature flag for enabling price tracking action feature.
 BASE_DECLARE_FEATURE(kContextualPageActionPriceTracking);
