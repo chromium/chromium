@@ -5916,6 +5916,21 @@
             ]
         }
     ],
+    "InstallAndroidUnwindDfm": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InstallAndroidUnwindDfm"
+                    ]
+                }
+            ]
+        }
+    ],
     "IntelVpSuperResolution": [
         {
             "platforms": [
