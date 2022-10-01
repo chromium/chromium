@@ -224,8 +224,15 @@ source_set("connections_implementation_analytics") {
     ":nearby_include_config",
     ":nearby_defines",
   ]
-  sources = [ "src/connections/implementation/analytics/analytics_recorder.cc" ]
-  public = [ "src/connections/implementation/analytics/analytics_recorder.h" ]
+  sources = [
+    "src/connections/implementation/analytics/analytics_recorder.cc",
+    "src/connections/implementation/analytics/throughput_recorder.cc",
+  ]
+  public = [
+    "src/connections/implementation/analytics/analytics_recorder.h",
+    "src/connections/implementation/analytics/packet_meta_data.h",
+    "src/connections/implementation/analytics/throughput_recorder.h",
+  ]
   public_deps = [
     ":analytics_event_logger",
     ":connections_enums_proto",
