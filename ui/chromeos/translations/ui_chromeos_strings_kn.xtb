@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">ಪಟ್ಟಿ ವೀಕ್ಷಣೆಗೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="2377590462528165447">Linux ನೊಂದಿಗೆ <ph name="NUMBER_OF_ITEMS" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="2383454254762599978">ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="2387458720915042159">ಪ್ರಾಕ್ಸಿ ಪ್ರಕಾರ ಸಂಪರ್ಕ</translation>
 <translation id="2389832672041313158">ಬರ್ಮೀಸ್/ಮ್ಯಾನ್ಮಾರ್</translation>
 <translation id="2392369802118427583">ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com ಗೆ ಹೋಗಿ...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ಬಳಸಿಕೊಂಡು ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು, ಅವುಗಳನ್ನು ಮೊದಲು Windows ಫೈಲ್‌ಗಳ ಫೋಲ್ಡರ್‌ಗೆ ನಕಲಿಸಿ.</translation>
 <translation id="3556731189587832921">ಇಂಟರ್‌ನ್ಯಾಶನಲ್ PC ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ಅನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3567221313191587603">ಫೈಲ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ನಿಮ್ಮ ಫೈಲ್‌ಗಳ ಆಫ್‌ಲೈನ್ ಪ್ರವೇಶಕ್ಕಾಗಿ ಅವುಗಳ ಮೇಲೆ <ph name="OFFLINE_CHECKBOX_NAME" /> ಟಾಗಲ್ ಮಾಡಿ.</translation>
 <translation id="357479282490346887">ಲಿಥುವಾನಿಯನ್</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">ಬಾಂಗ್ಲಾ ಫೋನೆಟಿಕ್</translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4017788180641807848">ವರ್ಕ್‌ಮ್ಯಾನ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಇಂಗ್ಲಿಷ್ (ಯುಎಸ್)</translation>
+<translation id="4019998208269143058">ತ್ವರಿತ ಫೈಲ್‌ಗಳಿಗೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="4040753847560036377">ತಪ್ಪಾದ PUK</translation>
 <translation id="4057991113334098539">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4092890906744441904">ಐರಿಷ್</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">ನಿರ್ವಾಹಕರ ನೀತಿ ಇವುಗಳನ್ನು ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ಐಟಂಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4176286497474237543">ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಿ</translation>
+<translation id="4179621117429069925">ಈ ಐಟಂ ನಿಮ್ಮ ಅನುಪಯುಕ್ತದಲ್ಲಿದೆ</translation>
 <translation id="4186579485882418952">ಆಫ್‌ಲೈನ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4193154014135846272">Google ಡಾಕ್ಯುಮೆಂಟ್‌</translation>
 <translation id="4197674956721858839">ಜಿಪ್ ಆಯ್ಕೆ</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">ದೃಢೀಕರಣ ಪ್ರಮಾಣಪತ್ರವನ್ನು ರಿಮೋಟ್ ಆಗಿ ತಿರಸ್ಕರಿಸಲಾಗಿದೆ</translation>
 <translation id="4394214039309501350">ಬಾಹ್ಯ ಲಿಂಕ್</translation>
 <translation id="4394980935660306080">ಈ ವಾರದ ಆರಂಭದಲ್ಲಿ</translation>
+<translation id="4398096759193130964">ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಅಥವಾ ಅವುಗಳನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="4401287888955153199">ಎಲ್ಲವನ್ನೂ ಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="4410695710508688828">ಬೇರ್ಪಡಿಸುವಿಕೆ ಕಾರ್ಯಾಚರಣೆ ವಿಫಲವಾಗಿದೆ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ನಿಮ್ಮ ಫೈಲ್‌ಗಳಿಗಾಗಿ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">ಹಿಂದಿ ಭಾಷೆಯ ಇನ್‌ಸ್ಕ್ರಿಪ್ಟ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="4801956050125744859">ಎರಡನ್ನೂ ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="4804827417948292437">ಆವಕಾಡೊ</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4823651846660089135">ಸಾಧನ ಓದಲು ಮಾತ್ರ ಆಗಿದೆ</translation>
 <translation id="4826849268470072925">ತಮಿಳು ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ಐಟಂಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">ಗಜಾನಿಯಾ ಹೂ</translation>
 <translation id="4943368462779413526">ಫುಟ್‌ಬಾಲ್</translation>
 <translation id="4961158930123534723">Parallels Desktop ಮೂಲಕ 1 ಫೋಲ್ಡರ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="4969785127455456148">ಆಲ್ಬಮ್</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> ಅಕ್ಷರಗಳು ಅಥವಾ ಕಡಿಮೆ ಅಕ್ಷರಗಳನ್ನು ಹೊಂದಿರುವ ಹೆಸರನ್ನು ಬಳಸಿ</translation>
 <translation id="4973970068702235170">ಝಿಪ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ, ಅನಿರೀಕ್ಷಿತ ದೋಷ: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">ಓಹ್, <ph name="FILE_NAME" /> ಇನ್ನು ಮುಂದೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವುದಿಲ್ಲ.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" /> ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="5700087501958648444">ಆಡಿಯೋ ಮಾಹಿತಿ</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ಅನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="5724172041621205163">ಪಟ್ಟಾಚೋಟೆ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಥಾಯ್</translation>
 <translation id="5756666464756035725">ಹಂಗೇರಿಯನ್ QWERTY</translation>
 <translation id="5763377084591234761">ಜರ್ಮನ್ (ಸ್ವಿಟ್ಜರ್‌ಲ್ಯಾಂಡ್)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ಆರ್ಕೈವ್</translation>
 <translation id="6321303798550928047">ಕೈ ಬೀಸುತ್ತಿರುವುದು</translation>
 <translation id="6327785803543103246">ವೆಬ್‌ ಪ್ರಾಕ್ಸಿಯ ಸ್ವಯಂಅನ್ವೇಷಣೆ</translation>
+<translation id="6337014272874260727">ತ್ವರಿತ ಫೈಲ್‌ಗಳಿಂದ ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6339145975392024142">US ಅಂತರಾಷ್ಟ್ರೀಯ (PC)</translation>
 <translation id="6346310558342052870">ಪ್ರವೇಶ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6356685157277930264">ಫೈಲ್‌ಗಳ ಪ್ರತಿಕ್ರಿಯೆ ವಿಂಡೋ</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 ಫೋಲ್ಡರ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6755827872271341378">ChromeOS Flex ಸಾಧನ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
+<translation id="6794539005637808366">ಐಟಂ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಿ ಅಥವಾ ಅದನ್ನು ಅನುಪಯುಕ್ತದ ಹೊರಗಿನ ಹೊಸ ಫೋಲ್ಡರ್‌ಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="6795884519221689054">ಪಾಂಡಾ</translation>
 <translation id="6806699711453372963">Linux ಹಂಚಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6806796368146926706">ಜಪಾನೀಸ್ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಆಲ್ಫಾನ್ಯೂಮರಿಕ್</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ಸ್ವೀಡಿಶ್</translation>
 <translation id="6990081529015358884">ನಿಮ್ಮ ಬಳಿ ಇದ್ದ ಸ್ಥಳ ಖಾಲಿಯಾಗಿದೆ</translation>
+<translation id="6993826899923627728">ಈ ಐಟಂಗಳು ನಿಮ್ಮ ಅನುಪಯುಕ್ತದಲ್ಲಿವೆ</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ಫೋಲ್ಡರ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7008426324576352165">ಅಪ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಹೆಚ್ಚಿನ ಸಂಗ್ರಹಣೆಯ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">ಝೆಕ್</translation>
 <translation id="7417453074306512035">ಇಥಿಯೋಪಿಕ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="7417705661718309329">Google ನಕ್ಷೆ</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7458955835361612701">ಯಾವುದೇ ಇತ್ತೀಚಿನ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="7460898608667578234">ಉಕ್ರೇನಿಯನ್</translation>
 <translation id="7469894403370665791">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಈ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Google Photos ಅನ್ನು ಸುಲಭವಾಗಿ ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7663224033570512922">ಹಿಂದಿ</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="7693909743393669729">ಡ್ರೈವ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುವುದರಿಂದ ಅದರಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ ಹಾಗೂ ಗೋಚರಿಸದ ವಿಭಾಗಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಎಲ್ಲಾ ವಿಭಾಗಗಳನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="76959938259365003">ಅನುಪಯುಕ್ತವನ್ನು ಖಾಲಿ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">ಚೈನೀಸ್ ವುಬಿ</translation>
 <translation id="7765158879357617694">ಸರಿಸು</translation>
 <translation id="7774365994322694683">ಪಕ್ಷಿ</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"  ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಉಳಿಸಲು ನೀವು ಹೆಚ್ಚುವರಿ <ph name="TOTAL_FILE_SIZE" /> ಸ್ಥಳವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕು:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಅವಶ್ಯಕತೆಯಿಲ್ಲದಂತಹ ಫೈಲ್‌ಗಳನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ನಿಂದ <ph name="TO_ENTRY_NAME" /> ವರೆಗಿನ <ph name="ENTRY_COUNT" /> ನಮೂದುಗಳ ಶ್ರೇಣಿಯನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="954194396377670556">ನಿರ್ವಾಹಕರ ನೀತಿ ಇವುಗಳನ್ನು ತಡೆಯುತ್ತದೆ:</translation>
 <translation id="965477715979482472">ಇಂಗ್ಲಿಷ್‌‌ (ದಕ್ಷಿಣ ಆಫ್ರಿಕಾ)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳನ್ನು ಅನುಪಯುಕ್ತಕ್ಕೆ ಸರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ಹೆಸರಿನ ಫೈಲ್ ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ. ಇದನ್ನು ನೀವು ಬದಲಾಯಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
 <translation id="992401651319295351">ನೀವು <ph name="RETRIES" /> ಬಾಕಿ ಉಳಿದಿರುವ ಪ್ರಯತ್ನಗಳನ್ನು ಹೊಂದಿರುವಿರಿ. ಹೊಸ ಪಿನ್ ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವವರೆಗೆ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>

@@ -270,9 +270,6 @@
       <ph name="MS_WIN_NAME" /> では、この機能は <ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみ使用できます。</translation>
 <translation id="1285819498003746288">Event.path API を使用不可にする。</translation>
 <translation id="1290634681382861275">USB、Bluetooth、ポリシーの更新、デベロッパー モードなど、その他の設定を制御します。</translation>
-<translation id="1291880496936992484">警告: <ph name="PRODUCT_NAME" /> ではバージョン 52 で RC4 のサポートを完全に終了し（2016 年 9 月頃）、このポリシーも機能しなくなります。
-
-      このポリシーが未設定または false に設定されている場合、TLS の RC4 暗号スイートは有効化されません。古いサーバーに対応するため、true に設定しておくこともできますが、あくまで暫定的な措置であり、サーバーを再設定する必要があります。</translation>
 <translation id="129206366270737897"><ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> の非同期メソッドを無効にする</translation>
 <translation id="1294263471858445589">シークレット モードと標準のセッションでアンビエント認証を有効にします。</translation>
 <translation id="1295737447968372331">ログイン画面で音声入力を有効にする</translation>
@@ -810,13 +807,6 @@
       このポリシーを未設定のままにした場合、<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> が設定されていればその設定が使用され、設定されていなければユーザーの個人設定が適用されます。
 
       このポリシーで指定する URL は、<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> で指定する URL と競合しないようにする必要があります。競合する場合、このポリシーは <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> より優先されます。</translation>
-<translation id="1859859319036806634">警告: TLS バージョン フォールバックは、<ph name="PRODUCT_NAME" /> のバージョン 52 で削除され（2016 年 9 月頃）、このポリシーもそれ以降機能しなくなります。
-
-      TLS ハンドシェイクが失敗すると、<ph name="PRODUCT_NAME" /> ではこれまで HTTPS サーバーでのバグを回避するため、前のバージョンの TLS を使用して接続を再試行していました。この設定では、このフォールバック プロセスを停止するバージョンを指定します。サーバーでバージョン ネゴシエーションが正しく（つまり接続が切断することなく）実行された場合、この設定は適用されません。いずれにしても、確立された接続は SSLVersionMin に準拠していることが必要です。
-
-      このポリシーが設定されていないか、「tls1.2」に設定されている場合、<ph name="PRODUCT_NAME" /> でこのフォールバックは実行されなくなります。なお、これは以前の TLS バージョンのサポートを無効にするものではなく、バージョン ネゴシエーションを正しく実行できないサーバーのバグを <ph name="PRODUCT_NAME" /> で回避するかどうかを決めるものです。
-
-      バグが発生したサーバーとの互換性を維持する必要がある場合は、このポリシーを「tls1.1」に設定します。これは暫定的な措置であり、サーバーのバグは速やかに修正する必要があります。</translation>
 <translation id="1861206724856734193">データ漏洩防止ルールのリストを設定します。</translation>
 <translation id="1862267110714201519">ゴースト ウィンドウ機能を無効にする</translation>
 <translation id="1865417998205858223">キーの権限</translation>
@@ -2033,11 +2023,6 @@
       サイトの URL がこのポリシーで指定した URL パターンと一致した場合、<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" /> のポリシーは無視されます。
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。  このポリシーでは、オリジンのみが照合されるため、URL パターンのパスは無視されます。</translation>
-<translation id="3117676313396757089">警告: DHE は <ph name="PRODUCT_NAME" /> のバージョン 57 以後に完全に削除されます（2017 年 3 月頃）。また、このポリシーもその時点で機能しなくなります。
-
-      このポリシーが未設定であるか false に設定されている場合、TLS の DHE 暗号スイートは有効化されません。DHE 暗号スイートを有効にして古いサーバーに対応するために、このポリシーを true に設定することもできます。これは暫定的な措置であり、サーバーの再設定が必要です。
-
-      サーバーを ECDHE 暗号化スイートに移行することをおすすめします。ECDHE 暗号化スイートを使用できない場合は、RSA 鍵交換を使用した暗号化スイートが有効になっているか確認してください。</translation>
 <translation id="3118552207903834734">デバイスのホスト名の設定をユーザーに許可する</translation>
 <translation id="3122082892722698079">安全でないコンテンツの例外の使用を管理する</translation>
 <translation id="3128072319047570212">keygen の設定</translation>
@@ -3970,11 +3955,6 @@
 <translation id="5323200200131319468">ログイン画面で音声フィードバックを有効にする</translation>
 <translation id="532848608876725157">DNS-over-HTTPS を有効にする（安全でないフォールバックあり）</translation>
 <translation id="5328965694451556034">ログイン / ログアウトを報告する</translation>
-<translation id="5329007337159326804">警告: TLS の最大バージョン ポリシーは <ph name="PRODUCT_NAME" /> のバージョン 75 前後で完全に削除されます（2019 年 6 月頃）。
-
-      このポリシーが未設定の場合、<ph name="PRODUCT_NAME" /> ではデフォルトの最大バージョンが使用されます。
-
-      このポリシーを設定する場合は、値として「tls1.2」または「tls1.3」を指定できます。このポリシーが設定されている場合、<ph name="PRODUCT_NAME" /> では、指定されたバージョンより大きい SSL / TLS バージョンは使用されません。また、認識されない値は無視されます。</translation>
 <translation id="5329018127554115226">高効率モードを無効にする。</translation>
 <translation id="5330684698007383292">次のコンテンツ タイプの処理を <ph name="PRODUCT_FRAME_NAME" /> に対して許可する</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> のクラウド ポリシーはプラットフォーム ポリシーに優先します。</translation>
@@ -4672,10 +4652,6 @@
       管理者がこのポリシーを有効にした場合、ローカル IP の保護が弱まることに注意してください。</translation>
 <translation id="614662973812186053">このポリシーでは Android の使用状況と診断データの収集も管理できます。</translation>
 <translation id="614665605501218241">ウェブサイトがリストに指定されている場合、より限定されたプライベート ネットワークのエンドポイントに対して、そのサイトからの安全でない方法でのリクエストを許可する。</translation>
-<translation id="6154509171634387825">警告: 3DES は <ph name="PRODUCT_NAME" /> バージョン 95（2021 年 10 月頃公開）で完全に削除され、それ以後、このポリシーも機能しなくなります。
-
-      このポリシーを true に設定した場合は、TLS の 3DES 暗号スイートが有効になります。false に設定した場合は無効になります。このポリシーを未設定のままにした場合は、デフォルトで 3DES 暗号スイートが無効になります。このポリシーは、古いサーバーとの一時的な互換性の保持に使用できます。これは暫定的な措置であり、サーバーの再設定が必要です。
-      </translation>
 <translation id="6155350825868160236">スペルミスの解決に Google のウェブサービスを使用するかどうかをユーザーが選択できるようにする</translation>
 <translation id="6155936611791017817">ログイン画面での大きいカーソルのデフォルト状態を設定する</translation>
 <translation id="6157537876488211233">プロキシ バイパス ルールのカンマ区切りリスト</translation>

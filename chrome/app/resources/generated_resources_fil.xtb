@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Ang iyong computer ay may naka-built in din na RLZ library ng <ph name="SHORT_PRODUCT_NAME" />. Nagtatalaga ang RLZ ng hindi natatangi at hindi personal na nakakapagpakilalang tag upang sukatin ang mga paghahanap at paggamit ng <ph name="SHORT_PRODUCT_NAME" /> na nahimok ng isang partikular na kampanya sa pag-promote. Lumalabas minsan ang mga label na ito sa mga query sa Paghahanap sa Google sa <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Nagkaproblema. Puwede lang bahagyang i-upgrade ang Linux. Suriin ang mga log para sa higit pang impormasyon. Na-save ang mga log sa Mga File &gt; Aking mga file &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">I-clear din ang data mula sa mga app na ito?</translation>
-<translation id="1043824690776631483">Kailangan mo ng pahintulot para mabisita ang site na ito Posibleng mayroon itong hindi naaangkop na content.</translation>
 <translation id="104419033123549300">Istilo ng Keymap</translation>
 <translation id="104710386808485638">I-restart ang Linux?</translation>
 <translation id="1047431265488717055">Kopyahin ang Text ng Link</translation>
@@ -806,7 +805,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="173522743738009831">Tungkol sa Privacy Sandbox</translation>
 <translation id="173628468822554835">OK. Bilang default, hindi magpapadala sa iyo ng mga notification ang mga bagong site na bibisitahin mo.</translation>
 <translation id="1737968601308870607">I-file ang bug</translation>
-<translation id="1739684185846730053">Kasalukuyan pa ring dine-develop ang mga trial ng Privacy Sandbox at available ang mga ito sa mga piling rehiyon. Sa ngayon, puwedeng subukan ng mga site ang Privacy Sandbox habang patuloy na gumagamit ng mga kasalukuyang teknolohiya sa web gaya ng third-party na cookies.</translation>
 <translation id="1741190788710022490">Adaptive na pag-charge</translation>
 <translation id="174123615272205933">Custom</translation>
 <translation id="1741314857973421784">Magpatuloy</translation>
@@ -1977,7 +1975,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2787022501752539710">Panatilihin ang lokal na data sa pag-browse (mga bookmark, password, history, atbp.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Numero ng grupo</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2791529110887957050">Alisin ang Linux</translation>
 <translation id="2791952154587244007">May naganap na error. Hindi awtomatikong malulunsad ang kiosk application sa device na ito.</translation>
@@ -2007,7 +2004,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2805760958323556153">Invalid ang value ng patakaran ng ExtensionInstallForcelist. Makipag-ugnayan sa iyong administrator.</translation>
 <translation id="2805770823691782631">Mga karagdagang detalye</translation>
 <translation id="2806372837663997957">Hindi tinanggap ng device na sinusubukan mong bahaginan</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Mayroon nang ganitong shortcut</translation>
 <translation id="2807517655263062534">Dito lalabas ang mga file na iyong ida-download</translation>
 <translation id="2809586584051668049">at <ph name="NUMBER_ADDITIONAL_DISABLED" /> pa</translation>
@@ -2459,7 +2455,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3262986719682892278">Masyadong malaki</translation>
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">Konteksto</translation>
-<translation id="3265118321284789528">Naghihintay ng pag-apruba ng magulang</translation>
 <translation id="3265459715026181080">Close Window</translation>
 <translation id="3266022278425892773">Environment sa pag-develop ng Linux</translation>
 <translation id="3266274118485960573">Tumatakbo ang pag-check sa kaligtasan.</translation>
@@ -2587,7 +2582,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3388094447051599208">Malapit nang mapuno ang tray para sa output</translation>
 <translation id="3388788256054548012">Naka-encrypt ang file na ito. Hilingin sa may-ari nitong i-decrypt ito.</translation>
 <translation id="3390013585654699824">Mga detalye ng app</translation>
-<translation id="3391512812407811893">Mga trial ng Privacy Sandbox</translation>
 <translation id="3393554941209044235">Pagsusuri ng Chrome sa Dokumento</translation>
 <translation id="3393582007140394275">Hindi ma-cast ang screen.</translation>
 <translation id="3394850431319394743">Pinapayagang gumamit ng mga identifier para mag-play ng pinoprotektahang content</translation>
@@ -2648,7 +2642,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3441663102605358937">Mag-sign in ulit sa <ph name="ACCOUNT" /> para ma-verify ang account na ito</translation>
 <translation id="3442674350323953953">Hayaan ang Google na gamitin ang data ng iyong hardware para makatulong na mapahusay ang <ph name="DEVICE_OS" />. Kung tatanggi ka, ipapadala pa rin ang data na ito sa Google para makatukoy ng mga angkop na update, pero hindi ito iso-store o gagamitin sa ibang paraan.</translation>
-<translation id="3444641828375597683">Magagamit ng mga advertiser at publisher ang FLoC, na inilalarawan sa ibang bahagi ng page na ito.</translation>
 <translation id="3444726579402183581">Matitingnan ng <ph name="ORIGIN" /> ang <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Mga mabilisang sagot ng Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> (na) min</translation>
@@ -5332,7 +5325,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6027945736510816438">Ang ibig mo bang sabihin ay <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Magdagdag ng fingerprint</translation>
 <translation id="6031600495088157824">Mga opsyon sa pag-input sa toolbar</translation>
-<translation id="6032091552407840792">Aktibo lang ang trial na ito sa <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Para bigyan ng access ang isang extension sa site na ito, i-click ito.</translation>
 <translation id="6032912588568283682">System ng file</translation>
 <translation id="603539183851330738">Button na i-undo ang autocorrect. I-revert sa <ph name="TYPED_WORD" />.  Pindutin ang enter para i-activate, pindutin ang escape para i-dismiss.</translation>
@@ -6871,7 +6863,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7509097596023256288">Pag-set up sa pamamahala</translation>
 <translation id="7509246181739783082">I-verify ang iyong pagkakakilanlan</translation>
 <translation id="7509539379068593709">I-uninstall ang App</translation>
-<translation id="7511415964832680006">Kapag naka-on ito, posibleng gamitin ng mga site ang mga technique sa pagpapanatili ng privacy na ipinapakita rito para maibigay ang content at mga serbisyo ng mga ito. Kasama sa mga ito ang mga alternatibo sa cross-site na pagsubaybay. Posibleng magdagdag ng higit pang trial sa paglipas ng panahon.</translation>
 <translation id="7514239104543605883">Kopyahin sa iyong device</translation>
 <translation id="7514365320538308">I-download</translation>
 <translation id="7514417110442087199">Magdagdag ng pagkakatalaga</translation>
@@ -7273,8 +7264,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7877451762676714207">Hindi alam na error sa server. Pakisubukang muli, o makipag-ugnay sa administrator ng server.</translation>
 <translation id="7879478708475862060">Sundin ang pamamaraan ng pag-input</translation>
 <translation id="7879631849810108578">Naitakda na ang shortcut: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kapag naka-on ito at aktibo ang status, ginagamit ng Chrome ang iyong history ng pag-browse sa loob ng 7 araw para matukoy ang isang grupo, o “cohort”, kung nasaan ka. Puwedeng pumili ang mga advertiser ng mga ad para sa grupo. Pinapanatiling pribado ang iyong history ng pag-browse sa device mo. Aktibo lang ang trial na ito sa
-    <ph name="BEGIN_LINK" />ilang rehiyon<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Ide-delete ang lokal na data kapag nag-restart ka</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Tingnan ang Account</translation>
@@ -7548,7 +7537,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8119438628456698432">Binubuo ang mga log file...</translation>
 <translation id="811994229154425014">Dobleng puwang para mag-type ng tuldok</translation>
 <translation id="8120505434908124087">I-install ang profile ng eSIM</translation>
-<translation id="812260729110117038">Mapag-aaralan ng mga advertiser at publisher ang bisa ng mga ad sa paraang hindi nangangailangan ng pagsubaybay sa iyo sa lahat ng site.</translation>
 <translation id="81238879832906896">Dilaw at puting bulaklak</translation>
 <translation id="8123975449645947908">Mag-scroll pabalik</translation>
 <translation id="8124313775439841391">Pinamamahalaang ONC</translation>
@@ -7591,7 +7579,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="816055135686411707">Error sa Pagtakda ng Certificate Trust</translation>
 <translation id="8160775796528709999">Kumuha ng mga caption para sa iyong audio at video sa pamamagitan ng pag-enable sa Instant Caption sa mga setting</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Sa pamamagitan ng <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, nagde-develop ang Chrome ng mga bagong teknolohiya para protektahan ka laban sa cross-site na pagsubaybay habang pinapanatili ang bukas na web.</translation>
 <translation id="8161293209665121583">Reader mode para sa mga web page</translation>
 <translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Ilipat ang Tab sa Bagong Window}one{Maglipat ng Mga Tab sa Bagong Window}other{Maglipat ng Mga Tab sa Bagong Window}}</translation>
@@ -8120,7 +8107,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8676374126336081632">I-clear ang input</translation>
 <translation id="8676770494376880701">Nakakabit ang low-power charger</translation>
 <translation id="8677212948402625567">Tiklupin lahat...</translation>
-<translation id="867767487203716855">Susunod na update</translation>
 <translation id="8678378565142776698">Mag-restart at makakuha ng mga awtomatikong update</translation>
 <translation id="8678538439778360739">Na-encrypt ang data gamit ang iyong passphrase sa pag-sync noong <ph name="TIME" />. Hindi kasama rito ang mga paraan ng pagbabayad at address mula sa Google Pay.</translation>
 <translation id="8678582529642151449">Hindi liliit ang mga tab</translation>
@@ -8128,7 +8114,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8680251145628383637">Mag-sign in upang makuha ang iyong mga bookmark, history, password at iba pang mga setting sa lahat ng iyong device. Awtomatiko ka ring masa-sign in sa iyong mga serbisyo ng Google.</translation>
 <translation id="8681614230122836773">May nakitang mapaminsalang software ang Chrome sa iyong computer</translation>
 <translation id="8682730193597992579">Nakakonekta na ang <ph name="PRINTER_NAME" /> at puwede nang gamitin</translation>
-<translation id="8683081248374354009">I-reset ang grupo</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="8690129572193755009">Puwedeng hilingin ng mga site na mangasiwa ng mga protocol</translation>
 <translation id="8692107307702113268">Mahigit sa 1000 character ang password</translation>
@@ -8407,7 +8392,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8952831374766033534">Hindi sinusuportahan ang opsyon sa configuration: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Habang nagcha-charge</translation>
 <translation id="895347679606913382">Nagsisimula...</translation>
-<translation id="8953654039337655940">May ipinadalang kahilingan sa pag-apruba sa iyong magulang sa kanyang Google Family Link app at sa families.google.com. Makakatanggap ka ng notification kung inaprubahan ng iyong magulang ang kahilingan.</translation>
 <translation id="8956230710625245889">Buksan sa Reader</translation>
 <translation id="8957757410289731985">I-customize ang profile</translation>
 <translation id="895944840846194039">Memory ng JavaScript</translation>
@@ -8752,7 +8736,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="97905529126098460">Magsasara ang window na ito kapag tapos na ang pagkansela.</translation>
 <translation id="980731642137034229">Button ng menu ng pagkilos</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">May ipinadalang kahilingan sa pag-apruba sa iyong mga magulang sa kanilang Google Family Link app at sa families.google.com. Makakatanggap ka ng notification kung inaprubahan ng isa sa iyong mga magulang ang kahilingan.</translation>
 <translation id="983511809958454316">Hindi sinusuportahan ang feature na ito sa VR</translation>
 <translation id="984275831282074731">Mga paraan ng pagbabayad</translation>
 <translation id="984705303330760860">Idagdag ang mga wika ng spell check</translation>

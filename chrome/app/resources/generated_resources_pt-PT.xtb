@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">O seu computador também tem a biblioteca RLZ de <ph name="SHORT_PRODUCT_NAME" /> incorporada. A RLZ atribui uma etiqueta não exclusiva e não identificável a nível pessoal para medir as pesquisas e a utilização de <ph name="SHORT_PRODUCT_NAME" /> impulsionada por uma campanha promocional específica. Estas etiquetas por vezes aparecem em consultas da Pesquisa Google em <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Algo correu mal. O Linux pode ter sido atualizado apenas parcialmente. Consulte os registos para obter mais informações. Os registos foram guardados em Files &gt; Os meus ficheiros &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Também pretende limpar os dados destas apps?</translation>
-<translation id="1043824690776631483">Necessita de autorização para visitar este site. Pode ter conteúdo impróprio.</translation>
 <translation id="104419033123549300">Estilo do esquema do teclado</translation>
 <translation id="104710386808485638">Pretende reiniciar o Linux?</translation>
 <translation id="1047431265488717055">Copiar te&amp;xto do link</translation>
@@ -794,7 +793,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="173522743738009831">Acerca da Privacy Sandbox</translation>
 <translation id="173628468822554835">Compreendido. Por predefinição, os novos sites que visitar não lhe vão enviar notificações.</translation>
 <translation id="1737968601308870607">Erro de ficheiro</translation>
-<translation id="1739684185846730053">As avaliações da Privacy Sandbox ainda estão em desenvolvimento e estão disponíveis em regiões selecionadas. Por agora, os sites podem experimentar a Privacy Sandbox enquanto continuam a utilizar as tecnologias da Web atuais, como os cookies de terceiros.</translation>
 <translation id="1741190788710022490">Carregamento adaptável</translation>
 <translation id="174123615272205933">Personalizar</translation>
 <translation id="1741314857973421784">Continuar</translation>
@@ -1961,7 +1959,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2787022501752539710">Manter dados de navegação locais (marcadores, palavras-passe, histórico, etc.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Número do grupo</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2791529110887957050">Remover Linux</translation>
 <translation id="2791952154587244007">Ocorreu um erro. A aplicação Quiosque não poderá ser iniciada automaticamente neste dispositivo.</translation>
@@ -1991,7 +1988,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2805760958323556153">O valor da política de ExtensionInstallForcelist é inválido. Contacte o seu administrador.</translation>
 <translation id="2805770823691782631">Detalhes adicionais</translation>
 <translation id="2806372837663997957">O dispositivo com o qual está a tentar efetuar a partilha não aceitou.</translation>
-<translation id="2806840421670364300">APC</translation>
 <translation id="2806891468525657116">O atalho já existe.</translation>
 <translation id="2807517655263062534">Os ficheiros que transferir são apresentados aqui</translation>
 <translation id="2809586584051668049">e mais <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2444,7 +2440,6 @@ Pretende pará-lo?</translation>
 <translation id="3262986719682892278">Demasiado grande</translation>
 <translation id="3264544094376351444">Tipo de letra Sans-Serif</translation>
 <translation id="3264582393905923483">Contexto</translation>
-<translation id="3265118321284789528">A aguardar a aprovação parental</translation>
 <translation id="3265459715026181080">Fechar janela</translation>
 <translation id="3266022278425892773">Ambiente de programação Linux</translation>
 <translation id="3266274118485960573">A verificação de segurança está a ser executada.</translation>
@@ -2572,7 +2567,6 @@ Pretende pará-lo?</translation>
 <translation id="3388094447051599208">O tabuleiro de saída está quase cheio.</translation>
 <translation id="3388788256054548012">Este ficheiro está encriptado. Peça ao proprietário para desencriptar.</translation>
 <translation id="3390013585654699824">Detalhes da app</translation>
-<translation id="3391512812407811893">Avaliações da Privacy Sandbox</translation>
 <translation id="3393554941209044235">Análise de documentos do Chrome</translation>
 <translation id="3393582007140394275">Não é possível transmitir o ecrã.</translation>
 <translation id="3394850431319394743">Com autorização para utilizar identificadores para reproduzir conteúdo protegido</translation>
@@ -2633,7 +2627,6 @@ Pretende pará-lo?</translation>
 <translation id="3441653493275994384">Ecrã</translation>
 <translation id="3441663102605358937">Inicie sessão na sua conta <ph name="ACCOUNT" /> novamente para validar esta conta.</translation>
 <translation id="3442674350323953953">Permitir que a Google utilize os dados do seu hardware para ajudar a melhorar o dispositivo <ph name="DEVICE_OS" />. Se recusar, estes dados ainda são enviados para a Google para determinar quais são as atualizações adequadas, mas não são armazenados nem utilizados em qualquer outro local.</translation>
-<translation id="3444641828375597683">Os anunciantes e os publicadores podem utilizar a APC, descrita mais adiante nesta página.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> poderá ver <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Respostas rápidas do Assistente Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5317,7 +5310,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6027945736510816438">Será que quis dizer <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Adicionar impressão digital</translation>
 <translation id="6031600495088157824">Opções de introdução na barra de ferramentas</translation>
-<translation id="6032091552407840792">Esta avaliação está ativa apenas em <ph name="BEGIN_LINK" />algumas regiões<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Para conceder a uma extensão o acesso a este site, clique na mesma</translation>
 <translation id="6032912588568283682">Sistema de ficheiros</translation>
 <translation id="603539183851330738">Botão de anulação da correção automática. Reverter para <ph name="TYPED_WORD" />.  Prima Enter para ativar, Esc para ignorar.</translation>
@@ -6854,7 +6846,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7509097596023256288">Configurar a gestão</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
 <translation id="7509539379068593709">Desinstalar app</translation>
-<translation id="7511415964832680006">Quando esta opção está ativada, os sites podem utilizar as técnicas de preservação da privacidade mostradas aqui para fornecer o respetivo conteúdo e serviços. Estas incluem alternativas para a monitorização entre sites. Ao longo do tempo, podem ser adicionadas mais avaliações.</translation>
 <translation id="7514239104543605883">Copiar para o dispositivo</translation>
 <translation id="7514365320538308">Transferir</translation>
 <translation id="7514417110442087199">Adicionar atribuição</translation>
@@ -7256,8 +7247,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7877451762676714207">Erro de servidor desconhecido. Tente novamente ou contacte o gestor do servidor.</translation>
 <translation id="7879478708475862060">Seguir método de introdução</translation>
 <translation id="7879631849810108578">Atalho definido: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Quando está ativada e o estado é ativa, o Chrome utiliza o seu histórico de navegação ao longo de 7 dias para determinar um grupo, ou "coorte", do qual faz parte. Os anunciantes podem selecionar anúncios para o grupo. O seu histórico de navegação é mantido privado no seu dispositivo. Esta avaliação está ativa apenas em
-    <ph name="BEGIN_LINK" />algumas regiões<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Os dados locais vão ser eliminados quando reiniciar o dispositivo</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Ver Conta</translation>
@@ -7531,7 +7520,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8119438628456698432">A gerar ficheiros de registo…</translation>
 <translation id="811994229154425014">Premir Espaço duas vezes para inserir ponto final</translation>
 <translation id="8120505434908124087">Instalar perfil eSIM</translation>
-<translation id="812260729110117038">Os anunciantes e os publicadores podem estudar a eficácia dos anúncios sem monitorizar a sua navegação em sites.</translation>
 <translation id="81238879832906896">Flor amarela e branca</translation>
 <translation id="8123975449645947908">Deslocar para trás</translation>
 <translation id="8124313775439841391">ONC gerido</translation>
@@ -7574,7 +7562,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="816055135686411707">Erro ao definir a confiança do certificado</translation>
 <translation id="8160775796528709999">Obtenha legendas para o áudio e o vídeo ao ativar as Legendas instantâneas nas definições.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Com a <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, o Chrome está a desenvolver novas tecnologias que protegem da monitorização entre sites, ao mesmo tempo que preservam a Web aberta.</translation>
 <translation id="8161293209665121583">Modo de leitor para páginas Web</translation>
 <translation id="8161604891089629425">Tipo de letra com contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover separador para nova janela}other{Mover separadores para nova janela}}</translation>
@@ -8102,7 +8089,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8676374126336081632">Limpar texto</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>
 <translation id="8677212948402625567">Reduzir tudo...</translation>
-<translation id="867767487203716855">Próxima atualização</translation>
 <translation id="8678378565142776698">Reiniciar e obter atualizações automáticas</translation>
 <translation id="8678538439778360739">Os dados foram encriptados com a sua frase de acesso de sincronização a <ph name="TIME" />. Não estão incluídos métodos de pagamento e endereços do Google Pay.</translation>
 <translation id="8678582529642151449">Os separadores não são reduzidos</translation>
@@ -8110,7 +8096,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8680251145628383637">Inicie sessão para obter os seus marcadores, o histórico, as palavras-passe e outras definições em todos os seus dispositivos. Além disso, também inicia sessão automaticamente nos serviços Google.</translation>
 <translation id="8681614230122836773">O Chrome encontrou software prejudicial no seu computador.</translation>
 <translation id="8682730193597992579">A impressora <ph name="PRINTER_NAME" /> está ligada e pronta.</translation>
-<translation id="8683081248374354009">Repor grupo</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="8690129572193755009">Os sites podem solicitar o processamento de protocolos</translation>
 <translation id="8692107307702113268">A palavra-passe tem mais de 1000 carateres</translation>
@@ -8387,7 +8372,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8952831374766033534">Opção de configuração não suportada: <ph name="ERROR_LINE" />.</translation>
 <translation id="8953476467359856141">Estando a carregar</translation>
 <translation id="895347679606913382">A iniciar...</translation>
-<translation id="8953654039337655940">Foi enviado um pedido de aprovação a um dos teus pais na respetiva app Family Link da Google e em families.google.com. Recebes uma notificação se um dos teus pais aprovar o pedido.</translation>
 <translation id="8956230710625245889">Abrir no Reader</translation>
 <translation id="8957757410289731985">Personalizar perfil</translation>
 <translation id="895944840846194039">Memória JavaScript</translation>
@@ -8732,7 +8716,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="97905529126098460">Esta janela fecha-se depois de concluído o cancelamento.</translation>
 <translation id="980731642137034229">Botão menu de ação</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Foi enviado um pedido de aprovação aos teus pais na respetiva app Family Link da Google e em families.google.com. Recebes uma notificação se um dos teus pais aprovar o pedido.</translation>
 <translation id="983511809958454316">Esta funcionalidade não é compatível com RV</translation>
 <translation id="984275831282074731">Métodos de pagamento</translation>
 <translation id="984705303330760860">Adicione idiomas com verificação ortográfica</translation>

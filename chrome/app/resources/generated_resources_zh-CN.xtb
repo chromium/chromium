@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">您的计算机还内置了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 库。RLZ 会指定非唯一、非个人身份识别代码来衡量某推广活动所带来的搜索量和 <ph name="SHORT_PRODUCT_NAME" /> 使用量。这些标签有时会显示在 <ph name="PRODUCT_NAME" /> 的 Google 搜索查询中。</translation>
 <translation id="1043505821207197890">出了点问题。Linux 可能只能完成部分升级。请查看日志了解详情。日志已保存在“文件”&gt;“我的文件”&gt;“<ph name="LOG_FILE" />”中</translation>
 <translation id="1043818413152647937">要一并清除以下应用内的数据吗？</translation>
-<translation id="1043824690776631483">您需获得许可才能访问此网站，因为它可能含有不当内容。</translation>
 <translation id="104419033123549300">按键映射样式</translation>
 <translation id="104710386808485638">重启 Linux？</translation>
 <translation id="1047431265488717055">复制链接文字(&amp;X)</translation>
@@ -789,7 +788,6 @@
 <translation id="173522743738009831">隐私沙盒简介</translation>
 <translation id="173628468822554835">知道了。默认情况下，您访问的新网站不会向您发送通知。</translation>
 <translation id="1737968601308870607">提交错误</translation>
-<translation id="1739684185846730053">Privacy Sandbox 试用版功能尚处于积极开发阶段，目前只能在部分区域使用。现阶段，网站可在继续使用第三方 Cookie 等当前网络技术的同时试用 Privacy Sandbox。</translation>
 <translation id="1741190788710022490">自适应充电</translation>
 <translation id="174123615272205933">自定义</translation>
 <translation id="1741314857973421784">继续</translation>
@@ -1953,7 +1951,6 @@
 <translation id="2787022501752539710">保留本地浏览数据（书签、密码、历史记录等等）</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">群组编号</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">出现错误。自助服务终端应用在此设备上不能自动启动。</translation>
@@ -1983,7 +1980,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist 的政策值无效。请与您的管理员联系。</translation>
 <translation id="2805770823691782631">更多详情</translation>
 <translation id="2806372837663997957">目标设备未接受您的文件分享请求</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">快捷方式已存在</translation>
 <translation id="2807517655263062534">您下载的文件会显示在此处</translation>
 <translation id="2809586584051668049">及另外<ph name="NUMBER_ADDITIONAL_DISABLED" />个扩展程序</translation>
@@ -2435,7 +2431,6 @@
 <translation id="3262986719682892278">太大</translation>
 <translation id="3264544094376351444">Sans-serif 字体</translation>
 <translation id="3264582393905923483">上下文</translation>
-<translation id="3265118321284789528">等待家长审批</translation>
 <translation id="3265459715026181080">关闭窗口</translation>
 <translation id="3266022278425892773">Linux 开发环境</translation>
 <translation id="3266274118485960573">正在运行安全检查。</translation>
@@ -2563,7 +2558,6 @@
 <translation id="3388094447051599208">出纸盘快满了</translation>
 <translation id="3388788256054548012">这个文件已加密。请让它的所有者进行解密。</translation>
 <translation id="3390013585654699824">应用详细信息</translation>
-<translation id="3391512812407811893">试用隐私沙盒</translation>
 <translation id="3393554941209044235">Chrome 文档分析</translation>
 <translation id="3393582007140394275">无法投放屏幕。</translation>
 <translation id="3394850431319394743">可以使用标识符来播放受保护内容</translation>
@@ -2624,7 +2618,6 @@
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3441663102605358937">请重新登录 <ph name="ACCOUNT" /> 以验证此帐号</translation>
 <translation id="3442674350323953953">允许 Google 使用您的硬件数据协助改进 <ph name="DEVICE_OS" />。如果您拒绝，系统仍会将这些数据发送给 Google 以确定适当的更新，但不会存储或以其他方式使用这些数据。</translation>
-<translation id="3444641828375597683">广告主和发布商可使用 FLoC，具体说明见本页中的下文。</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
@@ -5301,7 +5294,6 @@
 <translation id="6027945736510816438">您是想访问 <ph name="WEBSITE" /> 吧？</translation>
 <translation id="6028117231645531007">添加指纹</translation>
 <translation id="6031600495088157824">在工具栏中显示输入选项</translation>
-<translation id="6032091552407840792">这项试用版功能仅在<ph name="BEGIN_LINK" />部分区域<ph name="END_LINK" />有效。</translation>
 <translation id="6032715498678347852">若要授权某个扩展程序访问此网站，请点击该扩展程序。</translation>
 <translation id="6032912588568283682">文件系统</translation>
 <translation id="603539183851330738">用于撤消自动更正的按钮。还原为“<ph name="TYPED_WORD" />”。若要启用此按钮，请按 Enter 键；若要关闭，请按 Esc 键。</translation>
@@ -6838,7 +6830,6 @@
 <translation id="7509097596023256288">正在设置为受管理</translation>
 <translation id="7509246181739783082">验证您的身份</translation>
 <translation id="7509539379068593709">卸载应用</translation>
-<translation id="7511415964832680006">如果此控件已开启，网站可能会使用此处所示的隐私保护技术来提供其内容和服务。这些技术包括跨网站跟踪机制的替代方案。随着时间的推移，我们可能会添加更多试用版功能。</translation>
 <translation id="7514239104543605883">复制到您的设备</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>
@@ -7240,7 +7231,6 @@
 <translation id="7877451762676714207">未知服务器错误。请重试或与服务器管理员联系。</translation>
 <translation id="7879478708475862060">按输入法</translation>
 <translation id="7879631849810108578">已成功设置快捷键：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">如果此控件已开启且处于有效状态，Chrome 会使用您的 7 天浏览记录来确定您所在的群组或“同类群组”。广告主可为群组选择广告。您的浏览记录会私密地保留在您的设备上。这项试用版功能仅在<ph name="BEGIN_LINK" />部分区域<ph name="END_LINK" />有效。</translation>
 <translation id="7880823633812189969">系统会在您重启设备时删除本地数据</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">查看帐号</translation>
@@ -7514,7 +7504,6 @@
 <translation id="8119438628456698432">正在生成日志文件…</translation>
 <translation id="811994229154425014">按两下空格键时输入句点</translation>
 <translation id="8120505434908124087">安装 eSIM 卡配置文件</translation>
-<translation id="812260729110117038">广告主和发布商可通过一种不会对您进行跨网站跟踪的方式研究广告的效果。</translation>
 <translation id="81238879832906896">黄色和白色花朵</translation>
 <translation id="8123975449645947908">向后滚动</translation>
 <translation id="8124313775439841391">受管理的 ONC</translation>
@@ -7557,7 +7546,6 @@
 <translation id="816055135686411707">设置证书信任时出错</translation>
 <translation id="8160775796528709999">只需在设置中启用“实时字幕”功能，即可为您的音频和视频生成字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Chrome 正在通过 <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 开发新技术，以便既能保护开放网络又能使您免受跨网站跟踪。</translation>
 <translation id="8161293209665121583">使用阅读器模式显示网页</translation>
 <translation id="8161604891089629425">轮廓字体</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
@@ -8085,7 +8073,6 @@
 <translation id="8676374126336081632">清除输入的内容</translation>
 <translation id="8676770494376880701">已连接低功率充电器</translation>
 <translation id="8677212948402625567">全部收起...</translation>
-<translation id="867767487203716855">下一次更新</translation>
 <translation id="8678378565142776698">重启设备并获取自动更新</translation>
 <translation id="8678538439778360739">数据已于 <ph name="TIME" />使用您的同步密码加密。这并不包括 Google Pay 中的付款方式和地址。</translation>
 <translation id="8678582529642151449">不收缩标签页</translation>
@@ -8093,7 +8080,6 @@
 <translation id="8680251145628383637">登录后即可在您的任何设备上获取自己的书签、历史记录、密码和其他设置。此外，您还会自动登录到 Google 服务。</translation>
 <translation id="8681614230122836773">Chrome 在您的计算机上发现了有害软件</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已连接且已准备就绪</translation>
-<translation id="8683081248374354009">重置群组</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="8690129572193755009">网站可以请求处理协议</translation>
 <translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
@@ -8370,7 +8356,6 @@
 <translation id="8952831374766033534">有配置选项不受支持：<ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">充电时</translation>
 <translation id="895347679606913382">即将开始下载...</translation>
-<translation id="8953654039337655940">系统已通过 Google Family Link 应用和 families.google.com 向您的一位家长发送了审批请求。如果这位家长批准了此请求，您会收到通知。</translation>
 <translation id="8956230710625245889">在阅读器中打开</translation>
 <translation id="8957757410289731985">自定义个人资料</translation>
 <translation id="895944840846194039">JavaScript 使用的内存</translation>
@@ -8715,7 +8700,6 @@
 <translation id="97905529126098460">此窗口将在取消安装完成后关闭。</translation>
 <translation id="980731642137034229">操作菜单按钮</translation>
 <translation id="981121421437150478">离线</translation>
-<translation id="982684081337630214">系统已通过 Google Family Link 应用和 families.google.com 向您的家长们发送了审批请求。如果他们中的任何一位批准了此请求，您会收到通知。</translation>
 <translation id="983511809958454316">此功能在虚拟实境中不受支持</translation>
 <translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">添加拼写检查语言</translation>

@@ -846,6 +846,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relatief</translation>
 <translation id="3223287115535306850">Geanimeerde programlaai-ikoon</translation>
+<translation id="3223425961342298674">Ligging nie toegelaat nie</translation>
 <translation id="3225347164936328585">Klap</translation>
 <translation id="3225919329040284222">Die bediener het 'n sertifikaat voorgehou wat nie ooreenstem met ingeboude verwagtinge nie. Hierdie verwagtinge is vir sekere hoësekerheidwebwerwe ingesluit om jou te beskerm.</translation>
 <translation id="3226128629678568754">Druk die herlaaiknoppie om die data wat benodig word om die bladsy te laai, weer in te dien.</translation>
@@ -1185,6 +1186,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4127575959421463246">Soek jy na die Chrome-bedryfstelselvlae? Besoek</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ander persoon}other{# ander mense}}</translation>
 <translation id="4130226655945681476">Gaan die netwerkkabels, modem en roeteerder na</translation>
+<translation id="4132448310531350254">Duplikaathanteerders vir file_extension "<ph name="FILE_EXTENSION" />" waarna programme "<ph name="POLICY_IDS_LIST" />" verwys.</translation>
 <translation id="4134123981501319574">Skep dokument</translation>
 <translation id="413544239732274901">Kom meer te wete</translation>
 <translation id="4142935452406587478">Laai 10</translation>
@@ -1207,6 +1209,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4194250254487269611">Jou kaart kan nie nou gestoor word nie</translation>
 <translation id="4196861286325780578">Herdoen skuif</translation>
 <translation id="4202554117186904723">Vyfde rol</translation>
+<translation id="4203769790323223880">Kamera nie toegelaat nie</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Die brandmuur- en antivirus-opstellings nagaan<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Groot</translation>
 <translation id="4210602799576081649">Verifikasiekode het verval; vra vir 'n nuwe kode</translation>
@@ -1233,6 +1236,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
     &lt;p&gt;Onthou om jou antivirusprogram weer aan te skakel wanneer jy klaar is.&lt;/p&gt;
     &lt;h4&gt;Stap 5: Kry bykomende hulp&lt;/h4&gt;
     &lt;p&gt;Kontak die webwerfeienaar as jy steeds die fout sien.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofoon nie toegelaat nie</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Probeer netwerkdiagnostiek uitvoer<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Kan vra om jou kamera te gebruik en beweeg</translation>
 <translation id="4235360514405112390">Geldig</translation>
@@ -1604,6 +1608,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5177076414499237632">Kom meer te wete oor hierdie bladsy se bron en onderwerp</translation>
 <translation id="5179510805599951267">Nie in <ph name="ORIGINAL_LANGUAGE" /> nie? Meld hierdie fout aan</translation>
 <translation id="518639307526414276">Troeteldierkos en troeteldiersorgbenodigdhede</translation>
+<translation id="5190072300954988691">Kamera en mikrofoon nie toegelaat nie</translation>
 <translation id="5190835502935405962">Boekmerkebalk</translation>
 <translation id="5191315092027169558">Jou profiel word deur <ph name="DOMAIN" /> bestuur</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wil veelvuldige lêers aflaai</translation>
@@ -1624,6 +1629,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Verwerp</translation>
+<translation id="5239623327352565343">Ligging toegelaat</translation>
 <translation id="5242889659037569123">Bagasie en reisbykomstighede</translation>
 <translation id="5250209940322997802">"Koppel aan netwerk"</translation>
 <translation id="52517543715119994">Leer meer oor Chrome-kenmerke</translation>
@@ -2500,6 +2506,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7581199239021537589">Skuif prent langs Y-as op kant 2</translation>
 <translation id="7582602800368606489">Skep vinnig 'n nuwe geleentheid in Google Kalender</translation>
 <translation id="7583969447617676942">Regsdienste</translation>
+<translation id="7586676035079382730">Kennisgewings nie toegelaat nie</translation>
 <translation id="7591288787774558753">Deel vertroulike inhoud?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wil webkoekies en werfdata op <ph name="TOP_LEVEL_URL" /> gebruik</translation>
 <translation id="7592362899630581445">Bedienersertifikaat oortree naambeperkings.</translation>
@@ -3052,6 +3059,7 @@ Bykomende besonderhede:
 <translation id="9131119348384879525">Vang vertroulike inhoud vas?</translation>
 <translation id="9136861683332321024">Luukse voertuie</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
+<translation id="9138037198177304356">Kennisgewings toegelaat</translation>
 <translation id="9139318394846604261">Inkopies</translation>
 <translation id="9141013498910525015">Bestuur adresse</translation>
 <translation id="9144951720726881238">Vervaldatum:</translation>

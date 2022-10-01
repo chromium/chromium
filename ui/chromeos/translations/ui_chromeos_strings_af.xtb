@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Skakel oor na lysaansig</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> vouers is met Linux gedeel</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> lêers gekies</translation>
+<translation id="2383454254762599978">Skuif asblik toe</translation>
 <translation id="2387458720915042159">Soort instaanbedienerverbinding</translation>
 <translation id="2389832672041313158">Birmaans/Mianmar</translation>
 <translation id="2392369802118427583">Aktiveer</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Gaan na drive.google.com …</translation>
 <translation id="3553048479571901246">Om lêers met <ph name="APP_NAME" /> oop te maak, moet jy hulle eers na die Windows-lêersvouer toe kopieer.</translation>
 <translation id="3556731189587832921">Engels (VSA) met internasionale rekenaarsleutelbord</translation>
+<translation id="3557414470514932909">Skuif tans <ph name="FILE_NAME" /> na die asblik</translation>
 <translation id="3567221313191587603">Kies 'n lêer en wissel <ph name="OFFLINE_CHECKBOX_NAME" /> na aan vir vanlyn toegang tot jou lêers.</translation>
 <translation id="357479282490346887">Litaus</translation>
 <translation id="3587482841069643663">Alles</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bangla-foneties</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engels (VSA) met Workman-sleutelbord</translation>
+<translation id="4019998208269143058">Speld aan kitslêers vas</translation>
 <translation id="4040753847560036377">Verkeerde PUK</translation>
 <translation id="4057991113334098539">Aktiveer tans …</translation>
 <translation id="4092890906744441904">Iers</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Administrateursbeleid beveel nie die volgende aan nie:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> is geskuif.</translation>
 <translation id="4176286497474237543">Maak asblik nou leeg</translation>
+<translation id="4179621117429069925">Hierdie item is in jou asblik</translation>
 <translation id="4186579485882418952">Aktiveer vanlyn</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
 <translation id="4197674956721858839">Kompakteer-keuse</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Stawingsertifikaat oor 'n afstand verwerp</translation>
 <translation id="4394214039309501350">Eksterne skakel</translation>
 <translation id="4394980935660306080">Vroeër vandeesweek</translation>
+<translation id="4398096759193130964">Stel die items terug of sleep hulle na ’n nuwe vouer buite die asblik</translation>
 <translation id="4401287888955153199">Ekstraheer alles</translation>
 <translation id="4410695710508688828">Kon nie onttrek nie. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Skep 'n kortpad vir jou lêers</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi met InScript-sleutelbord</translation>
 <translation id="4801956050125744859">Hou albei</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832">Stel tans <ph name="COUNT" /> items terug</translation>
 <translation id="4823651846660089135">Toestel is leesalleen</translation>
 <translation id="4826849268470072925">Tamil-ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> items gekies</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Botterblom</translation>
 <translation id="4943368462779413526">Voetbal</translation>
 <translation id="4961158930123534723">1 vouer is met Parallels Desktop gedeel</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> teruggestel</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Gebruik 'n naam wat <ph name="MAX_LENGTH" /> karakters of minder bevat</translation>
 <translation id="4973970068702235170">Kon nie kompakteer nie; onverwagte fout: <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +558,7 @@
 <translation id="5691596662111998220">Oeps, <ph name="FILE_NAME" /> bestaan nie meer nie.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, ontsluit</translation>
 <translation id="5700087501958648444">Oudio-inligting</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> na die asblik geskuif</translation>
 <translation id="5724172041621205163">Thai met Pattachote-sleutelbord</translation>
 <translation id="5756666464756035725">Hongaarse QWERTY</translation>
 <translation id="5763377084591234761">Duits (Switserland)</translation>
@@ -621,6 +629,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-argief</translation>
 <translation id="6321303798550928047">Waai</translation>
 <translation id="6327785803543103246">Webinstaanbediener-outo-ontdekking</translation>
+<translation id="6337014272874260727">Ontspeld van kitslêers</translation>
 <translation id="6339145975392024142">VSA-internasionaal (PC)</translation>
 <translation id="6346310558342052870">Toegang is beperk</translation>
 <translation id="6356685157277930264">Lêersterugvoervenster</translation>
@@ -661,6 +670,7 @@
 <translation id="6751256176799620176">1 vouer is gekies</translation>
 <translation id="6755827872271341378">Chrome OS Flex-toestel</translation>
 <translation id="6790428901817661496">Speel</translation>
+<translation id="6794539005637808366">Stel die item terug of sleep dit na ’n nuwe vouer buite die asblik</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Bestuur Linux-deling</translation>
 <translation id="6806796368146926706">Alfanumeries met Japannese sleutelbord</translation>
@@ -697,6 +707,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sweeds</translation>
 <translation id="6990081529015358884">Jy het nie meer spasie nie</translation>
+<translation id="6993826899923627728">Hierdie items is in jou asblik</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> vouers gekies</translation>
 <translation id="7008426324576352165">Jou organisasie benodig meer bergingspasie om die oplaai te voltooi.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +753,7 @@
 <translation id="7408870451288633753">Tsjeggies</translation>
 <translation id="7417453074306512035">Etiopiese sleutelbord</translation>
 <translation id="7417705661718309329">Google-kaart</translation>
+<translation id="7419668828140929293">Stel tans "<ph name="FILENAME" />" terug</translation>
 <translation id="7458955835361612701">Geen onlangse prente nie</translation>
 <translation id="7460898608667578234">Oekraïens</translation>
 <translation id="7469894403370665791">Koppel outomaties aan hierdie netwerk</translation>
@@ -770,6 +782,7 @@
 <translation id="7655441028674523381">Gaan maklik na Google Foto's</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> items is na die asblik geskuif</translation>
 <translation id="7693909743393669729">Alle data wat op 'n skyf geberg is, sal uitgevee word wanneer dit geformateer word en alle bestaande verdelings sal verwyder word, insluitend die verdelings wat nie sigbaar is nie. Hierdie handeling kan nie ontdoen word nie.</translation>
 <translation id="7695430100978772476">Kon nie <ph name="DRIVE_NAME" /> formateer nie</translation>
 <translation id="76959938259365003">Kon nie asblik leegmaak nie.</translation>
@@ -784,6 +797,7 @@
 <translation id="7760449188139285140">Chinees-Wubi</translation>
 <translation id="7765158879357617694">Skuif</translation>
 <translation id="7774365994322694683">Voël</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> items is teruggestel</translation>
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7788080748068240085">Om "<ph name="FILE_NAME" />" vanlyn te stoor, moet jy eers 'n bykomende <ph name="TOTAL_FILE_SIZE" /> spasie beskikbaar maak:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ontspeld lêers waarby jy nie meer vanlyn hoef in te gaan nie<ph name="MARKUP_3" />
@@ -964,6 +978,7 @@
 <translation id="947144732524271678">Kies 'n reeks van <ph name="ENTRY_COUNT" /> inskrywings van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Administrateursbeleid voorkom:</translation>
 <translation id="965477715979482472">Engels (Suid-Afrika)</translation>
+<translation id="976666271385981812">Skuif tans <ph name="NUMBER_OF_ITEMS" /> items na die asblik</translation>
 <translation id="981121421437150478">Vanlyn</translation>
 <translation id="988685240266037636">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Wil jy dit vervang?</translation>
 <translation id="992401651319295351">Jy het <ph name="RETRIES" /> pogings oor. Jy sal nie hierdie netwerk kan gebruik voordat jy 'n nuwe PIN opgestel het nie.</translation>

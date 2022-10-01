@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Kompjuteri yt vjen po ashtu me bibliotekën RLZ të <ph name="SHORT_PRODUCT_NAME" /> të integruar. Parametri RLZ cakton një etiketë jo unike, jo personalisht të identifikueshme për të matur kërkimet dhe përdorimin e <ph name="SHORT_PRODUCT_NAME" /> të nxitur nga një fushatë promocionale të veçantë. Këto etiketa ndonjëherë shfaqen në pyetjet e "Kërko me Google" në <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Ndodhi një gabim. Linux mund të jetë përmirësuar pjesërisht. Shqyrto evidencat për më shumë informacion. Evidencat janë ruajtur te Skedarët &gt; Skedarët e mi &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Do të pastrosh po ashtu të dhënat nga këto aplikacione?</translation>
-<translation id="1043824690776631483">Të nevojitet leje për të vizituar këtë sajt. Mund të kesh përmbajtje të papërshtatshme.</translation>
 <translation id="104419033123549300">Stili i hartës së tasteve</translation>
 <translation id="104710386808485638">Do ta rinisësh Linux?</translation>
 <translation id="1047431265488717055">Kopjo tekstin e lidhjes</translation>
@@ -791,7 +790,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="173522743738009831">Rreth Privacy Sandbox</translation>
 <translation id="173628468822554835">E kuptova. Si parazgjedhje, sajtet e reja që viziton nuk do të të dërgojnë njoftime.</translation>
 <translation id="1737968601308870607">Gabim i skedarit</translation>
-<translation id="1739684185846730053">Provat për Privacy Sandbox janë ende në zhvillim aktiv dhe ofrohen në rajone të zgjedhura. Për momentin, sajtet mund të provojnë Privacy Sandbox ndërkohë që vazhdojnë të përdorin teknologjitë aktuale të uebit si kukit e palëve të treta.</translation>
 <translation id="1741190788710022490">Karikim me përshtatje</translation>
 <translation id="174123615272205933">Të personalizuara</translation>
 <translation id="1741314857973421784">Vazhdo</translation>
@@ -1959,7 +1957,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2787022501752539710">Ruaj të dhënat lokale të shfletimit (faqeshënuesit, fjalëkalimet, historikun etj.)</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Numri i grupit</translation>
 <translation id="2789486458103222910">Në rregull</translation>
 <translation id="2791529110887957050">Hiq Linux</translation>
 <translation id="2791952154587244007">Ndodhi një gabim. Aplikacioni kioskë nuk do të jetë në gjendje të niset automatikisht në këtë pajisje.</translation>
@@ -1989,7 +1986,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2805760958323556153">Vlera e politikës për ExtensionInstallForcelist është e pavlefshme. Kontakto me administratorin tënd.</translation>
 <translation id="2805770823691782631">Detaje të tjera</translation>
 <translation id="2806372837663997957">Pajisja me të cilën po përpiqesh të ndash nuk pranoi</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Shkurtorja ekziston tashmë</translation>
 <translation id="2807517655263062534">Skedarët që shkarkon shfaqen këtu</translation>
 <translation id="2809586584051668049">dhe <ph name="NUMBER_ADDITIONAL_DISABLED" /> të tjerë</translation>
@@ -2441,7 +2437,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3262986719682892278">Shumë i madh</translation>
 <translation id="3264544094376351444">Shkrimi sans-serif</translation>
 <translation id="3264582393905923483">Konteksti</translation>
-<translation id="3265118321284789528">Në pritje të miratimit nga prindi</translation>
 <translation id="3265459715026181080">Mbyll dritaren</translation>
 <translation id="3266022278425892773">Ambient zhvillimi për Linux</translation>
 <translation id="3266274118485960573">Po ekzekutohet kontrolli i sigurisë.</translation>
@@ -2569,7 +2564,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3388094447051599208">Tabakaja e daljes është pothuajse plot</translation>
 <translation id="3388788256054548012">Ky skedar është i enkriptuar. Kërkoji zotëruesit ta deshifrojë.</translation>
 <translation id="3390013585654699824">Detajet e aplikacioneve</translation>
-<translation id="3391512812407811893">Provat e Privacy Sandbox</translation>
 <translation id="3393554941209044235">Analiza e dokumentit e Chrome</translation>
 <translation id="3393582007140394275">Ekrani nuk mund të transmetohej.</translation>
 <translation id="3394850431319394743">Lejohen të përdorin identifikuesit për të luajtur përmbajtjet e mbrojtura</translation>
@@ -2630,7 +2624,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3441653493275994384">Ekrani</translation>
 <translation id="3441663102605358937">Identifikohu përsëri në <ph name="ACCOUNT" /> për ta verifikuar këtë llogari</translation>
 <translation id="3442674350323953953">Lejo Google të përdorë të dhënat e harduerit për të ndihmuar në përmirësimin e <ph name="DEVICE_OS" />. Nëse refuzon, këto të dhëna do të dërgohen gjithsesi te Google për të përcaktuar përditësimet e duhura, por nuk do të ruhen apo përdoren.</translation>
-<translation id="3444641828375597683">Reklamuesit dhe botuesit mund të përdorin teknikën FLoC, për të cilën jepen përshkrime më poshtë në këtë faqe.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> do të ketë mundësi të shikojë <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Përgjigjet e shpejta të "Asistentit të Google"</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5313,7 +5306,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6027945736510816438">Mos dëshiron të thuash <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Shto gjurmë gishti</translation>
 <translation id="6031600495088157824">Opsionet e hyrjes në shiritin e veglave</translation>
-<translation id="6032091552407840792">Kjo provë është aktive vetëm në <ph name="BEGIN_LINK" />disa rajone<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Për të lejuar qasjen e një shtese te ky sajt, kliko te shtesa.</translation>
 <translation id="6032912588568283682">Sistemi i skedarëve</translation>
 <translation id="603539183851330738">Butoni i zhbërjes së korrigjimit automatik. Ktheje në <ph name="TYPED_WORD" />.  Shtyp Enter për ta aktivizuar, Escape për ta larguar.</translation>
@@ -6850,7 +6842,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7509097596023256288">Menaxhimi po konfigurohet</translation>
 <translation id="7509246181739783082">Verifiko identitetin</translation>
 <translation id="7509539379068593709">Çinstalo aplikacionin</translation>
-<translation id="7511415964832680006">Kur janë aktive, sajtet mund të përdorin teknikat e ruajtjes së privatësisë që shfaqen këtu për të ofruar përmbajtjen dhe shërbimet e tyre. Këto përfshijnë alternativa për gjurmimin ndërmjet sajteve. Mund të shtohen prova të tjera me kalimin e kohës.</translation>
 <translation id="7514239104543605883">Kopjo te pajisja jote</translation>
 <translation id="7514365320538308">Shkarko</translation>
 <translation id="7514417110442087199">Shto caktimin</translation>
@@ -7251,7 +7242,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7877451762676714207">Gabim i panjohur në server. Provo sërish më vonë ose kontakto me administratorin e serverit.</translation>
 <translation id="7879478708475862060">Ndiq modalitetin e hyrjes</translation>
 <translation id="7879631849810108578">Shkurtorja u vendos: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kur është e aktivizuar dhe statusi është aktiv, Chrome përdor historikun tënd të 7 ditëve për të përcaktuar një grup apo "kohortë" së cilës i përket. Reklamuesit mund të zgjedhin reklamat për grupin. Historiku yt i shfletimit ruhet privat në pajisjen tënde. Kjo provë është aktive vetëm në <ph name="BEGIN_LINK" />disa rajone<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Të dhënat lokale do të fshihen kur ta rinisësh</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Shiko llogarinë</translation>
@@ -7524,7 +7514,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8119438628456698432">Po krijohen skedarët e evidencave...</translation>
 <translation id="811994229154425014">Hapësirë e dyfishtë për të shkruar pikë</translation>
 <translation id="8120505434908124087">Instalo profilin e kartës eSIM</translation>
-<translation id="812260729110117038">Reklamuesit dhe botuesit mund të studiojnë efikasitetin e reklamave në një mënyrë që nuk të gjurmon nëpër sajtet e uebit.</translation>
 <translation id="81238879832906896">Lule e verdhë dhe e bardhë</translation>
 <translation id="8123975449645947908">Lëviz prapa</translation>
 <translation id="8124313775439841391">ONC-ja e menaxhuar</translation>
@@ -7567,7 +7556,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="816055135686411707">Gabim në vendosjen e besimit të certifikatës</translation>
 <translation id="8160775796528709999">Merr titrat për audion dhe videon tënde duke aktivizuar "Titrat në çast" te cilësimet</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Me <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome po zhvillon teknologji të reja për të të mbrojtur nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur.</translation>
 <translation id="8161293209665121583">Modaliteti i lexuesit për faqet e uebit</translation>
 <translation id="8161604891089629425">Fonti me kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
@@ -8095,7 +8083,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8676770494376880701">Është lidhur karikues me fuqi të ulët</translation>
 <translation id="8677212948402625567">Palosi të gjitha...</translation>
-<translation id="867767487203716855">Përditësimi tjetër</translation>
 <translation id="8678378565142776698">Rinis dhe merr përditësimet automatike</translation>
 <translation id="8678538439778360739">Të dhënat janë enkriptuar me frazën tënde të kalimit në datën <ph name="TIME" />. Kjo nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.</translation>
 <translation id="8678582529642151449">Skedat nuk tkurren</translation>
@@ -8103,7 +8090,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8680251145628383637">Identifikohu për të marrë faqeshënuesit, historikun dhe cilësime të tjera në të gjitha pajisjet. Do të identifikohesh gjithashtu në shërbimet e tua të Google.</translation>
 <translation id="8681614230122836773">Chrome gjeti softuer keqdashës në kompjuterin tënd</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> është lidhur dhe është gati</translation>
-<translation id="8683081248374354009">Rivendos grupin</translation>
 <translation id="8688672835843460752">E disponueshme</translation>
 <translation id="8690129572193755009">Sajtet mund të kërkojnë të menaxhojnë protokollet</translation>
 <translation id="8692107307702113268">Fjalëkalimi është më shumë se 1000 karaktere</translation>
@@ -8380,7 +8366,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8952831374766033534">Opsioni i konfigurimit nuk mbështetet: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Gjatë karikimit</translation>
 <translation id="895347679606913382">Po niset...</translation>
-<translation id="8953654039337655940">Prindit tënd i është dërguar një kërkesë për miratim në aplikacionin Google Family Link dhe në families.google.com. Nëse prindi yt e miraton këtë kërkesë, do të marrësh një njoftim.</translation>
 <translation id="8956230710625245889">Hape te "Lexuesi"</translation>
 <translation id="8957757410289731985">Personalizo profilin</translation>
 <translation id="895944840846194039">Memoria e JavaScript</translation>
@@ -8725,7 +8710,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="97905529126098460">Kjo dritare do të mbyllet pas përfundimit të anulimit.</translation>
 <translation id="980731642137034229">Butoni i menysë së veprimeve</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
-<translation id="982684081337630214">Prindërve të tu i është dërguar një kërkesë për miratim në aplikacionin Google Family Link dhe në families.google.com. Nëse njëri prej tyre e miraton këtë kërkesë, do të marrësh një njoftim.</translation>
 <translation id="983511809958454316">Ky funksion nuk mbështetet në VR</translation>
 <translation id="984275831282074731">Mënyrat e pagesës</translation>
 <translation id="984705303330760860">Shto gjuhë për kontroll drejtshkrimor</translation>

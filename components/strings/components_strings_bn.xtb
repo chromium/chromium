@@ -847,6 +847,7 @@
 <translation id="3216313131063488104">ব্লুজ</translation>
 <translation id="3218181027817787318">রিলেটিভ</translation>
 <translation id="3223287115535306850">অ্যাপ লঞ্চ হচ্ছে</translation>
+<translation id="3223425961342298674">লোকেশন ব্যবহারের অনুমতি নেই</translation>
 <translation id="3225347164936328585">হাততালি</translation>
 <translation id="3225919329040284222">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপনা করেছে যা বিল্ট-ইন প্রত্যাশাগুলির সাথে মেলে না৷ এই প্রত্যাশাগুলি আপনাকে সুরক্ষিত করতে কিছু নিশ্চিত, উচ্চ সুরক্ষার ওয়েবসাইটের জন্য অন্তর্ভুক্ত৷</translation>
 <translation id="3226128629678568754">পৃষ্ঠা লোড করার জন্য প্রয়োজনীয় ডেটা আবার জমা দিতে রিলোড বোতামটি টিপুন৷</translation>
@@ -1186,6 +1187,7 @@
 <translation id="4127575959421463246">ChromeOS ফ্ল্যাগ খুঁজছেন? দেখুন</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{আরও ১টি}one{অন্যান্য #টি}other{অন্যান্য #টি}}</translation>
 <translation id="4130226655945681476">নেটওয়ার্কের তার, মডেম, এবং রাউটার পরীক্ষা করুন</translation>
+<translation id="4132448310531350254">অ্যাপ "<ph name="POLICY_IDS_LIST" />" দ্বারা রেফারেন্স দেওয়া হয়েছে এমন file_extension "<ph name="FILE_EXTENSION" />"-এর ডুপ্লিকেট হ্যান্ডলার।</translation>
 <translation id="4134123981501319574">ডক তৈরি করুন</translation>
 <translation id="413544239732274901">আরও জানুন</translation>
 <translation id="4142935452406587478">ট্রে ১০</translation>
@@ -1208,6 +1210,7 @@
 <translation id="4194250254487269611">এই মুহূর্তে আপনার কার্ডটি সেভ করা যাবে না</translation>
 <translation id="4196861286325780578">&amp;সরানোর কাজটি আবার করুন</translation>
 <translation id="4202554117186904723">Fifth Roll</translation>
+<translation id="4203769790323223880">ক্যামেরা ব্যবহারের অনুমতি নেই</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ফায়ারওয়াল এবং অ্যান্টিভাইরাস কনফিগারেশন পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">বৃহত্</translation>
 <translation id="4210602799576081649">যাচাইকরণ কোডের মেয়াদ শেষ হয়েছে, একটি নতুন কোডের জন্য অনুরোধ জানান</translation>
@@ -1234,6 +1237,7 @@
     &lt;p&gt;কাজ হলে গেলে মনে করে অ্যান্টিভাইরাস সফ্টওয়্যারটি আবার চালু করে নিন।&lt;/p&gt;
     &lt;h4&gt;ধাপ ৫: আরও সাহায্য পান&lt;/h4&gt;
     &lt;p&gt;এই ধাপগুলি অনুসরণ করার পরেও যদি একই সমস্যা হতে থাকে তাহলে ওয়েবসাইটের মালিকের সাথে যোগযোগ করুন।&lt;/p&gt;</translation>
+<translation id="4223404254440398437">মাইক্রোফোন ব্যবহারের অনুমতি নেই</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />নেটওয়ার্ক ডায়গনিস্টিক্স চালিয়ে দেখুন<ph name="END_LINK" />।</translation>
 <translation id="4230204356098880324">ক্যামেরা ব্যবহার করতে এবং সরাতে অনুমতি চাইতে পারে</translation>
 <translation id="4235360514405112390">সঠিক</translation>
@@ -1605,6 +1609,7 @@
 <translation id="5177076414499237632">পৃষ্ঠার সোর্স ও বিষয় সম্পর্কে আরও জানুন</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />-এ নেই? এই ত্রুটি রিপোর্ট করুন</translation>
 <translation id="518639307526414276">পোষা খাদ্য এবং পোষা যত্ন সরবরাহ</translation>
+<translation id="5190072300954988691">ক্যামেরা এবং মাইক্রোফোনের অনুমতি নেই</translation>
 <translation id="5190835502935405962">বুকমার্ক বার</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> একাধিক ফাইল ডাউনলোড করতে চায়</translation>
@@ -1625,6 +1630,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">খারিজ</translation>
+<translation id="5239623327352565343">লোকেশনের অনুমতি আছে</translation>
 <translation id="5242889659037569123">মালপত্র ও ভ্রমণ অ্যাক্সেসরিজ</translation>
 <translation id="5250209940322997802">"নেটওয়ার্কে কানেক্ট করুন"</translation>
 <translation id="52517543715119994">Chrome-এর ফিচার সম্পর্কে জানুন</translation>
@@ -2500,6 +2506,7 @@
 <translation id="7581199239021537589">সাইড 2 ছবি Y শিফ্ট</translation>
 <translation id="7582602800368606489">Google Calendar-এ চটপট নতুন একটি ইভেন্ট তৈরি করুন</translation>
 <translation id="7583969447617676942">আইনি পরিষেবা</translation>
+<translation id="7586676035079382730">বিজ্ঞপ্তি ব্যবহারের অনুমতি নেই</translation>
 <translation id="7591288787774558753">গোপনীয় কন্টেন্ট শেয়ার করবেন?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" />-এ <ph name="EMBEDDED_URL" /> কুকি ও সাইট ডেটা ব্যবহার করার অনুমতি চাইছে</translation>
 <translation id="7592362899630581445">সার্ভারের সার্টিফিকেট, নামের সীমাবদ্ধতাগুলি লঙ্ঘন করে৷</translation>
@@ -3052,6 +3059,7 @@
 <translation id="9131119348384879525">গোপনীয় কন্টেন্ট ক্যাপচার করবেন?</translation>
 <translation id="9136861683332321024">বিলাসবহুল যানবাহন</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
+<translation id="9138037198177304356">বিজ্ঞপ্তি ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ঠিকানা ম্যানেজ করুন</translation>
 <translation id="9144951720726881238">মেয়াদকাল সমাপ্তির তারিখ:</translation>

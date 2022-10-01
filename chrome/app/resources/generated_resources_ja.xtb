@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">お使いのパソコンには <ph name="SHORT_PRODUCT_NAME" /> の RLZ ライブラリも組み込まれています。RLZ は、個人を特定できないタグを割り当てて、特定の販促キャンペーンで生じた検索や <ph name="SHORT_PRODUCT_NAME" /> の利用状況を計測します。これらのラベルは <ph name="PRODUCT_NAME" /> で Google 検索キーワード内に表示されることがあります。</translation>
 <translation id="1043505821207197890">エラーが発生しました。Linux のアップグレードが完了していない可能性があります。詳しくはログをご確認ください。ログは [ファイル] &gt; [マイファイル] &gt; <ph name="LOG_FILE" /> に保存されています</translation>
 <translation id="1043818413152647937">次のアプリのデータも削除しますか？</translation>
-<translation id="1043824690776631483">このサイトにアクセスするには許可が必要です。不適切なコンテンツが含まれている可能性があります。</translation>
 <translation id="104419033123549300">キー設定の選択</translation>
 <translation id="104710386808485638">Linux を再起動しますか？</translation>
 <translation id="1047431265488717055">リンクテキストをコピー(&amp;X)</translation>
@@ -791,7 +790,6 @@
 <translation id="173522743738009831">プライバシー サンドボックスについて</translation>
 <translation id="173628468822554835">今後、新しくアクセスしたサイトでは、デフォルトで通知が表示されなくなります。</translation>
 <translation id="1737968601308870607">バグを報告</translation>
-<translation id="1739684185846730053">プライバシー サンドボックスの試用版はまだ開発段階にあり、一部の地域でのみご利用可能です。このため、現時点では多くのサイトでサードパーティ Cookie など現行のウェブ技術を引き続き使用しつつ、プライバシー サンドボックスが試験的に導入されると考えられます。</translation>
 <translation id="1741190788710022490">アダプティブ充電</translation>
 <translation id="174123615272205933">カスタム</translation>
 <translation id="1741314857973421784">次へ</translation>
@@ -1952,7 +1950,6 @@
 <translation id="2787022501752539710">閲覧データ（ブックマーク、パスワード、履歴など）をローカルで保持する</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">グループ番号</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Linux の削除</translation>
 <translation id="2791952154587244007">エラーが発生しました。キオスク アプリケーションをこのデバイスで自動的に起動することはできません。</translation>
@@ -1982,7 +1979,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist ポリシーの値が無効です。管理者にお問い合わせください。</translation>
 <translation id="2805770823691782631">詳細</translation>
 <translation id="2806372837663997957">共有先のデバイス側で承認されませんでした</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">ショートカットがすでに存在します</translation>
 <translation id="2807517655263062534">ダウンロードしたファイルがここに表示されます</translation>
 <translation id="2809586584051668049">、他 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 件</translation>
@@ -2433,7 +2429,6 @@
 <translation id="3262986719682892278">ファイルが大きすぎます</translation>
 <translation id="3264544094376351444">Sans Serif フォント</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
-<translation id="3265118321284789528">保護者の承認を待っています</translation>
 <translation id="3265459715026181080">ウインドウを閉じる</translation>
 <translation id="3266022278425892773">Linux 開発環境</translation>
 <translation id="3266274118485960573">安全確認を実行しています。</translation>
@@ -2560,7 +2555,6 @@
 <translation id="3388094447051599208">排紙トレイがあと少しでいっぱいです</translation>
 <translation id="3388788256054548012">このファイルは暗号化されています。所有者に復号するよう依頼してください。</translation>
 <translation id="3390013585654699824">アプリの詳細</translation>
-<translation id="3391512812407811893">プライバシー サンドボックス（試用版）</translation>
 <translation id="3393554941209044235">Chrome ドキュメント解析</translation>
 <translation id="3393582007140394275">画面をキャストできません。</translation>
 <translation id="3394850431319394743">識別子の使用と保護されたコンテンツの再生を許可するサイト</translation>
@@ -2621,7 +2615,6 @@
 <translation id="3441653493275994384">画面</translation>
 <translation id="3441663102605358937">もう一度 <ph name="ACCOUNT" /> にログインしてこのアカウントの確認を行ってください</translation>
 <translation id="3442674350323953953">Google とハードウェア データを共有して <ph name="DEVICE_OS" /> の改善に協力する。同意されない場合も、このデータは適切なアップデートを確認するため Google に送信されますが、それ以外の目的で保存または使用されることはありません。</translation>
-<translation id="3444641828375597683">広告主やパブリッシャーは FLoC を使用できます。FLoC についてはこのページで後述します。</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> は <ph name="FILENAME" /> を読み取れるようになります</translation>
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
@@ -5291,7 +5284,6 @@
 <translation id="6027945736510816438">もしかして: <ph name="WEBSITE" /></translation>
 <translation id="6028117231645531007">指紋を追加</translation>
 <translation id="6031600495088157824">ツールバーの入力オプション</translation>
-<translation id="6032091552407840792">この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="6032715498678347852">このサイトに拡張機能がアクセスするのを許可するには、クリックしてください。</translation>
 <translation id="6032912588568283682">ファイル システム</translation>
 <translation id="603539183851330738">自動修正を元に戻すボタン。「<ph name="TYPED_WORD" />」に戻します。戻す場合は Enter キー、修正されたままにする場合は Esc キーを押してください。</translation>
@@ -6820,7 +6812,6 @@
 <translation id="7509097596023256288">管理対象の設定</translation>
 <translation id="7509246181739783082">本人確認</translation>
 <translation id="7509539379068593709">アプリをアンインストール</translation>
-<translation id="7511415964832680006">オンにすると、サイトでコンテンツやサービスを提供する際に、ここで示されているプライバシー保護技術が使用される場合があります。これには、クロスサイト トラッキングの代わりとなる技術も含まれます。今後、試用版の技術がさらに追加される可能性があります。</translation>
 <translation id="7514239104543605883">デバイスにコピー</translation>
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7514417110442087199">割り当てを追加</translation>
@@ -7221,7 +7212,6 @@
 <translation id="7877451762676714207">不明なサーバー エラーが発生しました。もう一度お試しになるか、サーバー管理者にご連絡ください。</translation>
 <translation id="7879478708475862060">入力モードのとおり</translation>
 <translation id="7879631849810108578">ショートカットが設定されました: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">この設定をオンにして、ステータスが有効な場合、Chrome は 7 日間の閲覧履歴に基づいて、自身が属する特定の「コホート」つまりグループを特定します。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="7880823633812189969">再起動すると、ローカルデータが削除されます</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">アカウントを表示</translation>
@@ -7495,7 +7485,6 @@
 <translation id="8119438628456698432">ログファイルを生成しています...</translation>
 <translation id="811994229154425014">スペース 2 つでピリオドを入力</translation>
 <translation id="8120505434908124087">eSIM プロファイルのインストール</translation>
-<translation id="812260729110117038">広告主やパブリッシャーは、サイトをまたいでユーザーをトラッキングすることなく、広告の成果を把握できます。</translation>
 <translation id="81238879832906896">黄色と白の花</translation>
 <translation id="8123975449645947908">後方スクロール</translation>
 <translation id="8124313775439841391">管理対象 ONC</translation>
@@ -7538,7 +7527,6 @@
 <translation id="816055135686411707">証明書の信頼設定エラー</translation>
 <translation id="8160775796528709999">音声と動画の字幕を生成するには、設定で自動字幕起こしを有効にします</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />（<ph name="TIME_REMAINING" />）</translation>
-<translation id="81610453212785426">Chrome では、<ph name="BEGIN_LINK" />プライバシー サンドボックス<ph name="END_LINK" />という取り組みを通じて、クロスサイト トラッキングからユーザーを保護しつつ、オープンウェブの理念を支える新しい技術を開発しています。</translation>
 <translation id="8161293209665121583">ウェブページのリーダーモード</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
 <translation id="8165997195302308593">Crostini のポート転送</translation>
@@ -8063,7 +8051,6 @@
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8676770494376880701">低電力の充電器に接続されています</translation>
 <translation id="8677212948402625567">すべてを折りたたむ...</translation>
-<translation id="867767487203716855">次の更新</translation>
 <translation id="8678378565142776698">再起動して自動的に更新</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> にデータを同期パスフレーズで暗号化しました。なお、Google Pay のお支払い方法と住所はこれには含まれません。</translation>
 <translation id="8678582529642151449">タブを縮小しない</translation>
@@ -8071,7 +8058,6 @@
 <translation id="8680251145628383637">ブックマーク、履歴、パスワードなどの設定をすべてのデバイスで使用するにはログインしてください。ログインすると、利用している Google サービスにも自動的にログインすることになります。</translation>
 <translation id="8681614230122836773">お使いのパソコンに有害なソフトウェアが見つかりました</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> が接続され、準備が整いました</translation>
-<translation id="8683081248374354009">グループをリセット</translation>
 <translation id="8688672835843460752">使用可能</translation>
 <translation id="8690129572193755009">サイトがプロトコルの処理を要求できるようにする</translation>
 <translation id="8692107307702113268">パスワードが 1,000 文字を超えています</translation>
@@ -8348,7 +8334,6 @@
 <translation id="8952831374766033534">設定オプションがサポートされていません: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">開始しています...</translation>
-<translation id="8953654039337655940">Google ファミリー リンク アプリと families.google.com で、あなたの保護者に承認のリクエストを送信しました。保護者がリクエストを承認すると、通知が届きます。</translation>
 <translation id="8956230710625245889">リーダーで開く</translation>
 <translation id="8957757410289731985">プロフィールをカスタマイズ</translation>
 <translation id="895944840846194039">JavaScript メモリ</translation>
@@ -8693,7 +8678,6 @@
 <translation id="97905529126098460">このウィンドウはキャンセル処理の完了後に閉じられます。</translation>
 <translation id="980731642137034229">操作メニューボタン</translation>
 <translation id="981121421437150478">オフライン</translation>
-<translation id="982684081337630214">Google ファミリー リンク アプリと families.google.com で、あなたの保護者に承認のリクエストを送信しました。保護者のどちらかがリクエストを承認すると、通知が届きます。</translation>
 <translation id="983511809958454316">この機能は VR ではサポートされていません</translation>
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="984705303330760860">スペルチェックの言語を追加</translation>

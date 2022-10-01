@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">ਤੁਹਾਡਾ ਕੰਪਿਊਟਰ ਵੀ <ph name="SHORT_PRODUCT_NAME" /> ਦੀ RLZ ਲਾਇਬ੍ਰੇਰੀ ਬਿਲਟ ਇਨ ਤੋਂ ਆਉਂਦਾ ਹੈ। RLZ ਖੋਜਾਂ ਅਤੇ ਇੱਕ ਖ਼ਾਸ ਪ੍ਰਚਾਰ ਮੁਹਿੰਮ ਵੱਲੋਂ ਕੀਤੀ ਗਈ <ph name="SHORT_PRODUCT_NAME" /> ਵਰਤੋਂ ਦਾ ਹਿਸਾਬ ਲਗਾਉਣ ਲਈ ਇੱਕ ਗ਼ੈਰ-ਬੇਜੋੜ, ਗ਼ੈਰ-ਨਿੱਜੀ ਪਛਾਣਯੋਗ ਟੈਗ ਅਸਾਈਨ ਕਰਦਾ ਹੈ। ਇਹ ਲੇਬਲ ਕਦੇ-ਕਦਾਈਂ <ph name="PRODUCT_NAME" /> ਵਿੱਚ Google Search ਪੁੱਛਗਿੱਛਾਂ ਵਿੱਚ ਪ੍ਰਗਟ ਹੁੰਦੇ ਹਨ।</translation>
 <translation id="1043505821207197890">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। Linux ਨੂੰ ਸ਼ਾਇਦ ਸਿਰਫ਼ ਅੰਸ਼ਕ ਤੌਰ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕੀਤਾ ਜਾਵੇ। ਹੋਰ ਜਾਣਕਾਰੀ ਲਈ ਲੌਗਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਲੌਗਾਂ ਨੂੰ ਫ਼ਾਈਲਾਂ &gt; ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ &gt; <ph name="LOG_FILE" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1043818413152647937">ਕੀ ਇਹਨਾਂ ਐਪਾਂ ਤੋਂ ਵੀ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
-<translation id="1043824690776631483">ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਲਈ ਤੁਹਾਨੂੰ ਇਜਾਜ਼ਤ ਦੀ ਲੋੜ ਹੈ। ਸ਼ਾਇਦ ਇਸ ਵਿੱਚ ਅਢੁਕਵੀਂ ਸਮੱਗਰੀ ਹੋ ਸਕਦੀ ਹੈ।</translation>
 <translation id="104419033123549300">ਕੀਮੈਪ ਸਟਾਈਲ</translation>
 <translation id="104710386808485638">ਕੀ Linux ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="1047431265488717055">ਕਾਪੀ ਲਿੰਕ ਲਿ&amp;ਖਤ</translation>
@@ -806,7 +805,6 @@
 <translation id="173522743738009831">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਬਾਰੇ</translation>
 <translation id="173628468822554835">ਸਮਝ ਲਿਆ। ਪੂਰਵ-ਨਿਰਧਾਰਤ ਤੌਰ 'ਤੇ, ਜਿਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ ਉਹ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਨਹੀਂ ਭੇਜਣਗੀਆਂ।</translation>
 <translation id="1737968601308870607">ਫਾਈਲ ਬੱਗ</translation>
-<translation id="1739684185846730053">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਪਰਖਾਂ ਅਜੇ ਵੀ ਵਿਕਾਸ ਅਧੀਨ ਹਨ ਅਤੇ ਚੁਣੇ ਗਏ ਖੇਤਰਾਂ ਵਿੱਚ ਉਪਲਬਧ ਹਨ। ਹੁਣ ਲਈ, ਸਾਈਟਾਂ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਵਰਗੀਆਂ ਮੌਜੂਦਾ ਵੈੱਬ ਤਕਨਾਲੋਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਹੋਏ ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਨੂੰ ਅਜ਼ਮਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="1741190788710022490">ਅਡੈਪਟਿਵ ਚਾਰਜਿੰਗ</translation>
 <translation id="174123615272205933">ਵਿਉਂਤਬੱਧ</translation>
 <translation id="1741314857973421784">ਜਾਰੀ ਰੱਖੋ</translation>
@@ -1977,7 +1975,6 @@
 <translation id="2787022501752539710">ਸਥਨਾਕ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਰੱਖੋ (ਬੁੱਕਮਾਰਕ, ਪਾਸਵਰਡ, ਇਤਿਹਸ, ਆਦਿ)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">ਗਰੁੱਪ ਨੰਬਰ</translation>
 <translation id="2789486458103222910">ਠੀਕ ਹੈ</translation>
 <translation id="2791529110887957050">Linux ਹਟਾਓ</translation>
 <translation id="2791952154587244007">ਇੱਕ ਗੜਬੜ ਹੋਈ। ਕਿਓਸਕ ਐਪਲੀਕੇਸ਼ਨ ਇਸ ਡੀਵਾਈਸ ਤੇ ਸਵੈ-ਲਾਂਚ ਨਹੀਂ ਕਰ ਸਕੇਗਾ।</translation>
@@ -2007,7 +2004,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist ਦਾ ਨੀਤੀ ਮੁੱਲ ਅਵੈਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="2805770823691782631">ਵਧੀਕ ਵੇਰਵੇ</translation>
 <translation id="2806372837663997957">ਜਿਸ ਡੀਵਾਈਸ ਨਾਲ ਤੁਸੀਂ ਸਾਂਝਾ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੇ ਹੋ, ਉਸ ਨੇ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">ਸ਼ਾਰਟਕੱਟ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="2807517655263062534">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਖਾਈ ਦਿੰਦੀਆਂ ਹਨ</translation>
 <translation id="2809586584051668049">ਅਤੇ <ph name="NUMBER_ADDITIONAL_DISABLED" /> ਹੋਰ</translation>
@@ -2458,7 +2454,6 @@
 <translation id="3262986719682892278">ਬਹੁਤ ਵੱਡੀ</translation>
 <translation id="3264544094376351444">Sans-serif ਫੌਂਟ</translation>
 <translation id="3264582393905923483">ਸੰਦਰਭ</translation>
-<translation id="3265118321284789528">ਮਾਂ-ਪਿਓ ਦੀ ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3265459715026181080">Window ਬੰਦ ਕਰੋ</translation>
 <translation id="3266022278425892773">Linux ਵਿਕਾਸ ਵਾਤਾਵਰਨ</translation>
 <translation id="3266274118485960573">ਸੁਰੱਖਿਆ ਜਾਂਚ ਚਲਾਈ ਜਾ ਰਹੀ ਹੈ।</translation>
@@ -2586,7 +2581,6 @@
 <translation id="3388094447051599208">ਆਊਟਪੁੱਟ ਟ੍ਰੇਅ ਲਗਭਗ ਭਰ ਗਈ ਹੈ</translation>
 <translation id="3388788256054548012">ਇਹ ਫ਼ਾਈਲ ਇਨਕ੍ਰਿਪਟਡ ਹੈ। ਇਸਦੇ ਮਾਲਕ ਨੂੰ ਡਿਕ੍ਰਿਪਟ ਕਰਨ ਲਈ ਕਹੋ।</translation>
 <translation id="3390013585654699824">ਐਪ ਸੰਬੰਧੀ ਵੇਰਵੇ</translation>
-<translation id="3391512812407811893">ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ ਪਰਖਾਂ</translation>
 <translation id="3393554941209044235">Chrome ਦਸਤਾਵੇਜ਼ ਵਿਸ਼ਲੇਸ਼ਣ</translation>
 <translation id="3393582007140394275">ਸਕ੍ਰੀਨ ਨੂੰ ਕਾਸਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="3394850431319394743">ਸੁਰੱਖਿਅਤ ਸਮੱਗਰੀ ਚਲਾਉਣ ਲਈ ਪਛਾਣਕਰਤਾਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਹੈ</translation>
@@ -2647,7 +2641,6 @@
 <translation id="3441653493275994384">ਸਕ੍ਰੀਨ</translation>
 <translation id="3441663102605358937">ਇਸ ਖਾਤੇ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਦੁਬਾਰਾ <ph name="ACCOUNT" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Google ਨੂੰ ਤੁਹਾਡੇ ਹਾਰਡਵੇਅਰ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦਿਓ। ਜੇ ਤੁਸੀਂ ਅਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਫਿਰ ਵੀ ਇਹ ਡਾਟਾ Google ਨੂੰ ਉਚਿਤ ਅੱਪਡੇਟ ਨਿਰਧਾਰਿਤ ਕਰਨ ਲਈ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ, ਪਰ ਨਾ ਹੀ ਇਸਨੂੰ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਨਾ ਹੀ ਕਿਸੇ ਹੋਰ ਕੰਮ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ।</translation>
-<translation id="3444641828375597683">ਵਿਗਿਆਪਨਦਾਤੇ ਅਤੇ ਪ੍ਰਕਾਸ਼ਕ, ਇਸ ਪੰਨੇ 'ਤੇ ਬਾਅਦ ਵਿੱਚ ਦੱਸੀ ਗਈ FLoC ਤਕਨਾਲੋਜੀ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹਨ।</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" />, <ph name="FILENAME" /> ਨੂੰ ਦੇਖ ਸਕੇਗੀ</translation>
 <translation id="3445047461171030979">Google Assistant ਤਤਕਾਲ ਜਵਾਬ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ਮਿੰਟ</translation>
@@ -5331,7 +5324,6 @@
 <translation id="6027945736510816438">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ <ph name="WEBSITE" /> ਸੀ?</translation>
 <translation id="6028117231645531007">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6031600495088157824">ਟੂਲਬਾਰ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ</translation>
-<translation id="6032091552407840792">ਇਹ ਪਰਖ ਸਿਰਫ਼ <ph name="BEGIN_LINK" />ਕੁਝ ਖੇਤਰਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਹੀ ਕਿਰਿਆਸ਼ੀਲ ਹੈ।</translation>
 <translation id="6032715498678347852">ਇਸ ਸਾਈਟ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨ ਪਹੁੰਚ ਦੇਣ ਲਈ, ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6032912588568283682">ਫਾਈਲ ਸਿਸਟਮ</translation>
 <translation id="603539183851330738">ਸਵੈ-ਸੁਧਾਰ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ ਬਟਨ। <ph name="TYPED_WORD" /> 'ਤੇ ਵਾਪਸ ਲਿਜਾਓ।  ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ enter, ਖਾਰਜ ਕਰਨ ਲਈ escape ਦਬਾਓ।</translation>
@@ -6871,7 +6863,6 @@
 <translation id="7509097596023256288">ਪ੍ਰਬੰਧਨ ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="7509246181739783082">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="7509539379068593709">ਐਪ ਅਣਸਥਾਪਤ ਕਰੋ</translation>
-<translation id="7511415964832680006">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਆਪਣੀ ਸਮੱਗਰੀ ਅਤੇ ਸੇਵਾਵਾਂ ਮੁਹੱਈਆ ਕਰਵਾਉਣ ਲਈ ਇੱਥੇ ਦਿਖਾਈਆਂ ਗਈਆਂ ਪਰਦੇਦਾਰੀ-ਸੰਭਾਲਣ ਵਾਲੀਆਂ ਤਕਨੀਕਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਇਹਨਾਂ ਵਿੱਚ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ ਦੇ ਵਿਕਲਪ ਸ਼ਾਮਲ ਹਨ। ਸਮੇਂ ਦੇ ਨਾਲ ਹੋਰ ਪਰਖਾਂ ਸ਼ਾਮਲ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="7514239104543605883">ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="7514365320538308">ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="7514417110442087199">ਜ਼ਿੰਮੇ ਲਗਾਏ ਗਏ ਸਵਿੱਚ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>
@@ -7272,8 +7263,6 @@
 <translation id="7877451762676714207">ਅਗਿਆਤ ਸਰਵਰ ਅਸ਼ੁੱਧੀ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ ਜਾਂ ਸਰਵਰ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="7879478708475862060">ਇਨਪੁਟ ਵਿਧੀ ਫਾੱਲੋ ਕਰੋ</translation>
 <translation id="7879631849810108578">ਸ਼ਾਰਟਕੱਟ ਸੈੱਟ ਕੀਤਾ ਗਿਆ: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">ਚਾਲੂ ਹੋਣ ਅਤੇ ਸਥਿਤੀ ਦੇ ਕਿਰਿਆਸ਼ੀਲ ਹੋਣ 'ਤੇ, Chrome ਵੱਲੋਂ 7 ਦਿਨਾਂ ਤੋਂ ਜ਼ਿਆਦਾ ਦੇ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਵਰਤ ਕੇ ਉਸ ਗਰੁੱਪ, ਜਾਂ "ਸਮਗੁਣ" ਨੂੰ ਨਿਰਧਾਰਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਸ਼ਾਮਲ ਹੋ। ਵਿਗਿਆਪਨਦਾਤੇ ਗਰੁੱਪ ਲਈ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਚੁਣ ਸਕਦੇ ਹਨ। ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਨਿੱਜੀ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ। ਇਹ ਪਰਖ ਸਿਰਫ਼
-    <ph name="BEGIN_LINK" />ਕੁਝ ਖੇਤਰਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਹੀ ਕਿਰਿਆਸ਼ੀਲ ਹੈ।</translation>
 <translation id="7880823633812189969">ਜਦੋਂ ਤੁਸੀਂ ਡੀਵਾਈਸ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋਗੇ ਤਾਂ ਸਥਾਨਕ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ਖਾਤਾ ਦੇਖੋ</translation>
@@ -7546,7 +7535,6 @@
 <translation id="8119438628456698432">ਲੌਗ ਫ਼ਾਈਲਾਂ ਸਿਰਜੀਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...</translation>
 <translation id="811994229154425014">ਪੂਰਨ ਵਿਰਾਮ ਟਾਈਪ ਕਰਨ ਲਈ ਡਬਲ-ਸਪੇਸ</translation>
 <translation id="8120505434908124087">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਸਥਾਪਤ ਕਰੋ</translation>
-<translation id="812260729110117038">ਵਿਗਿਆਪਨਦਾਤੇ ਅਤੇ ਪ੍ਰਕਾਸ਼ਕ ਵਿਗਿਆਪਨਾਂ ਦੀ ਪ੍ਰਭਾਵਕਤਾ ਦਾ ਅਧਿਐਨ ਅਜਿਹੇ ਤਰੀਕੇ ਨਾਲ ਕਰ ਸਕਦੇ ਹਨ ਜੋ ਤੁਹਾਨੂੰ ਸਾਈਟਾਂ 'ਤੇ ਟਰੈਕ ਨਹੀਂ ਕਰਦਾ।</translation>
 <translation id="81238879832906896">ਪੀਲਾ ਅਤੇ ਸਫ਼ੈਦ ਫੁੱਲ</translation>
 <translation id="8123975449645947908">ਪਿੱਛੇ ਵੱਲ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="8124313775439841391">ਵਿਵਸਥਿਤ ONC</translation>
@@ -7589,7 +7577,6 @@
 <translation id="816055135686411707">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ</translation>
 <translation id="8160775796528709999">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਲਾਈਵ ਸੁਰਖੀਆਂ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੇ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />ਪ੍ਰਾਈਵੇਸੀ ਸੈਂਡਬਾਕਸ<ph name="END_LINK" /> ਦੇ ਨਾਲ, Chrome ਨਵੀਆਂ ਤਕਨਾਲੋਜੀਆਂ ਦਾ ਵਿਕਾਸ ਕਰ ਰਿਹਾ ਹੈ, ਤਾਂਕਿ ਖੁੱਲੇ ਵੈੱਬ ਨੂੰ ਸੰਭਾਲ ਕੇ ਰੱਖਣ ਦੇ ਨਾਲ-ਨਾਲ ਤੁਹਾਨੂੰ ਕ੍ਰਾਸ-ਸਾਈਟ ਟਰੈਕਿੰਗ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾ ਸਕੇ।</translation>
 <translation id="8161293209665121583">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਰੀਡਰ ਮੋਡ</translation>
 <translation id="8161604891089629425">ਆਊਟਲਾਈਨ ਫ਼ੌਂਟ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}}</translation>
@@ -8117,7 +8104,6 @@
 <translation id="8676374126336081632">ਇਨਪੁਟ ਹਟਾਓ</translation>
 <translation id="8676770494376880701">ਘੱਟ-ਪਾਵਰ ਦਾ ਚਾਰਜਰ ਕਨੈਕਟ ਕੀਤਾ</translation>
 <translation id="8677212948402625567">ਸਭ ਸਮੇਟੋ</translation>
-<translation id="867767487203716855">ਅਗਲਾ ਅੱਪਡੇਟ</translation>
 <translation id="8678378565142776698">ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ ਅਤੇ ਸਵੈਚਲਿਤ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> ਵਜੇ ਡਾਟਾ ਤੁਹਾਡੇ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਸੀ। ਇਸ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।</translation>
 <translation id="8678582529642151449">ਟੈਬਾਂ ਨਹੀਂ ਸੁੰਗੜਨਗੀਆਂ</translation>
@@ -8125,7 +8111,6 @@
 <translation id="8680251145628383637">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ, ਪਾਸਵਰਡ ਅਤੇ ਹੋਰ ਸੈਟਿੰਗਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸਾਈਨ-ਇਨ ਕਰੋ। ਤੁਸੀਂ ਆਪਣੀਆਂ Google ਸੇਵਾਵਾਂ 'ਤੇ ਵੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸਾਈਨ-ਇਨ ਹੋ ਜਾਵੋਗੇ।</translation>
 <translation id="8681614230122836773">Chrome ਨੂੰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਹਾਨੀਕਾਰਕ ਸਾਫ਼ਟਵੇਅਰ ਲੱਭਿਆ ਹੈ</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ਕਨੈਕਟ ਅਤੇ ਤਿਆਰ ਹੈ</translation>
-<translation id="8683081248374354009">ਗਰੁੱਪ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="8688672835843460752">ਉਪਲਬਧ</translation>
 <translation id="8690129572193755009">ਸਾਈਟਾਂ ਪ੍ਰੋਟੋਕੋਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="8692107307702113268">ਪਾਸਵਰਡ 1000 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਤੋਂ ਵੱਧ ਦਾ ਹੈ</translation>
@@ -8403,7 +8388,6 @@
 <translation id="8952831374766033534">ਸੰਰੂਪਣ ਵਿਕਲਪ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ਚਾਰਜਿੰਗ ਵੇਲੇ</translation>
 <translation id="895347679606913382">ਸ਼ੁਰੂ ਹੋ ਰਿਹਾ ਹੈ...</translation>
-<translation id="8953654039337655940">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀ Google Family Link ਐਪ ਅਤੇ families.google.com 'ਤੇ ਮਨਜ਼ੂਰੀ ਦੀ ਬੇਨਤੀ ਭੇਜੀ ਗਈ ਹੈ। ਜੇ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਬੇਨਤੀ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਦੇ ਹਨ, ਤਾਂ ਤੁਹਾਨੂੰ ਸੂਚਨਾ ਮਿਲੇਗੀ।</translation>
 <translation id="8956230710625245889">ਰੀਡਰ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8957757410289731985">ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="895944840846194039">JavaScript ਮੈਮਰੀ</translation>
@@ -8748,7 +8732,6 @@
 <translation id="97905529126098460">ਰੱਦ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਹੋਣ ਦੇ ਬਾਅਦ ਇਹ ਵਿੰਡੋ ਬੰਦ ਹੋ ਜਾਵੇਗੀ।</translation>
 <translation id="980731642137034229">ਕਾਰਵਾਈ ਮੀਨੂ ਬਟਨ</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
-<translation id="982684081337630214">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀ Google Family Link ਐਪ ਅਤੇ families.google.com 'ਤੇ ਮਨਜ਼ੂਰੀ ਦੀ ਬੇਨਤੀ ਭੇਜੀ ਗਈ ਹੈ। ਜੇ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਵਿੱਚੋਂ ਕੋਈ ਵੀ ਬੇਨਤੀ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਦਾ ਹੈ, ਤਾਂ ਤੁਹਾਨੂੰ ਸੂਚਨਾ ਮਿਲੇਗੀ।</translation>
 <translation id="983511809958454316">VR ਵਿੱਚ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="984275831282074731">ਭੁਗਤਾਨ ਵਿਧੀਆਂ</translation>
 <translation id="984705303330760860">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਾਲੀਆਂ ਭਾਸ਼ਾਵਾਂ ਨੂੰ ਸ਼ਾਮਲ ਕਰੋ</translation>

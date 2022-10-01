@@ -45,7 +45,6 @@
 <translation id="1042174272890264476"><ph name="SHORT_PRODUCT_NAME" /> sisältää sisäänrakennetun RLZ-kirjaston. RLZ tuottaa ei-yksilöivän tagin, jolla voidaan mitata tietyn kampanjan aiheuttamia hakuja ja tuotteen <ph name="SHORT_PRODUCT_NAME" /> käyttöä. <ph name="PRODUCT_NAME" /> näyttää ajoittain näitä tunnisteita Google-hakujen kyselyissä.</translation>
 <translation id="1043505821207197890">Jotain meni pieleen. Linux on saatettu päivittää vain osittain. Katso lisätietoa lokeista. Lokit on tallennettu kohtaan Tiedostot &gt; Omat tiedostot &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Poistetaanko myös näiden sovellusten data?</translation>
-<translation id="1043824690776631483">Tarvitset luvan tälle sivustolle siirtymiseen. Sillä voi olla sopimatonta sisältöä.</translation>
 <translation id="104419033123549300">Näppäinkartan tyyli</translation>
 <translation id="104710386808485638">Käynnistetäänkö Linux uudelleen?</translation>
 <translation id="1047431265488717055">Kopioi linkin te&amp;ksti</translation>
@@ -804,7 +803,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="173522743738009831">Tietoja Privacy Sandboxista</translation>
 <translation id="173628468822554835">Selvä. Oletuksena uudet avaamasi sivustot eivät lähetä sinulle ilmoituksia.</translation>
 <translation id="1737968601308870607">Tiedostovirhe</translation>
-<translation id="1739684185846730053">Privacy Sandbox ‑kokeiluja kehitetään yhä aktiivisesti, ja ne ovat saatavilla vain tietyillä alueilla. Tällä hetkellä sivustot voivat kokeilla Privacy Sandboxia ja jatkaa samalla nykyisten verkkoteknologioiden, esim. kolmansien osapuolten evästeiden, käyttöä.</translation>
 <translation id="1741190788710022490">Mukautuva lataus</translation>
 <translation id="174123615272205933">Oma</translation>
 <translation id="1741314857973421784">Jatka</translation>
@@ -1975,7 +1973,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2787022501752539710">Säilytä paikallinen selausdata (kirjanmerkit, salasanat, historia jne.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Ryhmän numero</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Poista Linux</translation>
 <translation id="2791952154587244007">Tapahtui virhe. Kioskisovellus ei voi käynnistyä automaattisesti tällä laitteella.</translation>
@@ -2005,7 +2002,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2805760958323556153">ExtensionInstallForcelist-käytännön arvo on virheellinen. Ota yhteyttä järjestelmänvalvojaasi.</translation>
 <translation id="2805770823691782631">Lisätietoja</translation>
 <translation id="2806372837663997957">Laite, jolle yrität jakaa, ei hyväksynyt</translation>
-<translation id="2806840421670364300">FLoC-kohdentaminen</translation>
 <translation id="2806891468525657116">Pikakuvake on jo olemassa</translation>
 <translation id="2807517655263062534">Lataamasi tiedostot näytetään tässä.</translation>
 <translation id="2809586584051668049">ja <ph name="NUMBER_ADDITIONAL_DISABLED" /> muuta</translation>
@@ -2457,7 +2453,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3262986719682892278">Liian iso</translation>
 <translation id="3264544094376351444">Sans-Serif-fontti</translation>
 <translation id="3264582393905923483">Konteksti</translation>
-<translation id="3265118321284789528">Odotetaan vanhemman hyväksyntää</translation>
 <translation id="3265459715026181080">Sulje ikkuna</translation>
 <translation id="3266022278425892773">Linux-kehitysympäristö</translation>
 <translation id="3266274118485960573">Turvatarkistus on käynnissä.</translation>
@@ -2585,7 +2580,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3388094447051599208">Tulostuslokero on melkein täynnä</translation>
 <translation id="3388788256054548012">Tämä tiedosto on salattu. Pyydä sen omistajaa purkamaan salaus.</translation>
 <translation id="3390013585654699824">Sovelluksen tiedot</translation>
-<translation id="3391512812407811893">Privacy Sandbox ‑kokeilut</translation>
 <translation id="3393554941209044235">Chromen dokumenttianalyysi</translation>
 <translation id="3393582007140394275">Näyttöä ei voi striimata.</translation>
 <translation id="3394850431319394743">Tunnisteiden käyttö on sallittua suojatun sisällön toistamisessa</translation>
@@ -2646,7 +2640,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3441653493275994384">Näyttö</translation>
 <translation id="3441663102605358937">Kirjaudu uudelleen sisään sivustolle <ph name="ACCOUNT" /> vahvistaaksesi tilin</translation>
 <translation id="3442674350323953953">Salli Googlen käyttää laitedataasi palvelun (<ph name="DEVICE_OS" />) kehittämiseksi. Jos kieltäydyt, dataa lähetetään Googlelle tarvittavien päivitysten selvittämiseksi, mutta sitä ei tallenneta tai käytetä muihin tarkoituksiin.</translation>
-<translation id="3444641828375597683">Mainostajat ja julkaisijat voivat käyttää FLoC-tekniikkaa (lisätietoja tällä sivulla).</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> voi nähdä tämän: <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Google Assistantin nopeat vastaukset</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5327,7 +5320,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6027945736510816438">Tarkoititko: <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Lisää sormenjälki</translation>
 <translation id="6031600495088157824">Syöttövalinnat työkalupalkissa</translation>
-<translation id="6032091552407840792">Tämä kokeilu on aktiivinen vain <ph name="BEGIN_LINK" />tietyillä alueilla<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Anna laajennukselle pääsy sivustolle klikkaamalla laajennusta.</translation>
 <translation id="6032912588568283682">Tiedostojärjestelmä</translation>
 <translation id="603539183851330738">Automaattisen korjauksen kumoamispainike. Palauta <ph name="TYPED_WORD" />.  Aktivoi painamalla Enter, ohita painamalla Esc.</translation>
@@ -6864,7 +6856,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7509097596023256288">Otetaan hallinointia käyttöön</translation>
 <translation id="7509246181739783082">Vahvista henkilöllisyys</translation>
 <translation id="7509539379068593709">Poista sovellus</translation>
-<translation id="7511415964832680006">Kun se on päällä, sivustot voivat käyttää täällä näkyvää yksityisyyttä suojaavaa tekniikkaa sisällön ja palveluiden tarjoamiseen. Saatavilla on esimerkiksi vaihtoehtoja sivustojen väliselle seurannalle. Muita kokeiluja voidaan lisätä ajan myötä.</translation>
 <translation id="7514239104543605883">Kopioi laitteelle</translation>
 <translation id="7514365320538308">Lataa</translation>
 <translation id="7514417110442087199">Lisää määritys</translation>
@@ -7265,8 +7256,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7877451762676714207">Tuntematon palvelinvirhe. Yritä uudelleen tai ota yhteyttä palvelimen järjestelmänvalvojaan.</translation>
 <translation id="7879478708475862060">Seuraa syöttötapaa</translation>
 <translation id="7879631849810108578">Pikanäppäin luotu: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kun se on päällä ja sen tila on aktiivinen, Chrome päättelee seuraavan seitsemän päivän aikana selaushistorian avulla, mihin ryhmään tai "kohorttiin" kuulut. Mainostajat voivat valita ryhmälle mainoksia. Selaushistoriasi pysyy yksityisenä laitteellasi. Tämä kokeilu on aktiivinen vain
-    <ph name="BEGIN_LINK" />tietyillä alueilla<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Paikallinen data poistetaan uudelleenkäynnistyksen yhteydessä</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Näytä tili</translation>
@@ -7540,7 +7529,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8119438628456698432">Luodaan lokitiedostoja…</translation>
 <translation id="811994229154425014">Piste tuplavälilyönnillä</translation>
 <translation id="8120505434908124087">Asenna eSIM-profiili</translation>
-<translation id="812260729110117038">Mainostajat ja julkaisijat voivat tutkia mainosten vaikuttavuutta tavalla, joka ei seuraa sinua eri sivustoilla.</translation>
 <translation id="81238879832906896">Kelta-valkoinen kukka</translation>
 <translation id="8123975449645947908">Vieritä taaksepäin</translation>
 <translation id="8124313775439841391">Hallinnoitu ONC</translation>
@@ -7583,7 +7571,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="816055135686411707">Varmenteen luottamusasetusten virhe</translation>
 <translation id="8160775796528709999">Laita Livetekstitys päälle asetuksista, jotta näet audion ja videon tekstitykset</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Chrome kehittää <ph name="BEGIN_LINK" />Privacy Sandboxin<ph name="END_LINK" /> avulla uusia tekniikoita, joiden avulla sinua voidaan suojata sivustojen väliseltä seurannalta verkon pysyessä avoimena.</translation>
 <translation id="8161293209665121583">Verkkosivujen lukijatila</translation>
 <translation id="8161604891089629425">Ääriviivafontti</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Siirrä välilehti uuteen ikkunaan}other{Siirrä välilehdet uuteen ikkunaan}}</translation>
@@ -8111,7 +8098,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8676374126336081632">Tyhjennä teksti</translation>
 <translation id="8676770494376880701">Pienitehoinen laturi kytketty</translation>
 <translation id="8677212948402625567">Tiivistä kaikki...</translation>
-<translation id="867767487203716855">Seuraava päivitys</translation>
 <translation id="8678378565142776698">Käynnistä uudelleen ja päivitä automaattisesti</translation>
 <translation id="8678538439778360739">Data salattiin synkronoinnin tunnuslauseellasi <ph name="TIME" />. Tämä ei koske Google Payhin tallennettuja maksutapoja tai osoitteita.</translation>
 <translation id="8678582529642151449">Välilehdet eivät kutistu</translation>
@@ -8119,7 +8105,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8680251145628383637">Kirjaudu sisään, niin voit käyttää kirjanmerkkejä, historiaa, salasanoja ja muita asetuksiasi kaikilla laitteilla. Sinut kirjataan lisäksi automaattisesti sisään käyttämiisi Googlen palveluihin.</translation>
 <translation id="8681614230122836773">Chrome löysi tietokoneeltasi haitallisen ohjelmiston</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> on yhdistetty ja valmiina</translation>
-<translation id="8683081248374354009">Nollaa ryhmä</translation>
 <translation id="8688672835843460752">Saatavilla</translation>
 <translation id="8690129572193755009">Sivustot voivat pyytää lupaa käsitellä protokollia</translation>
 <translation id="8692107307702113268">Salasana sisältää yli 1000 merkkiä</translation>
@@ -8396,7 +8381,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8952831374766033534">Määritysvaihtoehtoa ei tueta: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Latauksessa</translation>
 <translation id="895347679606913382">Käynnistää...</translation>
-<translation id="8953654039337655940">Vanhemmallesi on lähetetty hyväksyntäpyyntö Google Family Link ‑sovelluksessa ja osoitteessa families.google.com. Saat ilmoituksen, jos vanhempi hyväksyy pyynnön.</translation>
 <translation id="8956230710625245889">Avaa lukijassa</translation>
 <translation id="8957757410289731985">Muokkaa profiilia</translation>
 <translation id="895944840846194039">JavaScriptin käyttämä muisti</translation>
@@ -8741,7 +8725,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="97905529126098460">Tämä ikkuna suljetaan, kun peruutus on valmis.</translation>
 <translation id="980731642137034229">Toimintovalikon painike</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Vanhemmillesi on lähetetty hyväksyntäpyyntö Google Family Link ‑sovelluksessa ja osoitteessa families.google.com. Saat ilmoituksen, jos joku vanhemmistasi hyväksyy pyynnön.</translation>
 <translation id="983511809958454316">VR ei tue tätä ominaisuutta</translation>
 <translation id="984275831282074731">Maksutavat</translation>
 <translation id="984705303330760860">Lisää oikeinkirjoituksen tarkistuksen kieliä</translation>

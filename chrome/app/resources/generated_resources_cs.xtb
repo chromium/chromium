@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Počítač je dodáván s integrovanou knihovnou RLZ prohlížeče <ph name="SHORT_PRODUCT_NAME" />. RLZ přiřadí značku, která slouží k vyhodnocení vyhledávání a využití prohlížečů <ph name="SHORT_PRODUCT_NAME" />, které pocházejí z konkrétní propagační kampaně. Tato značka není jedinečná a neumožňuje osobní identifikaci. Tyto značky jsou někdy v prohlížeči <ph name="PRODUCT_NAME" /> uváděny v dotazech ve Vyhledávání Google.</translation>
 <translation id="1043505821207197890">Došlo k chybě. Linux byl zřejmě upgradován jen částečně. Další informace naleznete v protokolech. Protokoly byly uloženy do umístění Soubory &gt; Moje soubory &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Vymazat data také z těchto aplikací?</translation>
-<translation id="1043824690776631483">K návštěvě tohoto webu potřebujete povolení. Může zahrnovat nevhodný obsah.</translation>
 <translation id="104419033123549300">Styl mapy kláves</translation>
 <translation id="104710386808485638">Restartovat Linux?</translation>
 <translation id="1047431265488717055">Kopírovat te&amp;xt odkazu</translation>
@@ -796,7 +795,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="173522743738009831">Informace o funkci Privacy Sandbox</translation>
 <translation id="173628468822554835">Rozumím. Ve výchozím nastavení vám nově navštívené weby nebudou zasílat oznámení.</translation>
 <translation id="1737968601308870607">Oznámit chybu</translation>
-<translation id="1739684185846730053">Zkušební technologie Privacy Sandbox jsou stále aktivně vyvíjeny a jsou dostupné jen ve vybraných oblastech. Prozatím mohou weby technologie Privacy Sandbox zkoušet a přitom nadále používat aktuální technologie, jako jsou soubory cookie třetích stran.</translation>
 <translation id="1741190788710022490">Adaptivní nabíjení</translation>
 <translation id="174123615272205933">Vlastní</translation>
 <translation id="1741314857973421784">Pokračovat</translation>
@@ -1963,7 +1961,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2787022501752539710">Zachovat místní údaje o prohlížení (záložky, hesla, historii apod.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Číslo skupiny</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Odstranit Linux</translation>
 <translation id="2791952154587244007">Došlo k chybě. Aplikace veřejného terminálu se v tomto zařízení nebude moci automaticky spustit.</translation>
@@ -1993,7 +1990,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2805760958323556153">Hodnota zásady ExtensionInstallForcelist není platná. Obraťte se na administrátora.</translation>
 <translation id="2805770823691782631">Další podrobnosti</translation>
 <translation id="2806372837663997957">Cílové zařízení sdílený soubor nepřijalo</translation>
-<translation id="2806840421670364300">Federované učení kohort</translation>
 <translation id="2806891468525657116">Zkratka už existuje</translation>
 <translation id="2807517655263062534">Zde se zobrazují stažené soubory</translation>
 <translation id="2809586584051668049">a další (<ph name="NUMBER_ADDITIONAL_DISABLED" />)</translation>
@@ -2445,7 +2441,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3262986719682892278">Příliš velké</translation>
 <translation id="3264544094376351444">Bezpatkové písmo</translation>
 <translation id="3264582393905923483">Kontext</translation>
-<translation id="3265118321284789528">Čekání na schválení od rodičů</translation>
 <translation id="3265459715026181080">Zavřít okno</translation>
 <translation id="3266022278425892773">Vývojové prostředí Linux</translation>
 <translation id="3266274118485960573">Bezpečnostní kontrola je spuštěna.</translation>
@@ -2573,7 +2568,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3388094447051599208">Výstupní zásobník je téměř plný</translation>
 <translation id="3388788256054548012">Tento soubor je zašifrovaný. Požádejte vlastníka, aby ho dešifroval.</translation>
 <translation id="3390013585654699824">Podrobnosti o aplikaci</translation>
-<translation id="3391512812407811893">Privacy Sandbox</translation>
 <translation id="3393554941209044235">Analýza dokumentů Chrome</translation>
 <translation id="3393582007140394275">Obrazovku nelze odeslat.</translation>
 <translation id="3394850431319394743">Povolení používat identifikátory k přehrávání chráněného obsahu</translation>
@@ -2634,7 +2628,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3441663102605358937">Ověřte účet <ph name="ACCOUNT" /> tím, že se k němu znovu přihlásíte</translation>
 <translation id="3442674350323953953">Umožnit Googlu používat data o hardwaru k vylepšování systému <ph name="DEVICE_OS" />. Pokud odmítnete, tato data se přesto do Googlu budou odesílat, aby bylo možné vybrat správné aktualizace, ale nebudou se ukládat ani používat k jiným účelům.</translation>
-<translation id="3444641828375597683">Inzerenti a majitelé obsahu mohou používat federované učení kohort popsané dále na této stránce.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> bude moci zobrazit soubor <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Rychlé odpovědi Asistenta Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5313,7 +5306,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6027945736510816438">Měli jste na mysli <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Přidat otisk prstu</translation>
 <translation id="6031600495088157824">Možnosti zadávání na liště</translation>
-<translation id="6032091552407840792">Tato zkušební funkce je k dispozici pouze v <ph name="BEGIN_LINK" />některých oblastech<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Chcete-li rozšíření udělit přístup k tomuto webu, klikněte na něj.</translation>
 <translation id="6032912588568283682">Systém souborů</translation>
 <translation id="603539183851330738">Tlačítko vrácení automatické opravy zpět. Vrátit na <ph name="TYPED_WORD" />.  Klávesou Enter opravu vrátíte zpět, klávesou Escape akci zrušíte.</translation>
@@ -6854,7 +6846,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7509097596023256288">Probíhá nastavování správy</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
 <translation id="7509539379068593709">Odinstalovat aplikaci</translation>
-<translation id="7511415964832680006">Když je tato možnost zapnutá, weby při poskytování obsahu a služeb mohou používat zde uvedené techniky zajišťující ochranu soukromí. Patří sem i alternativy ke sledování napříč weby. Časem mohou přibýt další zkušební funkce.</translation>
 <translation id="7514239104543605883">Kopírovat do zařízení</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7514417110442087199">Přidat přiřazení</translation>
@@ -7256,7 +7247,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7877451762676714207">Neznámá chyba serveru. Zkuste to prosím znovu, nebo kontaktujte správce serveru.</translation>
 <translation id="7879478708475862060">Sledovat režim vstupu</translation>
 <translation id="7879631849810108578">Byla nastavena zkratka: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Když je tato funkce zapnutá a aktivní, Chrome na základě vaší sedmidenní historie prohlížení určuje skupinu (kohortu), do které patříte. Inzerenti mohou vybírat reklamy podle skupin. Vaše historie prohlížení zůstává soukromá ve vašem zařízení. Tato zkušební funkce je k dispozici pouze v <ph name="BEGIN_LINK" />některých oblastech<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Při restartu se vymažou místní data</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Zobrazit účet</translation>
@@ -7530,7 +7520,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8119438628456698432">Generování souborů protokolů…</translation>
 <translation id="811994229154425014">Dvojitým stisknutím mezerníku zadávat tečku</translation>
 <translation id="8120505434908124087">Nainstalovat profil eSIM</translation>
-<translation id="812260729110117038">Inzerenti a majitelé obsahu mohou posuzovat účinnost reklam způsobem, při kterém nebudete sledováni napříč weby.</translation>
 <translation id="81238879832906896">Žluto-bílá květina</translation>
 <translation id="8123975449645947908">Posunout zpět</translation>
 <translation id="8124313775439841391">Spravovaná ONC</translation>
@@ -7573,7 +7562,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="816055135686411707">Chyba při nastavování důvěryhodnosti certifikátu</translation>
 <translation id="8160775796528709999">Když v nastavení povolíte živý přepis, budou se u zvuku a videí zobrazovat titulky</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">V rámci sady <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> vyvíjí tým Chrome nové technologie, které uživatele chrání před sledováním mezi weby a přitom zachovávají otevřenost webu.</translation>
 <translation id="8161293209665121583">Režim čtečky pro webové stránky</translation>
 <translation id="8161604891089629425">Obrysové písmo</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Přesunout kartu do nového okna}few{Přesunout karty do nového okna}many{Přesunout karty do nového okna}other{Přesunout karty do nového okna}}</translation>
@@ -8101,7 +8089,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8676374126336081632">Vymazat vstup</translation>
 <translation id="8676770494376880701">Byla připojena nabíječka s nízkým napětím</translation>
 <translation id="8677212948402625567">Sbalit vše...</translation>
-<translation id="867767487203716855">Další aktualizace</translation>
 <translation id="8678378565142776698">Restartovat a stáhnout automatické aktualizace</translation>
 <translation id="8678538439778360739">Data byla <ph name="TIME" /> zašifrována pomocí heslové fráze pro synchronizaci. Toto šifrování se nevztahuje na platební metody a adresy z Google Pay.</translation>
 <translation id="8678582529642151449">Karty se nezmenšují</translation>
@@ -8109,7 +8096,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8680251145628383637">Přihlaste se a synchronizujte záložky, historii, hesla a další nastavení do všech svých zařízení. Budete také automaticky přihlášeni do svých služeb Google.</translation>
 <translation id="8681614230122836773">Chrome ve vašem počítači našel škodlivý software</translation>
 <translation id="8682730193597992579">Tiskárna <ph name="PRINTER_NAME" /> je připojená a připravená</translation>
-<translation id="8683081248374354009">Resetovat skupinu</translation>
 <translation id="8688672835843460752">Dostupné</translation>
 <translation id="8690129572193755009">Weby mohou žádat o povolení zpracovávat protokoly</translation>
 <translation id="8692107307702113268">Heslo má víc než 1000 znaků</translation>
@@ -8388,7 +8374,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8952831374766033534">Konfigurační možnost není podporována: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Při nabíjení</translation>
 <translation id="895347679606913382">Spouštění...</translation>
-<translation id="8953654039337655940">Vašemu rodiči byla v aplikaci Google Family Link a na webu families.google.com odeslána žádost o schválení. Pokud rodič žádost schválí, obdržíte oznámení.</translation>
 <translation id="8956230710625245889">Otevřít ve čtečce</translation>
 <translation id="8957757410289731985">Upravit profil</translation>
 <translation id="895944840846194039">Paměť JavaScriptu</translation>
@@ -8733,7 +8718,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="97905529126098460">Až bude zrušení dokončeno, toto okno se zavře.</translation>
 <translation id="980731642137034229">Tlačítko nabídky akcí</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Vašim rodičům byla v aplikaci Google Family Link a na webu families.google.com odeslána žádost o schválení. Pokud rodiče žádost schválí, obdržíte oznámení.</translation>
 <translation id="983511809958454316">Tato funkce ve virtuální realitě není podporována</translation>
 <translation id="984275831282074731">Platební metody</translation>
 <translation id="984705303330760860">Přidání jazyků kontroly pravopisu</translation>

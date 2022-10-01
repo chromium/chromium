@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Sul computer è integrata anche la libreria RLZ di <ph name="SHORT_PRODUCT_NAME" />. RLZ assegna un tag non univoco che non consente l'identificazione personale per valutare le ricerche e l'utilizzo di <ph name="SHORT_PRODUCT_NAME" /> promosso da una determinata campagna promozionale. Talvolta queste etichette vengono visualizzate in query della Ricerca Google in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Si è verificato un errore. L'upgrade di Linux potrebbe essere stato solo parziale. Per ulteriori informazioni, controlla i log salvati in File &gt; I miei file &gt; <ph name="LOG_FILE" />.</translation>
 <translation id="1043818413152647937">Vuoi cancellare anche i dati di queste app?</translation>
-<translation id="1043824690776631483">Ti occorre l'autorizzazione per poter visitare questo sito perché potrebbe avere contenuti inappropriati.</translation>
 <translation id="104419033123549300">Stile mappa dei tasti</translation>
 <translation id="104710386808485638">Riavviare Linux?</translation>
 <translation id="1047431265488717055">Copia testo del lin&amp;k</translation>
@@ -794,7 +793,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="173522743738009831">Informazioni su Privacy Sandbox</translation>
 <translation id="173628468822554835">Ok. Per impostazione predefinita, i nuovi siti che visiti non ti invieranno notifiche.</translation>
 <translation id="1737968601308870607">Segnala bug</translation>
-<translation id="1739684185846730053">Le prove di Privacy Sandbox sono ancora in fase di sviluppo attivo e sono disponibili soltanto in alcune regioni. Per il momento i siti possono provare Privacy Sandbox continuando a usare le attuali tecnologie web quali i cookie di terze parti.</translation>
 <translation id="1741190788710022490">Ricarica adattiva</translation>
 <translation id="174123615272205933">Personalizzati</translation>
 <translation id="1741314857973421784">Continua</translation>
@@ -1961,7 +1959,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2787022501752539710">Mantieni dati di navigazione locali (preferiti, password, cronologia e così via)</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Numero del gruppo</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Rimuovere Linux</translation>
 <translation id="2791952154587244007">Si è verificato un errore. Impossibile avviare automaticamente l'applicazione kiosk su questo dispositivo.</translation>
@@ -1991,7 +1988,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2805760958323556153">Il valore del criterio di ExtensionInstallForcelist non è valido. Contatta l'amministratore.</translation>
 <translation id="2805770823691782631">Dettagli aggiuntivi</translation>
 <translation id="2806372837663997957">Il dispositivo con cui stai tentando di condividere il file non ha accettato</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Scorciatoia già presente</translation>
 <translation id="2807517655263062534">I file scaricati vengono mostrati qui</translation>
 <translation id="2809586584051668049">e altre <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2443,7 +2439,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3262986719682892278">File troppo grande</translation>
 <translation id="3264544094376351444">Carattere sans-serif</translation>
 <translation id="3264582393905923483">Contesto</translation>
-<translation id="3265118321284789528">In attesa dell'approvazione dei genitori</translation>
 <translation id="3265459715026181080">Chiudi finestra</translation>
 <translation id="3266022278425892773">Ambiente di sviluppo Linux</translation>
 <translation id="3266274118485960573">Controllo di sicurezza in corso.</translation>
@@ -2571,7 +2566,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3388094447051599208">Il vassoio di uscita è quasi pieno</translation>
 <translation id="3388788256054548012">Questo file è criptato. Chiedi al proprietario di decriptarlo.</translation>
 <translation id="3390013585654699824">Dettagli app</translation>
-<translation id="3391512812407811893">Prove di Privacy Sandbox</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3393582007140394275">Impossibile trasmettere lo schermo.</translation>
 <translation id="3394850431319394743">Autorizzati a usare identificatori per riprodurre contenuti protetti</translation>
@@ -2632,7 +2626,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3441653493275994384">Schermo</translation>
 <translation id="3441663102605358937">Accedi di nuovo all'account <ph name="ACCOUNT" /> per effettuare la verifica</translation>
 <translation id="3442674350323953953">Consenti a Google di usare i dati relativi al tuo hardware per migliorare <ph name="DEVICE_OS" />. Se rifiuti, questi dati vengono comunque inviati a Google per stabilire gli aggiornamenti appropriati, ma non vengono archiviati o usati in altro modo.</translation>
-<translation id="3444641828375597683">Gli inserzionisti e i publisher possono usare la tecnologia FLoC, descritta più avanti in questa pagina.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> potrà visualizzare <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Risposte rapide dell'Assistente Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5312,7 +5305,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6027945736510816438">Intendevi <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Aggiungi impronta</translation>
 <translation id="6031600495088157824">Opzioni di immissione nella barra degli strumenti</translation>
-<translation id="6032091552407840792">Questa prova è attiva soltanto in <ph name="BEGIN_LINK" />alcune regioni<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Per consentire a un'estensione di accedere a questo sito, fai clic sull'estensione.</translation>
 <translation id="6032912588568283682">File system</translation>
 <translation id="603539183851330738">Pulsante per annullare la correzione automatica. Ripristina <ph name="TYPED_WORD" />.  Premi Invio per attivare o Esc per ignorare.</translation>
@@ -6849,7 +6841,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7509097596023256288">Impostazione della gestione in corso…</translation>
 <translation id="7509246181739783082">Verifica la tua identità</translation>
 <translation id="7509539379068593709">Disinstalla app</translation>
-<translation id="7511415964832680006">Se attivi questa funzionalità, i siti potrebbero usare le tecniche che garantiscono la tutela della privacy mostrate qui per fornire i propri contenuti e servizi. Sono incluse alternative al tracciamento tra siti. Nel tempo potrebbero essere aggiunte altre prove.</translation>
 <translation id="7514239104543605883">Copia sul tuo dispositivo</translation>
 <translation id="7514365320538308">Scarica</translation>
 <translation id="7514417110442087199">Aggiungi assegnazione</translation>
@@ -7251,8 +7242,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7877451762676714207">Errore del server sconosciuto. Riprova o contatta l'amministratore del server.</translation>
 <translation id="7879478708475862060">Segui modalità immissione</translation>
 <translation id="7879631849810108578">Scorciatoia impostata: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Quando la funzionalità è attivata e lo stato è attivo, Chrome usa la tua cronologia di navigazione di 7 giorni per definire un gruppo, o "coorte", di cui fai parte. Gli inserzionisti possono selezionare annunci per il gruppo. La cronologia di navigazione rimane privata sul tuo dispositivo. Questa prova è attiva soltanto in
-    <ph name="BEGIN_LINK" />alcune regioni<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">I dati locali verranno eliminati al riavvio</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Visualizza account</translation>
@@ -7526,7 +7515,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8119438628456698432">Generazione dei file di log…</translation>
 <translation id="811994229154425014">Doppio spazio per digitare il punto</translation>
 <translation id="8120505434908124087">Installa profilo eSIM</translation>
-<translation id="812260729110117038">Gli inserzionisti e i publisher possono esaminare l'efficacia degli annunci senza tracciarti tra i siti.</translation>
 <translation id="81238879832906896">Fiore bianco e giallo</translation>
 <translation id="8123975449645947908">Scorri indietro</translation>
 <translation id="8124313775439841391">ONC gestito</translation>
@@ -7569,7 +7557,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="816055135686411707">Errore durante l'impostazione dell'attendibilità del certificato</translation>
 <translation id="8160775796528709999">Aggiungi sottotitoli ai tuoi contenuti audio e video attivando la funzionalità Sottotitoli in tempo reale nelle impostazioni</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Con <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome sviluppa nuove tecnologie che ti tutelano dai meccanismi di tracciamento tra siti salvaguardando al contempo il Web aperto.</translation>
 <translation id="8161293209665121583">Modalità Reader per le pagine web</translation>
 <translation id="8161604891089629425">Carattere contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Sposta scheda in una nuova finestra}other{Sposta schede in una nuova finestra}}</translation>
@@ -8097,7 +8084,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8676374126336081632">Cancella testo inserito</translation>
 <translation id="8676770494376880701">Caricabatterie a basso consumo collegato</translation>
 <translation id="8677212948402625567">Comprimi tutto...</translation>
-<translation id="867767487203716855">Prossimo aggiornamento</translation>
 <translation id="8678378565142776698">Riavvia e ricevi aggiornamenti automatici</translation>
 <translation id="8678538439778360739">I dati sono stati criptati con la tua passphrase di sincronizzazione il giorno <ph name="TIME" />. Non sono inclusi i metodi di pagamento e gli indirizzi di Google Pay.</translation>
 <translation id="8678582529642151449">Le schede non si riducono</translation>
@@ -8105,7 +8091,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8680251145628383637">Accedi per trovare i tuoi segnalibri, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi. Verrà inoltre eseguito l'accesso automatico ai tuoi servizi Google.</translation>
 <translation id="8681614230122836773">Chrome ha rilevato software dannoso sul tuo computer</translation>
 <translation id="8682730193597992579">La stampante <ph name="PRINTER_NAME" /> è collegata e pronta</translation>
-<translation id="8683081248374354009">Reimposta gruppo</translation>
 <translation id="8688672835843460752">Disponibile</translation>
 <translation id="8690129572193755009">I siti possono chiedere di gestire protocolli</translation>
 <translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
@@ -8382,7 +8367,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8952831374766033534">Opzione di configurazione non supportata: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Durante la ricarica</translation>
 <translation id="895347679606913382">Avvio download in corso...</translation>
-<translation id="8953654039337655940">È stata inviata una richiesta di approvazione a uno dei tuoi genitori nella sua app Google Family Link e all'indirizzo families.google.com. Se il genitore approverà la richiesta, riceverai una notifica.</translation>
 <translation id="8956230710625245889">Apri in Reader</translation>
 <translation id="8957757410289731985">Personalizza il profilo</translation>
 <translation id="895944840846194039">Memoria JavaScript</translation>
@@ -8727,7 +8711,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="97905529126098460">Questa finestra verrà chiusa una volta completato l'annullamento.</translation>
 <translation id="980731642137034229">Pulsante del menu azione</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">È stata inviata una richiesta di approvazione ai tuoi genitori nella loro app Google Family Link e all'indirizzo families.google.com. Se uno dei genitori approverà la richiesta, riceverai una notifica.</translation>
 <translation id="983511809958454316">Questa funzione non è supportata in realtà virtuale</translation>
 <translation id="984275831282074731">Metodi di pagamento</translation>
 <translation id="984705303330760860">Aggiungi lingue per il controllo ortografico</translation>

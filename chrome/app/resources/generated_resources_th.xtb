@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">คอมพิวเตอร์ของคุณมาพร้อมกับไลบรารี RLZ ของ <ph name="SHORT_PRODUCT_NAME" /> ในตัว โดย RLZ จะระบุแท็กที่ซ้ำกันได้และไม่สามารถระบุตัวบุคคลเพื่อวัดการค้นหาและการใช้งาน <ph name="SHORT_PRODUCT_NAME" /> ที่ทำงานโดยแคมเปญส่งเสริมการขายบางรายการ บางครั้งป้ายกำกับจะปรากฏในคำค้นหาของ Google Search ใน <ph name="PRODUCT_NAME" /></translation>
 <translation id="1043505821207197890">เกิดข้อผิดพลาด Linux อาจได้รับการอัปเกรดเพียงบางส่วน ตรวจสอบการบันทึกเพื่อดูข้อมูลเพิ่มเติม ระบบได้บันทึกข้อมูลไว้ใน Files &gt; ไฟล์ของฉัน &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">ล้างข้อมูลในแอปเหล่านี้ด้วยไหม</translation>
-<translation id="1043824690776631483">คุณต้องได้รับอนุญาตจึงจะเข้าชมเว็บไซต์นี้ได้ เพราะอาจมีเนื้อหาไม่เหมาะสม</translation>
 <translation id="104419033123549300">รูปแบบคีย์แมป</translation>
 <translation id="104710386808485638">รีสตาร์ท Linux ไหม</translation>
 <translation id="1047431265488717055">คัดลอก&amp;ข้อความของลิงก์</translation>
@@ -794,7 +793,6 @@
 <translation id="173522743738009831">เกี่ยวกับ Privacy Sandbox</translation>
 <translation id="173628468822554835">รับทราบ โดยค่าเริ่มต้นแล้ว เว็บไซต์ใหม่ที่คุณเข้าชมจะไม่ส่งการแจ้งเตือนให้คุณ</translation>
 <translation id="1737968601308870607">ข้อบกพร่องของไฟล์</translation>
-<translation id="1739684185846730053">การทดลองใช้ Privacy Sandbox ยังคงอยู่ระหว่างการพัฒนาอย่างสุดความสามารถ และพร้อมให้ใช้งานแล้วในบางภูมิภาค ตอนนี้เว็บไซต์ต่างๆ อาจลองใช้ Privacy Sandbox ไปพร้อมกับการใช้เทคโนโลยีเว็บปัจจุบัน เช่น คุกกี้ของบุคคลที่สาม</translation>
 <translation id="1741190788710022490">การชาร์จแบบปรับอัตโนมัติ</translation>
 <translation id="174123615272205933">กำหนดเอง</translation>
 <translation id="1741314857973421784">ต่อไป</translation>
@@ -1289,6 +1287,7 @@
 <translation id="2179416702468739594">กำลังหาโปรไฟล์ที่พร้อมใช้งาน ซึ่งอาจทำให้เครือข่ายมือถือของคุณยกเลิกการเชื่อมต่อเป็นเวลาสักครู่</translation>
 <translation id="2180620921879609685">บล็อกเนื้อหาในหน้าใดก็ได้</translation>
 <translation id="2182058453334755893">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
+<translation id="2183570493397356669">ปุ่มดําเนินการต่อปิดอยู่</translation>
 <translation id="2184515124301515068">ให้ Chrome เลือกว่าเว็บไซต์จะเล่นเสียงได้เมื่อใด (แนะนำ)</translation>
 <translation id="2186711480981247270">หน้าเว็บที่แชร์จากอุปกรณ์อื่น</translation>
 <translation id="2187675480456493911">ซิงค์กับอุปกรณ์อื่นในบัญชีของคุณแล้ว ระบบจะไม่ซิงค์การตั้งค่าที่ผู้ใช้คนอื่นๆ แก้ไข <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
@@ -1960,7 +1959,6 @@
 <translation id="2787022501752539710">เก็บข้อมูลการท่องเว็บในเครื่อง (บุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม ฯลฯ)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">หมายเลขกลุ่ม</translation>
 <translation id="2789486458103222910">ตกลง</translation>
 <translation id="2791529110887957050">นำ Linux ออก</translation>
 <translation id="2791952154587244007">เกิดข้อผิดพลาดขึ้น แอปพลิเคชันคีออสก์ไม่สามารถเปิดอัตโนมัติได้บนอุปกรณ์นี้</translation>
@@ -1990,7 +1988,6 @@
 <translation id="2805760958323556153">ค่าของนโยบาย ExtensionInstallForcelist ไม่ถูกต้อง โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="2805770823691782631">รายละเอียดเพิ่มเติม</translation>
 <translation id="2806372837663997957">อุปกรณ์ที่คุณพยายามเชื่อมต่อไม่ยอมรับการแชร์ไฟล์</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">มีทางลัดนี้อยู่แล้ว</translation>
 <translation id="2807517655263062534">ไฟล์ที่คุณดาวน์โหลดจะปรากฏที่นี่</translation>
 <translation id="2809586584051668049">และอีก <ph name="NUMBER_ADDITIONAL_DISABLED" /> รายการ</translation>
@@ -2442,7 +2439,6 @@
 <translation id="3262986719682892278">มีขนาดใหญ่เกินไป</translation>
 <translation id="3264544094376351444">แบบอักษร Sans-Serif</translation>
 <translation id="3264582393905923483">บริบท</translation>
-<translation id="3265118321284789528">กำลังรอการอนุมัติจากผู้ปกครอง</translation>
 <translation id="3265459715026181080">ปิดหน้าต่าง</translation>
 <translation id="3266022278425892773">สภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux</translation>
 <translation id="3266274118485960573">กำลังดำเนินการตรวจสอบความปลอดภัย</translation>
@@ -2570,7 +2566,6 @@
 <translation id="3388094447051599208">ถาดกระดาษออกใกล้เต็มแล้ว</translation>
 <translation id="3388788256054548012">ไฟล์นี้มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส</translation>
 <translation id="3390013585654699824">รายละเอียดแอป</translation>
-<translation id="3391512812407811893">ทดลองใช้ Privacy Sandbox</translation>
 <translation id="3393554941209044235">การวิเคราะห์เอกสารของ Chrome</translation>
 <translation id="3393582007140394275">แคสต์หน้าจอไม่ได้</translation>
 <translation id="3394850431319394743">ได้รับอนุญาตให้ใช้ตัวระบุเพื่อเล่นเนื้อหาที่มีการคุ้มครอง</translation>
@@ -2631,7 +2626,6 @@
 <translation id="3441653493275994384">หน้าจอ</translation>
 <translation id="3441663102605358937">ลงชื่อเข้าใช้ <ph name="ACCOUNT" /> อีกครั้งเพื่อยืนยันบัญชีนี้</translation>
 <translation id="3442674350323953953">ให้ Google ใช้ข้อมูลฮาร์ดแวร์เพื่อช่วยปรับปรุง <ph name="DEVICE_OS" /> หากคุณปฏิเสธ ข้อมูลนี้จะยังส่งไปยัง Google เพื่อพิจารณาอัปเดตที่เหมาะสม แต่จะไม่เก็บข้อมูลไว้หรือใช้ในลักษณะอื่น</translation>
-<translation id="3444641828375597683">ผู้ลงโฆษณาและผู้เผยแพร่โฆษณาใช้ FLoC ได้ ซึ่งจะอธิบายภายหลังในหน้านี้</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> จะดู <ph name="FILENAME" /> ได้</translation>
 <translation id="3445047461171030979">คำตอบด่วนของ Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
@@ -5311,7 +5305,6 @@
 <translation id="6027945736510816438">คุณหมายถึง <ph name="WEBSITE" /> ใช่ไหม</translation>
 <translation id="6028117231645531007">เพิ่มลายนิ้วมือ</translation>
 <translation id="6031600495088157824">ตัวเลือกการป้อนข้อมูลในแถบเครื่องมือ</translation>
-<translation id="6032091552407840792">การทดลองใช้นี้ใช้งานได้ใน<ph name="BEGIN_LINK" />บางภูมิภาค<ph name="END_LINK" />เท่านั้น</translation>
 <translation id="6032715498678347852">หากต้องการให้สิทธิ์เข้าถึงเว็บไซต์นี้แก่ส่วนขยาย ให้คลิกส่วนขยาย</translation>
 <translation id="6032912588568283682">ระบบไฟล์</translation>
 <translation id="603539183851330738">ปุ่มเลิกทำการแก้ไขอัตโนมัติ เปลี่ยนกลับเป็น <ph name="TYPED_WORD" />  กด Enter เพื่อเปิดใช้งาน หรือกด ESC เพื่อปิด</translation>
@@ -6848,7 +6841,6 @@
 <translation id="7509097596023256288">กำลังตั้งค่าการจัดการ</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7509539379068593709">ถอนการติดตั้งแอป</translation>
-<translation id="7511415964832680006">เมื่อเปิดไว้ เว็บไซต์อาจใช้เทคนิคการรักษาความเป็นส่วนตัวที่แสดงอยู่ที่นี่เพื่อจัดเตรียมเนื้อหาและให้บริการ ซึ่งรวมถึงทางเลือกในการติดตามข้ามเว็บไซต์ และอาจมีการเพิ่มช่วงทดลองใช้ในอนาคต</translation>
 <translation id="7514239104543605883">คัดลอกไปยังอุปกรณ์ของคุณ</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
 <translation id="7514417110442087199">เพิ่มการกำหนด</translation>
@@ -7014,6 +7006,7 @@
 <translation id="7665082356120621510">สำรองพื้นที่</translation>
 <translation id="7665369617277396874">เพิ่มบัญชี</translation>
 <translation id="766635563210446220">นำเข้ารหัสผ่านไม่ได้ ตรวจสอบ <ph name="FILENAME" /> ว่าอยู่ในรูปแบบที่ถูกต้อง <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="7666531788977935712">ปุ่มดําเนินการต่อเปิดอยู่</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{ส่งคืน <ph name="DEVICE_TYPE" /> ภายใน {NUM_WEEKS} สัปดาห์}other{ส่งคืน <ph name="DEVICE_TYPE" /> ภายใน {NUM_WEEKS} สัปดาห์}}</translation>
 <translation id="7668423670802040666">ในเครื่องมือจัดการรหัสผ่านของ Google สำหรับ <ph name="ACCOUNT" /></translation>
 <translation id="7668648754769651616">ฟีเจอร์การช่วยเหลือพิเศษจะช่วยให้อุปกรณ์ใช้งานง่ายยิ่งขึ้น หากต้องการเข้าถึงการตั้งค่าด่วน ให้เลือกเวลาที่ด้านล่างของหน้าจอ</translation>
@@ -7249,7 +7242,6 @@
 <translation id="7877451762676714207">ข้อผิดพลาดของเซิร์ฟเวอร์ที่ไม่รู้จัก โปรดลองอีกครั้งหรือติดต่อผู้ดูแลระบบเซิร์ฟเวอร์</translation>
 <translation id="7879478708475862060">ใช้ตามโหมดป้อนข้อมูล</translation>
 <translation id="7879631849810108578">แป้นพิมพ์ลัดที่ตั้งค่า: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">เมื่อเปิดไว้และสถานะเป็น "ใช้งานอยู่" Chrome จะใช้ประวัติการท่องเว็บในช่วง 7 วันเพื่อกำหนดกลุ่ม หรือ "กลุ่มประชากรตามรุ่น" ของคุณ ผู้ลงโฆษณาจะเลือกโฆษณาสำหรับกลุ่มดังกล่าวได้ ประวัติการท่องเว็บจะเก็บไว้เป็นส่วนตัวในอุปกรณ์ของคุณ การทดลองใช้นี้ใช้งานได้ใน<ph name="BEGIN_LINK" />บางภูมิภาค<ph name="END_LINK" />เท่านั้น</translation>
 <translation id="7880823633812189969">เมื่อคุณรีสตาร์ท ระบบจะลบข้อมูลในเครื่อง</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ดูบัญชี</translation>
@@ -7523,7 +7515,6 @@
 <translation id="8119438628456698432">กำลังสร้างไฟล์บันทึก...</translation>
 <translation id="811994229154425014">เคาะวรรค 2 ครั้งเพื่อพิมพ์จุด</translation>
 <translation id="8120505434908124087">ติดตั้งโปรไฟล์ eSIM</translation>
-<translation id="812260729110117038">ผู้ลงโฆษณาและผู้เผยแพร่โฆษณาจะศึกษาประสิทธิภาพของโฆษณาได้ในลักษณะที่ไม่ติดตามคุณข้ามเว็บไซต์</translation>
 <translation id="81238879832906896">ดอกไม้สีเหลืองแซมขาว</translation>
 <translation id="8123975449645947908">เลื่อนไปข้างหลัง</translation>
 <translation id="8124313775439841391">ONC ที่มีการจัดการ</translation>
@@ -7566,7 +7557,6 @@
 <translation id="816055135686411707">ข้อผิดพลาดในการตั้งค่าความเชื่อถือใบรับรอง</translation>
 <translation id="8160775796528709999">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายสดในการตั้งค่า</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">การใช้ <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ช่วยให้ Chrome พัฒนาเทคโนโลยีใหม่ๆ เพื่อปกป้องคุณจากการติดตามข้ามเว็บไซต์ในขณะที่ยังคงรักษาความเปิดกว้างของเว็บไว้</translation>
 <translation id="8161293209665121583">โหมดผู้อ่านสำหรับหน้าเว็บ</translation>
 <translation id="8161604891089629425">แบบอักษรเส้นกรอบ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
@@ -8094,7 +8084,6 @@
 <translation id="8676374126336081632">ล้างข้อมูลที่ป้อน</translation>
 <translation id="8676770494376880701">เชื่อมต่อกับที่ชาร์จพลังงานต่ำ</translation>
 <translation id="8677212948402625567">ยุบทั้งหมด...</translation>
-<translation id="867767487203716855">การอัปเดตถัดไป</translation>
 <translation id="8678378565142776698">รีสตาร์ทและรับการอัปเดตอัตโนมัติ</translation>
 <translation id="8678538439778360739">มีการเข้ารหัสข้อมูลด้วยรหัสผ่านการซิงค์เมื่อ <ph name="TIME" /> ข้อมูลนี้ไม่รวมถึงวิธีการชำระเงินและที่อยู่จาก Google Pay</translation>
 <translation id="8678582529642151449">แท็บจะไม่ย่อ</translation>
@@ -8102,7 +8091,6 @@
 <translation id="8680251145628383637">ลงชื่อเข้าใช้เพื่อดึงบุ๊กมาร์ก ประวัติ รหัสผ่าน และการตั้งค่าอื่นๆ บนอุปกรณ์ทุกเครื่องของคุณ ทั้งนี้ ระบบจะลงชื่อเข้าใช้บริการต่างๆ ของ Google ให้คุณโดยอัตโนมัติ</translation>
 <translation id="8681614230122836773">Chrome พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> เชื่อมต่อแล้วและพร้อมทำงาน</translation>
-<translation id="8683081248374354009">รีเซ็ตกลุ่ม</translation>
 <translation id="8688672835843460752">มีอยู่</translation>
 <translation id="8690129572193755009">เว็บไซต์สามารถขอจัดการโปรโตคอลได้</translation>
 <translation id="8692107307702113268">รหัสผ่านมีอักขระเกิน 1,000 ตัว</translation>
@@ -8379,7 +8367,6 @@
 <translation id="8952831374766033534">ตัวเลือกการกำหนดค่าที่ไม่รองรับ: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ขณะที่ชาร์จ</translation>
 <translation id="895347679606913382">กำลังเริ่มต้น...</translation>
-<translation id="8953654039337655940">ระบบได้ส่งคำขออนุมัติให้ผู้ปกครองของคุณทางแอป Family Link ของ Google และที่ families.google.com แล้ว คุณจะได้รับการแจ้งเตือนหากผู้ปกครองยอมรับคำขอ</translation>
 <translation id="8956230710625245889">เปิดในโปรแกรมอ่าน</translation>
 <translation id="8957757410289731985">ปรับแต่งโปรไฟล์</translation>
 <translation id="895944840846194039">หน่วยความจำ JavaScript</translation>
@@ -8724,7 +8711,6 @@
 <translation id="97905529126098460">หน้าต่างนี้จะปิดเมื่อการยกเลิกเสร็จสมบูรณ์แล้ว</translation>
 <translation id="980731642137034229">ปุ่มเมนูการทำงาน</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
-<translation id="982684081337630214">ระบบได้ส่งคำขออนุมัติให้ผู้ปกครองทุกคนของคุณทางแอป Family Link ของ Google และที่ families.google.com แล้ว คุณจะได้รับการแจ้งเตือนหากผู้ปกครองคนใดคนหนึ่งยอมรับคำขอ</translation>
 <translation id="983511809958454316">ฟีเจอร์นี้ใช้ไม่ได้ใน VR</translation>
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="984705303330760860">เพิ่มภาษาที่ใช้การตรวจตัวสะกดได้</translation>

@@ -846,6 +846,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3216313131063488104">Blåfarger</translation>
 <translation id="3218181027817787318">Relativ</translation>
 <translation id="3223287115535306850">Throbber for appstart</translation>
+<translation id="3223425961342298674">Posisjon er ikke tillatt</translation>
 <translation id="3225347164936328585">Klappende</translation>
 <translation id="3225919329040284222">Tjeneren oppga et sertifikat som ikke samsvarte med innebygde forventninger. Disse forventningene benyttes for visse nettsteder med høy sikkerhet, og brukes for å beskytte deg.</translation>
 <translation id="3226128629678568754">Trykk på knappen for å laste inn på nytt, for å sende inn dataene som trengs for å laste inn siden på nytt.</translation>
@@ -1185,6 +1186,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4127575959421463246">Ser du etter ChromeOS-flaggene? Besøk</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 til}other{# til}}</translation>
 <translation id="4130226655945681476">Sjekk nettverkskablene, modemet og ruteren</translation>
+<translation id="4132448310531350254">Appene «<ph name="POLICY_IDS_LIST" />» henviser til dupliserte behandlere for filetternavnet «<ph name="FILE_EXTENSION" />».</translation>
 <translation id="4134123981501319574">Opprett dokument</translation>
 <translation id="413544239732274901">Finn ut mer</translation>
 <translation id="4142935452406587478">Skuff 10</translation>
@@ -1207,6 +1209,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4194250254487269611">Kan ikke lagre kortet ditt akkurat nå</translation>
 <translation id="4196861286325780578">&amp;Flytt likevel</translation>
 <translation id="4202554117186904723">Femte rull</translation>
+<translation id="4203769790323223880">Kamera er ikke tillatt</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Sjekk brannmur- og antiviruskonfigurasjonen<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Stor</translation>
 <translation id="4210602799576081649">Bekreftelseskoden er utløpt – be om en ny kode</translation>
@@ -1233,6 +1236,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
     &lt;p&gt;Husk å slå på antivirusprogramvaren igjen når du er ferdig.&lt;/p&gt;
     &lt;h4&gt;Trinn 5: Få mer hjelp&lt;/h4&gt;
     &lt;p&gt;Hvis du fortsatt får feilmeldingen, bør du kontakte eieren av nettstedet.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofon er ikke tillatt</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prøv å kjøre Nettverksdiagnose<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Kan be om å få bruke og bevege kameraet ditt</translation>
 <translation id="4235360514405112390">Gyldig</translation>
@@ -1604,6 +1608,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5177076414499237632">Finn ut mer om sidens kilde og emne</translation>
 <translation id="5179510805599951267">Er ikke dette <ph name="ORIGINAL_LANGUAGE" />? Rapportér denne feilen</translation>
 <translation id="518639307526414276">Dyremat og -utstyr</translation>
+<translation id="5190072300954988691">Kamera og mikrofon er ikke tillatt</translation>
 <translation id="5190835502935405962">Bokmerkerad</translation>
 <translation id="5191315092027169558">Profilen din administreres av <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ber om å laste ned flere filer</translation>
@@ -1624,6 +1629,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Lukk</translation>
+<translation id="5239623327352565343">Posisjon er tillatt</translation>
 <translation id="5242889659037569123">Bagasje og reisetilbehør</translation>
 <translation id="5250209940322997802">«Koble til nettverk»</translation>
 <translation id="52517543715119994">Lær om Chrome-funksjoner</translation>
@@ -2499,6 +2505,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7581199239021537589">Y-forskyvning av bilde på side 2</translation>
 <translation id="7582602800368606489">Opprett en ny hendelse i Google Kalender raskt</translation>
 <translation id="7583969447617676942">Juridiske tjenester</translation>
+<translation id="7586676035079382730">Varsler er ikke tillatt</translation>
 <translation id="7591288787774558753">Vil du dele konfidensielt innhold?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vil bruke informasjonskapsler og nettstedsdata på <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Tjenerens sertifikat bryter navnereglene.</translation>
@@ -3051,6 +3058,7 @@ Mer informasjon:
 <translation id="9131119348384879525">Vil du ta opp konfidensielt innhold?</translation>
 <translation id="9136861683332321024">Luksuskjøretøy</translation>
 <translation id="9137013805542155359">Vis original</translation>
+<translation id="9138037198177304356">Varsler er tillatt</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">Administrer adresser</translation>
 <translation id="9144951720726881238">Utløpsdato:</translation>

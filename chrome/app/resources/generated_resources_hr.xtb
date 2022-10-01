@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Vaše računalo ima ugrađenu RLZ biblioteku preglednika <ph name="SHORT_PRODUCT_NAME" />. RLZ dodjeljuje nejedinstvenu oznaku koja ne može poslužiti za osobnu identifikaciju za mjerenje pretraživanja i upotrebu proizvoda <ph name="SHORT_PRODUCT_NAME" /> potaknutu određenom promotivnom kampanjom. Te se oznake ponekad prikazuju u upitima Google pretraživanja u pregledniku <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Nešto nije u redu. Linux je možda samo djelomično nadograđen. Pregledajte zapisnike za više informacija. Zapisnici su spremljeni u mapu Datoteke &gt; Moje datoteke &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Želite li izbrisati podatke i iz ovih aplikacija?</translation>
-<translation id="1043824690776631483">Potrebno ti je dopuštenje za posjet toj web-lokaciji. Sadržaj možda nije primjeren.</translation>
 <translation id="104419033123549300">Stil karte tipkovnice</translation>
 <translation id="104710386808485638">Ponovno pokrenuti Linux?</translation>
 <translation id="1047431265488717055">Kopiraj te&amp;kst veze</translation>
@@ -800,7 +799,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="173522743738009831">O Privacy Sandboxu</translation>
 <translation id="173628468822554835">Shvaćam. Nove web-lokacije koje posjetite neće slati obavijesti prema zadanim postavkama.</translation>
 <translation id="1737968601308870607">Bug datoteke</translation>
-<translation id="1739684185846730053">Probe Privacy Sandboxa i dalje su u aktivnom razvoju i dostupne su u odabranim regijama. Web-lokacije trenutačno mogu isprobati Privacy Sandbox dok se istovremeno još uvijek koriste aktualnim web-tehnologijama, npr. kolačićima trećih strana.</translation>
 <translation id="1741190788710022490">Adaptivno punjenje</translation>
 <translation id="174123615272205933">Prilagođeno</translation>
 <translation id="1741314857973421784">Nastavi</translation>
@@ -1969,7 +1967,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2787022501752539710">Zadrži lokalne podatke o pregledavanju (oznake, zaporke, povijest itd.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Broj grupe</translation>
 <translation id="2789486458103222910">U redu</translation>
 <translation id="2791529110887957050">Uklanjanje Linuxa</translation>
 <translation id="2791952154587244007">Došlo je do pogreške. Aplikacije kioska neće se moći automatski pokrenuti na ovom uređaju.</translation>
@@ -1999,7 +1996,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2805760958323556153">Vrijednost pravila ExtensionInstallForcelist nije valjana. Obratite se administratoru.</translation>
 <translation id="2805770823691782631">Dodatne pojedinosti</translation>
 <translation id="2806372837663997957">Uređaj s kojim pokušavate dijeliti nije prihvatio</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Prečac već postoji</translation>
 <translation id="2807517655263062534">Ovdje se prikazuju datoteke koje ste preuzeli</translation>
 <translation id="2809586584051668049">i još <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2451,7 +2447,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3262986719682892278">Datoteka prevelika</translation>
 <translation id="3264544094376351444">Font Sans-serif</translation>
 <translation id="3264582393905923483">Kontekst</translation>
-<translation id="3265118321284789528">Čekanje na roditeljsko odobrenje</translation>
 <translation id="3265459715026181080">Zatvori prozor</translation>
 <translation id="3266022278425892773">Linuxovo razvojno okruženje</translation>
 <translation id="3266274118485960573">U tijeku je sigurnosna provjera.</translation>
@@ -2579,7 +2574,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3388094447051599208">Izlazna je ladica gotovo puna</translation>
 <translation id="3388788256054548012">Datoteka je kriptirana. Recite vlasniku da je dekriptira.</translation>
 <translation id="3390013585654699824">Pojedinosti o aplikaciji</translation>
-<translation id="3391512812407811893">Probne verzije Privacy Sandboxa</translation>
 <translation id="3393554941209044235">Chromeova analiza dokumenata</translation>
 <translation id="3393582007140394275">Emitiranje zaslona nije uspjelo.</translation>
 <translation id="3394850431319394743">Dopuštena je upotreba identifikatora za reprodukciju zaštićenog sadržaja</translation>
@@ -2640,7 +2634,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3441653493275994384">Zaslon</translation>
 <translation id="3441663102605358937">Da biste potvrdili ovaj račun, ponovno se prijavite na račun <ph name="ACCOUNT" /></translation>
 <translation id="3442674350323953953">Omogućite Googleu da koristi podatke o hardveru kako bi poboljšao <ph name="DEVICE_OS" />. Ako odbijete, ti se podaci svejedno šalju Googleu kako bi se utvrdila odgovarajuća ažuriranja, no ti se podaci ni u kojem drugom slučaju ne pohranjuju niti koriste.</translation>
-<translation id="3444641828375597683">Oglašivači i izdavači mogu koristiti FLoC, opisan u nastavku na ovoj stranici.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> će moći pregledavati datoteku <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Brzi odgovori Google asistenta</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5323,7 +5316,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6027945736510816438">Jeste li mislili <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Dodajte otisak prsta</translation>
 <translation id="6031600495088157824">Opcije unosa na alatnoj traci</translation>
-<translation id="6032091552407840792">Proba je aktivna samo u <ph name="BEGIN_LINK" />nekim regijama<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Da biste proširenju omogućili pristup web-lokaciji, kliknite ga.</translation>
 <translation id="6032912588568283682">Datotečni sustav</translation>
 <translation id="603539183851330738">Gumb za poništavanje automatskog ispravka. Vrati na <ph name="TYPED_WORD" />.  Pritisnite Enter da biste ga aktivirali, Esc da biste ga odbacili.</translation>
@@ -6865,7 +6857,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7509097596023256288">Postavljanje upravljanja</translation>
 <translation id="7509246181739783082">Potvrdite svoj identitet</translation>
 <translation id="7509539379068593709">Deinstaliraj aplikaciju</translation>
-<translation id="7511415964832680006">Kada je Privacy Sandbox uključen, za pružanje svog sadržaja i svojih usluga web-lokacije mogu primjenjivati ovdje prikazane tehnike kojima se čuva privatnost. Te tehnike uključuju alternative praćenju na različitim web-lokacijama. U budućnosti će se možda dodati još probnih značajki.</translation>
 <translation id="7514239104543605883">Kopiraj na svoj uređaj</translation>
 <translation id="7514365320538308">Preuzmi</translation>
 <translation id="7514417110442087199">Dodaj zadatak</translation>
@@ -7267,7 +7258,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7877451762676714207">Nepoznata pogreška poslužitelja. Pokušajte ponovo ili se obratite administratoru poslužitelja.</translation>
 <translation id="7879478708475862060">Praćenje načina unosa</translation>
 <translation id="7879631849810108578">Skup prečaca: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kad je ta značajka uključena i status je aktivan, Chrome koristi vašu povijest pregledavanja tijekom sedam dana da bi odredio grupu, odnosno skupinu u kojoj se nalazite. Oglašivači mogu odabrati oglase za tu grupu. Vaša povijest pregledavanja ostaje privatna na vašem uređaju. Proba je aktivna samo u <ph name="BEGIN_LINK" />nekim regijama<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Lokalni podaci izbrisat će se prilikom ponovnog pokretanja</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Prikaz računa</translation>
@@ -7541,7 +7531,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8119438628456698432">Generiranje datoteka zapisnika...</translation>
 <translation id="811994229154425014">Dva pritiska na razmaknicu za unos točke</translation>
 <translation id="8120505434908124087">Instalirajte eSIM profil</translation>
-<translation id="812260729110117038">Oglašivači i izdavači mogu steći uvid u učinkovitost oglasa na način koji ne uključuje praćenje korisnika na raznim web-lokacijama.</translation>
 <translation id="81238879832906896">Žuti i bijeli cvijet</translation>
 <translation id="8123975449645947908">Pomicanje unatrag</translation>
 <translation id="8124313775439841391">Upravljani ONC</translation>
@@ -7584,7 +7573,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="816055135686411707">Pogreška u postavljanju pouzdanosti certifikata</translation>
 <translation id="8160775796528709999">U postavkama omogućite automatske titlove i preuzmite titlove za zvuk i videozapise</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Uz <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome razvija nove tehnologije koje će vas štititi od praćenja na različitim web-lokacijama, a istovremeno očuvati otvorenost weba.</translation>
 <translation id="8161293209665121583">Način čitača za web-stranice</translation>
 <translation id="8161604891089629425">Strukturni font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premjesti karticu u novi prozor}one{Premjesti kartice u novi prozor}few{Premjesti kartice u novi prozor}other{Premjesti kartice u novi prozor}}</translation>
@@ -8112,7 +8100,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8676770494376880701">Priključen je punjač male snage</translation>
 <translation id="8677212948402625567">Sažmi sve...</translation>
-<translation id="867767487203716855">Sljedeće ažuriranje</translation>
 <translation id="8678378565142776698">Ponovo pokrenite i primajte automatska ažuriranja</translation>
 <translation id="8678538439778360739">Podaci su šifrirani vašom šifrom za sinkronzaciju <ph name="TIME" />. To ne uključuje načine plaćanja i adrese s Google Paya.</translation>
 <translation id="8678582529642151449">Kartice se ne smanjuju</translation>
@@ -8120,7 +8107,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8680251145628383637">Prijavite se tako da vam oznake, povijest i druge postavke budu dostupne na svim svojim uređajima. Time ćete se automatski prijaviti i na Googleove usluge.</translation>
 <translation id="8681614230122836773">Chrome je na vašem računalu pronašao štetni softver</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> je povezan i spreman</translation>
-<translation id="8683081248374354009">Poništi grupu</translation>
 <translation id="8688672835843460752">Dostupno</translation>
 <translation id="8690129572193755009">Web-lokacije mogu tražiti dopuštenje za upravljanje protokolima</translation>
 <translation id="8692107307702113268">Broj znakova zaporke ne smije biti veći od 1000</translation>
@@ -8399,7 +8385,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8952831374766033534">Opcija konfiguracije nije podržana: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Tijekom punjenja</translation>
 <translation id="895347679606913382">Početak...</translation>
-<translation id="8953654039337655940">Zahtjev za odobrenje poslan je tvojem roditelju u njegovoj aplikaciji Google Family Link i na stranici families.google.com. Dobit ćeš obavijest ako roditelj odobri zahtjev.</translation>
 <translation id="8956230710625245889">Otvori u Readeru</translation>
 <translation id="8957757410289731985">Prilagodite profil</translation>
 <translation id="895944840846194039">Memorija JavaScripta</translation>
@@ -8744,7 +8729,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="97905529126098460">Ovaj će se prozor zatvoriti nakon što otkazivanje završi.</translation>
 <translation id="980731642137034229">Gumb izbornika aktivnosti</translation>
 <translation id="981121421437150478">Izvanmrežno</translation>
-<translation id="982684081337630214">Zahtjev za odobrenje poslan je tvojim roditeljima u njihovoj aplikaciji Google Family Link i na stranici families.google.com. Dobit ćeš obavijest ako jedan od tvojih roditelja odobri zahtjev.</translation>
 <translation id="983511809958454316">VR ne podržava tu značajku</translation>
 <translation id="984275831282074731">Načini plaćanja</translation>
 <translation id="984705303330760860">Dodavanje jezika za provjeru pravopisa</translation>

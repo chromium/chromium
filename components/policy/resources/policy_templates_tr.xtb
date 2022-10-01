@@ -291,9 +291,6 @@
       <ph name="MS_WIN_NAME" /> işletim sisteminde bu işlev yalnızca Windows 10 Pro üzerinde çalışan bir <ph name="MS_AD_NAME" /> alan adına katılmış veya <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> öğesine kaydolmuş örneklerde kullanılabilir.</translation>
 <translation id="1285819498003746288">Event.path API kullanılamaz.</translation>
 <translation id="1290634681382861275">USB, Bluetooth, politika yenileme, geliştirici modu gibi çeşitli ayarları kontrol eder.</translation>
-<translation id="1291880496936992484">Uyarı: RC4, sürüm 52'den sonra (yaklaşık olarak Eylül 2016'da) <ph name="PRODUCT_NAME" /> ürününden tamamen kaldırılacak ve sonrasında bu politika çalışmayacaktır.
-
-      Politika ayarlanmamışsa veya yanlış seçeneğine ayarlanmışsa, TLS'deki RC4 şifre paketleri etkinleştirilmez. Aksi takdirde, eski bir sunucuyla uyumluluğun korunması için doğru seçeneğine ayarlanabilir. Bu geçici bir tedbirdir ve sunucu yeniden yapılandırılmalıdır.</translation>
 <translation id="129206366270737897">Eşzamansız <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> yöntemlerini devre dışı bırakır.</translation>
 <translation id="1294263471858445589">Ambiyans kimlik doğrulamasını gizli ve normal oturumlarda etkinleştir.</translation>
 <translation id="1295737447968372331">Giriş ekranında dikte özelliğini etkinleştir</translation>
@@ -859,13 +856,6 @@ Kurumsal profil ayrımının katı bir şekilde zorunlu tutulması ya da ilgili 
       Politika ayarlanmadan bırakılırsa <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> (ayarlanmışsa) geçerli olur. Aksi takdirde kullanıcının kişisel ayarları geçerlidir.
 
       Bu politikadaki URL'ler, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> aracılığıyla yapılandırılan URL'lerle çakışmamalıdır. Çakışırsa bu politika, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> ve  politikalarına göre daha önceliklidir.</translation>
-<translation id="1859859319036806634">Uyarı: TLS sürüm yedeği, sürüm 52'den sonra <ph name="PRODUCT_NAME" /> ürününden kaldırılacak (Eylül 2016 civarı) ve bu politika artık çalışmayacaktır.
-
-      Bir TLS anlaşması başarısız olduğunda <ph name="PRODUCT_NAME" />, HTTPS sunucularındaki hatalardan kaçınmak amacıyla önceden TLS'nin daha düşük bir sürümüyle bağlanmayı tekrar deniyordu. Bu ayar, bu yedek sürümü kullanma işleminin ne kadar eskiye gideceğini yapılandırır. Bir sunucu sürüm pazarlığını doğru şekilde yaparsa (yani bağlantıyı kesmeden) bu ayar uygulanmaz. Yine de, sonuçta yapılan bağlantı SSLVersionMin ile uyumlu olmalıdır.
-
-      Bu politika yapılandırılmazsa veya "tls1.2" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, bu yedek sürümü kullanma işlemini gerçekleştirmez. Bunun daha eski TLS sürümlerine yönelik desteği devre dışı bırakmadığını, yalnızca <ph name="PRODUCT_NAME" /> ürününün, sürümlerle ilgili pazarlığı doğru şekilde yapamayan hatalı sunuculardan kaçınmaya çalışıp çalışmayacağını belirlediğini unutmayın.
-
-      Yapılandırılması durumunda, hatalı bir sunucuyla uyumluluğun korunması gerekiyorsa bu politika, "tls1.1" değerine ayarlanabilir. Bu geçici bir tedbirdir ve sunucudaki sorun kısa sürede çözülmelidir.</translation>
 <translation id="1861206724856734193">Veri sızıntısı önleme kuralları listesini ayarlar.</translation>
 <translation id="1862267110714201519">Hayalet pencere özelliğini devre dışı bırak.</translation>
 <translation id="1865417998205858223">Temel İzinler</translation>
@@ -2167,11 +2157,6 @@ Yeni oluşturulan profilin ikincil hesapları olmasına izin verilmemesi dışı
       Bir site bu politikadaki URL kalıbıyla eşleşirse şu politikalar dikkate alınmaz: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.  Bu politika, yalnızca kaynağa göre eşleşir. Dolayısıyla, URL kalıbındaki yollar yoksayılır.</translation>
-<translation id="3117676313396757089">Uyarı: DHE, sürüm 57'den sonra (yaklaşık olarak Mart 2017'de) <ph name="PRODUCT_NAME" /> ürününden tamamen kaldırılacak ve sonrasında bu politika çalışmayacaktır.
-
-      Politika ayarlanmamışsa veya yanlış seçeneğine ayarlanmışsa, TLS'deki DHE şifre paketleri etkinleştirilmez. Aksi takdirde, DHE şifre paketlerinin etkinleştirilmesi ve eski bir sunucuyla uyumluluğun korunması için doğru seçeneğine ayarlanabilir. Bu geçici bir tedbirdir ve sunucu yeniden yapılandırılmalıdır.
-
-      Sunucuların ECDHE şifre paketi sürümüne taşınması önerilir. Bunlar kullanılamıyorsa RSA anahtar değiş tokuşunu kullanan bir şifre paketinin etkinleştirildiğinden emin olun.</translation>
 <translation id="3118552207903834734">Kullanıcının, cihazın ana makine adını yapılandırmasına izin ver</translation>
 <translation id="3122082892722698079">Güvenli olmayan içerik istisnalarının kullanımını kontrol et</translation>
 <translation id="3128072319047570212">Anahtar oluşturucu ayarları</translation>
@@ -4209,11 +4194,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
 <translation id="5323200200131319468">Giriş ekranında sözlü geri bildirimi etkinleştir</translation>
 <translation id="532848608876725157">DNS-over-HTTPS'i güvenli olmayan geçişle etkinleştir</translation>
 <translation id="5328965694451556034">Girişi/çıkışı raporla</translation>
-<translation id="5329007337159326804">Uyarı: Maks. TLS sürümü politikası, yaklaşık olarak sürüm 75 düzeyinde (Haziran 2019 civarında) <ph name="PRODUCT_NAME" /> ürününden tamamıyla kaldırılacaktır.
-
-      Bu politika yapılandırılmazsa <ph name="PRODUCT_NAME" />, varsayılan maksimum sürümü kullanır.
-
-      Aksi halde, şu değerlerin birine ayarlanabilir: "tls1.2" veya "tls1.3". Ayarlandığında, <ph name="PRODUCT_NAME" />, belirtilen sürümden yüksek olan SSL/TLS sürümlerini kullanmaz. Tanınmayan değerler yoksayılır.</translation>
 <translation id="5329018127554115226">Yüksek Verimlilik Modu devre dışı bırakılır.</translation>
 <translation id="5330684698007383292"><ph name="PRODUCT_FRAME_NAME" /> için aşağıdaki içerik türlerini işlemeye izin ver</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> bulut politikası, Platform politikasını geçersiz kılar.</translation>
@@ -4931,10 +4911,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politikanın, yöneticilerin ihtiyaç duyması halinde yerel IP'lerin korunmasını zayıflattığını lütfen unutmayın.</translation>
 <translation id="614662973812186053">Bu politika, Android kullanımını ve teşhis verilerini toplama çalışmalarını da kontrol eder.</translation>
 <translation id="614665605501218241">Listelenen sitelerin, daha özel ağ uç noktalarına güvenli olmayan bir şekilde istekte bulunmasına izin ver.</translation>
-<translation id="6154509171634387825">Uyarı: 3DES, 95 sürümünde (Ekim 2021 civarında) <ph name="PRODUCT_NAME" /> ürününden tamamen kaldırılacak ve bu politika artık kullanılamayacaktır.
-
-      Politika doğru değerine ayarlanırsa TLS'de 3DES şifre paketleri etkinleştirilir. Politika yanlış değerine ayarlanırsa bunlar devre dışı bırakılır. Politika ayarlanmazsa 3DES şifre paketleri varsayılan olarak devre dışı bırakılır. Bu politika eski bir sunucuyla uyumluluğu sürdürmek için geçici olarak kullanılabilir. Bu geçici bir tedbir olup sunucu yeniden yapılandırılmalıdır.
-      </translation>
 <translation id="6155350825868160236">Kullanıcının, Google web hizmetlerinin yazım hatalarını çözmek için kullanılıp kullanılmayacağını seçmesine izin ver</translation>
 <translation id="6155936611791017817">Giriş ekranında büyük imleç modunun varsayılan durumunu ayarla</translation>
 <translation id="6157537876488211233">Proxy atlama kurallarının noktalı virgül ile ayrılmış listesi</translation>

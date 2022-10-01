@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Datorn har även RLZ-biblioteket för <ph name="SHORT_PRODUCT_NAME" /> inbyggt. RLZ tilldelar en icke-unik, icke-personligt identifierbar tagg för att mäta antalet sökningar och användningen av <ph name="SHORT_PRODUCT_NAME" /> som drivs av en viss reklamkampanj. Dessa etiketter visas ibland vid sökningar på Google i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Något gick fel. Linux kanske bara delvis har uppgraderats. Mer information finns i loggarna. Loggarna har sparats i Filer &gt; Mina filer &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Vill du även rensa data för dessa appar?</translation>
-<translation id="1043824690776631483">Du behöver tillstånd att besöka den här webbplatsen. Den kan ha olämpligt innehåll.</translation>
 <translation id="104419033123549300">Format för tangentbordsuppsättning</translation>
 <translation id="104710386808485638">Vill du starta om Linux?</translation>
 <translation id="1047431265488717055">Kopiera länktext</translation>
@@ -805,7 +804,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="173522743738009831">Om Privacy Sandbox</translation>
 <translation id="173628468822554835">Ok, jag förstår. Nya webbplatser som du besöker skickar inte aviseringar till dig som standard.</translation>
 <translation id="1737968601308870607">Rapportera fel</translation>
-<translation id="1739684185846730053">Provfunktioner i Privacy Sandbox är för närvarande under utveckling och tillgängliga i vissa regioner. För närvarande går det att testa Privacy Sandbox på en webbplats samtidigt som gängse webbteknik som tredjepartscookies används på den.</translation>
 <translation id="1741190788710022490">Smart laddning</translation>
 <translation id="174123615272205933">Anpassa</translation>
 <translation id="1741314857973421784">Fortsätt</translation>
@@ -1976,7 +1974,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2787022501752539710">Behåll lokal webbinformation (t.ex. bokmärken, lösenord, historik)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Gruppens nummer</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Ta bort Linux</translation>
 <translation id="2791952154587244007">Ett fel har inträffat. Kioskappen kan inte startas automatiskt på den här enheten.</translation>
@@ -2006,7 +2003,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2805760958323556153">Principen ExtensionInstallForcelist har ett ogiltigt värde. Kontakta administratören.</translation>
 <translation id="2805770823691782631">Ytterligare information</translation>
 <translation id="2806372837663997957">Enheten som du försökte att dela med godkände inte delningsförsöket</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Genvägen finns redan</translation>
 <translation id="2807517655263062534">Filer som du laddar ned visas här</translation>
 <translation id="2809586584051668049">och ytterligare <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2458,7 +2454,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3262986719682892278">För stor</translation>
 <translation id="3264544094376351444">Sans serif-teckensnitt</translation>
 <translation id="3264582393905923483">Sammanhang</translation>
-<translation id="3265118321284789528">Väntar på en förälders godkännande</translation>
 <translation id="3265459715026181080">Stäng fönster</translation>
 <translation id="3266022278425892773">Linux-utvecklingsmiljö</translation>
 <translation id="3266274118485960573">Säkerhetskontrollen körs.</translation>
@@ -2586,7 +2581,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3388094447051599208">Utmatningsfacket är nästan fullt</translation>
 <translation id="3388788256054548012">Den här filen är krypterad. Be ägaren att dekryptera den.</translation>
 <translation id="3390013585654699824">Information om appen</translation>
-<translation id="3391512812407811893">Provfunktioner i Privacy Sandbox</translation>
 <translation id="3393554941209044235">Dokumentanalys i Chrome</translation>
 <translation id="3393582007140394275">Det gick inte att casta skärmen.</translation>
 <translation id="3394850431319394743">Tillåts att använda identifierare för att spela upp skyddat innehåll</translation>
@@ -2647,7 +2641,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3441653493275994384">Skärm</translation>
 <translation id="3441663102605358937">Logga in på <ph name="ACCOUNT" /> igen för att verifiera kontot</translation>
 <translation id="3442674350323953953">Låt Google använda din maskinvarudata för att förbättra <ph name="DEVICE_OS" />. Om du nekar skickas denna data ändå till Google i syfte att fastställa lämpliga uppdateringar, men den varken lagras eller används på andra sätt.</translation>
-<translation id="3444641828375597683">Annonsörer och utgivare kan använda FLoC som beskrivs längre ned på den här sidan.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> får läsbehörighet till <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Snabba svar från Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5331,7 +5324,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6027945736510816438">Menade du <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Lägg till fingeravtryck</translation>
 <translation id="6031600495088157824">Inmatningsalternativ i verktygsfältet</translation>
-<translation id="6032091552407840792">Provperioden är endast aktiv i <ph name="BEGIN_LINK" />vissa regioner<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Klicka på tillägget om du vill ge det åtkomst till den här webbplatsen.</translation>
 <translation id="6032912588568283682">Filsystem</translation>
 <translation id="603539183851330738">Knapp för att ångra autokorrigering. Återställ till <ph name="TYPED_WORD" />.  Tryck på Retur för att aktivera och på Esc för att ignorera.</translation>
@@ -6868,7 +6860,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7509097596023256288">Hantering konfigureras</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
 <translation id="7509539379068593709">Avinstallera app</translation>
-<translation id="7511415964832680006">När det här alternativet är aktiverat kan webbplatser tillhandahålla sina tjänster med hjälp av de integritetsbevarande metoder som visas här. Det gäller bland annat alternativ till att spåra användaren från webbplats till webbplats. Fler provfunktioner kan läggas till med tiden.</translation>
 <translation id="7514239104543605883">Kopiera till din enhet</translation>
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7514417110442087199">Lägg till tilldelning</translation>
@@ -7270,8 +7261,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7877451762676714207">Okänt serverfel. Försök igen eller kontakta serveradministratören.</translation>
 <translation id="7879478708475862060">Följ inmatningsläge</translation>
 <translation id="7879631849810108578">Kortkommandot har ställts in: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">När det här alternativet är på och statusen är Aktiv använder Chrome webbhistoriken från de senaste sju dagarna för att fastställa vilken grupp, eller kohort, som du tillhör. Annonsörerna kan välja annonser för gruppen. Webbhistoriken förblir privat på enheten. Provperioden är endast aktiv i
-    <ph name="BEGIN_LINK" />vissa regioner<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Lokal data raderas när du startar om</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Visa konto</translation>
@@ -7545,7 +7534,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8119438628456698432">Loggfilerna genereras …</translation>
 <translation id="811994229154425014">Skriv punkt med hjälp av dubbelt mellanslag</translation>
 <translation id="8120505434908124087">Installera eSIM-profil</translation>
-<translation id="812260729110117038">Annonsörerna och utgivarna kan utvärdera annonsernas effektivitet med hjälp av andra metoder än att spåra dig från webbplats till webbplats.</translation>
 <translation id="81238879832906896">Gul och vit blomma</translation>
 <translation id="8123975449645947908">Scrolla bakåt</translation>
 <translation id="8124313775439841391">Hanterad ONC</translation>
@@ -7588,7 +7576,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="816055135686411707">Fel när certifikatets tillförlitlighet angavs</translation>
 <translation id="8160775796528709999">Få ljud- och videouppspelning textad genom att aktivera Live Caption i inställningarna</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> utvecklar vi ny teknik för Chrome som skyddar dig från att bli spårad från webbplats till webbplats samtidigt som vi värnar den öppna webben.</translation>
 <translation id="8161293209665121583">Läsläge för webbsidor</translation>
 <translation id="8161604891089629425">Konturteckensnitt</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta flikarna till ett nytt fönster}}</translation>
@@ -8116,7 +8103,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8676374126336081632">Radera inmatning</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8677212948402625567">Dölj alla...</translation>
-<translation id="867767487203716855">Nästa uppdatering</translation>
 <translation id="8678378565142776698">Starta om och få automatiska uppdateringar</translation>
 <translation id="8678538439778360739">Data krypterades med din lösenfras för synkronisering den <ph name="TIME" />. Betalningsmetoder och adresser från Google Pay omfattas inte.</translation>
 <translation id="8678582529642151449">Flikar förminskas inte</translation>
@@ -8124,7 +8110,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8680251145628383637">Logga in om du vill få tillgång till samma bokmärken, historik, lösenord och andra inställningar på alla dina enheter. Dessutom blir du automatiskt inloggad på Googles tjänster.</translation>
 <translation id="8681614230122836773">Chrome har upptäckt skadlig programvara på datorn</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> är ansluten och klar</translation>
-<translation id="8683081248374354009">Återställ gruppen</translation>
 <translation id="8688672835843460752">Tillgängligt</translation>
 <translation id="8690129572193755009">Webbplatser får begära tillstånd att hantera protokoll</translation>
 <translation id="8692107307702113268">Lösenordet är längre än 1 000 tecken</translation>
@@ -8401,7 +8386,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8952831374766033534">Konfigurationsalternativet stöds inte: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Vid laddning</translation>
 <translation id="895347679606913382">Startar...</translation>
-<translation id="8953654039337655940">En begäran om godkännande har skickats till din förälder i Google Family Link-appen och på families.google.com. Du får en avisering om din förälder godkänner förfrågan.</translation>
 <translation id="8956230710625245889">Öppna i läsare</translation>
 <translation id="8957757410289731985">Anpassa profil</translation>
 <translation id="895944840846194039">JavaScript-minne</translation>
@@ -8746,7 +8730,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="97905529126098460">Det här fönstret stängs när installationen har avbrutits.</translation>
 <translation id="980731642137034229">Knapp för åtgärdsmeny</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">En begäran om godkännande har skickats till dina föräldrar i Google Family Link-appen och på families.google.com. Du får en avisering om någon av dina föräldrar godkänner förfrågan.</translation>
 <translation id="983511809958454316">Den här funktionen stöds inte i VR-läget</translation>
 <translation id="984275831282074731">Betalningsmetoder</translation>
 <translation id="984705303330760860">Lägg till språk för stavningskontroll</translation>

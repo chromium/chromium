@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Je computer is ook uitgerust met de RLZ-bibliotheek van <ph name="SHORT_PRODUCT_NAME" />. RLZ wijst een niet-unieke, niet-persoonlijke tag toe om de zoekopdrachten en het gebruik van <ph name="SHORT_PRODUCT_NAME" /> te meten als gevolg van een bepaalde promotiecampagne. Deze labels worden soms weergegeven in Google-zoekopdrachten in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Er is iets misgegaan. Linux is misschien maar gedeeltelijk geüpgraded. Bekijk de logboeken voor meer informatie. De logboeken zijn opgeslagen in Bestanden &gt; Mijn bestanden &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Ook gegevens van deze apps wissen?</translation>
-<translation id="1043824690776631483">Je hebt toestemming nodig om deze site te bezoeken. De site kan ongepaste content bevatten.</translation>
 <translation id="104419033123549300">Stijl van toetsenindeling</translation>
 <translation id="104710386808485638">Linux opnieuw starten?</translation>
 <translation id="1047431265488717055">Lin&amp;ktekst kopiëren</translation>
@@ -798,7 +797,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="173522743738009831">Over Privacy Sandbox</translation>
 <translation id="173628468822554835">OK. Standaard sturen nieuwe sites die je bezoekt, je geen meldingen.</translation>
 <translation id="1737968601308870607">Bug indienen</translation>
-<translation id="1739684185846730053">Privacy Sandbox-proeven zijn nog actief in ontwikkeling en zijn beschikbaar in bepaalde regio's. Voorlopig kunnen sites Privacy Sandbox uitproberen en tegelijkertijd gebruik blijven maken van huidige webtechnologieën, zoals cookies van derden.</translation>
 <translation id="1741190788710022490">Aangepast opladen</translation>
 <translation id="174123615272205933">Aangepast</translation>
 <translation id="1741314857973421784">Doorgaan</translation>
@@ -1966,7 +1964,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2787022501752539710">Lokale browsegegevens behouden (bookmarks, wachtwoorden, geschiedenis, enzovoort)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Groepsnummer</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Linux verwijderen</translation>
 <translation id="2791952154587244007">Er is een fout opgetreden. Kiosk-app kan niet automatisch worden gestart op dit apparaat.</translation>
@@ -1996,7 +1993,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2805760958323556153">De beleidswaarde voor ExtensionInstallForcelist is ongeldig. Neem contact op met je beheerder.</translation>
 <translation id="2805770823691782631">Aanvullende informatie</translation>
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
 <translation id="2809586584051668049">en <ph name="NUMBER_ADDITIONAL_DISABLED" /> meer</translation>
@@ -2448,7 +2444,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3262986719682892278">Te groot</translation>
 <translation id="3264544094376351444">Sans-Serif-lettertype</translation>
 <translation id="3264582393905923483">Context</translation>
-<translation id="3265118321284789528">Wachten op goedkeuring van ouder</translation>
 <translation id="3265459715026181080">Sluit venster</translation>
 <translation id="3266022278425892773">Linux-ontwikkelomgeving</translation>
 <translation id="3266274118485960573">Veiligheidscheck wordt uitgevoerd.</translation>
@@ -2576,7 +2571,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3388094447051599208">Uitvoervak is bijna vol</translation>
 <translation id="3388788256054548012">Dit bestand is versleuteld. Vraag de eigenaar om het te ontsleutelen.</translation>
 <translation id="3390013585654699824">App-gegevens</translation>
-<translation id="3391512812407811893">Proeffuncties van Privacy Sandbox</translation>
 <translation id="3393554941209044235">Documentanalyse van Chrome</translation>
 <translation id="3393582007140394275">Kan scherm niet casten.</translation>
 <translation id="3394850431319394743">Toestemming om ID's te gebruiken om beveiligde content af te spelen</translation>
@@ -2637,7 +2631,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3441653493275994384">Beeldscherm</translation>
 <translation id="3441663102605358937">Log opnieuw in op <ph name="ACCOUNT" /> om dit account te verifiëren</translation>
 <translation id="3442674350323953953">Toestaan dat Google je hardwaregegevens gebruikt om <ph name="DEVICE_OS" /> te verbeteren. Als je geen toestemming geeft, worden deze gegevens nog steeds naar Google gestuurd om te bepalen welke updates nodig zijn. De gegevens worden niet anderszins opgeslagen of gebruikt.</translation>
-<translation id="3444641828375597683">Adverteerders en uitgevers kunnen FLoC gebruiken, dat verderop op deze pagina wordt beschreven.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> kan <ph name="FILENAME" /> bekijken</translation>
 <translation id="3445047461171030979">Snelle antwoorden van de Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
@@ -5318,7 +5311,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6027945736510816438">Bedoelde je <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Vingerafdruk toevoegen</translation>
 <translation id="6031600495088157824">Invoeropties in werkbalk</translation>
-<translation id="6032091552407840792">Deze proef is alleen actief in <ph name="BEGIN_LINK" />bepaalde regio's<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Klik op een extensie om de extensie toegang tot deze site te geven.</translation>
 <translation id="6032912588568283682">Bestandssysteem</translation>
 <translation id="603539183851330738">Knop voor autocorrectie ongedaan maken. Terugzetten naar <ph name="TYPED_WORD" />.  Druk op Enter om te activeren of op Escape om te sluiten.</translation>
@@ -6854,7 +6846,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7509097596023256288">Beheer instellen</translation>
 <translation id="7509246181739783082">Je identiteit verifiëren</translation>
 <translation id="7509539379068593709">App verwijderen</translation>
-<translation id="7511415964832680006">Als de functie aanstaat, kunnen sites de hier vermelde privacybeschermende technieken gebruiken om hun content en services aan te bieden. Hieronder vallen ook alternatieven voor tracking op verschillende sites. We kunnen in de loop van de tijd meer proeffuncties toevoegen.</translation>
 <translation id="7514239104543605883">Kopiëren naar je apparaat</translation>
 <translation id="7514365320538308">Downloaden</translation>
 <translation id="7514417110442087199">Toewijzing toevoegen</translation>
@@ -7254,7 +7245,6 @@ Je kunt instellingen voor deze kaart beheren via het kaartmenu of meer opties be
 <translation id="7877451762676714207">Onbekende serverfout. Probeer het opnieuw of neem contact op met de serverbeheerder.</translation>
 <translation id="7879478708475862060">Invoermodus volgen</translation>
 <translation id="7879631849810108578">Snelkoppeling ingesteld: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Als deze functie aanstaat en de status actief is, gebruikt Chrome je browsegeschiedenis voor een periode van 7 dagen om een groep (of cohort) te bepalen waarvan je deel uitmaakt. Adverteerders kunnen advertenties selecteren voor de groep. Je browsegeschiedenis blijft privé op je apparaat. Deze proef is alleen actief in <ph name="BEGIN_LINK" />bepaalde regio's<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Lokale gegevens worden verwijderd wanneer je opnieuw opstart</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Account bekijken</translation>
@@ -7528,7 +7518,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8119438628456698432">Logbestanden genereren...</translation>
 <translation id="811994229154425014">Twee keer spatie om punt te typen</translation>
 <translation id="8120505434908124087">E-simkaartprofiel installeren</translation>
-<translation id="812260729110117038">Adverteerders en uitgevers kunnen de effectiviteit van advertenties onderzoeken zonder dat je bezoeken aan verschillende sites worden bijgehouden.</translation>
 <translation id="81238879832906896">Geel-witte bloem</translation>
 <translation id="8123975449645947908">Terugscrollen</translation>
 <translation id="8124313775439841391">Beheerde ONC</translation>
@@ -7571,7 +7560,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="816055135686411707">Fout bij het instellen van vertrouwde certificaten</translation>
 <translation id="8160775796528709999">Bekijk een ondertiteling voor je audio en video door 'Live ondertiteling' aan te zetten in de instellingen</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Met <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ontwikkelt Chrome nieuwe technologieën om je te beschermen tegen tracking op verschillende sites terwijl het open web behouden blijft.</translation>
 <translation id="8161293209665121583">Lezermodus voor webpagina's</translation>
 <translation id="8161604891089629425">Lettertype met omtrek</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar nieuw venster}}</translation>
@@ -8099,7 +8087,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8676374126336081632">Invoer wissen</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8677212948402625567">Alles samenvouwen...</translation>
-<translation id="867767487203716855">Volgende update</translation>
 <translation id="8678378565142776698">Opnieuw opstarten en automatische updates ontvangen</translation>
 <translation id="8678538439778360739">De gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin voor synchronisatie. Hieronder vallen geen betaalmethoden en adressen van Google Pay.</translation>
 <translation id="8678582529642151449">Tabbladen krimpen niet</translation>
@@ -8107,7 +8094,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8680251145628383637">Log in om je bookmarks, geschiedenis, wachtwoorden en andere instellingen op te halen op al je apparaten. Je wordt ook automatisch ingelogd bij je Google-services.</translation>
 <translation id="8681614230122836773">Chrome heeft schadelijke software gevonden op je computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is verbonden en klaar</translation>
-<translation id="8683081248374354009">Groep resetten</translation>
 <translation id="8688672835843460752">Beschikbaar</translation>
 <translation id="8690129572193755009">Sites kunnen vragen of ze protocollen mogen verwerken</translation>
 <translation id="8692107307702113268">Het wachtwoord is langer dan 1000 tekens</translation>
@@ -8385,7 +8371,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8952831374766033534">Configuratie-optie niet ondersteund: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Tijdens het opladen</translation>
 <translation id="895347679606913382">Starten...</translation>
-<translation id="8953654039337655940">Er is een goedkeuringsverzoek naar je ouder gestuurd in de Family Link-app van Google en op families.google.com. Je krijgt een melding als je ouder het verzoek goedkeurt.</translation>
 <translation id="8956230710625245889">Openen in Reader</translation>
 <translation id="8957757410289731985">Profiel aanpassen</translation>
 <translation id="895944840846194039">JavaScript-geheugen</translation>
@@ -8730,7 +8715,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="97905529126098460">Dit venster wordt gesloten nadat het annuleren is voltooid.</translation>
 <translation id="980731642137034229">Knop voor actiemenu</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Er is een goedkeuringsverzoek naar je ouders gestuurd in de Family Link-app van Google en op families.google.com. Je krijgt een melding als je een van je ouders het verzoek goedkeurt.</translation>
 <translation id="983511809958454316">Deze functie wordt niet ondersteund in VR</translation>
 <translation id="984275831282074731">Betaalmethoden</translation>
 <translation id="984705303330760860">Talen voor spellingcontrole toevoegen</translation>

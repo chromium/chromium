@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">ब्लूज</translation>
 <translation id="3218181027817787318">संबंधित</translation>
 <translation id="3223287115535306850">ॲप लाँचिंग थ्रॉबर</translation>
+<translation id="3223425961342298674">स्थानाला अनुमती नाही</translation>
 <translation id="3225347164936328585">टाळ्या वाजवणे</translation>
 <translation id="3225919329040284222">सर्व्हरने असे सर्टिफिकेट सादर केले आहे जे अंगभूत अपेक्षांशी जुळत नाही. या अपेक्षा तुम्हाला संरक्षित करण्यासाठी विशिष्ट, उच्च सुरक्षिततेच्या वेबसाइटसाठी समाविष्ट केल्या आहेत.</translation>
 <translation id="3226128629678568754">पृष्ठ लोड करण्यास आवश्यक असलेला डेटा पुन्हा सबमिट करण्यासाठी रीलोड बटण दाबा.</translation>
@@ -1184,6 +1185,7 @@
 <translation id="4127575959421463246">ChromeOS फ्लॅग शोधत आहात का? भेट द्या</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{अन्य 1}other{अन्य #}}</translation>
 <translation id="4130226655945681476">नेटवर्क केबल, मोडेम आणि राउटर तपासत आहे</translation>
+<translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />". अ‍ॅप्सद्वारे संदर्भ दिलेल्या file_extension "<ph name="FILE_EXTENSION" />" साठी डुप्लिकेट हँडलर.</translation>
 <translation id="4134123981501319574">दस्तऐवज तयार करा</translation>
 <translation id="413544239732274901">आणखी जाणून घ्या</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
@@ -1206,6 +1208,7 @@
 <translation id="4194250254487269611">तुमचे कार्ड आता सेव्ह केले जाऊ शकत नाही</translation>
 <translation id="4196861286325780578">&amp;हलवा पुन्हा करा</translation>
 <translation id="4202554117186904723">पाचवा रोल</translation>
+<translation id="4203769790323223880">कॅमेराला अनुमती नाही</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवॉल आणि अँटीव्हायरस कॉंफिगरेशन तपासणे<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">मोठा</translation>
 <translation id="4210602799576081649">पडताळणी कोड एक्स्पायर झाला, नवीन कोडसाठी विनंती करा</translation>
@@ -1232,6 +1235,7 @@
     &lt;p&gt;तुमचे काम पूर्ण झाले की, तुमचा अँटीव्हायरस प्रोग्राम पुन्हा सुरू करण्याचे लक्षात ठेवा.&lt;/p&gt;
     &lt;h4&gt;पायरी ५: आणखी मदत मिळवा&lt;/h4&gt;
     &lt;p&gt;जर अजूनही तुम्हाला हीच एरर दिसत असेल, तर वेबसाइटच्या मालकाशी संपर्क करा.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">मायक्रोफोनला अनुमती नाही</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />नेटवर्क निदान चालवून पहा<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">तुमचा कॅमेरा वापरण्याची आणि आजूबाजूला हलवण्याची विनंती करू शकते</translation>
 <translation id="4235360514405112390">वैध</translation>
@@ -1603,6 +1607,7 @@
 <translation id="5177076414499237632">या पेजच्या स्रोत आणि विषयाबद्दल जाणून घ्या</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> मध्ये नाही? ही एरर नोंदवा</translation>
 <translation id="518639307526414276">पाळीव प्राण्यांचे खाद्य आणि पाळीव प्राण्यांच्या निगेशी संबंधित पुरवठा</translation>
+<translation id="5190072300954988691">कॅमेरा आणि मायक्रोफोनला अनुमती नाही</translation>
 <translation id="5190835502935405962">बुकमार्क बार</translation>
 <translation id="5191315092027169558">तुमची प्रोफाइल <ph name="DOMAIN" /> द्वारे व्यवस्थापित केली जाते</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ला एकाहून अधिक फाइल डाउनलोड करायच्या आहेत</translation>
@@ -1623,6 +1628,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">डिसमिस करा</translation>
+<translation id="5239623327352565343">स्थानाला अनुमती आहे</translation>
 <translation id="5242889659037569123">सामान आणि प्रवासाशी संबंधित ॲक्सेसरी</translation>
 <translation id="5250209940322997802">"नेटवर्कशी कनेक्ट करा"</translation>
 <translation id="52517543715119994">Chrome च्या वैशिष्‍ट्यांविषयी जाणून घ्या</translation>
@@ -2500,6 +2506,7 @@
 <translation id="7581199239021537589">साइन २ इमेज Y शिफ्ट</translation>
 <translation id="7582602800368606489">Google Calendar मध्ये नवीन इव्‍हेंट झटपट तयार करा</translation>
 <translation id="7583969447617676942">कायद्याशी संबंधित सेवा</translation>
+<translation id="7586676035079382730">सूचनांना अनुमती नाही</translation>
 <translation id="7591288787774558753">गोपनीय आशय शेअर करायचा आहे का?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ला <ph name="TOP_LEVEL_URL" /> वरील कुकी आणि साइट डेटा वापरायचा आहे.</translation>
 <translation id="7592362899630581445">सर्व्हरचे सर्टिफिकेट नाव मर्यादांचे उल्लंघन करते.</translation>
@@ -3052,6 +3059,7 @@
 <translation id="9131119348384879525">गोपनीय आशय कॅप्चर करायचा आहे का?</translation>
 <translation id="9136861683332321024">लक्झरी वाहने</translation>
 <translation id="9137013805542155359">मूळ दर्शवा</translation>
+<translation id="9138037198177304356">सूचनांना अनुमती आहे</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">पत्ते व्यवस्थापित करा</translation>
 <translation id="9144951720726881238">कालावधी समाप्ती तारीख:</translation>

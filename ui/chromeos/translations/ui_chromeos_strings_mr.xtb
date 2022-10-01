@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">सूची व्‍ह्यूवर स्विच करा</translation>
 <translation id="2377590462528165447">Linux सोबत शेअर केलेली <ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> फाइल निवडल्या</translation>
+<translation id="2383454254762599978">ट्रॅशमध्ये हलवा</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2389832672041313158">बर्मीज/म्यानमार</translation>
 <translation id="2392369802118427583">सक्रिय करा</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com वर जा...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> सोबत फाइल उघडण्यासाठी, प्रथम त्या Windows फाइल फोल्डरमध्ये कॉपी करा.</translation>
 <translation id="3556731189587832921">आंतरराष्ट्रीय पीसी कीबोर्डसह इंग्रजी (यूएस)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ट्रॅश मध्ये हलवत आहे</translation>
 <translation id="3567221313191587603">फाइल निवडा आणि तुमच्या फाइल ऑफलाइन अ‍ॅक्सेस करण्यासाठी <ph name="OFFLINE_CHECKBOX_NAME" /> वर टॉगल करा.</translation>
 <translation id="357479282490346887">लिथुआनियन</translation>
 <translation id="3587482841069643663">सर्व</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">बंगाली फोनेटिक</translation>
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4017788180641807848">वर्कमॅन कीबोर्डसह इंग्रजी (यूएस)</translation>
+<translation id="4019998208269143058">झटपट फाइल वर पिन करा</translation>
 <translation id="4040753847560036377">चुकीचा PUK</translation>
 <translation id="4057991113334098539">सक्रिय करीत आहे...</translation>
 <translation id="4092890906744441904">आयरिश</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">अ‍ॅडमिनिस्ट्रेटर धोरणाची शिफारस केली जात नाही:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> हलवला.</translation>
 <translation id="4176286497474237543">आता ट्रॅश रिकामा करा</translation>
+<translation id="4179621117429069925">हा आयटम तुमच्या ट्रॅशमध्ये आहे</translation>
 <translation id="4186579485882418952">ऑफलाइन हे एक्स्टेंशन सुरू करा</translation>
 <translation id="4193154014135846272">Google दस्तऐवज</translation>
 <translation id="4197674956721858839">झिप निवड</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">ऑथेंटिकेशन प्रमाणपत्र रिमोट पद्धतीने नाकारले</translation>
 <translation id="4394214039309501350">बाह्य लिंक</translation>
 <translation id="4394980935660306080">या आठवड्याच्या सुरुवातीला</translation>
+<translation id="4398096759193130964">आयटम रिस्टोअर करा किंवा त्यांना ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा</translation>
 <translation id="4401287888955153199">सर्व काढा</translation>
 <translation id="4410695710508688828">काढून टाकता आले नाही. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">तुमच्या फाइलसाठी शॉर्टकट तयार करणे</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">InScript कीबोर्डसह हिंदी</translation>
 <translation id="4801956050125744859">दोन्ही ठेवा</translation>
 <translation id="4804827417948292437">ॲव्होकॅडो</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> आयटम रिस्टोअर करत आहे</translation>
 <translation id="4823651846660089135">डिव्हाइस केवळ वाचनीय आहे</translation>
 <translation id="4826849268470072925">तमिळ ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> आयटम निवडले</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">गॅझानियाचे फूल</translation>
 <translation id="4943368462779413526">फूटबॉल</translation>
 <translation id="4961158930123534723">Parallels Desktop सोबत एक फोल्डर शेअर केले</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> रिस्टोअर केली</translation>
 <translation id="4969785127455456148">अल्बम</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> किंवा त्यापेक्षा कमी वर्णांचे नाव वापरा</translation>
 <translation id="4973970068702235170">झिप करता आले नाही, अनपेक्षित एरर: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5691596662111998220">अरेरे, <ph name="FILE_NAME" /> यापुढे अस्तित्वात नाही.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, अनलॉक करा</translation>
 <translation id="5700087501958648444">ऑडिओ माहिती</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ट्रॅश मध्ये हलवली आहे</translation>
 <translation id="5724172041621205163">पट्टाचोटे कीबोर्डसह थाई</translation>
 <translation id="5756666464756035725">हंगेरियन क्वर्टी कीबोर्ड</translation>
 <translation id="5763377084591234761">जर्मन (स्वित्झर्लंड)</translation>
@@ -622,6 +630,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> संग्रहण</translation>
 <translation id="6321303798550928047">हात हलवणे</translation>
 <translation id="6327785803543103246">वेब प्रॉक्सी स्वयं शोध</translation>
+<translation id="6337014272874260727">झटपट फाइल वरून अनपिन करा</translation>
 <translation id="6339145975392024142">युएस इंटरनॅशनल (PC)</translation>
 <translation id="6346310558342052870">ॲक्सेस प्रतिबंधित केला</translation>
 <translation id="6356685157277930264">फाइल फीडबॅक विंडो</translation>
@@ -662,6 +671,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6751256176799620176">1 फोल्डर निवडले</translation>
 <translation id="6755827872271341378">ChromeOS Flex डिव्हाइस</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
+<translation id="6794539005637808366">आयटम रिस्टोअर करा किंवा तो ट्रॅशच्या बाहेरील नवीन फोल्डरमध्ये ड्रॅग करा</translation>
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6806699711453372963">Linux शेअरिंग व्यवस्थापित करा</translation>
 <translation id="6806796368146926706">जपानी कीबोर्डसह वर्णांक</translation>
@@ -698,6 +708,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">स्वीडिश</translation>
 <translation id="6990081529015358884">तुमची जागा समाप्त झाली आहे</translation>
+<translation id="6993826899923627728">हे आयटम तुमच्या ट्रॅश मध्ये आहेत</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डर निवडली</translation>
 <translation id="7008426324576352165">अपलोड पूर्ण करण्यासाठी तुमच्या संस्थेला आणखी स्टोरेजची आवश्यकता आहे.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7408870451288633753">झेक</translation>
 <translation id="7417453074306512035">इथिओपिक कीबोर्ड</translation>
 <translation id="7417705661718309329">Google नकाशा</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" रिस्टोअर करत आहे</translation>
 <translation id="7458955835361612701">अलीकडील कोणत्याही इमेज नाहीत</translation>
 <translation id="7460898608667578234">यूक्रेनियन</translation>
 <translation id="7469894403370665791">या नेटवर्कशी स्वयंचलितपणे कनेक्ट व्हा</translation>
@@ -771,6 +783,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7655441028674523381">Google Photos सहजपणे ॲक्सेस करा</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7663224033570512922">हिंदी</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> आयटम ट्रॅशमध्ये हलवले आहेत</translation>
 <translation id="7693909743393669729">ड्राइव्ह फॉरमॅट केल्याने त्यावर स्टोअर केलेला सर्व डेटा मिटवला जाईल आणि दृश्यमान नसू शकणार्‍या पार्टिशनसह, सध्याची सर्व पार्टिशन काढून टाकली जातील. ही कृती पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> फॉरमॅट करता आली नाही</translation>
 <translation id="76959938259365003">ट्रॅश रिकामा करता आला नाही.</translation>
@@ -785,6 +798,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7760449188139285140">चीनी वुबी</translation>
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7774365994322694683">पक्षी</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> आयटम रिस्टोअर केले</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" ऑफलाइन सेव्ह करण्यासाठी तुम्ही अतिरिक्त <ph name="TOTAL_FILE_SIZE" /> जागा मोकळी करणे आवश्‍यक आहे:<ph name="MARKUP_1" /> 
         <ph name="MARKUP_2" />तुम्हाला ऑफलाइन ॲक्सेस करण्‍याची यापुढे आवश्यकता नसलेल्या फाइल अनपिन करा<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
 <translation id="954194396377670556">अ‍ॅडमिनिस्ट्रेटर धोरण पुढील गोष्टी प्रतिबंधित करते:</translation>
 <translation id="965477715979482472">इंग्रजी (दक्षिण आफ्रिका)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> आयटम ट्रॅशमध्ये हलवत आहे</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>
 <translation id="992401651319295351">तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत. तुम्ही नवीन पिन सेट करेपर्यंत तुम्हाला हे नेटवर्क वापरता येणार नाही.</translation>

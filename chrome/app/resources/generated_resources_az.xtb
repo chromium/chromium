@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Kompüteriniz həmçinin daxili <ph name="SHORT_PRODUCT_NAME" /> RLZ kitabxanası ilə gəlir. RLZ axtarışları və <ph name="SHORT_PRODUCT_NAME" /> istifadəsini ölçmək üçün identifikasiya edilə bilən teq ayırır. Bu etiketlər bəzən <ph name="PRODUCT_NAME" /> daxilində, Google Axtarış sorğularında görünür.</translation>
 <translation id="1043505821207197890">Xəta oldu. Linux yalnız qismən təkmilləşdirilə bilər. Ətraflı məlumat üçün qeydlərə baxın. Qeydlər burada saxlanılıb: Fayllar &gt; Fayllarım &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Həmçinin bu tətbiqlərdən data silinsin?</translation>
-<translation id="1043824690776631483">Bu sayta daxil olmaq üçün icazə tələb edilir. Burada uyğun olmayan məzmun ola bilər.</translation>
 <translation id="104419033123549300">Klaviatura xəritəsi üslubu</translation>
 <translation id="104710386808485638">Linux yenidən başladılsın?</translation>
 <translation id="1047431265488717055">Link Mətnini Kopyalayın</translation>
@@ -790,7 +789,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="173522743738009831">Təhlükəsiz Sandbox haqqında</translation>
 <translation id="173628468822554835">Anladım. Defolt olaraq, daxil olduğunuz yeni saytlar sizə bildirişlər göndərməyəcək.</translation>
 <translation id="1737968601308870607">Fayl baqı</translation>
-<translation id="1739684185846730053">Məxfilik Sendboksu sınaqları hələ də aktiv hazırlanma mərhələsindədir və seçilmiş regionlarda əlçatandır. Hələlik saytlar üçüncü tərəf kukiləri kimi cari veb texnologiyalarından istifadə etməyə davam edərkən Məxfilik Sendboksunu sınaqdan keçirə bilər.</translation>
 <translation id="1741190788710022490">Adaptiv şarj</translation>
 <translation id="174123615272205933">Fərdi</translation>
 <translation id="1741314857973421784">Davam edin</translation>
@@ -1960,7 +1958,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2787022501752539710">Yerli baxış məlumatlarını (əlfəcinlər, parollar, tarixçə və s.) saxlayın.</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Qrup nömrəsi</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2791529110887957050">Linux'u silin</translation>
 <translation id="2791952154587244007">Xəta baş verdi. Kiosk tətbiqi bu cihazda avtomatik başladıla bilməyəcək.</translation>
@@ -1990,7 +1987,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2805760958323556153">Bu siyasət dəyəri (ExtensionInstallForcelist) yanlışdır. İnzibatçınız ilə əlaqə saxlayın.</translation>
 <translation id="2805770823691782631">Əlavə məlumatlar</translation>
 <translation id="2806372837663997957">Paylaşım etmək istədiyiniz cihaz qəbul etmədi</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Qısayol artıq mövcuddur</translation>
 <translation id="2807517655263062534">Endirilən fayllar burada görünür</translation>
 <translation id="2809586584051668049">və <ph name="NUMBER_ADDITIONAL_DISABLED" /> daha</translation>
@@ -2442,7 +2438,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3262986719682892278">Çox böyükdür</translation>
 <translation id="3264544094376351444">Sans-serif şrifti</translation>
 <translation id="3264582393905923483">Məzmun</translation>
-<translation id="3265118321284789528">Valideynlərin təsdiqi gözlənilir</translation>
 <translation id="3265459715026181080">Pəncərəni Bağlayın</translation>
 <translation id="3266022278425892773">Linux inkişaf mühiti</translation>
 <translation id="3266274118485960573">Təhlükəsizlik yoxlanışı icra olunur.</translation>
@@ -2570,7 +2565,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3388094447051599208">Çıxış bölməsi dolmaq üzrədir</translation>
 <translation id="3388788256054548012">Bu fayl şifrələnib. Sahibindən onun şifrəsini açmasını istəyin.</translation>
 <translation id="3390013585654699824">Tətbiq detalları</translation>
-<translation id="3391512812407811893">Təhlükəsiz Sandbox sınaqları</translation>
 <translation id="3393554941209044235">Chrome Sənəd Təhlili</translation>
 <translation id="3393582007140394275">Ekranı yayımlamaq olmur.</translation>
 <translation id="3394850431319394743">Qorunan məzmunu oxutmaq üçün identifikatorlardan istifadə etməyə icazə verilib</translation>
@@ -2631,7 +2625,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937"><ph name="ACCOUNT" /> hesabına yenidən daxil olaraq bu hesabı doğrulayın</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> sistemini yaxşılaşdırmaq üçün Google'un avadanlıq datasını toplamasına icazə verin. İmtina etsəniz, bu data lazımi güncəlləmələri müəyyən etmək üçün yenə də Google'a göndəriləcək, lakin saxlanılmayacaq və ya başqa cür istifadə edilməyəcək.</translation>
-<translation id="3444641828375597683">Reklamçılar və naşirlər bu səhifənin sonunda təsvir edilən FLoC üsulundan istifadə edə bilərlər.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> faylına baxa biləcək</translation>
 <translation id="3445047461171030979">Google Assistent cəld cavablar</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
@@ -5310,7 +5303,6 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> nəzərdə tuturdunuz?</translation>
 <translation id="6028117231645531007">Barmaq izi əlavə edin</translation>
 <translation id="6031600495088157824">Alət panelində daxiletmə seçimləri</translation>
-<translation id="6032091552407840792">Bu sınaq yalnız <ph name="BEGIN_LINK" />bəzi regionlarda<ph name="END_LINK" /> aktivdir.</translation>
 <translation id="6032715498678347852">Artırmanın bu sayta girişinə icazə vermək üçün ona toxunun.</translation>
 <translation id="6032912588568283682">Fayl sistemi</translation>
 <translation id="603539183851330738">"Avtodüzəlişi geri qaytarın" düyməsi. <ph name="TYPED_WORD" /> sözünə qaytarın.  Aktivləşdirmək üçün enter, qapatmaq üçün escape düyməsinə basın.</translation>
@@ -6847,7 +6839,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7509097596023256288">İdarəetmənin ayarlanması</translation>
 <translation id="7509246181739783082">Kimliyinizi doğrulayın</translation>
 <translation id="7509539379068593709">Tətbiqi ləğv edin</translation>
-<translation id="7511415964832680006">Aktiv olduqda, saytlar məzmun və xidmətlərini təmin etmək üçün burada göstərilən məxfiliyi qoruma üsullarından istifadə edə bilərlər. Bunlara saytlararası izləmə üçün alternativlər daxildir. Zamanla daha çox sınaq əlavə edilə bilər.</translation>
 <translation id="7514239104543605883">Cihazınıza kopyalayın</translation>
 <translation id="7514365320538308">Endirmə</translation>
 <translation id="7514417110442087199">Təyinat əlavə edin</translation>
@@ -7249,7 +7240,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7877451762676714207">Naməlum server xətası. Lütfən, yenidən cəhd edin vəya server administratoru ilə əlaqə saxlayın.</translation>
 <translation id="7879478708475862060">Daxiletmə rejimini izləyin</translation>
 <translation id="7879631849810108578">Qısayol ayarlanıb: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Yanılı olduqda və status "aktiv" olduğu zaman Chrome olduğunuz qrupu, yaxud "kohortu" müəyyən etmək üçün son 7 günə aid brauzer tarixçənizdən istifadə edir. Reklamçılar qrup üçün reklamlar seçə bilər. Brauzer tarixçəniz cihazınızda məxfi saxlanılır. Bu sınaq yalnız <ph name="BEGIN_LINK" />bəzi regionlarda<ph name="END_LINK" /> aktivdir.</translation>
 <translation id="7880823633812189969">Yenidən başlatma zamanı lokal data silinəcək</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Hesaba Baxın</translation>
@@ -7522,7 +7512,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8119438628456698432">Loq faylları yaradılır...</translation>
 <translation id="811994229154425014">Nöqtə yazmaq üçün iki boşluq</translation>
 <translation id="8120505434908124087">eSIM profili quraşdırın</translation>
-<translation id="812260729110117038">Reklamçılar reklamların effektivliyini saytlarda sizi izləməyəcək şəkildə araşdıra bilərlər.</translation>
 <translation id="81238879832906896">Sarı və ağ gül</translation>
 <translation id="8123975449645947908">Geri sürüşdürün</translation>
 <translation id="8124313775439841391">İdarə olunan ONC</translation>
@@ -7565,7 +7554,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="816055135686411707">Xəta Ayarı Sertifikat Etibarlılığı</translation>
 <translation id="8160775796528709999">Ayarlarda Canlı Altyazını aktivləşdirməklə audio və videonuz üçün altyazılar əldə edin</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />Məxfilik Sendboksu<ph name="END_LINK" /> ilə Chrome açıq vebdən sərbəst şəkildə istifadənizi təmin edərkən sizi saytlararası izləmə mexanizmlərindən qoruyacaq yeni texnologiyalar hazırlayır.</translation>
 <translation id="8161293209665121583">Veb səhifələr üçün oxucu rejimi</translation>
 <translation id="8161604891089629425">Konturlu şrift</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabeli Yeni Pəncərəyə Köçürün}other{Tabelləri Yeni Pəncərəyə Köçürün}}</translation>
@@ -8093,7 +8081,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8676374126336081632">Daxiletməni silin</translation>
 <translation id="8676770494376880701">Enerjiyə qənaət edən şarjer qoşuldu</translation>
 <translation id="8677212948402625567">Hamısını yığcamlaşdırın...</translation>
-<translation id="867767487203716855">Növbəti güncəlləmə</translation>
 <translation id="8678378565142776698">Yenidən başladın və avtomatik güncəlləmələri əldə edin</translation>
 <translation id="8678538439778360739">Data sinxronizasiya parolunuz ilə bu vaxt şifrələnib: <ph name="TIME" />. Google Pay'dəki ödəniş metodları və ünvanlar bura daxil deyil.</translation>
 <translation id="8678582529642151449">Tabların ölçüsü dəyişmir</translation>
@@ -8101,7 +8088,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8680251145628383637">Bütün cihazlarınızda əlfəcin, tarixçə və digər ayarları əldə etmək üçün daxil olun. Həmçinin, avtomatik olaraq Google xidmətlərinə daxil ediləcəksiniz.</translation>
 <translation id="8681614230122836773">Chrome kompüterdə zərərli proqram tapıb</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> qoşuldu və hazırdır</translation>
-<translation id="8683081248374354009">Qrupu sıfırlayın</translation>
 <translation id="8688672835843460752">Əlçatandır</translation>
 <translation id="8690129572193755009">Saytlar protokolları nizamlamaq üçün icazə istəyə bilər</translation>
 <translation id="8692107307702113268">Parol 1000 simvoldan uzundur</translation>
@@ -8376,7 +8362,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8952831374766033534">Konfiqurasiya seçimi dəstəklənmir: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Şarj edilən zaman</translation>
 <translation id="895347679606913382">Başlayır...</translation>
-<translation id="8953654039337655940">Valideyninizə Google Family Link tətbiqində və families.google.com ünvanında təsdiq sorğusu göndərilib. Valideyniniz sorğunu təsdiq edərsə bildiriş alacaqsınız.</translation>
 <translation id="8956230710625245889">Oxucuda açın</translation>
 <translation id="8957757410289731985">Profili fərdiləşdirin</translation>
 <translation id="895944840846194039">JavaScript yaddaşı</translation>
@@ -8721,7 +8706,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="97905529126098460">Ləğvetmə tamamlandıqdan sonra bu pəncərə bağlanacaq.</translation>
 <translation id="980731642137034229">Əməliyyat menyu düyməsi</translation>
 <translation id="981121421437150478">Oflayn</translation>
-<translation id="982684081337630214">Valideynlərinizə Google Family Link tətbiqində və families.google.com ünvanında təsdiq sorğusu göndərilib. Valideynləriniz sorğunu təsdiq edərsə bildiriş alacaqsınız.</translation>
 <translation id="983511809958454316">Bu funksiya VR-də dəstəklənmir</translation>
 <translation id="984275831282074731">Ödəniş üsulları</translation>
 <translation id="984705303330760860">Orfoqrafik yoxlanış dilləri əlavə edin</translation>

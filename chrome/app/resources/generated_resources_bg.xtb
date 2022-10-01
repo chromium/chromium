@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Компютърът ви също се предлага с библиотеката RLZ на <ph name="SHORT_PRODUCT_NAME" />, която е вградена. Тя задава неуникален и непозволяващ лично идентифициране маркер за измерване на търсенията и използването на <ph name="SHORT_PRODUCT_NAME" />, стимулирани от определена промоционална кампания. Тези етикети понякога се показват в заявките за търсене с Google в <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Нещо се обърка. Възможно е надстройването на Linux да е завършено само частично. За повече информация прегледайте регистрационните файлове. Те са запазени във „Файлове &gt; Моите файлове &gt; <ph name="LOG_FILE" />“</translation>
 <translation id="1043818413152647937">Да се изчистят ли данните от следните приложения?</translation>
-<translation id="1043824690776631483">Необходимо ви е разрешение, за да посетите този сайт. Възможно е да има неподходящо съдържание.</translation>
 <translation id="104419033123549300">Стил на клавиатурната подредба</translation>
 <translation id="104710386808485638">Искате ли да рестартирате Linux?</translation>
 <translation id="1047431265488717055">Копиране на тек&amp;ста на връзката</translation>
@@ -801,7 +800,6 @@
 <translation id="173522743738009831">Всичко за Privacy Sandbox</translation>
 <translation id="173628468822554835">Разбрано. По подразбиране новите сайтове, които посещавате, няма да ви изпращат известия.</translation>
 <translation id="1737968601308870607">Картотекиране на програмната грешка</translation>
-<translation id="1739684185846730053">Експериментите за Privacy Sandbox продължават да се разработват активно и са налице в избрани региони. Засега сайтовете може да изпробват Privacy Sandbox и да продължат да използват настоящите уеб технологии, като „бисквитките“ на трети страни.</translation>
 <translation id="1741190788710022490">Адаптивно зареждане</translation>
 <translation id="174123615272205933">Персонализиран</translation>
 <translation id="1741314857973421784">Напред</translation>
@@ -1972,7 +1970,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2787022501752539710">Запазване на локалните данни за сърфирането (отметки, пароли, история и др.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Номер на групата</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Премахване на Linux</translation>
 <translation id="2791952154587244007">Възникна грешка. Павилионното приложение няма да може да стартира автоматично на това устройство.</translation>
@@ -2002,7 +1999,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2805760958323556153">Стойността на правилото ExtensionInstallForcelist е невалидна. Моля, обърнете се към администратора си.</translation>
 <translation id="2805770823691782631">Допълнителни подробности</translation>
 <translation id="2806372837663997957">Устройството, с което се опитвате да споделите файла, не го прие</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Прекият път вече съществува</translation>
 <translation id="2807517655263062534">Тук се показват изтеглените от вас файлове</translation>
 <translation id="2809586584051668049">и още <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2454,7 +2450,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3262986719682892278">Файлът е твърде голям</translation>
 <translation id="3264544094376351444">Безсерифен шрифт</translation>
 <translation id="3264582393905923483">Контекст</translation>
-<translation id="3265118321284789528">Изчаква се одобрение от родител</translation>
 <translation id="3265459715026181080">Затваряне на прозореца</translation>
 <translation id="3266022278425892773">Linux среда на програмиране</translation>
 <translation id="3266274118485960573">Извършва се проверка на безопасността.</translation>
@@ -2582,7 +2577,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3388094447051599208">Изходната тава е почти пълна</translation>
 <translation id="3388788256054548012">Този файл е шифрован. Помолете собственика му да го разшифрова.</translation>
 <translation id="3390013585654699824">Подробности за приложението</translation>
-<translation id="3391512812407811893">Изпробване на Privacy Sandbox</translation>
 <translation id="3393554941209044235">Анализ на документа в Chrome</translation>
 <translation id="3393582007140394275">Предаването на екрана не е възможно.</translation>
 <translation id="3394850431319394743">Разрешено е използването на идентификатори с цел възпроизвеждане на защитено съдържание</translation>
@@ -2643,7 +2637,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3441653493275994384">Екран</translation>
 <translation id="3441663102605358937">Влезте в <ph name="ACCOUNT" /> отново, за да потвърдите този профил</translation>
 <translation id="3442674350323953953">Позволете на Google да използва данните за хардуера ви с цел подобряване на <ph name="DEVICE_OS" />. Ако откажете, данните пак се изпращат до Google, за да се определят подходящите актуализации, но не се съхраняват и не се използват за други цели.</translation>
-<translation id="3444641828375597683">Рекламодателите и издателите могат да използват техниката FLoC, описана по-нататък на тази страница.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ще може да преглежда <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Кратки отговори на Google Асистент</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
@@ -5329,7 +5322,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6027945736510816438">Може би имахте предвид <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Добавяне на отпечатъка</translation>
 <translation id="6031600495088157824">Опции за въвеждане в лентата с инструменти</translation>
-<translation id="6032091552407840792">Този експеримент е активен само в <ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Kликнете върху дадено разширение, за да му предоставите достъп до този сайт.</translation>
 <translation id="6032912588568283682">Файлова система</translation>
 <translation id="603539183851330738">Бутон за отмяна на автоматичното коригиране. Връщане към <ph name="TYPED_WORD" />.  Натиснете Enter за активиране или Escape за отхвърляне.</translation>
@@ -6866,7 +6858,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7509097596023256288">Управлението се настройва</translation>
 <translation id="7509246181739783082">Потвърждаване на самоличността ви</translation>
 <translation id="7509539379068593709">Деинсталиране на приложението</translation>
-<translation id="7511415964832680006">Когато настройката е включена, сайтовете може да използват описаните тук техники за защита на поверителността, за да предоставят съдържанието и услугите си. Техниките съдържат алтернативи на проследяването в различни сайтове. С течение на времето може да бъдат добавени други експерименти.</translation>
 <translation id="7514239104543605883">Копиране на устройството ви</translation>
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7514417110442087199">Задаване на действие</translation>
@@ -7268,8 +7259,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7877451762676714207">Неизвестна грешка в сървъра. Моля, опитайте отново или се свържете с администратора му.</translation>
 <translation id="7879478708475862060">Следване на режима за въвеждане</translation>
 <translation id="7879631849810108578">Прекият път е зададен: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Когато настройката е включена и състоянието е активно, Chrome използва историята ви на сърфиране в продължение на 7 дни, за да определи групата, или кохортата, от която сте част. Рекламодателите могат да избират реклами за групата. Историята ви на сърфиране остава частна на устройството ви. Този експеримент е активен само в
-<ph name="BEGIN_LINK" />някои региони<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Локалните данни ще бъдат изтрити, когато рестартирате</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Преглед на профила</translation>
@@ -7543,7 +7532,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8119438628456698432">Регистрационните файлове се създават...</translation>
 <translation id="811994229154425014">Въвеждане на точка чрез двоен интервал</translation>
 <translation id="8120505434908124087">Инсталиране на потребителския профил на електронната SIM карта</translation>
-<translation id="812260729110117038">Те могат да проучват ефективността на рекламите по начин, който не проследява действията ви в различните сайтове.</translation>
 <translation id="81238879832906896">Жълто-бяло цвете</translation>
 <translation id="8123975449645947908">Превъртане назад</translation>
 <translation id="8124313775439841391">Управлявано ONC</translation>
@@ -7586,7 +7574,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="816055135686411707">При задаването на доверие за сертификата възникна грешка</translation>
 <translation id="8160775796528709999">Показване на надписи за аудио- и видеосъдържание чрез активиране на „Надписи на живо“ в настройките</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Чрез <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome разработва нови технологии, за да ви предпазва от проследяване в различни сайтове, съхранявайки отворената мрежа.</translation>
 <translation id="8161293209665121583">Режим за четене за уеб страниците</translation>
 <translation id="8161604891089629425">Контур</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на разделите в нов прозорец}}</translation>
@@ -8114,7 +8101,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
 <translation id="8676770494376880701">Свързано е зарядно устройство с малка мощност</translation>
 <translation id="8677212948402625567">Свиване на всички...</translation>
-<translation id="867767487203716855">Следваща актуализация</translation>
 <translation id="8678378565142776698">Рестартиране и получаване на автоматични актуализации</translation>
 <translation id="8678538439778360739">Данните са шифровани с пропуска ви за синхронизиране на <ph name="TIME" />. Това не включва начините на плащане и адресите от Google Pay.</translation>
 <translation id="8678582529642151449">Разделите не се свиват</translation>
@@ -8122,7 +8108,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8680251145628383637">Влезте в профила си, за да получите своите отметки, история, пароли и други настройки на всичките си устройства. Също така ще влезете автоматично в използваните от вас услуги на Google.</translation>
 <translation id="8681614230122836773">Chrome откри опасен софтуер на компютъра ви</translation>
 <translation id="8682730193597992579">Принтерът <ph name="PRINTER_NAME" /> е свързан и готов</translation>
-<translation id="8683081248374354009">Повторно задаване на групата</translation>
 <translation id="8688672835843460752">Свободно място</translation>
 <translation id="8690129572193755009">Сайтовете могат да извеждат запитвания за обработване на протоколи</translation>
 <translation id="8692107307702113268">Паролата съдържа повече от 1000 знака</translation>
@@ -8399,7 +8384,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8952831374766033534">Конфигурационната опция не се поддържа: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">При зареждане</translation>
 <translation id="895347679606913382">Стартира...</translation>
-<translation id="8953654039337655940">До родителя ви бе изпратено искане за одобрение в приложението Google Family Link и на адрес families.google.com. Ще получите известие, ако искането бъде одобрено.</translation>
 <translation id="8956230710625245889">Отваряне в Reader</translation>
 <translation id="8957757410289731985">Персонализиране на потребителския профил</translation>
 <translation id="895944840846194039">Памет за JavaScript</translation>
@@ -8744,7 +8728,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="97905529126098460">Този прозорец ще се затвори, след като анулирането завърши.</translation>
 <translation id="980731642137034229">Бутон за менюто с действия</translation>
 <translation id="981121421437150478">Офлайн</translation>
-<translation id="982684081337630214">До родителите ви бе изпратено искане за одобрение в приложението Google Family Link и на адрес families.google.com. Ще получите известие, ако искането бъде одобрено.</translation>
 <translation id="983511809958454316">Тази функция не се поддържа във VR</translation>
 <translation id="984275831282074731">Начини на плащане</translation>
 <translation id="984705303330760860">Добавяне на езици за проверка на правописа</translation>

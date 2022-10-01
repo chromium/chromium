@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">‏آپ کا کمپیوٹر <ph name="SHORT_PRODUCT_NAME" /> کی پہلے سے شامل RLZ لائبریری کے ساتھ بھی آتا ہے۔ RLZ ایک غیر منفرد، ذاتی طور پر ناقابل شناخت ٹیگ کو تفویض کرتا ہے تاکہ تلاشوں اور ایک خاص پروموشنل مہم کے ذریعہ چلائے گئے <ph name="SHORT_PRODUCT_NAME" /> استعمال کی پیمائش کر سکے۔ یہ لیبلز کبھی کبھی Google تلاش استفسارات میں <ph name="PRODUCT_NAME" /> میں ظاہر ہوتے ہیں۔</translation>
 <translation id="1043505821207197890">‏کچھ غلط ہوگیا۔ ممکن ہے کہ Linux صرف جزوی طور پر اپ گریڈ کیا جائے۔ مزید معلومات کے لیے لاگز کا جائزہ لیں۔ لاگز کو فائلز &gt; میری فائلز &gt; <ph name="LOG_FILE" /> میں محفوط کیا گیا ہے</translation>
 <translation id="1043818413152647937">ان ایپس سے بھی ڈیٹا کو صاف کریں؟</translation>
-<translation id="1043824690776631483">یہ سائٹ ملاحظہ کرنے کیلئے آپ کو اجازت درکار ہے۔ اس میں نامناسب مواد ہو سکتا ہے۔</translation>
 <translation id="104419033123549300">کلیدی نقشہ کی طرز</translation>
 <translation id="104710386808485638">‏Linux ری اسٹارٹ کریں؟</translation>
 <translation id="1047431265488717055">لنک کا مت&amp;ن کاپی کریں</translation>
@@ -794,7 +793,6 @@
 <translation id="173522743738009831">رازداری سینڈ باکس کے بارے میں</translation>
 <translation id="173628468822554835">سمجھ آ گئی۔ بذریعہ ڈیفالٹ، جن نئی سائٹس کا آپ ملاحظہ کرتے ہیں وہ آپ کو اطلاعات نہیں بھیجیں گی۔</translation>
 <translation id="1737968601308870607">فائل بگ</translation>
-<translation id="1739684185846730053">رازداری سینڈ باکس ٹرائلز کا ڈیولپمنٹ ابھی بھی جاری ہے اور یہ منتخب علاقوں میں دستیاب ہیں۔ ابھی کے لئے، سائٹس فریق ثالث کوکیز جیسی موجودہ ویب ٹیکنالوجیز کا استعمال جاری رکھتے ہوئے رازداری سینڈ باکس کو آزما کر دیکھ سکتی ہیں۔</translation>
 <translation id="1741190788710022490">اڈاپٹیو چارجنگ</translation>
 <translation id="174123615272205933">حسب ضرورت</translation>
 <translation id="1741314857973421784">جاری رکھیں</translation>
@@ -1963,7 +1961,6 @@
 <translation id="2787022501752539710">مقامی براؤزنگ ڈیٹا (بُک مارکس، پاس ورڈز، سرگزشت وغیرہ) رکھیں</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">گروپ نمبر</translation>
 <translation id="2789486458103222910">ٹھیک ہے</translation>
 <translation id="2791529110887957050">‏Linux ہٹائیں</translation>
 <translation id="2791952154587244007">ایک خرابی پیش آ گئی۔ کیوسک ایپلیکیشن اس آلے پر خودکار طور پر شروع نہیں ہو سکے گی۔</translation>
@@ -1993,7 +1990,6 @@
 <translation id="2805760958323556153">‏ExtensionInstallForcelist کی پالیسی کی قدر غلط ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="2805770823691782631">اضافی تفصیلات</translation>
 <translation id="2806372837663997957">آپ جس آلے کے ساتھ اشتراک کرنے کی کوشش کر رہے ہیں اس نے قبول نہیں کیا</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
 <translation id="2809586584051668049">اور <ph name="NUMBER_ADDITIONAL_DISABLED" /> مزید</translation>
@@ -2445,7 +2441,6 @@
 <translation id="3262986719682892278">بہت بڑی</translation>
 <translation id="3264544094376351444">‏Sans-serif فونٹ</translation>
 <translation id="3264582393905923483">سیاق و سباق</translation>
-<translation id="3265118321284789528">والدین کی منظوری کا انتظار ہے</translation>
 <translation id="3265459715026181080">ونڈو کو بند کریں</translation>
 <translation id="3266022278425892773">‏Linux ڈیولپمنٹ ماحول</translation>
 <translation id="3266274118485960573">سیفٹی چیک چل رہا ہے۔</translation>
@@ -2573,7 +2568,6 @@
 <translation id="3388094447051599208">آؤٹ پٹ ٹرے تقریباً بھر گیا ہے</translation>
 <translation id="3388788256054548012">یہ فائل مرموز کردہ ہے۔ اس کے مالک سے غیر مرموز کرنے کو کہیں۔</translation>
 <translation id="3390013585654699824">ایپ کی تفصیلات</translation>
-<translation id="3391512812407811893">رازداری سینڈ باکس ٹرائلز</translation>
 <translation id="3393554941209044235">‏Chrome کی دستاویز کا تجزیہ</translation>
 <translation id="3393582007140394275">اسکرین کاسٹ کرنے سے قاصر۔</translation>
 <translation id="3394850431319394743">تحفظ یافتہ مواد کو چلانے کیلئے شناخت کنندگان کو استعمال کرنے کی اجازت دی گئی</translation>
@@ -2634,7 +2628,6 @@
 <translation id="3441653493275994384">اسکرین</translation>
 <translation id="3441663102605358937">اس اکاؤنٹ کی توثیق کرنے کیلئے <ph name="ACCOUNT" /> میں دوبارہ سائن ان کریں</translation>
 <translation id="3442674350323953953">‏<ph name="DEVICE_OS" /> کو بہتر بنانے میں مدد کے لیے Google کو اپنا ہارڈویئر ڈیٹا استعمال کرنے دیں۔ اگر آپ مسترد کرتے ہیں تو یہ ڈیٹا اب بھی Google کو بھیجا جاتا ہے تاکہ مناسب اپ ڈیٹس کا تعین کیا جا سکے، لیکن اسے اسٹور یا استعمال نہیں کیا جاتا۔</translation>
-<translation id="3444641828375597683">‏مشتہرین اور ناشرین اس صفحے پر بعد میں بیان کردہ کے مطابق FLoC کا استعمال کر سکتے ہیں۔</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" /> کو دیکھ سکے گا</translation>
 <translation id="3445047461171030979">‏Google اسسٹنٹ کے فوری جوابات</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
@@ -5316,7 +5309,6 @@
 <translation id="6027945736510816438">کیا آپ کا مطلب <ph name="WEBSITE" /> ہے؟</translation>
 <translation id="6028117231645531007">فنگر پرنٹ شامل کریں</translation>
 <translation id="6031600495088157824">ٹول بار میں ان پٹ اختیارات</translation>
-<translation id="6032091552407840792">یہ ٹرائل صرف <ph name="BEGIN_LINK" />کچھ علاقوں<ph name="END_LINK" /> میں ہی فعال ہے۔</translation>
 <translation id="6032715498678347852">ایکسٹینشن کو اس سائٹ تک رسائی فراہم کرنے کے لیے، اس پر کلک کریں۔</translation>
 <translation id="6032912588568283682">فائل سسٹم</translation>
 <translation id="603539183851330738">خودکار تصحیح بٹن کو کالعدم کریں۔ <ph name="TYPED_WORD" /> پر لوٹائیں۔  فعال کرنے کے لیے اینٹر، برخاست کرنے کے لیے ایسکیپ دبائیں۔</translation>
@@ -6853,7 +6845,6 @@
 <translation id="7509097596023256288">مینیجمنٹ سیٹ اپ کیا جا رہا ہے</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7509539379068593709">ایپ کو اَن انسٹال کریں</translation>
-<translation id="7511415964832680006">آن ہونے پر، سائٹس اپنے مواد اور سروسز کو فراہم کرنے کے لیے یہاں دکھائی گئی رازداری کے تحفظ کی تکنیکوں کا استعمال کر سکتی ہیں۔ ان میں کراس سائٹ ٹریکنگ کے متبادلات شامل ہیں۔ آنے والے وقت میں مزید ٹرائلز شامل کئے جا سکتے ہیں۔</translation>
 <translation id="7514239104543605883">اپنے آلہ پر کاپی کریں</translation>
 <translation id="7514365320538308">ڈاؤن لوڈ کریں</translation>
 <translation id="7514417110442087199">تفویض شامل کریں</translation>
@@ -7255,7 +7246,6 @@
 <translation id="7877451762676714207">سرور کی نامعلوم  خرابی۔ براہ کرم دوبارہ کوشش کریں یا سرور کے منتظم سے رابطہ کریں۔</translation>
 <translation id="7879478708475862060">اندراج کی وض‏ع کی پیروی کریں</translation>
 <translation id="7879631849810108578">شارٹ کٹ کا سیٹ: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">‏آن ہونے اور اسٹیٹس فعال ہونے پر Chrome آپ کی براؤزنگ کی سرگزشت کو 7 دن سے زیادہ وقت تک کسی گروپ یا "مشترک خصوصیات کے حامل لوگوں کا گروپ" جس میں آپ شامل ہوں اس کا تعین کرنے کے لیے استعمال کرتا ہے۔ مشتہرین گروپ کے لیے اشتہارات کا انتخاب کر سکتے ہیں۔ آپ کی براؤزنگ کی سرگزشت کو آپ کے آلے پر نجی رکھا جاتا ہے۔ یہ ٹرائل صرف <ph name="BEGIN_LINK" />کچھ علاقوں<ph name="END_LINK" /> میں ہی فعال ہے۔</translation>
 <translation id="7880823633812189969">جب آپ دوبارہ شروع کریں گے تو مقامی ڈیٹا حذف ہو جائے گا</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">اکاؤنٹ دیکھیں</translation>
@@ -7528,7 +7518,6 @@
 <translation id="8119438628456698432">لاگ فائلز تخلیق ہو رہی ہیں...</translation>
 <translation id="811994229154425014">پیریڈ ٹائپ کرنے کیلئے دوہرا اسپیس</translation>
 <translation id="8120505434908124087">‏eSIM پروفائل انسٹال کریں</translation>
-<translation id="812260729110117038">مشتہرین اور ناشرین اشتہارات کی افادیت کا ایسے طریقے سے مطالعہ کر سکتے ہیں جو آپ کو مختلف سائٹس پر ٹریک نہ کرتا ہو۔</translation>
 <translation id="81238879832906896">زرد اور سفید پھول</translation>
 <translation id="8123975449645947908">پیچھے اسکرول کریں</translation>
 <translation id="8124313775439841391">‏نظم کردہ ONC</translation>
@@ -7571,7 +7560,6 @@
 <translation id="816055135686411707">سرٹیفیکیٹ ٹرسٹ کو ترتیب دینے میں خرابی</translation>
 <translation id="8160775796528709999">ترتیبات میں لائیو کیپشن فعال کر کے اپنی آڈیو اور ویڈیو کیلئے کیپشنز حاصل کریں</translation>
 <translation id="816095449251911490">‎<ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" />‎</translation>
-<translation id="81610453212785426">‏<ph name="BEGIN_LINK" />رازداری سینڈ باکس<ph name="END_LINK" /> کے ساتھ، Chrome آپ کو اوپن ویب کے تحفظ کے دوران کراس سائٹ کی ٹریکنگ سے محفوظ رکھنے کے لیے نئی ٹیکنالوجیز تیار کر رہا ہے۔</translation>
 <translation id="8161293209665121583">ویب صفحات کے لیے ریڈر وضع</translation>
 <translation id="8161604891089629425">آؤٹ لائن فونٹ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ٹیب کو نئی ونڈو میں منتقل کریں}other{ٹیبز کو نئی ونڈو میں منتقل کریں}}</translation>
@@ -8099,7 +8087,6 @@
 <translation id="8676374126336081632">ان پٹ صاف کریں</translation>
 <translation id="8676770494376880701">کم پاور چارجر منسلک ہوگیا</translation>
 <translation id="8677212948402625567">سبھی کو سکیڑیں…</translation>
-<translation id="867767487203716855">اگلا اپ ڈیٹ</translation>
 <translation id="8678378565142776698">دوبارہ شروع کریں اور خودکار اپ ڈیٹس حاصل کریں</translation>
 <translation id="8678538439778360739">‏<ph name="TIME" /> پر، آپ کے مطابقت پذیر پاس فریز کی مدد سے ڈيٹا کی مرموزکاری کر دی گئی۔ اس میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہوتے ہیں۔</translation>
 <translation id="8678582529642151449">ٹیبز چھوٹے نہیں کئے جاتے</translation>
@@ -8107,7 +8094,6 @@
 <translation id="8680251145628383637">‏اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کرنے کیلئے سائن ان کریں۔ آپ اپنی Google سروسز میں خود بخود سائن ان بھی ہو جائیں گے۔</translation>
 <translation id="8681614230122836773">‏Chrome کو آپ کے کمپیوٹر پر نقصان دہ سافٹ ویئر ملا</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> منسلک اور تیار ہے</translation>
-<translation id="8683081248374354009">گروپ ری سیٹ کریں</translation>
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="8690129572193755009">سائٹس پروٹوکولز ہینڈل کرنے کے لئے پوچھ سکتی ہیں</translation>
 <translation id="8692107307702113268">پاس ورڈ میں 1000 سے زیادہ حروف ہیں</translation>
@@ -8384,7 +8370,6 @@
 <translation id="8952831374766033534">کنفیگریشن اختیار تعاون یافتہ نہیں ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">چارج ہوتے وقت</translation>
 <translation id="895347679606913382">اسٹارٹ ہو رہا ہے…</translation>
-<translation id="8953654039337655940">‏آپ کے والد/والدہ کو ان کی Google Family Link ایپ اور families.google.com پر منظوری کی ایک درخواست بھیج دی گئی ہے۔ اگر آپ کے والد/والدہ درخواست منظور کر لیتے ہیں تو آپ کو ایک اطلاع موصول ہوگی۔</translation>
 <translation id="8956230710625245889">ریڈر میں کھولیں</translation>
 <translation id="8957757410289731985">پروفائل حسب ضرورت بنائیں</translation>
 <translation id="895944840846194039">‏JavaScript میموری</translation>
@@ -8729,7 +8714,6 @@
 <translation id="97905529126098460">منسوخی کا عمل مکمل ہونے کے بعد یہ ونڈو بند ہو جائے گی۔</translation>
 <translation id="980731642137034229">کارروائی مینو بٹن</translation>
 <translation id="981121421437150478">آف لائن</translation>
-<translation id="982684081337630214">‏آپ کے والدین کو ان کی Google Family Link ایپ اور families.google.com پر منظوری کی ایک درخواست بھیج دی گئی ہے۔ اگر آپ کے والدین میں سے کوئی ایک درخواست منظور کر لیتا ہے تو آپ کو ایک اطلاع موصول ہوگی۔</translation>
 <translation id="983511809958454316">‏یہ خصوصیت VR میں تعاون یافتہ نہیں ہے</translation>
 <translation id="984275831282074731">ادائیگی کے طریقے</translation>
 <translation id="984705303330760860">املے کی جانچ کے لیے زبانیں شامل کریں</translation>

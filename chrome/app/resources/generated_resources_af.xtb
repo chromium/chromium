@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Jou rekenaar kom ook met <ph name="SHORT_PRODUCT_NAME" /> se RLZ-biblioteek ingebou. RLZ wys 'n nie-unieke, nie-persoonlik identifiseerbare merker toe om die soektogte en <ph name="SHORT_PRODUCT_NAME" /> se gebruik, gedryf deur 'n bepaalde promosieveldtog, te meet. Hierdie etikette verskyn somtyds in Google Search-navrae op <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Iets is fout. Linux is dalk net gedeeltelik opgegradeer. Gaan loglêers na vir meer inligting. Loglêers is gestoor in Lêers &gt; My lêers &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Vee ook data in hierdie programme uit?</translation>
-<translation id="1043824690776631483">Jy moet toestemming hê om hierdie werf te besoek. Dit bevat dalk onvanpaste inhoud.</translation>
 <translation id="104419033123549300">Sleutelbindingstyl</translation>
 <translation id="104710386808485638">Herbegin Linux?</translation>
 <translation id="1047431265488717055">Kopieer skakelteks</translation>
@@ -72,6 +71,7 @@
 <translation id="1067661089446014701">Jy kan vir bykomende veiligheid wagwoorde op jou toestel enkripteer voordat hulle in jou Google-rekening gestoor word</translation>
 <translation id="1067922213147265141">Ander Google-dienste</translation>
 <translation id="1069355737714877171">Verwyder e-SIM-profiel genaamd <ph name="PROFILE_NAME" /></translation>
+<translation id="1069814191880976658">Kies ’n ander skerm</translation>
 <translation id="1070377999570795893">'n Ander program op jou rekenaar het 'n uitbreiding bygevoeg wat dalk die manier sal verander waarop Chrome werk.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -229,6 +229,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="120069043972472860">Onkykbaar</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1201564082781748151">Plaaslike data kan teruggestel word as jy jou wagwoord vergeet</translation>
+<translation id="1202116106683864634">Is jy seker jy wil hierdie wagwoordsleutel uitvee?</translation>
 <translation id="1202596434010270079">Kioskprogram is opgedateer. Verwyder asseblief die USB-stokkie.</translation>
 <translation id="120368089816228251">Musieknoot</translation>
 <translation id="1203942045716040624">Gedeelde werker: <ph name="SCRIPT_URL" /></translation>
@@ -252,6 +253,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1223853788495130632">Jou administrateur beveel 'n spesifieke waarde vir hierdie instelling aan.</translation>
 <translation id="1225177025209879837">Verwerk tans versoek …</translation>
 <translation id="1227507814927581609">Kon nie staaf terwyl daar aan "<ph name="DEVICE_NAME" />" gekoppel word nie.</translation>
+<translation id="1227660082540388410">Wysig wagwoordsleutel</translation>
 <translation id="1227993798763400520">Kon nie uitsaai nie. Probeer asseblief weer.</translation>
 <translation id="1230417814058465809">Standaardbeskerming is aan. Gebruik verbeterde beskerming vir selfs nog meer sekuriteit.</translation>
 <translation id="1231733316453485619">Skakel sinkronisering aan?</translation>
@@ -780,6 +782,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (oorspronklik)</translation>
 <translation id="1709217939274742847">Kies 'n kaartjie om vir stawing te gebruik. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netwerkinstellings</translation>
+<translation id="1709916727352927457">Vee wagwoordsleutel uit</translation>
 <translation id="1709972045049031556">Kan nie deel nie</translation>
 <translation id="1711935594505774770">Dit sal alle data en webkoekies uitvee wat deur <ph name="SITE_GROUP_NAME" />, enige werwe daaronder en die geïnstalleerde programme daarvan geberg word</translation>
 <translation id="1714644264617423774">Aktiveer toeganklikheidskenmerke om jou toestel makliker te maak om te gebruik. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -805,7 +808,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="173522743738009831">Meer oor Privacy Sandbox</translation>
 <translation id="173628468822554835">Het dit. Nuwe werwe wat jy besoek, sal by verstek nie kennisgewings vir jou stuur nie.</translation>
 <translation id="1737968601308870607">Lêerfout</translation>
-<translation id="1739684185846730053">Privacy Sandbox-proeflopies word nog aktief ontwikkel en is in uitgesoekte streke beskikbaar. Vir nou kan werwe Privacy Sandbox probeer terwyl hulle steeds huidige webtegnologieë soos derdepartywebkoekies gebruik.</translation>
 <translation id="1741190788710022490">Aanpasbare laaiproses</translation>
 <translation id="174123615272205933">Gepasmaak</translation>
 <translation id="1741314857973421784">Gaan voort</translation>
@@ -1108,6 +1110,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="2007404777272201486">Gee 'n probleem aan …</translation>
 <translation id="2009590708342941694">Emosiekoonnutsding</translation>
 <translation id="2010501376126504057">Versoenbare toestelle</translation>
+<translation id="2010888903612390044">Geen mikrofoon is gekoppel nie</translation>
 <translation id="2015232545623037616">Rekenaar en Chromecast in dieselfde wi-fi-netwerk</translation>
 <translation id="2016473077102413275">Kenmerke wat prente nodig het, sal nie werk nie</translation>
 <translation id="2016574333161572915">Jou Google Vergader-hardeware is gereed om op te stel</translation>
@@ -1976,7 +1979,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2787022501752539710">Hou plaaslike blaaidata (boekmerke, wagwoorde, geskiedenis, ens.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Groepgetal</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Verwyder Linux</translation>
 <translation id="2791952154587244007">'n Fout het voorgekom. Kioskprogram sal nie outomaties op hierdie toestel kan begin nie.</translation>
@@ -2006,7 +2008,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2805760958323556153">Die beleidwaarde vir ExtensionInstallForcelist is ongeldig. Kontak jou administrateur.</translation>
 <translation id="2805770823691782631">Bykomende besonderhede</translation>
 <translation id="2806372837663997957">Die toestel waarmee jy probeer deel, het dit nie aanvaar nie</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Kortpad bestaan reeds</translation>
 <translation id="2807517655263062534">Lêers wat jy aflaai, verskyn hier</translation>
 <translation id="2809586584051668049">en nog <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2458,7 +2459,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3262986719682892278">Te groot</translation>
 <translation id="3264544094376351444">Sans Serif lettertipe</translation>
 <translation id="3264582393905923483">Konteks</translation>
-<translation id="3265118321284789528">Wag tans vir ouergoedkeuring</translation>
 <translation id="3265459715026181080">Maak venster toe</translation>
 <translation id="3266022278425892773">Linux-ontwikkelingomgewing</translation>
 <translation id="3266274118485960573">Veiligheidskontrole vind tans plaas</translation>
@@ -2586,7 +2586,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3388094447051599208">Uitvoerlaai is amper vol</translation>
 <translation id="3388788256054548012">Hierdie lêer is geënkripteer. Vra die eienaar om dit te dekripteer.</translation>
 <translation id="3390013585654699824">Programbesonderhede</translation>
-<translation id="3391512812407811893">Privacy Sandbox-proeflopies</translation>
 <translation id="3393554941209044235">Chrome-dokumentontleding</translation>
 <translation id="3393582007140394275">Kan nie skerm uitsaai nie.</translation>
 <translation id="3394850431319394743">Word toegelaat om identifiseerders te gebruik om beskermde inhoud te speel</translation>
@@ -2647,7 +2646,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3441653493275994384">Skerm</translation>
 <translation id="3441663102605358937">Meld weer by <ph name="ACCOUNT" /> aan om hierdie rekening te verifieer</translation>
 <translation id="3442674350323953953">Laat Google jou hardewaredata gebruik om te help om <ph name="DEVICE_OS" /> beter te maak. As jy dit afwys, sal hierdie data nogtans na Google toe gestuur word om gepaste opdaterings te bepaal, maar dit sal nie geberg of andersins gebruik word nie.</translation>
-<translation id="3444641828375597683">Adverteerders en uitgewers kan FLoC gebruik, wat later op hierdie bladsy beskryf word.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> sal <ph name="FILENAME" /> kan bekyk</translation>
 <translation id="3445047461171030979">Vinnige antwoorde in Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
@@ -3049,6 +3047,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3813296892522778813">Gaan na <ph name="BEGIN_LINK_CHROMIUM" />Google Chrome-hulp<ph name="END_LINK_CHROMIUM" /> as jy nie kan kry wat jy soek nie</translation>
 <translation id="3813358687923336574">Taal wat gebruik word om bladsye en Vinnige Antwoorde te vertaal</translation>
 <translation id="3814529970604306954">Skoolrekening</translation>
+<translation id="3814792775883886759">Geen kamera is gekoppel nie</translation>
 <translation id="3816118180265633665">Chrome-kleure</translation>
 <translation id="3817524650114746564">Maak jou rekenaar se instaanbedienerinstellings oop</translation>
 <translation id="3819164369574292143">Zoem in om items op die skerm groter te maak. Gebruik Soek + Ctrl + M om vergrootglas aan en af te skakel. Gebruik Ctrl + Alt + pylsleutels om rond te beweeg wanneer jy ingezoem is.</translation>
@@ -4295,6 +4294,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5017643436812738274">Jy kan met 'n tekspyltjie deur bladsye navigeer. Druk Ctrl+Search+7 om dit af te skakel.</translation>
 <translation id="5018207570537526145">Maak uitbreidingwebwerf oop</translation>
 <translation id="5018526990965779848">Stuur gebruik- en diagnostiese data. Help om jou Android-ervaring beter te maak deur diagnostiese, toestel- en programgebruikdata outomaties na Google toe te stuur. Dit sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. As jou bykomende Web- en App-aktiwiteit-instelling aangeskakel is, kan hierdie data in jou Google-rekening gestoor word.</translation>
+<translation id="5020008942039547742">Kies ’n ander venster</translation>
 <translation id="5021750053540820849">Nog nie opgedateer nie</translation>
 <translation id="5024511550058813796">Jy sal jou geskiedenis op al jou gesinkroniseerde toestelle hê sodat jy kan voortgaan met dit waarmee jy besig was</translation>
 <translation id="5026492829171796515">Meld aan om 'n Google-rekening by te voeg</translation>
@@ -4521,6 +4521,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5252653240322147470">PIN moet korter as <ph name="MAXIMUM" /> syfers wees</translation>
 <translation id="5254368820972107711">Wys lêers wat verwyder moet word</translation>
 <translation id="52550593576409946">Kioskprogram kon nie begin word nie.</translation>
+<translation id="5255726914791076208">Jou <ph name="RP_ID" />-rekening sal nie verander wanneer jy jou wagwoordsleutel verander nie</translation>
 <translation id="5255859108402770436">Meld weer aan</translation>
 <translation id="52566111838498928">Laai tans lettertipes …</translation>
 <translation id="5256861893479663409">Op alle werwe</translation>
@@ -5332,7 +5333,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6027945736510816438">Het jy bedoel <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Voeg vingerafdruk by</translation>
 <translation id="6031600495088157824">Invoeropsies in nutsbalk</translation>
-<translation id="6032091552407840792">Hierdie proeflopie is net in <ph name="BEGIN_LINK" />sommige streke<ph name="END_LINK" /> aktief.</translation>
 <translation id="6032715498678347852">Om aan 'n uitbreiding toegang tot hierdie werf te gee, moet jy dit klik.</translation>
 <translation id="6032912588568283682">Lêerstelsel</translation>
 <translation id="603539183851330738">Ontdoen Outokorrigeer-knoppie. Stel terug na <ph name="TYPED_WORD" />.  Druk Enter om te aktiveer, Escape om te weier.</translation>
@@ -6061,6 +6061,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="672609503628871915">Sien wat nuut is</translation>
 <translation id="67269783048918309">Stuur gebruik- en diagnostiese data. Hierdie toestel stuur tans diagnostiese, toestel- en programgebruikdata outomaties na Google toe. Dit sal nie gebruik word om jou kind te identifiseer nie en sal met stelsel- en programstabiliteit en ander verbeteringe help. Sekere saamgestelde data sal ook Google-programme en -vennote, soos Android-ontwikkelaars, help. Hierdie <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> word deur die eienaar afgedwing. As die bykomende Web- en App-aktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. <ph name="BEGIN_LINK2" />Kom meer te wete<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Gekoppel, <ph name="BATTERY_PERCENTAGE" />% batterykrag</translation>
+<translation id="6729192290958770680">Voer jou gebruikernaam in</translation>
 <translation id="6731320427842222405">Dit kan 'n paar minute neem</translation>
 <translation id="6733620523445262364">"<ph name="BOOKMARK_TITLE" />" is geskep.</translation>
 <translation id="6735304988756581115">Wys webkoekies en ander werfdata …</translation>
@@ -6869,7 +6870,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7509097596023256288">Stel tans bestuur op</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7509539379068593709">Deïnstalleer program</translation>
-<translation id="7511415964832680006">Wanneer dit aan is, kan werwe die privaatheidinstandhoudingtegnieke wat hier gewys word, gebruik om hul inhoud en dienste te verskaf. Dit sluit alternatiewe vir kruiswerfnasporing in. Nog proeflopies kan oor tyd bygevoeg word.</translation>
 <translation id="7514239104543605883">Kopieer na jou toestel toe</translation>
 <translation id="7514365320538308">Laai af</translation>
 <translation id="7514417110442087199">Voeg toewysing by</translation>
@@ -7271,8 +7271,6 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7877451762676714207">Onbekende bedienerfout. Probeer asseblief weer, of kontak die bedieneradministrateur.</translation>
 <translation id="7879478708475862060">Volg invoermodus</translation>
 <translation id="7879631849810108578">Kortpadstel: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Wanneer dit aan is en die status aktief is, gebruik Chrome jou blaaigeskiedenis oor 7 dae om 'n groep, of "kohort", te bepaal waarin jy is. Adverteerders kan advertensies vir die groep kies. Jou blaaigeskiedenis word privaat gehou op jou toestel. Hierdie proeflopie is net in 
-    <ph name="BEGIN_LINK" />sommige streke<ph name="END_LINK" /> aktief.</translation>
 <translation id="7880823633812189969">Plaaslike data sal uitgevee word wanneer jy herbegin</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Bekyk rekening</translation>
@@ -7545,7 +7543,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8119438628456698432">Genereer tans loglêers …</translation>
 <translation id="811994229154425014">Dubbelspasie om punt te tik</translation>
 <translation id="8120505434908124087">Installeer e-SIM-profiel</translation>
-<translation id="812260729110117038">Adverteerders en uitgewers kan die doeltreffendheid van advertensies op 'n manier bestudeer wat jou nie oor werwe heen naspoor nie.</translation>
 <translation id="81238879832906896">Geel-en-wit blom</translation>
 <translation id="8123975449645947908">Rollees agteruit</translation>
 <translation id="8124313775439841391">Bestuurde ONC</translation>
@@ -7588,7 +7585,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="816055135686411707">Kon nie sertifikaatvertroue stel nie</translation>
 <translation id="8160775796528709999">Kry onderskrifte vir jou oudio en video deur Intydse Onderskrifte in instellings te aktiveer</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Met <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> ontwikkel Chrome nuwe tegnologieë om jou teen kruiswerfnasporing te beveilig terwyl dit die oop web in stand hou.</translation>
 <translation id="8161293209665121583">Lesermodus vir webbladsye</translation>
 <translation id="8161604891089629425">Buitelynlettertipe</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skuif oortjie na nuwe venster toe}other{Skuif oortjies na nuwe venster toe}}</translation>
@@ -8116,7 +8112,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="8676770494376880701">Laekraglaaier gekoppel</translation>
 <translation id="8677212948402625567">Vou alles in …</translation>
-<translation id="867767487203716855">Volgende opdatering</translation>
 <translation id="8678378565142776698">Herbegin en kry outomatiese opdaterings</translation>
 <translation id="8678538439778360739">Data is op <ph name="TIME" /> met jou sinkroniseringwagfrase geënkripteer. Dit sluit nie betaalmetodes en adresse van Google Pay af in nie.</translation>
 <translation id="8678582529642151449">Oortjies krimp nie</translation>
@@ -8124,7 +8119,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8680251145628383637">Meld aan om jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle te kry. Jy sal ook outomaties by jou Google-dienste aangemeld word.</translation>
 <translation id="8681614230122836773">Chrome het skadelike sagteware op jou rekenaar gekry</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is gekoppel en gereed</translation>
-<translation id="8683081248374354009">Stel groep terug</translation>
 <translation id="8688672835843460752">Beskikbaar</translation>
 <translation id="8690129572193755009">Werwe kan vra om protokolle te hanteer</translation>
 <translation id="8692107307702113268">Wagwoord is meer as 1 000 karakters</translation>
@@ -8401,7 +8395,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8952831374766033534">Opstellingopsie word nie gesteun nie: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Terwyl dit laai</translation>
 <translation id="895347679606913382">Begin tans …</translation>
-<translation id="8953654039337655940">'n Goedkeuringversoek is aan jou ouer gestuur op hul Google Family Link-program en by families.google.com. Jy sal 'n kennisgewing kry as jou ouer die versoek goedkeur.</translation>
 <translation id="8956230710625245889">Maak in Leser oop</translation>
 <translation id="8957757410289731985">Pasmaak profiel</translation>
 <translation id="895944840846194039">JavaScript-geheue</translation>
@@ -8746,7 +8739,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="97905529126098460">Hierdie venster sal toemaak sodra kansellasie voltooi is.</translation>
 <translation id="980731642137034229">Handelingkieslysknoppie</translation>
 <translation id="981121421437150478">Vanlyn</translation>
-<translation id="982684081337630214">'n Goedkeuringversoek is aan jou ouers gestuur op hul Google Family Link-program en by families.google.com. Jy sal 'n kennisgewing kry as jou ouers die versoek goedkeur.</translation>
 <translation id="983511809958454316">Hierdie kenmerk word nie in VR gesteun nie</translation>
 <translation id="984275831282074731">Betaalmetodes</translation>
 <translation id="984705303330760860">Voeg speltoetstale by</translation>

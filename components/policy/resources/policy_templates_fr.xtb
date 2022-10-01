@@ -287,9 +287,6 @@
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">L'API Event.path sera indisponible.</translation>
 <translation id="1290634681382861275">Contrôle divers paramètres de type USB, Bluetooth, actualisation des stratégies, mode développeur et plus encore.</translation>
-<translation id="1291880496936992484">Avertissement : RC4 sera intégralement supprimé de <ph name="PRODUCT_NAME" /> après la version 52 (autour de septembre 2016) et cette règle ne sera plus valable.
-
-      Si cette règle n'est pas configurée, ou si elle est définie sur "False", les suites de chiffrement RC4 dans TLS ne seront pas activées. La règle peut être définie sur "True" pour assurer la compatibilité avec un serveur obsolète. Il s'agit là d'une solution provisoire, et le serveur devrait être reconfiguré.</translation>
 <translation id="129206366270737897">Désactive les méthodes asynchrones de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="1294263471858445589">Activer l'authentification ambiante pour les sessions standards et de navigation privée.</translation>
 <translation id="1295737447968372331">Activer la dictée sur l'écran de connexion</translation>
@@ -854,13 +851,6 @@ Cette règle n'a aucun effet si l'option permettant de conserver les données de
       Si cette règle n'est pas configurée, la règle <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> s'applique, à condition qu'elle soit définie. Sinon, le paramètre défini par l'utilisateur s'applique.
 
       Les URL de cette règle ne doivent pas entrer en conflit avec celles configurées via <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. En cas de conflit, cette règle prévaut sur <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="1859859319036806634">Avertissement : Le traitement de secours de la version TLS sera supprimé de <ph name="PRODUCT_NAME" /> après la version 52 (vers le mois de septembre 2016), et cette règle ne sera alors plus applicable.
-
-      Auparavant, en cas d'échec d'un handshake TLS, <ph name="PRODUCT_NAME" /> tentait de se connecter à nouveau avec une version inférieure de TLS afin de contourner les bugs des serveurs HTTPS. Ce paramètre permet de configurer la version à partir de laquelle le processus de traitement de secours s'arrêtera. Si un serveur effectue correctement une négociation de version (c'est-à-dire sans interrompre la connexion), alors ce paramètre ne s'applique pas. Dans tous les cas, la connexion qui en résulte doit être conforme à SSLVersionMin.
-
-      Si cette règle n'est pas configurée ou si elle est définie sur "tls1.2", <ph name="PRODUCT_NAME" /> n'effectue plus ce traitement de secours. Notez que cela ne désactive pas la compatibilité avec les versions TLS antérieures, mais n'affecte que la façon dont <ph name="PRODUCT_NAME" /> contournera les serveurs qui comportent des bugs et qui sont incapables de procéder correctement à la négociation de version.
-
-      Sinon, si la compatibilité avec un serveur comportant des bugs doit être maintenue, cette règle peut être définie sur "tls1.1". Il s'agit là d'une solution provisoire qui exige parallèlement de dépanner le serveur rapidement.</translation>
 <translation id="1861206724856734193">Définit la liste des règles de prévention des fuites de données.</translation>
 <translation id="1862267110714201519">Désactiver la fonctionnalité Fenêtre fantôme.</translation>
 <translation id="1865417998205858223">Autorisations de clés</translation>
@@ -2182,11 +2172,6 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Si un site correspond à un format d'URL dans cette règle, les règles suivantes sont ignorées : <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Cette règle ne tient compte que de l'origine. Ainsi, tout chemin d'accès dans le format d'URL est ignoré.</translation>
-<translation id="3117676313396757089">Avertissement : DHE sera intégralement supprimé de <ph name="PRODUCT_NAME" /> après la version 57 (autour de mars 2017) et cette règle ne sera plus valable.
-
-      Si cette règle n'est pas configurée, ou si elle est définie sur "False", les suites de chiffrement DHE dans TLS ne seront pas activées. Sinon, elle peut être définie sur "True" pour activer ces mêmes suites de chiffrement et assurer la compatibilité avec un serveur obsolète. Il s'agit là d'une solution provisoire, et le serveur devrait être reconfiguré.
-
-      Nous recommandons la migration des serveurs vers des suites de chiffrement ECDHE. Si celles-ci ne sont pas disponibles, veillez à ce qu'une suite de chiffrement utilisant l'échange de clés RSA soit activée.</translation>
 <translation id="3118552207903834734">Autoriser l'utilisateur à configurer le nom d'hôte de son appareil</translation>
 <translation id="3122082892722698079">Contrôler l'utilisation des exceptions liées au contenu non sécurisé</translation>
 <translation id="3128072319047570212">Paramètres de keygen</translation>
@@ -4207,11 +4192,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
 <translation id="5328965694451556034">Signaler une connexion/déconnexion</translation>
-<translation id="5329007337159326804">Avertissement : La règle relative à la version TLS maximale sera entièrement supprimée de <ph name="PRODUCT_NAME" /> à partir de la version 75 environ (autour de juin 2019).
-
-      Si cette règle n'est pas définie, <ph name="PRODUCT_NAME" /> utilise la version maximale par défaut.
-
-      Cette règle peut également être définie sur l'une des valeurs suivantes : "tls1.2" ou "tls1.3". Si elle est configurée, <ph name="PRODUCT_NAME" /> n'utilisera pas de versions de SSL/TLS supérieures à la version spécifiée. Toute valeur non reconnue sera ignorée.</translation>
 <translation id="5329018127554115226">Le mode Haute efficacité sera désactivé.</translation>
 <translation id="5330684698007383292">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenu suivants</translation>
 <translation id="5331746669335642668">Les règles relatives au cloud de <ph name="PRODUCT_NAME" /> sont prioritaires sur les règles relatives à la plate-forme.</translation>
@@ -4939,10 +4919,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Veuillez noter que cette règle affaiblit la protection des adresses IP locales, dans le cas où celle-ci serait requise par les administrateurs.</translation>
 <translation id="614662973812186053">Cette règle permet également de contrôler la collecte des données d'utilisation et de diagnostic sur les appareils Android.</translation>
 <translation id="614665605501218241">Autorise les sites listés à envoyer des requêtes à des points de terminaison plus privés du réseau de façon non sécurisée.</translation>
-<translation id="6154509171634387825">Avertissement : 3DES sera complètement supprimé de <ph name="PRODUCT_NAME" /> dans la version 95 (autour d'octobre 2021). Cette règle cessera alors de fonctionner.
-
-      Si cette règle est définie sur "True", les suites de chiffrement 3DES dans TLS seront activées. Si cette règle est définie sur "False", celles-ci seront désactivées. Si cette règle n'est pas configurée, les suites de chiffrement 3DES sont désactivées par défaut. Cette règle peut être utilisée pour assurer temporairement la compatibilité avec un serveur obsolète. Il s'agit d'une solution provisoire, et il est conseillé de reconfigurer le serveur.
-      </translation>
 <translation id="6155350825868160236">Autoriser l'utilisateur à choisir si des services Web Google peuvent être utilisés pour corriger les fautes d'orthographe</translation>
 <translation id="6155936611791017817">Définir l'état par défaut du grand curseur sur l'écran de connexion</translation>
 <translation id="6157537876488211233">Liste de règles de contournement de proxy séparées par des virgules</translation>

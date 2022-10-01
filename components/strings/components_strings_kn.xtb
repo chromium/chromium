@@ -843,6 +843,7 @@
 <translation id="3216313131063488104">ಬ್ಲೂಸ್</translation>
 <translation id="3218181027817787318">ಸಂಬಂಧಿತ</translation>
 <translation id="3223287115535306850">ಆ್ಯಪ್ ಬಿಡುಗಡೆ ಥ್ರೋಬರ್</translation>
+<translation id="3223425961342298674">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3225347164936328585">ಚಪ್ಪಾಳೆ ತಟ್ಟುತ್ತಿರುವುದು</translation>
 <translation id="3225919329040284222">ಆಂತರಿಕ ಮಾನದಂಡಗಳಿಗೆ ಹೊಂದಿಕೆಯಾಗದ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಹಾಜರಿಪಡಿಸಿದೆ. ನಿಮ್ಮ ಸುರಕ್ಷತೆಯ ಸಲುವಾಗಿ ಕೆಲವು ಹೆಚ್ಚು ಸುರಕ್ಷಿತ ವೆಬ್ ಸೈಟ್‌ಗಳಲ್ಲಿ ಈ ಮಾನದಂಡಗಳನ್ನು ಸೇರ್ಪಡೆಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="3226128629678568754">ಪುಟವನ್ನು ಲೋಡ್ ಮಾಡುವುದಕ್ಕೆ ಅಗತ್ಯವಿರುವ ಡೇಟಾವನ್ನು ಮರುಸಲ್ಲಿಸಲು ಮರುಲೋಡ್ ಬಟನ್ ಒತ್ತಿರಿ.</translation>
@@ -1181,6 +1182,7 @@
 <translation id="4127575959421463246">ChromeOS ಫ್ಲ್ಯಾಗ್‌ಗಳಿಗಾಗಿ ಹುಡುಕುತ್ತಿರುವಿರಾ? ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ಇತರೆ}one{# ಇತರೆ}other{# ಇತರೆ}}</translation>
 <translation id="4130226655945681476">ನೆಟ್‌ವರ್ಕ್ ಕೇಬಲ್‌ಗಳು, ಮೊಡೆಮ್ ಮತ್ತು ರೂಟರ್ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="4132448310531350254">ಆ್ಯಪ್‌ಗಳ "<ph name="POLICY_IDS_LIST" />" ಮೂಲಕ ಉಲ್ಲೇಖಿಸಲಾದ file_extension "<ph name="FILE_EXTENSION" />" ಗೆ ಸಂಬಂಧಿಸಿದ ನಕಲಿ ಹ್ಯಾಂಡ್ಲರ್‌ಗಳು.</translation>
 <translation id="4134123981501319574">Doc ರಚಿಸಿ</translation>
 <translation id="413544239732274901">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="4142935452406587478">ಟ್ರೇ 10</translation>
@@ -1203,6 +1205,7 @@
 <translation id="4194250254487269611">ಸದ್ಯಕ್ಕೆ ನಿಮ್ಮ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="4196861286325780578">&amp;ಸರಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
 <translation id="4202554117186904723">ಐದನೇ ರೋಲ್</translation>
+<translation id="4203769790323223880">ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ಫೈರ್‌ವಾಲ್ ಮತ್ತು ಆಂಟಿವೈರಸ್ ಕಾನ್ಫಿಗರೇಶನ್‌‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">ದೊಡ್ಡದು</translation>
 <translation id="4210602799576081649">ದೃಢೀಕರಣ ಕೋಡ್ ಅವಧಿ ಮೀರಿದೆ, ಹೊಸ ಕೋಡ್‌ಗಾಗಿ ವಿನಂತಿಸಿ</translation>
@@ -1229,6 +1232,7 @@
     &lt;p&gt;ನಿಮ್ಮ ಕೆಲಸ ಮುಗಿದ ನಂತರ, ನಿಮ್ಮ ಆ್ಯಂಟಿವೈರಸ್ ಪ್ರೋಗ್ರಾಂ ಅನ್ನು ಮರಳಿ ಆನ್ ಮಾಡಲು ಮರೆಯಬೇಡಿ.&lt;/p&gt;
     &lt;h4&gt;ಹಂತ 5: ಹೆಚ್ಚುವರಿ ಸಹಾಯ ಪಡೆಯಿರಿ&lt;/h4&gt;
     &lt;p&gt;ದೋಷವು ಇನ್ನೂ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವೆಬ್‌ಸೈಟ್ ಮಾಲೀಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ನೆಟ್‌ವರ್ಕ್ ಡಯಾಗ್ನಾಸ್ಟಿಕ್ಸ್‌ ರನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಮತ್ತು ಸರಿಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="4235360514405112390">ಮಾನ್ಯವಾಗಿದೆ</translation>
@@ -1600,6 +1604,7 @@
 <translation id="5177076414499237632">ಈ ಪುಟದ ಮೂಲ ಹಾಗೂ ವಿಷಯದ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> ರಲ್ಲಿ ಇಲ್ಲವೆ? ಈ ದೋಷವನ್ನು ವರದಿ ಮಾಡಿ</translation>
 <translation id="518639307526414276">ಸಾಕುಪ್ರಾಣಿಗಳ ಆಹಾರ ಮತ್ತು ಸಾಕುಪ್ರಾಣಿ ಆರೈಕೆಯ ಸಾಮಗ್ರಿಗಳು</translation>
+<translation id="5190072300954988691">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="5190835502935405962">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಬಾರ್</translation>
 <translation id="5191315092027169558">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು <ph name="DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ಬಹು ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಬಯಸುತ್ತದೆ</translation>
@@ -1620,6 +1625,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">ವಜಾಗೊಳಿಸಿ</translation>
+<translation id="5239623327352565343">ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="5242889659037569123">ಲಗೇಜ್ ಮತ್ತು ಪ್ರಯಾಣ ಪರಿಕರಗಳು</translation>
 <translation id="5250209940322997802">"ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಿಸಿ"</translation>
 <translation id="52517543715119994">Chrome ಫೀಚರ್‌ಗಳ ಕುರಿತು ತಿಳಿಯಿರಿ</translation>
@@ -2494,6 +2500,7 @@
 <translation id="7581199239021537589">ಅಂಚು 2 ಚಿತ್ರ Y ಶಿಫ್ಟ್</translation>
 <translation id="7582602800368606489">Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="7583969447617676942">ಕಾನೂನು ಸೇವೆಗಳು</translation>
+<translation id="7586676035079382730">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="7591288787774558753">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕೇ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> ನಲ್ಲಿ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಲು <ph name="EMBEDDED_URL" /> ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="7592362899630581445">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವು ಹೆಸರಿನ ನಿರ್ಬಂಧನೆಗಳನ್ನು ಉಲ್ಲಂಘಿಸುತ್ತದೆ.</translation>
@@ -3047,6 +3054,7 @@
 <translation id="9131119348384879525">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="9136861683332321024">ಐಷಾರಾಮಿ ವಾಹನಗಳು</translation>
 <translation id="9137013805542155359">ಮೂಲವನ್ನು ತೋರಿಸಿ</translation>
+<translation id="9138037198177304356">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9144951720726881238">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ:</translation>

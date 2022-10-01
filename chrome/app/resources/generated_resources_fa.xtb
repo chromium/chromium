@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">‏‫همچنین کتابخانه RLZ‏ <ph name="SHORT_PRODUCT_NAME" /> از قبل بر روی رایانه شما نصب شده است. RLZ یک برچسب غیرمنحصر بفرد و غیرقابل‌شناسایی برای سنجش جستجوها و استفاده از <ph name="SHORT_PRODUCT_NAME" /> اختصاص می‌دهد که توسط یک کمپین تبلیغاتی خاص ارائه می‌شود. در بعضی مواقع در <ph name="PRODUCT_NAME" /> این برچسب‌ها در عباراتی که در جستجوی Goole جستجو می‌شوند نمایان می‌شوند.</translation>
 <translation id="1043505821207197890">‏مشکلی پیش آمد. Linux ممکن است به‌صورت جزئی ارتقا یافته باشد. برای اطلاعات بیشتر، گزارش‌ها را مرور کنید. گزارش‌ها در «Files &gt; فایل‌های من &gt; <ph name="LOG_FILE" />» ذخیره شده است</translation>
 <translation id="1043818413152647937">داده‌های این برنامه‌ها نیز پاک شود؟</translation>
-<translation id="1043824690776631483">برای بازدید از این سایت، به اجازه نیاز دارید. ممکن است حاوی محتوای نامناسب باشد.</translation>
 <translation id="104419033123549300">سبک نقشه‌کلید</translation>
 <translation id="104710386808485638">‏Linux بازراه‌اندازی شود؟</translation>
 <translation id="1047431265488717055">کپی کردن متن &amp;پیوند</translation>
@@ -803,7 +802,6 @@
 <translation id="173522743738009831">درباره «جعبه ایمنی حریم خصوصی»</translation>
 <translation id="173628468822554835">متوجه شدم. به‌طور پیش‌فرض، سایت‌های جدیدی را که بازدید کرده‌اید برایتان اعلان نمی‌فرستند.</translation>
 <translation id="1737968601308870607">اشکال پرونده</translation>
-<translation id="1739684185846730053">دوره آزمایشی «جعبه ایمنی حریم خصوصی» هنوز در مرحله توسعه فعال است و در مناطق منتخب دردسترس است. درحال‌حاضر، ممکن است سایت‌ها همچنان که از فناوری‌های کوکی‌های شخص ثالث استفاده می‌کنند، «جعبه ایمنی حریم خصوصی» را نیز امتحان کنند.</translation>
 <translation id="1741190788710022490">شارژ تطبیقی</translation>
 <translation id="174123615272205933">سفارشی</translation>
 <translation id="1741314857973421784">ادامه</translation>
@@ -1973,7 +1971,6 @@
 <translation id="2787022501752539710">داده‌های مرور محلی (نشانک‌ها، گذرواژه‌ها، سابقه، و غیره) نگه داشته شود</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">شماره گروه</translation>
 <translation id="2789486458103222910">تأیید</translation>
 <translation id="2791529110887957050">‏برداشتن Linux</translation>
 <translation id="2791952154587244007">خطایی رخ داده است. برنامه کیوسک نمی‌تواند در این دستگاه به صورت خودکار راه‌اندازی شود.</translation>
@@ -2003,7 +2000,6 @@
 <translation id="2805760958323556153">‏مقدار خط‌مشی ExtensionInstallForcelist نامعتبر است. لطفاً با سرپرست تماس بگیرید.</translation>
 <translation id="2805770823691782631">جزئیات دیگر</translation>
 <translation id="2806372837663997957">دستگاهی که می‌خواهید با آن هم‌رسانی کنید درخواست را نپذیرفت</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">میان‌بر از قبل وجود دارد</translation>
 <translation id="2807517655263062534">فایل‌هایی که بارگیری می‌کنید اینجا نشان داده می‌شود</translation>
 <translation id="2809586584051668049">و <ph name="NUMBER_ADDITIONAL_DISABLED" /> مورد دیگر</translation>
@@ -2455,7 +2451,6 @@
 <translation id="3262986719682892278">بسیار بزرگ است</translation>
 <translation id="3264544094376351444">‏قلم Sans-Serif</translation>
 <translation id="3264582393905923483">زمینه</translation>
-<translation id="3265118321284789528">درانتظار تأیید ولی</translation>
 <translation id="3265459715026181080">بستن پنجره</translation>
 <translation id="3266022278425892773">‏محیط برنامه‌نویسی Linux</translation>
 <translation id="3266274118485960573">«بررسی ایمنی» درحال اجرا است.</translation>
@@ -2583,7 +2578,6 @@
 <translation id="3388094447051599208">سینی خروجی تقریباً پر است</translation>
 <translation id="3388788256054548012">این فایل رمزگذاری شده است. از مالک بخواهید آن را رمزگشایی کند.</translation>
 <translation id="3390013585654699824">جزئیات برنامه</translation>
-<translation id="3391512812407811893">دوره‌های آزمایشی «جعبه ایمنی حریم خصوصی»</translation>
 <translation id="3393554941209044235">‏تجزیه‌وتحلیل اسناد Chrome</translation>
 <translation id="3393582007140394275">محتوای صفحه ارسال نشد.</translation>
 <translation id="3394850431319394743">سایت‌هایی که مجاز هستند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کنند</translation>
@@ -2644,7 +2638,6 @@
 <translation id="3441653493275994384">صفحه</translation>
 <translation id="3441663102605358937">برای به‌تأیید رساندن این حساب، دوباره به سیستم <ph name="ACCOUNT" /> وارد شوید</translation>
 <translation id="3442674350323953953">‏به Google اجازه دهید از داده‌های سخت‌افزار برای کمک به بهبود <ph name="DEVICE_OS" /> استفاده کند. اگر رد کنید، این داده‌ها همچنان برای تعیین به‌روزرسانی‌های مناسب به Google ارسال می‌شوند اما ذخیره نمی‌شوند یا به‌نحوی دیگر از آن‌ها استفاده نمی‌شود.</translation>
-<translation id="3444641828375597683">‏تبلیغ‌کنندگان و ناشران می‌توانند از FLoC که در بخش‌های بعدی این صفحه شرح داده شده استفاده کنند.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> خواهد توانست <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="3445047461171030979">‏پاسخ‌های سریع «دستیار Google»</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
@@ -5328,7 +5321,6 @@
 <translation id="6027945736510816438">منظورتان <ph name="WEBSITE" /> بود؟</translation>
 <translation id="6028117231645531007">افزودن اثر انگشت</translation>
 <translation id="6031600495088157824">گزینه‌های ورودی در نوارابزار</translation>
-<translation id="6032091552407840792">این دوره آزمایشی فقط در <ph name="BEGIN_LINK" />برخی مناطق<ph name="END_LINK" /> فعال است.</translation>
 <translation id="6032715498678347852">برای اینکه افزونه‌ای بتواند به این سایت دسترسی داشته باشد، روی آن کلیک کنید.</translation>
 <translation id="6032912588568283682">سیستم فایل</translation>
 <translation id="603539183851330738">‏دکمه واگرد کردن تصحیح خودکار. برگرداندن به <ph name="TYPED_WORD" />.  برای فعال کردن، کلید Enter و برای رد کردن، کلید «گریز» را فشار دهید.</translation>
@@ -6867,7 +6859,6 @@
 <translation id="7509097596023256288">درحال راه‌اندازی مدیریت</translation>
 <translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
 <translation id="7509539379068593709">حذف نصب برنامه</translation>
-<translation id="7511415964832680006">وقتی روشن باشد، سایت‌ها می‌توانند برای ارائه محتوا و سرویس‌هایشان از تکنیک‌های حفظ حریم خصوصی نشان داده‌شده در اینجا استفاده کنند. این تکنیک‌ها شامل روش‌های جایگزین برای ردیابی بین‌سایتی می‌شود. ممکن است در گذر زمان، دوره‌های آزمایشی بیشتری اضافه شود.</translation>
 <translation id="7514239104543605883">کپی در دستگاه</translation>
 <translation id="7514365320538308">بارگیری</translation>
 <translation id="7514417110442087199">افزودن تخصیص</translation>
@@ -7268,8 +7259,6 @@
 <translation id="7877451762676714207">خطای سرور ناشناس. لطفاً دوباره سعی کنید یا با سرپرست سرور تماس بگیرید.</translation>
 <translation id="7879478708475862060">پیروی از روش ورودی</translation>
 <translation id="7879631849810108578">میان‌بر تنظیم شد: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">‏وقتی روشن باشد و وضعیت آن فعال باشد، Chrome از سابقه مرور ۷ روز گذشته شما برای تشخیص گروه یا «هم‌گروهی» که به آن تعلق دارید استفاده می‌کند. تبلیغ‌کنندگان می‌توانند برای این گروه، آگهی انتخاب کنند. سابقه مرور شما به‌صورت خصوصی در دستگاهتان نگهداری می‌شود. این دوره آزمایشی فقط در
-    <ph name="BEGIN_LINK" />برخی مناطق<ph name="END_LINK" /> فعال است.</translation>
 <translation id="7880823633812189969">وقتی بازراه‌اندازی کنید، داده‌های محلی حذف می‌شود</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">مشاهده حساب</translation>
@@ -7543,7 +7532,6 @@
 <translation id="8119438628456698432">درحال ایجاد فایل‌های گزارش…</translation>
 <translation id="811994229154425014">دوفاصله برای تایپ نقطه</translation>
 <translation id="8120505434908124087">نصب نمایه سیم‌کارت داخلی</translation>
-<translation id="812260729110117038">تبلیغ‌کنندگان و ناشران می‌توانند اثربخشی آگهی‌ها را به‌گونه‌ای بررسی کنند که شما را در سایت‌ها ردیابی نکند.</translation>
 <translation id="81238879832906896">گل زرد و سفید</translation>
 <translation id="8123975449645947908">پیمایش به‌عقب</translation>
 <translation id="8124313775439841391">‏ONC مدیریت شده</translation>
@@ -7586,7 +7574,6 @@
 <translation id="816055135686411707">خطا در تنظیم اعتماد مجوز</translation>
 <translation id="8160775796528709999">با فعال کردن «زیرنویس ناشنوایان زنده» در تنظیمات، برای صدا و ویدیو زیرنویس ناشنوایان دریافت کنید</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">‏Chrome بااستفاده از <ph name="BEGIN_LINK" />جعبه ایمنی حریم خصوصی<ph name="END_LINK" /> درحال توسعه فناوری‌های جدیدی است که ضمن حفظ وبِ باز، از شما در برابر ردیابی بین‌سایتی محافظت می‌کند.</translation>
 <translation id="8161293209665121583">«حالت خواننده» برای صفحه‌های وب</translation>
 <translation id="8161604891089629425">قلم برون‌خط</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
@@ -8114,7 +8101,6 @@
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
 <translation id="8676770494376880701">شارژر برق متصل شده ضعیف است</translation>
 <translation id="8677212948402625567">کوچک کردن همه...</translation>
-<translation id="867767487203716855">به‌روزرسانی بعدی</translation>
 <translation id="8678378565142776698">بازراه‌اندازی و دریافت به‌روزرسانی‌های خودکار</translation>
 <translation id="8678538439778360739">‏داده‌ها در <ph name="TIME" /> با گذرعبارت همگام‌سازی‌تان رمزگذاری شد. این شامل روش‌های پرداخت و نشانی‌های Google Pay نمی‌شود.</translation>
 <translation id="8678582529642151449">برگه‌ها کوچک نمی‌شوند</translation>
@@ -8122,7 +8108,6 @@
 <translation id="8680251145628383637">‏برای دریافت نشانک‌ها، سابقه، گذرواژه‌ها و تنظیمات دیگرتان را در همه دستگاه‌هایتان، به سیستم وارد شوید. همچنین به‌صورت خودکار به سیستم خدمات Google خود نیز وارد می‌شوید.</translation>
 <translation id="8681614230122836773">‏Chrome نرم‌افزار مضری در رایانه‌تان پیدا کرده است</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> متصل و آماده است</translation>
-<translation id="8683081248374354009">بازنشانی گروه</translation>
 <translation id="8688672835843460752">دردسترس</translation>
 <translation id="8690129572193755009">سایت‌ها می‌توانند برای کنترل پروتکل‌ها درخواست دهند</translation>
 <translation id="8692107307702113268">گذرواژه بیش‌از ۱۰۰۰ نویسه دارد</translation>
@@ -8400,7 +8385,6 @@
 <translation id="8952831374766033534">گزینه پیکربندی پشتیبانی نمی‌شود: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">هنگام شارژ شدن</translation>
 <translation id="895347679606913382">در حال شروع...</translation>
-<translation id="8953654039337655940">‏درخواست تأییدی به ولی شما در برنامه Google Family Link او و families.google.com ارسال شده است. اگر ولی‌تان درخواست را تأیید کند اعلانی دریافت می‌کنید.</translation>
 <translation id="8956230710625245889">باز کردن در «صفحه‌خوان»</translation>
 <translation id="8957757410289731985">سفارشی کردن نمایه</translation>
 <translation id="895944840846194039">حافطه جاوا اسکریپت</translation>
@@ -8745,7 +8729,6 @@
 <translation id="97905529126098460">بعد از کامل شدن لغو، این پنجره بسته می‌شود.</translation>
 <translation id="980731642137034229">دکمه منوی کنش‌ها</translation>
 <translation id="981121421437150478">آفلاین</translation>
-<translation id="982684081337630214">‏درخواست تأییدی به والدین شما در برنامه Google Family Link آن‌ها و families.google.com ارسال شده است. اگر یکی از والدینتان درخواست را تأیید کند اعلانی دریافت می‌کنید.</translation>
 <translation id="983511809958454316">‏این ویژگی در VR پشتیبانی نمی‌شود</translation>
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="984705303330760860">افزودن زبان‌های غلط‌گیر املایی</translation>

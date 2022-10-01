@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Twój komputer zawiera również wbudowaną bibliotekę RLZ <ph name="SHORT_PRODUCT_NAME" />. Przypisuje ona powtarzalny, nieumożliwiający identyfikacji użytkownika tag służący do monitorowania wyszukiwań i używania <ph name="SHORT_PRODUCT_NAME" /> w ramach określonej kampanii promocyjnej. Etykiety te czasami pojawiają się w zapytaniach wyszukiwarki Google w <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Coś poszło nie tak. Linux mógł nie zostać w pełni uaktualniony. Aby dowiedzieć się więcej, przejrzyj dzienniki. Zostały one zapisane tutaj: Pliki &gt; Moje pliki &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Wyczyścić też dane z tych aplikacji?</translation>
-<translation id="1043824690776631483">Aby wejść na tę stronę, musisz mieć pozwolenie. Strona może zawierać nieodpowiednie treści.</translation>
 <translation id="104419033123549300">Styl mapy klawiszy</translation>
 <translation id="104710386808485638">Uruchomić Linuksa ponownie?</translation>
 <translation id="1047431265488717055">Kopiuj te&amp;kst linku</translation>
@@ -800,7 +799,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="173522743738009831">Piaskownica prywatności – informacje</translation>
 <translation id="173628468822554835">OK. Domyślnie strony, które odwiedzasz po raz pierwszy, nie będą wysyłać Ci powiadomień.</translation>
 <translation id="1737968601308870607">Zgłoś błąd</translation>
-<translation id="1739684185846730053">Prace nad rozwojem Piaskownicy prywatności wciąż trwają, więc wersja próbna jest dostępna w wybranych regionach. Teraz witryny mogą ją wypróbować, korzystając nadal z obecnie stosowanych technologii sieciowych takich jak pliki cookie innych firm.</translation>
 <translation id="1741190788710022490">Ładowanie adaptacyjne</translation>
 <translation id="174123615272205933">Niestandardowe</translation>
 <translation id="1741314857973421784">Dalej</translation>
@@ -1953,7 +1951,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2787022501752539710">Zachowaj lokalne dane przeglądania (m.in. zakładki, hasła i historię)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Numer grupy</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Usuń Linuksa</translation>
 <translation id="2791952154587244007">Wystąpił błąd. Nie będzie można automatycznie uruchamiać aplikacji kiosku na tym urządzeniu.</translation>
@@ -1983,7 +1980,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2805760958323556153">Wartość zasady ExtensionInstallForcelist jest nieprawidłowa. Skontaktuj się z administratorem.</translation>
 <translation id="2805770823691782631">Dodatkowe szczegóły</translation>
 <translation id="2806372837663997957">Urządzenie, któremu chcesz udostępnić dokument, nie zaakceptowało Twojej prośby</translation>
-<translation id="2806840421670364300">Sfederowane uczenie się kohort</translation>
 <translation id="2806891468525657116">Skrót już istnieje</translation>
 <translation id="2807517655263062534">Tutaj wyświetlają się pobrane pliki</translation>
 <translation id="2809586584051668049">i jeszcze <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2435,7 +2431,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3262986719682892278">Za duży</translation>
 <translation id="3264544094376351444">Czcionka bezszeryfowa</translation>
 <translation id="3264582393905923483">Kontekst</translation>
-<translation id="3265118321284789528">Czekam na zgodę rodzica</translation>
 <translation id="3265459715026181080">Zamknij okno</translation>
 <translation id="3266022278425892773">Środowisko programistyczne Linuksa</translation>
 <translation id="3266274118485960573">Trwa kontrola zabezpieczeń.</translation>
@@ -2563,7 +2558,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3388094447051599208">Zasobnik wyjściowy jest prawie pełny</translation>
 <translation id="3388788256054548012">Ten plik jest zaszyfrowany. Poproś właściciela, by go odszyfrował.</translation>
 <translation id="3390013585654699824">Szczegóły aplikacji</translation>
-<translation id="3391512812407811893">Wersje próbne w Piaskownicy prywatności</translation>
 <translation id="3393554941209044235">Analiza dokumentu w Chrome</translation>
 <translation id="3393582007140394275">Nie udało się przesłać ekranu.</translation>
 <translation id="3394850431319394743">Mogą używać identyfikatorów do odtwarzania treści chronionych</translation>
@@ -2624,7 +2618,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponownie zaloguj się na konto <ph name="ACCOUNT" />, by je zweryfikować</translation>
 <translation id="3442674350323953953">Pozwól Google na używanie danych dotyczących Twojego sprzętu w celu ulepszania systemu <ph name="DEVICE_OS" />. Jeśli nie wyrazisz zgody, dane te nadal będą przesyłane do Google i używane do określania odpowiednich aktualizacji, ale nie będą przechowywane ani wykorzystywane do innych celów.</translation>
-<translation id="3444641828375597683">Reklamodawcy i wydawcy mogą korzystać ze sfederowanego uczenia się kohort (FLoC), które opisano niżej na tej stronie.</translation>
 <translation id="3444726579402183581">Strona <ph name="ORIGIN" /> będzie mogła wyświetlać plik <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Krótkie odpowiedzi Asystenta Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5309,7 +5302,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6027945736510816438">Czy chodziło Ci o <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Dodaj odcisk palca</translation>
 <translation id="6031600495088157824">Opcje wprowadzania na pasku narzędzi</translation>
-<translation id="6032091552407840792">Wersja próbna jest dostępna tylko w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Aby przyznać rozszerzeniu dostęp do tej strony, kliknij je.</translation>
 <translation id="6032912588568283682">System plików</translation>
 <translation id="603539183851330738">Przycisk cofania autokorekty. Przywróć: <ph name="TYPED_WORD" />.  Naciśnij Enter, by aktywować, albo Escape, by odrzucić.</translation>
@@ -6849,7 +6841,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7509097596023256288">Konfiguruję zarządzanie</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7509539379068593709">Odinstaluj aplikację</translation>
-<translation id="7511415964832680006">Gdy włączysz tę funkcję, witryny będą mogły dostarczać swoje treści i usługi, używając wymienionych tu technik chroniących prywatność. Obejmują one rozwiązania alternatywne dla śledzenia w witrynach. Z czasem może pojawić się więcej wersji próbnych.</translation>
 <translation id="7514239104543605883">Skopiuj na swoje urządzenie</translation>
 <translation id="7514365320538308">Pobierz</translation>
 <translation id="7514417110442087199">Dodaj przypisanie</translation>
@@ -7251,8 +7242,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7877451762676714207">Nieznany błąd serwera. Spróbuj ponownie lub skontaktuj się z administratorem serwera.</translation>
 <translation id="7879478708475862060">Zgodnie z trybem wprowadzania</translation>
 <translation id="7879631849810108578">Ustawiono skrót: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kiedy sfederowane uczenie się kohort jest włączone, a stan jest aktywny, Chrome korzysta z historii przeglądania z 7 dni, aby określić grupę („kohortę”), do której należysz. Reklamodawcy mogą wybierać reklamy na potrzeby grupy. Historia przeglądania jest prywatnie przechowywana na Twoim urządzeniu. Wersja próbna jest dostępna tylko
-    w <ph name="BEGIN_LINK" />niektórych regionach<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Dane lokalne zostaną usunięte po ponownym uruchomieniu</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Wyświetl konto</translation>
@@ -7526,7 +7515,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8119438628456698432">Generuję pliki dzienników…</translation>
 <translation id="811994229154425014">Wstawianie kropki po dwukrotnym naciśnięciu spacji</translation>
 <translation id="8120505434908124087">Zainstaluj profil eSIM</translation>
-<translation id="812260729110117038">Reklamodawcy i wydawcy mogą analizować skuteczność reklam, stosując metody niewymagające śledzenia Cię w witrynach.</translation>
 <translation id="81238879832906896">Żółto-biały kwiat</translation>
 <translation id="8123975449645947908">Przewiń do tyłu</translation>
 <translation id="8124313775439841391">Zarządzana konfiguracja ONC</translation>
@@ -7569,7 +7557,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="816055135686411707">Błąd podczas ustawiania zaufania do certyfikatu</translation>
 <translation id="8160775796528709999">Włącz napisy na żywo w ustawieniach, by odtwarzać dźwięk i wideo z napisami</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">W ramach <ph name="BEGIN_LINK" />Piaskownicy prywatności<ph name="END_LINK" /> Chrome rozwija nowe technologie chroniące przed śledzeniem w różnych witrynach przy zachowaniu otwartego charakteru internetu.</translation>
 <translation id="8161293209665121583">Tryb czytnika stron internetowych</translation>
 <translation id="8161604891089629425">Czcionka konturowa</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Przenieś kartę do nowego okna}few{Przenieś karty do nowego okna}many{Przenieś karty do nowego okna}other{Przenieś karty do nowego okna}}</translation>
@@ -8097,7 +8084,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="8676770494376880701">Podłączono ładowarkę o małej mocy</translation>
 <translation id="8677212948402625567">Zwiń wszystko...</translation>
-<translation id="867767487203716855">Następna aktualizacja</translation>
 <translation id="8678378565142776698">Uruchom ponownie otrzymywanie automatycznych aktualizacji</translation>
 <translation id="8678538439778360739">Dane zostały zaszyfrowane Twoim hasłem synchronizacji w dniu <ph name="TIME" />. Nie obejmuje to form płatności ani adresów w Google Pay.</translation>
 <translation id="8678582529642151449">Karty się nie zmniejszają</translation>
@@ -8105,7 +8091,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8680251145628383637">Zaloguj się, by korzystać ze swoich zakładek, historii, haseł i innych ustawień na wszystkich urządzeniach. Będziesz też automatycznie logować się do usług Google, których używasz.</translation>
 <translation id="8681614230122836773">Przeglądarka Chrome znalazła na Twoim komputerze szkodliwe oprogramowanie</translation>
 <translation id="8682730193597992579">Drukarka <ph name="PRINTER_NAME" /> jest podłączona i gotowa do pracy</translation>
-<translation id="8683081248374354009">Resetuj grupę</translation>
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="8690129572193755009">Witryny mogą prosić o zgodę na obsługę protokołów</translation>
 <translation id="8692107307702113268">Hasło ma ponad 1000 znaków</translation>
@@ -8384,7 +8369,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8952831374766033534">Nieobsługiwana opcja konfiguracyjna: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Podczas ładowania</translation>
 <translation id="895347679606913382">Zaczynam...</translation>
-<translation id="8953654039337655940">Do Twojego rodzica została wysłana prośba o zatwierdzenie, którą może on zobaczyć w aplikacji Google Family Link i na families.google.com. Jeśli rodzic wyrazi zgodę, otrzymasz powiadomienie.</translation>
 <translation id="8956230710625245889">Otwórz w czytniku</translation>
 <translation id="8957757410289731985">Dostosuj profil</translation>
 <translation id="895944840846194039">Pamięć JavaScript</translation>
@@ -8726,7 +8710,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="97905529126098460">Po zakończeniu anulowania okno zostanie zamknięte.</translation>
 <translation id="980731642137034229">Przycisk menu czynności</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Do Twoich rodziców została wysłana prośba o zatwierdzenie, którą mogą oni zobaczyć w aplikacji Google Family Link i na families.google.com. Jeśli któryś z rodziców wyrazi zgodę, otrzymasz powiadomienie.</translation>
 <translation id="983511809958454316">Ta funkcja nie jest obsługiwana w rzeczywistości wirtualnej</translation>
 <translation id="984275831282074731">Formy płatności</translation>
 <translation id="984705303330760860">Dodaj języki sprawdzania pisowni</translation>

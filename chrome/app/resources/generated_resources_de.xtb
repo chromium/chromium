@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Auch die RLZ-Bibliothek von <ph name="SHORT_PRODUCT_NAME" /> ist auf deinem Computer vorinstalliert. RLZ sorgt für die Zuweisung von Tags, anhand derer gemessen wird, wie sich einzelne Werbekampagnen auf die Suchanfragen und die Nutzung von <ph name="SHORT_PRODUCT_NAME" /> auswirken. Die Tags sind weder eindeutig, noch personenbezogen und kommen manchmal in Google-Suchanfragen in <ph name="PRODUCT_NAME" /> vor.</translation>
 <translation id="1043505821207197890">Ein Fehler ist aufgetreten. Linux wurde möglicherweise nur teilweise aktualisiert. In den Protokollen sind weitere Informationen. Diese findest du unter „Dateien“ &gt; „Meine Dateien“ &gt; „<ph name="LOG_FILE" />“.</translation>
 <translation id="1043818413152647937">Daten auch aus folgenden Apps löschen?</translation>
-<translation id="1043824690776631483">Du benötigst eine Berechtigung, um auf diese Website zuzugreifen. Eventuell enthält sie unangemessene Inhalte.</translation>
 <translation id="104419033123549300">Keymap-Stil</translation>
 <translation id="104710386808485638">Linux neu starten?</translation>
 <translation id="1047431265488717055">Linkte&amp;xt kopieren</translation>
@@ -791,7 +790,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="173522743738009831">Informationen zu Privacy Sandbox</translation>
 <translation id="173628468822554835">Ok. Standardmäßig senden dir neue Websites, die du besuchst, keine Benachrichtigungen.</translation>
 <translation id="1737968601308870607">Fehler melden</translation>
-<translation id="1739684185846730053">Privacy Sandbox befindet sich noch in der Entwicklung und Testversionen sind nur in ausgewählten Regionen verfügbar. Manche Websites, die Privacy Sandbox probeweise nutzen, verwenden momentan möglicherweise weiterhin aktuelle Web-Technologien wie Drittanbieter-Cookies.</translation>
 <translation id="1741190788710022490">Adaptives Laden</translation>
 <translation id="174123615272205933">Benutzerdefiniert</translation>
 <translation id="1741314857973421784">Weiter</translation>
@@ -1958,7 +1956,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2787022501752539710">Lokale Browserdaten beibehalten (z. B. Lesezeichen, Passwörter, Verlauf)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Gruppennummer</translation>
 <translation id="2789486458103222910">Ok</translation>
 <translation id="2791529110887957050">Linux entfernen</translation>
 <translation id="2791952154587244007">Ein Fehler ist aufgetreten. Die Kioskanwendung kann auf diesem Gerät nicht automatisch gestartet werden.</translation>
@@ -1988,7 +1985,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2805760958323556153">Der Wert von „ExtensionInstallForcelist“ ist ungültig. Bitte an den Administrator wenden.</translation>
 <translation id="2805770823691782631">Zusätzliche Informationen</translation>
 <translation id="2806372837663997957">Das Gerät, für das du Dateien freigeben möchtest, hat diese nicht angenommen</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Verknüpfung ist bereits vorhanden</translation>
 <translation id="2807517655263062534">Hier werden heruntergeladene Dateien angezeigt</translation>
 <translation id="2809586584051668049">und <ph name="NUMBER_ADDITIONAL_DISABLED" /> weitere</translation>
@@ -2440,7 +2436,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3262986719682892278">Zu groß</translation>
 <translation id="3264544094376351444">Schriftart Sans-Serif</translation>
 <translation id="3264582393905923483">Kontext</translation>
-<translation id="3265118321284789528">Warten auf Genehmigung der Eltern</translation>
 <translation id="3265459715026181080">Fenster schließen</translation>
 <translation id="3266022278425892773">Linux-Entwicklungsumgebung</translation>
 <translation id="3266274118485960573">Der Sicherheitscheck wird ausgeführt.</translation>
@@ -2568,7 +2563,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3388094447051599208">Ausgabefach fast voll</translation>
 <translation id="3388788256054548012">Diese Datei ist verschlüsselt. Bitte den Inhaber, sie zu entschlüsseln.</translation>
 <translation id="3390013585654699824">App-Details</translation>
-<translation id="3391512812407811893">Privacy Sandbox-Probenutzung</translation>
 <translation id="3393554941209044235">Chrome-Dokumentenanalyse</translation>
 <translation id="3393582007140394275">Bildschirm kann nicht gestreamt werden.</translation>
 <translation id="3394850431319394743">Darf Kennungen verwenden, um geschützte Inhalte wiederzugeben</translation>
@@ -2629,7 +2623,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3441653493275994384">Bildschirm</translation>
 <translation id="3441663102605358937">Melde dich noch einmal bei <ph name="ACCOUNT" /> an, um dieses Konto zu bestätigen</translation>
 <translation id="3442674350323953953">Du kannst Google erlauben, deine Hardwaredaten zu verwenden, um <ph name="DEVICE_OS" /> zu verbessern. Wenn du dies ablehnst, werden deine Daten trotzdem an Google gesendet, um zu prüfen, welche Updates installiert werden sollten – sie werden jedoch nicht gespeichert oder anderweitig verwendet.</translation>
-<translation id="3444641828375597683">Werbetreibende und Publisher können FLoC verwenden. Informationen dazu findest du weiter unten auf dieser Seite.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> kann <ph name="FILENAME" /> aufrufen</translation>
 <translation id="3445047461171030979">Schnelle Antworten bei Google Assistant</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5309,7 +5302,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6027945736510816438">Meintest du <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Fingerabdruck hinzufügen</translation>
 <translation id="6031600495088157824">Eingabeoptionen in Symbolleiste</translation>
-<translation id="6032091552407840792">Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Wenn eine Erweiterung Zugriff auf diese Website haben soll, klicke sie an.</translation>
 <translation id="6032912588568283682">Dateisystem</translation>
 <translation id="603539183851330738">Taste zum Rückgängigmachen der Autokorrektur. „<ph name="TYPED_WORD" />“ wiederherstellen.  Drücke zum Aktivieren die Enter-Taste und zum Ablehnen die Escape-Taste.</translation>
@@ -6846,7 +6838,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7509097596023256288">Verwaltung wird eingerichtet</translation>
 <translation id="7509246181739783082">Identität bestätigen</translation>
 <translation id="7509539379068593709">App deinstallieren</translation>
-<translation id="7511415964832680006">Wenn diese Option aktiviert ist, können Websites die hier aufgeführten Technologien, die zu einem besseren Datenschutz beitragen, zur Bereitstellung ihrer Inhalte und Dienste verwenden. Hierzu zählen unter anderem Alternativen zum websiteübergreifenden Tracking. Mit der Zeit können weitere Testfunktionen hinzukommen.</translation>
 <translation id="7514239104543605883">Auf mein Gerät kopieren</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7514417110442087199">Zuweisung hinzufügen</translation>
@@ -7248,7 +7239,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7877451762676714207">Unbekannter Serverfehler. Bitte versuche es erneut oder wende dich an den Serveradministrator.</translation>
 <translation id="7879478708475862060">Dieselbe Methode wie bei der Eingabe verwenden</translation>
 <translation id="7879631849810108578">Tastenkombination festgelegt: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Wenn FLoC aktiviert und aktiv ist, verwendet Chrome den Browserverlauf der letzten sieben Tage, um eine Gruppe oder „Kohorte“ für dich zu bestimmen. Werbetreibende können Werbung für die einzelnen Gruppen auswählen. Dein Browserverlauf wird sicher auf deinem Gerät gespeichert. Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Lokale Daten werden beim nächsten Neustart gelöscht</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Konto anzeigen</translation>
@@ -7522,7 +7512,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8119438628456698432">Protokolldateien werden erstellt…</translation>
 <translation id="811994229154425014">Punkteingabe durch Doppeltippen auf die Leertaste</translation>
 <translation id="8120505434908124087">eSIM-Profil einrichten</translation>
-<translation id="812260729110117038">Werbetreibende und Publisher können die Wirksamkeit von Anzeigen prüfen, ohne dich dabei websiteübergreifend zu tracken.</translation>
 <translation id="81238879832906896">Gelbe und weiße Blume</translation>
 <translation id="8123975449645947908">Zurückscrollen</translation>
 <translation id="8124313775439841391">Verwaltete ONC-Eigenschaften</translation>
@@ -7565,7 +7554,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="816055135686411707">Fehler beim Festlegen der Vertrauenswürdigkeit des Zertifikats</translation>
 <translation id="8160775796528709999">Aktiviere „Automatische Untertitel“ in den Einstellungen, um deine Audioinhalte und Videos zu untertiteln</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Im Rahmen der Initiative <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> werden neue Technologien entwickelt, die zum Schutz vor websiteübergreifenden Tracking-Mechanismen und zum Erhalt des offenen Webs beitragen.</translation>
 <translation id="8161293209665121583">Lesemodus für Webseiten</translation>
 <translation id="8161604891089629425">Schrift mit Umriss versehen</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
@@ -8093,7 +8081,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
 <translation id="8677212948402625567">Alle minimieren...</translation>
-<translation id="867767487203716855">Nächste Aktualisierung</translation>
 <translation id="8678378565142776698">Neu starten und automatische Updates erhalten</translation>
 <translation id="8678538439778360739">Deine Daten wurden am <ph name="TIME" /> mit deiner Synchronisierungspassphrase verschlüsselt. Davon ausgenommen sind Zahlungsmethoden oder Adressen von Google Pay.</translation>
 <translation id="8678582529642151449">Tabs werden nicht verkleinert</translation>
@@ -8101,7 +8088,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8680251145628383637">Melde dich an, um deine Lesezeichen, den Verlauf und deine anderen Einstellungen auf allen deinen Geräten zu sehen. Du wirst auch automatisch in deinen Google-Diensten angemeldet.</translation>
 <translation id="8681614230122836773">Chrome hat auf deinem Computer schädliche Software gefunden</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ist verbunden und bereit</translation>
-<translation id="8683081248374354009">Gruppe zurücksetzen</translation>
 <translation id="8688672835843460752">Verfügbar</translation>
 <translation id="8690129572193755009">Websites dürfen nachfragen, wenn sie Protokolle verarbeiten möchten</translation>
 <translation id="8692107307702113268">Das Passwort enthält mehr als 1.000 Zeichen</translation>
@@ -8378,7 +8364,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8952831374766033534">Konfigurationsoption wird nicht unterstützt: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Beim Aufladen</translation>
 <translation id="895347679606913382">Wird gestartet...</translation>
-<translation id="8953654039337655940">Eine Genehmigungsanfrage wurde bei families.google.com und über die Google Family Link App an deinen Elternteil gesendet. Du erhältst eine Nachricht, wenn die Anfrage genehmigt wird.</translation>
 <translation id="8956230710625245889">In Leseanwendung öffnen</translation>
 <translation id="8957757410289731985">Profil anpassen</translation>
 <translation id="895944840846194039">JavaScript-Speicher</translation>
@@ -8723,7 +8708,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="97905529126098460">Dieses Fenster wird nach Abbruch der Installation geschlossen.</translation>
 <translation id="980731642137034229">Dreipunkt-Menü-Schaltfläche</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Eine Genehmigungsanfrage wurde bei families.google.com und über die Google Family Link App an deine Eltern gesendet. Du erhältst eine Nachricht, wenn die Anfrage genehmigt wird.</translation>
 <translation id="983511809958454316">Diese Funktion wird im VR-Modus nicht unterstützt</translation>
 <translation id="984275831282074731">Zahlungsmethoden</translation>
 <translation id="984705303330760860">Sprachen für die Rechtschreibprüfung hinzufügen</translation>

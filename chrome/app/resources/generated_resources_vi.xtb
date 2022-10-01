@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Máy tính của bạn cũng đi kèm với thư viện RLZ của <ph name="SHORT_PRODUCT_NAME" /> được tích hợp sẵn. RLZ chỉ định thẻ không thể nhận dạng cá nhân, không duy nhất để đo lường các tìm kiếm và mức độ sử dụng <ph name="SHORT_PRODUCT_NAME" /> mà một chiến dịch quảng cáo cụ thể mang lại. Đôi khi các nhãn này xuất hiện trong truy vấn Google Tìm kiếm trong <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Đã xảy ra lỗi. Có thể Linux chỉ được nâng cấp một phần. Xem nhật ký để biết thêm thông tin. Nhật ký đã được lưu tại Files &gt; My files &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Cũng xóa dữ liệu khỏi các ứng dụng này?</translation>
-<translation id="1043824690776631483">Bạn cần có quyền để truy cập trang web này. Trang web có thể chứa nội dung không phù hợp.</translation>
 <translation id="104419033123549300">Kiểu sơ đồ bàn phím</translation>
 <translation id="104710386808485638">Khởi động lại Linux?</translation>
 <translation id="1047431265488717055">Sao chép &amp;văn bản liên kết</translation>
@@ -809,7 +808,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="173522743738009831">Giới thiệu về Hộp cát về quyền riêng tư</translation>
 <translation id="173628468822554835">Đã hiểu. Theo mặc định, các trang web mới mà bạn truy cập sẽ không gửi thông báo cho bạn.</translation>
 <translation id="1737968601308870607">Lỗi tệp</translation>
-<translation id="1739684185846730053">Chế độ dùng thử Hộp cát về quyền riêng tư vẫn đang trong giai đoạn phát triển và được cung cấp ở một số khu vực. Các trang web hiện có thể dùng thử Hộp cát về quyền riêng tư trong khi tiếp tục sử dụng các công nghệ web hiện tại như cookie của bên thứ ba.</translation>
 <translation id="1741190788710022490">Sạc thích ứng</translation>
 <translation id="174123615272205933">Tùy chỉnh</translation>
 <translation id="1741314857973421784">Tiếp tục</translation>
@@ -1981,7 +1979,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2787022501752539710">Lưu giữ dữ liệu duyệt web (dấu trang, mật khẩu, nhật ký, v.v.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Số nhóm</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Xóa Linux</translation>
 <translation id="2791952154587244007">Đã xảy ra lỗi. Ứng dụng kiosk sẽ không thể tự động chạy trên thiết bị này.</translation>
@@ -2011,7 +2008,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2805760958323556153">Giá trị ExtensionInstallForcelist của chính sách là không hợp lệ. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="2805770823691782631">Thông tin chi tiết bổ sung</translation>
 <translation id="2806372837663997957">Thiết bị mà bạn đang cố gắng chia sẻ tệp đã không chấp nhận</translation>
-<translation id="2806840421670364300">FLoC (Học liên kết theo nhóm cùng sở thích)</translation>
 <translation id="2806891468525657116">Lối tắt đã tồn tại</translation>
 <translation id="2807517655263062534">Các tệp bạn tải xuống sẽ xuất hiện ở đây</translation>
 <translation id="2809586584051668049">và <ph name="NUMBER_ADDITIONAL_DISABLED" /> mục khác</translation>
@@ -2463,7 +2459,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3262986719682892278">Quá lớn</translation>
 <translation id="3264544094376351444">Phông chữ Sans-serif</translation>
 <translation id="3264582393905923483">Ngữ cảnh</translation>
-<translation id="3265118321284789528">Đang chờ sự chấp thuận của cha mẹ</translation>
 <translation id="3265459715026181080">Đóng Cửa sổ</translation>
 <translation id="3266022278425892773">Môi trường phát triển Linux</translation>
 <translation id="3266274118485960573">Đang chạy tính năng kiểm tra an toàn.</translation>
@@ -2591,7 +2586,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3388094447051599208">Khay giấy ra sắp đầy</translation>
 <translation id="3388788256054548012">Tệp này đã được mã hóa. Hãy yêu cầu chủ sở hữu tệp giải mã.</translation>
 <translation id="3390013585654699824">Thông tin chi tiết về ứng dụng</translation>
-<translation id="3391512812407811893">Dùng thử Hộp cát về quyền riêng tư</translation>
 <translation id="3393554941209044235">Phân tích tài liệu Chrome</translation>
 <translation id="3393582007140394275">Không truyền được màn hình.</translation>
 <translation id="3394850431319394743">Được phép dùng giá trị nhận dạng để phát nội dung được bảo vệ</translation>
@@ -2652,7 +2646,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3441653493275994384">Màn hình</translation>
 <translation id="3441663102605358937">Đăng nhập lại vào <ph name="ACCOUNT" /> để xác minh tài khoản này</translation>
 <translation id="3442674350323953953">Cho phép Google dùng dữ liệu phần cứng của bạn để giúp cải thiện <ph name="DEVICE_OS" />. Nếu bạn từ chối, dữ liệu này vẫn sẽ được gửi tới Google để xác định các bản cập nhật thích hợp, nhưng sẽ không được lưu trữ hoặc sử dụng cho mục đích khác.</translation>
-<translation id="3444641828375597683">Các nhà quảng cáo và nhà xuất bản có thể dùng kỹ thuật FLoC (Học liên kết theo nhóm cùng sở thích), được mô tả ở phần sau trên trang này.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> sẽ xem được <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Các câu trả lời nhanh của Trợ lý Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
@@ -5339,7 +5332,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6027945736510816438">Ý của bạn là <ph name="WEBSITE" /> phải không?</translation>
 <translation id="6028117231645531007">Thêm vân tay</translation>
 <translation id="6031600495088157824">Các tùy chọn phương thức nhập trên thanh công cụ</translation>
-<translation id="6032091552407840792">Chế độ dùng thử này chỉ hoạt động ở <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Để cấp cho một tiện ích quyền truy cập vào trang web này, hãy nhấp vào tiện ích đó.</translation>
 <translation id="6032912588568283682">Hệ thống tệp</translation>
 <translation id="603539183851330738">Nút hủy thao tác tự động sửa lỗi. Chuyển về <ph name="TYPED_WORD" />.  Nhấn phím Enter để kích hoạt hoặc nhấn phím Escape để đóng.</translation>
@@ -6877,7 +6869,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7509097596023256288">Thiết lập tính năng quản lý</translation>
 <translation id="7509246181739783082">Xác minh danh tính của bạn</translation>
 <translation id="7509539379068593709">Gỡ cài đặt ứng dụng</translation>
-<translation id="7511415964832680006">Khi bạn bật Hộp cát về quyền riêng tư, các trang web có thể dùng kỹ thuật bảo vệ quyền riêng tư theo mô tả ở đây để cung cấp nội dung và dịch vụ của mình. Các kỹ thuật này gồm có những biện pháp thay thế cho hoạt động theo dõi trên nhiều trang web. Theo thời gian, chúng tôi có thể bổ sung nhiều chế độ dùng thử khác.</translation>
 <translation id="7514239104543605883">Sao chép vào thiết bị của bạn</translation>
 <translation id="7514365320538308">Tải xuống</translation>
 <translation id="7514417110442087199">Thêm công tắc được gán</translation>
@@ -7279,8 +7270,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7877451762676714207">Lỗi máy chủ không xác định. Vui lòng thử lại hoặc liên hệ với quản trị viên máy chủ.</translation>
 <translation id="7879478708475862060">Theo dõi chế độ nhập</translation>
 <translation id="7879631849810108578">Đã đặt phím tắt: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Khi chế độ này bật và trạng thái là đang hoạt động, Chrome sẽ dùng nhật ký duyệt web của bạn trong hơn 7 ngày để xác định một nhóm hoặc “nhóm thuần tập” mà bạn tham gia. Các nhà quảng cáo có thể chọn quảng cáo cho nhóm đó. Nhật ký duyệt web được lưu giữ riêng tư trên thiết bị của bạn. Chế độ dùng thử này chỉ hoạt động ở
-    <ph name="BEGIN_LINK" />một số khu vực<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Dữ liệu trên thiết bị sẽ bị xóa khi bạn khởi động lại</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Xem tài khoản</translation>
@@ -7554,7 +7543,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8119438628456698432">Đang tạo tệp nhật ký...</translation>
 <translation id="811994229154425014">Hai dấu cách để nhập dấu chấm câu</translation>
 <translation id="8120505434908124087">Cài đặt hồ sơ eSIM</translation>
-<translation id="812260729110117038">Các nhà quảng cáo và nhà xuất bản có thể nghiên cứu tính hiệu quả của quảng cáo mà không cần theo dõi bạn trên các trang web.</translation>
 <translation id="81238879832906896">Hoa màu vàng và trắng</translation>
 <translation id="8123975449645947908">Cuộn lùi</translation>
 <translation id="8124313775439841391">ONC được quản lý</translation>
@@ -7597,7 +7585,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="816055135686411707">Lỗi khi cài đặt độ tin cậy của chứng chỉ</translation>
 <translation id="8160775796528709999">Hiển thị phụ đề cho âm thanh và video bằng cách bật tính năng Phụ đề trực tiếp trong phần cài đặt</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Với <ph name="BEGIN_LINK" />Hộp cát về quyền riêng tư<ph name="END_LINK" />, Chrome sẽ phát triển các công nghệ mới để giúp bạn không bị theo dõi trên nhiều trang web trong khi vẫn duy trì môi trường web mở.</translation>
 <translation id="8161293209665121583">Chế độ đọc dành cho trang web</translation>
 <translation id="8161604891089629425">Phông chữ có đường viền</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Di chuyển thẻ sang cửa sổ mới}other{Di chuyển các thẻ sang cửa sổ mới}}</translation>
@@ -8125,7 +8112,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="8676770494376880701">Đã kết nối bộ sạc công suất thấp</translation>
 <translation id="8677212948402625567">Thu gọn tất cả...</translation>
-<translation id="867767487203716855">Thời gian cập nhật tiếp theo</translation>
 <translation id="8678378565142776698">Khởi động lại và nhận bản cập nhật tự động</translation>
 <translation id="8678538439778360739">Dữ liệu đã được mã hóa bằng cụm mật khẩu đồng bộ hóa của bạn vào <ph name="TIME" />. Dữ liệu này không bao gồm địa chỉ và phương thức thanh toán trên Google Pay.</translation>
 <translation id="8678582529642151449">Thẻ sẽ không thu gọn</translation>
@@ -8133,7 +8119,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8680251145628383637">Đăng nhập để sử dụng dấu trang, lịch sử hoạt động, mật khẩu và các tùy chọn cài đặt khác trên tất cả thiết bị của bạn. Bạn cũng sẽ tự động được đăng nhập vào các dịch vụ Google của mình.</translation>
 <translation id="8681614230122836773">Chrome đã phát hiện thấy phần mềm có hại trên máy tính của bạn</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> đã kết nối và sẵn sàng sử dụng</translation>
-<translation id="8683081248374354009">Đặt lại nhóm</translation>
 <translation id="8688672835843460752">Có sẵn</translation>
 <translation id="8690129572193755009">Trang web có thể yêu cầu xử lý các giao thức</translation>
 <translation id="8692107307702113268">Mật khẩu dài hơn 1000 ký tự</translation>
@@ -8410,7 +8395,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8952831374766033534">Không hỗ trợ tùy chọn cấu hình: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Trong khi sạc</translation>
 <translation id="895347679606913382">Đang bắt đầu...</translation>
-<translation id="8953654039337655940">Yêu cầu phê duyệt đã được gửi đến cha mẹ bạn trên ứng dụng Google Family Link và tại families.google.com. Bạn sẽ nhận được thông báo nếu cha mẹ bạn chấp thuận yêu cầu.</translation>
 <translation id="8956230710625245889">Mở trong Trình đọc</translation>
 <translation id="8957757410289731985">Tùy chỉnh hồ sơ</translation>
 <translation id="895944840846194039">Bộ nhớ dành cho JavaScript</translation>
@@ -8755,7 +8739,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="97905529126098460">Cửa sổ này sẽ đóng sau khi quá trình hủy hoàn tất.</translation>
 <translation id="980731642137034229">Nút trình đơn thao tác</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
-<translation id="982684081337630214">Yêu cầu phê duyệt đã được gửi đến cha mẹ bạn trên ứng dụng Google Family Link và tại families.google.com. Bạn sẽ nhận được thông báo nếu cha hoặc mẹ của bạn chấp thuận yêu cầu.</translation>
 <translation id="983511809958454316">Tính năng này không được hỗ trợ trong VR</translation>
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="984705303330760860">Thêm các ngôn ngữ được kiểm tra lỗi chính tả</translation>

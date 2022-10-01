@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Таны компьютер мөн <ph name="SHORT_PRODUCT_NAME" />-ын RLZ программын мэдээллийн сантай байдаг.  RLZ нь тодорхой кампанит ажлаар удирдуулсан хайлтууд болон <ph name="SHORT_PRODUCT_NAME" />-ын хэрэглээг хэмжих онцгой бус, мөн хувийн бус, тодорхойлох боломжтой цонхнуудыг ажиллуулдаг. Эдгээр хаягууд нь заримдаа <ph name="PRODUCT_NAME" /> дахь Google Хайлтын асуултуудад харагддаг.</translation>
 <translation id="1043505821207197890">Алдаа гарлаа. Linux-г зөвхөн хэсэгчлэн сайжруулж болно. Дэлгэрэнгүй мэдээлэл авах бол логийг шалгана уу. Логийг Файлс &gt; Миний файлууд &gt; <ph name="LOG_FILE" />-д хадгалсан</translation>
 <translation id="1043818413152647937">Эдгээр аппаас мөн өгөгдлийг арилгах уу?</translation>
-<translation id="1043824690776631483">Та энэ сайтад зочлохын тулд зөвшөөрөл авах шаардлагатай. Үүнд зохисгүй контент агуулж байж магадгүй.</translation>
 <translation id="104419033123549300">Гарын товчлууруудын байрлалын загвар</translation>
 <translation id="104710386808485638">Linux-г дахин эхлүүлэх үү?</translation>
 <translation id="1047431265488717055">Текстийн холбоосыг хуулах</translation>
@@ -805,7 +804,6 @@
 <translation id="173522743738009831">Privacy Sandbox-н тухай</translation>
 <translation id="173628468822554835">Ойлголоо. Өгөгдмөл тохиргоогоор таны зочлох шинэ сайтууд нь танд мэдэгдэл илгээхгүй.</translation>
 <translation id="1737968601308870607">Файлын алдаа</translation>
-<translation id="1739684185846730053">Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд байгаа бөгөөд сонгосон бүс нутгуудад боломжтой. Одоогоор сайтууд гуравдагч талын күүки зэрэг одоогийн веб технологийг үргэлжлүүлэн ашиглах үедээ Privacy Sandbox-г туршиж үзэж болно.</translation>
 <translation id="1741190788710022490">Орчинтой тохируулан цэнэглэх</translation>
 <translation id="174123615272205933">Захиалгат</translation>
 <translation id="1741314857973421784">Үргэлжлүүлэх</translation>
@@ -1977,7 +1975,6 @@
 <translation id="2787022501752539710">Дотоодын интернэтээр үзсэн өгөгдлийг хадгалах (хавчуурга, нууц үг, түүх гэх мэт)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Бүлгийн тоо</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Linux-г хасах</translation>
 <translation id="2791952154587244007">Алдаа гарлаа. Kiosk апп энэ төхөөрөмж дээр автоматиар эхлэх боломжгүй.</translation>
@@ -2007,7 +2004,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist бодлогын утга буруу байна. Администратортайгаа холбогдоно уу.</translation>
 <translation id="2805770823691782631">Нэмэлт дэлгэрэнгүй мэдээлэл</translation>
 <translation id="2806372837663997957">Таны хуваалцахыг оролдож буй төхөөрөмж зөвшөөрсөнгүй</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Ижил товчлол ашиглалтад байна</translation>
 <translation id="2807517655263062534">Таны татаж авсан файл энд харагдана</translation>
 <translation id="2809586584051668049">ба <ph name="NUMBER_ADDITIONAL_DISABLED" /> дэлгэрэнгүй</translation>
@@ -2459,7 +2455,6 @@
 <translation id="3262986719682892278">Хэт том байна</translation>
 <translation id="3264544094376351444">Sans-serif фонт</translation>
 <translation id="3264582393905923483">Хам сэдэв</translation>
-<translation id="3265118321284789528">Эцэг эхийн зөвшөөрлийг хүлээж байна</translation>
 <translation id="3265459715026181080">Цонхыг хаах</translation>
 <translation id="3266022278425892773">Linux-н хөгжүүлэлтийн орчин</translation>
 <translation id="3266274118485960573">Аюулгүй байдлын шалгалт хийж байна.</translation>
@@ -2587,7 +2582,6 @@
 <translation id="3388094447051599208">Гарах цаасны тэвш бараг дүүрсэн байна</translation>
 <translation id="3388788256054548012">Энэ файлыг шифрлэсэн байна. Өмчлөгчөөс нь үүний кодыг тайлахыг хүснэ үү.</translation>
 <translation id="3390013585654699824">Аппын дэлгэрэнгүй</translation>
-<translation id="3391512812407811893">Privacy Sandbox-н туршилт</translation>
 <translation id="3393554941209044235">Chrome-н документын задлан шинжилгээ</translation>
 <translation id="3393582007140394275">Дэлгэцийг дамжуулах боломжгүй.</translation>
 <translation id="3394850431319394743">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрсөн</translation>
@@ -2648,7 +2642,6 @@
 <translation id="3441653493275994384">Дэлгэц</translation>
 <translation id="3441663102605358937">Энэ бүртгэлийг баталгаажуулахын тулд <ph name="ACCOUNT" />-д нэвтэрнэ үү</translation>
 <translation id="3442674350323953953">Google-д таны техник хангамжийн өгөгдлийг <ph name="DEVICE_OS" />-г сайжруулахад ашиглахыг зөвшөөрнө үү. Хэрэв та татгалзвал энэ өгөгдлийг Google рүү зохих шинэчлэлтүүдийг тодорхойлохын тулд илгээсэн хэвээр байх хэдий ч хадгалахгүй эсвэл өөрөөр ашиглахгүй.</translation>
-<translation id="3444641828375597683">Сурталчлагчид болон нийтлэгчид FLoC-г дараа энэ хуудсанд тайлбарласны дагуу ашиглах боломжтой.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" />-г үзэх боломжтой болно</translation>
 <translation id="3445047461171030979">Google Туслахын шуурхай хариултууд</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
@@ -5334,7 +5327,6 @@
 <translation id="6027945736510816438">Та <ph name="WEBSITE" />-г хэлж байна уу?</translation>
 <translation id="6028117231645531007">Хурууны хээ нэмэх</translation>
 <translation id="6031600495088157824">Самбар дээрх оролтын сонголт</translation>
-<translation id="6032091552407840792">Энэ туршилт зөвхөн <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
 <translation id="6032715498678347852">Өргөтгөлд энэ сайтад хандах эрхийг олгохын тулд үүнийг товшино уу.</translation>
 <translation id="6032912588568283682">Файлын систем</translation>
 <translation id="603539183851330738">Автоматаар засахыг болих товчлуур. <ph name="TYPED_WORD" /> руу буцаана.  Идэвхжүүлэхийн тулд enter, хаахын тулд escape-г дарна уу.</translation>
@@ -6872,7 +6864,6 @@
 <translation id="7509097596023256288">Менежмент тохируулах</translation>
 <translation id="7509246181739783082">Өөрийгөө баталгаажуулах</translation>
 <translation id="7509539379068593709">Аппыг устгах</translation>
-<translation id="7511415964832680006">Асаалттай үед сайтууд өөрсдийн контент болон үйлчилгээг хүргэхдээ энд харуулсан нууцлал хадгалах техникийг ашиглаж магадгүй. Үүнд сайт хоорондын хяналтын хувилбарууд орно. Илүү олон туршилтыг аажимдаа нэмж магадгүй.</translation>
 <translation id="7514239104543605883">Төхөөрөмж рүүгээ хуулах</translation>
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7514417110442087199">Даалгаврыг нэмэх</translation>
@@ -7273,8 +7264,6 @@
 <translation id="7877451762676714207">Тодорхойгүй серверийн алдаа. Серверийн администратор тойгоо холбогдох эсвэл дахин оролдоод үзээрэй.</translation>
 <translation id="7879478708475862060">Оролтын горимыг дага</translation>
 <translation id="7879631849810108578">Товчлолыг тохирууллаа: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Асаалттай бөгөөд төлөв нь идэвхтэй үед Chrome таны 7-оос дээш өдрийн хөтчийн түүхийг таны байгаа бүлэг эсвэл "нэг үеийнхэн"-ийг тодорхойлоход ашиглана. Сурталчлагчид бүлэгт зар сонгох боломжтой. Таны хөтчийн түүхийг төхөөрөмж дээр тань аюулгүй хадгалдаг. Энэ туршилт зөвхөн
-    <ph name="BEGIN_LINK" />зарим бүс нутагт<ph name="END_LINK" /> идэвхтэй байна.</translation>
 <translation id="7880823633812189969">Таныг дахин эхлүүлэх үед дотоод өгөгдлийг устгана</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Бүртгэл харах</translation>
@@ -7546,7 +7535,6 @@
 <translation id="8119438628456698432">Лог файлуудыг үүсгэж байна...</translation>
 <translation id="811994229154425014">Цэг бичихийн тулд хоёр зай авах</translation>
 <translation id="8120505434908124087">eSIM профайл суулгах</translation>
-<translation id="812260729110117038">Сурталчлагчид болон нийтлэгчид таныг сайтууд дээр дагахгүйгээр зарын үр нөлөөг судлах боломжтой.</translation>
 <translation id="81238879832906896">Шар, цагаан цэцэг</translation>
 <translation id="8123975449645947908">Арагш гүйлгэх</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
@@ -7589,7 +7577,6 @@
 <translation id="816055135686411707">Гэрчилгээ баталгаажуулалтын тохиргоо алдаатай байна</translation>
 <translation id="8160775796528709999">Шууд тайлбарыг тохиргоонд идэвхжүүлж аудио болон видеондоо хадмал аваарай</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /> , <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />-р Chrome нээлттэй вебийг хадгалах явцдаа таныг сайт хооронд хянахаас хамгаалах шинэ технологийг хөгжүүлж байна.</translation>
 <translation id="8161293209665121583">Веб хуудсанд зориулсан уншигчийн горим</translation>
 <translation id="8161604891089629425">Хүрээтэй фонт</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Табыг шинэ цонх руу зөөх}other{Табуудыг шинэ цонх руу зөөх}}</translation>
@@ -8117,7 +8104,6 @@
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
 <translation id="8676770494376880701">Цэнэглэгчийг холбосон байна</translation>
 <translation id="8677212948402625567">Бүгдийг нуух...</translation>
-<translation id="867767487203716855">Дараагийн шинэчлэлт</translation>
 <translation id="8678378565142776698">Дахин эхлүүлж, автомат шинэчлэлт аваарай</translation>
 <translation id="8678538439778360739">Өгөгөдлийг таны синкийн нэвтрэх үгтэй <ph name="TIME" />-д шифрлэсэн байна. Үүнд Google Pay-н төлбөрийн хэрэгслүүд болон хаягуудыг агуулдаггүй.</translation>
 <translation id="8678582529642151449">Табууд агшихгүй</translation>
@@ -8125,7 +8111,6 @@
 <translation id="8680251145628383637">Та бүх төхөөрөмжийнхөө хавчуурга, түүх, бусад тохиргоог авахын тулд нэвтрээрэй. Та Google үйлчилгээнд мөн автоматаар нэвтрэх болно.</translation>
 <translation id="8681614230122836773">Chrome таны компьютер дээрээс аюултай программ хангамж оллоо</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> хэдийн холбогдсон, бэлэн байна</translation>
-<translation id="8683081248374354009">Бүлгийг шинэчлэх</translation>
 <translation id="8688672835843460752">Боломжтой</translation>
 <translation id="8690129572193755009">Сайтууд протокол зохицуулахыг хүсэх боломжтой</translation>
 <translation id="8692107307702113268">Нууц үг 1000-аас дээш тэмдэгттэй байна</translation>
@@ -8400,7 +8385,6 @@
 <translation id="8952831374766033534">Тохируулгын сонголт дэмжигдээгүй байна: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Цэнэглэх үед</translation>
 <translation id="895347679606913382">Үйлдлийг эхэлж байна ...</translation>
-<translation id="8953654039337655940">Зөвшөөрлийн хүсэлтийг эцэг эхэд тань тэдний Google дээрх Family Link апп болон families.google.com руу илгээсэн. Эцэг эх тань хүсэлтийг зөвшөөрсөн тохиолдолд та мэдэгдэл авна.</translation>
 <translation id="8956230710625245889">Уншигчид нээх</translation>
 <translation id="8957757410289731985">Профайлыг өөрчлөх</translation>
 <translation id="895944840846194039">JavaScript санах ой</translation>
@@ -8745,7 +8729,6 @@
 <translation id="97905529126098460">Цуцалж дуусмагц энэ цонхыг хаана.</translation>
 <translation id="980731642137034229">Үйлдлийн цэсийн товчлуур</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Зөвшөөрлийн хүсэлтийг эцэг эхэд тань тэдний Google дээрх Family Link апп болон families.google.com руу илгээсэн. Эцэг эхийн тань аль нэг нь хүсэлтийг зөвшөөрсөн тохиолдолд та мэдэгдэл авна.</translation>
 <translation id="983511809958454316">Энэ онцлогийг VR-д дэмжээгүй</translation>
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="984705303330760860">Зөв бичгийн алдаа шалгах хэлнүүдийг нэмэх</translation>

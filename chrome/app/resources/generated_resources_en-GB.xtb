@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Your computer also comes with <ph name="SHORT_PRODUCT_NAME" />'s RLZ library built in. RLZ assigns a non-unique, non-personally identifiable tag to measure the searches and <ph name="SHORT_PRODUCT_NAME" /> usage driven by a particular promotional campaign. These labels sometimes appear in Google Search queries in <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Something went wrong. Linux may only be partially upgraded. Review logs for more information. Logs have been saved in Files &gt; My files &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Also clear data from these apps?</translation>
-<translation id="1043824690776631483">You need permission to visit this site. It may have inappropriate content.</translation>
 <translation id="104419033123549300">Keymap style</translation>
 <translation id="104710386808485638">Restart Linux?</translation>
 <translation id="1047431265488717055">Copy Link Te&amp;xt</translation>
@@ -809,7 +808,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="173522743738009831">About Privacy Sandbox</translation>
 <translation id="173628468822554835">Got it. By default, new sites that you visit won't send you notifications.</translation>
 <translation id="1737968601308870607">File bug</translation>
-<translation id="1739684185846730053">Privacy Sandbox trials are still in active development and are available in selected regions. For now, sites may try out Privacy Sandbox while continuing to use current web technologies like third-party cookies.</translation>
 <translation id="1741190788710022490">Adaptive charging</translation>
 <translation id="174123615272205933">Custom</translation>
 <translation id="1741314857973421784">Continue</translation>
@@ -1135,6 +1133,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2034346955588403444">Add other Wi-Fi network</translation>
 <translation id="2035211704574173780">Greyscale</translation>
 <translation id="203574396658008164">Enable note taking from lock screen</translation>
+<translation id="2036514476578229158">You asked to visit this site. Your parents can reply in Family Link.</translation>
 <translation id="2037445849770872822">Supervision is set up for this Google account. To set up more parental controls, select Continue.
 
 Otherwise, sign out now so that the changes to this account will be reflected on this device.
@@ -1255,6 +1254,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2135787500304447609">&amp;Resume</translation>
 <translation id="2136372518715274136">Enter new password</translation>
 <translation id="2136476978468204130">The passphrase you entered is incorrect</translation>
+<translation id="2137891579555018930">Waiting for permission…</translation>
 <translation id="2138398485845393913">Connection to '<ph name="DEVICE_NAME" />' still in progress</translation>
 <translation id="2139919072249842737">Set up button</translation>
 <translation id="2140788884185208305">Battery health</translation>
@@ -1981,7 +1981,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2787022501752539710">Keep local browsing data (bookmarks, passwords, history, etc.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Group number</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Remove Linux</translation>
 <translation id="2791952154587244007">An error occurred. Kiosk application will not be able to auto-launch on this device.</translation>
@@ -2011,7 +2010,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2805760958323556153">The policy value of ExtensionInstallForcelist is invalid. Please contact your administrator.</translation>
 <translation id="2805770823691782631">Additional details</translation>
 <translation id="2806372837663997957">The device that you’re trying to share with did not accept</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Shortcut already exists</translation>
 <translation id="2807517655263062534">Files you download appear here</translation>
 <translation id="2809586584051668049">and <ph name="NUMBER_ADDITIONAL_DISABLED" /> more</translation>
@@ -2463,7 +2461,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3262986719682892278">Too big</translation>
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">Context</translation>
-<translation id="3265118321284789528">Waiting for parent approval</translation>
 <translation id="3265459715026181080">Close Window</translation>
 <translation id="3266022278425892773">Linux development environment</translation>
 <translation id="3266274118485960573">Safety check is running.</translation>
@@ -2591,7 +2588,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3388094447051599208">Output tray is almost full</translation>
 <translation id="3388788256054548012">This file is encrypted. Ask its owner to decrypt it.</translation>
 <translation id="3390013585654699824">App details</translation>
-<translation id="3391512812407811893">Privacy Sandbox trials</translation>
 <translation id="3393554941209044235">Chrome document analysis</translation>
 <translation id="3393582007140394275">Unable to cast screen.</translation>
 <translation id="3394850431319394743">Allowed to use identifiers to play protected content</translation>
@@ -2652,7 +2648,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3441653493275994384">Screen</translation>
 <translation id="3441663102605358937">Sign in to <ph name="ACCOUNT" /> again to verify this account</translation>
 <translation id="3442674350323953953">Let Google use your hardware data to help improve <ph name="DEVICE_OS" />. If you decline, this data is still sent to Google to determine proper updates but is not stored or used otherwise.</translation>
-<translation id="3444641828375597683">Advertisers and publishers can use FLoC, as described later on this page.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> will be able to view <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Google Assistant quick answers</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -4143,6 +4138,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4858913220355269194">Footy</translation>
 <translation id="4862642413395066333">Signing OCSP Responses</translation>
 <translation id="4863769717153320198">Looks like <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Default)</translation>
+<translation id="486459320933704969">A parent or guardian has to say that it's OK for you to visit this website</translation>
 <translation id="4864805589453749318">Select the parent who is granting permission to add a school account.</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
 <translation id="4868281708609571334">Teach Google Assistant to recognise <ph name="SUPERVISED_USER_NAME" />’s voice</translation>
@@ -5339,7 +5335,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6027945736510816438">Did you mean <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Add fingerprint</translation>
 <translation id="6031600495088157824">Input options in toolbar</translation>
-<translation id="6032091552407840792">This trial is active only in <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">To give an extension access to this site, click it.</translation>
 <translation id="6032912588568283682">File system</translation>
 <translation id="603539183851330738">Undo autocorrect button. Revert to <ph name="TYPED_WORD" />.  Press enter to activate, escape to dismiss.</translation>
@@ -6877,7 +6872,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7509097596023256288">Setting up management</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7509539379068593709">Uninstall app</translation>
-<translation id="7511415964832680006">When on, sites may use the privacy-preserving techniques shown here to provide their content and services. These include alternatives to cross-site tracking. More trials may be added over time.</translation>
 <translation id="7514239104543605883">Copy to your device</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Add assignment</translation>
@@ -7279,8 +7273,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7877451762676714207">Unknown server error. Please try again, or contact the server administrator.</translation>
 <translation id="7879478708475862060">Follow input mode</translation>
 <translation id="7879631849810108578">Shortcut set: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">When on and the status is active, Chrome uses your browsing history over seven days to determine a group, or 'cohort', that you’re in. Advertisers can select ads for the group. Your browsing history is kept private on your device. This trial is active only in
-    <ph name="BEGIN_LINK" />some regions<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Local data will be deleted when you restart</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">View Account</translation>
@@ -7554,7 +7546,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8119438628456698432">Generating log files…</translation>
 <translation id="811994229154425014">Double-space to type full stop</translation>
 <translation id="8120505434908124087">Install eSIM profile</translation>
-<translation id="812260729110117038">Advertisers and publishers can study the effectiveness of ads in a way that does not track you across sites.</translation>
 <translation id="81238879832906896">Yellow and white flower</translation>
 <translation id="8123975449645947908">Scroll backwards</translation>
 <translation id="8124313775439841391">Managed ONC</translation>
@@ -7597,7 +7588,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="816055135686411707">Error While Setting Certificate Trust</translation>
 <translation id="8160775796528709999">Get captions for your audio and video by enabling Live Caption in settings</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">With <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome is developing new technologies to safeguard you from cross-site tracking while preserving the open web.</translation>
 <translation id="8161293209665121583">Reader mode for web pages</translation>
 <translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move Tab to New Window}other{Move Tabs to New Window}}</translation>
@@ -8125,7 +8115,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8676374126336081632">Clear input</translation>
 <translation id="8676770494376880701">Low-power charger connected</translation>
 <translation id="8677212948402625567">Collapse all...</translation>
-<translation id="867767487203716855">Next update</translation>
 <translation id="8678378565142776698">Restart and get automatic updates</translation>
 <translation id="8678538439778360739">Data was encrypted with your sync passphrase on <ph name="TIME" />. This doesn't include payment methods and addresses from Google Pay.</translation>
 <translation id="8678582529642151449">Tabs don't shrink</translation>
@@ -8133,7 +8122,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8680251145628383637">Sign in to get your bookmarks, history, passwords and other settings on all your devices. You'll also automatically be signed in to your Google services.</translation>
 <translation id="8681614230122836773">Chrome found harmful software on your computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> is connected and ready</translation>
-<translation id="8683081248374354009">Reset group</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="8690129572193755009">Sites can ask to handle protocols</translation>
 <translation id="8692107307702113268">Password is more than 1,000 characters</translation>
@@ -8410,7 +8398,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8952831374766033534">Configuration option not supported: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">While charging</translation>
 <translation id="895347679606913382">Starting...</translation>
-<translation id="8953654039337655940">An approval request has been sent to your parent on their Google Family Link app and at families.google.com. You will get a notification if your parent approves the request.</translation>
 <translation id="8956230710625245889">Open in Reader</translation>
 <translation id="8957757410289731985">Customise profile</translation>
 <translation id="895944840846194039">JavaScript Memory</translation>
@@ -8723,6 +8710,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="947329552760389097">&amp;Inspect Elements</translation>
 <translation id="947526284350604411">Your answer</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> can't open files in this folder because it contains system files</translation>
+<translation id="949314938206378263">You asked to visit this site. Your parent can reply in Family Link.</translation>
 <translation id="950307215746360464">Setup guide</translation>
 <translation id="951991426597076286">Decline</translation>
 <translation id="952471655966876828">Device will connect automatically when it's turned on and is being used</translation>
@@ -8755,7 +8743,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="97905529126098460">This window will close after cancellation is complete.</translation>
 <translation id="980731642137034229">Action menu button</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">An approval request has been sent to your parents on their Google Family Link app and at families.google.com. You will get a notification if one of your parents approves the request.</translation>
 <translation id="983511809958454316">This feature is not supported in VR</translation>
 <translation id="984275831282074731">Payment methods</translation>
 <translation id="984705303330760860">Add spell check languages</translation>

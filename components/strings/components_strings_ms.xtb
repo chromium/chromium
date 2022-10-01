@@ -846,6 +846,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3216313131063488104">Biru</translation>
 <translation id="3218181027817787318">Relatif</translation>
 <translation id="3223287115535306850">Ikon pemuatan pelancaran apl</translation>
+<translation id="3223425961342298674">Lokasi tidak dibenarkan</translation>
 <translation id="3225347164936328585">Bertepuk tangan</translation>
 <translation id="3225919329040284222">Pelayan memberikan sijil yang tidak sepadan dengan jangkaan terbina dalam. Jangkaan ini disertakan untuk laman web dengan keselamatan tinggi tertentu untuk melindungi anda.</translation>
 <translation id="3226128629678568754">Tekan butang muat semula untuk menyerahkan kembali data yang diperlukan untuk memuatkan halaman.</translation>
@@ -1186,6 +1187,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4127575959421463246">Mencari bendera ChromeOS? Lawati</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
 <translation id="4130226655945681476">Memeriksa kabel rangkaian, modem dan penghala</translation>
+<translation id="4132448310531350254">Pengendali pendua untuk sambungan_fail "<ph name="FILE_EXTENSION" />" dirujuk oleh "<ph name="POLICY_IDS_LIST" />" apl.</translation>
 <translation id="4134123981501319574">Buat dokumen</translation>
 <translation id="413544239732274901">Ketahui lebih lanjut</translation>
 <translation id="4142935452406587478">Dulang 10</translation>
@@ -1208,6 +1210,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4194250254487269611">Kad anda tidak dapat disimpan sekarang</translation>
 <translation id="4196861286325780578">&amp;Buat semula pindahkan</translation>
 <translation id="4202554117186904723">Gulungan Kelima</translation>
+<translation id="4203769790323223880">Kamera tidak dibenarkan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Menyemak konfigurasi tembok api dan antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4210602799576081649">Kod pengesahan sudah tamat tempoh, minta kod baharu</translation>
@@ -1234,6 +1237,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     &lt;p&gt;Jangan lupa untuk menghidupkan semula atur cara antivirus itu apabila anda sudah selesai.&lt;/p&gt;
     &lt;h4&gt;Langkah 5: Dapatkan bantuan tambahan&lt;/h4&gt;
     &lt;p&gt;Jika ralat masih kelihatan, hubungi pemilik laman web.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofon tidak dibenarkan</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Cuba jalankan Diagnostik Rangkaian<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Boleh meminta untuk menggunakan &amp; menggerakkan kamera anda</translation>
 <translation id="4235360514405112390">Sah</translation>
@@ -1605,6 +1609,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5177076414499237632">Ketahui tentang sumber &amp; topik halaman ini</translation>
 <translation id="5179510805599951267">Bukan dalam <ph name="ORIGINAL_LANGUAGE" />? Laporkan ralat ini</translation>
 <translation id="518639307526414276">Makanan haiwan kesayangan &amp; bekalan penjagaan haiwan kesayangan</translation>
+<translation id="5190072300954988691">Kamera dan mikrofon tidak dibenarkan</translation>
 <translation id="5190835502935405962">Bar Penanda Halaman</translation>
 <translation id="5191315092027169558">Profil anda diurus oleh <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> mahu memuat turun berbilang fail</translation>
@@ -1625,6 +1630,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
+<translation id="5239623327352565343">Lokasi dibenarkan</translation>
 <translation id="5242889659037569123">Bagasi &amp; aksesori perjalanan</translation>
 <translation id="5250209940322997802">"Sambung kepada rangkaian"</translation>
 <translation id="52517543715119994">Ketahui tentang ciri Chrome</translation>
@@ -2501,6 +2507,7 @@ Butiran tambahan:
 <translation id="7581199239021537589">Anjakan Y sisi 2 imej</translation>
 <translation id="7582602800368606489">Buat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="7583969447617676942">Perkhidmatan perundangan</translation>
+<translation id="7586676035079382730">Pemberitahuan tidak dibenarkan</translation>
 <translation id="7591288787774558753">Kongsi kandungan sulit?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> mahu menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Sijil pelayan melanggar kekangan nama.</translation>
@@ -3054,6 +3061,7 @@ Butiran tambahan:
 <translation id="9131119348384879525">Tangkap kandungan sulit?</translation>
 <translation id="9136861683332321024">Kenderaan mewah</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
+<translation id="9138037198177304356">Pemberitahuan dibenarkan</translation>
 <translation id="9139318394846604261">Beli-belah</translation>
 <translation id="9141013498910525015">Urus alamat</translation>
 <translation id="9144951720726881238">Tarikh tamat tempoh:</translation>

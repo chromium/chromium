@@ -287,9 +287,6 @@
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290634681382861275">Legt sonstige Einstellungen fest, u. a. für USB, Bluetooth, Richtlinienaktualisierung, Entwicklermodus und mehr.</translation>
-<translation id="1291880496936992484">Achtung: RC4 wird nach Version 52, etwa im September 2016, vollständig aus <ph name="PRODUCT_NAME" /> entfernt. Anschließend funktioniert diese Richtlinie nicht mehr.
-
-      Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, werden RC4-Verschlüsselungssammlungen in TLS nicht aktiviert. Sie kann auf "true" gestellt werden, um die Kompatibilität mit veralteten Servern zu gewährleisten. Hierbei handelt es sich jedoch um eine provisorische Maßnahme. Der Server sollte neu konfiguriert werden.</translation>
 <translation id="129206366270737897">Dadurch werden alle asynchronen Methoden von <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> deaktiviert.</translation>
 <translation id="1294263471858445589">Aktiviert die passive Authentifizierung für Inkognito- und reguläre Sitzungen.</translation>
 <translation id="1295737447968372331">Hiermit wird die Funktion "Spracheingabe" auf dem Anmeldebildschirm aktiviert</translation>
@@ -851,13 +848,6 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />“, sofern sie konfiguriert ist. Andernfalls wird die persönliche Einstellung des Nutzers verwendet.
 
       URLs in dieser Richtlinie dürfen nicht im Widerspruch zu denen stehen, die über „<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />“ konfiguriert wurden. Sonst hat diese Richtlinie Vorrang vor „<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />“.</translation>
-<translation id="1859859319036806634">Achtung: Der TLS-Versions-Fallback wird nach Version 52 (ungefähr im September 2016) aus <ph name="PRODUCT_NAME" /> entfernt. Diese Richtlinie funktioniert dann nicht mehr.
-
-      Bei einem TLS-Handshake-Fehler hat <ph name="PRODUCT_NAME" /> früher versucht, eine Verbindung mit einer niedrigeren TLS-Version herzustellen, um Programmfehler bei HTTPS-Servern zu umgehen. Mit dieser Einstellung wird die Version festgelegt, bei der dieser Fallback-Vorgang beendet wird. Wenn ein Server die Versionsaushandlung korrekt, d. h. ohne Unterbrechung der Verbindung durchführt, wird diese Einstellung nicht angewendet. Ungeachtet dessen muss die sich daraus ergebende Verbindung dem Parameter "SSLVersionMin" entsprechen.
-
-      Ist diese Richtlinie nicht konfiguriert oder auf "tls1.2" eingestellt, führt <ph name="PRODUCT_NAME" /> diesen Fallback nicht mehr durch. Die Unterstützung älterer TLS-Versionen wird dadurch nicht deaktiviert, es wird lediglich festgelegt, ob <ph name="PRODUCT_NAME" /> fehlerträchtige Server umgeht, die keine korrekten Versionsaushandlungen durchführen können.
-
-      Wenn die Kompatibilität mit einem fehlerträchtigen Server aufrechterhalten werden muss, kann "tls1.1" eingestellt werden. Hierbei handelt es sich um einen provisorischen Wert und der Server sollte schnell repariert werden.</translation>
 <translation id="1861206724856734193">Legt eine Liste mit Regeln zur Vermeidung von Datenlecks fest.</translation>
 <translation id="1862267110714201519">Funktion für ghost-Dialogfelder deaktivieren.</translation>
 <translation id="1865417998205858223">Hauptberechtigungen</translation>
@@ -2165,11 +2155,6 @@ Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
       Wenn eine Website mit einem URL-Muster in dieser Richtlinie übereinstimmt, werden die folgenden Richtlinien nicht berücksichtigt: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.</translation>
-<translation id="3117676313396757089">Achtung: DHE wird nach Version 57, etwa im März 2017, vollständig aus <ph name="PRODUCT_NAME" /> entfernt. Anschließend funktioniert diese Richtlinie nicht mehr.
-
-      Wenn die Richtlinie nicht konfiguriert oder auf "false" festgelegt ist, werden DHE-Verschlüsselungssammlungen in TLS nicht aktiviert. Die Richtlinie kann auf "true" festgelegt werden, um DHE-Verschlüsselungssammlungen zu aktivieren und die Kompatibilität mit veralteten Servern zu gewährleisten. Dies ist eine provisorische Maßnahme. Der Server sollte neu konfiguriert werden.
-
-      Server sollten zu ECDHE-Verschlüsselungssammlungen migriert werden. Falls diese nicht verfügbar sind, vergewissere dich, dass eine Verschlüsselungssammlung mit einem RSA-Schlüsselaustausch aktiviert ist.</translation>
 <translation id="3118552207903834734">Nutzer erlauben, seinen Gerätehostnamen zu konfigurieren</translation>
 <translation id="3122082892722698079">Ausnahmen bei unsicheren Inhalten verwalten</translation>
 <translation id="3128072319047570212">Keygen-Einstellungen</translation>
@@ -4193,11 +4178,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="532848608876725157">DoH-Modus mit unsicherem Fallback-Verhalten aktivieren</translation>
 <translation id="5328965694451556034">Anmeldung/Abmeldung melden</translation>
-<translation id="5329007337159326804">Achtung: Die Richtlinie zur TLS-Höchstversion wird voraussichtlich in Version 75 (etwa im Juni 2019) vollständig aus <ph name="PRODUCT_NAME" /> entfernt.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> die standardmäßige Höchstversion.
-
-      Ansonsten kann sie auf einen der folgenden Werte festgelegt werden: "tls1.2" oder "tls1.3". Wenn die Richtlinie konfiguriert ist, verwendet <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die neuer als die festgelegte Version sind. Ein unbekannter Wert wird ignoriert.</translation>
 <translation id="5329018127554115226">Der Modus für hohe Effizienz wird deaktiviert.</translation>
 <translation id="5330684698007383292">Verarbeitung der folgenden Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="5331746669335642668">Cloud-Richtlinie von <ph name="PRODUCT_NAME" /> überschreibt Plattformrichtlinie.</translation>
@@ -4913,10 +4893,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Beachte bitte, dass diese Richtlinie den Schutz lokaler IPs schwächt, sofern Administratoren diese benötigen.</translation>
 <translation id="614662973812186053">Diese Richtlinie steuert zudem die Erfassung von Nutzungsdaten &amp; Fehlerberichte in Android.</translation>
 <translation id="614665605501218241">In der Liste aufgeführten Websites erlauben, unsichere Anfragen an eher private Netzwerk-Endpunkte zu senden.</translation>
-<translation id="6154509171634387825">Achtung: 3DES wird in Version 95 vollständig aus <ph name="PRODUCT_NAME" /> entfernt (ungefähr im Oktober 2021) und diese Richtlinie funktioniert danach nicht mehr.
-
-      Wenn die Richtlinie auf „true“ gesetzt ist, werden Cipher Suites von 3DES in TLS aktiviert. Ist die Richtlinie auf „false“ festgelegt, werden die Cipher Suites von 3DES deaktiviert. Wenn sie nicht konfiguriert ist, sind die Cipher Suites von 3DES standardmäßig deaktiviert. Diese Richtlinie kann verwendet werden, um vorübergehend eine Kompatibilität mit einem veralteten Server herzustellen. Dies ist aber nur eine provisorische Maßnahme und der Server sollte neu konfiguriert werden.
-      </translation>
 <translation id="6155350825868160236">Zulassen, dass Nutzer festlegen, ob Rechtschreibfehler mithilfe von Google-Webdiensten korrigiert werden</translation>
 <translation id="6155936611791017817">Standardstatus für den großen Cursor auf der Anmeldeseite festlegen</translation>
 <translation id="6157537876488211233">Kommagetrennte Liste der Proxy-Umgehungsregeln</translation>

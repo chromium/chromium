@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Jūsų kompiuteryje taip pat įdiegta „<ph name="SHORT_PRODUCT_NAME" />“ RLZ biblioteka. RLZ priskiria neunikalią, asmens neidentifikuojančią žymą, kad įvertintų tam tikros reklamos kampanijos paieškas ir „<ph name="SHORT_PRODUCT_NAME" />“ naudojimą. Šios etiketės kartais rodomos „Google“ paieškos užklausose „<ph name="PRODUCT_NAME" />“.</translation>
 <translation id="1043505821207197890">Kažkas ne taip. Gali būti, kad „Linux“ tik iš dalies naujovinta. Jei reikia daugiau informacijos, peržiūrėkite žurnalus. Žurnalai išsaugoti skiltyje „Failai“ &gt; „Mano failai“ &gt; „<ph name="LOG_FILE" />“</translation>
 <translation id="1043818413152647937">Taip pat išvalyti duomenis iš šių programų?</translation>
-<translation id="1043824690776631483">Turite gauti leidimą apsilankyti šioje svetainėje. Joje gali būti nepriimtino turinio.</translation>
 <translation id="104419033123549300">Klavišų susiejimo stilius</translation>
 <translation id="104710386808485638">Iš naujo paleisti „Linux“?</translation>
 <translation id="1047431265488717055">Kopijuoti nuorodos teks&amp;tą</translation>
@@ -808,7 +807,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="173522743738009831">Apie privatumo „sandbox“ (smėlio dėžę)</translation>
 <translation id="173628468822554835">Supratau. Pagal numatytuosius nustatymus naujose svetainėse, kuriose lankysitės, nebus siunčiami pranešimai.</translation>
 <translation id="1737968601308870607">Failo riktas</translation>
-<translation id="1739684185846730053">Privatumo „sandbox“ (smėlio dėžės) bandomosios versijos vis dar intensyviai kuriamos ir pasiekiamos tam tikruose regionuose. Kol kas svetainėse galima išbandyti privatumo „sandbox“ (smėlio dėžę) toliau naudojant dabartines žiniatinklio technologijas, pvz., trečiųjų šalių slapukus.</translation>
 <translation id="1741190788710022490">Prisitaikantis įkrovimas</translation>
 <translation id="174123615272205933">Tinkinta</translation>
 <translation id="1741314857973421784">Tęsti</translation>
@@ -1979,7 +1977,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2787022501752539710">Palikti vietinius naršymo duomenis (žymes, slaptažodžius, istoriją ir kt.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Grupės numeris</translation>
 <translation id="2789486458103222910">Gerai</translation>
 <translation id="2791529110887957050">Pašalinti „Linux“</translation>
 <translation id="2791952154587244007">Įvyko klaida. Šiame įrenginyje nebus galima automatiškai paleisti viešojo terminalo programų.</translation>
@@ -2009,7 +2006,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2805760958323556153">„ExtensionInstallForcelist“ politikos vertė netinkama. Susisiekite su administratoriumi.</translation>
 <translation id="2805770823691782631">Papildoma informacija</translation>
 <translation id="2806372837663997957">Įrenginys, su kuriuo norite bendrinti, nepriima turinio</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Spartusis klavišas jau yra</translation>
 <translation id="2807517655263062534">Atsisiųsti failai rodomi čia</translation>
 <translation id="2809586584051668049">ir dar <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2461,7 +2457,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3262986719682892278">Per didelis</translation>
 <translation id="3264544094376351444">Šriftas „Sans-Serif“</translation>
 <translation id="3264582393905923483">Kontekstas</translation>
-<translation id="3265118321284789528">Laukiama vieno iš tėvų patvirtinimo</translation>
 <translation id="3265459715026181080">Uždaryti langą</translation>
 <translation id="3266022278425892773">„Linux“ kūrimo aplinka</translation>
 <translation id="3266274118485960573">Vykdoma saugos patikra.</translation>
@@ -2589,7 +2584,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3388094447051599208">Išvesties dėklas beveik pilnas</translation>
 <translation id="3388788256054548012">Šis failas šifruotas. Paprašykite jo savininko iššifruoti.</translation>
 <translation id="3390013585654699824">Išsami programos informacija</translation>
-<translation id="3391512812407811893">Privatumo „sandbox“ (smėlio dėžės) bandomieji laikotarpiai</translation>
 <translation id="3393554941209044235">„Chrome“ dokumentų analizė</translation>
 <translation id="3393582007140394275">Nepavyko perduoti ekrano vaizdo.</translation>
 <translation id="3394850431319394743">Leidžiama naudoti identifikatorius apsaugotam turiniui leisti</translation>
@@ -2650,7 +2644,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3441653493275994384">Ekranas</translation>
 <translation id="3441663102605358937">Dar kartą prisijunkite prie <ph name="ACCOUNT" />, kad patvirtintumėte šią paskyrą</translation>
 <translation id="3442674350323953953">Leiskite sistemai „Google“ naudoti jūsų aparatinės įrangos duomenis, kad galėtų pagerinti „<ph name="DEVICE_OS" />“. Jei atsisakysite, duomenys vis tiek bus siunčiami sistemai „Google“ siekiant nustatyti, kurie naujiniai tinkami, tačiau jie nebus saugomi ar naudojami kitais būdais.</translation>
-<translation id="3444641828375597683">Reklamuotojai ir leidėjai gali naudoti „FLoC“, aprašytą toliau šiame puslapyje.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> galės peržiūrėti „<ph name="FILENAME" />“</translation>
 <translation id="3445047461171030979">Greiti „Google“ padėjėjo atsakymai</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
@@ -5335,7 +5328,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="6027945736510816438">Turėjote omenyje <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Pridėti piršto antspaudą</translation>
 <translation id="6031600495088157824">Įvesties parinktys įrankių juostoje</translation>
-<translation id="6032091552407840792">Ši bandomoji versija aktyvi tik <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Norėdami suteikti plėtiniui prieigą prie šios svetainės, spustelėkite jį.</translation>
 <translation id="6032912588568283682">Failų sistema</translation>
 <translation id="603539183851330738">Automatinio taisymo anuliavimo mygtukas. Grąžinti žodį „<ph name="TYPED_WORD" />“.  Paspauskite „Enter“, kad suaktyvintumėte, arba „Escape“, kad atsisakytumėte.</translation>
@@ -6878,7 +6870,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7509097596023256288">Valdymo funkcijų nustatymas</translation>
 <translation id="7509246181739783082">Tapatybės patvirtinimas</translation>
 <translation id="7509539379068593709">Pašalinti programą</translation>
-<translation id="7511415964832680006">Įjungus svetainėse galima naudoti čia nurodytus privatumą užtikrinančius metodus turiniui ir paslaugoms teikti. Įtraukiami alternatyvūs veiklos skirtingose svetainėse stebėjimo metodai. Per laiką gali būti pridėta daugiau bandomųjų versijų.</translation>
 <translation id="7514239104543605883">Kopijuoti į įrenginį</translation>
 <translation id="7514365320538308">Atsisiųsti</translation>
 <translation id="7514417110442087199">Pridėti priskyrimą</translation>
@@ -7280,8 +7271,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7877451762676714207">Nežinoma serverio klaida. Bandykite dar kartą arba susisiekite su serverio administratoriumi.</translation>
 <translation id="7879478708475862060">Stebėti įvesties režimą</translation>
 <translation id="7879631849810108578">Spartusis klavišas nustatytas: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kai technologija įjungta, o būsena aktyvi, „Chrome“ naudoja septynių dienų naršymo istoriją, kad nustatytų grupę, kuriai priklausote. Reklamuotojai gali pasirinkti grupei skirtus skelbimus. Jūsų naršymo istorija saugoma privačiai įrenginyje. Ši bandomoji versija aktyvi tik
-    <ph name="BEGIN_LINK" />kai kuriuose regionuose<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Vietiniai duomenys bus ištrinti paleidus iš naujo</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Žiūrėti paskyrą</translation>
@@ -7555,7 +7544,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8119438628456698432">Generuojami žurnalo failai…</translation>
 <translation id="811994229154425014">Įvesti tašką dukart paspaudus tarpo klavišą</translation>
 <translation id="8120505434908124087">Įdiegti „eSIM“ kortelės profilį</translation>
-<translation id="812260729110117038">Reklamuotojai ir leidėjai gali tyrinėti skelbimų efektyvumą nestebėdami jūsų svetainėse.</translation>
 <translation id="81238879832906896">Geltonos ir baltos spalvos gėlė</translation>
 <translation id="8123975449645947908">Slinkti atgal</translation>
 <translation id="8124313775439841391">Tvarkoma ONC</translation>
@@ -7598,7 +7586,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="816055135686411707">Sertifikato patikimumo nustatymo klaida</translation>
 <translation id="8160775796528709999">Gaukite garso ir vaizdo įrašų subtitrus įgalinę „Subtitrų realiuoju laiku“ funkciją nustatymuose</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Naudodama <ph name="BEGIN_LINK" />privatumo „sandbox“ (smėlio dėžę)<ph name="END_LINK" /> „Chrome“ kuria naujas technologijas, kad apsaugotų jus nuo veiklos skirtingose svetainėse stebėjimo, išlaikydama atvirą žiniatinklį.</translation>
 <translation id="8161293209665121583">Tinklalapių skaitytojo režimą</translation>
 <translation id="8161604891089629425">Kontūrinis šriftas</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skirtuko perkėlimas į naują langą}one{Skirtukų perkėlimas į naują langą}few{Skirtukų perkėlimas į naują langą}many{Skirtukų perkėlimas į naują langą}other{Skirtukų perkėlimas į naują langą}}</translation>
@@ -8126,7 +8113,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8676770494376880701">Prijungtas mažos galios įkroviklis</translation>
 <translation id="8677212948402625567">Sutraukti viską...</translation>
-<translation id="867767487203716855">Kitas naujinys</translation>
 <translation id="8678378565142776698">Paleisti iš naujo ir gauti automatinius naujinius</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Mokėjimo metodai ir adresai iš „Google Pay“ neįtraukiami.</translation>
 <translation id="8678582529642151449">Skirtukai nesumažinami</translation>
@@ -8134,7 +8120,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8680251145628383637">Prisijunkite, kad žymes, istoriją, slaptažodžius ir kitus nustatymus galėtumėte naudoti visuose įrenginiuose. Be to, būsite automatiškai prijungti prie „Google“ paslaugų.</translation>
 <translation id="8681614230122836773">„Chrome“ kompiuteryje rado žalingos programinės įrangos</translation>
 <translation id="8682730193597992579">„<ph name="PRINTER_NAME" />“ prijungtas ir parengtas naudoti</translation>
-<translation id="8683081248374354009">Iš naujo nustatyti grupę</translation>
 <translation id="8688672835843460752">Galima</translation>
 <translation id="8690129572193755009">Svetainės gali prašyti apdoroti protokolus</translation>
 <translation id="8692107307702113268">Slaptažodį sudaro daugiau nei 1 000 simbolių</translation>
@@ -8414,7 +8399,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8952831374766033534">Konfigūracijos parinktis nepalaikoma: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Įkraunant</translation>
 <translation id="895347679606913382">Pradedama...</translation>
-<translation id="8953654039337655940">Patvirtinimo užklausa nusiųsta vienam iš tėvų į programą „Google Family Link“ ir adresu families.google.com. Gausite pranešimą, jei vienas iš tėvų patvirtins užklausą.</translation>
 <translation id="8956230710625245889">Atidaryti naudojant skaitytuvą</translation>
 <translation id="8957757410289731985">Tinkinti profilį</translation>
 <translation id="895944840846194039">„JavaScript“ atmintis</translation>
@@ -8759,7 +8743,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="97905529126098460">Atšaukus šis langas užsidarys.</translation>
 <translation id="980731642137034229">Veiksmų meniu mygtukas</translation>
 <translation id="981121421437150478">Neprisijungus</translation>
-<translation id="982684081337630214">Patvirtinimo užklausa nusiųsta jūsų tėvams į programą „Google Family Link“ ir adresu families.google.com. Gausite pranešimą, jei vienas iš tėvų patvirtins užklausą.</translation>
 <translation id="983511809958454316">Ši funkcija nepalaikoma VR režimu</translation>
 <translation id="984275831282074731">Mokėjimo metodai</translation>
 <translation id="984705303330760860">Rašybos tikrinimo kalbų pridėjimas</translation>

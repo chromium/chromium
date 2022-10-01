@@ -217,6 +217,7 @@
       Si no se le asigna ningún valor a esta política, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> se aplicará a todos los sitios, si se ha definido. Si no se ha definido, se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="1209096923317019235">Asigna aplicaciones como controladores predeterminados de extensiones de archivo especificadas</translation>
 <translation id="120937472976628837">Enviar información sobre ventiladores</translation>
 <translation id="1212233008927724662">Inhabilita la carga en diferido de la WebUI de inicio de sesión.</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con Signed HTTP Exchange (SXG)</translation>
@@ -292,9 +293,6 @@
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">La API Event.path no estará disponible.</translation>
 <translation id="1290634681382861275">Controla varios ajustes, como el USB, el Bluetooth, la actualización de políticas o el modo desarrollador.</translation>
-<translation id="1291880496936992484">Advertencia: RC4 se eliminará completamente de <ph name="PRODUCT_NAME" /> después de la versión 52 (en torno a septiembre de 2016) y dejará de funcionar.
-
-      Si la política no se establece o se le asigna el valor false, no se habilitarán los conjuntos de cifrado de RC4 en TLS. Si por el contrario se le asigna el valor true, mantendrá la compatibilidad con un servidor obsoleto. Se trata de una medida provisional y el servidor se debería volver a configurar.</translation>
 <translation id="129206366270737897">Inhabilita cualquier método asíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="1294263471858445589">Habilita la autenticación pasiva en sesiones normales y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita el dictado en la pantalla de inicio de sesión</translation>
@@ -860,13 +858,6 @@ Esta política no tendrá efecto si la opción de conservar los datos de navegac
       Si no se le asigna un valor a la política, se aplicará <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> si se ha definido previamente. Si no, se aplicará la configuración personal del usuario.
 
       Las URLs de esta política no deben entrar en conflicto con las de la política <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. En caso de conflicto, esta política prevalece sobre <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="1859859319036806634">Advertencia: La alternativa de la versión de TLS se retirará de <ph name="PRODUCT_NAME" /> después de la versión 52 (en septiembre de 2016, aproximadamente) y esta política dejará de funcionar.
-
-      Cuando no es posible establecer el protocolo de enlace TLS, <ph name="PRODUCT_NAME" /> ya habrá intentado intentar establecer la conexión con una versión anterior de TLS para evitar errores en los servidores HTTPS. Esta opción configura la versión en la que se detendrá el proceso alternativo. Si un servidor lleva a cabo la negociación de la versión correctamente (es decir, sin interrumpir la conexión), esta opción no se aplica. En cualquier caso, la conexión resultante debe cumplir la política SSLVersionMin.
-
-      Si no se configura esta política o si se le asigna el valor tls1.2, <ph name="PRODUCT_NAME" /> ya no utiliza esta alternativa. Ten en cuenta que esto no inhabilita la compatibilidad con versiones más antiguas de TLS, solo determina si <ph name="PRODUCT_NAME" /> evita el uso de servidores con errores que no puedan negociar las versiones correctamente.
-
-      De lo contrario, el valor tls 1.1 puede asignarse a la política si se debe mantener la compatibilidad con un servidor con errores. Esta es una medida provisional y el servidor debería arreglarse rápidamente.</translation>
 <translation id="1861206724856734193">Configura una lista de reglas de prevención de filtración de datos.</translation>
 <translation id="1862267110714201519">Inhabilitar la función de ventana fantasma</translation>
 <translation id="1865417998205858223">Permisos clave</translation>
@@ -2193,11 +2184,6 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Si un sitio coincide con un patrón de URL en esta política, no se tendrán en cuenta las siguientes políticas: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.</translation>
-<translation id="3117676313396757089">Advertencia: DHE se retirará por completo de <ph name="PRODUCT_NAME" /> a partir de la versión 57 (en torno a marzo de 2017) y esta política dejará de funcionar.
-
-      Si la política no se establece o se le asigna el valor false, no se habilitarán los conjuntos de cifrado DHE en TLS. Si por el contrario se le asigna el valor true, se habilitarán estos conjuntos de cifrado y se mantendrá la compatibilidad con un servidor obsoleto. Se trata de una medida provisional y el servidor se debería volver a configurar.
-
-      Se recomienda migrar los servidores a los conjuntos de cifrado ECDHE. Si no están disponibles, asegúrate de que se habilite un conjunto de cifrado que utilice el intercambio de claves RSA.</translation>
 <translation id="3118552207903834734">Permitir al usuario configurar el nombre de host de su dispositivo</translation>
 <translation id="3122082892722698079">Permite controlar el uso de las excepciones de contenido no seguro</translation>
 <translation id="3128072319047570212">Configuración del generador de claves</translation>
@@ -2396,6 +2382,15 @@ Este comportamiento es el mismo que el de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
       Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el navegador o el SO fallan), los datos de navegación se borrarán la próxima vez que se cargue el perfil.</translation>
 <translation id="3264793472749429012">Codificaciones del proveedor de búsquedas predeterminadas</translation>
 <translation id="3273221114520206906">Configuración de JavaScript predeterminada</translation>
+<translation id="3282240846541032181">Esta política permite a los administradores especificar aplicaciones que actúan como controladores predeterminados de las respectivas extensiones de archivo en <ph name="PRODUCT_OS_NAME" /> y que los usuarios no pueden cambiar.
+      En el caso de todas las extensiones de archivo que no se especifiquen en la política, los usuarios pueden configurar sus propios ajustes predeterminados con respecto al flujo de trabajo habitual.
+
+      Especifica las aplicaciones de Chrome mediante su ID, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, y las aplicaciones web mediante la URL usada en <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, como <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
+
+      Ten en cuenta que las aplicaciones DEBEN declararse a sí mismas como controladoras de archivos de las extensiones especificadas en el archivo de manifiesto para que el elemento de la política se aplique (es decir, la política NO amplía las capacidades actuales de las aplicaciones).
+
+      Si no se establece la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar controladores predeterminados de acuerdo con la lógica interna.
+      </translation>
 <translation id="328347261792478720">De forma predeterminada, el navegador mostrará recomendaciones de contenido multimedia personalizadas al usuario. Si se inhabilita esta política, no se mostrarán estas recomendaciones al usuario. Si se habilita esta política o no se establece, se mostrarán recomendaciones de contenido multimedia al usuario.</translation>
 <translation id="3284094172359247914">Controlar el uso de la API WebUSB</translation>
 <translation id="3288595667065905535">Canal de lanzamiento</translation>
@@ -4241,15 +4236,39 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="5323200200131319468">Habilitar los mensajes de voz en la pantalla de inicio de sesión</translation>
 <translation id="532848608876725157">Habilitar DNS-over-HTTPS con alternativa no segura</translation>
 <translation id="5328965694451556034">Informar de inicio o cierre de sesión</translation>
-<translation id="5329007337159326804">Advertencia: La política de la versión máxima de TLS se retirará por completo de <ph name="PRODUCT_NAME" /> aproximadamente en la versión 75 (en torno a junio del 2019).
-
-      Si esta política no se configura, <ph name="PRODUCT_NAME" /> usa la versión máxima predeterminada.
-
-      En caso contrario, se le asigna uno de estos valores: "tls1.2" o "tls1.3". Si se habilita, <ph name="PRODUCT_NAME" /> no usa las versiones de SSL/TLS superiores a la versión especificada y se ignoran los valores no reconocidos.</translation>
 <translation id="5329018127554115226">El modo Alta eficiencia se inhabilitará.</translation>
 <translation id="5330684698007383292">Permitir que <ph name="PRODUCT_FRAME_NAME" /> procese los tipos de contenido que se indican a continuación</translation>
 <translation id="5331746669335642668">La política relativa a la nube de <ph name="PRODUCT_NAME" /> anula la política de la plataforma.</translation>
 <translation id="5346587320074666194">Bloquear el acceso a los sensores en estos sitios web</translation>
+<translation id="5357039649371478544">Configura una lista de reglas para evitar las filtraciones de datos en <ph name="PRODUCT_OS_NAME" />.
+      Se pueden producir filtraciones de datos cuando se copia y pega información, se transfieren archivos, se imprime, se comparte la pantalla o se hacen capturas de pantalla, entre otras acciones.
+
+      Cada regla se compone de lo siguiente:
+      - Una lista de fuentes definidas como URLs. Los datos de las fuentes se considerarán confidenciales y se les aplicarán las restricciones.
+      - Una lista de destinos definidos como URLs o componentes con los que se permite o no compartir los datos confidenciales.
+      - Una lista de restricciones que deben aplicarse a los datos de las fuentes.
+
+      Se pueden añadir reglas para:
+      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
+      - Controlar que se puedan hacer capturas de pantalla de cualquiera de las fuentes.
+      - Controlar la impresión de cualquiera de las fuentes.
+      - Controlar la pantalla de privacidad cuando se muestra alguna de las fuentes.
+      - Controlar la pantalla compartida de cualquiera de las fuentes.
+      - Controlar los archivos descargados desde cualquiera de las fuentes cuando se transfieren al destino. Compatible con <ph name="PRODUCT_OS_NAME" /> 108 y versiones posteriores.
+
+      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, ALLOW, REPORT o WARN.
+      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción bloqueada al administrador.
+      - Si se asigna el valor ALLOW al nivel de restricción, la acción se permitirá.
+      - Si se asigna el valor REPORT al nivel de restricción y se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará de la acción al administrador.
+      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela. Si se asigna el valor True a <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" />, se informará al administrador de que se ha mostrado la advertencia. También se le informará si se continúa con la acción.
+
+      Notas:
+      - La restricción PRIVACY_SCREEN no bloquea la opción de activar la pantalla de privacidad, sino que la requiere cuando la clase de la restricción tiene el valor BLOCK.
+      - Los destinos no pueden estar vacíos en caso de que alguna de las restricciones sea CLIPBOARD o FILES, pero no afectan al resto de las restricciones.
+      - Los destinos DRIVE y USB se ignoran debido a la restricción CLIPBOARD.
+      - Los patrones de URL deben tener el formato que se indica en esta página: https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Si la política no se establece, no se aplicará ninguna restricción.</translation>
 <translation id="5362531528507578966">Anula el modo de impresión de gráficos de fondo predeterminado.</translation>
 <translation id="5365476955714838841">Parámetros de línea de comandos correspondientes al navegador alternativo.</translation>
 <translation id="5365946944967967336">Mostrar botón de página principal en la barra de herramientas</translation>
@@ -4974,10 +4993,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Ten en cuenta que esta política debilita la protección de las IP locales si así lo necesitan los administradores.</translation>
 <translation id="614662973812186053">Esta política también controla la recopilación de los datos de uso y diagnóstico de Android.</translation>
 <translation id="614665605501218241">Permite que los sitios de la lista envíen solicitudes a puntos finales de red más privados de una manera no segura.</translation>
-<translation id="6154509171634387825">Advertencia: 3DES se eliminará totalmente en la versión 95 de <ph name="PRODUCT_NAME" /> (en torno a octubre del 2021) y esta política dejará de funcionar en ese momento.
-
-      Si se asigna el valor true a esta política, se habilitarán los paquetes de cifrado 3DES en TLS. Si se le asigna el valor false, se inhabilitarán estos paquetes. Si no se le asigna ningún valor, los paquetes de cifrado 3DES estarán inhabilitados de forma predeterminada. Esta política se puede usar para mantener temporalmente la compatibilidad con un servidor obsoleto. Se trata de una solución provisional y se debería volver a configurar el servidor.
-      </translation>
 <translation id="6155350825868160236">Permitir que el usuario elija si se utilizan servicios web de Google para corregir errores ortográficos</translation>
 <translation id="6155936611791017817">Establecer el estado predeterminado del cursor grande en la pantalla de inicio de sesión</translation>
 <translation id="6157537876488211233">Lista de reglas de omisión de proxy separadas por comas</translation>

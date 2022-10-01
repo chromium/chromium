@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Сонымен қатар компьютеріңізге <ph name="SHORT_PRODUCT_NAME" /> RLZ кітапханасы ендірілген. RLZ кітапханасы белгілі бір науқан арқылы жүргізілген іздеулер мен <ph name="SHORT_PRODUCT_NAME" /> пайдалану мүмкіндігін өлшеу үшін бірегей емес, жеке анықталмайтын тегті тағайындайды. Бұл белгілер кейде <ph name="PRODUCT_NAME" /> өніміндегі Google Search сұрауларында пайда болады.</translation>
 <translation id="1043505821207197890">Бірдеңе дұрыс болмады. Linux жүйесі тек жартылай жаңартылған болуы мүмкін. Толық ақпарат алу үшін журналдарды қарап шығыңыз. Журналдар "Файлдар &gt; Файлдарым&gt; <ph name="LOG_FILE" />" тармағында сақталған.</translation>
 <translation id="1043818413152647937">Осы қолданбалардағы деректер де өшірілсін бе?</translation>
-<translation id="1043824690776631483">Бұл сайтқа кіру үшін рұқсат керек. Мұнда орынсыз мазмұн болуы мүмкін.</translation>
 <translation id="104419033123549300">Пернелер картасының стилі</translation>
 <translation id="104710386808485638">Linux жүйесі қайта қосылсын ба?</translation>
 <translation id="1047431265488717055">Сілтеме мә&amp;тінін көшіру</translation>
@@ -791,7 +790,6 @@
 <translation id="173522743738009831">Privacy Sandbox туралы ақпарат</translation>
 <translation id="173628468822554835">Түсінікті. Әдепкісінше кірген жаңа сайттарыңыз хабарландырулар жібермейді.</translation>
 <translation id="1737968601308870607">Файл қатесі</translation>
-<translation id="1739684185846730053">Privacy Sandbox сынақ нұсқалары әлі де әзірленіп жатыр және кейбір аймақта ғана қолжетімді. Әзірге сайттар үшінші тарап cookie файлдары сияқты веб-технологиялардан бас тартпастан, Privacy Sandbox-ты пайдаланып көре алады.</translation>
 <translation id="1741190788710022490">Бейімдеп зарядтау</translation>
 <translation id="174123615272205933">Арнаулы</translation>
 <translation id="1741314857973421784">Жалғастыру</translation>
@@ -1958,7 +1956,6 @@
 <translation id="2787022501752539710">Браузерді пайдаланудың жергілікті деректері (бетбелгілер, құпия сөздер, браузерді пайдалану тарихы және т.б.) тұра берсін.</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Топ нөмірі</translation>
 <translation id="2789486458103222910">Жарайды</translation>
 <translation id="2791529110887957050">Linux жүйесін өшіру</translation>
 <translation id="2791952154587244007">Қате орын алды. Киоск қолданбасы бұл құрылғыда автоматты түрде іске қосылмайды.</translation>
@@ -1988,7 +1985,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist саясат мәні жарамсыз. Әкімшіге хабарласыңыз.</translation>
 <translation id="2805770823691782631">Қосымша мәліметтер</translation>
 <translation id="2806372837663997957">Бөліскіңіз келген құрылғы қабылдамады.</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Таңбаша бұрыннан бар</translation>
 <translation id="2807517655263062534">Сіз жүктеп алатын файлдар осында шығады</translation>
 <translation id="2809586584051668049">және тағы <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2440,7 +2436,6 @@
 <translation id="3262986719682892278">Тым үлкен</translation>
 <translation id="3264544094376351444">Sans-serif қаріпі</translation>
 <translation id="3264582393905923483">Мәнмәтін</translation>
-<translation id="3265118321284789528">Ата-ана мақұлдауын күтудеміз</translation>
 <translation id="3265459715026181080">Терезені жабу</translation>
 <translation id="3266022278425892773">Linux әзірлеуші ортасы</translation>
 <translation id="3266274118485960573">Қауіпсіздік шарасы қосулы.</translation>
@@ -2568,7 +2563,6 @@
 <translation id="3388094447051599208">Шығыс науасы толуға жақын.</translation>
 <translation id="3388788256054548012">Бұл файл шифрланған. Иесінен шифрдан шығаруын сұраңыз.</translation>
 <translation id="3390013585654699824">Қолданба туралы мәлімет</translation>
-<translation id="3391512812407811893">Privacy Sandbox сынақ мерзімдері</translation>
 <translation id="3393554941209044235">Chrome құжат талдау процесі</translation>
 <translation id="3393582007140394275">Экранды трансляциялау мүмкін емес.</translation>
 <translation id="3394850431319394743">Қорғалған мазмұнды ойнату үшін идентификаторларды пайдалануға рұқсат етілді.</translation>
@@ -2629,7 +2623,6 @@
 <translation id="3441653493275994384">Экран</translation>
 <translation id="3441663102605358937">Осы аккаунтты растау үшін <ph name="ACCOUNT" /> аккаунтына қайта кіріңіз.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> жүйесін жақсарту үшін Google-ға жабдық деректерін пайдалануға рұқсат беріңіз. Егер бас тартсаңыз, дұрыс жаңартуларды анықтау үшін Google-ға дерек жіберіле береді, бірақ ол сақталмайды немесе пайдаланылмайды.</translation>
-<translation id="3444641828375597683">Жарнама берушілер мен жариялаушылар FLoC әдісін (кейінірек осы бетте сипатталады) пайдалана алады.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> домені <ph name="FILENAME" /> файлын көре алады.</translation>
 <translation id="3445047461171030979">Google Assistant жылдам жауаптары</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
@@ -5309,7 +5302,6 @@
 <translation id="6027945736510816438"><ph name="WEBSITE" /> сайтын меңзедіңіз бе?</translation>
 <translation id="6028117231645531007">Саусақ ізін енгізу</translation>
 <translation id="6031600495088157824">Құралдар тақтасындағы енгізу опциялары</translation>
-<translation id="6032091552407840792">Бұл сынақ нұсқасы <ph name="BEGIN_LINK" />кейбір аймақта<ph name="END_LINK" /> ғана қолжетімді.</translation>
 <translation id="6032715498678347852">Кеңейтімге сайтқа кіру рұқсатын беру үшін оны басыңыз.</translation>
 <translation id="6032912588568283682">Файл жүйесі</translation>
 <translation id="603539183851330738">Автоматты түзетуден бас тарту түймесі. <ph name="TYPED_WORD" /> деген сөзге қайту.  Іске қосу үшін Enter, жабу үшін Escape пернесін басыңыз.</translation>
@@ -6846,7 +6838,6 @@
 <translation id="7509097596023256288">Басқару құралы реттелуде</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
 <translation id="7509539379068593709">Қолданбаны жою</translation>
-<translation id="7511415964832680006">Бұл функция қосылып тұрса, сайттар осында көрсетілген құпиялылықты сақтау әдістерін қолданып, өз мазмұны мен қызметтерін ұсына алады. Оларға сайтаралық бақылау баламалары кіреді. Уақыт өте келе басқа сынақ нұсқалары қосылуы мүмкін.</translation>
 <translation id="7514239104543605883">Құрылғыға көшіру</translation>
 <translation id="7514365320538308">Жүктеу</translation>
 <translation id="7514417110442087199">Тағайындау</translation>
@@ -7248,7 +7239,6 @@
 <translation id="7877451762676714207">Белгісіз сервер қатесі. Әрекетті қайталап көріңіз немесе сервер әкімшісіне хабарласыңыз.</translation>
 <translation id="7879478708475862060">Енгізу режимін қолдану</translation>
 <translation id="7879631849810108578">Пернелер тіркесімі орнатылды: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Privacy Sandbox функциялары қосулы болса, Chrome сіздің тобыңызды немесе "когортаңызды" анықтау үшін 7 күндегі браузерді қолдану тарихын пайдаланады. Жарнама берушілер топ үшін жарнамаларды таңдай алады. Браузерді қолдану тарихы құрылғыда құпия сақталады. Бұл сынақ нұсқасы <ph name="BEGIN_LINK" />кейбір аймақта<ph name="END_LINK" /> ғана қолжетімді.</translation>
 <translation id="7880823633812189969">Іске қосылған кезде, жергілікті деректер жойылады</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Аккаунтты көру</translation>
@@ -7521,7 +7511,6 @@
 <translation id="8119438628456698432">Журнал файлдары жасалуда...</translation>
 <translation id="811994229154425014">Нүкте қою үшін бос орын пернесін екі рет басу</translation>
 <translation id="8120505434908124087">eSIM профилін орнату</translation>
-<translation id="812260729110117038">Жарнама берушілер мен жариялаушылар сайттарда жасаған әрекеттеріңізді бақыламай-ақ жарнамалардың тиімділігін бағамдай алады.</translation>
 <translation id="81238879832906896">Сары және ақ гүл</translation>
 <translation id="8123975449645947908">Артқа айналдыру</translation>
 <translation id="8124313775439841391">Басқарылатын ONC</translation>
@@ -7564,7 +7553,6 @@
 <translation id="816055135686411707">Сенімді сертификатты орнату қатесі</translation>
 <translation id="8160775796528709999">Параметрлерден Live Caption функциясын қосу арқылы аудио мен бейненің субтитрін көріңіз.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Chrome ашық желіні қолдай отырып, <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> көмегімен сізді сайтаралық бақылаудан қорғайтын жаңа технологияларды әзірлеуде.</translation>
 <translation id="8161293209665121583">Веб-беттерге арналған оқу құралы режимі</translation>
 <translation id="8161604891089629425">Контурлық қаріп</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Қойындыны жаңа терезеден ашу}other{Қойындыларды жаңа терезеден ашу}}</translation>
@@ -8092,7 +8080,6 @@
 <translation id="8676374126336081632">Енгізілгенді өшіру</translation>
 <translation id="8676770494376880701">Төмен қуат зарядтағышы қосылды</translation>
 <translation id="8677212948402625567">Барлығын жию…</translation>
-<translation id="867767487203716855">Келесі жаңарту</translation>
 <translation id="8678378565142776698">Өшіріп қосу және автоматты жаңартылған нұсқа алу</translation>
 <translation id="8678538439778360739">Деректер <ph name="TIME" /> күні сақталған синхрондау құпия фразаңызбен шифрланған. Google Pay қызметіндегі төлеу әдістері мен мекенжайлар құпия фразамен шифрланбайды.</translation>
 <translation id="8678582529642151449">қойындылар кішіреймейді</translation>
@@ -8100,7 +8087,6 @@
 <translation id="8680251145628383637">Барлық құрылғыларыңызда бетбелгілерді, журналды, құпия сөздерді және басқа параметрлерді алу үшін жүйеге кіріңіз. Сонымен қатар Google қызметтеріне автоматты түрде кіресіз.</translation>
 <translation id="8681614230122836773">Chrome компьютеріңізден зиянды бағдарламалық құрал тапты.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> жалғанды және дайын.</translation>
-<translation id="8683081248374354009">Топ параметрлерін бастапқы күйге қайтару</translation>
 <translation id="8688672835843460752">Қолжетімді</translation>
 <translation id="8690129572193755009">Сайттар протоколдарды өңдеуді сұрайды</translation>
 <translation id="8692107307702113268">Құпия сөзде 1000 таңбадан артық таңба бар.</translation>
@@ -8377,7 +8363,6 @@
 <translation id="8952831374766033534">Конфигурация опциясына қолдау көрсетілмейді: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Зарядтау кезінде</translation>
 <translation id="895347679606913382">Басталуда…</translation>
-<translation id="8953654039337655940">Ата-анаңыздың Google Family Link қолданбасында және families.google.com бетінде оларға мақұлдау сұрауы жіберілді. Егер ата-анаңыз сұрауды мақұлдаса, сізге хабарландыру келеді.</translation>
 <translation id="8956230710625245889">Reader арқылы ашу</translation>
 <translation id="8957757410289731985">Профильді реттеу</translation>
 <translation id="895944840846194039">JavaScript жады</translation>
@@ -8722,7 +8707,6 @@
 <translation id="97905529126098460">Бас тарту процесі аяқталғаннан кейін, осы терезе жабылады.</translation>
 <translation id="980731642137034229">Әрекеттер мәзірі түймесі</translation>
 <translation id="981121421437150478">Желіден тыс</translation>
-<translation id="982684081337630214">Ата-анаңыздың Google Family Link қолданбасында және families.google.com бетінде оларға мақұлдау сұрауы жіберілді. Егер ата-анаңыздың бірі сұрауды мақұлдаса, сізге хабарландыру келеді.</translation>
 <translation id="983511809958454316">Бұл функция VR режимінде қолданылмайды</translation>
 <translation id="984275831282074731">Төлеу әдістері</translation>
 <translation id="984705303330760860">Емлені тексеру функциясы бар тілдерді қосу</translation>

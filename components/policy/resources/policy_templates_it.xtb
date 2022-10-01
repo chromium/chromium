@@ -293,9 +293,6 @@
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto per le istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">L'API Event.path non sarà disponibile.</translation>
 <translation id="1290634681382861275">Consente di gestire varie impostazioni, tra cui USB, Bluetooth, aggiornamento delle norme, modalità sviluppatore e altre ancora.</translation>
-<translation id="1291880496936992484">Avviso. RC4 sarà rimosso completamente da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo di settembre 2016), dopodiché questa norma non sarà più attiva.
-
-      Se la norma non viene impostata o se viene impostata su false, i pacchetti di crittografia RC4 in TLS non saranno attivati. In alternativa, la norma può essere impostata su true per mantenere la compatibilità con un server obsoleto. Si tratta di una soluzione temporanea ed è necessario configurare nuovamente il server.</translation>
 <translation id="129206366270737897">Consente di disattivare tutti i metodi asincroni di <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="1294263471858445589">Attiva l'autenticazione ambientale nelle sessioni standard e in modalità in incognito.</translation>
 <translation id="1295737447968372331">Attiva la dettatura sulla schermata di accesso</translation>
@@ -857,13 +854,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Gli URL in questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza su <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="1859859319036806634">Avviso. Il fallback della versione TLS sarà rimosso da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo settembre 2016), dopodiché questa norma non sarà più attiva.
-
-      Se lo handshake TLS non riesce, <ph name="PRODUCT_NAME" /> proverà a stabilire una connessione con una versione precedente di TLS per risolvere i bug nei server HTTPS. Con questa impostazione viene configurata la versione in cui si interrompe il processo di fallback. Se un server esegue correttamente la negoziazione della versione (cioè senza interrompere la connessione), questa impostazione non viene applicata. In ogni caso, la connessione risultante deve essere conforme a SSLVersionMin.
-
-      Se questa norma non è configurata o se viene impostata su "tls1.2", <ph name="PRODUCT_NAME" /> non eseguirà più il fallback. Il supporto per le versioni precedenti di TLS non viene disattivato, solo se <ph name="PRODUCT_NAME" /> eviterà i server che presentano errori e che non sono in grado di trattare correttamente le versioni.
-
-      In caso contrario, se è necessario mantenere la compatibilità con un server con errori, è possibile impostare la norma su "tls1.1". Si tratta di una misura temporanea ed è necessario correggere rapidamente il server.</translation>
 <translation id="1861206724856734193">Consente di configurare un elenco di regole per la prevenzione della fuga di dati.</translation>
 <translation id="1862267110714201519">Disattiva la funzionalità di finestre nascoste.</translation>
 <translation id="1865417998205858223">Autorizzazioni chiave</translation>
@@ -2160,11 +2150,6 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
       Se un sito corrisponde a un pattern URL in questo criterio, i seguenti criteri non saranno presi in considerazione: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.</translation>
-<translation id="3117676313396757089">Avviso. DHE sarà rimosso completamente da <ph name="PRODUCT_NAME" /> dopo la versione 57 (nel periodo di marzo 2017), dopodiché questa norma non sarà più attiva.
-
-      Se la norma non viene impostata o se viene impostata su false, le suite di crittografia DHE in TLS non saranno attivate. In alternativa, la norma può essere impostata su true per attivare le suite di crittografia DHE e per mantenere la compatibilità con un server obsoleto. Si tratta di una soluzione temporanea ed è necessario configurare nuovamente il server.
-
-      Si consiglia di effettuare la migrazione dei server alle suite di crittografia ECDHE. Se non sono disponibili, assicurati che siano attivate le suite di crittografia con l'utilizzo dello scambio delle chiavi RSA.</translation>
 <translation id="3118552207903834734">Consente a un utente di configurare il nome host del suo dispositivo</translation>
 <translation id="3122082892722698079">Controlla l'utilizzo delle eccezioni per i contenuti non sicuri</translation>
 <translation id="3128072319047570212">Impostazioni keygen</translation>
@@ -4201,11 +4186,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="532848608876725157">Attiva DNS over HTTPS con fallback non sicuro</translation>
 <translation id="5328965694451556034">Segnala accesso/uscita</translation>
-<translation id="5329007337159326804">Attenzione: la norma Versione TLS massima verrà interamente rimossa da <ph name="PRODUCT_NAME" /> con la versione 75 (orientativamente giugno 2019).
-
-      Se questa norma non viene configurata, <ph name="PRODUCT_NAME" /> utilizza la versione massima predefinita.
-
-      . In caso contrario, potrebbe essere impostato uno dei seguenti valori: "tls1.2" o "tls1.3". Se questa norma viene impostata, <ph name="PRODUCT_NAME" /> non utilizzerà versioni SSL/TLS successive a quella specificata. I valori non riconosciuti verranno ignorati.</translation>
 <translation id="5329018127554115226">La modalità ad alta efficienza verrà disattivata.</translation>
 <translation id="5330684698007383292">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuti</translation>
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
@@ -4921,10 +4901,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Tieni presente che questo criterio riduce la sicurezza degli indirizzi IP locali se richiesto dagli amministratori.</translation>
 <translation id="614662973812186053">Questa norma controlla anche la raccolta dei dati diagnostici e sull'utilizzo di Android.</translation>
 <translation id="614665605501218241">Consenti ai siti elencati di effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.</translation>
-<translation id="6154509171634387825">Avviso: 3DES verrà completamente rimosso da <ph name="PRODUCT_NAME" /> nella versione 95 (indicativamente a ottobre 2021); in quel momento, questo criterio smetterà di funzionare.
-
-      Se il criterio viene impostato su vero, le suite di crittografia 3DES in TLS verranno attivate. Se viene impostato su falso, verranno disattivate. Se il criterio non viene configurato, le suite di crittografia 3DES sono disattivate per impostazione predefinita. Questo criterio potrebbe essere usato per mantenere momentaneamente la compatibilità con un server obsoleto. Si tratta di una misura temporanea ed è necessario riconfigurare il server.
-      </translation>
 <translation id="6155350825868160236">Consenti all'utente di decidere se usare o meno servizi web di Google per correggere gli errori ortografici</translation>
 <translation id="6155936611791017817">Impostazione stato predefinito del puntatore grande nella schermata di accesso</translation>
 <translation id="6157537876488211233">Elenco separato da virgole delle regole di bypass proxy</translation>

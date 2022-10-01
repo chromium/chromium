@@ -288,9 +288,6 @@
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">Event.path API is niet beschikbaar.</translation>
 <translation id="1290634681382861275">Beheert diverse instellingen, waaronder USB, Bluetooth, vernieuwingsinterval voor beleid, ontwikkelaarsmodus en meer.</translation>
-<translation id="1291880496936992484">Waarschuwing: RC4 wordt volledig verwijderd van <ph name="PRODUCT_NAME" /> na versie 52 (rond september 2016) en dit beleid werkt vanaf dan niet meer.
-
-      Als het beleid niet is ingesteld of is ingesteld op False, worden de RC4-coderingssuites in TLS niet aangezet. Anders kan het worden ingesteld op True om compatibiliteit met een verouderde server te behouden. Dit is een tijdelijke oplossing en de server moet opnieuw worden ingesteld.</translation>
 <translation id="129206366270737897">Zet alle asynchrone methoden van <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> uit.</translation>
 <translation id="1294263471858445589">Ambient-verificatie in normale en incognitosessies aanzetten.</translation>
 <translation id="1295737447968372331">Dicteren op het inlogscherm aanzetten</translation>
@@ -855,13 +852,6 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
       Als je het beleid niet instelt, is <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> van toepassing als dit is ingesteld. Zo niet, dan gelden de persoonlijke instellingen van de gebruiker.
 
       De URL's in dit beleid mogen niet conflicteren met de URL's die zijn ingesteld via <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Als dit het geval is, krijgt dit beleid voorrang op <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="1859859319036806634">Waarschuwing: De TLS-fallbackversie wordt na de lancering van versie 52 (rond september 2016) uit <ph name="PRODUCT_NAME" /> verwijderd. Vanaf dat moment werkt dit beleid niet meer.
-
-      Wanneer een TLS-handshake mislukt, probeerde <ph name="PRODUCT_NAME" /> voorheen opnieuw verbinding te maken met een lagere versie van TLS om bugs in HTTPS-servers te omzeilen. Deze instelling configureert de versie waarbij dit fallbackproces wordt stopgezet. Als een server de versieonderhandeling correct uitvoert (dat wil zeggen, zonder de verbinding te verbreken), is deze instelling niet van toepassing. Desondanks moet de resulterende verbinding nog steeds voldoen aan SSLVersionMin.
-
-      Als dit beleid niet is geconfigureerd of als het is ingesteld op 'tls1.2', voert <ph name="PRODUCT_NAME" /> deze fallback niet meer uit. Let op: Hiermee wordt de ondersteuning voor oudere TLS-versies niet uitgezet, maar alleen het proces van <ph name="PRODUCT_NAME" /> om servers met bugs te omzeilen die versieonderhandelingen niet correct kunnen uitvoeren.
-
-      Als de compatibiliteit met een server met bugs moet worden behouden, kan dit beleid worden ingesteld op 'tls1.1'. Dit is slechts een noodoplossing. De server moet snel worden gerepareerd.</translation>
 <translation id="1861206724856734193">Hiermee stel je een lijst in met regels ter voorkoming van datalekken.</translation>
 <translation id="1862267110714201519">De functie voor ghostvenster uitzetten.</translation>
 <translation id="1865417998205858223">Rechten voor sleutels</translation>
@@ -2146,11 +2136,6 @@ Dit is hetzelfde gedrag als <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
       Als een site overeenkomt met een URL-patroon in dit beleid, wordt er geen rekening gehouden met de volgende beleidsregels: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  Dit beleid zoekt alleen overeenkomsten op basis van de herkomst, dus elk pad in het URL-patroon wordt genegeerd.</translation>
-<translation id="3117676313396757089">Waarschuwing: DHE wordt na versie 57 (rond maart 2017) volledig van <ph name="PRODUCT_NAME" /> verwijderd en dit beleid werkt vanaf dat moment niet meer.
-
-      Als het beleid niet is ingesteld of is ingesteld op False, worden de DHE-coderingssuites in TLS niet aangezet. Anders kan het worden ingesteld op True om DHE-coderingssuites aan te zetten en de compatibiliteit met een verouderde server te behouden. Dit is een tijdelijke oplossing en de server moet opnieuw worden ingesteld.
-
-      Servers kunnen het beste worden gemigreerd naar ECDHE-coderingssuites. Als deze niet beschikbaar zijn, moet je ervoor zorgen dat er een coderingssuite is aangezet die gebruikmaakt van RSA-sleuteluitwisseling.</translation>
 <translation id="3118552207903834734">Toestaan dat een gebruiker de hostnaam van het eigen apparaat instelt</translation>
 <translation id="3122082892722698079">Gebruik van niet-beveiligde contentuitzonderingen beheren</translation>
 <translation id="3128072319047570212">Instellingen voor sleutelgenerator</translation>
@@ -4175,11 +4160,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
 <translation id="5323200200131319468">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="532848608876725157">DNS-over-HTTPS met onbeveiligde fallback aanzetten</translation>
 <translation id="5328965694451556034">Inloggen/uitloggen rapporteren</translation>
-<translation id="5329007337159326804">Waarschuwing: Het beleid voor de maximale TLS-versie wordt rond versie 75 (rond juni 2019) volledig verwijderd uit <ph name="PRODUCT_NAME" />.
-
-      Als dit beleid niet is ingesteld, gebruikt <ph name="PRODUCT_NAME" /> de standaard maximale versie.
-
-      Dit beleid kan ook worden ingesteld op een van de volgende waarden: 'tls1.2' of 'tls1.3'. Wanneer dit beleid is ingesteld, gebruikt <ph name="PRODUCT_NAME" /> geen hogere SSL-/TLS-versies dan de opgegeven versie. Als er een waarde wordt ingesteld die niet wordt herkend, wordt deze genegeerd.</translation>
 <translation id="5329018127554115226">De modus voor hoge efficiëntie wordt uitgezet.</translation>
 <translation id="5330684698007383292"><ph name="PRODUCT_FRAME_NAME" /> toestaan de volgende soorten content te verwerken.</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" />-cloudbeleid krijgt voorrang op het platformbeleid.</translation>
@@ -4924,10 +4904,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Houd er rekening mee dat dit beleid de beveiliging van lokale IP's verzwakt als beheerders dit nodig hebben.</translation>
 <translation id="614662973812186053">Met dit beleid wordt ook het gebruik van Android en het verzamelen van diagnostische gegevens bepaald.</translation>
 <translation id="614665605501218241">Hiermee sta je de vermelde sites toe om op een onbeveiligde manier verzoeken te sturen naar netwerkeindpunten die meer privé zijn.</translation>
-<translation id="6154509171634387825">Waarschuwing: 3DES wordt volledig verwijderd uit <ph name="PRODUCT_NAME" /> vanaf versie 95 (rond oktober 2021). Dit beleid werkt dan niet meer.
-
-      Als je het beleid instelt op True, worden 3DES cipher suites in TLS aangezet. Als je het beleid instelt op False, worden ze uitgezet. Als je het beleid niet instelt, staan 3DES cipher suites standaard uit. Je kunt dit beleid gebruiken om de compatibiliteit met een verouderde server tijdelijk te behouden. Dit is slechts een noodoplossing. De server moet opnieuw worden ingesteld.
-      </translation>
 <translation id="6155350825868160236">Toestaan dat gebruikers kiezen of Google-webservices worden gebruikt om spelfouten op te lossen</translation>
 <translation id="6155936611791017817">De standaardstatus van de grote muisaanwijzer op het inlogscherm instellen</translation>
 <translation id="6157537876488211233">Door komma's gescheiden lijst van regels voor proxyomzeiling</translation>

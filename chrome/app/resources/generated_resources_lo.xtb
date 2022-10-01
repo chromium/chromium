@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">ຄອມພິວເຕີຂອງທ່ານຍັງມາພ້ອມກັບຄັງເກັບມ້ຽນ RLZ ຂອງ <ph name="SHORT_PRODUCT_NAME" /> ມາກັບເຄື່ອງ. RLZ ມອບໝາຍໃຫ້ແທັກສາມາດລະບຸໄດ້ບໍ່ເປັນເອກະລັກ, ບໍ່ເປັນສ່ວນຕົວ ເພື່ອວັດແທກການຄົ້ນຫາ ແລະການໃຊ້ <ph name="SHORT_PRODUCT_NAME" /> ຂັບເຄື່ອນໂດຍການໂຄສະນາສະເພາະ. ບາງຄັ້ງສະຫຼາກເຫຼົ່ານີ້ປະກົດຂຶ້ນຢູ່ໃນການສອບຖາມການຄົ້ນຫາ Google ຢູ່ໃນ <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. Linux ອາດຖືກອັບເກຣດບາງສ່ວນເທົ່ານັ້ນ. ກວດສອບບັນທຶກສຳລັບຂໍ້ມູນເພີ່ມເຕີມ. ຈັດເກັບບັນທຶກໄວ້ແລ້ວໃນໄຟລ໌ &gt; ໄຟລ໌ຂອງຂ້ອຍ &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">ລຶບຂໍ້ມູນອອກຈາກແອັບເຫຼົ່ານີ້ນຳບໍ?</translation>
-<translation id="1043824690776631483">ທ່ານຈຳເປັນຕ້ອງມີການອະນຸຍາດເພື່ອເຂົ້າເບິ່ງເວັບໄຊນີ້. ມັນອາດມີເນື້ອຫາທີ່ບໍ່ເໝາະສົມ.</translation>
 <translation id="104419033123549300">ຮູບແບບແຜນຜັງປຸ່ມ</translation>
 <translation id="104710386808485638">ຣິສະຕາດ Linux ບໍ?</translation>
 <translation id="1047431265488717055">ອັດ​ສຳ​ເນົາ​ຂໍ້​ຄວາມ​ລິ້ງ</translation>
@@ -803,7 +802,6 @@
 <translation id="173522743738009831">ກ່ຽວກັບ Privacy Sandbox</translation>
 <translation id="173628468822554835">ເຂົ້າໃຈແລ້ວ. ຕາມຄ່າເລີ່ມຕົ້ນ, ເວັບໄຊໃໝ່ທີ່ທ່ານເຂົ້າເບິ່ງຈະບໍ່ສົ່ງການແຈ້ງເຕືອນໃຫ້ທ່ານ.</translation>
 <translation id="1737968601308870607">ບັນຫາໄຟລ໌</translation>
-<translation id="1739684185846730053">ການທົດລອງໃຊ້ Privacy Sandbox ຍັງຄົງຢູ່ໃນລະຫວ່າງການພັດທະນາຢ່າງຫ້າວຫັນ ແລະ ສາມາດໃຊ້ໄດ້ໃນບາງພາກພື້ນ. ສຳລັບຕອນນີ້, ເວັບໄຊອາດລອງໃຊ້ Privacy Sandbox ໃນຂະນະທີ່ສືບຕໍ່ໃຊ້ເທັກໂນໂລຢີເວັບປັດຈຸບັນ ເຊັ່ນ: ຄຸກກີ້ພາກສ່ວນທີສາມ.</translation>
 <translation id="1741190788710022490">ການສາກໄຟແບບປັບອັດຕະໂນມັດ</translation>
 <translation id="174123615272205933">ກຳນົດເອງ</translation>
 <translation id="1741314857973421784">ສືບຕໍ່</translation>
@@ -1975,7 +1973,6 @@
 <translation id="2787022501752539710">ເກັບຂໍ້ມູນການນຳໃຊ້ໃນເຄື່ອງໄວ້ (ບຸກມາກ, ລະຫັດຜ່ານ, ປະຫວັດ ແລະ ອື່ນໆ)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">ໝາຍເລກກຸ່ມ</translation>
 <translation id="2789486458103222910">ຕົກລົງ</translation>
 <translation id="2791529110887957050">ລຶບ Linux ອອກ</translation>
 <translation id="2791952154587244007">ເກີດຄວາມຜິດພາດຂຶ້ນ. ແອັບພລິເຄຊັ່ນ Kiosk ຈະບໍ່ສາມາດເປີດໃຊ້ອັດຕະໂນມັດຢູ່ໃນເຄື່ອງນີ້ໄດ້.</translation>
@@ -2005,7 +2002,6 @@
 <translation id="2805760958323556153">ຄ່ານະໂຍບາຍ ExtensionInstallForcelist ບໍ່ຖືກຕ້ອງ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="2805770823691782631">ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="2806372837663997957">ອຸປະກອນທີ່ທ່ານກຳລັງພະຍາຍາມແບ່ງປັນກັບບໍ່ຕອບຮັບ</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">ມີທາງລັດນັ້ນຢູ່ກ່ອນແລ້ວ</translation>
 <translation id="2807517655263062534">ໄຟລ໌ທີ່ທ່ານດາວໂຫຼດປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="2809586584051668049">ແລະ <ph name="NUMBER_ADDITIONAL_DISABLED" /> ເພີ່ມອີກ</translation>
@@ -2457,7 +2453,6 @@
 <translation id="3262986719682892278">ໃຫຍ່ເກີນໄປ</translation>
 <translation id="3264544094376351444">ຟອນ Sans-serif</translation>
 <translation id="3264582393905923483">ສະພາບການ</translation>
-<translation id="3265118321284789528">ກຳລັງລໍຖ້າການອະນຸມັດຈາກພໍ່ແມ່</translation>
 <translation id="3265459715026181080">ປິດໜ້າ​ຕ່າງ</translation>
 <translation id="3266022278425892773">ສະພາບແວດລ້ອມການພັດທະນາ Linux</translation>
 <translation id="3266274118485960573">ການກວດສອບຄວາມປອດໄພພວມດຳເນີນຢູ່.</translation>
@@ -2585,7 +2580,6 @@
 <translation id="3388094447051599208">ຖາດເຈ້ຍອອກໃກ້ເຕັມແລ້ວ</translation>
 <translation id="3388788256054548012">ໄຟລ໌ນີ້ມີການເຂົ້າລະຫັດໄວ້. ຂໍໃຫ້ເຈົ້າຂອງມັນຖອດລະຫັດ.</translation>
 <translation id="3390013585654699824">ລາຍລະອຽດແອັບ</translation>
-<translation id="3391512812407811893">ການທົດລອງໃຊ້ Privacy Sandbox</translation>
 <translation id="3393554941209044235">ການວິເຄາະເອກະສານ Chrome</translation>
 <translation id="3393582007140394275">ບໍ່ສາມາດສົ່ງສັນຍານໜ້າຈໍໄດ້.</translation>
 <translation id="3394850431319394743">ອະນຸຍາດໃຫ້ຕົວລະບຸຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງແລ້ວ</translation>
@@ -2646,7 +2640,6 @@
 <translation id="3441653493275994384">ຫນ້າ​ຈໍ</translation>
 <translation id="3441663102605358937">ເຂົ້າສູ່ລະບົບ <ph name="ACCOUNT" /> ອີກຄັ້ງເພື່ອຢັ້ງຢືນບັນຊີນີ້</translation>
 <translation id="3442674350323953953">ໃຫ້ Google ໃຊ້ຂໍ້ມູນຮາດແວຂອງທ່ານເພື່ອຊ່ວຍປັບປຸງ <ph name="DEVICE_OS" />. ຫາກທ່ານປະຕິເສດ, ຂໍ້ມູນນີ້ຈະຍັງຄົງຖືກສົ່ງໄປໃຫ້ Google ເພື່ອກວດສອບການອັບເດດທີ່ເໝາະສົມ, ແຕ່ຈະບໍ່ຖືກຈັດເກັບ ຫຼື ຖືກໃຊ້ໄປໃນທາງອື່ນ.</translation>
-<translation id="3444641828375597683">ຜູ້ລົງໂຄສະນາ ແລະ ຜູ້ເຜີຍແຜ່ສາມາດໃຊ້ FLoC ໄດ້, ຕາມທີ່ອະທິບາຍພາຍຫຼັງໃນໜ້ານີ້.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> ຈະສາມາດເບິ່ງ <ph name="FILENAME" /> ໄດ້</translation>
 <translation id="3445047461171030979">ຄຳຕອບດ່ວນຂອງຜູ້ຊ່ວຍ Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
@@ -5329,7 +5322,6 @@
 <translation id="6027945736510816438">ທ່ານໝາຍເຖິງ <ph name="WEBSITE" /> ບໍ?</translation>
 <translation id="6028117231645531007">ເພີ່ມລາຍນີ້ວມື</translation>
 <translation id="6031600495088157824">ຕົວເລືອກການປ້ອນຂໍ້ມູນໃນແຖບເຄື່ອງມື</translation>
-<translation id="6032091552407840792">ການທົດລອງໃຊ້ນີ້ແມ່ນໃຊ້ໄດ້ສະເພາະໃນ <ph name="BEGIN_LINK" />ບາງພາກພື້ນ<ph name="END_LINK" /> ເທົ່ານັ້ນ.</translation>
 <translation id="6032715498678347852">ເພື່ອໃຫ້ສິດເຂົ້າເຖິງເວັບໄຊນີ້ແກ່ສ່ວນຂະຫຍາຍ, ກະລຸນາຄລິກມັນ.</translation>
 <translation id="6032912588568283682">ລະ​ບົບ​ໄຟລ໌</translation>
 <translation id="603539183851330738">ປຸ່ມຍົກເລີກການແກ້ໄຂອັດຕະໂນມັດ. ປ່ຽນກັບຄືນເປັນ <ph name="TYPED_WORD" />.  ກົດ Enter ເພື່ອເປີດນຳໃຊ້, Escape ເພື່ອປິດໄວ້.</translation>
@@ -6866,7 +6858,6 @@
 <translation id="7509097596023256288">ກຳລັງຕັ້ງຄ່າການຈັດການ</translation>
 <translation id="7509246181739783082">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ</translation>
 <translation id="7509539379068593709">ຖອນການຕິດຕັ້ງແອັບ</translation>
-<translation id="7511415964832680006">ເມື່ອເປີດໃຊ້, ເວັບໄຊອາດໃຊ້ເທັກໂນໂລຢີການຮັກສາຄວາມເປັນສ່ວນຕົວທີ່ສະແດງຢູ່ບ່ອນນີ້ເພື່ອສະໜອງເນື້ອຫາ ແລະ ບໍລິການຂອງພວກມັນ. ເທັກນິກເຫຼົ່ານີ້ຮວມທັງທາງເລືອກຕໍ່ກັບການຕິດຕາມຂ້າມເວັບໄຊ. ອາດມີການເພີ່ມການທົດລອງໃຊ້ເພີ່ມເຕີມໃນອະນາຄົດ.</translation>
 <translation id="7514239104543605883">ສຳເນົາໄປໃສ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7514365320538308">ດາວ​ໂຫລດ</translation>
 <translation id="7514417110442087199">ເພີ່ມການກຳນົດ</translation>
@@ -7267,8 +7258,6 @@
 <translation id="7877451762676714207">ການຜິດພາດຂອງເຊີບເວີທີ່ບໍ່ຮູ້ຈັກ. ກະລຸນາລອງໃໝ່ອີກ, ຫຼືຕິດຕໍ່ຫາຜູ້ຄວບຄຸມເຊີບເວີ.</translation>
 <translation id="7879478708475862060">ປະຕິບັດຕາມໂໝດປ້ອນເຂົ້າ</translation>
 <translation id="7879631849810108578">ທາງລັດທີ່ຕັ້ງຄ່າ: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">ເມື່ອເປີດໃຊ້ ແລະ ສະຖານະເປັນແບບນຳໃຊ້ຢູ່, Chrome ຈະໃຊ້ປະຫວັດການທ່ອງເວັບໃນໄລຍະ 7 ມື້ທີ່ຜ່ານມາເພື່ອກຳນົດກຸ່ມ ຫຼື “ກຸ່ມປະຊາກອນຕາມຮຸ່ນ” ຂອງທ່ານ. ຜູ້ລົງໂຄສະນາສາມາດເລືອກໂຄສະນາສຳລັບກຸ່ມໄດ້. ປະຫວັດການທ່ອງເວັບຂອງທ່ານແມ່ນຖືກຈັດເກັບໄວ້ເປັນສ່ວນຕົວຢູ່ອຸປະກອນທ່ານ. ການທົດລອງໃຊ້ນີ້ແມ່ນໃຊ້ໄດ້ສະເພາະໃນ
-<ph name="BEGIN_LINK" />ບາງພາກພື້ນ<ph name="END_LINK" /> ເທົ່ານັ້ນ.</translation>
 <translation id="7880823633812189969">ຂໍ້ມູນພາຍໃນເຄື່ອງຈະຖືກລຶບເມື່ອທ່ານປິດເປີດຄືນໃໝ່</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">ເບິ່ງ​ບັນ​ຊີ​</translation>
@@ -7541,7 +7530,6 @@
 <translation id="8119438628456698432">ກຳລັງສ້າງໄຟລ໌ບັນທຶກ...</translation>
 <translation id="811994229154425014">ແຕະປຸ່ມຍະຫວ່າງສອງຄັ້ງເພື່ອພິມໝາຍຈຸດ</translation>
 <translation id="8120505434908124087">ຕິດຕັ້ງໂປຣໄຟລ໌ eSIM</translation>
-<translation id="812260729110117038">ຜູ້ໂຄສະນາ ແລະ ຜູ້ເຜີຍແຜ່ສາມາດສຶກສາປະສິດທິຜົນຂອງໂຄສະນາໃນແບບທີ່ບໍ່ຕິດຕາມທ່ານຂ້າມເວັບໄຊໄດ້.</translation>
 <translation id="81238879832906896">ດອກໄມ້ສີເຫຼືອງ ແລະ ສີຂາວ</translation>
 <translation id="8123975449645947908">ເລື່ອນກັບຫຼັງ</translation>
 <translation id="8124313775439841391">ONC ຈັດ​ການ​ແລ້ວ</translation>
@@ -7584,7 +7572,6 @@
 <translation id="816055135686411707">ການຕັ້ງຄ່າຄວາມເຊື່ອໝັ້ນໃບຢັ້ງຢືນຜິດພາດ</translation>
 <translation id="8160775796528709999">ຮັບຄຳບັນຍາຍສຳລັບສຽງ ແລະ ວິດີໂອຂອງທ່ານໂດຍການເປີດການນຳໃຊ້ຄຳບັນຍາຍສົດໃນການຕັ້ງຄ່າ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">ດ້ວຍ <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome ກຳລັງພັດທະນາເທັກໂນໂລຢີໃໝ່ເພື່ອປ້ອງກັນທ່ານຈາກການຕິດຕາມຂ້າມເວັບໄຊໃນຂະນະທີ່ຍັງຄົງຮັກສາຄວາມເປີດກວ້າງຂອງເວັບໄວ້.</translation>
 <translation id="8161293209665121583">ໂໝດຜູ້ອ່ານສຳລັບໜ້າເວັບ</translation>
 <translation id="8161604891089629425">ຟອນເສັ້ນຂອບ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່}}</translation>
@@ -8112,7 +8099,6 @@
 <translation id="8676374126336081632">ລຶບການປ້ອນເຂົ້າ</translation>
 <translation id="8676770494376880701">ເຄື່ອງສາກ​ແບບ​ໃຊ້ໄຟຕໍ່າເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="8677212948402625567">ຍຸບເຊື່ອງທັງໝົດ...</translation>
-<translation id="867767487203716855">ອັບເດດຕໍ່ໄປ</translation>
 <translation id="8678378565142776698">ຣີສະຕາດ ແລະ ຮັບການອັບເດດອັດຕະໂນມັດ</translation>
 <translation id="8678538439778360739">ເຂົ້າລະຫັດຂໍ້ມູນໂດຍໃຊ້ລະຫັດຜ່ານການຊິ້ງຂໍ້ມູນຂອງທ່ານເມື່ອ <ph name="TIME" />. ນີ້ບໍ່ຮວມເອົາວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay.</translation>
 <translation id="8678582529642151449">ບໍ່ມີການຫຍໍ້ຂະໜາດແຖບ</translation>
@@ -8120,7 +8106,6 @@
 <translation id="8680251145628383637">ລົງຊື່ເຂົ້າໃຊ້ເພື່ອ​ເອົາບຸກມາກ໌ສ, ປະຫວັດ, ລະ​ຫັດ​ຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານ ຢູ່ໃນອຸປະກອນຂອງທ່ານທັງໝົດ. ທ່ານ​ຍັງ​ຈະ​ຖືກລົງຊື່ເຂົ້າ​ຫາ​ການ​ບໍ​ລິ​ການ Google ຂອງ​ທ່ານ​ໂດຍ​ອັດ​ຕະ​ໂນ​ມັດ.</translation>
 <translation id="8681614230122836773">Chrome ໄດ້ພົບຊອບແວອັນຕະລາຍໃນຄອມພິວເຕີຂອງທ່ານ</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> ເຊື່ອມຕໍ່ ແລະ ພ້ອມແລ້ວ</translation>
-<translation id="8683081248374354009">ຣີເຊັດກຸ່ມ</translation>
 <translation id="8688672835843460752">ຍັງເຫຼືອ</translation>
 <translation id="8690129572193755009">ເວັບໄຊສາມາດຂໍຈັດການໂປຣໂຕຄໍໄດ້</translation>
 <translation id="8692107307702113268">ລະຫັດຜ່ານມີຫຼາຍກວ່າ 1000 ຕົວອັກສອນ</translation>
@@ -8397,7 +8382,6 @@
 <translation id="8952831374766033534">ບໍ່ຮອງຮັບຕົວເລືອກການກຳນົດຄ່າ: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ໃນຂະນະທີ່ສາກຢູ່</translation>
 <translation id="895347679606913382">ກໍາລັງເລີ່ມຕົ້ນ...</translation>
-<translation id="8953654039337655940">ສົ່ງຄຳຮ້ອງຂໍການອະນຸມັດໄປໃຫ້ພໍ່ແມ່ຂອງທ່ານຢູ່ແອັບ Google Family Link ຂອງເຂົາເຈົ້າ ແລະ ຢູ່ families.google.com ແລ້ວ. ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກພໍ່ແມ່ຂອງທ່ານອະນຸມັດຄຳຮ້ອງຂໍ.</translation>
 <translation id="8956230710625245889">ເປີດໃນ Reader</translation>
 <translation id="8957757410289731985">ປັບແຕ່ງໂປຣໄຟລ໌</translation>
 <translation id="895944840846194039">ຄວາມ​ຈໍາ JavaScript</translation>
@@ -8742,7 +8726,6 @@
 <translation id="97905529126098460">ໜ້າຈໍນີ້ຈະປິດຫຼັງຈາກສຳເລັດການຍົກເລີກແລ້ວ.</translation>
 <translation id="980731642137034229">ປຸ່ມເມນູຄຳສັ່ງ</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>
-<translation id="982684081337630214">ສົ່ງຄຳຮ້ອງຂໍການອະນຸມັດໄປໃຫ້ພໍ່ແມ່ຂອງທ່ານຢູ່ແອັບ Google Family Link ຂອງເຂົາເຈົ້າ ແລະ ຢູ່ families.google.com ແລ້ວ. ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກເຂົາເຈົ້າຄົນໃດຄົນໜຶ່ງອະນຸມັດຄຳຮ້ອງຂໍ.</translation>
 <translation id="983511809958454316">ບໍ່ຮອງຮັບຄຸນສົມບັດນີ້ໃນ VR</translation>
 <translation id="984275831282074731">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="984705303330760860">ເພີ່ມພາສາການກວດຄຳຜິດ</translation>

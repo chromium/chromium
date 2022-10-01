@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">Mientras se actualiza el firmware, no desconectes este dispositivo externo ni apagues el ordenador. Puedes minimizar esta ventana. Es posible que esta actualización tarde unos minutos en instalarse y que tu dispositivo externo no funcione durante ese tiempo.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Activación parcial</translation>
+<translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimiento de rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiza Chrome OS</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>

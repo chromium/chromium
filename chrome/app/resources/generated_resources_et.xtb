@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Teie arvutil on ka toote <ph name="SHORT_PRODUCT_NAME" /> sisseehitatud RLZ-teek. RLZ määrab korduva ja isikut mittetuvastava ID-tunnuse, et mõõta konkreetse reklaamikampaania tekitatud otsinguid ja toote <ph name="SHORT_PRODUCT_NAME" /> kasutust. Need sildid kuvatakse vahel ka tootes <ph name="PRODUCT_NAME" /> Google'i otsingupäringutes.</translation>
 <translation id="1043505821207197890">Midagi läks valesti. Linuxi versiooni uuendamine võis ainult osaliselt õnnestuda. Lisateabe saamiseks vaadake üle logid. Logid salvestati jaotisse Failid &gt; Minu failid &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Kas kustutada andmed ka nendest rakendustest?</translation>
-<translation id="1043824690776631483">Vajad selle saidi külastamiseks luba. See võib sisaldada sobimatut sisu.</translation>
 <translation id="104419033123549300">Klahvitabeli stiil</translation>
 <translation id="104710386808485638">Kas taaskäivitada Linux?</translation>
 <translation id="1047431265488717055">Kopeeri lingi te&amp;kst</translation>
@@ -797,7 +796,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="173522743738009831">Teave privaatsuse liivakasti kohta</translation>
 <translation id="173628468822554835">Selge. Vaikimisi ei saada uued saidid, mida külastate, teile märguandeid.</translation>
 <translation id="1737968601308870607">Faili viga</translation>
-<translation id="1739684185846730053">Privaatsuse liivakasti prooviperioodid on endiselt arendusjärgus ja saadaval vaid valitud piirkondades. Praegu võivad saidid privaatsuse liivakasti proovida, kasutades jätkuvalt ka muid veebitehnoloogiaid, nagu kolmandate osapoolte küpsisefailid.</translation>
 <translation id="1741190788710022490">Kohanduv laadimine</translation>
 <translation id="174123615272205933">Kohandatud</translation>
 <translation id="1741314857973421784">Jätka</translation>
@@ -1967,7 +1965,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2787022501752539710">Hoia alles kohalikud sirvimisandmed (järjehoidjad, paroolid, ajalugu jne)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Grupi number</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2791529110887957050">Linuxi eemaldamine</translation>
 <translation id="2791952154587244007">Ilmnes viga. Kioskirakendust ei saa seadmes automaatselt käivitada.</translation>
@@ -1997,7 +1994,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2805760958323556153">Atribuudi ExtensionInstallForcelist reegli väärtus on sobimatu. Võtke ühendust administraatoriga.</translation>
 <translation id="2805770823691782631">Täiendavad üksikasjad</translation>
 <translation id="2806372837663997957">Seade, millega üritate faili jagada, ei võtnud seda vastu</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Otsetee on juba olemas</translation>
 <translation id="2807517655263062534">Siin kuvatakse teie allalaaditud failid</translation>
 <translation id="2809586584051668049">ja veel <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2449,7 +2445,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3262986719682892278">Liiga suur</translation>
 <translation id="3264544094376351444">Seriifideta font</translation>
 <translation id="3264582393905923483">Kontekst</translation>
-<translation id="3265118321284789528">Vanema heakskiidu ootel</translation>
 <translation id="3265459715026181080">Sulge aken</translation>
 <translation id="3266022278425892773">Linuxi arenduskeskkond</translation>
 <translation id="3266274118485960573">Ohutuskontroll on käimas.</translation>
@@ -2577,7 +2572,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3388094447051599208">Väljastussalv on peaaegu täis</translation>
 <translation id="3388788256054548012">See fail on krüpteeritud. Paluge omanikul see dekrüpteerida.</translation>
 <translation id="3390013585654699824">Rakenduse üksikasjad</translation>
-<translation id="3391512812407811893">Privaatsuse liivakasti prooviversioonid</translation>
 <translation id="3393554941209044235">Chrome'i dokumendi analüüs</translation>
 <translation id="3393582007140394275">Ekraanikuva ei õnnestu üle kanda.</translation>
 <translation id="3394850431319394743">Lubatud identifikaatorite alusel kaitstud sisu esitada</translation>
@@ -2638,7 +2632,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3441653493275994384">Ekraan</translation>
 <translation id="3441663102605358937">Konto <ph name="ACCOUNT" /> kinnitamiseks logige sellele uuesti sisse</translation>
 <translation id="3442674350323953953">Lubage Google'il kasutada teie riistvaraandmeid, et aidata operatsioonisüsteemi <ph name="DEVICE_OS" /> täiustada. Kui keeldute, saadetakse need andmed siiski Google'ile, et otsustada, millised on vajalikud värskendused, kuid neid andmeid ei talletata ega kasutata muul viisil.</translation>
-<translation id="3444641828375597683">Reklaamijad ja väljaandjad saavad kasutada FLoC-tehnoloogiat, mida kirjeldatakse allpool.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> saab faili <ph name="FILENAME" /> vaadata</translation>
 <translation id="3445047461171030979">Google'i assistendi kiirvastused</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5321,7 +5314,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="6027945736510816438">Kas mõtlesite saiti <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Lisa sõrmejälg</translation>
 <translation id="6031600495088157824">Sisestamisvalikud tööriistaribal</translation>
-<translation id="6032091552407840792">See prooviperiood on aktiivne vaid <ph name="BEGIN_LINK" />teatud piirkondades<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Selleks et anda laiendusele juurdepääs sellele saidile, klõpsake laiendusel.</translation>
 <translation id="6032912588568283682">Failisüsteem</translation>
 <translation id="603539183851330738">Automaatkorrektuuri tagasivõtmise nupp. Ennista tekstiks „<ph name="TYPED_WORD" />”.  Aktiveerimiseks vajutage sisestusklahvi, loobumiseks paoklahvi.</translation>
@@ -6858,7 +6850,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7509097596023256288">Halduse seadistamine</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>
 <translation id="7509539379068593709">Desinstalli rakendus</translation>
-<translation id="7511415964832680006">Kui see on sisse lülitatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid meetodeid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.</translation>
 <translation id="7514239104543605883">Kopeeri seadmesse</translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7514417110442087199">Lisa määrang</translation>
@@ -7260,8 +7251,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7877451762676714207">Tundmatu serveriviga. Proovige uuesti või võtke ühendust serveri administraatoriga.</translation>
 <translation id="7879478708475862060">Sisestusmeetodi jälgimine</translation>
 <translation id="7879631849810108578">Otsetee on määratud: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Kui see on sisse lülitatud ja olek on aktiivne, kasutab Chrome teie viimase seitsme päeva sirvimisajalugu, et tuvastada grupp või rühm, millesse kuulute. Reklaamijad saavad grupi jaoks reklaame valida. Teie sirvimisajalugu hoitakse teie seadmes privaatsena. See prooviperiood on aktiivne vaid
-    <ph name="BEGIN_LINK" />teatud piirkondades<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Kohalikud andmed kustutatakse taaskäivitamisel</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Kuva konto</translation>
@@ -7535,7 +7524,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8119438628456698432">Logifailide loomine …</translation>
 <translation id="811994229154425014">Punkti sisestamine tühikuklahvi topeltvajutusega</translation>
 <translation id="8120505434908124087">eSIM-i profiili installimine</translation>
-<translation id="812260729110117038">Reklaamijad ja väljaandjad saavad reklaamide tõhusust uurida viisil, mis teie tegevusi saitidel ei jälgi.</translation>
 <translation id="81238879832906896">Kollane ja valge lill</translation>
 <translation id="8123975449645947908">Keri tagasi</translation>
 <translation id="8124313775439841391">Hallatud ONC</translation>
@@ -7578,7 +7566,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="816055135686411707">Viga usaldusväärse sertifikaadi seades</translation>
 <translation id="8160775796528709999">Lisage oma helile ja videole subtiitrid, lubades seadetes funktsiooni Reaalajas subtiitrid</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />Privaatsuse liivakasti<ph name="END_LINK" /> abil arendab Chrome uusi tehnoloogiaid, mille abil kaitsta teid saidiülese jälgimise eest, säilitades siiski juurdepääsu avatud veebile.</translation>
 <translation id="8161293209665121583">Lugeja režiim veebilehtedele</translation>
 <translation id="8161604891089629425">Piirjoontega font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Teisalda vaheleht uude aknasse}other{Teisalda vahelehed uude aknasse}}</translation>
@@ -8106,7 +8093,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8676374126336081632">Tühjenda sisestus</translation>
 <translation id="8676770494376880701">Väikese energiakuluga laadija on ühendatud</translation>
 <translation id="8677212948402625567">Ahenda kõik ...  </translation>
-<translation id="867767487203716855">Järgmine värskendus</translation>
 <translation id="8678378565142776698">Taaskäivita ja hangi automaatsed värskendused</translation>
 <translation id="8678538439778360739">Andmed on kuupäeval <ph name="TIME" /> krüpteeritud teie sünkroonimisparooliga. See ei hõlma Google Pay makseviise ega aadresse.</translation>
 <translation id="8678582529642151449">Vahelehed ei kahane</translation>
@@ -8114,7 +8100,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8680251145628383637">Logige sisse, et teie järjehoidjad, ajalugu, paroolid ja muud seaded oleksid kõikides seadmetes saadaval. Teid logitakse ka automaatselt sisse Google'i teenustesse.</translation>
 <translation id="8681614230122836773">Chrome leidis teie arvutist kahjulikku tarkvara</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> on juba ühendatud</translation>
-<translation id="8683081248374354009">Lähtesta grupp</translation>
 <translation id="8688672835843460752">Saadaval</translation>
 <translation id="8690129572193755009">Saidid saavad küsida luba protokollide käsitlemiseks</translation>
 <translation id="8692107307702113268">Parool on pikem kui 1000 tähemärki</translation>
@@ -8391,7 +8376,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8952831374766033534">Seadistamisvalikut ei toetata: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Laadimise ajal</translation>
 <translation id="895347679606913382">Alustamine...</translation>
-<translation id="8953654039337655940">Heakskiidutaotlus saadeti rakenduses Google Family Link ja saidil families.google.com sinu vanemale. Kui vanem taotluse heaks kiidab, saad märguande.</translation>
 <translation id="8956230710625245889">Ava Readeris</translation>
 <translation id="8957757410289731985">Profiili kohandamine</translation>
 <translation id="895944840846194039">JavaScripti mälu</translation>
@@ -8736,7 +8720,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="97905529126098460">Aken sulgub pärast tühistamise lõppu.</translation>
 <translation id="980731642137034229">Toimingumenüü nupp</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
-<translation id="982684081337630214">Heakskiidutaotlus saadeti rakenduses Google Family Link ja saidil families.google.com sinu vanematele. Kui üks vanematest taotluse heaks kiidab, saad märguande.</translation>
 <translation id="983511809958454316">Seda funktsiooni VR-režiimis ei toetata</translation>
 <translation id="984275831282074731">Makseviisid</translation>
 <translation id="984705303330760860">Õigekirjakontrolli keelte lisamine</translation>

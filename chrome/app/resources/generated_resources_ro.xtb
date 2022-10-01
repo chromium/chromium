@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Computerul este dotat, de asemenea, cu o bibliotecă RLZ încorporată, oferită de <ph name="SHORT_PRODUCT_NAME" />. Biblioteca RLZ atribuie o etichetă non-unică și care nu vă identifică în mod personal, pentru a măsura căutările și modul în care este utilizat <ph name="SHORT_PRODUCT_NAME" /> în funcție de o anumită campanie promoțională. Aceste etichete pot apărea uneori în interogările Căutării Google din <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">A apărut o eroare. Poți face doar un upgrade parțial pentru Linux. Consultă jurnalele pentru informații suplimentare. Jurnalele au fost salvate în Fișiere &gt; Fișierele mele &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Ștergi și datele din aceste aplicații?</translation>
-<translation id="1043824690776631483">Ai nevoie de permisiune ca să accesezi acest site. Este posibil să includă conținut neadecvat.</translation>
 <translation id="104419033123549300">Stil hartă taste</translation>
 <translation id="104710386808485638">Repornești Linux?</translation>
 <translation id="1047431265488717055">Copiază te&amp;xtul linkului</translation>
@@ -795,7 +794,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="173522743738009831">Despre Privacy Sandbox</translation>
 <translation id="173628468822554835">Am înțeles. În mod prestabilit, site-urile noi pe care le accesezi nu-ți vor trimite notificări.</translation>
 <translation id="1737968601308870607">Trimite o eroare</translation>
-<translation id="1739684185846730053">Versiunile de încercare Privacy Sandbox sunt încă în dezvoltare și sunt disponibile în anumite regiuni. Pentru moment, site-urile pot încerca Privacy Sandbox în timp ce folosesc mai departe tehnologiile web actuale, precum cookie-urile terțe.</translation>
 <translation id="1741190788710022490">Încărcare adaptabilă</translation>
 <translation id="174123615272205933">Personalizată</translation>
 <translation id="1741314857973421784">Continuă</translation>
@@ -1962,7 +1960,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2787022501752539710">Păstrează datele de navigare locale (marcaje, parole, istoric etc.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Numărul grupului</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Elimină Linux</translation>
 <translation id="2791952154587244007">A apărut o eroare. Aplicația de tip chioșc nu se va putea lansa automat pe acest dispozitiv.</translation>
@@ -1992,7 +1989,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2805760958323556153">Valoarea ExtensionInstallForcelist a politicii nu este validă. Contactează administratorul.</translation>
 <translation id="2805770823691782631">Detalii suplimentare</translation>
 <translation id="2806372837663997957">Dispozitivul căruia încerci să îi trimiți nu a acceptat</translation>
-<translation id="2806840421670364300">ÎFG</translation>
 <translation id="2806891468525657116">Comanda rapidă există deja</translation>
 <translation id="2807517655263062534">Fișierele pe care le descarci apar aici</translation>
 <translation id="2809586584051668049">și încă <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2444,7 +2440,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3262986719682892278">Prea mare</translation>
 <translation id="3264544094376351444">Font Sans-Serif</translation>
 <translation id="3264582393905923483">Context</translation>
-<translation id="3265118321284789528">Se așteaptă aprobarea unui părinte</translation>
 <translation id="3265459715026181080">Închide fereastra</translation>
 <translation id="3266022278425892773">Mediu de dezvoltare Linux</translation>
 <translation id="3266274118485960573">Verificarea de siguranță rulează.</translation>
@@ -2572,7 +2567,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3388094447051599208">Tava de ieșire este aproape plină</translation>
 <translation id="3388788256054548012">Fișierul este criptat. Solicită-i proprietarului să îl decripteze.</translation>
 <translation id="3390013585654699824">Detalii despre aplicație</translation>
-<translation id="3391512812407811893">Perioadele de încercare pentru Privacy Sandbox</translation>
 <translation id="3393554941209044235">Analiza documentelor Chrome</translation>
 <translation id="3393582007140394275">Ecranul nu poate fi proiectat.</translation>
 <translation id="3394850431319394743">Au permisiunea de a folosi identificatori pentru a reda conținut protejat</translation>
@@ -2633,7 +2627,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3441653493275994384">Ecran</translation>
 <translation id="3441663102605358937">Conectează-te din nou la <ph name="ACCOUNT" /> pentru a confirma contul</translation>
 <translation id="3442674350323953953">Permite ca Google să folosească datele despre hardware-ul tău pentru a îmbunătăți <ph name="DEVICE_OS" />. Chiar dacă refuzi, datele vor fi trimise la Google pentru a alege actualizările potrivite, dar nu vor fi stocate sau folosite în alte scopuri.</translation>
-<translation id="3444641828375597683">Advertiserii și editorii pot folosi tehnologia ÎFG, descrisă mai jos în această pagină.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> va putea să vadă <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Răspunsuri rapide de la Asistentul Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
@@ -5316,7 +5309,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6027945736510816438">Ai vrut să scrii <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Adaugă amprenta</translation>
 <translation id="6031600495088157824">Opțiunile de introducere a textului din bara de instrumente</translation>
-<translation id="6032091552407840792">Această versiune de încercare este activă numai în <ph name="BEGIN_LINK" />anumite regiuni<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Pentru a permite accesul unei extensii la acest site, dă clic pe extensie.</translation>
 <translation id="6032912588568283682">Sistem de fișiere</translation>
 <translation id="603539183851330738">Buton de anulare a corectării automate. Revino la <ph name="TYPED_WORD" />.  Apasă Enter pentru activare sau Escape pentru închidere.</translation>
@@ -6855,7 +6847,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7509097596023256288">Se configurează gestionarea</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
 <translation id="7509539379068593709">Dezinstalează aplicația</translation>
-<translation id="7511415964832680006">Când opțiunea este activată, site-urile pot folosi tehnicile de păstrare a confidențialității indicate aici pentru a-și pune la dispoziție conținutul și serviciile. Acestea includ alternative la urmărirea pe mai multe site-uri. În timp se pot adăuga mai multe versiuni de încercare.</translation>
 <translation id="7514239104543605883">Copiază pe dispozitiv</translation>
 <translation id="7514365320538308">Descarcă</translation>
 <translation id="7514417110442087199">Adaugă atribuirea</translation>
@@ -7257,7 +7248,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7877451762676714207">Eroare de server necunoscută. Încercați din nou sau contactați administratorul serverului.</translation>
 <translation id="7879478708475862060">Urmați modul de introducere</translation>
 <translation id="7879631849810108578">Set de comenzi rapide: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Când opțiunea este activată și starea este Activ, Chrome îți folosește istoricul de navigare din ultimele șapte zile pentru a stabili un grup din care faci parte. Advertiserii pot selecta anunțuri pentru grup. Istoricul de navigare este păstrat privat pe dispozitivul tău. Această versiune de încercare este activă numai în <ph name="BEGIN_LINK" />anumite regiuni<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Datele locale vor fi șterse când repornești</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Afișați contul</translation>
@@ -7531,7 +7521,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8119438628456698432">Se generează fișiere jurnal...</translation>
 <translation id="811994229154425014">Spațiu dublu pentru a insera punct</translation>
 <translation id="8120505434908124087">Instalează profilul eSIM</translation>
-<translation id="812260729110117038">Advertiserii și editorii pot studia eficiența anunțurilor într-un mod care nu te urmărește pe site-uri.</translation>
 <translation id="81238879832906896">Floare galbenă și albă</translation>
 <translation id="8123975449645947908">Derulează înapoi</translation>
 <translation id="8124313775439841391">Proprietăți ONC gestionate</translation>
@@ -7574,7 +7563,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="816055135686411707">Eroare la setarea certificatului de încredere</translation>
 <translation id="8160775796528709999">Afișează subtitrări pentru conținutul audio și video activând Subtitrări live în setări</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Cu <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome dezvoltă noi tehnologii care te apără de mecanismele de urmărire de pe mai multe site-uri, păstrând un web deschis.</translation>
 <translation id="8161293209665121583">Modul Cititor pentru pagini web</translation>
 <translation id="8161604891089629425">Font de contur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mută fila în fereastră nouă}few{Mută filele în fereastră nouă}other{Mută filele în fereastră nouă}}</translation>
@@ -8102,7 +8090,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8676374126336081632">Șterge textul introdus</translation>
 <translation id="8676770494376880701">A fost conectat un încărcător de putere joasă</translation>
 <translation id="8677212948402625567">Restrânge-le pe toate...</translation>
-<translation id="867767487203716855">Următoarea actualizare</translation>
 <translation id="8678378565142776698">Repornește și primește actualizări automate</translation>
 <translation id="8678538439778360739">Datele au fost criptate cu expresia de acces pentru sincronizare la <ph name="TIME" />. Acest lucru nu este valabil pentru metodele de plată și adresele din Google Pay.</translation>
 <translation id="8678582529642151449">Filele nu se micșorează</translation>
@@ -8110,7 +8097,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8680251145628383637">Conectează-te pentru a-ți accesa marcajele, istoricul, parolele și alte setări pe toate dispozitivele. În plus, te vei conecta automat la serviciile Google.</translation>
 <translation id="8681614230122836773">Chrome a găsit software dăunător pe computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> este conectată și pregătită</translation>
-<translation id="8683081248374354009">Resetează grupul</translation>
 <translation id="8688672835843460752">Disponibilă</translation>
 <translation id="8690129572193755009">Site-urile pot solicita permisiunea de a gestiona protocoale</translation>
 <translation id="8692107307702113268">Parola are peste 1.000 de caractere</translation>
@@ -8388,7 +8374,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8952831374766033534">Opțiunea de configurare nu este acceptată: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">În timpul încărcării</translation>
 <translation id="895347679606913382">Se începe...</translation>
-<translation id="8953654039337655940">A fost trimisă o solicitare de aprobare părintelui tău în aplicația Google Family Link și la families.google.com. Vei primi o notificare dacă părintele aprobă solicitarea.</translation>
 <translation id="8956230710625245889">Deschide în Reader</translation>
 <translation id="8957757410289731985">Personalizează profilul</translation>
 <translation id="895944840846194039">Memorie JavaScript</translation>
@@ -8733,7 +8718,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="97905529126098460">Fereastra se va închide după ce anularea se finalizează.</translation>
 <translation id="980731642137034229">Butonul meniului de acțiuni</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">A fost trimisă o solicitare de aprobare părinților tăi în aplicația Google Family Link și la families.google.com. Vei primi o notificare dacă unul dintre părinți aprobă solicitarea.</translation>
 <translation id="983511809958454316">Această funcție nu este acceptată în RV</translation>
 <translation id="984275831282074731">Metode de plată</translation>
 <translation id="984705303330760860">Adaugă limbi pentru verificarea ortografiei</translation>

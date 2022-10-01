@@ -846,6 +846,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3223287115535306850">Throbber de lanzamiento de la aplicación</translation>
+<translation id="3223425961342298674">Ubicación no permitida</translation>
 <translation id="3225347164936328585">Aplausos</translation>
 <translation id="3225919329040284222">El servidor ha mostrado un certificado que no coincide con lo que se esperaba. Algunos sitios web tienen un alto nivel de seguridad para garantizar tu protección y esperan ciertas características de los certificados.</translation>
 <translation id="3226128629678568754">Pulsa el botón de actualización de página para que se vuelvan a enviar los datos necesarios para cargar la página.</translation>
@@ -1185,6 +1186,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4127575959421463246">¿Buscas las marcas de ChromeOS? Visita</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Uno más}other{# más}}</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
+<translation id="4132448310531350254">Controladores duplicados de la extensión de archivo <ph name="FILE_EXTENSION" /> a los que hacen referencia las aplicaciones <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Crear documento</translation>
 <translation id="413544239732274901">Más información</translation>
 <translation id="4142935452406587478">Bandeja 10</translation>
@@ -1207,6 +1209,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4194250254487269611">En estos momentos no se puede guardar tu tarjeta</translation>
 <translation id="4196861286325780578">&amp;Rehacer movimiento</translation>
 <translation id="4202554117186904723">Quinto rollo</translation>
+<translation id="4203769790323223880">Cámara no permitida</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Comprobar la configuración del cortafuegos y del antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">El código de verificación ha caducado. Solicita uno nuevo.</translation>
@@ -1233,6 +1236,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
     &lt;p&gt;Recuerda que debes volver a activar el antivirus cuando hayas finalizado.&lt;/p&gt;
     &lt;h4&gt;Paso 5: Busca más ayuda&lt;/h4&gt;
     &lt;p&gt;Si el error persiste, ponte en contacto con el propietario del sitio web.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Micrófono no permitido</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prueba a ejecutar Diagnósticos de red<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Puede pedir permiso para usar y mover tu cámara</translation>
 <translation id="4235360514405112390">Válido</translation>
@@ -1604,6 +1608,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5177076414499237632">Consultar información sobre la fuente y el tema de esta página</translation>
 <translation id="5179510805599951267">¿Esta página no está escrita en <ph name="ORIGINAL_LANGUAGE" />? Informa de este error.</translation>
 <translation id="518639307526414276">Productos de alimentación y cuidado de mascotas</translation>
+<translation id="5190072300954988691">Cámara y micrófono no permitidos</translation>
 <translation id="5190835502935405962">Barra de marcadores</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> gestiona tu perfil</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> quiere descargar varios archivos</translation>
@@ -1624,6 +1629,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Cerrar</translation>
+<translation id="5239623327352565343">Ubicación permitida</translation>
 <translation id="5242889659037569123">Maletas y accesorios de viaje</translation>
 <translation id="5250209940322997802">"Conéctate a la red"</translation>
 <translation id="52517543715119994">Consulta información sobre las funciones de Chrome</translation>
@@ -2500,6 +2506,7 @@ Más información:
 <translation id="7581199239021537589">Cara 2 del desplazamiento de la imagen en el eje Y</translation>
 <translation id="7582602800368606489">Crea un nuevo evento en Google Calendar rápidamente</translation>
 <translation id="7583969447617676942">Servicios jurídicos</translation>
+<translation id="7586676035079382730">Notificaciones no permitidas</translation>
 <translation id="7591288787774558753">¿Compartir contenido confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> quiere usar tus cookies y datos de sitios en <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">El certificado del servidor incluye un nombre que está fuera de su cobertura.</translation>
@@ -3052,6 +3059,7 @@ Más información:
 <translation id="9131119348384879525">¿Capturar contenido confidencial?</translation>
 <translation id="9136861683332321024">Vehículos de lujo</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
+<translation id="9138037198177304356">Notificaciones permitidas</translation>
 <translation id="9139318394846604261">Compras</translation>
 <translation id="9141013498910525015">Gestionar direcciones</translation>
 <translation id="9144951720726881238">Fecha de vencimiento:</translation>

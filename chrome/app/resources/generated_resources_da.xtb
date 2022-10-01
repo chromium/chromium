@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Computeren leveres også med <ph name="SHORT_PRODUCT_NAME" />s RLZ-samling indbygget. RLZ tildeler et ikke-unikt, ikke-personligt identificerbart tag til at måle søgninger og <ph name="SHORT_PRODUCT_NAME" />-brug, der er drevet af en bestemt kampagne. Disse etiketter vises nogle gange i Googles søgeforespørgsler i <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Noget gik galt. Linux er muligvis kun blevet opgraderet delvist. Få flere oplysninger i loggerne. Loggerne er blevet gemt under Filer &gt; Mine filer &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Vil du også rydde dataene fra disse apps?</translation>
-<translation id="1043824690776631483">Du skal have tilladelse til at besøge dette website. Det kan have upassende indhold.</translation>
 <translation id="104419033123549300">Tastaturtypografi</translation>
 <translation id="104710386808485638">Vil du genstarte Linux?</translation>
 <translation id="1047431265488717055">Kopiér linkte&amp;kst</translation>
@@ -806,7 +805,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="173522743738009831">Om Privacy Sandbox</translation>
 <translation id="173628468822554835">OK. Som standard vil de nye websites, du besøger, ikke sende dig notifikationer.</translation>
 <translation id="1737968601308870607">Indgiv fejl</translation>
-<translation id="1739684185846730053">Prøveperioder til Privacy Sandbox er stadig under udvikling og kan anvendes i udvalgte områder. Indtil videre kan websites afprøve Privacy Sandbox, samtidig med at de anvender aktuelle webteknologier som f.eks. tredjepartscookies.</translation>
 <translation id="1741190788710022490">Adaptiv opladning</translation>
 <translation id="174123615272205933">Tilpasset</translation>
 <translation id="1741314857973421784">Fortsæt</translation>
@@ -1977,7 +1975,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2787022501752539710">Behold lokale browserdata (bogmærker, adgangskoder, historik osv.)</translation>
 <translation id="2787354132612937472">–</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Gruppenummer</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2791529110887957050">Fjern Linux</translation>
 <translation id="2791952154587244007">Der opstod en fejl. Terminalapplikationen kan ikke åbnes automatisk på denne enhed.</translation>
@@ -2007,7 +2004,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2805760958323556153">Politikkens værdi for ExtensionInstallForcelist er ugyldig. Kontakt din administrator.</translation>
 <translation id="2805770823691782631">Yderligere oplysninger</translation>
 <translation id="2806372837663997957">Den enhed, du forsøger at dele med, accepterede ikke</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Genvejen findes allerede</translation>
 <translation id="2807517655263062534">Dine downloadede filer vises her</translation>
 <translation id="2809586584051668049">og <ph name="NUMBER_ADDITIONAL_DISABLED" /> mere</translation>
@@ -2459,7 +2455,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3262986719682892278">For stor</translation>
 <translation id="3264544094376351444">Sans-serif-skrifttype</translation>
 <translation id="3264582393905923483">Kontekst</translation>
-<translation id="3265118321284789528">Venter på godkendelse af forælder</translation>
 <translation id="3265459715026181080">Luk vindue</translation>
 <translation id="3266022278425892773">Linux-udviklingsmiljø</translation>
 <translation id="3266274118485960573">Der udføres et sikkerhedstjek.</translation>
@@ -2587,7 +2582,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3388094447051599208">Papirbakken er næsten fuld</translation>
 <translation id="3388788256054548012">Denne fil er krypteret. Bed ejeren af filen om at dekryptere den.</translation>
 <translation id="3390013585654699824">Info om appen</translation>
-<translation id="3391512812407811893">Prøveperioder til Privacy Sandbox</translation>
 <translation id="3393554941209044235">Chrome Document Analysis</translation>
 <translation id="3393582007140394275">Skærmen kan ikke castes.</translation>
 <translation id="3394850431319394743">Har tilladelse til at bruge id'er til at afspille beskyttet indhold</translation>
@@ -2648,7 +2642,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3441653493275994384">Skærm</translation>
 <translation id="3441663102605358937">Log ind på <ph name="ACCOUNT" /> igen for at bekræfte denne konto</translation>
 <translation id="3442674350323953953">Giv Google tilladelse til at bruge dine hardwaredata til at hjælpe med at forbedre <ph name="DEVICE_OS" />. Hvis du afviser, bliver disse data stadig sendt til Google med henblik på at levere de rigtige opdateringer, men de bliver ikke gemt eller brugt udover det.</translation>
-<translation id="3444641828375597683">Annoncører og udgivere kan bruge FLoC, som er beskrevet længere nede på denne side.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> vil kunne se <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Hurtige svar i Google Assistent</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
@@ -5332,7 +5325,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6027945736510816438">Mente du <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Tilføj fingeraftryk</translation>
 <translation id="6031600495088157824">Indtastningsmuligheder i værktøjslinjen</translation>
-<translation id="6032091552407840792">Denne prøveperiode er kun aktiv i <ph name="BEGIN_LINK" />nogle områder<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Du kan give en udvidelse adgang til dette website ved at klikke på udvidelsen.</translation>
 <translation id="6032912588568283682">Filsystem</translation>
 <translation id="603539183851330738">Knap til at fortryde automatisk rettelse. Vend tilbage til <ph name="TYPED_WORD" />  Tryk på Enter for at aktivere, tryk på Escape for at afvise.</translation>
@@ -6871,7 +6863,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7509097596023256288">Konfiguration af administration</translation>
 <translation id="7509246181739783082">Bekræft din identitet</translation>
 <translation id="7509539379068593709">Afinstaller app</translation>
-<translation id="7511415964832680006">Når Privacy Sandbox er aktiveret, kan websites levere deres indhold og tjenester via den teknologi til beskyttelse af personlige oplysninger, som vises her. Denne teknologi omfatter alternative metoder til sporing på tværs af forskellige websites. Der kan blive tilføjet flere prøveperioder over tid.</translation>
 <translation id="7514239104543605883">Kopiér til din enhed</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Tilføj tildeling</translation>
@@ -7272,8 +7263,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7877451762676714207">Ukendt serverfejl. Prøv igen, eller kontakt serveradministratoren.</translation>
 <translation id="7879478708475862060">Følg indtastningstilstand</translation>
 <translation id="7879631849810108578">Genvejen blev gemt: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Når Privacy Sandbox er aktiveret og angives som aktiv, anvender Chrome din browserhistorik over syv dage til at fastslå den gruppe eller "kohorte", du indgår i. Annoncører kan vælge annoncer til gruppen. Din browserhistorik forbliver privat på din enhed. Denne prøveperiode er kun aktiv i
-    <ph name="BEGIN_LINK" />nogle områder<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Lokale data slettes, når du genstarter</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Vis konto</translation>
@@ -7547,7 +7536,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8119438628456698432">Genererer logfiler...</translation>
 <translation id="811994229154425014">Tryk to gange på mellemrumstasten for at indsætte punktum</translation>
 <translation id="8120505434908124087">Installer eSIM-profil</translation>
-<translation id="812260729110117038">Annoncører og udgivere kan undersøge effektiviteten af annoncer på en måde, der ikke sporer dig på tværs af forskellige websites.</translation>
 <translation id="81238879832906896">Gul og hvid blomst</translation>
 <translation id="8123975449645947908">Rul baglæns</translation>
 <translation id="8124313775439841391">Administreret ONC</translation>
@@ -7590,7 +7578,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="816055135686411707">Fejl under konfiguration af certifikattillid</translation>
 <translation id="8160775796528709999">Få undertekster til dit lyd- og videoindhold ved at aktivere Livetekstning i indstillingerne</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> udvikler Chrome nye teknologier, der beskytter dig mod sporing på tværs af forskellige websites og samtidig bevarer det åbne net.</translation>
 <translation id="8161293209665121583">Læser-tilstand for websider</translation>
 <translation id="8161604891089629425">Skrifttype med kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flyt fanen til et nyt vindue}one{Flyt fanen til et nyt vindue}other{Flyt fanerne til et nyt vindue}}</translation>
@@ -8118,7 +8105,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8676374126336081632">Ryd indtastning</translation>
 <translation id="8676770494376880701">Oplader med lav kraft er tilsluttet</translation>
 <translation id="8677212948402625567">Skjul alle...</translation>
-<translation id="867767487203716855">Næste opdatering</translation>
 <translation id="8678378565142776698">Genstart, og få automatiske opdateringer</translation>
 <translation id="8678538439778360739">Dataene blev krypteret med din adgangssætning til synkronisering <ph name="TIME" />. Dette omfatter ikke betalingsmetoder og adresser fra Google Pay.</translation>
 <translation id="8678582529642151449">Faner formindskes ikke</translation>
@@ -8126,7 +8112,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8680251145628383637">Log ind for at få dine bogmærker, din historik, dine adgangskoder og dine øvrige indstillinger på alle dine enheder. Du bliver også automatisk logget ind på dine Google-tjenester.</translation>
 <translation id="8681614230122836773">Chrome har registreret skadelig software på din computer</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> er tilsluttet og klar</translation>
-<translation id="8683081248374354009">Nulstil gruppe</translation>
 <translation id="8688672835843460752">Tilgængelig</translation>
 <translation id="8690129572193755009">Websites kan anmode om tilladelse til at håndtere protokoller</translation>
 <translation id="8692107307702113268">Adgangskoden er på mere end 1.000 tegn</translation>
@@ -8405,7 +8390,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8952831374766033534">Konfigurationsmuligheden understøttes ikke: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Under opladning</translation>
 <translation id="895347679606913382">Begynder...</translation>
-<translation id="8953654039337655940">Der er sendt en anmodning om godkendelse til din forælder i din forælders Google Family Link-app og på families.google.com. Du får en notifikation, hvis din forælder godkender anmodningen.</translation>
 <translation id="8956230710625245889">Åbn i Læser</translation>
 <translation id="8957757410289731985">Tilpas profil</translation>
 <translation id="895944840846194039">JavaScript-hukommelse</translation>
@@ -8750,7 +8734,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="97905529126098460">Dette vindue lukkes, når annulleringen er fuldført.</translation>
 <translation id="980731642137034229">Knappen Handlingsmenu</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Der er sendt en anmodning om godkendelse til dine forældre i deres Google Family Link-app og på families.google.com. Du får en notifikation, hvis en af dine forældre godkender anmodningen.</translation>
 <translation id="983511809958454316">Denne funktion understøttes ikke i VR</translation>
 <translation id="984275831282074731">Betalingsmetoder</translation>
 <translation id="984705303330760860">Tilføj sprog for stavekontrollen</translation>

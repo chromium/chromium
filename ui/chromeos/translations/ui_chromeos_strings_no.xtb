@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Bytt til listevisning</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> filer valgt</translation>
+<translation id="2383454254762599978">Legg i papirkurven</translation>
 <translation id="2387458720915042159">Tilkoblingstype for proxy-tjener</translation>
 <translation id="2389832672041313158">Burmesisk/myanmarsk</translation>
 <translation id="2392369802118427583">Aktiver</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Gå til drive.google.com</translation>
 <translation id="3553048479571901246">For å åpne filer med <ph name="APP_NAME" />, kopiér dem til mappen for Windows-filer først.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internasjonalt datamaskintastatur</translation>
+<translation id="3557414470514932909">Legger <ph name="FILE_NAME" /> i papirkurven</translation>
 <translation id="3567221313191587603">Velg en fil, og slå på <ph name="OFFLINE_CHECKBOX_NAME" /> for å ha tilgang til filene dine uten nett.</translation>
 <translation id="357479282490346887">Litauisk</translation>
 <translation id="3587482841069643663">Alle</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bengali, fonetisk</translation>
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
+<translation id="4019998208269143058">Fest til hurtigfiler</translation>
 <translation id="4040753847560036377">Feil PUK-kode.</translation>
 <translation id="4057991113334098539">Aktiverer ...</translation>
 <translation id="4092890906744441904">Irsk</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Administratorreglene anbefaler ikke at du gjør følgende:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> er flyttet.</translation>
 <translation id="4176286497474237543">Tøm papirkurven nå</translation>
+<translation id="4179621117429069925">Dette elementet ligger i papirkurven din</translation>
 <translation id="4186579485882418952">Gjør tilgjengelig uten nett</translation>
 <translation id="4193154014135846272">Google-dokument</translation>
 <translation id="4197674956721858839">Zip-utvalg</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Autentiseringssertifikatet ble avvist eksternt</translation>
 <translation id="4394214039309501350">Ekstern link</translation>
 <translation id="4394980935660306080">Tidligere denne uken</translation>
+<translation id="4398096759193130964">Gjenopprett elementene eller dra dem til en ny mappe utenfor papirkurven</translation>
 <translation id="4401287888955153199">Pakk ut alt</translation>
 <translation id="4410695710508688828">Utpakkingsoperasjonen mislyktes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Opprett en snarvei til filene dine</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi med InScript-tastatur</translation>
 <translation id="4801956050125744859">Behold begge</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832">Gjenoppretter <ph name="COUNT" /> elementer</translation>
 <translation id="4823651846660089135">Enheten er skrivebeskyttet</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elementer valgt</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Gazania-blomst</translation>
 <translation id="4943368462779413526">Fotball</translation>
 <translation id="4961158930123534723">1 mappe er delt med Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> er gjenopprettet</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Bruk et navn på <ph name="MAX_LENGTH" /> eller færre tegn</translation>
 <translation id="4973970068702235170">Zippingen mislyktes på grunn av en uventet feil: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Beklager, <ph name="FILE_NAME" /> eksisterer ikke lenger.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, lås opp</translation>
 <translation id="5700087501958648444">Lydinformasjon</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> er lagt i papirkurven</translation>
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
 <translation id="5756666464756035725">Ungarsk QWERTY</translation>
 <translation id="5763377084591234761">Tysk (Sveits)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
 <translation id="6321303798550928047">Vinker</translation>
 <translation id="6327785803543103246">Automatisk oppdagelse av proxy-tjenere</translation>
+<translation id="6337014272874260727">Løsne fra hurtigfiler</translation>
 <translation id="6339145975392024142">USA internasjonalt (PC)</translation>
 <translation id="6346310558342052870">Tilgangsbegrenset</translation>
 <translation id="6356685157277930264">Tilbakemeldingsvindu for Filer</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 mappe er valgt</translation>
 <translation id="6755827872271341378">ChromeOS Flex-enhet</translation>
 <translation id="6790428901817661496">Spill av</translation>
+<translation id="6794539005637808366">Gjenopprett elementet eller dra det til en ny mappe utenfor papirkurven</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Administrer Linux-deling</translation>
 <translation id="6806796368146926706">Alfanumerisk med japansk tastatur</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Du har ikke tilgjengelig lagringsplass</translation>
+<translation id="6993826899923627728">Disse elementene ligger i papirkurven din</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mapper er valgt</translation>
 <translation id="7008426324576352165">Organisasjonen din trenger mer lagringsplass for å fullføre opplastingen.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Tsjekkisk</translation>
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google Maps</translation>
+<translation id="7419668828140929293">Gjenoppretter «<ph name="FILENAME" />»</translation>
 <translation id="7458955835361612701">Ingen nylige bilder</translation>
 <translation id="7460898608667578234">Ukrainsk</translation>
 <translation id="7469894403370665791">Koble til dette nettverket automatisk</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Enkel tilgang til Google Foto</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> elementer er lagt i papirkurven</translation>
 <translation id="7693909743393669729">Når du formaterer stasjoner, slettes alle data som er lagret på dem, og alle eksisterende partisjoner fjernes, inkludert partisjoner som kanskje ikke er synlige. Denne handlingen kan ikke angres.</translation>
 <translation id="7695430100978772476">Kunne ikke formatere <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Kunne ikke tømme papirkurven.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Kinesisk wubi</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7774365994322694683">Fugl</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> elementer ble gjenopprettet</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7788080748068240085">Hvis du vil lagre <ph name="FILE_NAME" /> for bruk uten nett, må du frigjøre ytterligere <ph name="TOTAL_FILE_SIZE" /> lagringsplass:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />Løsne filer du ikke trenger å bruke uten nett lenger.<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Valgte et område med <ph name="ENTRY_COUNT" /> oppføringer – fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Administratorreglene forhindrer følgende:</translation>
 <translation id="965477715979482472">Engelsk (Sør-Afrika)</translation>
+<translation id="976666271385981812">Legger <ph name="NUMBER_OF_ITEMS" /> elementer i papirkurven</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="988685240266037636">Filnavnet «<ph name="FILE_NAME" />» finnes allerede. Vil du erstatte filen med dette navnet?</translation>
 <translation id="992401651319295351">Du har <ph name="RETRIES" /> forsøk igjen. Du kan ikke bruke dette nettverket før du har satt opp en ny PIN-kode.</translation>

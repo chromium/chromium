@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">તમારા કમ્પ્યુટરની સાથે <ph name="SHORT_PRODUCT_NAME" /> ની RLZ લાઇબ્રેરી બિલ્ટ ઇન પણ આવે છે. RLZ વિશેષ પ્રચારાત્મક ઝુંબેશ દ્વારા ચલાવવામાં આવતી શોધ અને <ph name="SHORT_PRODUCT_NAME" /> ઉપયોગને માપવા માટે બિન-અદ્વિતીય, બિન-વ્યક્તિગત રીતે ઓળખી શકાય તેવા ટૅગ સોંપે છે. આ લેબલ કેટલીકવાર <ph name="PRODUCT_NAME" />માં Google Search ક્વેરીમાં દેખાય છે.</translation>
 <translation id="1043505821207197890">કંઈક ખોટું થયું. શક્ય છે કે Linux માત્ર આંશિક રીતે જ અપગ્રેડ થાય. વધુ માહિતી માટે લૉગનો રિવ્યૂ કરો. ફાઇલો &gt; મારી ફાઇલો &gt; <ph name="LOG_FILE" />માં લૉગ સાચવવામાં આવ્યા છે</translation>
 <translation id="1043818413152647937">આ ઍપમાંથી પણ ડેટા સાફ કરીએ?</translation>
-<translation id="1043824690776631483">આ સાઇટની મુલાકાત લેવા માટે તમને પરવાનગીની જરૂર છે. તેમાં અનુચિત કન્ટેન્ટ હોઈ શકે છે.</translation>
 <translation id="104419033123549300">કીમેપની શૈલી</translation>
 <translation id="104710386808485638">Linux ફરી ચાલુ કરીએ?</translation>
 <translation id="1047431265488717055">લિંક ટે&amp;ક્સ્ટને કૉપિ કરો</translation>
@@ -795,7 +794,6 @@
 <translation id="173522743738009831">પ્રાઇવસી સૅન્ડબૉક્સનું વર્ણન</translation>
 <translation id="173628468822554835">સમજાઈ ગયું. ડિફૉલ્ટ તરીકે, તમે જેની મુલાકાત લો છો તે નવી સાઇટ, તમને નોટિફિકેશન મોકલશે નહીં.</translation>
 <translation id="1737968601308870607">બગ ફાઇલ કરો</translation>
-<translation id="1739684185846730053">પ્રાઇવસી સૅન્ડબૉક્સની અજમાયશો હજુ પણ સક્રિય વિકાસ હેઠળ છે અને અમુક પ્રદેશોમાં ઉપલબ્ધ છે. હાલ પૂરતું, સાઇટ ત્રીજા પક્ષની કુકી જેવી વર્તમાન વેબ ટેક્નોલોજીનો ઉપયોગ કરવાનું ચાલુ રાખીને પ્રાઇવસી સૅન્ડબૉક્સને અજમાવી શકે છે.</translation>
 <translation id="1741190788710022490">અડૅપ્ટિવ ચાર્જિંગ</translation>
 <translation id="174123615272205933">કસ્ટમ</translation>
 <translation id="1741314857973421784">ચાલુ રાખો</translation>
@@ -1291,6 +1289,7 @@
 <translation id="2179416702468739594">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આને કારણે કદાચ થોડીવાર માટે તમારું મોબાઇલ નેટવર્ક ડિસ્કનેક્ટ થઈ શકે છે.</translation>
 <translation id="2180620921879609685">કોઈપણ પેજ પરનું કન્ટેન્ટ બ્લૉક કરો</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
+<translation id="2183570493397356669">ચાલુ રાખો બટન બંધ છે</translation>
 <translation id="2184515124301515068">સાઇટ સાઉન્ડ ક્યારે ચલાવી શકે તે Chromeને પસંદ કરવા દો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2186711480981247270">કોઈ અન્ય ડિવાઇસ પરથી પેજ શેર કરવામાં આવ્યું છે</translation>
 <translation id="2187675480456493911">તમારા એકાઉન્ટ પરના અન્ય ડિવાઇસ સાથે સિંક કરેલું. અન્ય વપરાશકર્તાઓ દ્વારા બદલવામાં આવેલા સેટિંગ સિંક કરવામાં આવશે નહીં. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -1963,7 +1962,6 @@
 <translation id="2787022501752539710">સ્થાનિક બ્રાઉઝિંગ ડેટા (બુકમાર્ક, પાસવર્ડ, ઇતિહાસ, વગેરે.) જાળવી રાખો</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">ગ્રૂપ નંબર</translation>
 <translation id="2789486458103222910">બરાબર, સમજાઇ ગયું</translation>
 <translation id="2791529110887957050">Linux કાઢી નાખો</translation>
 <translation id="2791952154587244007">એક ભૂલ આવી. કિઓસ્ક ઍપ્લિકેશન આ ઉપકરણ પર સ્વતઃ-લોંચ કરવામાં સમર્થ હશે નહીં.</translation>
@@ -1993,7 +1991,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelistનું પૉલિસી મૂલ્ય અમાન્ય છે. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="2805770823691782631">વધારાની વિગતો</translation>
 <translation id="2806372837663997957">તમે જે ડિવાઇસ સાથે શેર કરવાનો પ્રયાસ કરો છો, તેણે વિનંતી સ્વીકારી નથી</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">શૉર્ટકટ પહેલેથી અસ્તિત્વમાં છે</translation>
 <translation id="2807517655263062534">તમે ડાઉનલોડ કરેલી ફાઇલો અહીં દેખાશે</translation>
 <translation id="2809586584051668049">અને <ph name="NUMBER_ADDITIONAL_DISABLED" /> વધુ</translation>
@@ -2445,7 +2442,6 @@
 <translation id="3262986719682892278">ખૂબ મોટી</translation>
 <translation id="3264544094376351444">Sans-Serif ફૉન્ટ</translation>
 <translation id="3264582393905923483">સંદર્ભ</translation>
-<translation id="3265118321284789528">માતાપિતાની મંજૂરી માટે રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="3265459715026181080">વિંડો બંધ કરો</translation>
 <translation id="3266022278425892773">Linux ડેવલપમેન્ટ વાતાવરણ</translation>
 <translation id="3266274118485960573">સલામતી માટે તપાસની પ્રક્રિયા થઈ રહી છે.</translation>
@@ -2573,7 +2569,6 @@
 <translation id="3388094447051599208">આઉટપુટ ટ્રે લગભગ ભરાઈ ગઈ છે</translation>
 <translation id="3388788256054548012">આ ફાઇલ એન્ક્રિપ્ટ કરેલી છે. તેના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.</translation>
 <translation id="3390013585654699824">ઍપની વિગતો</translation>
-<translation id="3391512812407811893">પ્રાઇવસી સૅન્ડબૉક્સની અજમાયશ</translation>
 <translation id="3393554941209044235">Chromeના દસ્તાવેજનું વિશ્લેષણ</translation>
 <translation id="3393582007140394275">સ્ક્રીનને કાસ્ટ કરી શકતા નથી.</translation>
 <translation id="3394850431319394743">સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, ઓળખકર્તાઓનો ઉપયોગ કરવાની મંજૂરી છે</translation>
@@ -2634,7 +2629,6 @@
 <translation id="3441653493275994384">સ્કિન</translation>
 <translation id="3441663102605358937">આ એકાઉન્ટની ચકાસણી કરવા માટે <ph name="ACCOUNT" />માં ફરીથી સાઇન ઇ કરો</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" />ને બહેતર બનાવવામાં મદદ કરવા માટે, Googleને તમારા હાર્ડવેર ડેટાનો ઉપયોગ કરવા દો. જો તમે નકારશો, તો પણ આ ડેટા યોગ્ય અપડેટ નક્કી કરવા માટે Googleને મોકલવામાં આવે છે, પરંતુ ન તો તેને સ્ટોર કરવામાં આવે છે કે ન તો તેનો ઉપયોગ કરવામાં આવે છે.</translation>
-<translation id="3444641828375597683">જાહેરાતકર્તાઓ અને પ્રકાશકો FLoCનો ઉપયોગ કરી શકે છે, જે આ પેજ પર પછીથી વર્ણવેલું છે.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> <ph name="FILENAME" />ને જોઈ શકશે</translation>
 <translation id="3445047461171030979">Google Assistantનાં ઝડપી જવાબના સેટિંગ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> મિનિટ</translation>
@@ -5322,7 +5316,6 @@ USB ડિવાઇસ</translation>
 <translation id="6027945736510816438">શું તમારો અર્થ <ph name="WEBSITE" /> હતો?</translation>
 <translation id="6028117231645531007">ફિંગરપ્રિન્ટ ઉમેરો</translation>
 <translation id="6031600495088157824">ટૂલબારમાંના ઇનપુટ માટેના વિકલ્પો</translation>
-<translation id="6032091552407840792">આ અજમાયશ માત્ર <ph name="BEGIN_LINK" />કેટલાક પ્રદેશો<ph name="END_LINK" />માં સક્રિય છે.</translation>
 <translation id="6032715498678347852">એક્સ્ટેંશનને આ સાઇટનો ઍક્સેસ આપવા માટે, તેના પર ક્લિક કરો.</translation>
 <translation id="6032912588568283682">ફાઇલ સિસ્ટમ</translation>
 <translation id="603539183851330738">ઑટોમૅટિક રીતે સુધારણાના બટન દ્વારા કરેલો છેલ્લો ફેરફાર રદ કરો. <ph name="TYPED_WORD" /> પર પાછા ફરો.  સક્રિય કરવા માટે Enter કી દબાવો અને છોડી દેવા Escape કી દબાવો.</translation>
@@ -6862,7 +6855,6 @@ USB ડિવાઇસ</translation>
 <translation id="7509097596023256288">મેનેજમેન્ટ સેટઅપ કરી રહ્યાં છીએ</translation>
 <translation id="7509246181739783082">તમારી ઓળખ ચકાસો</translation>
 <translation id="7509539379068593709">ઍપ અનઇન્સ્ટૉલ કરો</translation>
-<translation id="7511415964832680006">જ્યારે ચાલુ હોય, ત્યારે સાઇટ તેમાંનું કન્ટેન્ટ અને સેવાઓ પ્રદાન કરવા માટે, અહીં બતાવેલી પ્રાઇવસીની જાળવણી કરતી ટેક્નોલોજીનો ઉપયોગ કરી શકે છે. આમાં ક્રોસ-સાઇટ ટ્રૅકિંગ માટેના વિકલ્પોનો સમાવેશ છે. સમયાંતરે વધુ અજમાયશો ઉમેરવામાં આવી શકે છે.</translation>
 <translation id="7514239104543605883">તમારા ડિવાઇસ પર કૉપિ કરો</translation>
 <translation id="7514365320538308">ડાઉનલોડ કરો</translation>
 <translation id="7514417110442087199">સોંપણી ઉમેરો</translation>
@@ -7028,6 +7020,7 @@ USB ડિવાઇસ</translation>
 <translation id="7665082356120621510">કદ આરક્ષિત કરો</translation>
 <translation id="7665369617277396874">એકાઉન્ટ ઉમેરો</translation>
 <translation id="766635563210446220">પાસવર્ડ આયાત કરી શકાતા નથી. <ph name="FILENAME" /> ચેક કરો અને તે યોગ્ય રીતે ફૉર્મેટ કરેલું હોવાની ખાતરી કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="7666531788977935712">ચાલુ રાખો બટન ચાલુ છે</translation>
 <translation id="7668002322287525834">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયામાં પરત કરો}one{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયાંમાં પરત કરો}other{<ph name="DEVICE_TYPE" /> {NUM_WEEKS} અઠવાડિયાંમાં પરત કરો}}</translation>
 <translation id="7668423670802040666"><ph name="ACCOUNT" /> માટે Google પાસવર્ડ મેનેજરમાં</translation>
 <translation id="7668648754769651616">ઍક્સેસિબિલિટી સુવિધાઓ તમારા ડિવાઇસનો ઉપયોગ કરવાનું વધુ સરળ બનાવે છે. ઝડપી સેટિંગ ઍક્સેસ કરવા માટે, તમારી સ્ક્રીનની સૌથી નીચે સમય પસંદ કરો.</translation>
@@ -7262,8 +7255,6 @@ USB ડિવાઇસ</translation>
 <translation id="7877451762676714207">અજ્ઞાત સર્વર ભૂલ. કૃપા કરી ફરીથી પ્રયત્ન કરો અથવા સર્વર વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="7879478708475862060">ઇનપુટ મોડને અનુસરો</translation>
 <translation id="7879631849810108578">શૉર્ટકટ સેટ થયો: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">જ્યારે ચાલુ હોય અને સ્ટેટસ સક્રિય હોય, ત્યારે Chrome તમારા 7 દિવસના બ્રાઉઝિંગ ઇતિહાસનો ઉપયોગ કરીને કોઈ ગ્રૂપ અથવા "ગ્રૂપ" નક્કી કરે છે કે જેમાં તમે છો. જાહેરાતકર્તાઓ ગ્રૂપ માટે જાહેરાતો પસંદ કરી શકે છે. તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે. આ અજમાયશ માત્ર
-    <ph name="BEGIN_LINK" />કેટલાક પ્રદેશો<ph name="END_LINK" />માં સક્રિય છે.</translation>
 <translation id="7880823633812189969">તમે ફરી શરૂ કરશો ત્યારે સ્થાનિક ડેટા ડિલીટ કરવામાં આવશે</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">એકાઉન્ટ જુઓ</translation>
@@ -7532,7 +7523,6 @@ USB ડિવાઇસ</translation>
 <translation id="8119438628456698432">લૉગ ફાઇલો જનરેટ થઈ રહી છે...</translation>
 <translation id="811994229154425014">પૂર્ણવિરામ ટાઇપ કરવા માટે ડબલ-સ્પેસ</translation>
 <translation id="8120505434908124087">ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરો</translation>
-<translation id="812260729110117038">જાહેરાતકર્તાઓ અને પ્રકાશકો જાહેરાતોની અસરકારકતાનો એવી રીતે અભ્યાસ કરી શકે છે કે તમને કોઈ પણ સાઇટ પર ટ્રૅક કરવામાં ન આવે.</translation>
 <translation id="81238879832906896">પીળા અને સફેદ ફૂલ</translation>
 <translation id="8123975449645947908">પાછળ સ્ક્રોલ કરો</translation>
 <translation id="8124313775439841391">મેનેજ થયેલ ONC</translation>
@@ -7575,7 +7565,6 @@ USB ડિવાઇસ</translation>
 <translation id="816055135686411707">ભૂલ સેટિંગ પ્રમાણપત્ર વિશ્વાસ</translation>
 <translation id="8160775796528709999">સેટિંગમાં લાઇવ કૅપ્શન ચાલુ કરીને તમારા ઑડિયો અને વીડિયો માટે કૅપ્શન મેળવો</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />પ્રાઇવસી સૅન્ડબૉક્સ<ph name="END_LINK" /> વડે, Chrome નવી ટેક્નોલોજીનો વિકાસ કરી રહ્યું છે, જે ખુલ્લી વેબ પર સુરક્ષિત રાખીને, ક્રોસ-સાઇટ ટ્રૅકિંગ સામે તમારું સંરક્ષણ કરે છે.</translation>
 <translation id="8161293209665121583">વેબપેજ માટે વાચક મોડ</translation>
 <translation id="8161604891089629425">આઉટલાઇન ફૉન્ટ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ટૅબને નવી વિંડોમાં ખસેડો}one{ટૅબને નવી વિંડોમાં ખસેડો}other{ટૅબને નવી વિંડોમાં ખસેડો}}</translation>
@@ -8103,7 +8092,6 @@ USB ડિવાઇસ</translation>
 <translation id="8676374126336081632">ઇનપુટ સાફ કરો</translation>
 <translation id="8676770494376880701">નિમ્ન-પાવર ચાર્જર કનેક્ટ કર્યું છે</translation>
 <translation id="8677212948402625567">બધાને સંકુચિત કરો...</translation>
-<translation id="867767487203716855">આગલી અપડેટ</translation>
 <translation id="8678378565142776698">ફરી શરૂ કરીને ઑટોમૅટિક રીતે અપડેટ મેળવો</translation>
 <translation id="8678538439778360739"><ph name="TIME" /> વાગ્યે તમારા સિંક પાસફ્રેઝ વડે ડેટા એન્ક્રિપ્ટ કરવામાં આવ્યો હતો. આમાં Google Payની ચુકવણી પદ્ધતિઓ અને ઍડ્રેસનો સમાવેશ હોતો નથી.</translation>
 <translation id="8678582529642151449">ટૅબ સંકોચાતી નથી</translation>
@@ -8111,7 +8099,6 @@ USB ડિવાઇસ</translation>
 <translation id="8680251145628383637">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ મેળવવા માટે સાઇન ઇન કરો. તમે તમારી Google સેવાઓ પર ઑટોમૅટિક રીતે સાઇન ઇન પણ થશો.</translation>
 <translation id="8681614230122836773">Chromeને તમારા કમ્પ્યુટરમાં હાનિકારક સૉફ્ટવેર મળી આવ્યું છે</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> કનેક્ટ કરેલું અને તૈયાર છે</translation>
-<translation id="8683081248374354009">ગ્રૂપને રીસેટ કરો</translation>
 <translation id="8688672835843460752">ઉપલબ્ધ</translation>
 <translation id="8690129572193755009">સાઇટ પ્રોટોકૉલ હૅન્ડલ કરવાનું પૂછી શકે છે</translation>
 <translation id="8692107307702113268">પાસવર્ડ 1000 કરતાં વધુ અક્ષર ધરાવે છે</translation>
@@ -8389,7 +8376,6 @@ USB ડિવાઇસ</translation>
 <translation id="8952831374766033534">ગોઠવણીના વિકલ્પની સુવિધા નથી: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ચાર્જિંગ થતી વખતે</translation>
 <translation id="895347679606913382">પ્રારંભ કરે છે...</translation>
-<translation id="8953654039337655940">તમારા માતાપિતાને તેમની Google Family Link ઍપ અને families.google.com પર મંજૂરી માટેની વિનંતી મોકલવામાં આવી છે. જો તમારા માતાપિતા વિનંતી મંજૂર કરશે તો તમને નોટિફિકેશન મળશે.</translation>
 <translation id="8956230710625245889">Readerમાં ખોલો</translation>
 <translation id="8957757410289731985">પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="895944840846194039">JavaScript મેમરી</translation>
@@ -8734,7 +8720,6 @@ USB ડિવાઇસ</translation>
 <translation id="97905529126098460">રદ કરવાની પ્રક્રિયા પૂરી થાય પછી આ વિંડો બંધ થશે.</translation>
 <translation id="980731642137034229">ક્રિયા મેનૂ બટન</translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
-<translation id="982684081337630214">તમારા માતાપિતાને તેમની Google Family Link ઍપ અને families.google.com પર મંજૂરી માટેની વિનંતી મોકલવામાં આવી છે. જો તમારા માતાપિતામાંથી કોઈ એક વિનંતી મંજૂર કરશે તો તમને નોટિફિકેશન મળશે.</translation>
 <translation id="983511809958454316">આ સુવિધા VRમાં સમર્થિત નથી</translation>
 <translation id="984275831282074731">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="984705303330760860">ભાષાઓ માટે જોડણીની તપાસ સુવિધા ઉમેરો</translation>

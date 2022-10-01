@@ -284,9 +284,6 @@
       在 <ph name="MS_WIN_NAME" /> 上，這項功能僅適用於已加入 <ph name="MS_AD_NAME" /> 網域、在 Windows 10 專業版上執行，或是已註冊 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />服務的執行個體。</translation>
 <translation id="1285819498003746288">Event.path API 將無法使用。</translation>
 <translation id="1290634681382861275">管理其他設定，包括 USB、藍牙、政策更新、開發人員模式等等。</translation>
-<translation id="1291880496936992484">警告：自 <ph name="PRODUCT_NAME" /> 52 版 (將於 2016 年 9 月左右推出) 起，系統將全面移除 RC4，屆時這項政策將停止運作。
-
-      如果未設定這項政策或將其設為 False，系統就不會在 TLS 中啟用 RC4 加密套件。您也可以將這項政策設為 True，以保持與過舊伺服器的相容性。這種方法是權宜之計，伺服器應重新設定，才是正確的做法。</translation>
 <translation id="129206366270737897">停用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 的任何非同步方法。</translation>
 <translation id="1294263471858445589">在無痕模式工作階段和一般工作階段中啟用背景驗證。</translation>
 <translation id="1295737447968372331">在登入畫面上啟用語音輸入功能</translation>
@@ -847,13 +844,6 @@
       如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
 
       這項政策中的網址不得與透過 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址產生衝突。如有衝突情況，這項政策的優先順序高於 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
-<translation id="1859859319036806634">警告：我們將於 <ph name="PRODUCT_NAME" /> 52 版發布 (大約在 2016 年 9 月) 之後淘汰 TLS 版本遞補功能，並停止支援這項政策。
-
-      當 TLS 交握失敗時，<ph name="PRODUCT_NAME" /> 會先重新嘗試以較低版本的 TLS 建立連線，以忽略 HTTPS 伺服器發生的錯誤。這項設定可讓您指定要在哪個版本停止遞補程序。如果伺服器正確執行版本交涉 (亦即不中斷連線)，系統就不會套用這項設定。不過，最終的連線仍然必須符合 SSLVersionMin 要求。
-
-      如果未設定這項政策，或是將這項政策的值設為「tls1.2」，<ph name="PRODUCT_NAME" /> 就不會再執行這項遞補程序。請注意，這只會影響 <ph name="PRODUCT_NAME" /> 是否略過發生錯誤的伺服器 (無法正確交涉版本)，系統並不會因此停止支援較舊的 TLS 版本。
-
-      如果實際狀況與上述情形皆不相符，而必須與發生錯誤的伺服器維持相容，系統可能會將這項政策的值設為「tls1.1」。這種方法是權宜之計，伺服器錯誤應該很快就會解決。</translation>
 <translation id="1861206724856734193">設定防止資料外洩的規則清單。</translation>
 <translation id="1862267110714201519">停用 ghost 視窗功能。</translation>
 <translation id="1865417998205858223">金鑰權限</translation>
@@ -2138,11 +2128,6 @@
       如果網站與這項政策中的網址模式相符，系統就不會考量下列政策：<ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />、<ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />。
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。這項政策只會根據來源進行比對，因此會忽略網址模式中的路徑。</translation>
-<translation id="3117676313396757089">警告：自 <ph name="PRODUCT_NAME" /> 57 版 (將於 2017 年 3 月左右推出) 起，系統將全面移除 DHE，屆時這項政策將停止運作。
-
-      如果未設定這項政策或將其設為 false，系統就不會在 TLS 中啟用 DHE 加密套件。如要啟用 DHE 加密套件並維持與過舊伺服器的相容性，您也可以將這項政策設為 true。這種方法是權宜之計，正確的做法是重新設定伺服器。
-
-      建議您讓伺服器改用 ECDHE 加密套件。如果無法使用 ECDHE 加密套件，請確定啟用的加密套件會使用 RSA 金鑰交換機制。</translation>
 <translation id="3118552207903834734">允許使用者設定裝置主機名稱</translation>
 <translation id="3122082892722698079">控管可使用不安全內容的例外網站</translation>
 <translation id="3128072319047570212">Keygen 設定</translation>
@@ -4145,11 +4130,6 @@
 <translation id="5323200200131319468">在登入畫面上啟用互動朗讀功能</translation>
 <translation id="532848608876725157">啟用 DNS-over-HTTPS，而且可以改用不安全查詢</translation>
 <translation id="5328965694451556034">回報登入/登出情形</translation>
-<translation id="5329007337159326804">警告：自 <ph name="PRODUCT_NAME" /> 版本 75 (2019 年 6 月左右推出) 起，我們將全面移除 TLS 最高版本政策。
-
-      如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會使用預設最高版本。
-
-      如要設定這項政策，則可使用的設定值包括：「tls1.2」或「tls1.3」。設定後，<ph name="PRODUCT_NAME" /> 就不會使用高於指定版本的 SSL/TLS 版本。系統會忽略無法辨識的值。</translation>
 <translation id="5329018127554115226">系統將停用高效率模式。</translation>
 <translation id="5330684698007383292">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理列出的內容類型</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 雲端政策會覆寫平台政策。</translation>
@@ -4851,9 +4831,6 @@
       請注意，如果系統管理員必須使用此政策，此政策將降低系統對本機 IP 的保護程度。</translation>
 <translation id="614662973812186053">這項政策也可以控制 Android 使用資料和診斷資料的收集設定。</translation>
 <translation id="614665605501218241">允許列出的網站譯不安全的方式，向更私密的網路端點傳送要求。</translation>
-<translation id="6154509171634387825">警告：我們將從 <ph name="PRODUCT_NAME" /> 第 95 版中 (約在 2021 年 10 月推出) 完全移除 3DES，屆時這項政策也會停止運作。
-      如果將這項政策設為 True，系統會啟用傳輸層安全標準 (TLS) 中的 3DES 加密套件。如果設為 False，系統將停用這些加密套件。如果不設定這項政策，3DES 加密套件會預設為停用。這項政策可以暫時維持與過時伺服器的相容性。這種做法是權宜之計，正確的做法是重新設定伺服器。
-      </translation>
 <translation id="6155350825868160236">允許使用者選擇是否要使用 Google 網路服務來解決拼字錯誤</translation>
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>

@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Ordenagailuak <ph name="SHORT_PRODUCT_NAME" /> produktuaren RLZ liburutegia ere du integratuta. RLZ liburutegiak esklusiboa ez den eta pertsonalki identifikatu ezin zaitzakeen etiketa bat esleitzen du promozio-kanpaina jakin batek sortutako bilaketak eta <ph name="SHORT_PRODUCT_NAME" /> produktuaren erabilera neurtzeko. Etiketa horiek <ph name="PRODUCT_NAME" /> produktuko Google Bilaketa kontsultetan agertzen dira batzuetan.</translation>
 <translation id="1043505821207197890">Arazoren bat izan da. Baliteke Linux guztiz ez bertsio-berritu izatea. Informazio gehiago lortzeko, berrikusi erregistroak. Fitxategiak &gt; Nire fitxategiak &gt; <ph name="LOG_FILE" /> atalean daude gordeta erregistroak.</translation>
 <translation id="1043818413152647937">Aplikazio hauetako datuak ere garbitu nahi dituzu?</translation>
-<translation id="1043824690776631483">Webgunea bisitatzeko baimena behar duzu. Baliteke webguneak eduki desegokia edukitzea.</translation>
 <translation id="104419033123549300">Teklatu-maparen estiloa</translation>
 <translation id="104710386808485638">Linux berrabiarazi nahi duzu?</translation>
 <translation id="1047431265488717055">Kopiatu estekaren te&amp;stua</translation>
@@ -794,7 +793,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="173522743738009831">Privacy Sandbox-i buruz</translation>
 <translation id="173628468822554835">Ados. Modu lehenetsian, bisitatzen dituzun webgune berriek ez dizute bidaliko jakinarazpenik.</translation>
 <translation id="1737968601308870607">Bidali akatsaren txostena</translation>
-<translation id="1739684185846730053">Privacy Sandbox-eko probaldiak garapen-prozesuan daude oraindik eta lurralde jakin batzuetan baino ezin dira egin. Oraingoz, une honetako web-teknologiak (hirugarrenen cookieak, kasu) erabiltzen jarraitzen duten bitartean probatu ahal izango dute webguneek Privacy Sandbox-a.</translation>
 <translation id="1741190788710022490">Karga egokitua</translation>
 <translation id="174123615272205933">Pertsonalizatuak</translation>
 <translation id="1741314857973421784">Egin aurrera</translation>
@@ -1961,7 +1959,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2787022501752539710">Mantendu arakatze-datu lokalak (laster-markak, pasahitzak, historia, etab.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Taldearen zenbakia</translation>
 <translation id="2789486458103222910">Ados</translation>
 <translation id="2791529110887957050">Kendu Linux</translation>
 <translation id="2791952154587244007">Errore bat gertatu da. Aplikazio espezializatuak ezin izango du automatikoki abiarazi gailu honetan.</translation>
@@ -1991,7 +1988,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2805760958323556153">Ez du balio ExtensionInstallForcelist gidalerro-balioak. Jarri administratzailearekin harremanetan.</translation>
 <translation id="2805770823691782631">Xehetasun gehigarriak</translation>
 <translation id="2806372837663997957">Gailuak ez du onartu partekatzen saiatzen ari zaren fitxategia</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Jada badago lasterbide hori</translation>
 <translation id="2807517655263062534">Deskargatutako fitxategiak agertuko dira hemen</translation>
 <translation id="2809586584051668049">eta beste <ph name="NUMBER_ADDITIONAL_DISABLED" /></translation>
@@ -2443,7 +2439,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3262986719682892278">Handiegia</translation>
 <translation id="3264544094376351444">Sans-serif letra</translation>
 <translation id="3264582393905923483">Testuingurua</translation>
-<translation id="3265118321284789528">Gurasoen onarpenaren zain</translation>
 <translation id="3265459715026181080">Itxi leihoa</translation>
 <translation id="3266022278425892773">Linux-eko garapen-ingurunea</translation>
 <translation id="3266274118485960573">Abian da segurtasun-egiaztapena.</translation>
@@ -2571,7 +2566,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3388094447051599208">Irteerako erretilua ia beteta dago</translation>
 <translation id="3388788256054548012">Fitxategia enkriptatuta dago. Eskatu jabeari hura desenkriptatzeko.</translation>
 <translation id="3390013585654699824">Aplikazioaren xehetasunak</translation>
-<translation id="3391512812407811893">Privacy Sandbox-en probaldiak</translation>
 <translation id="3393554941209044235">Chrome-ko dokumentuen analisia</translation>
 <translation id="3393582007140394275">Ezin da igorri pantaila.</translation>
 <translation id="3394850431319394743">Identifikatzaileak erabiltzeko baimena eman zaie eduki babestua erreproduzi dezaten</translation>
@@ -2632,7 +2626,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3441653493275994384">Pantaila</translation>
 <translation id="3441663102605358937">Hasi saioa <ph name="ACCOUNT" /> kontuan berriro kontua egiaztatzeko</translation>
 <translation id="3442674350323953953">Utzi Google-ri hardware-datuak erabiltzen <ph name="DEVICE_OS" /> hobetzeko. Aukera hau baztertu arren, datuak Google-ra bidaliko dira eguneratze egokiak zehazteko. Alabaina, ez dira ez gordeko, ez beste ezertarako erabiliko.</translation>
-<translation id="3444641828375597683">Iragarleek eta argitaratzaileek FLoC teknika erabil dezakete, zeina orri honetan aurrerago azalduta baitagoen.</translation>
 <translation id="3444726579402183581"><ph name="FILENAME" /> ikusteko gai izango da <ph name="ORIGIN" /></translation>
 <translation id="3445047461171030979">Google-ren Laguntzailea zerbitzuaren erantzun bizkorrak</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
@@ -5312,7 +5305,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6027945736510816438"><ph name="WEBSITE" /> esan nahi al zenuen?</translation>
 <translation id="6028117231645531007">Gehitu hatz-marka</translation>
 <translation id="6031600495088157824">Idatzi aukerak tresna-barran</translation>
-<translation id="6032091552407840792"><ph name="BEGIN_LINK" />Lurralde batzuetan<ph name="END_LINK" /> soilik dago aktibo probaldia.</translation>
 <translation id="6032715498678347852">Luzapen bati webgune honetarako sarbidea eman nahi badiozu, saka ezazu.</translation>
 <translation id="6032912588568283682">Fitxategi-sistema</translation>
 <translation id="603539183851330738">Zuzenketa automatikoak desegiteko botoia. Leheneratu eta erabili "<ph name="TYPED_WORD" />".  Sakatu "Sartu" tekla aktibatzeko edo Ihes tekla baztertzeko.</translation>
@@ -6849,7 +6841,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7509097596023256288">Kudeaketa konfiguratzen</translation>
 <translation id="7509246181739783082">Egiaztatu zeu zarela</translation>
 <translation id="7509539379068593709">Desinstalatu aplikazioa</translation>
-<translation id="7511415964832680006">Aktibatuta dagoenean, hemen agertzen diren pribatutasuna babesteko teknikak erabil ditzakete webguneek haien edukia eta zerbitzuak eskaintzeko. Besteak beste, webguneen arteko jarraipenaren ordezko aukerak hartzen dira barnean. Litekeena da beste probaldi batzuk gehitzea denborak aurrera egin ahala.</translation>
 <translation id="7514239104543605883">Kopiatu zure gailuan</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7514417110442087199">Gehitu esleipen bat</translation>
@@ -7251,7 +7242,6 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7877451762676714207">Zerbitzariko errore ezezaguna. Saiatu berriro edo jarri harremanetan zerbitzariaren administratzailearekin.</translation>
 <translation id="7879478708475862060">Jarraitu idazketa moduari</translation>
 <translation id="7879631849810108578">Ezarri da lasterbidea: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Teknologia abian denean eta aktibo dagoenean, azken zazpi egunetako arakatze-historia erabiltzen du Chrome-k zer talde demografikotan zauden zehazteko. Iragarleek talde horretarako iragarkiak hauta ditzakete. Arakatze-historia pribatu mantentzen da gailuan. <ph name="BEGIN_LINK" />Lurralde batzuetan<ph name="END_LINK" /> soilik dago aktibo probaldia.</translation>
 <translation id="7880823633812189969">Gailuan dituzun datuak ezabatu egingo dira gailua berrabiarazten duzunean</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Ikusi kontua</translation>
@@ -7524,7 +7514,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8119438628456698432">Erregistro-fitxategiak sortzen…</translation>
 <translation id="811994229154425014">Zuriune bikoitza puntua idazteko</translation>
 <translation id="8120505434908124087">Instalatu eSIMaren profila</translation>
-<translation id="812260729110117038">Iragarleek eta argitaratzaileek iragarkien eraginkortasuna azter dezakete, webguneetan zure jarraipena egin beharrik gabe.</translation>
 <translation id="81238879832906896">Lore hori eta zuria</translation>
 <translation id="8123975449645947908">Egin atzera</translation>
 <translation id="8124313775439841391">Kudeatutako ONC propietateak</translation>
@@ -7567,7 +7556,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="816055135686411707">Errore bat gertatu da ziurtagiriaren konfiantza-maila editatzean</translation>
 <translation id="8160775796528709999">Audioaren eta bideoen azpitituluak lortzeko, gaitu Istanteko azpitituluak ezarpenetan</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />Privacy Sandbox-arekin<ph name="END_LINK" />, Chrome teknologia berriak garatzen ari da sare irekia mantendu bitartean zu webguneen arteko jarraipenetik babesteko.</translation>
 <translation id="8161293209665121583">Web-orrietarako irakurgailu modua</translation>
 <translation id="8161604891089629425">Letra ingeradaduna</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Eraman fitxa leiho berri batera}other{Eraman fitxak leiho berri batera}}</translation>
@@ -8095,7 +8083,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8676374126336081632">Garbitu idatzitakoa</translation>
 <translation id="8676770494376880701">Potentzia txikiko kargagailua konektatu da</translation>
 <translation id="8677212948402625567">Tolestu guztiak…</translation>
-<translation id="867767487203716855">Hurrengo eguneratzea</translation>
 <translation id="8678378565142776698">Berrezarri eta jaso eguneratze automatikoak</translation>
 <translation id="8678538439778360739">Sinkronizazio-pasaesaldiarekin enkriptatu dira datuak (<ph name="TIME" />). Kanpoan utzi dira Google Pay-ko ordainketa-metodoak eta helbideak.</translation>
 <translation id="8678582529642151449">Fitxak ez dira txikitzen</translation>
@@ -8103,7 +8090,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8680251145628383637">Hasi saioa laster-markak, historia eta bestelako ezarpenak gailu guztietan sinkronizatuta izateko. Google-ren zerbitzuetan ere automatikoki hasiko duzu saioa.</translation>
 <translation id="8681614230122836773">Chrome-k software kaltegarria aurkitu du ordenagailuan</translation>
 <translation id="8682730193597992579">Konektatu da eta prest dago <ph name="PRINTER_NAME" /></translation>
-<translation id="8683081248374354009">Berrezarri taldea</translation>
 <translation id="8688672835843460752">Erabilgarri</translation>
 <translation id="8690129572193755009">Webguneek protokoloak kudeatzea eska dezakete</translation>
 <translation id="8692107307702113268">Pasahitzak 1.000 karaktere baino gehiago ditu</translation>
@@ -8380,7 +8366,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="8952831374766033534">Konfigurazio-aukera ez da onartzen: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Kargatzen ari denean</translation>
 <translation id="895347679606913382">Hasten…</translation>
-<translation id="8953654039337655940">Onarpen-eskaera bat bidali zaio guraso bati; Google-ren Family Link aplikazioan eta families.google.com helbidean ikus dezake eskaera. Onartzen badu, jakinarazpen bat jasoko duzu.</translation>
 <translation id="8956230710625245889">Ireki ezazu irakurgailuan</translation>
 <translation id="8957757410289731985">Pertsonalizatu profila</translation>
 <translation id="895944840846194039">JavaScript memoria</translation>
@@ -8725,7 +8710,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="97905529126098460">Bertan behera uzteko prozesua amaitzen denean itxiko da leihoa.</translation>
 <translation id="980731642137034229">Ekintza-menuaren botoia</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
-<translation id="982684081337630214">Onarpen-eskaera bat bidali zaio gurasoei; Google-ren Family Link aplikazioan eta families.google.com helbidean ikus dezakete eskaera. Haietakoren batek onartzen badu, jakinarazpen bat jasoko duzu.</translation>
 <translation id="983511809958454316">Eginbide hau ezin da erabili errealitate birtualean</translation>
 <translation id="984275831282074731">Ordainketa-metodoak</translation>
 <translation id="984705303330760860">Gehitu hizkuntzak ortografia-zuzentzailean</translation>

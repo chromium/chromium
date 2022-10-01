@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">Komputer Anda juga dilengkapi dengan perpustakaan RLZ <ph name="SHORT_PRODUCT_NAME" /> yang tertanam di dalamnya. RLZ menetapkan tag tak unik dan tidak dapat diidentifikasi secara pribadi untuk mengukur penelusuran dan penggunaan <ph name="SHORT_PRODUCT_NAME" /> yang didorong oleh kampanye promosi tertentu. Biasanya label ini muncul di kueri Google Penelusuran di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1043505821207197890">Terjadi error. Linux mungkin hanya diupgrade sebagian. Tinjau log untuk mengetahui informasi selengkapnya. Log telah disimpan di File &gt; File saya &gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">Hapus data dari aplikasi ini juga?</translation>
-<translation id="1043824690776631483">Kamu perlu izin untuk membuka situs ini. Situs mungkin berisi konten tidak pantas.</translation>
 <translation id="104419033123549300">Gaya Konfigurasi Tombol</translation>
 <translation id="104710386808485638">Mulai ulang Linux?</translation>
 <translation id="1047431265488717055">Salin Te&amp;ks Tautan</translation>
@@ -805,7 +804,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="173522743738009831">Tentang Privacy Sandbox</translation>
 <translation id="173628468822554835">Oke. Secara default, situs baru yang Anda kunjungi tidak akan mengirimkan notifikasi.</translation>
 <translation id="1737968601308870607">Bug file</translation>
-<translation id="1739684185846730053">Uji coba Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah tertentu. Untuk saat ini, situs dapat mencoba Privacy Sandbox sambil tetap menggunakan teknologi web saat ini seperti cookie pihak ketiga.</translation>
 <translation id="1741190788710022490">Pengisian daya adaptif</translation>
 <translation id="174123615272205933">Kustom</translation>
 <translation id="1741314857973421784">Lanjutkan</translation>
@@ -1976,7 +1974,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2787022501752539710">Simpan data penjelajahan lokal (bookmark, sandi, histori, dll.)</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">Nomor grup</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2791529110887957050">Hapus Linux</translation>
 <translation id="2791952154587244007">Terjadi error. Aplikasi kios tidak akan dapat diluncurkan secara otomatis di perangkat ini.</translation>
@@ -2006,7 +2003,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2805760958323556153">Nilai kebijakan ExtensionInstallForcelist tidak valid. Harap hubungi administrator Anda.</translation>
 <translation id="2805770823691782631">Detail tambahan</translation>
 <translation id="2806372837663997957">Perangkat yang Anda coba ajak berbagi tidak menerima</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">Pintasan sudah ada</translation>
 <translation id="2807517655263062534">File yang Anda download muncul di sini</translation>
 <translation id="2809586584051668049">dan <ph name="NUMBER_ADDITIONAL_DISABLED" /> lainnya</translation>
@@ -2458,7 +2454,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3262986719682892278">Terlalu besar</translation>
 <translation id="3264544094376351444">Font Sans-serif</translation>
 <translation id="3264582393905923483">Konteks</translation>
-<translation id="3265118321284789528">Menunggu persetujuan orang tua</translation>
 <translation id="3265459715026181080">Tutup Jendela</translation>
 <translation id="3266022278425892773">Lingkungan pengembangan Linux</translation>
 <translation id="3266274118485960573">Pemeriksaan keamanan sedang berjalan.</translation>
@@ -2586,7 +2581,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3388094447051599208">Baki hasil cetak hampir penuh</translation>
 <translation id="3388788256054548012">File ini dienkripsi. Minta pemiliknya untuk mendekripsi.</translation>
 <translation id="3390013585654699824">Detail aplikasi</translation>
-<translation id="3391512812407811893">Uji coba Privacy Sandbox</translation>
 <translation id="3393554941209044235">Analisis Dokumen Chrome</translation>
 <translation id="3393582007140394275">Tidak dapat mentransmisikan layar.</translation>
 <translation id="3394850431319394743">Diizinkan menggunakan ID untuk memutar konten yang dilindungi</translation>
@@ -2647,7 +2641,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3441653493275994384">Layar</translation>
 <translation id="3441663102605358937">Login ke <ph name="ACCOUNT" /> lagi untuk memverifikasi akun ini</translation>
 <translation id="3442674350323953953">Izinkan Google menggunakan data hardware Anda untuk membantu meningkatkan <ph name="DEVICE_OS" />. Jika Anda menolak, data ini tetap dikirimkan ke Google untuk menentukan update yang tepat, tetapi tidak disimpan ataupun digunakan.</translation>
-<translation id="3444641828375597683">Pengiklan dan penayang dapat menggunakan FLoC, yang dijelaskan selanjutnya di halaman ini.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> akan dapat melihat <ph name="FILENAME" /></translation>
 <translation id="3445047461171030979">Jawaban cepat Asisten Google</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> mnt</translation>
@@ -5331,7 +5324,6 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="6027945736510816438">Mungkin maksud Anda <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Tambahkan sidik jari</translation>
 <translation id="6031600495088157824">Opsi masukan di toolbar</translation>
-<translation id="6032091552407840792">Uji coba ini hanya aktif di <ph name="BEGIN_LINK" />beberapa wilayah<ph name="END_LINK" />.</translation>
 <translation id="6032715498678347852">Agar ekstensi dapat mengakses situs ini, klik ekstensi.</translation>
 <translation id="6032912588568283682">Sistem file</translation>
 <translation id="603539183851330738">Tombol urungkan koreksi otomatis. Kembalikan ke <ph name="TYPED_WORD" />.  Tekan enter untuk mengaktifkan, escape untuk menutup.</translation>
@@ -6868,7 +6860,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7509097596023256288">Menyiapkan pengelolaan</translation>
 <translation id="7509246181739783082">Verifikasi identitas Anda</translation>
 <translation id="7509539379068593709">Uninstal Aplikasi</translation>
-<translation id="7511415964832680006">Jika aktif, situs dapat menggunakan teknik yang melindungi privasi seperti yang ditunjukkan di sini untuk menyediakan konten dan layanannya. Ini termasuk alternatif untuk pelacakan lintas situs. Uji coba lainnya dapat ditambahkan seiring waktu.</translation>
 <translation id="7514239104543605883">Salin ke perangkat Anda</translation>
 <translation id="7514365320538308">Download</translation>
 <translation id="7514417110442087199">Tambahkan penetapan</translation>
@@ -7270,8 +7261,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7877451762676714207">Kesalahan server tidak diketahui. Coba lagi, atau hubungi administrator server.</translation>
 <translation id="7879478708475862060">Ikuti mode masukan</translation>
 <translation id="7879631849810108578">Pintasan yang disetel: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">Jika diaktifkan dan statusnya masih berlaku, Chrome akan menggunakan histori penjelajahan Anda selama 7 hari untuk menentukan grup, atau “kohor”, tempat Anda berada. Pengiklan dapat memilih iklan untuk grup tersebut. Histori penjelajahan Anda tetap bersifat pribadi di perangkat Anda. Uji coba ini hanya aktif di
-    <ph name="BEGIN_LINK" />beberapa wilayah<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Data lokal akan dihapus saat Anda memulai ulang</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">Lihat Akun</translation>
@@ -7545,7 +7534,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8119438628456698432">Membuat file log ...</translation>
 <translation id="811994229154425014">Spasi dua kali untuk mengetik titik</translation>
 <translation id="8120505434908124087">Instal profil eSIM</translation>
-<translation id="812260729110117038">Pengiklan dan penayang dapat mempelajari keefektifan iklan dengan cara yang tidak melacak Anda di berbagai situs.</translation>
 <translation id="81238879832906896">Bunga kuning dan putih</translation>
 <translation id="8123975449645947908">Scroll mundur</translation>
 <translation id="8124313775439841391">ONC yang dikelola</translation>
@@ -7588,7 +7576,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="816055135686411707">Kesalahan Saat Menyetel Kepercayaan Sertifikat</translation>
 <translation id="8160775796528709999">Dapatkan teks untuk audio dan video Anda dengan mengaktifkan Teks Otomatis di setelan</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Dengan <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome mengembangkan teknologi baru untuk mengamankan Anda dari pelacakan lintas situs sekaligus mempertahankan web terbuka.</translation>
 <translation id="8161293209665121583">Mode pembaca untuk halaman web</translation>
 <translation id="8161604891089629425">Font bergaris batas</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Pindahkan Tab ke Jendela Baru}other{Pindahkan beberapa Tab ke Jendela Baru}}</translation>
@@ -8116,7 +8103,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8676374126336081632">Hapus masukan</translation>
 <translation id="8676770494376880701">Pengisi daya rendah terpasang</translation>
 <translation id="8677212948402625567">Ciutkan semua...</translation>
-<translation id="867767487203716855">Update berikutnya</translation>
 <translation id="8678378565142776698">Mulai ulang dan dapatkan update otomatis</translation>
 <translation id="8678538439778360739">Data dienkripsi dengan frasa sandi sinkronisasi Anda pada <ph name="TIME" />. Data ini tidak mencakup metode pembayaran dan alamat dari Google Pay.</translation>
 <translation id="8678582529642151449">Tab tidak dikecilkan</translation>
@@ -8124,7 +8110,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8680251145628383637">Login untuk mendapatkan bookmark, histori, sandi, dan setelan lain di semua perangkat. Anda juga akan otomatis masuk ke layanan Google.</translation>
 <translation id="8681614230122836773">Chrome menemukan software berbahaya di komputer Anda</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> terhubung dan siap digunakan</translation>
-<translation id="8683081248374354009">Reset grup</translation>
 <translation id="8688672835843460752">Tersedia</translation>
 <translation id="8690129572193755009">Situs dapat meminta untuk menangani protokol</translation>
 <translation id="8692107307702113268">Sandi berisi lebih dari 1.000 karakter</translation>
@@ -8401,7 +8386,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8952831374766033534">Opsi konfigurasi tidak didukung: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Saat mengisi daya</translation>
 <translation id="895347679606913382">Memulai...</translation>
-<translation id="8953654039337655940">Permintaan persetujuan sudah dikirim ke orang tuamu di aplikasi Family Link Google-nya dan di families.google.com. Kamu akan menerima notifikasi kalau orang tuamu menyetujui permintaan itu.</translation>
 <translation id="8956230710625245889">Buka di Reader</translation>
 <translation id="8957757410289731985">Sesuaikan profil</translation>
 <translation id="895944840846194039">Memori JavaScript</translation>
@@ -8746,7 +8730,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="97905529126098460">Jendela ini akan ditutup setelah proses pembatalan selesai.</translation>
 <translation id="980731642137034229">Tombol menu tindakan</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="982684081337630214">Permintaan persetujuan sudah dikirim ke orang tuamu di aplikasi Family Link Google mereka dan di families.google.com. Kamu akan menerima notifikasi kalau salah satu orang tuamu menyetujui permintaan itu.</translation>
 <translation id="983511809958454316">Fitur ini tidak didukung di VR</translation>
 <translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="984705303330760860">Tambahkan bahasa periksa ejaan</translation>

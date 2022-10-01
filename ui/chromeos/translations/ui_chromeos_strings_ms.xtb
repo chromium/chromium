@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Tukar kepada paparan senarai</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dikongsi dengan Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fail dipilih</translation>
+<translation id="2383454254762599978">Alihkan ke folder sampah</translation>
 <translation id="2387458720915042159">Jenis sambungan proksi</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Pergi ke drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka fail dengan <ph name="APP_NAME" />, salin fail itu ke folder fail Windows dahulu.</translation>
 <translation id="3556731189587832921">Inggeris (AS) dengan papan kekunci PC Antarabangsa</translation>
+<translation id="3557414470514932909">Mengalihkan <ph name="FILE_NAME" /> ke folder sampah</translation>
 <translation id="3567221313191587603">Pilih fail dan hidupkan <ph name="OFFLINE_CHECKBOX_NAME" /> untuk mendapatkan akses luar talian kepada fail anda.</translation>
 <translation id="357479282490346887">Bahasa Lithuania</translation>
 <translation id="3587482841069643663">Semua</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Fonetik Bangla</translation>
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4017788180641807848">Inggeris (AS) dengan papan kekunci Workman</translation>
+<translation id="4019998208269143058">Sematkan pada fail pantas</translation>
 <translation id="4040753847560036377">PUK salah</translation>
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Ireland</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Dasar pentadbir tidak mengesyorkan:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dialihkan.</translation>
 <translation id="4176286497474237543">Kosongkan sampah sekarang</translation>
+<translation id="4179621117429069925">Item ini berada dalam folder sampah anda</translation>
 <translation id="4186579485882418952">Dayakan Luar Talian</translation>
 <translation id="4193154014135846272">Dokumen Google</translation>
 <translation id="4197674956721858839">Pemilihan zip</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Sijil pengesahan ditolak dari jauh</translation>
 <translation id="4394214039309501350">Pautan luaran</translation>
 <translation id="4394980935660306080">Awal minggu ini</translation>
+<translation id="4398096759193130964">Pulihkan atau seret item ke folder baharu di luar folder sampah</translation>
 <translation id="4401287888955153199">Ekstrak semua</translation>
 <translation id="4410695710508688828">Operasi ekstrak gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Buat pintasan untuk fail anda</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Bahasa Hindi dengan papan kekunci InScript</translation>
 <translation id="4801956050125744859">Simpan kedua-duanya</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832">Memulihkan <ph name="COUNT" /> item</translation>
 <translation id="4823651846660089135">Peranti dalam mod baca sahaja</translation>
 <translation id="4826849268470072925">ITRANS Tamil</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> item dipilih</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Bola Sepak</translation>
 <translation id="4961158930123534723">1 folder dikongsi dengan Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Gunakan nama yang mengandungi tidak lebih daripada <ph name="MAX_LENGTH" /> aksara</translation>
 <translation id="4973970068702235170">Gagal mengezip, ralat tidak dijangka: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Op, <ph name="FILE_NAME" /> tidak lagi wujud.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Buka kunci</translation>
 <translation id="5700087501958648444">Maklumat audio</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> dialihkan ke folder sampah</translation>
 <translation id="5724172041621205163">Thai dengan papan kekunci Pattachote</translation>
 <translation id="5756666464756035725">QWERTY Hungary</translation>
 <translation id="5763377084591234761">Jerman (Switzerland)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Arkib <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Melambai</translation>
 <translation id="6327785803543103246">Autopenemuan proksi web</translation>
+<translation id="6337014272874260727">Nyahsemat daripada fail pantas</translation>
 <translation id="6339145975392024142">Antarabangsa AS (PC)</translation>
 <translation id="6346310558342052870">Akses terhad</translation>
 <translation id="6356685157277930264">Tetingkap maklum balas fail</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6755827872271341378">Peranti Chrome OS Flex</translation>
 <translation id="6790428901817661496">Mainkan</translation>
+<translation id="6794539005637808366">Pulihkan atau seret item ke folder baharu di luar folder sampah</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Urus perkongsian Linux</translation>
 <translation id="6806796368146926706">Abjad angka dengan papan kekunci Jepun</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Sweden</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
+<translation id="6993826899923627728">Item ini berada dalam folder sampah anda</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="7008426324576352165">Organisasi anda memerlukan lebih banyak storan untuk menyelesaikan muat naik.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Czech</translation>
 <translation id="7417453074306512035">Papan kekunci bahasa Ethiopia</translation>
 <translation id="7417705661718309329">Google Maps</translation>
+<translation id="7419668828140929293">Memulihkan "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">Tiada imej baru-baru ini</translation>
 <translation id="7460898608667578234">Bahasa Ukraine</translation>
 <translation id="7469894403370665791">Menyambung ke rangkaian ini secara automatik</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Akses Google Photos dengan mudah</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> item dialihkan ke folder sampah</translation>
 <translation id="7693909743393669729">Tindakan memformatkan pemacu akan memadamkan semua data yang disimpan pada pemacu itu dan mengalih keluar semua petakan yang sedia ada, termasuk petakan yang mungkin tidak kelihatan. Tindakan ini tidak boleh dibuat asal.</translation>
 <translation id="7695430100978772476">Tidak boleh memformat <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Gagal mengosongkan sampah.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Wubi Cina</translation>
 <translation id="7765158879357617694">Alih</translation>
 <translation id="7774365994322694683">Burung</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> item dipulihkan</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7788080748068240085">Untuk menyimpan "<ph name="FILE_NAME" />" di luar talian anda mesti mengosongkan ruang tambahan <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />buka pin fail yang anda tidak perlu untuk akses di luar talian lagi<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Memilih <ph name="ENTRY_COUNT" /> masukan daripada <ph name="FROM_ENTRY_NAME" /> hingga <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Dasar pentadbir menghalang:</translation>
 <translation id="965477715979482472">Inggeris (Afrika Selatan)</translation>
+<translation id="976666271385981812">Mengalihkan <ph name="NUMBER_OF_ITEMS" /> item ke folder sampah</translation>
 <translation id="981121421437150478">Luar talian</translation>
 <translation id="988685240266037636">Fail bernama "<ph name="FILE_NAME" />" sudah wujud. Adakah anda mahu menggantikannya?</translation>
 <translation id="992401651319295351">Anda mempunyai <ph name="RETRIES" /> percubaan lagi. Anda tidak akan dapat menggunakan rangkaian ini sehinggalah anda menyediakan PIN baharu.</translation>

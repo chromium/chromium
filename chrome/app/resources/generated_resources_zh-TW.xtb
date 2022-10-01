@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">你的電腦也內建了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 程式庫。RLZ 可指定非重複、非個人的可辨識標記，以評估特定宣傳廣告活動所提升的搜尋數與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
 <translation id="1043505821207197890">發生錯誤，Linux 可能並未進行完整的升級程序。請參閱記錄檔以瞭解詳情。記錄檔已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
 <translation id="1043818413152647937">要一併清除這些應用程式中的資料嗎？</translation>
-<translation id="1043824690776631483">你必須獲得授權，才能造訪這個可能含有不當內容的網站。</translation>
 <translation id="104419033123549300">按鍵對應樣式</translation>
 <translation id="104710386808485638">要重新啟動 Linux 嗎？</translation>
 <translation id="1047431265488717055">複製連結文字(&amp;X)</translation>
@@ -794,7 +793,6 @@
 <translation id="173522743738009831">關於 Privacy Sandbox</translation>
 <translation id="173628468822554835">我知道了。在預設情況下，你首次造訪的網站將不會傳送通知。</translation>
 <translation id="1737968601308870607">回報錯誤</translation>
-<translation id="1739684185846730053">Privacy Sandbox 的試用功能仍在積極開發階段，目前開放地區有限。現在網站可以嘗試使用 Privacy Sandbox，也能繼續使用第三方 Cookie 等現有的網路技術。</translation>
 <translation id="1741190788710022490">自動調節充電</translation>
 <translation id="174123615272205933">自訂</translation>
 <translation id="1741314857973421784">繼續</translation>
@@ -1961,7 +1959,6 @@
 <translation id="2787022501752539710">保留本機瀏覽資料，例如書籤、密碼、歷史記錄等</translation>
 <translation id="2787354132612937472">-</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">群組編號</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">發生錯誤，系統無法在這個裝置上自動啟動 Kiosk 應用程式。</translation>
@@ -1991,7 +1988,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist 的政策值無效，請與系統管理員聯絡。</translation>
 <translation id="2805770823691782631">其他詳細資訊</translation>
 <translation id="2806372837663997957">你試圖分享檔案的目標裝置並未接受檔案分享</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">捷徑已經存在</translation>
 <translation id="2807517655263062534">你下載的檔案會顯示在這裡</translation>
 <translation id="2809586584051668049">和另外 <ph name="NUMBER_ADDITIONAL_DISABLED" /> 個</translation>
@@ -2443,7 +2439,6 @@
 <translation id="3262986719682892278">檔案過大</translation>
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
-<translation id="3265118321284789528">正在等待家長核准</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
 <translation id="3266022278425892773">Linux 開發環境</translation>
 <translation id="3266274118485960573">正在執行安全檢查。</translation>
@@ -2571,7 +2566,6 @@
 <translation id="3388094447051599208">輸出紙匣幾乎已滿</translation>
 <translation id="3388788256054548012">這個檔案已加密。請要求檔案擁有者解密。</translation>
 <translation id="3390013585654699824">應用程式詳細資料</translation>
-<translation id="3391512812407811893">試用 Privacy Sandbox</translation>
 <translation id="3393554941209044235">Chrome 文件分析</translation>
 <translation id="3393582007140394275">無法投放螢幕畫面。</translation>
 <translation id="3394850431319394743">允許使用 ID 來播放受保護的內容</translation>
@@ -2632,7 +2626,6 @@
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3441663102605358937">再次登入 <ph name="ACCOUNT" /> 以驗證這個帳戶</translation>
 <translation id="3442674350323953953">允許 Google 使用硬體資料來協助改善 <ph name="DEVICE_OS" />。如果拒絕，這項資料仍會傳送給 Google 以判斷適當的更新內容，但不會儲存或用於其他用途。</translation>
-<translation id="3444641828375597683">廣告客戶和發布商可以使用 FLoC 技術 (本頁隨後會加以說明)。</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" /> 將可查看「<ph name="FILENAME" />」</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
@@ -5311,7 +5304,6 @@
 <translation id="6027945736510816438">你是不是要輸入 <ph name="WEBSITE" />？</translation>
 <translation id="6028117231645531007">新增指紋</translation>
 <translation id="6031600495088157824">工具列中的輸入選項</translation>
-<translation id="6032091552407840792">這項功能目前僅開放<ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />試用。</translation>
 <translation id="6032715498678347852">如要授予擴充功能這個網站的存取權，請按一下該擴充功能。</translation>
 <translation id="6032912588568283682">檔案系統</translation>
 <translation id="603539183851330738">復原自動更正內容的按鈕，還原為「<ph name="TYPED_WORD" />」。按下 Enter 鍵即可還原，按 Esc 鍵則為取消。</translation>
@@ -6848,7 +6840,6 @@
 <translation id="7509097596023256288">正在設定管理服務</translation>
 <translation id="7509246181739783082">驗證身分</translation>
 <translation id="7509539379068593709">解除安裝應用程式</translation>
-<translation id="7511415964832680006">在啟用狀態下，網站可能會使用這裡顯示的隱私保護技術提供內容和服務，包括對於跨網站追蹤的替代性措施。本服務可能會陸續新增更多試用功能。</translation>
 <translation id="7514239104543605883">複製到你的裝置</translation>
 <translation id="7514365320538308">下載</translation>
 <translation id="7514417110442087199">新增指派設定</translation>
@@ -7250,8 +7241,6 @@
 <translation id="7877451762676714207">不明的伺服器錯誤。請再試一次，或與伺服器管理員聯絡。</translation>
 <translation id="7879478708475862060">按照輸入模式</translation>
 <translation id="7879631849810108578">已設定快速鍵：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">如果這項功能已啟用且處於有效狀態，Chrome 就能使用你過去 7 天的瀏覽記錄來判斷你所在的群組 (或稱「同類群組」)。廣告客戶可以選擇要向該群組顯示的廣告，而你的瀏覽記錄會保留在裝置上，僅供本人存取。這項功能目前僅開放
-    <ph name="BEGIN_LINK" />部分地區<ph name="END_LINK" />試用。</translation>
 <translation id="7880823633812189969">系統會在你重新啟動時刪除本機資料</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">查看帳戶</translation>
@@ -7525,7 +7514,6 @@
 <translation id="8119438628456698432">正在產生記錄檔...</translation>
 <translation id="811994229154425014">按兩下空格鍵可輸入句號</translation>
 <translation id="8120505434908124087">安裝 eSIM 卡設定檔</translation>
-<translation id="812260729110117038">廣告客戶和發布商不必追蹤你的網站瀏覽記錄，就能瞭解自身的廣告成效。</translation>
 <translation id="81238879832906896">黃色和白色花朵</translation>
 <translation id="8123975449645947908">向後捲動</translation>
 <translation id="8124313775439841391">管理化 ONC</translation>
@@ -7568,7 +7556,6 @@
 <translation id="816055135686411707">憑證信任設定錯誤</translation>
 <translation id="8160775796528709999">只要在設定中啟用即時字幕功能，即可取得音訊和視訊的字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426">Chrome 透過 <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 開發新的技術，防止有心人士透過跨網站追蹤機制取得你的資料，同時保護開放網路。</translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8161604891089629425">輪廓字型</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移到新視窗}other{將分頁移到新視窗}}</translation>
@@ -8096,7 +8083,6 @@
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8676770494376880701">已連接低功率充電器</translation>
 <translation id="8677212948402625567">全部收合...</translation>
-<translation id="867767487203716855">下一個更新項目</translation>
 <translation id="8678378565142776698">重新啟動並取得自動更新</translation>
 <translation id="8678538439778360739">系統已採用你在 <ph name="TIME" />設定的同步通關密語對資料進行加密處理。加密的資料不包括 Google Pay 的付款方式和地址。</translation>
 <translation id="8678582529642151449">不縮小分頁</translation>
@@ -8104,7 +8090,6 @@
 <translation id="8680251145628383637">只要登入帳戶，你在任何裝置上都能取得自己的書籤、歷史記錄和密碼，並套用相同的設定。此外，系統還會自動讓您登入各項 Google 服務。</translation>
 <translation id="8681614230122836773">Chrome 發現你的電腦安裝了有害軟體</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" /> 已連接且準備就緒</translation>
-<translation id="8683081248374354009">重設群組</translation>
 <translation id="8688672835843460752">可用空間</translation>
 <translation id="8690129572193755009">網站可以要求處理通訊協定</translation>
 <translation id="8692107307702113268">密碼長度超過 1000 個半形字元</translation>
@@ -8381,7 +8366,6 @@
 <translation id="8952831374766033534">不支援的設定選項：<ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">充電時</translation>
 <translation id="895347679606913382">啟動中...</translation>
-<translation id="8953654039337655940">核准要求已透過 Google Family Link 應用程式和 families.google.com 傳送給一位家長。這位家長核准該要求後，你就會收到通知。</translation>
 <translation id="8956230710625245889">在 Reader 中開啟</translation>
 <translation id="8957757410289731985">自訂檔案</translation>
 <translation id="895944840846194039">JavaScript 記憶體使用量</translation>
@@ -8726,7 +8710,6 @@
 <translation id="97905529126098460">此視窗將在完成取消作業後關閉。</translation>
 <translation id="980731642137034229">動作選單按鈕</translation>
 <translation id="981121421437150478">離線</translation>
-<translation id="982684081337630214">核准要求已透過 Google Family Link 應用程式和 families.google.com 傳送給多位家長。任一家長核准該要求後，你就會收到通知。</translation>
 <translation id="983511809958454316">無法在 VR 狀態下使用這項功能</translation>
 <translation id="984275831282074731">付款方式</translation>
 <translation id="984705303330760860">新增拼字檢查支援的語言</translation>

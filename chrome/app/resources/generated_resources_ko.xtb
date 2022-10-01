@@ -45,7 +45,6 @@
 <translation id="1042174272890264476">또한 컴퓨터에는 <ph name="SHORT_PRODUCT_NAME" /> RLZ 라이브러리가 내장되어 있습니다. RLZ는 고유하지 않고 개인 식별이 불가능한 태그를 할당하여 특정 홍보 캠페인을 통한 검색 및 <ph name="SHORT_PRODUCT_NAME" /> 사용 실태를 측정합니다. 이러한 라벨은 <ph name="PRODUCT_NAME" />의 Google 검색어에 표시되기도 합니다.</translation>
 <translation id="1043505821207197890">문제가 발생했습니다. Linux 부분 업그레이드만 진행할 수 있습니다. 자세한 정보는 로그를 검토하세요. 로그는 파일 &gt; 내 파일 &gt; <ph name="LOG_FILE" />에 저장되어 있습니다.</translation>
 <translation id="1043818413152647937">아래 앱의 데이터도 삭제하시겠습니까?</translation>
-<translation id="1043824690776631483">이 사이트에 방문하려면 승인이 필요합니다. 부적절한 콘텐츠가 포함되어 있을 수 있습니다.</translation>
 <translation id="104419033123549300">키맵 스타일</translation>
 <translation id="104710386808485638">Linux를 다시 시작하시겠습니까?</translation>
 <translation id="1047431265488717055">링크 텍스트 복사(&amp;X)</translation>
@@ -805,7 +804,6 @@
 <translation id="173522743738009831">개인정보 보호 샌드박스 정보</translation>
 <translation id="173628468822554835">알겠습니다. 앞으로 새로 방문하는 사이트에서는 기본적으로 알림을 표시하지 않습니다.</translation>
 <translation id="1737968601308870607">버그 신고</translation>
-<translation id="1739684185846730053">개인 정보 보호 샌드박스 무료 체험은 아직 개발 단계에 있으므로 일부 지역에서만 제공됩니다. 현재 사이트는 타사 쿠키와 같은 기존 웹 기술을 계속 사용하면서 개인 정보 보호 샌드박스를 사용해 볼 수 있습니다.</translation>
 <translation id="1741190788710022490">자동 조절 충전</translation>
 <translation id="174123615272205933">맞춤</translation>
 <translation id="1741314857973421784">계속</translation>
@@ -1977,7 +1975,6 @@
 <translation id="2787022501752539710">로컬 인터넷 사용 기록(북마크, 비밀번호, 방문 기록 등) 유지</translation>
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
-<translation id="2788468313014644040">그룹 번호</translation>
 <translation id="2789486458103222910">확인</translation>
 <translation id="2791529110887957050">Linux 삭제</translation>
 <translation id="2791952154587244007">오류가 발생했습니다. 이 기기에서 키오스크 애플리케이션을 자동 실행할 수 없습니다.</translation>
@@ -2007,7 +2004,6 @@
 <translation id="2805760958323556153">ExtensionInstallForcelist 정책 값이 잘못되었습니다. 관리자에게 문의해 주세요.</translation>
 <translation id="2805770823691782631">추가 세부정보</translation>
 <translation id="2806372837663997957">공유하려는 기기에서 수락하지 않았습니다.</translation>
-<translation id="2806840421670364300">FLoC</translation>
 <translation id="2806891468525657116">바로가기가 이미 존재합니다.</translation>
 <translation id="2807517655263062534">다운로드한 파일이 여기에 표시됩니다.</translation>
 <translation id="2809586584051668049">외 <ph name="NUMBER_ADDITIONAL_DISABLED" />개</translation>
@@ -2459,7 +2455,6 @@
 <translation id="3262986719682892278">너무 큼</translation>
 <translation id="3264544094376351444">Sans-serif</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
-<translation id="3265118321284789528">부모님 승인 대기 중</translation>
 <translation id="3265459715026181080">창 닫기</translation>
 <translation id="3266022278425892773">Linux 개발 환경</translation>
 <translation id="3266274118485960573">안전 확인을 실행 중입니다.</translation>
@@ -2587,7 +2582,6 @@
 <translation id="3388094447051599208">배지대가 거의 가득 찼습니다.</translation>
 <translation id="3388788256054548012">암호화된 파일입니다. 소유자에게 복호화를 요청하세요.</translation>
 <translation id="3390013585654699824">앱 세부정보</translation>
-<translation id="3391512812407811893">개인정보 보호 샌드박스 체험판</translation>
 <translation id="3393554941209044235">Chrome 문서 분석</translation>
 <translation id="3393582007140394275">화면을 전송할 수 없습니다</translation>
 <translation id="3394850431319394743">보호된 콘텐츠를 재생하기 위해 식별자를 사용하도록 허용됨</translation>
@@ -2648,7 +2642,6 @@
 <translation id="3441653493275994384">화면</translation>
 <translation id="3441663102605358937">계정을 인증하려면 <ph name="ACCOUNT" />에 다시 로그인하세요.</translation>
 <translation id="3442674350323953953"><ph name="DEVICE_OS" /> 개선을 위해 Google에서 하드웨어 데이터를 사용하도록 허용합니다. 거부하더라도 데이터가 Google에 전송되어 적절한 업데이트를 결정하는 데 사용되지만, 저장되거나 다른 용도로 사용되지는 않습니다.</translation>
-<translation id="3444641828375597683">광고주와 게시자는 이 페이지에서 나중에 설명하는 FLoC을 사용할 수 있습니다.</translation>
 <translation id="3444726579402183581"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
 <translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
@@ -5330,7 +5323,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6027945736510816438"><ph name="WEBSITE" /> 도메인을 찾으셨나요?</translation>
 <translation id="6028117231645531007">지문 추가</translation>
 <translation id="6031600495088157824">툴바의 입력 옵션</translation>
-<translation id="6032091552407840792">이 무료 체험은 <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="6032715498678347852">사이트 액세스를 허용하려면 확장 프로그램을 클릭하세요.</translation>
 <translation id="6032912588568283682">파일 시스템</translation>
 <translation id="603539183851330738">자동 수정 실행취소 버튼입니다. <ph name="TYPED_WORD" />(으)로 되돌립니다.  활성화하려면 Enter를, 닫으려면 Esc를 누르세요.</translation>
@@ -6867,7 +6859,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7509097596023256288">관리 설정 중</translation>
 <translation id="7509246181739783082">본인 확인</translation>
 <translation id="7509539379068593709">앱 제거</translation>
-<translation id="7511415964832680006">사용 설정하면 사이트가 여기에 표시된 개인 정보 보호 기술을 이용해 콘텐츠와 서비스를 제공할 수 있습니다. 크로스 사이트 추적의 대안이 되는 기술 등이 있습니다. 시간이 지남에 따라 더 많은 무료 체험 기능이 포함될 수 있습니다.</translation>
 <translation id="7514239104543605883">기기로 복사</translation>
 <translation id="7514365320538308">다운로드</translation>
 <translation id="7514417110442087199">할당 추가</translation>
@@ -7270,8 +7261,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7877451762676714207">알 수 없는 서버 오류입니다. 다시 시도하거나 서버 관리자에게 문의하시기 바랍니다.</translation>
 <translation id="7879478708475862060">입력 모드 따라하기</translation>
 <translation id="7879631849810108578">단축키 조합: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880685873361171388">사용 설정되어 있고 무료 체험이 제공되는 경우 Chrome에서 지난 7일간의 방문 기록을 토대로 내가 속한 그룹 또는 '동질 집단'을 결정합니다. 광고주는 그룹에 보여 줄 광고를 선택할 수 있습니다. 방문 기록은 기기에 비공개로 유지됩니다. 이 무료 체험은
-    <ph name="BEGIN_LINK" />일부 지역<ph name="END_LINK" />에서만 진행됩니다.</translation>
 <translation id="7880823633812189969">다시 시작하면 로컬 데이터가 삭제됩니다</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7881483672146086348">계정 보기</translation>
@@ -7545,7 +7534,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8119438628456698432">로그 파일 생성 중...</translation>
 <translation id="811994229154425014">스페이스바를 2번 눌러 마침표 입력</translation>
 <translation id="8120505434908124087">eSIM 프로필 설치</translation>
-<translation id="812260729110117038">광고주와 게시자는 사이트 전반에서 사용자를 추적하지 않는 방식으로 광고의 효과를 연구할 수 있습니다.</translation>
 <translation id="81238879832906896">노란색과 흰색 꽃</translation>
 <translation id="8123975449645947908">뒤로 스크롤</translation>
 <translation id="8124313775439841391">관리되는 ONC</translation>
@@ -7588,7 +7576,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="816055135686411707">인증서 신뢰를 설정하던 중 오류 발생</translation>
 <translation id="8160775796528709999">설정에서 실시간 자막을 사용 설정하여 음성 및 영상 자막 생성하기</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
-<translation id="81610453212785426"><ph name="BEGIN_LINK" />개인 정보 보호 샌드박스<ph name="END_LINK" />를 통해 Chrome은 오픈 웹의 장점을 유지하면서 크로스 사이트 추적으로부터 사용자를 보호하는 새로운 기술을 개발하고 있습니다.</translation>
 <translation id="8161293209665121583">웹페이지 리더 모드</translation>
 <translation id="8161604891089629425">윤곽선 글꼴</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
@@ -8116,7 +8103,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8676770494376880701">저출력 충전기 연결됨</translation>
 <translation id="8677212948402625567">모두 접기...</translation>
-<translation id="867767487203716855">다음 업데이트</translation>
 <translation id="8678378565142776698">다시 시작하고 자동 업데이트 받기</translation>
 <translation id="8678538439778360739"><ph name="TIME" />에 데이터가 동기화 암호로 암호화되었습니다. Google Pay의 결제 수단 및 주소는 암호화되지 않습니다.</translation>
 <translation id="8678582529642151449">탭이 줄어들지 않음</translation>
@@ -8124,7 +8110,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8680251145628383637">로그인하면 모든 기기에서 북마크, 방문 기록, 비밀번호, 기타 설정이 동기화되며 Google 서비스에 자동으로 로그인됩니다.</translation>
 <translation id="8681614230122836773">Chrome이 컴퓨터에서 유해한 소프트웨어를 발견했습니다.</translation>
 <translation id="8682730193597992579"><ph name="PRINTER_NAME" />이(가) 연결되었으며 사용 가능함</translation>
-<translation id="8683081248374354009">그룹 재설정</translation>
 <translation id="8688672835843460752">사용 가능</translation>
 <translation id="8690129572193755009">사이트에서 프로토콜 처리를 요청할 수 있음</translation>
 <translation id="8692107307702113268">비밀번호가 1,000자(영문 기준)를 초과합니다.</translation>
@@ -8401,7 +8386,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8952831374766033534">설정 옵션이 지원되지 않음: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">충전 시</translation>
 <translation id="895347679606913382">다운로드 시작...</translation>
-<translation id="8953654039337655940">Google Family Link 앱 및 families.google.com에서 부모님에게 승인 요청이 전송되었습니다. 부모님이 요청을 승인하면 알림이 전송됩니다.</translation>
 <translation id="8956230710625245889">Reader에서 열기</translation>
 <translation id="8957757410289731985">프로필 맞춤설정</translation>
 <translation id="895944840846194039">자바스크립트 메모리</translation>
@@ -8746,7 +8730,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="97905529126098460">취소가 완료되면 이 창이 닫힙니다.</translation>
 <translation id="980731642137034229">작업 메뉴 버튼</translation>
 <translation id="981121421437150478">오프라인</translation>
-<translation id="982684081337630214">Google Family Link 앱 및 families.google.com에서 부모님에게 승인 요청이 전송되었습니다. 부모님 중 한 명이 요청을 승인하면 알림이 전송됩니다.</translation>
 <translation id="983511809958454316">이 기능은 VR에서 지원되지 않습니다</translation>
 <translation id="984275831282074731">결제 수단</translation>
 <translation id="984705303330760860">맞춤법 검사 언어 추가</translation>

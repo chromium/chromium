@@ -292,9 +292,6 @@
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">Event.path API tidak akan tersedia.</translation>
 <translation id="1290634681382861275">Mengontrol berbagai setelan antara lain USB, bluetooth, pembaruan kebijakan, mode developer, dan lainnya.</translation>
-<translation id="1291880496936992484">Peringatan: RC4 akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> setelah versi 52 (sekitar September 2016) dan sejak saat itu kebijakan ini tidak akan berlaku lagi.
-
-      Jika kebijakan tidak disetel, atau disetel ke False, maka cipher suite RC4 di TLS tidak akan diaktifkan. Jika kebijakan disetel ke True, kebijakan akan tetap berlaku untuk mempertahankan kompatibilitas dengan server yang sudah usang. Tindakan ini hanya untuk sementara dan server sebaiknya dikonfigurasi ulang.</translation>
 <translation id="129206366270737897">Menonaktifkan semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> asinkron.</translation>
 <translation id="1294263471858445589">Mengaktifkan autentikasi pasif di sesi samaran dan reguler.</translation>
 <translation id="1295737447968372331">Mengaktifkan dikte di layar login</translation>
@@ -860,13 +857,6 @@ Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> akan berlaku, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       URL dalam kebijakan ini tidak boleh bertentangan dengan URL yang dikonfigurasi melalui <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Jika bertentangan, kebijakan ini akan lebih diprioritaskan daripada <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
-<translation id="1859859319036806634">Peringatan: TLS versi pengganti akan dihapus dari <ph name="PRODUCT_NAME" /> setelah versi 52 (sekitar bulan September 2016) dan kebijakan ini tidak akan berlaku lagi.
-
-      Jika penyambungan TLS gagal, <ph name="PRODUCT_NAME" /> akan terlebih dahulu mencoba ulang sambungan dengan versi TLS yang lebih rendah guna memperbaiki bug di server HTTPS. Setelan yang mengonfigurasi versi tempat proses pengganti ini akan berhenti. Jika server menjalankan negosiasi versi dengan tepat (tanpa memutuskan sambungan), setelan ini tidak akan berlaku. Namun demikian, sambungan yang dihasilkan tetap harus mematuhi SSLVersionMin.
-
-      Jika kebijakan ini tidak dikonfigurasi atau jika disetel ke "tls1.2", <ph name="PRODUCT_NAME" /> akan berhenti menjalankan pengganti ini. Perhatikan bahwa tindakan ini tidak menonaktifkan dukungan untuk TLS versi lebih lama, hanya jika <ph name="PRODUCT_NAME" /> akan memperbaiki server berisi bug yang tidak dapat melakukan negosiasi versi dengan tepat.
-
-      Sebaliknya, jika kompatibilitas dengan server berisi bug harus dipertahankan, kebijakan ini akan disetel ke "tls1.1". Hal ini merupakan ukuran sementara dan server harus segera diperbaiki.</translation>
 <translation id="1861206724856734193">Menyetel daftar aturan pencegahan kebocoran data.</translation>
 <translation id="1862267110714201519">Nonaktifkan fitur jendela bayangan.</translation>
 <translation id="1865417998205858223">Izin Kunci</translation>
@@ -2191,11 +2181,6 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
       Jika situs cocok dengan pola URL di kebijakan ini, kebijakan berikut akan diabaikan: <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME" />, <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME" />.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Kebijakan ini hanya mencocokkan berdasarkan asal, sehingga jalur apa pun di pola URL akan diabaikan.</translation>
-<translation id="3117676313396757089">Peringatan: DHE akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> setelah versi 57 (sekitar Maret 2017) dan setelah itu kebijakan ini tidak akan berlaku lagi.
-
-      Jika kebijakan tidak disetel, atau disetel ke false, maka cipher suite DHE di TLS tidak akan diaktifkan. Kebijakan dapat disetel ke true untuk mengaktifkan cipher suite DHE dan mempertahankan kompatibilitas dengan server yang telah usang. Tindakan ini hanya sementara dan server harus dikonfigurasi ulang.
-
-      Server sebaiknya dimigrasikan ke cipher suite ECDHE. Jika tidak tersedia, pastikan cipher suite yang menggunakan pertukaran kunci RSA diaktifkan.</translation>
 <translation id="3118552207903834734">Mengizinkan pengguna mengonfigurasi nama host perangkatnya</translation>
 <translation id="3122082892722698079">Mengontrol penggunaan pengecualian konten tidak aman</translation>
 <translation id="3128072319047570212">Setelan keygen</translation>
@@ -4250,11 +4235,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5323200200131319468">Mengaktifkan respons lisan di layar login</translation>
 <translation id="532848608876725157">Aktifkan DNS-over-HTTPS dengan fallback yang tidak aman</translation>
 <translation id="5328965694451556034">Melaporkan login/logout</translation>
-<translation id="5329007337159326804">Peringatan: Kebijakan versi TLS maksimum akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> mulai sekitar versi 75 (sekitar bulan Juni 2019).
-
-      Jika kebijakan ini tidak dikonfigurasi, <ph name="PRODUCT_NAME" /> akan menggunakan versi maksimum default.
-
-      Jika kebijakan ini dikonfigurasi, produk dapat ditetapkan ke salah satu nilai berikut: "tls1.2" atau "tls1.3". Setelah ditetapkan, <ph name="PRODUCT_NAME" /> tidak akan menggunakan versi SSL/TLS yang lebih baru daripada versi yang ditentukan. Nilai yang tidak dikenal akan diabaikan.</translation>
 <translation id="5329018127554115226">Mode Efisiensi Tinggi akan dinonaktifkan.</translation>
 <translation id="5330684698007383292">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten berikut</translation>
 <translation id="5331746669335642668">Kebijakan cloud <ph name="PRODUCT_NAME" /> menggantikan kebijakan Platform.</translation>
@@ -4982,10 +4962,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Perlu diingat bahwa kebijakan ini akan melemahkan perlindungan IP lokal jika dibutuhkan oleh administrator.</translation>
 <translation id="614662973812186053">Kebijakan ini juga mengontrol pengumpulan data diagnostik dan penggunaan Android.</translation>
 <translation id="614665605501218241">Mengizinkan situs yang terdaftar untuk membuat permintaan ke endpoint jaringan yang lebih pribadi dengan cara yang tidak aman.</translation>
-<translation id="6154509171634387825">Peringatan: 3DES akan dihapus sepenuhnya dari <ph name="PRODUCT_NAME" /> versi 95 (sekitar Oktober 2021) dan kebijakan ini akan berhenti berfungsi.
-
-      Jika kebijakan disetel ke benar (true), cipher suite 3DES di TLS akan diaktifkan. Jika kebijakan disetel ke salah (false), cipher suite 3DES di TLS akan dinonaktifkan. Jika kebijakan tidak disetel, cipher suite 3DES akan dinonaktifkan secara default. Kebijakan ini dapat digunakan untuk sementara waktu mempertahankan kompatibilitas dengan server yang sudah tidak berlaku. Ini adalah tindakan sementara dan server harus dikonfigurasi ulang.
-      </translation>
 <translation id="6155350825868160236">Izinkan pengguna memilih apakah akan menggunakan layanan web Google untuk mengatasi kesalahan ejaan</translation>
 <translation id="6155936611791017817">Setel status default kursor besar di layar masuk</translation>
 <translation id="6157537876488211233">Peraturan mengabaikan proxy yang dipisahkan koma</translation>
