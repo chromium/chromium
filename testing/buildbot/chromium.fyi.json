@@ -104613,8 +104613,7 @@
     "gtest_tests": [
       {
         "args": [
-          "--gtest_also_run_disabled_tests",
-          "--gtest_filter=*DISABLE*"
+          "--gtest_also_run_disabled_tests"
         ],
         "isolate_profile_data": true,
         "merge": {

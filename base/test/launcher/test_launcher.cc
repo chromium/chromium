@@ -1577,6 +1577,12 @@ bool TestLauncher::Init(CommandLine* command_line) {
     }
   }
 
+  // If kGTestRunDisabledTestsFlag is set, force running all negative
+  // tests in testing/buildbot/filters.
+  if (command_line->HasSwitch(kGTestRunDisabledTestsFlag)) {
+    negative_test_filter_.clear();
+  }
+
   // Split --gtest_filter at '-', if there is one, to separate into
   // positive filter and negative filter portions.
   bool double_colon_supported = !command_line->HasSwitch(kGTestFilterFlag);

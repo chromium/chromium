@@ -3676,7 +3676,7 @@
         'mixins': [
           'isolate_profile_data',
           'linux-bionic',
-          'gtest_run_disabled_only',
+          'gtest_run_disabled',
         ],
         'additional_compile_targets': [
           'chrome',

@@ -169,6 +169,12 @@ class TestLauncherTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::IO};
   ScopedTempDir dir;
 
+  FilePath CreateFilterFile() {
+    FilePath result_file = dir.GetPath().AppendASCII("test.filter");
+    WriteFile(result_file, "-Test.firstTest");
+    return result_file;
+  }
+
  private:
   std::vector<TestIdentifier> tests_;
 };
@@ -466,6 +472,56 @@ TEST_F(TestLauncherTest, RunDisabledTests) {
   SetUpExpectCalls();
   command_line->AppendSwitch("gtest_also_run_disabled_tests");
   command_line->AppendSwitchASCII("gtest_filter", "Test*.first*");
+  std::vector<std::string> tests_names = {"DISABLED_TestDisabled.firstTest",
+                                          "Test.firstTest",
+                                          "Test.DISABLED_firstTestDisabled"};
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
+                                 _,
+                                 testing::ElementsAreArray(tests_names.cbegin(),
+                                                           tests_names.cend()),
+                                 _, _))
+      .WillOnce(::testing::DoAll(
+          OnTestResult(&test_launcher, "Test.firstTest",
+                       TestResult::TEST_SUCCESS),
+          OnTestResult(&test_launcher, "DISABLED_TestDisabled.firstTest",
+                       TestResult::TEST_SUCCESS),
+          OnTestResult(&test_launcher, "Test.DISABLED_firstTestDisabled",
+                       TestResult::TEST_SUCCESS)));
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher does not run negative tests filtered under
+// testing/buildbot/filters.
+TEST_F(TestLauncherTest, DoesRunFilteredTests) {
+  AddMockedTests("Test", {"firstTest", "secondTest"});
+  SetUpExpectCalls();
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  // filter file content is "-Test.firstTest"
+  FilePath path = CreateFilterFile();
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  std::vector<std::string> tests_names = {"Test.secondTest"};
+  EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
+                                 _,
+                                 testing::ElementsAreArray(tests_names.cbegin(),
+                                                           tests_names.cend()),
+                                 _, _))
+      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.secondTest",
+                                              TestResult::TEST_SUCCESS)));
+  EXPECT_TRUE(test_launcher.Run(command_line.get()));
+}
+
+// Test TestLauncher run disabled tests and negative tests filtered under
+// testing/buildbot/filters, when gtest_also_run_disabled_tests is set.
+TEST_F(TestLauncherTest, RunDisabledTestsWithFilteredTests) {
+  AddMockedTests("DISABLED_TestDisabled", {"firstTest"});
+  AddMockedTests("Test", {"firstTest", "DISABLED_firstTestDisabled"});
+  SetUpExpectCalls();
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  // filter file content is "-Test.firstTest", but Test.firstTest will still
+  // run due to gtest_also_run_disabled_tests is set.
+  FilePath path = CreateFilterFile();
+  command_line->AppendSwitchPath("test-launcher-filter-file", path);
+  command_line->AppendSwitch("gtest_also_run_disabled_tests");
   std::vector<std::string> tests_names = {"DISABLED_TestDisabled.firstTest",
                                           "Test.firstTest",
                                           "Test.DISABLED_firstTestDisabled"};
