@@ -5,7 +5,9 @@
 #include "chrome/common/profiler/unwind_util.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/profiler/profiler_buildflags.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/version_info/channel.h"
@@ -14,11 +16,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// Used to gate unwind prerequisites' installation for some unit tests.
+extern const base::Feature kInstallAndroidUnwindDfm;
+
 namespace {
 
 using ::testing::_;
-using ::testing::IsFalse;
-using ::testing::IsTrue;
 using ::testing::Return;
 
 // For `RequestUnwindPrerequisitesInstallation` and
@@ -73,6 +76,22 @@ TEST(UnwindPrerequisitesTest, RequestInstall) {
                                          &mock_delegate);
 }
 
+TEST(UnwindPrerequisitesTest, RequestInstallOnBeta) {
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) &&           \
+    BUILDFLAG(ENABLE_ARM_CFI_TABLE) && defined(OFFICIAL_BUILD) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kInstallAndroidUnwindDfm);
+
+  MockModuleUnwindPrerequisitesDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, RequestInstallation(version_info::Channel::BETA))
+      .Times(1);
+
+  RequestUnwindPrerequisitesInstallation(version_info::Channel::BETA,
+                                         &mock_delegate);
+#endif
+}
+
 TEST(UnwindPrerequisitesDeathTest, CannotRequestInstallOutsideBrowser) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kProcessType, switches::kRendererProcess);
@@ -99,6 +118,7 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
   } test_cases[] = {
     {version_info::Channel::CANARY, &true_mock_delegate, true},
     {version_info::Channel::DEV, &true_mock_delegate, true},
+    {version_info::Channel::BETA, &true_mock_delegate, true},
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL) && \
     BUILDFLAG(ENABLE_ARM_CFI_TABLE)
     {version_info::Channel::CANARY, &false_mock_delegate, false},
@@ -107,11 +127,9 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
     {version_info::Channel::STABLE, &false_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &false_mock_delegate, false},
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {version_info::Channel::BETA, &true_mock_delegate, false},
     {version_info::Channel::STABLE, &true_mock_delegate, false},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, false},
-#else   // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {version_info::Channel::BETA, &true_mock_delegate, true},
+#else  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {version_info::Channel::STABLE, &true_mock_delegate, true},
     {version_info::Channel::UNKNOWN, &true_mock_delegate, true},
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -119,7 +137,6 @@ TEST(UnwindPrerequisitesTest, AreUnwindPrerequisitesAvailable) {
         // BUILDFLAG(ENABLE_ARM_CFI_TABLE)
     {version_info::Channel::CANARY, &false_mock_delegate, true},
     {version_info::Channel::DEV, &false_mock_delegate, true},
-    {version_info::Channel::BETA, &true_mock_delegate, true},
     {version_info::Channel::BETA, &false_mock_delegate, true},
     {version_info::Channel::STABLE, &true_mock_delegate, true},
     {version_info::Channel::STABLE, &false_mock_delegate, true},

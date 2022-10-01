@@ -10,6 +10,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/profiler/profiler_buildflags.h"
@@ -47,6 +48,10 @@ extern "C" {
 extern char __executable_start;
 }
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
+
+// See `RequestUnwindPrerequisitesInstallation` below.
+extern const base::Feature kInstallAndroidUnwindDfm{
+    "InstallAndroidUnwindDfm", base::FEATURE_DISABLED_BY_DEFAULT};
 
 namespace {
 
@@ -210,7 +215,9 @@ void RequestUnwindPrerequisitesInstallation(
   // The install occurs asynchronously, with the module available at the first
   // run of Chrome following install.
   if (channel == version_info::Channel::CANARY ||
-      channel == version_info::Channel::DEV) {
+      channel == version_info::Channel::DEV ||
+      (channel == version_info::Channel::BETA &&
+       base::FeatureList::IsEnabled(kInstallAndroidUnwindDfm))) {
     prerequites_delegate->RequestInstallation(channel);
   }
 #endif
@@ -226,7 +233,8 @@ bool AreUnwindPrerequisitesAvailable(
   // unwinder module is installed, we only consider it to be available for
   // specific channels.
   if (!(channel == version_info::Channel::CANARY ||
-        channel == version_info::Channel::DEV)) {
+        channel == version_info::Channel::DEV ||
+        channel == version_info::Channel::BETA)) {
     return false;
   }
 #endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
