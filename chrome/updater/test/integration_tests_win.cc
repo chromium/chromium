@@ -1483,8 +1483,8 @@ void RunOfflineInstall(UpdaterScope scope,
   // was run.
   const std::wstring event_name = base::StrCat(
       {L"OfflineInstallTest-", base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name.c_str(), scope, &attr);
+  NamedObjectAttributes attr =
+      GetNamedObjectAttributes(event_name.c_str(), scope);
   base::WaitableEvent event(base::win::ScopedHandle(
       ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
   ASSERT_NE(event.handle(), nullptr);

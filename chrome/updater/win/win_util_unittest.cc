@@ -105,16 +105,15 @@ TEST(WinUtil, BuildExeCommandLine) {
 }
 
 TEST(WinUtil, ShellExecuteAndWait) {
-  DWORD exit_code = 0;
+  HResultOr<DWORD> result =
+      ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {});
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
-  EXPECT_EQ(ShellExecuteAndWait(base::FilePath(L"NonExistent.Exe"), {}, {},
-                                &exit_code),
-            HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
-
-  EXPECT_HRESULT_SUCCEEDED(ShellExecuteAndWait(
-      GetTestProcessCommandLine(GetTestScope()).GetProgram(), {}, {},
-      &exit_code));
-  EXPECT_EQ(exit_code, 0UL);
+  result = ShellExecuteAndWait(
+      GetTestProcessCommandLine(GetTestScope()).GetProgram(), {}, {});
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), DWORD{0});
 }
 
 TEST(WinUtil, RunElevated) {
@@ -123,13 +122,13 @@ TEST(WinUtil, RunElevated) {
   if (!::IsUserAnAdmin())
     return;
 
-  DWORD exit_code = 0;
   const base::CommandLine test_process_cmd_line =
       GetTestProcessCommandLine(GetTestScope());
-  EXPECT_HRESULT_SUCCEEDED(
+  HResultOr<DWORD> result =
       RunElevated(test_process_cmd_line.GetProgram(),
-                  test_process_cmd_line.GetArgumentsString(), &exit_code));
-  EXPECT_EQ(exit_code, 0UL);
+                  test_process_cmd_line.GetArgumentsString());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), DWORD{0});
 }
 
 TEST(WinUtil, GetOSVersion) {
@@ -250,9 +249,9 @@ TEST(WinUtil, CompareOSVersions_OldMajorWithHigherMinor) {
 }
 
 TEST(WinUtil, IsCOMCallerAdmin) {
-  bool is_com_caller_admin = false;
-  EXPECT_HRESULT_SUCCEEDED(IsCOMCallerAdmin(is_com_caller_admin));
-  EXPECT_EQ(is_com_caller_admin, ::IsUserAnAdmin());
+  HResultOr<bool> is_com_caller_admin = IsCOMCallerAdmin();
+  ASSERT_TRUE(is_com_caller_admin.has_value());
+  EXPECT_EQ(is_com_caller_admin.value(), ::IsUserAnAdmin());
 }
 
 TEST(WinUtil, EnableSecureDllLoading) {

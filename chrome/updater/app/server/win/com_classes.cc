@@ -40,13 +40,14 @@ HRESULT IsCOMCallerAllowed() {
   if (GetUpdaterScope() == UpdaterScope::kUser)
     return S_OK;
 
-  bool is_com_caller_admin = false;
-  if (HRESULT hr = IsCOMCallerAdmin(is_com_caller_admin); FAILED(hr)) {
+  HResultOr<bool> result = IsCOMCallerAdmin();
+  if (!result.has_value()) {
+    HRESULT hr = result.error();
     LOG(ERROR) << __func__ << ": IsCOMCallerAdmin failed: " << std::hex << hr;
     return hr;
   }
 
-  return is_com_caller_admin ? S_OK : E_ACCESSDENIED;
+  return result.value() ? S_OK : E_ACCESSDENIED;
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback_helpers.h"
@@ -18,6 +19,7 @@
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
 #include "base/scoped_generic.h"
+#include "base/types/expected.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -40,6 +42,15 @@ struct std::hash<IID> {
 };
 
 namespace updater {
+
+// Helper for methods which perform system operations which may fail. The
+// failure reason is returned as an HRESULT.
+// TODO(crbug.com/1369769): Remove the following warning once resolved in
+// base. NOTE: When ValueT is an integral type, base::expected's implicit ctors
+// are ambiguous. To return an error in this case it must be wrapped in a
+// base::unexpected(error);
+template <typename ValueT>
+using HResultOr = base::expected<ValueT, HRESULT>;
 
 class ScHandleTraits {
  public:
@@ -110,9 +121,16 @@ HRESULT OpenUniqueEventFromEnvironment(const std::wstring& var_name,
                                        HANDLE* unique_event);
 
 struct NamedObjectAttributes {
-  NamedObjectAttributes();
+  NamedObjectAttributes(const std::wstring& name, const CSecurityDesc& sd);
+  NamedObjectAttributes(const NamedObjectAttributes& other) = delete;
+  NamedObjectAttributes& operator=(const NamedObjectAttributes& other) = delete;
   ~NamedObjectAttributes();
+
   std::wstring name;
+
+  // `CSecurityAttributes` has broken value semantics because it does not update
+  // its `SECURITY_ATTRIBUTES` base to keep it in sync with the internal
+  // `m_SecurityDescriptor` data member.
   CSecurityAttributes sa;
 };
 
@@ -121,26 +139,20 @@ struct NamedObjectAttributes {
 // For machine objects, returns a security attributes that gives permissions to
 // both Admins and SYSTEM. This allows for cases where SYSTEM creates the named
 // object first. The default DACL for SYSTEM will not allow Admins access.
-void GetNamedObjectAttributes(const wchar_t* base_name,
-                              UpdaterScope scope,
-                              NamedObjectAttributes* attr);
+NamedObjectAttributes GetNamedObjectAttributes(const wchar_t* base_name,
+                                               UpdaterScope scope);
 
 // Creates an event based on the provided attributes.
 HRESULT CreateEvent(NamedObjectAttributes* event_attr, HANDLE* event_handle);
 
 // Gets the security descriptor with the default DACL for the current process
 // user. The owner is the current user, the group is the current primary group.
-// Returns true and populates sec_attr on success, false on failure.
-bool GetCurrentUserDefaultSecurityAttributes(CSecurityAttributes* sec_attr);
-
-// Get security attributes containing a DACL that grant the ACCESS_MASK access
-// to admins and system.
-void GetAdminDaclSecurityAttributes(CSecurityAttributes* sec_attr,
-                                    ACCESS_MASK accessmask);
+// Returns security attributes on success, nullopt on failure.
+absl::optional<CSecurityDesc> GetCurrentUserDefaultSecurityDescriptor();
 
 // Get security descriptor containing a DACL that grants the ACCESS_MASK access
 // to admins and system.
-void GetAdminDaclSecurityDescriptor(CSecurityDesc* sd, ACCESS_MASK accessmask);
+CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask);
 
 // Returns the registry path `Software\{CompanyName}\Update\Clients\{app_id}`.
 std::wstring GetAppClientsKey(const std::string& app_id);
@@ -171,27 +183,26 @@ int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes);
 // Returns a logged on user token handle from the current session.
 base::win::ScopedHandle GetUserTokenFromCurrentSessionId();
 
-// Sets `is_token_admin` to `true` if the token is an elevated administrator. If
+// Returns `true` if the token is an elevated administrator. If
 // `token` is `NULL`, the current thread token is used.
-HRESULT IsTokenAdmin(HANDLE token, bool& is_token_admin);
+HResultOr<bool> IsTokenAdmin(HANDLE token);
 
-// Sets `is_user_admin` to true if the user is running as an elevated
+// Returns true if the user is running as an elevated
 // administrator.
-HRESULT IsUserAdmin(bool& is_user_admin);
+HResultOr<bool> IsUserAdmin();
 
-// Sets `is_user_non_elevated_admin` to true if the user is running as a
+// Returns `true` if the user is running as a
 // non-elevated administrator.
-HRESULT IsUserNonElevatedAdmin(bool& is_user_non_elevated_admin);
+HResultOr<bool> IsUserNonElevatedAdmin();
 
-// Sets `is_com_caller_admin` to `true` if the COM caller is an admin.
-HRESULT IsCOMCallerAdmin(bool& is_com_caller_admin);
+// Returns `true` if the COM caller is an admin.
+HResultOr<bool> IsCOMCallerAdmin();
 
-// Sets `is_uac_on` to true if the UAC is enabled.
-HRESULT IsUACOn(bool& is_uac_on);
+// Returns `true` if the UAC is enabled.
+bool IsUACOn();
 
-// Sets `is_elevated_with_uac_on` to true if running at high integrity with
-// UAC on.
-HRESULT IsElevatedWithUACOn(bool& is_elevated_with_uac_on);
+// Returns `true` if running at high integrity with UAC on.
+bool IsElevatedWithUACOn();
 
 // Returns a string representing the UAC settings and elevation state for the
 // caller. The value can be used for logging purposes.
@@ -213,22 +224,22 @@ REGSAM Wow6432(REGSAM access);
 
 // Starts a new process via ::ShellExecuteEx. `parameters` and `verb` can be
 // empty strings. The function waits until the spawned process has completed.
-// The exit code of the process is returned in `exit_code`.
 // `verb` specifies the action to perform. For instance, the "runas" verb
 // launches an application as administrator with an UAC prompt if UAC is enabled
 // and the parent process is running at medium integrity.
-HRESULT ShellExecuteAndWait(const base::FilePath& file_path,
-                            const std::wstring& parameters,
-                            const std::wstring& verb,
-                            DWORD* exit_code);
+// Returns the exit code of the process or HRESULT on failure. Returns 0 if the
+// process was created successfully but the exit code is unknown.
+HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
+                                     const std::wstring& parameters,
+                                     const std::wstring& verb);
 
 // Starts a new elevated process. `file_path` specifies the program to be run.
 // `parameters` can be an empty string.
-// The function waits until the spawned process has completed. The exit code of
-// the process is returned in `exit_code`.
-HRESULT RunElevated(const base::FilePath& file_path,
-                    const std::wstring& parameters,
-                    DWORD* exit_code);
+// The function waits until the spawned process has completed.
+// Returns the exit code of the process or HRESULT on failure. Returns 0 if the
+// process was created successfully but the exit code is unknown.
+HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
+                             const std::wstring& parameters);
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 

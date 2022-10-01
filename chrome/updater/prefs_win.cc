@@ -50,8 +50,8 @@ std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
 
 bool ScopedPrefsLockImpl::Initialize(UpdaterScope scope,
                                      base::TimeDelta timeout) {
-  NamedObjectAttributes lock_attr;
-  GetNamedObjectAttributes(kPrefsAccessMutex, scope, &lock_attr);
+  NamedObjectAttributes lock_attr =
+      GetNamedObjectAttributes(kPrefsAccessMutex, scope);
   mutex_.Set(::CreateMutex(&lock_attr.sa, false, lock_attr.name.c_str()));
   if (!mutex_.IsValid())
     return false;

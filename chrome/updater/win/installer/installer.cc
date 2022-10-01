@@ -271,18 +271,17 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
 
   // The metainstaller is elevated because unpacking its files and running
   // updater.exe must happen from a secure directory.
-  DWORD exit_code = 0;
-  HRESULT hr = RunElevated(
-      command_line.GetProgram(),
-      [&command_line]() {
+  HResultOr<DWORD> result =
+      RunElevated(command_line.GetProgram(), [&command_line]() {
         base::CommandLine elevate_command_line = command_line;
         elevate_command_line.AppendSwitchASCII(kCmdLineExpectElevated, {});
         return elevate_command_line.GetArgumentsString();
-      }(),
-      &exit_code);
-  return SUCCEEDED(hr)
-             ? ProcessExitResult(exit_code)
-             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
+      }());
+
+  return result.has_value()
+             ? ProcessExitResult(result.value())
+             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS,
+                                 result.error());
 }
 
 ProcessExitResult WMain(HMODULE module) {

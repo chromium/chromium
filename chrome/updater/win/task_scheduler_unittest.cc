@@ -155,8 +155,8 @@ TEST_F(TaskSchedulerTests, DISABLED_RunAProgramNow) {
   const std::wstring event_name =
       base::StrCat({kTestProcessExecutableName, L"-",
                     base::NumberToWString(::GetCurrentProcessId())});
-  NamedObjectAttributes attr;
-  GetNamedObjectAttributes(event_name.c_str(), GetTestScope(), &attr);
+  NamedObjectAttributes attr =
+      GetNamedObjectAttributes(event_name.c_str(), GetTestScope());
 
   base::WaitableEvent event(base::win::ScopedHandle(
       ::CreateEvent(&attr.sa, FALSE, FALSE, attr.name.c_str())));
