@@ -29,8 +29,9 @@ namespace {
 // If enabled, this will release all EGL state as soon as the underlying
 // texture is released. This has the potential to cause performance regressions,
 // and so is disabled by default.
-const base::Feature kTightlyScopedIOSurfaceEGLState{
-    "TightlyScopedIOSurfaceEGLState", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kTightlyScopedIOSurfaceEGLState,
+             "TightlyScopedIOSurfaceEGLState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 struct InternalFormatType {
   InternalFormatType(GLenum format, GLenum type) : format(format), type(type) {}

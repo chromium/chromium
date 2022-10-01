@@ -35,8 +35,9 @@ namespace gpu {
 namespace {
 
 // Control use of AVFoundation to draw video content.
-base::Feature kAVFoundationOverlays{"avfoundation-overlays",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAVFoundationOverlays,
+             "avfoundation-overlays",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
 ImageTransportSurfaceOverlayMac::ImageTransportSurfaceOverlayMac(

@@ -1625,8 +1625,9 @@ BASE_FEATURE(kRunTextInputUpdatePostLifecycle,
              "RunTextInputUpdatePostLifecycle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kProcessHtmlDataImmediately{
-    "ProcessHtmlDataImmediately", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kProcessHtmlDataImmediately,
+             "ProcessHtmlDataImmediately",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kProcessHtmlDataImmediatelyFirstChunk{
     &kProcessHtmlDataImmediately, "first", false};
@@ -1642,8 +1643,9 @@ BASE_FEATURE(kWildcardSubdomainsInPermissionsPolicy,
              "WildcardSubdomainsInPermissionsPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::Feature kDocumentEventNodePathCaching{
-    "DocumentEventNodePathCaching", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDocumentEventNodePathCaching,
+             "DocumentEventNodePathCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kDocumentMaxEventNodePathCachedEntries{
     &kDocumentEventNodePathCaching, "max-cache-entries", 100};

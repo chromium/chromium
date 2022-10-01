@@ -18,9 +18,9 @@ namespace {
 
 // When enabled, Source Location blocking BFCache is captured
 // to send it to the browser.
-const base::Feature kRegisterJSSourceLocationBlockingBFCache{
-    "RegisterJSSourceLocationBlockingBFCache",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
+             "RegisterJSSourceLocationBlockingBFCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns whether features::kRegisterJSSourceLocationBlockingBFCache is
 // enabled.

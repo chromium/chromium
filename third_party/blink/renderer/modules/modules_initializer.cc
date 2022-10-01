@@ -123,8 +123,9 @@ namespace {
 
 // Controls whether media players use base::ThreadPool or (legacy) the
 // CategorizedWorkerPool, which predates the base thread pool.
-base::Feature kBlinkMediaPlayerUsesBaseThreadPool{
-    "BlinkMediaPlayerUsesThreadPool", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kBlinkMediaPlayerUsesBaseThreadPool,
+             "BlinkMediaPlayerUsesThreadPool",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 

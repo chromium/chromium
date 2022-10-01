@@ -31,7 +31,7 @@ class SharedContextState;
 class SharedImageFactory;
 class SharedImageRepresentationFactory;
 
-extern const base::Feature kGPUMemoryAblationFeature;
+BASE_DECLARE_FEATURE(kGPUMemoryAblationFeature);
 
 // When enabled, this experiment allocates additional memory alongside each
 // normal allocation. This will allow a study of the correlation between

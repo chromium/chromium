@@ -64,8 +64,7 @@
 namespace headless {
 
 namespace features {
-const base::Feature kVirtualTime{"VirtualTime",
-                                 base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVirtualTime, "VirtualTime", base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
 const base::FilePath::CharType kDefaultProfileName[] =

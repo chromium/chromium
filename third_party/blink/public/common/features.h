@@ -853,7 +853,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRunTextInputUpdatePostLifecycle);
 // same name. Also note that this only applies to uses that are normally
 // deferred (for example, when HTMLDocumentParser is created for inner-html it
 // is not deferred).
-BLINK_COMMON_EXPORT extern const base::Feature kProcessHtmlDataImmediately;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kProcessHtmlDataImmediately);
 
 // If set, the first chunk of data available for html processing is processed
 // immediately.
@@ -874,7 +874,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kWildcardSubdomainsInPermissionsPolicy);
 
 // If enabled, will cache for each node's EventPath::NodePath in document.
-BLINK_COMMON_EXPORT extern const base::Feature kDocumentEventNodePathCaching;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDocumentEventNodePathCaching);
 
 // Parameter for tuning max entries allowed in EventNodePathCache, which will be
 // used to do LRU eviction in document.
