@@ -1227,7 +1227,7 @@ void MediaSource::ClearLiveSeekableRange_Locked(
   SendUpdatedInfoToMainThreadCache();
 }
 
-MediaSourceHandleImpl* MediaSource::handle(ExceptionState& exception_state) {
+MediaSourceHandleImpl* MediaSource::handle() {
   base::AutoLock lock(attachment_link_lock_);
 
   DVLOG(3) << __func__;
@@ -1237,32 +1237,26 @@ MediaSourceHandleImpl* MediaSource::handle(ExceptionState& exception_state) {
          RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
              GetExecutionContext()));
 
-  // Per https://github.com/w3c/media-source/pull/306:
-  // 1. If the implementation does not support creating a handle for this
-  //    MediaSource, then throw a NotSupportedError exception and abort these
-  //    steps.
   // TODO(crbug.com/506273): Support MediaSource srcObject attachment idiom for
-  // main-thread-owned MediaSource objects.
-  if (IsMainThread() ||
-      !GetExecutionContext()->IsDedicatedWorkerGlobalScope()) {
-    LogAndThrowDOMException(exception_state,
-                            DOMExceptionCode::kNotSupportedError,
-                            "MediaSourceHandle creation is currently supported "
-                            "only in a dedicated worker.");
-    return nullptr;
-  }
+  // main-thread-owned MediaSource objects (would need MSE spec updates, too,
+  // and might not involve a handle regardless).
+  DCHECK(!IsMainThread() &&
+         GetExecutionContext()->IsDedicatedWorkerGlobalScope());
 
-  // Lazily create the handle, since it indirectly holds a
-  // CrossThreadMediaSourceAttachment (until attachment starts or the handle is
-  // transferred) which holds a strong reference to us until attachment is
-  // actually started and later closed.
-  // TODO(crbug.com/878133): Update MSE spec to create this handle either during
-  // construction of worker-owned MediaSource or lazily upon first read of this
-  // attribute at this point, e.g. "Create a new MediaSourceHandle object and
-  // associated resources, and link it internally to this MediaSource."
+  // Per
+  // https://www.w3.org/TR/2022/WD-media-source-2-20220921/#dom-mediasource-handle:
+  // If the handle for this MediaSource object has not yet been created, then
+  // run the following steps:
+  // 1.1. Let created handle be the result of creating a new MediaSourceHandle
+  //      object and associated resources, linked internally to this
+  //      MediaSource.
+  // 1.2. Update the attribute to be created handle.
   if (!worker_media_source_handle_) {
-    // PassKey provider usage here ensures that we are allowed to call the
-    // attachment constructor.
+    // Lazily create the handle, since it indirectly holds a
+    // CrossThreadMediaSourceAttachment (until attachment starts or the handle
+    // is transferred) which holds a strong reference to us until attachment is
+    // actually started and later closed. PassKey provider usage here ensures
+    // that we are allowed to call the attachment constructor.
     scoped_refptr<CrossThreadMediaSourceAttachment> attachment =
         base::MakeRefCounted<CrossThreadMediaSourceAttachment>(
             this, AttachmentCreationPassKeyProvider::GetPassKey());
@@ -1280,6 +1274,9 @@ MediaSourceHandleImpl* MediaSource::handle(ExceptionState& exception_state) {
         std::move(attachment_provider), std::move(internal_blob_url));
   }
 
+  // Per
+  // https://www.w3.org/TR/2022/WD-media-source-2-20220921/#dom-mediasource-handle:
+  // 2. Return the MediaSourceHandle object that is this attribute's value.
   DCHECK(worker_media_source_handle_);
   return worker_media_source_handle_.Get();
 }

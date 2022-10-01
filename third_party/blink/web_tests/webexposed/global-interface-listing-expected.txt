@@ -5562,7 +5562,6 @@ interface MediaSource : EventTarget
     attribute @@toStringTag
     getter activeSourceBuffers
     getter duration
-    getter handle
     getter onsourceclose
     getter onsourceended
     getter onsourceopen

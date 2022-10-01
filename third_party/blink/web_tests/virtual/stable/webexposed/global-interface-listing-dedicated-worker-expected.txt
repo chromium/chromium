@@ -815,6 +815,31 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method decodingInfo
 [Worker]     method encodingInfo
+[Worker] interface MediaSource : EventTarget
+[Worker]     static getter canConstructInDedicatedWorker
+[Worker]     static method isTypeSupported
+[Worker]     attribute @@toStringTag
+[Worker]     getter activeSourceBuffers
+[Worker]     getter duration
+[Worker]     getter handle
+[Worker]     getter onsourceclose
+[Worker]     getter onsourceended
+[Worker]     getter onsourceopen
+[Worker]     getter readyState
+[Worker]     getter sourceBuffers
+[Worker]     method addSourceBuffer
+[Worker]     method clearLiveSeekableRange
+[Worker]     method constructor
+[Worker]     method endOfStream
+[Worker]     method removeSourceBuffer
+[Worker]     method setLiveSeekableRange
+[Worker]     setter duration
+[Worker]     setter onsourceclose
+[Worker]     setter onsourceended
+[Worker]     setter onsourceopen
+[Worker] interface MediaSourceHandle
+[Worker]     attribute @@toStringTag
+[Worker]     method constructor
 [Worker] interface MessageChannel
 [Worker]     attribute @@toStringTag
 [Worker]     getter port1
@@ -1327,6 +1352,42 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method unregister
 [Worker]     method update
 [Worker]     setter onupdatefound
+[Worker] interface SourceBuffer : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter appendWindowEnd
+[Worker]     getter appendWindowStart
+[Worker]     getter buffered
+[Worker]     getter mode
+[Worker]     getter onabort
+[Worker]     getter onerror
+[Worker]     getter onupdate
+[Worker]     getter onupdateend
+[Worker]     getter onupdatestart
+[Worker]     getter timestampOffset
+[Worker]     getter updating
+[Worker]     method abort
+[Worker]     method appendBuffer
+[Worker]     method changeType
+[Worker]     method constructor
+[Worker]     method remove
+[Worker]     setter appendWindowEnd
+[Worker]     setter appendWindowStart
+[Worker]     setter mode
+[Worker]     setter onabort
+[Worker]     setter onerror
+[Worker]     setter onupdate
+[Worker]     setter onupdateend
+[Worker]     setter onupdatestart
+[Worker]     setter timestampOffset
+[Worker] interface SourceBufferList : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter length
+[Worker]     getter onaddsourcebuffer
+[Worker]     getter onremovesourcebuffer
+[Worker]     method @@iterator
+[Worker]     method constructor
+[Worker]     setter onaddsourcebuffer
+[Worker]     setter onremovesourcebuffer
 [Worker] interface StorageManager : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor

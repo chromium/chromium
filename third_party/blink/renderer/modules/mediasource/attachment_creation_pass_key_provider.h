@@ -11,7 +11,6 @@
 
 namespace blink {
 
-class ExceptionState;
 class MediaSource;
 class MediaSourceHandleImpl;
 class ScriptState;
@@ -27,7 +26,7 @@ class AttachmentCreationPassKeyProvider {
   // create a MediaSourceAttachmentSupplement.
   static PassKey GetPassKey() { return PassKey(); }
   friend String URLMediaSource::createObjectURL(ScriptState*, MediaSource*);
-  friend MediaSourceHandleImpl* MediaSource::handle(ExceptionState&);
+  friend MediaSourceHandleImpl* MediaSource::handle();
 };
 
 }  // namespace blink

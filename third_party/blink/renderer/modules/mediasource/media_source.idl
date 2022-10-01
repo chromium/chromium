@@ -72,12 +72,13 @@ enum EndOfStreamError {
 
     // Initially for just MSE-in-Workers (https://crbug.com/878133). See also
     // discussion on https://github.com/w3c/media-source/issues/175,
-    // https://github.com/w3c/media-source/pull/305 and
-    // https://github.com/w3c/media-source/pull/306.
+    // https://github.com/w3c/media-source/pull/305,
+    // https://github.com/w3c/media-source/pull/306 and
+    // https://github.com/w3c/media-source/pull/317.
     [
         RuntimeEnabled=MediaSourceInWorkersUsingHandle,
         MeasureAs=MediaSourceGetHandle,
-        RaisesException=Getter,
+        Exposed(DedicatedWorker MediaSourceInWorkers),
         SameObject
     ] readonly attribute MediaSourceHandle handle;
 

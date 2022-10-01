@@ -98,8 +98,7 @@ class MediaSource final : public EventTargetWithInlineData,
   void clearLiveSeekableRange(ExceptionState&)
       LOCKS_EXCLUDED(attachment_link_lock_);
 
-  MediaSourceHandleImpl* handle(ExceptionState&)
-      LOCKS_EXCLUDED(attachment_link_lock_);
+  MediaSourceHandleImpl* handle() LOCKS_EXCLUDED(attachment_link_lock_);
 
   static bool isTypeSupported(ExecutionContext* context, const String& type);
 
