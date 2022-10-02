@@ -39,13 +39,15 @@ bool FirstPartySetsContextConfig::Contains(const SchemefulSite& site) const {
   return FindOverride(site).has_value();
 }
 
-void FirstPartySetsContextConfig::ForEachCustomizationEntry(
-    base::FunctionRef<void(const SchemefulSite&,
+bool FirstPartySetsContextConfig::ForEachCustomizationEntry(
+    base::FunctionRef<bool(const SchemefulSite&,
                            const absl::optional<FirstPartySetEntry>&)> f)
     const {
   for (const auto& [site, maybe_entry] : customizations_) {
-    f(site, maybe_entry);
+    if (!f(site, maybe_entry))
+      return false;
   }
+  return true;
 }
 
 }  // namespace net

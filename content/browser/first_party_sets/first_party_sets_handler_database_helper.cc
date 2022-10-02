@@ -56,13 +56,14 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
 
   old_config.ForEachCustomizationEntry(
       [&](const net::SchemefulSite& old_member,
-          const absl::optional<net::FirstPartySetEntry>& old_entry) {
+          const absl::optional<net::FirstPartySetEntry>& old_entry) -> bool {
         const absl::optional<net::FirstPartySetEntry> current_entry =
             current_sets.FindEntry(old_member, &current_config);
         // Look for the ones have owner changed.
         if (old_entry.has_value() && current_entry != old_entry) {
           result.push_back(old_member);
         }
+        return true;
       });
 
   return result;
@@ -77,8 +78,7 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
   DCHECK(!browser_context_id.empty());
   base::flat_set<net::SchemefulSite> diff =
       ComputeSetsDiff(db_->GetGlobalSets(browser_context_id),
-                      net::FirstPartySetsContextConfig(
-                          db_->FetchPolicyModifications(browser_context_id)),
+                      db_->FetchPolicyModifications(browser_context_id),
                       current_sets, current_config);
 
   if (!db_->InsertSitesToClear(browser_context_id, diff)) {

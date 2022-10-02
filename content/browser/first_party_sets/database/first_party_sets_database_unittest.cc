@@ -152,7 +152,7 @@ TEST_F(FirstPartySetsDatabaseTest, CreateDB_TablesAndIndexesLazilyInitialized) {
       3u, sql::test::CountTableColumns(&db, "browser_context_sites_to_clear"));
   // `browser_context_id`, `cleared_at_run`.
   EXPECT_EQ(2u, sql::test::CountTableColumns(&db, "browser_contexts_cleared"));
-  // `browser_context_id`, `site`, `site_owner`.
+  // `browser_context_id`, `site`, `primary_site`.
   EXPECT_EQ(3u, sql::test::CountTableColumns(&db, "policy_modifications"));
   EXPECT_EQ(0u, CountPublicSetsEntries(&db));
   EXPECT_EQ(0u, CountBrowserContextSetsVersionEntries(&db));
@@ -175,7 +175,7 @@ TEST_F(FirstPartySetsDatabaseTest, LoadDBFile_CurrentVersion_Success) {
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
-  EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
+  EXPECT_EQ(3u, CountBrowserContextSetsVersionEntries(&db));
   EXPECT_EQ(1, VersionFromMetaTable(db));
   EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
   EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
@@ -262,7 +262,11 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   const std::string site = "https://aaa.test";
   const std::string primary = "https://bbb.test";
 
-  net::GlobalFirstPartySets input(
+  const std::string primary_site = "https://example.test";
+  const std::string site_member1 = "https://member1.test";
+  const std::string site_member2 = "https://member2.test";
+
+  net::GlobalFirstPartySets global_sets(
       /*entries=*/{{net::SchemefulSite(GURL(site)),
                     net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
                                             net::SiteType::kAssociated,
@@ -273,32 +277,40 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
                                             absl::nullopt)}},
       /*aliases=*/{});
 
+  net::FirstPartySetsContextConfig config(
+      {{net::SchemefulSite(GURL(site_member1)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}});
+
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->PersistSets(browser_context_id, version, input,
-                                net::FirstPartySetsContextConfig()));
+  EXPECT_TRUE(
+      db()->PersistSets(browser_context_id, version, global_sets, config));
   CloseDatabase();
 
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(2u, CountPublicSetsEntries(&db));
+  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
 
-  static constexpr char kSelectSql[] =
+  // ============ Verify persisting public sets
+  static constexpr char kSelectPublicSetsSql[] =
       "SELECT version,site,primary_site,site_type FROM public_sets";
-  sql::Statement s(db.GetUniqueStatement(kSelectSql));
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ(version.GetString(), s.ColumnString(0));
-  EXPECT_EQ(site, s.ColumnString(1));
-  EXPECT_EQ(primary, s.ColumnString(2));
-  EXPECT_EQ(1, s.ColumnInt(3));
+  sql::Statement s_public_sets(db.GetUniqueStatement(kSelectPublicSetsSql));
+  EXPECT_TRUE(s_public_sets.Step());
+  EXPECT_EQ(version.GetString(), s_public_sets.ColumnString(0));
+  EXPECT_EQ(site, s_public_sets.ColumnString(1));
+  EXPECT_EQ(primary, s_public_sets.ColumnString(2));
+  EXPECT_EQ(1, s_public_sets.ColumnInt(3));
 
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ(version.GetString(), s.ColumnString(0));
-  EXPECT_EQ(primary, s.ColumnString(1));
-  EXPECT_EQ(primary, s.ColumnString(2));
-  EXPECT_EQ(0, s.ColumnInt(3));
+  EXPECT_TRUE(s_public_sets.Step());
+  EXPECT_EQ(version.GetString(), s_public_sets.ColumnString(0));
+  EXPECT_EQ(primary, s_public_sets.ColumnString(1));
+  EXPECT_EQ(primary, s_public_sets.ColumnString(2));
+  EXPECT_EQ(0, s_public_sets.ColumnInt(3));
 
-  EXPECT_FALSE(s.Step());
+  EXPECT_FALSE(s_public_sets.Step());
 
   static constexpr char kVersionSql[] =
       "SELECT browser_context_id,public_sets_version "
@@ -309,40 +321,78 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_NoPreExistingDB) {
   EXPECT_EQ(version.GetString(), s_version.ColumnString(1));
 
   EXPECT_FALSE(s_version.Step());
+
+  // ============ Verify persisting context config
+  const char kSelectConfigSql[] =
+      "SELECT browser_context_id,site,primary_site FROM policy_modifications";
+  sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
+  EXPECT_TRUE(s_config.Step());
+  EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+  EXPECT_EQ(site_member1, s_config.ColumnString(1));
+  EXPECT_EQ(primary_site, s_config.ColumnString(2));
+
+  EXPECT_TRUE(s_config.Step());
+  EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+  EXPECT_EQ(site_member2, s_config.ColumnString(1));
+  EXPECT_EQ("", s_config.ColumnString(2));
+
+  EXPECT_FALSE(s_config.Step());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
+  const std::string browser_context_id = "b2";
   // Verify data in the pre-existing DB.
   {
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path()));
     ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     ASSERT_EQ(2u, CountPublicSetsEntries(&db));
+    ASSERT_EQ(2u, CountPolicyModificationsEntries(&db));
 
-    static constexpr char kSelectSql[] =
+    // Verify data in the public_sets table.
+    static constexpr char kSelectPublicSetsSql[] =
         "SELECT version,site,primary_site,site_type FROM public_sets";
-    sql::Statement s(db.GetUniqueStatement(kSelectSql));
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ("0.0.1", s.ColumnString(0));
-    ASSERT_EQ("https://aaa.test", s.ColumnString(1));
-    ASSERT_EQ("https://bbb.test", s.ColumnString(2));
-    ASSERT_EQ(1, s.ColumnInt(3));
+    sql::Statement s_public_sets(db.GetUniqueStatement(kSelectPublicSetsSql));
+    ASSERT_TRUE(s_public_sets.Step());
+    ASSERT_EQ("0.0.1", s_public_sets.ColumnString(0));
+    ASSERT_EQ("https://aaa.test", s_public_sets.ColumnString(1));
+    ASSERT_EQ("https://bbb.test", s_public_sets.ColumnString(2));
+    ASSERT_EQ(1, s_public_sets.ColumnInt(3));
 
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ("0.0.1", s.ColumnString(0));
-    ASSERT_EQ("https://bbb.test", s.ColumnString(1));
-    ASSERT_EQ("https://bbb.test", s.ColumnString(2));
-    ASSERT_EQ(0, s.ColumnInt(3));
+    ASSERT_TRUE(s_public_sets.Step());
+    ASSERT_EQ("0.0.1", s_public_sets.ColumnString(0));
+    ASSERT_EQ("https://bbb.test", s_public_sets.ColumnString(1));
+    ASSERT_EQ("https://bbb.test", s_public_sets.ColumnString(2));
+    ASSERT_EQ(0, s_public_sets.ColumnInt(3));
+
+    // Verify data in the policy_modifications table.
+    const char kSelectConfigSql[] =
+        "SELECT browser_context_id,site,primary_site FROM policy_modifications";
+    sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
+    EXPECT_TRUE(s_config.Step());
+    EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+    EXPECT_EQ("https://member1.test", s_config.ColumnString(1));
+    EXPECT_EQ("https://example.test", s_config.ColumnString(2));
+
+    EXPECT_TRUE(s_config.Step());
+    EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+    EXPECT_EQ("https://member2.test", s_config.ColumnString(1));
+    EXPECT_EQ("", s_config.ColumnString(2));
+
+    EXPECT_FALSE(s_config.Step());
   }
   const base::Version version("0.0.2");
-  const std::string browser_context_id = "b";
   const std::string site = "https://site1.test";
   const std::string primary = "https://site2.test";
 
-  net::GlobalFirstPartySets input(
+  const std::string primary_site = "https://example2.test";
+  const std::string site_member1 = "https://member3.test";
+  const std::string site_member2 = "https://member4.test";
+
+  net::GlobalFirstPartySets global_sets(
       /*entries=*/{{net::SchemefulSite(GURL(site)),
                     net::FirstPartySetEntry(net::SchemefulSite(GURL(primary)),
                                             net::SiteType::kAssociated,
@@ -353,33 +403,41 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
                                             absl::nullopt)}},
       /*aliases=*/{});
 
+  net::FirstPartySetsContextConfig config(
+      {{net::SchemefulSite(GURL(site_member1)),
+        net::FirstPartySetEntry(net::SchemefulSite(GURL(primary_site)),
+                                net::SiteType::kAssociated, absl::nullopt)},
+       {net::SchemefulSite(GURL(site_member2)), absl::nullopt}});
+
   OpenDatabase();
   // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->PersistSets(browser_context_id, version, input,
-                                net::FirstPartySetsContextConfig()));
+  EXPECT_TRUE(
+      db()->PersistSets(browser_context_id, version, global_sets, config));
   CloseDatabase();
 
   // Verify data is inserted.
   sql::Database db;
   EXPECT_TRUE(db.Open(db_path()));
   EXPECT_EQ(4u, CountPublicSetsEntries(&db));
+  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
 
-  static constexpr char kSelectSql[] =
+  // ============ Verify persisting public sets
+  static constexpr char kSelectPublicSetsSql[] =
       "SELECT site,primary_site,site_type FROM public_sets "
       "WHERE version=?";
-  sql::Statement s(db.GetUniqueStatement(kSelectSql));
-  s.BindString(0, version.GetString());
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ(site, s.ColumnString(0));
-  EXPECT_EQ(primary, s.ColumnString(1));
-  EXPECT_EQ(1, s.ColumnInt(2));
+  sql::Statement s_public_sets(db.GetUniqueStatement(kSelectPublicSetsSql));
+  s_public_sets.BindString(0, version.GetString());
+  EXPECT_TRUE(s_public_sets.Step());
+  EXPECT_EQ(site, s_public_sets.ColumnString(0));
+  EXPECT_EQ(primary, s_public_sets.ColumnString(1));
+  EXPECT_EQ(1, s_public_sets.ColumnInt(2));
 
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ(primary, s.ColumnString(0));
-  EXPECT_EQ(primary, s.ColumnString(1));
-  EXPECT_EQ(0, s.ColumnInt(2));
+  EXPECT_TRUE(s_public_sets.Step());
+  EXPECT_EQ(primary, s_public_sets.ColumnString(0));
+  EXPECT_EQ(primary, s_public_sets.ColumnString(1));
+  EXPECT_EQ(0, s_public_sets.ColumnInt(2));
 
-  EXPECT_FALSE(s.Step());
+  EXPECT_FALSE(s_public_sets.Step());
 
   static constexpr char kVersionSql[] =
       "SELECT public_sets_version FROM browser_context_sets_version "
@@ -390,6 +448,24 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingDB) {
   EXPECT_EQ(version.GetString(), s_version.ColumnString(0));
 
   EXPECT_FALSE(s_version.Step());
+
+  // ============ Verify the new context config overwrote the pre-existing
+  // data.
+  const char kSelectConfigSql[] =
+      "SELECT browser_context_id,site,primary_site FROM policy_modifications "
+      "WHERE browser_context_id=?";
+  sql::Statement s_config(db.GetUniqueStatement(kSelectConfigSql));
+  s_config.BindString(0, browser_context_id);
+  EXPECT_TRUE(s_config.Step());
+  EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+  EXPECT_EQ(site_member1, s_config.ColumnString(1));
+  EXPECT_EQ(primary_site, s_config.ColumnString(2));
+
+  EXPECT_TRUE(s_config.Step());
+  EXPECT_EQ(browser_context_id, s_config.ColumnString(0));
+  EXPECT_EQ(site_member2, s_config.ColumnString(1));
+  EXPECT_EQ("", s_config.ColumnString(2));
+  EXPECT_FALSE(s_config.Step());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_PreExistingVersion) {
@@ -641,117 +717,6 @@ TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
   EXPECT_FALSE(s.Step());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, InsertPolicymodifications_NoPreExistingDB) {
-  const std::string browser_context_id = "b";
-  const std::string site_owner = "https://example.test";
-  const std::string site_member1 = "https://member1.test";
-  const std::string site_member2 = "https://member2.test";
-
-  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
-      input = {
-          {net::SchemefulSite(GURL(site_member1)),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL(site_owner)),
-                                   net::SiteType::kAssociated, absl::nullopt)},
-          {net::SchemefulSite(GURL(site_member2)), absl::nullopt}};
-
-  OpenDatabase();
-  // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->InsertPolicyModifications(browser_context_id, input));
-  CloseDatabase();
-
-  sql::Database db;
-  EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
-
-  const char kSelectSql[] =
-      "SELECT browser_context_id,site,site_owner FROM policy_modifications";
-  sql::Statement s(db.GetUniqueStatement(kSelectSql));
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ(browser_context_id, s.ColumnString(0));
-  EXPECT_EQ(site_member1, s.ColumnString(1));
-  EXPECT_EQ(site_owner, s.ColumnString(2));
-
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ(browser_context_id, s.ColumnString(0));
-  EXPECT_EQ(site_member2, s.ColumnString(1));
-  EXPECT_EQ("", s.ColumnString(2));
-
-  EXPECT_FALSE(s.Step());
-}
-
-TEST_F(FirstPartySetsDatabaseTest, InsertPolicymodifications_PreExistingDB) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
-
-  const std::string browser_context_id = "b2";
-  // Verify data in the pre-existing DB, and set `pre_run_count`.
-  {
-    sql::Database db;
-    ASSERT_TRUE(db.Open(db_path()));
-    ASSERT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    ASSERT_EQ(2u, CountPolicyModificationsEntries(&db));
-
-    const char kSelectSql[] =
-        "SELECT browser_context_id,site,site_owner FROM policy_modifications "
-        "WHERE browser_context_id=?";
-    sql::Statement s(db.GetUniqueStatement(kSelectSql));
-    s.BindString(0, browser_context_id);
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ("b2", s.ColumnString(0));
-    ASSERT_EQ("https://member1.test", s.ColumnString(1));
-    ASSERT_EQ("https://example.test", s.ColumnString(2));
-
-    ASSERT_TRUE(s.Step());
-    ASSERT_EQ("b2", s.ColumnString(0));
-    ASSERT_EQ("https://member2.test", s.ColumnString(1));
-    ASSERT_EQ("", s.ColumnString(2));
-    ASSERT_FALSE(s.Step());
-  }
-
-  const std::string site_owner = "https://example2.test";
-  const std::string site_member1 = "https://member3.test";
-  const std::string site_member2 = "https://member4.test";
-
-  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
-      input = {
-          {net::SchemefulSite(GURL(site_member1)),
-           net::FirstPartySetEntry(net::SchemefulSite(GURL(site_owner)),
-                                   net::SiteType::kAssociated, absl::nullopt)},
-          {net::SchemefulSite(GURL(site_member2)), absl::nullopt}};
-
-  OpenDatabase();
-  // Trigger the lazy-initialization.
-  EXPECT_TRUE(db()->InsertPolicyModifications(browser_context_id, input));
-  CloseDatabase();
-
-  // Verify the inserted data overwrote the pre-existing data.
-  sql::Database db;
-  EXPECT_TRUE(db.Open(db_path()));
-  EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-  EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
-
-  const char kSelectSql[] =
-      "SELECT browser_context_id,site,site_owner FROM policy_modifications "
-      "WHERE browser_context_id=?";
-  sql::Statement s(db.GetUniqueStatement(kSelectSql));
-  s.BindString(0, browser_context_id);
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ("b2", s.ColumnString(0));
-  EXPECT_EQ(site_member1, s.ColumnString(1));
-  EXPECT_EQ(site_owner, s.ColumnString(2));
-
-  EXPECT_TRUE(s.Step());
-  EXPECT_EQ("b2", s.ColumnString(0));
-  EXPECT_EQ(site_member2, s.ColumnString(1));
-  EXPECT_EQ("", s.ColumnString(2));
-  EXPECT_FALSE(s.Step());
-}
-
-TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_NoPreExistingDB) {
-  OpenDatabase();
-  EXPECT_EQ(std::vector<net::SchemefulSite>(), db()->FetchSitesToClear("b"));
-}
-
 TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_BrowserContextNotExist) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
@@ -876,7 +841,7 @@ TEST_F(FirstPartySetsDatabaseTest, FetchAllSitesToClearFilter) {
 
 TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_THAT(db()->FetchPolicyModifications("b"), IsEmpty());
+  EXPECT_TRUE(db()->FetchPolicyModifications("b").empty());
 }
 
 TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
@@ -890,16 +855,15 @@ TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications) {
     EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
     EXPECT_EQ(2u, CountPolicyModificationsEntries(&db));
   }
-  base::flat_map<net::SchemefulSite, absl::optional<net::FirstPartySetEntry>>
-      res = {
-          {net::SchemefulSite(GURL("https://member1.test")),
-           net::FirstPartySetEntry(
-               {net::SchemefulSite(GURL("https://example.test"))},
-               net::SiteType::kAssociated, absl::nullopt)},
-          {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-      };
+  net::FirstPartySetsContextConfig res({
+      {net::SchemefulSite(GURL("https://member1.test")),
+       net::FirstPartySetEntry(
+           {net::SchemefulSite(GURL("https://example.test"))},
+           net::SiteType::kAssociated, absl::nullopt)},
+      {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
+  });
   OpenDatabase();
-  EXPECT_THAT(db()->FetchPolicyModifications("b2"), res);
+  EXPECT_EQ(db()->FetchPolicyModifications("b2"), res);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets_NoPreExistingDB) {
@@ -919,7 +883,7 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
     sql::Database db;
     EXPECT_TRUE(db.Open(db_path()));
     EXPECT_EQ(2u, CountPublicSetsEntries(&db));
-    EXPECT_EQ(1u, CountBrowserContextSetsVersionEntries(&db));
+    EXPECT_EQ(3u, CountBrowserContextSetsVersionEntries(&db));
   }
   const net::SchemefulSite aaa(GURL("https://aaa.test"));
   const net::SchemefulSite bbb(GURL("https://bbb.test"));

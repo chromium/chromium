@@ -59,9 +59,11 @@ class NET_EXPORT FirstPartySetsContextConfig {
   // override will be `nullopt` if it is a deletion, or `optional(entry)` if it
   // is a modification of an existing entry, or an addition.
   //
-  // No guarantees are made re: iteration order.
-  void ForEachCustomizationEntry(
-      base::FunctionRef<void(const SchemefulSite&,
+  // Returns early if any of the iterations returns false. Returns false if
+  // iteration was incomplete; true if all iterations returned true. No
+  // guarantees are made re: iteration order.
+  bool ForEachCustomizationEntry(
+      base::FunctionRef<bool(const SchemefulSite&,
                              const absl::optional<FirstPartySetEntry>&)> f)
       const;
 

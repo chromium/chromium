@@ -23,7 +23,6 @@ class Version;
 }  // namespace base
 
 namespace net {
-class FirstPartySetEntry;
 class GlobalFirstPartySets;
 class SchemefulSite;
 }  // namespace net
@@ -96,9 +95,7 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // wipe out the pre-existing ones for the given `browser_context_id`.
   [[nodiscard]] bool InsertPolicyModifications(
       const std::string& browser_context_id,
-      const base::flat_map<net::SchemefulSite,
-                           absl::optional<net::FirstPartySetEntry>>&
-          modificatons);
+      const net::FirstPartySetsContextConfig& config);
 
   // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
   // fetching methods when having query errors
@@ -119,9 +116,8 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
 
   // Gets the previously-stored policy modifications for the
   // `browser_context_id`.
-  [[nodiscard]] base::flat_map<net::SchemefulSite,
-                               absl::optional<net::FirstPartySetEntry>>
-  FetchPolicyModifications(const std::string& browser_context_id);
+  [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyModifications(
+      const std::string& browser_context_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsDatabaseTest,
