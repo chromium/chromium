@@ -263,10 +263,8 @@ TEST(InvalidatorRegistrarWithMemoryTest, EmptySetUnregisters) {
 }
 
 TEST(InvalidatorRegistrarWithMemoryTest, RestoresInterestingTopics) {
-  const base::Feature restore_interesting_topics_feature{
-      "InvalidatorRestoreInterestingTopics", base::FEATURE_ENABLED_BY_DEFAULT};
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(restore_interesting_topics_feature);
+  feature_list.InitAndEnableFeature(kRestoreInterestingTopicsFeature);
 
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
