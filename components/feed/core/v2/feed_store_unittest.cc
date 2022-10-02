@@ -127,8 +127,8 @@ TEST_F(FeedStoreTest, OverwriteStream) {
   CallbackReceiver<bool> receiver;
   // TODO(harringtond): find a long term fix for assumptions about
   // kTestTimeEpoch value.
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          receiver.Bind());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), receiver.Bind());
   fake_db_->UpdateCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -251,8 +251,8 @@ TEST_F(FeedStoreTest, OverwriteStreamWebFeed) {
   CallbackReceiver<bool> receiver;
   // TODO(harringtond): find a long term fix for assumptions about
   // kTestTimeEpoch value.
-  store_->OverwriteStream(kWebFeedStream, MakeTypicalInitialModelState(),
-                          receiver.Bind());
+  store_->OverwriteStream(StreamType(StreamKind::kFollowing),
+                          MakeTypicalInitialModelState(), receiver.Bind());
   fake_db_->UpdateCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -389,8 +389,8 @@ TEST_F(FeedStoreTest, OverwriteStreamOverwritesData) {
   db_entries_["m"].mutable_local_action()->set_id(6);
 
   CallbackReceiver<bool> receiver;
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          receiver.Bind());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), receiver.Bind());
   fake_db_->UpdateCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -403,12 +403,12 @@ TEST_F(FeedStoreTest, OverwriteStreamOverwritesData) {
 
 TEST_F(FeedStoreTest, LoadStreamSuccess) {
   MakeFeedStore({});
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          base::DoNothing());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
   fake_db_->UpdateCallback(true);
 
   CallbackReceiver<LoadStreamResult> receiver;
-  store_->LoadStream(kForYouStream, receiver.Bind());
+  store_->LoadStream(StreamType(StreamKind::kForYou), receiver.Bind());
   fake_db_->LoadCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -419,12 +419,12 @@ TEST_F(FeedStoreTest, LoadStreamSuccess) {
 
 TEST_F(FeedStoreTest, LoadStreamFail) {
   MakeFeedStore({});
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          base::DoNothing());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
   fake_db_->UpdateCallback(true);
 
   CallbackReceiver<LoadStreamResult> receiver;
-  store_->LoadStream(kForYouStream, receiver.Bind());
+  store_->LoadStream(StreamType(StreamKind::kForYou), receiver.Bind());
   fake_db_->LoadCallback(false);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -435,7 +435,7 @@ TEST_F(FeedStoreTest, LoadStreamNoData) {
   MakeFeedStore({});
 
   CallbackReceiver<LoadStreamResult> receiver;
-  store_->LoadStream(kForYouStream, receiver.Bind());
+  store_->LoadStream(StreamType(StreamKind::kForYou), receiver.Bind());
   fake_db_->LoadCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -444,12 +444,12 @@ TEST_F(FeedStoreTest, LoadStreamNoData) {
 
 TEST_F(FeedStoreTest, LoadStreamIgnoresADifferentStreamType) {
   MakeFeedStore({});
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          base::DoNothing());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
   fake_db_->UpdateCallback(true);
 
   CallbackReceiver<LoadStreamResult> receiver;
-  store_->LoadStream(kWebFeedStream, receiver.Bind());
+  store_->LoadStream(StreamType(StreamKind::kFollowing), receiver.Bind());
   fake_db_->LoadCallback(true);
 
   ASSERT_TRUE(receiver.GetResult());
@@ -460,7 +460,8 @@ TEST_F(FeedStoreTest, LoadStreamIgnoresADifferentStreamType) {
 TEST_F(FeedStoreTest, WriteOperations) {
   MakeFeedStore({});
   CallbackReceiver<LoadStreamResult> receiver;
-  store_->WriteOperations(kForYouStream, /*sequence_number=*/5,
+  store_->WriteOperations(StreamType(StreamKind::kForYou),
+                          /*sequence_number=*/5,
                           {MakeOperation(MakeCluster(2, MakeRootId())),
                            MakeOperation(MakeCluster(6, MakeRootId()))});
   fake_db_->UpdateCallback(true);
@@ -505,8 +506,9 @@ TEST_F(FeedStoreTest, ReadNonexistentContentAndSharedStates) {
                    std::vector<feedstore::StreamSharedState>>
       cr;
 
-  store_->ReadContent(kForYouStream, {MakeContentContentId(0)},
-                      {MakeSharedStateContentId(0)}, cr.Bind());
+  store_->ReadContent(StreamType(StreamKind::kForYou),
+                      {MakeContentContentId(0)}, {MakeSharedStateContentId(0)},
+                      cr.Bind());
   fake_db_->LoadCallback(true);
 
   ASSERT_NE(cr.GetResult<0>(), absl::nullopt);
@@ -540,7 +542,8 @@ TEST_F(FeedStoreTest, ReadContentAndSharedStates) {
       cr;
 
   // Successful read
-  store_->ReadContent(kForYouStream, content_ids, shared_state_ids, cr.Bind());
+  store_->ReadContent(StreamType(StreamKind::kForYou), content_ids,
+                      shared_state_ids, cr.Bind());
   fake_db_->LoadCallback(true);
 
   ASSERT_NE(cr.GetResult<0>(), absl::nullopt);
@@ -560,7 +563,8 @@ TEST_F(FeedStoreTest, ReadContentAndSharedStates) {
 
   // Failed read
   cr.Clear();
-  store_->ReadContent(kForYouStream, content_ids, shared_state_ids, cr.Bind());
+  store_->ReadContent(StreamType(StreamKind::kForYou), content_ids,
+                      shared_state_ids, cr.Bind());
   fake_db_->LoadCallback(false);
 
   ASSERT_NE(cr.GetResult<0>(), absl::nullopt);
@@ -638,8 +642,8 @@ TEST_F(FeedStoreTest, RemoveActions) {
 TEST_F(FeedStoreTest, ClearAllSuccess) {
   // Write at least one record of each type.
   MakeFeedStore({});
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          base::DoNothing());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
   fake_db_->UpdateCallback(true);
   store_->WriteActions({MakeAction(0)}, base::DoNothing());
   fake_db_->UpdateCallback(true);

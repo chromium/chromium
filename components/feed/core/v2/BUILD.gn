@@ -218,6 +218,7 @@ source_set("core_unit_tests") {
     "public/logging_parameters_unittest.cc",
     "public/ntp_feed_content_fetcher_unittest.cc",
     "public/public_types_unittest.cc",
+    "public/stream_type_unittest.cc",
     "request_throttler_unittest.cc",
     "scheduling_unittest.cc",
     "stream/info_card_tracker_unittest.cc",

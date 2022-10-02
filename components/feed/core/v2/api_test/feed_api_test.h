@@ -179,6 +179,10 @@ class TestWebFeedSurface : public TestSurfaceBase {
  public:
   explicit TestWebFeedSurface(FeedStream* stream = nullptr);
 };
+class TestChannelSurface : public TestSurfaceBase {
+ public:
+  explicit TestChannelSurface(FeedStream* stream = nullptr);
+};
 
 class TestImageFetcher : public ImageFetcher {
  public:

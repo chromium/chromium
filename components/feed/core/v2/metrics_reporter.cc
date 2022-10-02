@@ -35,7 +35,9 @@
 
 namespace feed {
 namespace {
-const StreamType kStreamTypes[] = {kForYouStream, kWebFeedStream};
+StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kFollowing,
+                             StreamKind::kChannel};
+// TODO(crbug.com/1369777) Add kChannel streams to metrics reporting below
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
 const int kMaxSuggestionsTotal = 50;
@@ -322,8 +324,8 @@ void MetricsReporter::TrackTimeSpentInFeed(bool interacted_or_scrolled) {
 
 void MetricsReporter::FinalizeVisit() {
   bool has_engagement = false;
-  for (const StreamType& stream_type : kStreamTypes) {
-    StreamStats& data = ForStream(stream_type);
+  for (const StreamKind& stream_type : kStreamKinds) {
+    StreamStats& data = ForStream(StreamType(stream_type));
     if (!data.engaged_simple_reported)
       continue;
     has_engagement = true;
@@ -948,7 +950,9 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
     const StreamType& stream_type) {
   if (stream_type.IsForYou())
     return for_you_stats_;
-  DCHECK(stream_type.IsWebFeed());
+  if (stream_type.IsWebFeed())
+    return web_feed_stats_;
+  DCHECK(stream_type.IsChannelFeed());
   return web_feed_stats_;
 }
 

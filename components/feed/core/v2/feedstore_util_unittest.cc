@@ -5,6 +5,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 
 #include <string>
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/test/test_util.h"
@@ -65,6 +66,28 @@ TEST(feedstore_util_test, GetNextActionId) {
 
   EXPECT_EQ(feed::LocalActionId(1), GetNextActionId(metadata));
   EXPECT_EQ(feed::LocalActionId(2), GetNextActionId(metadata));
+}
+
+using feed::StreamKind;
+using feed::StreamType;
+TEST(feedstore_util_test, StreamTypeFromKey) {
+  StreamType for_you = StreamType(StreamKind::kForYou);
+  StreamType following = StreamType(StreamKind::kFollowing);
+  StreamType channel = StreamType(StreamKind::kChannel);
+  StreamType channel_a = StreamType(StreamKind::kChannel, "A");
+  StreamType unknown = StreamType();
+
+  EXPECT_EQ(StreamKey(for_you), kForYouStreamKey);
+  EXPECT_EQ(StreamKey(following), kFollowStreamKey);
+  EXPECT_DCHECK_DEATH(StreamKey(unknown));
+
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(channel)).IsChannelFeed());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(channel_a)).IsChannelFeed());
+
+  EXPECT_EQ(StreamTypeFromKey(StreamKey(channel_a)).GetWebFeedId(), "A");
+
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(following)).IsWebFeed());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(for_you)).IsForYou());
 }
 
 }  // namespace

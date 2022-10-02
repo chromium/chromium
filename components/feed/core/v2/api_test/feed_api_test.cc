@@ -329,9 +329,11 @@ bool TestSurfaceBase::IsInitialLoadSpinnerUpdate(
 }
 
 TestForYouSurface::TestForYouSurface(FeedStream* stream)
-    : TestSurfaceBase(kForYouStream, stream) {}
+    : TestSurfaceBase(StreamType(StreamKind::kForYou), stream) {}
 TestWebFeedSurface::TestWebFeedSurface(FeedStream* stream)
-    : TestSurfaceBase(kWebFeedStream, stream) {}
+    : TestSurfaceBase(StreamType(StreamKind::kFollowing), stream) {}
+TestChannelSurface::TestChannelSurface(FeedStream* stream)
+    : TestSurfaceBase(StreamType(StreamKind::kChannel), stream) {}
 
 TestReliabilityLoggingBridge::TestReliabilityLoggingBridge() = default;
 TestReliabilityLoggingBridge::~TestReliabilityLoggingBridge() = default;

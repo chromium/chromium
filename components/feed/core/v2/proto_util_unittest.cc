@@ -67,7 +67,7 @@ TEST(ProtoUtilTest, ClientInfoStartSurface) {
 
 TEST(ProtoUtilTest, DefaultCapabilities) {
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -95,7 +95,7 @@ TEST(ProtoUtilTest, HeartsEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kInterestFeedV2Hearts}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -113,7 +113,7 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   OverrideConfigWithFinchForTesting();
 
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -131,7 +131,8 @@ TEST(ProtoUtilTest, PrivacyNoticeCardAcknowledged) {
   RequestMetadata request_metadata;
   request_metadata.notice_card_acknowledged = true;
   feedwire::Request request = CreateFeedQueryRefreshRequest(
-      kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+      request_metadata,
       /*consistency_token=*/std::string());
 
   EXPECT_TRUE(request.feed_request()
@@ -144,7 +145,8 @@ TEST(ProtoUtilTest, PrivacyNoticeCardNotAcknowledged) {
   RequestMetadata request_metadata;
   request_metadata.notice_card_acknowledged = false;
   feedwire::Request request = CreateFeedQueryRefreshRequest(
-      kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+      request_metadata,
       /*consistency_token=*/std::string());
 
   EXPECT_FALSE(request.feed_request()
@@ -165,7 +167,8 @@ TEST(ProtoUtilTest, InfoCardTrackingStates) {
   state1.set_explicitly_dismissed_count(1);
   request_metadata.info_card_tracking_states = {state1, state2};
   feedwire::Request request = CreateFeedQueryRefreshRequest(
-      kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
+      request_metadata,
       /*consistency_token=*/std::string());
 
   ASSERT_EQ(2, request.feed_request()
@@ -187,9 +190,10 @@ TEST(ProtoUtilTest, AutoplayEnabled) {
   request_metadata.autoplay_enabled = true;
 
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
-          /*consistency_token=*/std::string())
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    request_metadata,
+                                    /*consistency_token=*/std::string())
           .feed_request();
 
   ASSERT_THAT(request.client_capability(),
@@ -202,7 +206,7 @@ TEST(ProtoUtilTest, StampEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedStamp}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -221,7 +225,7 @@ TEST(ProtoUtilTest, ReadLaterEnabled) {
   scoped_feature_list.InitWithFeatures({reading_list::switches::kReadLater},
                                        {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -238,7 +242,7 @@ TEST(ProtoUtilTest, ReadLaterDisabled) {
   scoped_feature_list.InitWithFeatures({},
                                        {reading_list::switches::kReadLater});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -255,7 +259,7 @@ TEST(ProtoUtilTest, CrowButtonEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kShareCrowButton}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -270,7 +274,7 @@ TEST(ProtoUtilTest, InfoCardAcknowledgementTrackingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kInfoCardAcknowledgementTracking}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())
@@ -286,9 +290,10 @@ TEST(ProtoUtilTest, TabGroupsEnabledForReplaced) {
   request_metadata.tab_group_enabled_state = TabGroupEnabledState::kReplaced;
 
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
-          /*consistency_token=*/std::string())
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    request_metadata,
+                                    /*consistency_token=*/std::string())
           .feed_request();
 
   ASSERT_THAT(request.client_capability(),
@@ -302,9 +307,10 @@ TEST(ProtoUtilTest, TabGroupsEnabledForBoth) {
   request_metadata.tab_group_enabled_state = TabGroupEnabledState::kBoth;
 
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          kForYouStream, feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
-          /*consistency_token=*/std::string())
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
+                                    feedwire::FeedQuery::MANUAL_REFRESH,
+                                    request_metadata,
+                                    /*consistency_token=*/std::string())
           .feed_request();
 
   ASSERT_THAT(request.client_capability(),
@@ -317,7 +323,7 @@ TEST(ProtoUtilTest, InlinePlayback) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedVideoInlinePlayback}, {});
   feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(kForYouStream,
+      CreateFeedQueryRefreshRequest(StreamType(StreamKind::kForYou),
                                     feedwire::FeedQuery::MANUAL_REFRESH,
                                     /*request_metadata=*/{},
                                     /*consistency_token=*/std::string())

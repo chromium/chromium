@@ -100,7 +100,8 @@ static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
     return static_cast<jint>(ContentOrder::kUnspecified);
   JavaUnreadContentObserver* observer = new JavaUnreadContentObserver(
       base::android::ScopedJavaGlobalRef<jobject>(j_observer));
-  api->AddUnreadContentObserver(is_web_feed ? kWebFeedStream : kForYouStream,
+  api->AddUnreadContentObserver(is_web_feed ? StreamType(StreamKind::kFollowing)
+                                            : StreamType(StreamKind::kForYou),
                                 observer);
   return reinterpret_cast<jlong>(observer);
 }
@@ -119,7 +120,8 @@ static jint JNI_FeedServiceBridge_GetContentOrderForWebFeed(JNIEnv* env) {
   FeedApi* api = GetFeedApi();
   if (!api)
     return 0;
-  return static_cast<int>(api->GetContentOrder(kWebFeedStream));
+  return static_cast<int>(
+      api->GetContentOrder(StreamType(StreamKind::kFollowing)));
 }
 
 static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
@@ -130,10 +132,12 @@ static void JNI_FeedServiceBridge_SetContentOrderForWebFeed(
     return;
   switch (content_order) {
     case static_cast<jint>(ContentOrder::kGrouped):
-      api->SetContentOrder(kWebFeedStream, ContentOrder::kGrouped);
+      api->SetContentOrder(StreamType(StreamKind::kFollowing),
+                           ContentOrder::kGrouped);
       return;
     case static_cast<jint>(ContentOrder::kReverseChron):
-      api->SetContentOrder(kWebFeedStream, ContentOrder::kReverseChron);
+      api->SetContentOrder(StreamType(StreamKind::kFollowing),
+                           ContentOrder::kReverseChron);
       return;
     case static_cast<jint>(ContentOrder::kUnspecified):
       break;

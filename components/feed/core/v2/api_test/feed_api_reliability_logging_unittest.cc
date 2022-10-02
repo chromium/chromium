@@ -310,13 +310,13 @@ TEST_F(FeedApiReliabilityLoggingTest,
 
 TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
   store_->OverwriteStream(
-      kForYouStream,
+      StreamType(StreamKind::kForYou),
       MakeTypicalInitialModelState(
-          /*first_cluster_id=*/0,
-          kTestTimeEpoch -
-              GetFeedConfig().GetStalenessThreshold(
-                  kForYouStream, /*is_web_feed_subscriber=*/true) -
-              base::Minutes(1)),
+          /*first_cluster_id=*/0, kTestTimeEpoch -
+                                      GetFeedConfig().GetStalenessThreshold(
+                                          StreamType(StreamKind::kForYou),
+                                          /*is_web_feed_subscriber=*/true) -
+                                      base::Minutes(1)),
       base::DoNothing());
 
   // Store is stale, so we should fallback to a network request.
@@ -344,13 +344,13 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
 TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
   network_.http_status_code = net::HttpStatusCode::HTTP_FORBIDDEN;
   store_->OverwriteStream(
-      kForYouStream,
+      StreamType(StreamKind::kForYou),
       MakeTypicalInitialModelState(
-          /*first_cluster_id=*/0,
-          kTestTimeEpoch -
-              GetFeedConfig().GetStalenessThreshold(
-                  kForYouStream, /*is_web_feed_subscriber=*/true) -
-              base::Minutes(1)),
+          /*first_cluster_id=*/0, kTestTimeEpoch -
+                                      GetFeedConfig().GetStalenessThreshold(
+                                          StreamType(StreamKind::kForYou),
+                                          /*is_web_feed_subscriber=*/true) -
+                                      base::Minutes(1)),
       base::DoNothing());
 
   // Store is stale, so we should fallback to a network request.
@@ -376,8 +376,8 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
 }
 
 TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Okay) {
-  store_->OverwriteStream(kForYouStream, MakeTypicalInitialModelState(),
-                          base::DoNothing());
+  store_->OverwriteStream(StreamType(StreamKind::kForYou),
+                          MakeTypicalInitialModelState(), base::DoNothing());
   WaitForIdleTaskQueue();
 
   TestForYouSurface surface(stream_.get());

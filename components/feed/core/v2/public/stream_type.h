@@ -15,16 +15,29 @@ namespace feed {
 // Note: currently there are two options, but this leaves room for more
 // parameters.
 class StreamType {
+  // TODO(crbug.com/1369784) rename to StreamID.
  public:
-  constexpr StreamType() = default;
-  constexpr explicit StreamType(StreamKind k) : kind_(k) {}
-  bool operator<(const StreamType& rhs) const { return kind_ < rhs.kind_; }
-  bool operator==(const StreamType& rhs) const { return kind_ == rhs.kind_; }
+  StreamType() = default;
+  virtual ~StreamType() = default;
+  explicit StreamType(StreamKind k, std::string s = "")
+      : kind_(k), web_feed_id_(s) {}
+  bool operator<(const StreamType& rhs) const {
+    if (kind_ == rhs.kind_) {
+      if (kind_ != StreamKind::kChannel)
+        return false;
+      return web_feed_id_.compare(rhs.web_feed_id_) < 0;
+    }
+    return kind_ < rhs.kind_;
+  }
+  bool operator==(const StreamType& rhs) const {
+    return (kind_ == rhs.kind_) && (web_feed_id_ == rhs.web_feed_id_);
+  }
   bool IsForYou() const { return kind_ == StreamKind::kForYou; }
   bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
   bool IsChannelFeed() const { return kind_ == StreamKind::kChannel; }
   bool IsValid() const { return kind_ != StreamKind::kUnknown; }
   StreamKind GetType() const { return kind_; }
+  std::string GetWebFeedId() const { return web_feed_id_; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;
@@ -37,11 +50,9 @@ class StreamType {
 
  private:
   StreamKind kind_ = StreamKind::kUnknown;
+  // Identifies the feed ID in the case that the feed is a ChannelFeed.
+  std::string web_feed_id_;
 };
-
-constexpr StreamType kForYouStream(StreamKind::kForYou);
-constexpr StreamType kWebFeedStream(StreamKind::kFollowing);
-constexpr StreamType kChannelStream(StreamKind::kChannel);
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const StreamType& stream_type) {

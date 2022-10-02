@@ -213,10 +213,10 @@ feedwire::Request CreateFeedQueryRequest(
   // Set the feed entry point based on the stream type.
   feedwire::FeedEntryPointData& entry_point =
       *query.mutable_feed_entry_point_data();
-  if (stream_type == kForYouStream) {
+  if (stream_type.IsForYou()) {
     entry_point.set_feed_entry_point_source_value(
         feedwire::FeedEntryPointSource::CHROME_DISCOVER_FEED);
-  } else if (stream_type == kWebFeedStream) {
+  } else if (stream_type.IsWebFeed()) {
     entry_point.set_feed_entry_point_source_value(
         feedwire::FeedEntryPointSource::CHROME_FOLLOWING_FEED);
   }
@@ -376,8 +376,8 @@ feedwire::Request CreateFeedQueryLoadMoreRequest(
     const std::string& consistency_token,
     const std::string& next_page_token) {
   return CreateFeedQueryRequest(
-      kForYouStream, feedwire::FeedQuery::NEXT_PAGE_SCROLL, request_metadata,
-      consistency_token, next_page_token);
+      StreamType(StreamKind::kForYou), feedwire::FeedQuery::NEXT_PAGE_SCROLL,
+      request_metadata, consistency_token, next_page_token);
 }
 
 }  // namespace feed

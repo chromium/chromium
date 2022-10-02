@@ -16,22 +16,25 @@ namespace feedstore {
 using feed::LocalActionId;
 using feed::StreamType;
 
-base::StringPiece StreamId(const StreamType& stream_type) {
+std::string StreamKey(const StreamType& stream_type) {
   if (stream_type.IsForYou())
-    return kForYouStreamId;
+    return kForYouStreamKey;
   if (stream_type.IsWebFeed())
-    return kFollowStreamId;
+    return kFollowStreamKey;
   DCHECK(stream_type.IsChannelFeed());
-  return kChannelStreamId;
+  std::string encoding;
+  base::Base64Encode(stream_type.GetWebFeedId(), &encoding);
+  return encoding;
 }
 
-StreamType StreamTypeFromId(base::StringPiece id) {
-  if (id == kForYouStreamId)
-    return feed::kForYouStream;
-  if (id == kFollowStreamId)
-    return feed::kWebFeedStream;
-  if (id == kChannelStreamId)
-    return feed::kChannelStream;
+StreamType StreamTypeFromKey(std::string key) {
+  if (key == kForYouStreamKey)
+    return StreamType(feed::StreamKind::kForYou);
+  if (key == kFollowStreamKey)
+    return StreamType(feed::StreamKind::kFollowing);
+  std::string channel_key;
+  if (base::Base64Decode(key, &channel_key))
+    return StreamType(feed::StreamKind::kChannel, channel_key);
   return {};
 }
 
@@ -116,9 +119,9 @@ LocalActionId GetNextActionId(Metadata& metadata) {
 const Metadata::StreamMetadata* FindMetadataForStream(
     const Metadata& metadata,
     const StreamType& stream_type) {
-  base::StringPiece id = StreamId(stream_type);
+  std::string key = StreamKey(stream_type);
   for (const auto& sm : metadata.stream_metadata()) {
-    if (sm.stream_id() == id)
+    if (sm.stream_key() == key)
       return &sm;
   }
   return nullptr;
@@ -131,7 +134,7 @@ Metadata::StreamMetadata& MetadataForStream(Metadata& metadata,
   if (existing)
     return *const_cast<Metadata::StreamMetadata*>(existing);
   Metadata::StreamMetadata* sm = metadata.add_stream_metadata();
-  sm->set_stream_id(std::string(StreamId(stream_type)));
+  sm->set_stream_key(std::string(StreamKey(stream_type)));
   return *sm;
 }
 

@@ -212,7 +212,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       PrintToString(callback.RunAndGetResult().web_feed_metadata));
   EXPECT_EQ(1, callback.RunAndGetResult().subscription_count);
   EXPECT_EQ("follow-ct", stream_->GetMetadata().consistency_token());
-  EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(),
+                                      StreamType(StreamKind::kFollowing)));
   ASSERT_THAT(
       network_.GetApiRequestSent<FollowWebFeedDiscoverApi>()->page_rss_uris(),
       testing::ElementsAre("http://rss1/", "http://rss2/"));
@@ -504,7 +505,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
   base::HistogramTester histograms;
   network_.InjectFollowResponse(MakeFailedResponse());
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(),
+                                       StreamType(StreamKind::kFollowing)));
 
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 WebFeedChangeReason::WEB_PAGE_MENU,
@@ -513,7 +515,8 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedUnknownError,
             callback.RunAndGetResult().request_status);
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
-  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(),
+                                       StreamType(StreamKind::kFollowing)));
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowUriResult",
       WebFeedSubscriptionRequestStatus::kFailedUnknownError, 1);
@@ -529,7 +532,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
                                 follow_callback.Bind());
   follow_callback.RunUntilCalled();
   // Un-mark stream as stale, to verify unsubscribe also marks stream as stale.
-  stream_->SetStreamStale(kWebFeedStream, false);
+  stream_->SetStreamStale(StreamType(StreamKind::kFollowing), false);
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
   network_.InjectResponse(SuccessfulUnfollowResponse());
@@ -552,7 +555,8 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
   EXPECT_EQ(0, unfollow_callback.RunAndGetResult().subscription_count);
   EXPECT_EQ("unfollow-ct", stream_->GetMetadata().consistency_token());
   EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
-  EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  EXPECT_TRUE(feedstore::IsKnownStale(stream_->GetMetadata(),
+                                      StreamType(StreamKind::kFollowing)));
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.UnfollowResult",
       WebFeedSubscriptionRequestStatus::kSuccess, 1);
@@ -604,7 +608,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
       unfollow_callback;
   network_.InjectUnfollowResponse(MakeFailedResponse());
   // Un-mark stream as stale, to verify unsubscribe also marks stream as stale.
-  stream_->SetStreamStale(kWebFeedStream, false);
+  stream_->SetStreamStale(StreamType(StreamKind::kFollowing), false);
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
       /*is_durable_request=*/false, WebFeedChangeReason::WEB_PAGE_MENU,
@@ -618,7 +622,8 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
       PrintToString(CheckAllSubscriptions()));
-  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(), kWebFeedStream));
+  EXPECT_FALSE(feedstore::IsKnownStale(stream_->GetMetadata(),
+                                       StreamType(StreamKind::kFollowing)));
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowWhileOffline) {

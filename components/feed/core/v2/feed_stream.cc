@@ -248,7 +248,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
-        feedstore::StreamTypeFromId(stream_data.stream_id());
+        feedstore::StreamTypeFromKey(stream_data.stream_id());
     if (stream_type.IsValid()) {
       GetStream(stream_type).content_ids =
           feedstore::GetContentIds(stream_data);
@@ -264,7 +264,7 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
   for (const feedstore::StreamData& stream_data :
        result.startup_data.stream_data) {
     StreamType stream_type =
-        feedstore::StreamTypeFromId(stream_data.stream_id());
+        feedstore::StreamTypeFromKey(stream_data.stream_id());
     if (stream_type.IsValid())
       MaybeNotifyHasUnreadContent(stream_type);
   }
@@ -328,10 +328,11 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
       // Checking for users without follows.
       // TODO(b/229143375) - We should rate limit fetches if the server side is
       // turned off for this locale, and continually fails.
-      if (!HasUnreadContent(kWebFeedStream)) {
+      StreamType following_type = StreamType(StreamKind::kFollowing);
+      if (!HasUnreadContent(following_type)) {
         LoadStreamTask::Options options;
         options.load_type = LoadType::kBackgroundRefresh;
-        options.stream_type = kWebFeedStream;
+        options.stream_type = following_type;
         options.abort_if_unread_content = true;
         task_queue_.AddTask(
             FROM_HERE,
@@ -682,12 +683,8 @@ bool FeedStream::WasUrlRecentlyNavigatedFromFeed(const GURL& url) {
 }
 
 void FeedStream::InvalidateContentCacheFor(StreamKind stream_kind) {
-  if (StreamKind::kForYou == stream_kind) {
-    SetStreamStale(kForYouStream, true);
-  }
-  if (StreamKind::kFollowing == stream_kind) {
-    SetStreamStale(kWebFeedStream, true);
-  }
+  if (stream_kind != StreamKind::kUnknown)
+    SetStreamStale(StreamType(stream_kind), true);
 }
 
 DebugStreamData FeedStream::GetDebugStreamData() {
@@ -723,7 +720,7 @@ void FeedStream::ForceRefreshForDebuggingTask(const StreamType& stream_type) {
 }
 
 std::string FeedStream::DumpStateForDebugging() {
-  Stream& stream = GetStream(kForYouStream);
+  Stream& stream = GetStream(StreamType(StreamKind::kForYou));
   std::stringstream ss;
   if (stream.model) {
     ss << "model loaded, " << stream.model->GetContentList().size()
@@ -960,6 +957,7 @@ RequestMetadata FeedStream::GetSignedInRequestMetadata() const {
 RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
                                                bool is_for_next_page) const {
   const Stream* stream = FindStream(stream_type);
+  // TODO(crbug.com/1370127) handle null channel streams
   DCHECK(stream);
   RequestMetadata result;
   if (is_for_next_page) {
@@ -1006,8 +1004,8 @@ void FeedStream::OnAllHistoryDeleted() {
   // In the interim, only send signed-out FeedQuery requests.
   signed_out_for_you_refreshes_until_ =
       base::TimeTicks::Now() + kSuppressRefreshDuration;
-  // We don't really need to delete kWebFeedStream data here, but clearing all
-  // data because it's easy.
+  // We don't really need to delete StreamType(StreamKind::kFollowing) data
+  // here, but clearing all data because it's easy.
   ClearAll();
 }
 
@@ -1138,8 +1136,8 @@ void FeedStream::IncrementFollowedFromWebPageMenuCount() {
 }
 
 void FeedStream::ClearAll() {
-  metrics_reporter_->OnClearAll(base::Time::Now() -
-                                GetLastFetchTime(kForYouStream));
+  metrics_reporter_->OnClearAll(
+      base::Time::Now() - GetLastFetchTime(StreamType(StreamKind::kForYou)));
   clear_all_in_progress_ = true;
   task_queue_.AddTask(FROM_HERE, std::make_unique<ClearAllTask>(this));
 }

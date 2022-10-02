@@ -45,15 +45,16 @@ void PrefetchImagesTask::Run() {
     TaskComplete();
     return;
   }
-  if (stream_.GetModel(kForYouStream)) {
-    PrefetchImagesFromModel(*stream_.GetModel(kForYouStream));
+  StreamType for_you_stream = StreamType(StreamKind::kForYou);
+  if (stream_.GetModel(for_you_stream)) {
+    PrefetchImagesFromModel(*stream_.GetModel(for_you_stream));
     return;
   }
 
   // Web feed subscriber is set to true so we don't use the less restrictive
   // staleness number for when there are no subscriptions.
   load_from_store_task_ = std::make_unique<LoadStreamFromStoreTask>(
-      LoadStreamFromStoreTask::LoadType::kFullLoad, &stream_, kForYouStream,
+      LoadStreamFromStoreTask::LoadType::kFullLoad, &stream_, for_you_stream,
       &stream_.GetStore(),
       /*missed_last_refresh=*/false,
       /*is_web_feed_subscriber=*/true,

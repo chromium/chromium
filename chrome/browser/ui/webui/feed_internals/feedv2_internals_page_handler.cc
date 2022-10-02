@@ -98,11 +98,13 @@ void FeedV2InternalsPageHandler::GetLastFetchProperties(
 }
 
 void FeedV2InternalsPageHandler::RefreshForYouFeed() {
-  feed_stream_->ForceRefreshForDebugging(feed::kForYouStream);
+  feed_stream_->ForceRefreshForDebugging(
+      feed::StreamType(feed::StreamKind::kForYou));
 }
 
 void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
-  feed_stream_->ForceRefreshForDebugging(feed::kWebFeedStream);
+  feed_stream_->ForceRefreshForDebugging(
+      feed::StreamType(feed::StreamKind::kFollowing));
 }
 
 void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
@@ -167,8 +169,8 @@ void FeedV2InternalsPageHandler::SetUseFeedQueryRequests(
 
 feed_internals::mojom::FeedOrder
 FeedV2InternalsPageHandler::GetFollowingFeedOrder() {
-  feed::ContentOrder order =
-      feed_stream_->GetContentOrderFromPrefs(feed::kWebFeedStream);
+  feed::ContentOrder order = feed_stream_->GetContentOrderFromPrefs(
+      feed::StreamType(feed::StreamKind::kFollowing));
   switch (order) {
     case feed::ContentOrder::kUnspecified:
       return feed_internals::mojom::FeedOrder::kUnspecified;
@@ -193,5 +195,6 @@ void FeedV2InternalsPageHandler::SetFollowingFeedOrder(
       order_to_set = feed::ContentOrder::kReverseChron;
       break;
   }
-  feed_stream_->SetContentOrder(feed::kWebFeedStream, order_to_set);
+  feed_stream_->SetContentOrder(feed::StreamType(feed::StreamKind::kFollowing),
+                                order_to_set);
 }

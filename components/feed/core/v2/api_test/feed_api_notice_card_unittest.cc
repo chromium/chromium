@@ -80,7 +80,7 @@ TEST_F(FeedApiNoticeCardTest, LoadStreamUpdateNoticeCardFulfillmentHistogram) {
     WaitForIdleTaskQueue();
   }
 
-  UnloadModel(kForYouStream);
+  UnloadModel(StreamType(StreamKind::kForYou));
 
   // Trigger another stream refresh that updates the histogram.
   {

@@ -137,7 +137,7 @@ bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
   base::TimeDelta content_expiration_threshold =
       GetFeedConfig().content_expiration_threshold;
   if (base::FeatureList::IsEnabled(kWebFeedOnboarding) &&
-      !is_web_feed_subscriber && stream_type == kWebFeedStream) {
+      !is_web_feed_subscriber && stream_type.IsWebFeed()) {
     content_expiration_threshold =
         GetFeedConfig().subscriptionless_content_expiration_threshold;
   }

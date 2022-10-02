@@ -290,7 +290,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
 
   if (result.request_status == WebFeedSubscriptionRequestStatus::kSuccess) {
     model_->OnSubscribed(result.web_feed_info);
-    feed_stream_->SetStreamStale(kWebFeedStream, true);
+    feed_stream_->SetStreamStale(StreamType(StreamKind::kFollowing), true);
   }
 
   SubscriptionsChanged();
@@ -363,7 +363,7 @@ void WebFeedSubscriptionCoordinator::UnfollowWebFeedComplete(
     UnsubscribeFromWebFeedTask::Result result) {
   if (!result.unsubscribed_feed_name.empty()) {
     model_->OnUnsubscribed(result.unsubscribed_feed_name);
-    feed_stream_->SetStreamStale(kWebFeedStream, true);
+    feed_stream_->SetStreamStale(StreamType(StreamKind::kFollowing), true);
   }
 
   WebFeedInFlightChange change = DequeueInflightChange();

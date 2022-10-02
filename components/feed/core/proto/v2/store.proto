@@ -85,7 +85,7 @@ message Metadata {
 
   // Metadata about a specific stream.
   message StreamMetadata {
-    string stream_id = 1;
+    string stream_key = 1;
     // Whether the stream data is known to be stale. This can happen in the
     // WebFeed stream if the subscription list changes.
     bool is_known_stale = 3;
