@@ -123,8 +123,7 @@ TEST_F(CastAuthUtilTest, VerifyEmptySignature) {
 
 TEST_F(CastAuthUtilTest, VerifyUnsupportedDigest) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      base::Feature{"CastSHA256Enforced", base::FEATURE_DISABLED_BY_DEFAULT});
+  scoped_feature_list.InitAndEnableFeature(kEnforceSHA256Checking);
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA1);
   base::Time now = base::Time::Now();
@@ -156,8 +155,7 @@ TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {
 
 TEST_F(CastAuthUtilTest, VerifySenderNonceMatch) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      base::Feature{"CastNonceEnforced", base::FEATURE_DISABLED_BY_DEFAULT});
+  scoped_feature_list.InitAndEnableFeature(kEnforceNonceChecking);
   AuthContext context = AuthContext::Create();
   AuthResult result = context.VerifySenderNonce(context.nonce());
   EXPECT_TRUE(result.success());
@@ -165,8 +163,7 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMatch) {
 
 TEST_F(CastAuthUtilTest, VerifySenderNonceMismatch) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      base::Feature{"CastNonceEnforced", base::FEATURE_DISABLED_BY_DEFAULT});
+  scoped_feature_list.InitAndEnableFeature(kEnforceNonceChecking);
   AuthContext context = AuthContext::Create();
   std::string received_nonce = "test2";
   EXPECT_NE(received_nonce, context.nonce());
@@ -177,8 +174,7 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMismatch) {
 
 TEST_F(CastAuthUtilTest, VerifySenderNonceMissing) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      base::Feature{"CastNonceEnforced", base::FEATURE_DISABLED_BY_DEFAULT});
+  scoped_feature_list.InitAndEnableFeature(kEnforceNonceChecking);
   AuthContext context = AuthContext::Create();
   std::string received_nonce;
   EXPECT_FALSE(context.nonce().empty());

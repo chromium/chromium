@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
@@ -24,6 +25,9 @@ namespace cast_channel {
 
 using ::cast::channel::AuthResponse;
 using ::cast::channel::CastMessage;
+
+BASE_DECLARE_FEATURE(kEnforceNonceChecking);
+BASE_DECLARE_FEATURE(kEnforceSHA256Checking);
 
 struct AuthResult {
  public:
