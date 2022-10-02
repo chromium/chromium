@@ -192,8 +192,7 @@ class PeriodicBackgroundSyncPermissionContextWithPermissionTest
     : public PeriodicBackgroundSyncPermissionContextTest {
  private:
   base::test::ScopedFeatureList feature_list_{
-      base::Feature{"PeriodicSyncPermissionForDefaultSearchEngine",
-                    base::FEATURE_ENABLED_BY_DEFAULT}};
+      features::kPeriodicSyncPermissionForDefaultSearchEngine};
 };
 
 TEST_F(PeriodicBackgroundSyncPermissionContextWithPermissionTest,

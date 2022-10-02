@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define CHROME_BROWSER_BACKGROUND_SYNC_PERIODIC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_context_base.h"
@@ -12,6 +13,12 @@
 namespace content {
 class BrowserContext;
 }
+
+namespace features {
+
+BASE_DECLARE_FEATURE(kPeriodicSyncPermissionForDefaultSearchEngine);
+
+}  // namespace features
 
 // This permission context is responsible for getting, deciding on and updating
 // the Periodic Background Sync permission for a particular website. This
