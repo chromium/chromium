@@ -5,8 +5,11 @@
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 
 using autofill::FormData;
@@ -256,8 +259,13 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
           : password_form.federation_origin.Serialize());
   *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
-  *password_data.mutable_notes() =
-      PasswordNotesToProto(password_form.notes, base_password_data.notes());
+  // TODO(crbug.com/1369638): Force downloading all passwords from the sync
+  // server when the feature is enabled in order to avoid local copy missing
+  // notes overriding the server copy.
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    *password_data.mutable_notes() =
+        PasswordNotesToProto(password_form.notes, base_password_data.notes());
+  }
   return password_data;
 }
 
@@ -296,7 +304,9 @@ PasswordForm PasswordFromSpecifics(
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
   password.password_issues = PasswordIssuesMapFromProto(password_data);
-  password.notes = PasswordNotesFromProto(password_data.notes());
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    password.notes = PasswordNotesFromProto(password_data.notes());
+  }
   return password;
 }
 

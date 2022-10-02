@@ -4,8 +4,12 @@
 
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/sync/base/features.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,9 +80,11 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_federation_url(std::string());
   *password_specifics.mutable_password_issues() =
       CreateSpecificsDataIssues(issue_types);
-  // The current code always populates notes for outgoing protos even when
-  // non-exists.
-  password_specifics.mutable_notes();
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    // The current code always populates notes for outgoing protos even when
+    // non-exists.
+    password_specifics.mutable_notes();
+  }
   return password_specifics;
 }
 
@@ -176,17 +182,28 @@ TEST(PasswordProtoUtilsTest, ReconcileCachedNotesUsingUnqiueDisplayName) {
 }
 
 TEST(PasswordProtoUtilsTest, ConvertSpecificsToFormAndBack) {
-  sync_pb::PasswordSpecifics specifics;
-  *specifics.mutable_client_only_encrypted_data() =
-      CreateSpecificsData("http://www.origin.com/", "username_element",
-                          "username_value", "password_element", "signon_realm",
-                          /*issue_types=*/{});
+  for (bool is_notes_enabled : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (is_notes_enabled) {
+      scoped_feature_list.InitAndEnableFeature(
+          syncer::kPasswordNotesWithBackup);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          syncer::kPasswordNotesWithBackup);
+    }
+    sync_pb::PasswordSpecifics specifics;
+    *specifics.mutable_client_only_encrypted_data() = CreateSpecificsData(
+        "http://www.origin.com/", "username_element", "username_value",
+        "password_element", "signon_realm",
+        /*issue_types=*/{});
 
-  EXPECT_THAT(SpecificsFromPassword(
-                  PasswordFromSpecifics(specifics.client_only_encrypted_data()),
-                  /*base_password_data=*/{})
-                  .SerializeAsString(),
-              Eq(specifics.SerializeAsString()));
+    EXPECT_THAT(
+        SpecificsFromPassword(
+            PasswordFromSpecifics(specifics.client_only_encrypted_data()),
+            /*base_password_data=*/{})
+            .SerializeAsString(),
+        Eq(specifics.SerializeAsString()));
+  }
 }
 
 TEST(PasswordProtoUtilsTest, SpecificsDataFromPasswordPreservesUnknownFields) {

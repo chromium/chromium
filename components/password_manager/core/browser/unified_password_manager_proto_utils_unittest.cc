@@ -4,9 +4,11 @@
 
 #include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
 
+#include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
 #include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,9 +61,11 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   // when none exist.
   *password_specifics.mutable_password_issues() =
       sync_pb::PasswordSpecificsData_PasswordIssues();
-  // The current code always populates notes for outgoing protos even when
-  // non-exists.
-  password_specifics.mutable_notes();
+  if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+    // The current code always populates notes for outgoing protos even when
+    // non-exists.
+    password_specifics.mutable_notes();
+  }
   return password_specifics;
 }
 

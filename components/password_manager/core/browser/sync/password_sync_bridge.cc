@@ -152,8 +152,10 @@ bool AreLocalAndRemotePasswordsEqualExcludingIssues(
              remote_password_specifics.avatar_url() &&
          local_password_specifics.federation_url() ==
              remote_password_specifics.federation_url() &&
-         PasswordNotesFromProto(local_password_specifics.notes()) ==
-             PasswordNotesFromProto(remote_password_specifics.notes());
+         (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)
+              ? PasswordNotesFromProto(local_password_specifics.notes()) ==
+                    PasswordNotesFromProto(remote_password_specifics.notes())
+              : true);
 }
 
 // Returns true iff |remote_password_specifics| and |local_password_specifics|
