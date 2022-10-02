@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
 <translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
 <translation id="2378075407703503998">เลือก <ph name="SELCTED_FILE_COUNT" /> ไฟล์</translation>
+<translation id="2383454254762599978">ย้ายไปที่ถังขยะ</translation>
 <translation id="2387458720915042159">ประเภทการเชื่อมต่อพร็อกซี</translation>
 <translation id="2389832672041313158">พม่า/เมียนมา</translation>
 <translation id="2392369802118427583">เปิดใช้งาน</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">ไปยัง drive.google.com...</translation>
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
+<translation id="3557414470514932909">กำลังย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะ</translation>
 <translation id="3567221313191587603">เลือกไฟล์แล้วเปิด <ph name="OFFLINE_CHECKBOX_NAME" /> เพื่อเข้าถึงไฟล์แบบออฟไลน์</translation>
 <translation id="357479282490346887">ลิทัวเนีย</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4017788180641807848">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman</translation>
+<translation id="4019998208269143058">ปักหมุดไว้ที่ไฟล์ด่วน</translation>
 <translation id="4040753847560036377">PUK ไม่ถูกต้อง</translation>
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">นโยบายของผู้ดูแลระบบไม่แนะนำให้ทำสิ่งต่อไปนี้</translation>
 <translation id="4159731583141908892">ย้าย <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4176286497474237543">ล้างข้อมูลทั้งหมดในถังขยะเลย</translation>
+<translation id="4179621117429069925">รายการนี้อยู่ในถังขยะ</translation>
 <translation id="4186579485882418952">เปิดใช้แบบออฟไลน์</translation>
 <translation id="4193154014135846272">เอกสารของ Google</translation>
 <translation id="4197674956721858839">การเลือกซิป</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">ใบรับรองการตรวจสอบสิทธิ์ได้รับการปฏิเสธจากระยะไกล</translation>
 <translation id="4394214039309501350">ลิงก์ภายนอก</translation>
 <translation id="4394980935660306080">ต้นสัปดาห์นี้</translation>
+<translation id="4398096759193130964">กู้คืนรายการหรือลากไปที่โฟลเดอร์ใหม่นอกถังขยะ</translation>
 <translation id="4401287888955153199">แตกเนื้อหาทั้งหมด</translation>
 <translation id="4410695710508688828">แตกข้อมูลไม่สำเร็จ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">สร้างทางลัดสำหรับไฟล์ของคุณ</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">ภาษาฮินดีด้วยแป้นพิมพ์ InScript</translation>
 <translation id="4801956050125744859">เก็บไว้ทั้งสองเวอร์ชัน</translation>
 <translation id="4804827417948292437">อะโวคาโด</translation>
+<translation id="4805966553127040832">กำลังกู้คืน <ph name="COUNT" /> รายการ</translation>
 <translation id="4823651846660089135">อุปกรณ์เป็นแบบอ่านอย่างเดียว</translation>
 <translation id="4826849268470072925">ทมิฬ (ITRANS)</translation>
 <translation id="4839847978919684242">เลือก <ph name="SELCTED_FILES_COUNT" /> รายการ</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">ดอกทานตะวัน</translation>
 <translation id="4943368462779413526">ฟุตบอล</translation>
 <translation id="4961158930123534723">แชร์กับ Parallels Desktop แล้ว 1 โฟลเดอร์</translation>
+<translation id="496656650103537022">กู้คืน <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="4969785127455456148">อัลบั้ม</translation>
 <translation id="4973523518332075481">ใช้ชื่อที่มีอักขระไม่เกิน <ph name="MAX_LENGTH" /> อักขระ</translation>
 <translation id="4973970068702235170">การซิปล้มเหลว ข้อผิดพลาดที่ไม่คาดคิด: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">อ๊ะ ไม่มี <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, ปลดล็อก</translation>
 <translation id="5700087501958648444">ข้อมูลเสียง</translation>
+<translation id="5720028165859493293">ย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะแล้ว</translation>
 <translation id="5724172041621205163">ไทยด้วยแป้นพิมพ์ปัตตะโชติ</translation>
 <translation id="5756666464756035725">QWERTY ภาษาฮังการี</translation>
 <translation id="5763377084591234761">เยอรมัน (สวิตเซอร์แลนด์)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">ที่เก็บ <ph name="ARCHIVE_TYPE" /> ถาวร</translation>
 <translation id="6321303798550928047">โบกมือ</translation>
 <translation id="6327785803543103246">การค้นหาเว็บพร็อกซีอัตโนมัติ</translation>
+<translation id="6337014272874260727">เลิกปักหมุดในไฟล์ด่วน</translation>
 <translation id="6339145975392024142">สหรัฐอเมริกาสากล (พีซี)</translation>
 <translation id="6346310558342052870">จำกัดสิทธิ์เข้าถึง</translation>
 <translation id="6356685157277930264">หน้าต่างความคิดเห็นของไฟล์</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">เลือกไว้ 1 โฟลเดอร์</translation>
 <translation id="6755827872271341378">อุปกรณ์ Chrome OS Flex</translation>
 <translation id="6790428901817661496">เล่น</translation>
+<translation id="6794539005637808366">กู้คืนรายการหรือลากไปที่โฟลเดอร์ใหม่นอกถังขยะ</translation>
 <translation id="6795884519221689054">แพนด้า</translation>
 <translation id="6806699711453372963">จัดการการแชร์ของ Linux</translation>
 <translation id="6806796368146926706">ตัวอักษรและตัวเลขด้วยแป้นพิมพ์ญี่ปุ่น</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6989942356279143254">สวีเดน</translation>
 <translation id="6990081529015358884">คุณไม่มีพื้นที่เหลือแล้ว</translation>
+<translation id="6993826899923627728">รายการเหล่านี้อยู่ในถังขยะ</translation>
 <translation id="6998711733709403587">เลือก <ph name="SELCTED_FOLDERS_COUNT" /> โฟลเดอร์</translation>
 <translation id="7008426324576352165">องค์กรต้องมีพื้นที่เก็บข้อมูลมากกว่านี้เพื่ออัปโหลดให้เสร็จสิ้น</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">เช็ก</translation>
 <translation id="7417453074306512035">แป้นพิมพ์ภาษาเอธิโอเปีย</translation>
 <translation id="7417705661718309329">แผนที่ Google</translation>
+<translation id="7419668828140929293">กำลังกู้คืน "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">ไม่มีรูปภาพล่าสุด</translation>
 <translation id="7460898608667578234">ยูเครน</translation>
 <translation id="7469894403370665791">เชื่อมต่อกับเครือข่ายนี้อัตโนมัติ</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">เข้าถึง Google Photos ได้ง่ายๆ</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7663224033570512922">ฮินดี</translation>
+<translation id="7689532716264131859">ย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะแล้ว</translation>
 <translation id="7693909743393669729">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์และลบพาร์ติชันที่มีอยู่ทั้งหมด รวมถึงพาร์ติชันที่อาจมองไม่เห็น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7695430100978772476">จัดรูปแบบ <ph name="DRIVE_NAME" /> ไม่ได้</translation>
 <translation id="76959938259365003">ล้างข้อมูลในถังขยะไม่สำเร็จ</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">จีน (Wubi)</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7774365994322694683">นก</translation>
+<translation id="7780322752056734036">กู้คืน <ph name="NUMBER_OF_ITEMS" /> รายการแล้ว</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
 <translation id="7788080748068240085">หากต้องการบันทึก "<ph name="FILE_NAME" />" เป็นแบบออฟไลน์ คุณจะต้องเพิ่มพื้นที่ว่างอีก <ph name="TOTAL_FILE_SIZE" /> โดยทำดังนี้:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />เลิกปักหมุดไฟล์ที่คุณไม่ต้องการเข้าถึงแบบออฟไลน์อีกต่อไป<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">เลือกรายการทั้งหมด <ph name="ENTRY_COUNT" /> รายการตั้งแต่ <ph name="FROM_ENTRY_NAME" /> จนถึง <ph name="TO_ENTRY_NAME" /></translation>
 <translation id="954194396377670556">นโยบายของผู้ดูแลระบบจะป้องกันสิ่งต่อไปนี้</translation>
 <translation id="965477715979482472">อังกฤษ (แอฟริกาใต้)</translation>
+<translation id="976666271385981812">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะ</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="988685240266037636">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว คุณต้องการแทนที่ไฟล์ดังกล่าวไหม</translation>
 <translation id="992401651319295351">ลองได้อีก <ph name="RETRIES" /> ครั้ง คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>
