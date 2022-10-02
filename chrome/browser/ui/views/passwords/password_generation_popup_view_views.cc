@@ -18,6 +18,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -45,6 +46,50 @@ constexpr int kPasswordGenerationMaxWidth = 480;
 // The default icon size used in the password generation drop down.
 constexpr int kIconSize = 16;
 
+// Adds space between child views. The `view`'s LayoutManager  must be a
+// BoxLayout.
+void AddSpacerWithSize(int spacer_width, bool resize, views::View* view) {
+  auto spacer = std::make_unique<views::View>();
+  spacer->SetPreferredSize(gfx::Size(spacer_width, /*height=*/1));
+  static_cast<views::BoxLayout*>(view->GetLayoutManager())
+      ->SetFlexForView(view->AddChildView(std::move(spacer)),
+                       /*flex=*/resize ? 1 : 0,
+                       /*use_min_size=*/true);
+}
+
+// Adds the password strength string and the warning icon children to the
+// view.
+std::unique_ptr<views::View> CreatePasswordStrengthView(
+    const std::u16string& password_strength_text) {
+  auto password_strength_view = std::make_unique<views::View>();
+
+  auto warning_icon = std::make_unique<views::ImageView>();
+  warning_icon->SetCanProcessEventsWithinSubtree(false);
+  warning_icon->SetImage(
+      ui::ImageModel::FromVectorIcon(vector_icons::kNotificationWarningIcon,
+                                     ui::kColorAlertMediumSeverity, kIconSize));
+  password_strength_view->AddChildView(std::move(warning_icon));
+
+  auto* layout = password_strength_view->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+
+  // Add space between the icon and the password strength string.
+  AddSpacerWithSize(autofill::AutofillPopupBaseView::GetHorizontalPadding(),
+                    false, password_strength_view.get());
+
+  auto* password_strength_label =
+      password_strength_view->AddChildView(std::make_unique<views::Label>(
+          password_strength_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_HIGHLIGHTED));
+  password_strength_label->SetMultiLine(true);
+  password_strength_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+  return password_strength_view;
+}
+
 }  // namespace
 
 // Class that shows the generated password and associated UI (currently an
@@ -69,16 +114,6 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     // improve contrast.
     password_label_->SetBackgroundColor(color);
     suggestion_label_->SetBackgroundColor(color);
-  }
-
-  void AddSpacerWithSize(int spacer_width,
-                         bool resize,
-                         views::BoxLayout* layout) {
-    auto spacer = std::make_unique<views::View>();
-    spacer->SetPreferredSize(gfx::Size(spacer_width, 1));
-    layout->SetFlexForView(AddChildView(std::move(spacer)),
-                           /*flex=*/resize ? 1 : 0,
-                           /*use_min_size=*/true);
   }
 
   void reset_controller() { controller_ = nullptr; }
@@ -107,7 +142,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           GooglePasswordManagerVectorIcon(), ui::kColorIcon, kIconSize)));
   AddSpacerWithSize(AutofillPopupBaseView::GetHorizontalPadding(),
-                    /*resize=*/false, layout);
+                    /*resize=*/false, this);
 
   suggestion_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->SuggestedText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
@@ -119,7 +154,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   AddSpacerWithSize(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_BETWEEN_PRIMARY_AND_SECONDARY_LABELS_HORIZONTAL),
-      /*resize=*/true, layout);
+      /*resize=*/true, this);
 
   DCHECK(!password_label_);
   password_label_ = AddChildView(std::make_unique<views::Label>(
@@ -245,14 +280,9 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
           password_manager::features::kPasswordStrengthIndicator)) {
     // TODO(crbug.com/1345766): Adjust according to the calculated password
     // strength.
-    std::u16string password_strength_text =
-        l10n_util::GetStringUTF16(IDS_PASSWORD_WEAKNESS_INDICATOR);
-    auto* password_strength_label = AddChildView(std::make_unique<views::Label>(
-        password_strength_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_HIGHLIGHTED));
-    password_strength_label->SetMultiLine(true);
-    password_strength_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    password_strength_label->SetBorder(views::CreateEmptyBorder(
+    auto* password_strength_view = AddChildView(CreatePasswordStrengthView(
+        l10n_util::GetStringUTF16(IDS_PASSWORD_WEAKNESS_INDICATOR)));
+    password_strength_view->SetBorder(views::CreateEmptyBorder(
         gfx::Insets::TLBR(kVerticalPadding, kHorizontalMargin, kVerticalPadding,
                           kHorizontalMargin)));
   }
