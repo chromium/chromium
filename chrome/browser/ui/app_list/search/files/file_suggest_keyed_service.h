@@ -101,6 +101,9 @@ class FileSuggestKeyedService : public KeyedService {
       GetSuggestFileDataCallback callback,
       const absl::optional<std::vector<FileSuggestData>>& suggestions);
 
+  // Returns whether `proto_` is initialized.
+  bool IsProtoInitialized() const;
+
  private:
   // Called when `proto_` is ready to read.
   void OnRemovedSuggestionProtoReady(ReadStatus read_status);

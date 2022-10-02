@@ -31,6 +31,11 @@ MockFileSuggestKeyedService::~MockFileSuggestKeyedService() = default;
 void MockFileSuggestKeyedService::GetSuggestFileData(
     app_list::FileSuggestionType type,
     GetSuggestFileDataCallback callback) {
+  if (!IsProtoInitialized()) {
+    std::move(callback).Run(/*suggestions=*/absl::nullopt);
+    return;
+  }
+
   // Emulate `FileSuggestKeyedService` that returns data asynchronously.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

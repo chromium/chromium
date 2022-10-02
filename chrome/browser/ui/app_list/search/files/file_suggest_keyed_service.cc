@@ -112,13 +112,13 @@ void FileSuggestKeyedService::OnSuggestionProviderUpdated(
 
 bool FileSuggestKeyedService::IsReadyForTest() const {
   return local_file_suggestion_provider_->IsInitializedForTest() &&
-         proto_.initialized();
+         IsProtoInitialized();
 }
 
 void FileSuggestKeyedService::FilterRemovedSuggestions(
     GetSuggestFileDataCallback callback,
     const absl::optional<std::vector<FileSuggestData>>& suggestions) {
-  DCHECK(proto_.initialized());
+  DCHECK(IsProtoInitialized());
 
   // There are no candidate suggestions to filter. Therefore, return early.
   if (!suggestions.has_value() || suggestions->empty()) {
@@ -135,6 +135,10 @@ void FileSuggestKeyedService::FilterRemovedSuggestions(
   }
 
   std::move(callback).Run(filtered_suggestions);
+}
+
+bool FileSuggestKeyedService::IsProtoInitialized() const {
+  return proto_.initialized();
 }
 
 void FileSuggestKeyedService::OnRemovedSuggestionProtoReady(
