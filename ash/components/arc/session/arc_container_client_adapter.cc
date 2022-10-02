@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/components/dbus/arc/arc.pb.h"
+#include "chromeos/ash/components/dbus/login_manager/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 
@@ -22,59 +22,72 @@ namespace arc {
 namespace {
 
 // Converts PackageCacheMode into login_manager's.
-UpgradeArcContainerRequest_PackageCacheMode ToLoginManagerPackageCacheMode(
-    UpgradeParams::PackageCacheMode mode) {
+login_manager::UpgradeArcContainerRequest_PackageCacheMode
+ToLoginManagerPackageCacheMode(UpgradeParams::PackageCacheMode mode) {
   switch (mode) {
     case UpgradeParams::PackageCacheMode::DEFAULT:
-      return UpgradeArcContainerRequest_PackageCacheMode_DEFAULT;
+      return login_manager::UpgradeArcContainerRequest_PackageCacheMode_DEFAULT;
     case UpgradeParams::PackageCacheMode::COPY_ON_INIT:
-      return UpgradeArcContainerRequest_PackageCacheMode_COPY_ON_INIT;
+      return login_manager::
+          UpgradeArcContainerRequest_PackageCacheMode_COPY_ON_INIT;
     case UpgradeParams::PackageCacheMode::SKIP_SETUP_COPY_ON_INIT:
-      return UpgradeArcContainerRequest_PackageCacheMode_SKIP_SETUP_COPY_ON_INIT;
+      return login_manager::
+          UpgradeArcContainerRequest_PackageCacheMode_SKIP_SETUP_COPY_ON_INIT;
   }
 }
 
 // Converts ArcManagementTransition into login_manager's.
-UpgradeArcContainerRequest_ManagementTransition
+login_manager::UpgradeArcContainerRequest_ManagementTransition
 ToLoginManagerManagementTransition(ArcManagementTransition transition) {
   switch (transition) {
     case ArcManagementTransition::NO_TRANSITION:
-      return UpgradeArcContainerRequest_ManagementTransition_NONE;
+      return login_manager::
+          UpgradeArcContainerRequest_ManagementTransition_NONE;
     case ArcManagementTransition::CHILD_TO_REGULAR:
-      return UpgradeArcContainerRequest_ManagementTransition_CHILD_TO_REGULAR;
+      return login_manager::
+          UpgradeArcContainerRequest_ManagementTransition_CHILD_TO_REGULAR;
     case ArcManagementTransition::REGULAR_TO_CHILD:
-      return UpgradeArcContainerRequest_ManagementTransition_REGULAR_TO_CHILD;
+      return login_manager::
+          UpgradeArcContainerRequest_ManagementTransition_REGULAR_TO_CHILD;
     case ArcManagementTransition::UNMANAGED_TO_MANAGED:
-      return UpgradeArcContainerRequest_ManagementTransition_UNMANAGED_TO_MANAGED;
+      return login_manager::
+          UpgradeArcContainerRequest_ManagementTransition_UNMANAGED_TO_MANAGED;
   }
 }
 
 // Converts PlayStoreAutoUpdate into login_manager's.
-StartArcMiniInstanceRequest_PlayStoreAutoUpdate
+login_manager::StartArcMiniContainerRequest_PlayStoreAutoUpdate
 ToLoginManagerPlayStoreAutoUpdate(StartParams::PlayStoreAutoUpdate update) {
   switch (update) {
     case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_DEFAULT:
-      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_DEFAULT;
+      return login_manager::
+          StartArcMiniContainerRequest_PlayStoreAutoUpdate_AUTO_UPDATE_DEFAULT;
     case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_ON:
-      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_ON;
+      return login_manager::
+          StartArcMiniContainerRequest_PlayStoreAutoUpdate_AUTO_UPDATE_ON;
     case StartParams::PlayStoreAutoUpdate::AUTO_UPDATE_OFF:
-      return StartArcMiniInstanceRequest_PlayStoreAutoUpdate_AUTO_UPDATE_OFF;
+      return login_manager::
+          StartArcMiniContainerRequest_PlayStoreAutoUpdate_AUTO_UPDATE_OFF;
   }
 }
 
 // Converts DalvikMemoryProfile into login_manager's.
-StartArcMiniInstanceRequest_DalvikMemoryProfile
+login_manager::StartArcMiniContainerRequest_DalvikMemoryProfile
 ToLoginManagerDalvikMemoryProfile(
     StartParams::DalvikMemoryProfile dalvik_memory_profile) {
   switch (dalvik_memory_profile) {
     case StartParams::DalvikMemoryProfile::DEFAULT:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT;
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT;
     case StartParams::DalvikMemoryProfile::M4G:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G;
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G;
     case StartParams::DalvikMemoryProfile::M8G:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G;
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G;
     case StartParams::DalvikMemoryProfile::M16G:
-      return StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G;
+      return login_manager::
+          StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G;
   }
 }
 
@@ -97,9 +110,9 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
       ash::SessionManagerClient::Get()->RemoveObserver(this);
   }
 
-  StartArcMiniInstanceRequest ConvertStartParamsToStartArcMiniInstanceRequest(
-      StartParams params) {
-    StartArcMiniInstanceRequest request;
+  login_manager::StartArcMiniContainerRequest
+  ConvertStartParamsToStartArcMiniContainerRequest(StartParams params) {
+    login_manager::StartArcMiniContainerRequest request;
     request.set_native_bridge_experiment(params.native_bridge_experiment);
     request.set_lcd_density(params.lcd_density);
     request.set_arc_file_picker_experiment(params.arc_file_picker_experiment);
@@ -136,14 +149,14 @@ class ArcContainerClientAdapter : public ArcClientAdapter,
     }
 
     auto request =
-        ConvertStartParamsToStartArcMiniInstanceRequest(std::move(params));
+        ConvertStartParamsToStartArcMiniContainerRequest(std::move(params));
     ash::SessionManagerClient::Get()->StartArcMiniContainer(
         request, std::move(callback));
   }
 
-  UpgradeArcContainerRequest ConvertUpgradeParamsToUpgradeArcContainerRequest(
-      UpgradeParams params) {
-    UpgradeArcContainerRequest request;
+  login_manager::UpgradeArcContainerRequest
+  ConvertUpgradeParamsToUpgradeArcContainerRequest(UpgradeParams params) {
+    login_manager::UpgradeArcContainerRequest request;
     request.set_account_id(params.account_id);
     request.set_is_account_managed(params.is_account_managed);
     request.set_is_managed_adb_sideloading_allowed(

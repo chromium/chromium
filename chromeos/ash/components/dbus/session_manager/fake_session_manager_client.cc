@@ -686,7 +686,7 @@ void FakeSessionManagerClient::GetPsmDeviceActiveSecret(
 }
 
 void FakeSessionManagerClient::StartArcMiniContainer(
-    const arc::StartArcMiniInstanceRequest& request,
+    const login_manager::StartArcMiniContainerRequest& request,
     chromeos::VoidDBusMethodCallback callback) {
   last_start_arc_mini_container_request_ = request;
 
@@ -700,7 +700,7 @@ void FakeSessionManagerClient::StartArcMiniContainer(
 }
 
 void FakeSessionManagerClient::UpgradeArcContainer(
-    const arc::UpgradeArcContainerRequest& request,
+    const login_manager::UpgradeArcContainerRequest& request,
     chromeos::VoidDBusMethodCallback callback) {
   last_upgrade_arc_request_ = request;
 

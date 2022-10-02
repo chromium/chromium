@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/dbus/arc/arc.pb.h"
+#include "chromeos/ash/components/dbus/login_manager/arc.pb.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -157,10 +157,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
       PsmDeviceActiveSecretCallback callback) override;
 
   void StartArcMiniContainer(
-      const arc::StartArcMiniInstanceRequest& request,
+      const login_manager::StartArcMiniContainerRequest& request,
       chromeos::VoidDBusMethodCallback callback) override;
-  void UpgradeArcContainer(const arc::UpgradeArcContainerRequest& request,
-                           chromeos::VoidDBusMethodCallback callback) override;
+  void UpgradeArcContainer(
+      const login_manager::UpgradeArcContainerRequest& request,
+      chromeos::VoidDBusMethodCallback callback) override;
   void StopArcInstance(const std::string& account_id,
                        bool should_backup_log,
                        chromeos::VoidDBusMethodCallback callback) override;
@@ -237,11 +238,12 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void set_device_local_account_policy(const std::string& account_id,
                                        const std::string& policy_blob);
 
-  const arc::UpgradeArcContainerRequest& last_upgrade_arc_request() const {
+  const login_manager::UpgradeArcContainerRequest& last_upgrade_arc_request()
+      const {
     return last_upgrade_arc_request_;
   }
-  const arc::StartArcMiniInstanceRequest last_start_arc_mini_container_request()
-      const {
+  const login_manager::StartArcMiniContainerRequest
+  last_start_arc_mini_container_request() const {
     return last_start_arc_mini_container_request_;
   }
 
@@ -432,10 +434,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   std::string request_browser_data_migration_mode_value_ = "invalid";
 
   // Contains last request passed to StartArcMiniContainer
-  arc::StartArcMiniInstanceRequest last_start_arc_mini_container_request_;
+  login_manager::StartArcMiniContainerRequest
+      last_start_arc_mini_container_request_;
 
-  // Contains last request passed to StartArcInstance
-  arc::UpgradeArcContainerRequest last_upgrade_arc_request_;
+  // Contains last requst passed to StartArcInstance
+  login_manager::UpgradeArcContainerRequest last_upgrade_arc_request_;
 
   StubDelegate* delegate_ = nullptr;
 

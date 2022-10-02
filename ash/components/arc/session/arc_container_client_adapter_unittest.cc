@@ -221,18 +221,22 @@ struct DalvikMemoryProfileTestParam {
   // Requested profile.
   StartParams::DalvikMemoryProfile profile;
   // Expected value passed to DBus.
-  StartArcMiniInstanceRequest_DalvikMemoryProfile expectation;
+  login_manager::StartArcMiniContainerRequest_DalvikMemoryProfile expectation;
 };
 
 constexpr DalvikMemoryProfileTestParam kDalvikMemoryProfileTestCases[] = {
     {StartParams::DalvikMemoryProfile::DEFAULT,
-     StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT},
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_DEFAULT},
     {StartParams::DalvikMemoryProfile::M4G,
-     StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G},
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_4G},
     {StartParams::DalvikMemoryProfile::M8G,
-     StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G},
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_8G},
     {StartParams::DalvikMemoryProfile::M16G,
-     StartArcMiniInstanceRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G}};
+     login_manager::
+         StartArcMiniContainerRequest_DalvikMemoryProfile_MEMORY_PROFILE_16G}};
 
 class ArcContainerClientAdapterDalvikMemoryProfileTest
     : public ArcContainerClientAdapterTest,

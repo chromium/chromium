@@ -17,11 +17,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
-namespace arc {
-class StartArcMiniInstanceRequest;
-class UpgradeArcContainerRequest;
-}  // namespace arc
-
 namespace cryptohome {
 class AccountIdentifier;
 }
@@ -37,6 +32,8 @@ class SignedData;
 namespace login_manager {
 class LoginScreenStorageMetadata;
 class PolicyDescriptor;
+class StartArcMiniContainerRequest;
+class UpgradeArcContainerRequest;
 }  // namespace login_manager
 
 namespace ash {
@@ -449,7 +446,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // StartArcMiniContainer starts a container with only a handful of ARC
   // processes for Chrome OS login screen.
   virtual void StartArcMiniContainer(
-      const arc::StartArcMiniInstanceRequest& request,
+      const login_manager::StartArcMiniContainerRequest& request,
       chromeos::VoidDBusMethodCallback callback) = 0;
 
   // UpgradeArcContainer upgrades a mini-container to a full ARC container. On
@@ -458,7 +455,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // guarantees over whether this |callback| is invoked or the
   // ArcInstanceStopped signal is received first.
   virtual void UpgradeArcContainer(
-      const arc::UpgradeArcContainerRequest& request,
+      const login_manager::UpgradeArcContainerRequest& request,
       chromeos::VoidDBusMethodCallback callback) = 0;
 
   // Asynchronously stops the ARC instance. When |should_backup_log| is set to
