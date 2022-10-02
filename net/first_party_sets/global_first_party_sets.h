@@ -5,6 +5,8 @@
 #ifndef NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_
 #define NET_FIRST_PARTY_SETS_GLOBAL_FIRST_PARTY_SETS_H_
 
+#include <set>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/function_ref.h"
@@ -23,6 +25,8 @@ class GlobalFirstPartySetsDataView;
 }  // namespace network::mojom
 
 namespace net {
+
+class FirstPartySetMetadata;
 
 // This class holds all of the info associated with the First-Party Sets known
 // to this browser, after they've been parsed. This is suitable for plumbing
@@ -77,6 +81,13 @@ class NET_EXPORT GlobalFirstPartySets {
       const base::flat_set<SchemefulSite>& sites,
       const FirstPartySetsContextConfig* config) const;
 
+  // Computes the First-Party Set metadata related to the given request context.
+  FirstPartySetMetadata ComputeMetadata(
+      const SchemefulSite& site,
+      const SchemefulSite* top_frame_site,
+      const std::set<SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config) const;
+
   // Modifies this instance such that it will respect the given
   // manually-specified set. `manual_entries` should contain entries for aliases
   // as well as "canonical" sites.
@@ -107,11 +118,22 @@ class NET_EXPORT GlobalFirstPartySets {
   // transitively overlap (when taking the current `entries_` of this map, plus
   // the manual config, into account) are unioned together. I.e., this ensures
   // that at most one addition set intersects with any given global set.
-  std::vector<base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
+  std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>
   NormalizeAdditionSets(
-      const std::vector<
-          base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>&
+      const std::vector<base::flat_map<SchemefulSite, FirstPartySetEntry>>&
           addition_sets) const;
+
+  // Returns whether `site` is same-party with `party_context`, and
+  // `top_frame_site` (if it is not nullptr). That is, is `site`'s owner the
+  // same as the owners of every member of `party_context` and of
+  // `top_frame_site`? Note: if `site` is not a member of a First-Party Set,
+  // then this returns false. If `top_frame_site` is nullptr, then it is
+  // ignored.
+  bool IsContextSamePartyWithSite(
+      const SchemefulSite& site,
+      const SchemefulSite* top_frame_site,
+      const std::set<SchemefulSite>& party_context,
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
     return entries_;

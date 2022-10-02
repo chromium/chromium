@@ -28,15 +28,6 @@
 
 namespace network {
 
-namespace {
-
-net::SamePartyContext::Type ContextTypeFromBool(bool is_same_party) {
-  return is_same_party ? net::SamePartyContext::Type::kSameParty
-                       : net::SamePartyContext::Type::kCrossParty;
-}
-
-}  // namespace
-
 FirstPartySetsManager::FirstPartySetsManager(bool enabled)
     : enabled_(enabled),
       pending_queries_(
@@ -48,32 +39,6 @@ FirstPartySetsManager::FirstPartySetsManager(bool enabled)
 
 FirstPartySetsManager::~FirstPartySetsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-bool FirstPartySetsManager::IsContextSamePartyWithSite(
-    const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
-    const net::FirstPartySetsContextConfig& fps_context_config) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const absl::optional<net::FirstPartySetEntry> site_entry =
-      FindEntry(site, fps_context_config);
-  if (!site_entry.has_value())
-    return false;
-
-  const auto is_in_same_set_as_frame_site =
-      [this, &site_entry,
-       &fps_context_config](const net::SchemefulSite& context_site) -> bool {
-    const absl::optional<net::FirstPartySetEntry> context_entry =
-        FindEntry(context_site, fps_context_config);
-    return context_entry.has_value() &&
-           context_entry->primary() == site_entry->primary();
-  };
-
-  if (top_frame_site && !is_in_same_set_as_frame_site(*top_frame_site))
-    return false;
-
-  return base::ranges::all_of(party_context, is_in_same_set_as_frame_site);
 }
 
 absl::optional<net::FirstPartySetMetadata>
@@ -124,25 +89,8 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(sets_.has_value());
 
-  const base::ElapsedTimer timer;
-
-  net::SamePartyContext::Type context_type =
-      ContextTypeFromBool(IsContextSamePartyWithSite(
-          site, top_frame_site, party_context, fps_context_config));
-
-  net::SamePartyContext context(context_type);
-
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
-      base::Microseconds(1), base::Milliseconds(100), 50);
-
-  absl::optional<net::FirstPartySetEntry> top_frame_entry =
-      top_frame_site ? FindEntry(*top_frame_site, fps_context_config)
-                     : absl::nullopt;
-
-  return net::FirstPartySetMetadata(
-      context, base::OptionalToPtr(FindEntry(site, fps_context_config)),
-      base::OptionalToPtr(top_frame_entry));
+  return sets_->ComputeMetadata(site, top_frame_site, party_context,
+                                fps_context_config);
 }
 
 absl::optional<net::FirstPartySetEntry> FirstPartySetsManager::FindEntry(

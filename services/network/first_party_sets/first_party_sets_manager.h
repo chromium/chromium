@@ -102,18 +102,6 @@ class FirstPartySetsManager {
       const std::set<net::SchemefulSite>& party_context,
       const net::FirstPartySetsContextConfig& fps_context_config) const;
 
-  // Returns whether the `site` is same-party with the `party_context`, and
-  // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
-  // same as the owners of every member of `party_context` and of
-  // `top_frame_site`? Note: if `site` is not a member of a First-Party Set
-  // (with more than one member), then this returns false. If `top_frame_site`
-  // is nullptr, then it is ignored.
-  bool IsContextSamePartyWithSite(
-      const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
-      const net::FirstPartySetsContextConfig& fps_context_config) const;
-
   // Returns `site`'s entry, or `nullopt` if `site` has no entry.
   // `fps_context_config` is the configuration to be used in this context.
   //
