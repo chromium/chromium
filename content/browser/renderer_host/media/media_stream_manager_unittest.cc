@@ -1296,7 +1296,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
   CustomSetUp(/*surface_type=*/"window");
   RequestDisplayCaptureTypeDevice();
   GetOpenDevice();
-  KeepDeviceAlive();
+  EXPECT_TRUE(KeepDeviceAlive());
   StopDevice();
 
   EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
@@ -1320,7 +1320,7 @@ TEST_F(MediaStreamManagerTestForTransfers,
   CustomSetUp();
   RequestDeviceCaptureTypeAudioDevice();
   GetOpenDevice();
-  KeepDeviceAlive();
+  EXPECT_TRUE(KeepDeviceAlive());
   StopDevice();
 
   EXPECT_EQ(result_, blink::mojom::MediaStreamRequestResult::INVALID_STATE);
