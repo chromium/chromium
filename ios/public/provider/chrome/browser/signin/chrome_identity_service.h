@@ -118,12 +118,7 @@ class ChromeIdentityService {
     virtual void OnChromeIdentityServiceWillBeDestroyed() {}
   };
 
-  // Callback invoked for each ChromeIdentity when iterating over them with
-  // `IterateOverIdentities()`.
-  using IdentityIteratorCallback =
-      base::RepeatingCallback<IdentityIteratorCallbackResult(ChromeIdentity*)>;
-
-  // Callback invoked for each SystemIdentity when iterating over them with
+  // Callback invoked for each id<SystemIdentity> when iterating over them with
   // `IterateOverIdentities()`
   using SystemIdentityIteratorCallback =
       base::RepeatingCallback<IdentityIteratorCallbackResult(
@@ -180,7 +175,6 @@ class ChromeIdentityService {
   // Iterates over all known ChromeIdentities, sorted by the ordering used
   // in account manager, which is typically based on the keychain ordering
   // of accounts.
-  void IterateOverIdentities(IdentityIteratorCallback callback);
   virtual void IterateOverIdentities(SystemIdentityIteratorCallback callback);
 
   // Forgets the given identity on the device. This method logs the user out.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
 #import "base/check.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -22,133 +23,132 @@
 
 namespace {
 
-// Helper base class for functors.
-template <typename T>
-class Functor {
+// Filter class skipping restricted account.
+class SkipRestricted {
  public:
-  explicit Functor(const PatternAccountRestriction& restriction,
-                   const bool applies_to_restriction = false)
-      : restriction_(restriction),
-        applies_to_restriction_(applies_to_restriction) {}
+  SkipRestricted(const PatternAccountRestriction& restriction)
+      : restriction_(restriction) {}
 
-  Functor(const Functor&) = delete;
-  Functor& operator=(const Functor&) = delete;
-
-  ios::ChromeIdentityService::IdentityIteratorCallback Callback() {
-    // The callback is invoked synchronously and does not escape the scope
-    // in which the Functor is defined. Thus it is safe to use Unretained
-    // here.
-    return base::BindRepeating(&Functor::Run, base::Unretained(this));
+  bool ShouldFilter(id<SystemIdentity> identity) const {
+    return restriction_.IsAccountRestricted(
+        base::SysNSStringToUTF8(identity.userEmail));
   }
 
  private:
-  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
-    // Filtering the ChromeIdentity.
-    const std::string email = base::SysNSStringToUTF8(identity.userEmail);
-    if (restriction_.IsAccountRestricted(email) != applies_to_restriction_)
-      return ios::kIdentityIteratorContinueIteration;
-
-    return static_cast<T*>(this)->Run(identity);
-  }
-
   const PatternAccountRestriction& restriction_;
-  const bool applies_to_restriction_;
 };
 
-// Helper class used to implement HasIdentities().
-class FunctorHasIdentities : public Functor<FunctorHasIdentities> {
+// Filter class skipping unrestricted account.
+class KeepRestricted {
  public:
-  explicit FunctorHasIdentities(const PatternAccountRestriction& restriction)
-      : Functor(restriction) {}
+  KeepRestricted(const PatternAccountRestriction& restriction)
+      : restriction_(restriction) {}
 
-  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
-    has_identities_ = true;
+  bool ShouldFilter(id<SystemIdentity> identity) const {
+    return !restriction_.IsAccountRestricted(
+        base::SysNSStringToUTF8(identity.userEmail));
+  }
+
+ private:
+  const PatternAccountRestriction& restriction_;
+};
+
+// Filter class skipping identities that do not have the given Gaia ID.
+class KeepGaiaID {
+ public:
+  KeepGaiaID(NSString* gaia_id) : gaia_id_(gaia_id) { DCHECK(gaia_id_.length); }
+
+  bool ShouldFilter(id<SystemIdentity> identity) const {
+    return ![gaia_id_ isEqualToString:identity.gaiaID];
+  }
+
+ private:
+  NSString* gaia_id_ = nil;
+};
+
+// Filter skipping identities if either sub-filter match.
+template <typename F1, typename F2>
+class CombineOr {
+ public:
+  CombineOr(F1&& f1, F2&& f2)
+      : f1_(std::forward<F1>(f1)), f2_(std::forward<F2>(f2)) {}
+
+  bool ShouldFilter(id<SystemIdentity> identity) const {
+    return f1_.ShouldFilter(identity) || f2_.ShouldFilter(identity);
+  }
+
+ private:
+  F1 f1_;
+  F2 f2_;
+};
+
+// Helper class returning the first identity found when iterating
+// over identities matching the filter.
+class FindFirstIdentity {
+ public:
+  using ResultType = ChromeIdentity*;
+
+  ios::IdentityIteratorCallbackResult ForEach(ChromeIdentity* identity) {
+    identity_ = base::mac::ObjCCastStrict<ChromeIdentity>(identity);
     return ios::kIdentityIteratorInterruptIteration;
   }
 
-  bool has_identities() const { return has_identities_; }
+  ResultType Result() const { return identity_; }
 
  private:
-  bool has_identities_ = false;
-};
-
-// Helper class used to implement GetIdentityWithGaiaID().
-class FunctorLookupIdentityByGaiaID
-    : public Functor<FunctorLookupIdentityByGaiaID> {
- public:
-  FunctorLookupIdentityByGaiaID(const PatternAccountRestriction& restriction,
-                                NSString* gaia_id)
-      : Functor(restriction), lookup_gaia_id_(gaia_id) {
-    DCHECK(lookup_gaia_id_.length);
-  }
-
-  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
-    if ([lookup_gaia_id_ isEqualToString:identity.gaiaID]) {
-      identity_ = identity;
-      return ios::kIdentityIteratorInterruptIteration;
-    }
-    return ios::kIdentityIteratorContinueIteration;
-  }
-
-  ChromeIdentity* identity() const { return identity_; }
-
- private:
-  NSString* lookup_gaia_id_ = nil;
   ChromeIdentity* identity_ = nil;
 };
 
-// Helper class used to implement GetAllIdentities().
-class FunctorCollectIdentities : public Functor<FunctorCollectIdentities> {
+// Helper class returning the list of all identities matching the filter
+// when iterating over identities.
+class CollectIdentities {
  public:
-  FunctorCollectIdentities(const PatternAccountRestriction& restriction)
-      : Functor(restriction), identities_([NSMutableArray array]) {}
+  using ResultType = NSArray<ChromeIdentity*>*;
 
-  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
-    [identities_ addObject:identity];
+  ios::IdentityIteratorCallbackResult ForEach(id<SystemIdentity> identity) {
+    [identities_ addObject:base::mac::ObjCCastStrict<ChromeIdentity>(identity)];
     return ios::kIdentityIteratorContinueIteration;
   }
 
-  NSArray<ChromeIdentity*>* identities() const { return [identities_ copy]; }
+  ResultType Result() const { return [identities_ copy]; }
 
  private:
-  NSMutableArray<ChromeIdentity*>* identities_ = nil;
+  NSMutableArray<ChromeIdentity*>* identities_ = [NSMutableArray array];
 };
 
-// Helper class used to implement GetDefaultIdentity().
-class FunctorGetFirstIdentity : public Functor<FunctorGetFirstIdentity> {
+// Helper class implementing iteration in IterateOverIdentities.
+template <typename T, typename F>
+class Iterator {
  public:
-  FunctorGetFirstIdentity(const PatternAccountRestriction& restriction)
-      : Functor(restriction) {}
+  using ResultType = typename T::ResultType;
 
-  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
-    default_identity_ = identity;
-    return ios::kIdentityIteratorInterruptIteration;
+  Iterator(T t, F f) : t_(t), f_(f) {}
+
+  ios::IdentityIteratorCallbackResult Run(id<SystemIdentity> identity) {
+    if (f_.ShouldFilter(identity))
+      return ios::kIdentityIteratorContinueIteration;
+
+    return t_.ForEach(identity);
   }
 
-  ChromeIdentity* default_identity() const { return default_identity_; }
+  ResultType Result() const { return t_.Result(); }
 
  private:
-  ChromeIdentity* default_identity_ = nil;
+  T t_;
+  F f_;
 };
 
-// Helper class used to implement HasRestrictedIdentities().
-class FunctorHasRestrictedIdentities
-    : public Functor<FunctorHasRestrictedIdentities> {
- public:
-  explicit FunctorHasRestrictedIdentities(
-      const PatternAccountRestriction& restriction)
-      : Functor(restriction, /*applies_to_restriction*/ true) {}
-
-  ios::IdentityIteratorCallbackResult Run(ChromeIdentity* identity) {
-    has_restricted_identities_ = true;
-    return ios::kIdentityIteratorInterruptIteration;
-  }
-
-  bool has_restricted_identities() const { return has_restricted_identities_; }
-
- private:
-  bool has_restricted_identities_ = false;
-};
+// Helper function to iterator over ChromeIdentityService identities.
+template <typename T, typename F>
+typename T::ResultType IterateOverIdentities(T t, F f) {
+  using Iter = Iterator<T, F>;
+  Iter iterator(std::move(t), std::move(f));
+  ios::GetChromeBrowserProvider()
+      .GetChromeIdentityService()
+      ->IterateOverIdentities(
+          base::BindRepeating(&Iter::Run, base::Unretained(&iterator)));
+  return iterator.Result();
+}
 
 // Returns the PatternAccountRestriction according to the given PrefService.
 PatternAccountRestriction PatternAccountRestrictionFromPreference(
@@ -184,19 +184,13 @@ ChromeAccountManagerService::ChromeAccountManagerService(
 ChromeAccountManagerService::~ChromeAccountManagerService() {}
 
 bool ChromeAccountManagerService::HasIdentities() const {
-  FunctorHasIdentities helper(restriction_);
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->IterateOverIdentities(helper.Callback());
-  return helper.has_identities();
+  return IterateOverIdentities(FindFirstIdentity{},
+                               SkipRestricted{restriction_}) != nil;
 }
 
 bool ChromeAccountManagerService::HasRestrictedIdentities() const {
-  FunctorHasRestrictedIdentities helper(restriction_);
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->IterateOverIdentities(helper.Callback());
-  return helper.has_restricted_identities();
+  return IterateOverIdentities(FindFirstIdentity{},
+                               KeepRestricted{restriction_}) != nil;
 }
 
 bool ChromeAccountManagerService::IsValidIdentity(
@@ -215,11 +209,9 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
   if (!gaia_id.length)
     return nil;
 
-  FunctorLookupIdentityByGaiaID helper(restriction_, gaia_id);
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->IterateOverIdentities(helper.Callback());
-  return helper.identity();
+  return IterateOverIdentities(
+      FindFirstIdentity{},
+      CombineOr{SkipRestricted{restriction_}, KeepGaiaID{gaia_id}});
 }
 
 ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
@@ -235,19 +227,13 @@ ChromeIdentity* ChromeAccountManagerService::GetIdentityWithGaiaID(
 
 NSArray<ChromeIdentity*>* ChromeAccountManagerService::GetAllIdentities()
     const {
-  FunctorCollectIdentities helper(restriction_);
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->IterateOverIdentities(helper.Callback());
-  return [helper.identities() copy];
+  return IterateOverIdentities(CollectIdentities{},
+                               SkipRestricted{restriction_});
 }
 
 ChromeIdentity* ChromeAccountManagerService::GetDefaultIdentity() const {
-  FunctorGetFirstIdentity helper(restriction_);
-  ios::GetChromeBrowserProvider()
-      .GetChromeIdentityService()
-      ->IterateOverIdentities(helper.Callback());
-  return helper.default_identity();
+  return IterateOverIdentities(FindFirstIdentity{},
+                               SkipRestricted{restriction_});
 }
 
 UIImage* ChromeAccountManagerService::GetIdentityAvatarWithIdentity(

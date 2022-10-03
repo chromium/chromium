@@ -118,18 +118,6 @@ ChromeIdentityService::CreateChromeIdentityInteractionManager() const {
 }
 
 void ChromeIdentityService::IterateOverIdentities(
-    IdentityIteratorCallback callback) {
-  // This helper method needs to be kept until all client code has been
-  // converted to use the iterator taking id<SystemIdentity> instead.
-  IterateOverIdentities(base::BindRepeating(
-      [](IdentityIteratorCallback callback, id<SystemIdentity> identity) {
-        return callback.Run(
-            base::mac::ObjCCastStrict<ChromeIdentity>(identity));
-      },
-      std::move(callback)));
-}
-
-void ChromeIdentityService::IterateOverIdentities(
     SystemIdentityIteratorCallback) {}
 
 void ChromeIdentityService::ForgetIdentity(id<SystemIdentity> identity,
