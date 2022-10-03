@@ -7182,3 +7182,9 @@ crbug.com/1359788 virtual/orb-v02/external/wpt/fetch/corb/img-svg-doctype-html-m
 # Sheriff 2022-09-29
 crbug.com/1368855 external/wpt/longtask-timing/containerNames.html [ Failure Pass ]
 crbug.com/1369642 [ Mac ] external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
+
+# Sheriff 2022-10-03
+crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.sharedworker.html [ Failure Pass ]
+crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.html [ Failure Pass ]
+crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.serviceworker.html [ Failure Pass ]
+crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.worker.html [ Failure Pass ]
