@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEPTH_ORDERED_LAYOUT_OBJECT_LIST_H_
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -29,7 +30,15 @@ struct LayoutObjectWithDepth {
   LayoutObject* operator->() const { return object; }
 
   bool operator<(const LayoutObjectWithDepth& other) const {
-    return depth > other.depth;
+    if (depth != other.depth)
+      return depth > other.depth;
+
+    // When recording/replaying, ensure that sorted arrays of objects are
+    // ordered deterministically when their depths are the same.
+    if (recordreplay::IsRecordingOrReplaying())
+      return recordreplay::PointerId(object) < recordreplay::PointerId(other.object);
+
+    return false;
   }
 
   void operator=(LayoutObject* obj) {

@@ -339,7 +339,9 @@ LayoutObject::LayoutObject(Node* node)
       parent_(nullptr),
       previous_(nullptr),
       next_(nullptr) {
-  // Pointer registration is needed for hashing in FragmentPaintPropertyTreeBuilder::UpdateTransform.
+  // Pointer registration is needed for hashing in the following places:
+  // FragmentPaintPropertyTreeBuilder::UpdateTransform
+  // LayoutObjectWithDepth ordering
   recordreplay::RegisterPointer(this);
   InstanceCounters::IncrementCounter(InstanceCounters::kLayoutObjectCounter);
   if (node_)
