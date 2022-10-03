@@ -1805,6 +1805,64 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, GetBucketUsage) {
   EXPECT_EQ(2 * foo_size, GetBucketUsage(bucket_locator1_));
 }
 
+TEST_F(CacheStorageManagerTest, GetBucketUsageConflictingBucketIds) {
+  // For buckets with first-party storage keys and default names, the directory
+  // path will be calculated solely based on the origin and owner. This means
+  // that two `BucketLocator`s that are the same in all ways except the bucket
+  // ID will use the same path under these conditions, so if we call
+  // `OpenCacheStorage` with two such `BucketLocator`s, the second call will
+  // instantiate an instance that would hang if we tried to use it (while the
+  // the first instance remains open and "owns" the directory). In theory this
+  // shouldn't happen, but just in case We have some logic to prevent this so
+  // test that here.
+  const GURL kTestURL = GURL("http://example.com/foo");
+  auto modified_bucket_locator1_{bucket_locator1_};
+  modified_bucket_locator1_.id = storage::BucketId::FromUnsafeValue(999);
+
+  base::FilePath bucket_locator1_path =
+      CacheStorageManager::ConstructBucketPath(
+          cache_manager_->profile_path(), bucket_locator1_,
+          storage::mojom::CacheStorageOwner::kCacheAPI);
+
+  base::FilePath modified_bucket_locator1_path =
+      CacheStorageManager::ConstructBucketPath(
+          cache_manager_->profile_path(), modified_bucket_locator1_,
+          storage::mojom::CacheStorageOwner::kCacheAPI);
+
+  ASSERT_EQ(bucket_locator1_path, modified_bucket_locator1_path);
+
+  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
+
+  disk_cache::FlushCacheThreadForTesting();
+  content::RunAllTasksUntilIdle();
+
+  // We are testing that this call doesn't hang and returns 0 since the
+  // directory is owned by the existing instance.
+  EXPECT_EQ(GetBucketUsage(modified_bucket_locator1_), 0);
+
+  // Clear out the CacheStorageManager's instance map.
+  DestroyStorageManager();
+  CreateStorageManager();
+
+  // Now try the reverse order when there's an existing index file on disk but
+  // there's no corresponding instance in the CacheStorage map. There should
+  // already be an index file on disk leftover from the test above. In this
+  // case, the `GetBucketUsage()` call should be able to read the size info
+  // from disk and won't take ownership of the directory, allowing the
+  // operations on the other instance to succeed.
+  ASSERT_TRUE(base::PathExists(bucket_locator1_path));
+
+  EXPECT_NE(GetBucketUsage(modified_bucket_locator1_), 0);
+
+  disk_cache::FlushCacheThreadForTesting();
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(), kTestURL));
+  EXPECT_NE(Size(bucket_locator1_), 0);
+}
+
 TEST_F(CacheStorageManagerMemoryOnlyTest, GetAllStorageKeysUsage) {
   EXPECT_EQ(0ULL, GetAllStorageKeysUsage().size());
   // Put one entry in a cache on origin 1.
@@ -2959,6 +3017,59 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP, DeleteBucketData) {
 
     EXPECT_FALSE(base::PathExists(calculated_path));
   }
+}
+
+TEST_F(CacheStorageManagerTest, DeleteBucketDataConflictingBucketIds) {
+  // For an overview of this test, see `GetBucketUsageConflictingBucketIds()`.
+  const GURL kTestURL = GURL("http://example.com/foo");
+  auto modified_bucket_locator1_{bucket_locator1_};
+  modified_bucket_locator1_.id = storage::BucketId::FromUnsafeValue(999);
+
+  base::FilePath bucket_locator1_path =
+      CacheStorageManager::ConstructBucketPath(
+          cache_manager_->profile_path(), bucket_locator1_,
+          storage::mojom::CacheStorageOwner::kCacheAPI);
+
+  base::FilePath modified_bucket_locator1_path =
+      CacheStorageManager::ConstructBucketPath(
+          cache_manager_->profile_path(), modified_bucket_locator1_,
+          storage::mojom::CacheStorageOwner::kCacheAPI);
+
+  ASSERT_EQ(bucket_locator1_path, modified_bucket_locator1_path);
+
+  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
+
+  disk_cache::FlushCacheThreadForTesting();
+  content::RunAllTasksUntilIdle();
+
+  // We are testing that this call doesn't hang and that it returns kOk without
+  // actually deleting the directory (which is currently in use).
+  EXPECT_EQ(DeleteBucketData(modified_bucket_locator1_),
+            blink::mojom::QuotaStatusCode::kOk);
+  ASSERT_TRUE(base::PathExists(bucket_locator1_path));
+
+  // Clear out the CacheStorageManager's instance map.
+  DestroyStorageManager();
+  CreateStorageManager();
+
+  // Now try the reverse order when there's an existing index file on disk but
+  // there's no corresponding instance in the CacheStorage map. There should
+  // already be an index file on disk leftover from the test above. In this
+  // case, the `DeleteBucketData()` call should succeed and a subsequent usage
+  // with the correct bucket locator should work as well.
+  ASSERT_TRUE(base::PathExists(bucket_locator1_path));
+  EXPECT_EQ(DeleteBucketData(modified_bucket_locator1_),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  disk_cache::FlushCacheThreadForTesting();
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(base::PathExists(bucket_locator1_path));
+
+  EXPECT_TRUE(Open(bucket_locator1_, "foo"));
+  EXPECT_FALSE(CacheMatch(callback_cache_handle_.value(), kTestURL));
+  EXPECT_EQ(Size(bucket_locator1_), 0);
 }
 
 class CacheStorageQuotaClientTest : public CacheStorageManagerTest {

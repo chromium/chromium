@@ -207,6 +207,9 @@ class CONTENT_EXPORT CacheStorageManager
 #if DCHECK_IS_ON()
   bool CacheStoragePathIsUnique(const base::FilePath& path);
 #endif
+  bool ConflictingInstanceExistsInMap(
+      storage::mojom::CacheStorageOwner owner,
+      const storage::BucketLocator& bucket_locator);
 
   // Stores the storage partition (profile) path unless the CacheStorage should
   // be in-memory only, in which case this is empty.

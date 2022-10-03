@@ -499,6 +499,45 @@ bool CacheStorageManager::CacheStoragePathIsUnique(const base::FilePath& path) {
 }
 #endif
 
+// Like `CacheStorageManager::CacheStoragePathIsUnique()`, this checks whether
+// there's an existing entry in `cache_storage_map_` that would share the same
+// directory path for the given `owner` and `bucket_locator`.
+bool CacheStorageManager::ConflictingInstanceExistsInMap(
+    storage::mojom::CacheStorageOwner owner,
+    const storage::BucketLocator& bucket_locator) {
+  DCHECK(bucket_locator.type == blink::mojom::StorageType::kTemporary);
+
+  if (IsMemoryBacked() || !bucket_locator.is_default ||
+      !bucket_locator.storage_key.IsFirstPartyContext()) {
+    return false;
+  }
+  CacheStorageMap::const_iterator it =
+      cache_storage_map_.find({bucket_locator, owner});
+  if (it != cache_storage_map_.end()) {
+    // If there's an entry in the map for a given BucketLocator then assume
+    // there are no conflicts.
+    return false;
+  }
+  // Note: since the number of CacheStorage instances is usually small, just
+  // search for any `storage::BucketLocator` keys with a matching
+  // `blink::StorageKey`.
+  for (const auto& key_value : cache_storage_map_) {
+    if (key_value.first.second != owner) {
+      continue;
+    }
+    if (!key_value.first.first.is_default ||
+        key_value.first.first.storage_key != bucket_locator.storage_key) {
+      continue;
+    }
+    DCHECK(key_value.first.first.type == blink::mojom::StorageType::kTemporary);
+
+    // An existing entry has a different bucket ID and/or type, which means
+    // these entries will use the same directory path.
+    return true;
+  }
+  return false;
+}
+
 CacheStorageHandle CacheStorageManager::OpenCacheStorage(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner) {
@@ -689,11 +728,12 @@ void CacheStorageManager::GetBucketUsageDidGetExists(
     storage::mojom::QuotaClient::GetBucketUsageCallback callback,
     bool exists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!exists) {
+  if (!exists || ConflictingInstanceExistsInMap(owner, bucket_locator)) {
     scheduler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /*usage=*/0));
     return;
   }
+
   CacheStorageHandle cache_storage = OpenCacheStorage(bucket_locator, owner);
   CacheStorage::From(cache_storage)->Size(std::move(callback));
 }
@@ -889,7 +929,7 @@ void CacheStorageManager::DeleteBucketDataDidGetExists(
     bool exists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!exists) {
+  if (!exists || ConflictingInstanceExistsInMap(owner, bucket_locator)) {
     scheduler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::mojom::QuotaStatusCode::kOk));
