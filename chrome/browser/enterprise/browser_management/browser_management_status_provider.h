@@ -43,6 +43,17 @@ class LocalBrowserManagementStatusProvider final
   EnterpriseManagementAuthority FetchAuthority() final;
 };
 
+class LocalDomainBrowserManagementStatusProvider final
+    : public policy::ManagementStatusProvider {
+ public:
+  LocalDomainBrowserManagementStatusProvider();
+  ~LocalDomainBrowserManagementStatusProvider() final;
+
+ protected:
+  // ManagementStatusProvider impl
+  EnterpriseManagementAuthority FetchAuthority() final;
+};
+
 class ProfileCloudManagementStatusProvider final
     : public policy::ManagementStatusProvider {
  public:
