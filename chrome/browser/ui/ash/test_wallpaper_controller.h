@@ -77,12 +77,13 @@ class TestWallpaperController : public ash::WallpaperController {
                           ash::WallpaperLayout layout,
                           bool preview_mode,
                           SetWallpaperCallback callback) override;
-  void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& file_name,
-                          ash::WallpaperLayout layout,
-                          const gfx::ImageSkia& image,
-                          bool preview_mode,
-                          const std::string& file_path = "") override;
+  void SetDecodedCustomWallpaper(const AccountId& account_id,
+                                 const std::string& file_name,
+                                 ash::WallpaperLayout layout,
+                                 bool preview_mode,
+                                 SetWallpaperCallback callback,
+                                 const std::string& file_path,
+                                 const gfx::ImageSkia& image) override;
   void SetOnlineWallpaper(const ash::OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const ash::OnlineWallpaperParams& params,

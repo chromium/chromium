@@ -189,10 +189,10 @@ class WallpaperChangeWaiter : public ash::WallpaperControllerObserver {
 
     wallpaper_controller_observation_.Observe(ash::WallpaperController::Get());
 
-    ash::WallpaperController::Get()->SetCustomWallpaper(
+    ash::WallpaperController::Get()->SetDecodedCustomWallpaper(
         user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
-        /*file_name=*/"fakename", ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image,
-        /*preview_mode=*/true, /*file_path=*/"");
+        /*file_name=*/"fakename", ash::WALLPAPER_LAYOUT_CENTER_CROPPED,
+        /*preview_mode=*/true, base::DoNothing(), /*file_path=*/"", image);
 
     loop.Run();
   }

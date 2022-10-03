@@ -1014,22 +1014,31 @@ void WallpaperControllerImpl::SetCustomWallpaper(
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   ReadAndDecodeWallpaper(
-      base::BindOnce(&WallpaperControllerImpl::OnCustomWallpaperDecoded,
+      base::BindOnce(&WallpaperControllerImpl::SetDecodedCustomWallpaper,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
-                     file_path, layout, preview_mode, std::move(callback)),
+                     file_path.BaseName().value(), layout, preview_mode,
+                     std::move(callback), file_path.value()),
       file_path);
 }
 
-void WallpaperControllerImpl::SetCustomWallpaper(const AccountId& account_id,
-                                                 const std::string& file_name,
-                                                 WallpaperLayout layout,
-                                                 const gfx::ImageSkia& image,
-                                                 bool preview_mode,
-                                                 const std::string& file_path) {
+void WallpaperControllerImpl::SetDecodedCustomWallpaper(
+    const AccountId& account_id,
+    const std::string& file_name,
+    WallpaperLayout layout,
+    bool preview_mode,
+    SetWallpaperCallback callback,
+    const std::string& file_path,
+    const gfx::ImageSkia& image) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-  if (!CanSetUserWallpaper(account_id))
+  if (image.isNull() || !CanSetUserWallpaper(account_id)) {
+    std::move(callback).Run(/*success=*/false);
     return;
+  }
 
+  // Run callback before finishing setting the image. This is the same timing of
+  // success callback, then |WallpaperControllerObserver::OnWallpaperChanged|,
+  // when setting online wallpaper and simplifies the logic in observers.
+  std::move(callback).Run(/*success=*/true);
   const bool is_active_user = IsActiveUser(account_id);
   if (preview_mode) {
     DCHECK(is_active_user);
@@ -2610,24 +2619,6 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
 
   wallpaper_cache_map_[account_id] =
       CustomWallpaperElement(wallpaper_path, image);
-}
-
-void WallpaperControllerImpl::OnCustomWallpaperDecoded(
-    const AccountId& account_id,
-    const base::FilePath& path,
-    WallpaperLayout layout,
-    bool preview_mode,
-    SetWallpaperCallback callback,
-    const gfx::ImageSkia& image) {
-  bool success = !image.isNull();
-  // Run callback before finishing setting the image. This is the same timing of
-  // success callback, then |WallpaperControllerObserver::OnWallpaperChanged|,
-  // when setting online wallpaper and simplifies the logic in observers.
-  std::move(callback).Run(success);
-  if (success) {
-    SetCustomWallpaper(account_id, path.BaseName().value(), layout, image,
-                       preview_mode, path.value());
-  }
 }
 
 void WallpaperControllerImpl::OnWallpaperDecoded(const AccountId& account_id,

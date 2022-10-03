@@ -692,9 +692,10 @@ class WallpaperControllerTest : public AshTestBase {
     // subsequent calls will be no-op since we intentionally prevent reloading
     // the same wallpaper.)
     ClearWallpaperCount();
-    controller_->SetCustomWallpaper(
+    controller_->SetDecodedCustomWallpaper(
         kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER_CROPPED,
-        CreateImage(640, 480, kWallpaperColor), false /*preview_mode=*/);
+        /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"",
+        CreateImage(640, 480, kWallpaperColor));
     RunAllTasksUntilIdle();
   }
 
@@ -1439,9 +1440,10 @@ TEST_F(WallpaperControllerTest, RemovePolicyWallpaperNoOp) {
   // wallpaper info is correct.
   SimulateUserLogin(kAccountId1);
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(
+  controller_->SetDecodedCustomWallpaper(
       kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER,
-      CreateImage(640, 480, kWallpaperColor), false /*preview_mode=*/);
+      /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"",
+      CreateImage(640, 480, kWallpaperColor));
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_FALSE(controller_->IsWallpaperControlledByPolicy(kAccountId1));
@@ -1820,12 +1822,12 @@ TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestInKioskMode) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   SimulateUserLogin("kiosk", user_manager::USER_TYPE_KIOSK_APP);
 
-  // Verify that |SetCustomWallpaper| doesn't set wallpaper in kiosk mode, and
-  // |kAccountId1|'s wallpaper info is not updated.
+  // Verify that |SetDecodedCustomWallpaper| doesn't set wallpaper in kiosk
+  // mode, and |kAccountId1|'s wallpaper info is not updated.
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1,
-                                  WALLPAPER_LAYOUT_CENTER, image,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(
+      kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER,
+      /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
   WallpaperInfo wallpaper_info;
@@ -1890,12 +1892,12 @@ TEST_F(WallpaperControllerTest, IgnoreWallpaperRequestWhenPolicyIsEnforced) {
                                       base::Time::Now().LocalMidnight());
 
   {
-    // Verify that |SetCustomWallpaper| doesn't set wallpaper when policy is
-    // enforced, and the user wallpaper info is not updated.
+    // Verify that |SetDecodedCustomWallpaper| doesn't set wallpaper when policy
+    // is enforced, and the user wallpaper info is not updated.
     ClearWallpaperCount();
-    controller_->SetCustomWallpaper(kAccountId1, kFileName1,
-                                    WALLPAPER_LAYOUT_CENTER, image,
-                                    false /*preview_mode=*/);
+    controller_->SetDecodedCustomWallpaper(
+        kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER,
+        /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"", image);
     RunAllTasksUntilIdle();
     EXPECT_EQ(0, GetWallpaperCount());
     EXPECT_TRUE(
@@ -2025,10 +2027,10 @@ TEST_F(WallpaperControllerTest, VerifyWallpaperCache) {
       controller_->GetWallpaperFromCache(kAccountId1, &cached_wallpaper));
   EXPECT_FALSE(controller_->GetPathFromCache(kAccountId1, &path));
 
-  // Verify |SetCustomWallpaper| updates wallpaper cache for |user1|.
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1,
-                                  WALLPAPER_LAYOUT_CENTER, image,
-                                  false /*preview_mode=*/);
+  // Verify |SetDecodedCustomWallpaper| updates wallpaper cache for |user1|.
+  controller_->SetDecodedCustomWallpaper(
+      kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER,
+      /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(
       controller_->GetWallpaperFromCache(kAccountId1, &cached_wallpaper));
@@ -2165,12 +2167,11 @@ TEST_F(WallpaperControllerTest, ReloadWallpaper) {
       CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
   WindowState::Get(wallpaper_picker_window.get())->Activate();
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(
+  controller_->SetDecodedCustomWallpaper(
       kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER,
-      CreateImage(640, 480, kWallpaperColor), true /*preview_mode=*/);
-  RunAllTasksUntilIdle();
-  EXPECT_EQ(1, GetWallpaperCount());
-  // Rotating the display should trigger a wallpaper reload.
+
+      /*preview_mode=*/true, base::DoNothing(), /*file_path=*/"",
+      CreateImage(640, 480, kWallpaperColor));
   ClearWallpaperCount();
   UpdateDisplay("800x600");
   RunAllTasksUntilIdle();
@@ -2207,8 +2208,10 @@ TEST_F(WallpaperControllerTest, UpdateCurrentWallpaperLayout) {
   // Set a custom wallpaper for the user. Verify that it's set successfully
   // and the wallpaper info is updated.
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout, image,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/false,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperLayout(), layout);
@@ -2675,8 +2678,10 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnOverviewStart) {
   ClearWallpaperCount();
 
   TestWallpaperControllerObserver observer(controller_);
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, true /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/true,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
@@ -2729,8 +2734,10 @@ TEST_F(WallpaperControllerTest, ClosePreviewWallpaperOnWindowCycleStart) {
   gfx::ImageSkia custom_wallpaper = CreateImage(640, 480, kWallpaperColor);
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, true /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/true,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
@@ -2784,8 +2791,10 @@ TEST_F(WallpaperControllerTest,
   gfx::ImageSkia custom_wallpaper = CreateImage(640, 480, kWallpaperColor);
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, true /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/true,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_TRUE(observer.is_in_wallpaper_preview());
   EXPECT_EQ(1, GetWallpaperCount());
@@ -2837,8 +2846,10 @@ TEST_F(WallpaperControllerTest, ConfirmPreviewWallpaper) {
   gfx::ImageSkia custom_wallpaper = CreateImage(640, 480, kWallpaperColor);
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, true /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/true,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -2954,8 +2965,10 @@ TEST_F(WallpaperControllerTest, CancelPreviewWallpaper) {
   gfx::ImageSkia custom_wallpaper = CreateImage(640, 480, kWallpaperColor);
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, true /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/true,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3033,8 +3046,10 @@ TEST_F(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   gfx::ImageSkia custom_wallpaper = CreateImage(640, 480, kWallpaperColor);
   EXPECT_NE(kWallpaperColor, GetWallpaperColor());
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, true /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/true,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3051,9 +3066,10 @@ TEST_F(WallpaperControllerTest, WallpaperSyncedDuringPreview) {
   gfx::ImageSkia synced_custom_wallpaper =
       CreateImage(640, 480, synced_custom_wallpaper_color);
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName2, layout,
-                                  synced_custom_wallpaper,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(
+      kAccountId1, kFileName2, layout,
+      /*preview_mode=*/false, base::DoNothing(),
+      /*file_path=*/"", synced_custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3185,8 +3201,10 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   // First, set a custom wallpaper for |kUser1|. Verify the wallpaper is shown
   // successfully and the user wallpaper info is updated.
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  custom_wallpaper, false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/false,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", custom_wallpaper);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3283,10 +3301,10 @@ TEST_F(WallpaperControllerTest, ShowWallpaperForEphemeralUser) {
   EXPECT_FALSE(controller_->GetPathFromCache(kAccountId1, &path));
 
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1,
-                                  WALLPAPER_LAYOUT_CENTER,
-                                  CreateImage(640, 480, kWallpaperColor),
-                                  /*preview_mode=*/false);
+  controller_->SetDecodedCustomWallpaper(
+      kAccountId1, kFileName1, WALLPAPER_LAYOUT_CENTER,
+      /*preview_mode=*/false, base::DoNothing(), /*file_path=*/"",
+      CreateImage(640, 480, kWallpaperColor));
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(WallpaperType::kCustomized, controller_->GetWallpaperType());
@@ -3429,8 +3447,10 @@ TEST_F(WallpaperControllerTest, SetCustomWallpaper) {
   // Set a custom wallpaper for |kUser1|. Verify the wallpaper is set
   // successfully and wallpaper info is updated.
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout, image,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/false,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3451,8 +3471,10 @@ TEST_F(WallpaperControllerTest, SetCustomWallpaper) {
   const SkColor custom_wallpaper_color = SK_ColorCYAN;
   image = CreateImage(640, 480, custom_wallpaper_color);
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout, image,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/false,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   EXPECT_EQ(0, GetWallpaperCount());
   EXPECT_EQ(kWallpaperColor, GetWallpaperColor());
@@ -3842,8 +3864,10 @@ TEST_F(WallpaperControllerTest, MigrateCustomWallpaper) {
 
   SimulateUserLogin(kAccountId1);
 
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout, image,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/false,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", image);
   RunAllTasksUntilIdle();
   ClearLogin();
 
@@ -3877,8 +3901,10 @@ TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
   gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
   WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
 
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout, image,
-                                  false /*preview_mode=*/);
+  controller_->SetDecodedCustomWallpaper(kAccountId1, kFileName1, layout,
+                                         /*preview_mode=*/false,
+                                         base::DoNothing(),
+                                         /*file_path=*/"", image);
   RunAllTasksUntilIdle();
 
   client_.ResetCounts();
@@ -4152,9 +4178,10 @@ TEST_F(WallpaperControllerTest, SetOnlineWallpaperIfExists) {
   // subsequent calls will be no-op since we intentionally prevent reloading the
   // same wallpaper.)
   ClearWallpaperCount();
-  controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                  CreateImage(640, 480, kWallpaperColor),
-                                  /*preview_mode=*/false);
+  controller_->SetDecodedCustomWallpaper(
+      kAccountId1, kFileName1, layout,
+      /*preview_mode=*/false, base::DoNothing(),
+      /*file_path=*/"", CreateImage(640, 480, kWallpaperColor));
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kCustomized);
@@ -4773,9 +4800,10 @@ TEST_P(WallpaperControllerGooglePhotosWallpaperTest,
     gfx::ImageSkia synced_custom_wallpaper =
         CreateImage(640, 480, kWallpaperColor);
     ClearWallpaperCount();
-    controller_->SetCustomWallpaper(kAccountId1, kFileName1, layout,
-                                    synced_custom_wallpaper,
-                                    /*preview_mode=*/false);
+    controller_->SetDecodedCustomWallpaper(
+        kAccountId1, kFileName1, layout,
+        /*preview_mode=*/false, base::DoNothing(),
+        /*file_path=*/"", synced_custom_wallpaper);
     RunAllTasksUntilIdle();
     EXPECT_EQ(GetWallpaperCount(), 0);
     EXPECT_EQ(controller_->GetWallpaperType(),

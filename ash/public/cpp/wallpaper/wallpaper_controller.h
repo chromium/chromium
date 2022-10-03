@@ -59,15 +59,15 @@ class ASH_PUBLIC_EXPORT WallpaperController {
                     const base::FilePath& custom_wallpapers,
                     const base::FilePath& device_policy_wallpaper) = 0;
 
-  // Sets wallpaper from a local file and updates the saved wallpaper info for
-  // the user.
+  // Sets the wallpaper from a local file and updates the saved wallpaper info
+  // for the user.
   // |account_id|: The user's account id.
   // |file_path|: The path of the image file to read.
   // |layout|: The layout of the wallpaper, used for wallpaper resizing.
   // |preview_mode|: If true, show the wallpaper immediately but doesn't change
   //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
   //                 called.
-  // |callback|: called when the image is read from file and decoded.
+  // |callback|: Called when the image is set.
   virtual void SetCustomWallpaper(const AccountId& account_id,
                                   const base::FilePath& file_path,
                                   WallpaperLayout layout,
@@ -79,16 +79,19 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // |account_id|: The user's account id.
   // |file_name|: The name of the wallpaper file.
   // |layout|: The layout of the wallpaper, used for wallpaper resizing.
-  // |image|: The wallpaper image.
   // |preview_mode|: If true, show the wallpaper immediately but doesn't change
   //                 the user wallpaper info until |ConfirmPreviewWallpaper| is
   //                 called.
-  virtual void SetCustomWallpaper(const AccountId& account_id,
-                                  const std::string& file_name,
-                                  WallpaperLayout layout,
-                                  const gfx::ImageSkia& image,
-                                  bool preview_mode,
-                                  const std::string& file_path) = 0;
+  // |callback|: Called when the wallpaper is set.
+  // |file_path| The path of the image file to read.
+  // |image|: The wallpaper image.
+  virtual void SetDecodedCustomWallpaper(const AccountId& account_id,
+                                         const std::string& file_name,
+                                         WallpaperLayout layout,
+                                         bool preview_mode,
+                                         SetWallpaperCallback callback,
+                                         const std::string& file_path,
+                                         const gfx::ImageSkia& image) = 0;
 
   // Sets the wallpaper at |params.asset_id|, |params.url| and
   // |params.collection_id| as the active wallpaper for the user at

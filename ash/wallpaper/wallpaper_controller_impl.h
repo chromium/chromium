@@ -237,12 +237,13 @@ class ASH_EXPORT WallpaperControllerImpl
                           WallpaperLayout layout,
                           bool preview_mode,
                           SetWallpaperCallback callback) override;
-  void SetCustomWallpaper(const AccountId& account_id,
-                          const std::string& file_name,
-                          WallpaperLayout layout,
-                          const gfx::ImageSkia& image,
-                          bool preview_mode,
-                          const std::string& file_path = "") override;
+  void SetDecodedCustomWallpaper(const AccountId& account_id,
+                                 const std::string& file_name,
+                                 WallpaperLayout layout,
+                                 bool preview_mode,
+                                 SetWallpaperCallback callback,
+                                 const std::string& file_path,
+                                 const gfx::ImageSkia& image) override;
   void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
   void SetOnlineWallpaperIfExists(const OnlineWallpaperParams& params,
@@ -587,13 +588,6 @@ class ASH_EXPORT WallpaperControllerImpl
       const gfx::ImageSkia& image,
       base::OnceCallback<void(const base::FilePath&)> image_saved_callback,
       const std::string& wallpaper_files_id);
-
-  void OnCustomWallpaperDecoded(const AccountId& account_id,
-                                const base::FilePath& path,
-                                WallpaperLayout layout,
-                                bool preview_mode,
-                                SetWallpaperCallback callback,
-                                const gfx::ImageSkia& image);
 
   // Used as the callback of wallpaper decoding. (Wallpapers of type
   // `WallpaperType::kOnline`, `WallpaperType::kDefault`,
