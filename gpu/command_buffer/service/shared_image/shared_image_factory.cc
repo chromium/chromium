@@ -43,7 +43,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif
 
-#if defined(USE_OZONE) && !BUILDFLAG(IS_CASTOS)
+#if defined(USE_OZONE)
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing_factory.h"
 #include "ui/ozone/public/gl_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -247,8 +247,8 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(external_vk_image_factory));
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#elif defined(USE_OZONE) && !BUILDFLAG(IS_CASTOS)
-  // For all Ozone platforms - Desktop Linux, ChromeOS, Fuchsia.
+#elif defined(USE_OZONE)
+  // For all Ozone platforms - Desktop Linux, ChromeOS, Fuchsia, CastOS.
   if (ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_native_pixmaps) {
@@ -266,7 +266,7 @@ SharedImageFactory::SharedImageFactory(
 #endif  // BUILDFLAG(IS_FUCHSIA)
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
-#endif  // defined(USE_OZONE) && !BUILDFLAG(IS_CASTOS)
+#endif  // defined(USE_OZONE)
 
 #if BUILDFLAG(IS_MAC)
   // TODO(hitawala): Temporary factory that will be replaced with Ozone and
