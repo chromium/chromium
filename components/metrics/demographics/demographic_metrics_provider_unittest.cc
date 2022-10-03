@@ -250,8 +250,7 @@ TEST(DemographicMetricsProviderTest,
      ProvideSyncedUserNoisedBirthYearAndGender_FeatureDisabled) {
   // Disable demographics reporting feature.
   base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndDisableFeature(
-      DemographicMetricsProvider::kDemographicMetricsReporting);
+  local_feature.InitAndDisableFeature(kDemographicMetricsReporting);
 
   base::HistogramTester histogram;
 

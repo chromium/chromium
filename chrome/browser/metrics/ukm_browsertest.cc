@@ -426,8 +426,8 @@ class UkmBrowserTestWithDemographics
     if (param.enable_feature) {
       scoped_feature_list_.InitWithFeatures(
           // enabled_features
-          {DemographicMetricsProvider::kDemographicMetricsReporting,
-           ukm::UkmService::kReportUserNoisedUserBirthYearAndGender},
+          {kDemographicMetricsReporting,
+           ukm::kReportUserNoisedUserBirthYearAndGender},
           // disabled_features
           {});
     } else {
@@ -435,8 +435,8 @@ class UkmBrowserTestWithDemographics
           // enabled_features
           {},
           // disabled_features
-          {DemographicMetricsProvider::kDemographicMetricsReporting,
-           ukm::UkmService::kReportUserNoisedUserBirthYearAndGender});
+          {kDemographicMetricsReporting,
+           ukm::kReportUserNoisedUserBirthYearAndGender});
     }
   }
 

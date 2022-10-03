@@ -256,8 +256,7 @@ TEST_F(ReportQueueProviderTest, CreateMultipleSpeculativeQueues) {
 TEST_F(ReportQueueProviderTest,
        CreateReportQueueWithEncryptedReportingPipelineDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      ReportQueueProvider::kEncryptedReportingPipeline);
+  feature_list.InitAndDisableFeature(kEncryptedReportingPipeline);
 
   // Create configuration
   auto config_result = ReportQueueConfiguration::Create(
@@ -276,8 +275,7 @@ TEST_F(ReportQueueProviderTest,
 TEST_F(ReportQueueProviderTest,
        CreateSpeculativeReportQueueWithEncryptedReportingPipelineDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      ReportQueueProvider::kEncryptedReportingPipeline);
+  feature_list.InitAndDisableFeature(kEncryptedReportingPipeline);
 
   // Create configuration
   auto config_result = ReportQueueConfiguration::Create(

@@ -68,11 +68,9 @@ class InterceptNavigationThrottleTest
   InterceptNavigationThrottleTest()
       : mock_callback_receiver_(new MockInterceptCallbackReceiver()) {
     if (GetParam()) {
-      scoped_feature_.InitAndEnableFeature(
-          InterceptNavigationThrottle::kAsyncCheck);
+      scoped_feature_.InitAndEnableFeature(kAsyncCheck);
     } else {
-      scoped_feature_.InitAndDisableFeature(
-          InterceptNavigationThrottle::kAsyncCheck);
+      scoped_feature_.InitAndDisableFeature(kAsyncCheck);
     }
   }
 

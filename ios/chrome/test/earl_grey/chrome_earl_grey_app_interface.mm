@@ -1053,8 +1053,7 @@ NSString* SerializedValue(const base::Value* value) {
 }
 
 + (BOOL)isDemographicMetricsReportingEnabled {
-  return base::FeatureList::IsEnabled(
-      metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+  return base::FeatureList::IsEnabled(metrics::kDemographicMetricsReporting);
 }
 
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {

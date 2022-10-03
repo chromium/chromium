@@ -23,6 +23,8 @@
 
 namespace reporting {
 
+BASE_DECLARE_FEATURE(kEncryptedReportingPipeline);
+
 // ReportQueueProvider acts a single point for instantiating
 // |reporting::ReportQueue|s. By performing initialization atomically it ensures
 // that all ReportQueues are created with the same global settings.
@@ -99,8 +101,6 @@ class ReportQueueProvider {
   // this is when we go ahead and create the report queue.
   using ReportQueueConfiguredCallback = base::OnceCallback<void(
       StatusOr<std::unique_ptr<ReportQueueConfiguration>>)>;
-
-  static const base::Feature kEncryptedReportingPipeline;
 
   explicit ReportQueueProvider(StorageModuleCreateCallback storage_create_cb);
   ReportQueueProvider(const ReportQueueProvider& other) = delete;

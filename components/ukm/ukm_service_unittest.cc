@@ -621,8 +621,7 @@ TEST_F(UkmServiceTest,
 
 TEST_F(UkmServiceTest, DontAddUserDemograhicsWhenFeatureDisabled) {
   base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndDisableFeature(
-      UkmService::kReportUserNoisedUserBirthYearAndGender);
+  local_feature.InitAndDisableFeature(kReportUserNoisedUserBirthYearAndGender);
 
   // The demographics provider should not be called.
   auto provider = std::make_unique<MockDemographicMetricsProvider>();

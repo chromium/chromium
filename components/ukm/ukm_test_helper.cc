@@ -28,7 +28,7 @@ bool UkmTestHelper::IsRecordingEnabled() const {
 
 bool UkmTestHelper::IsReportUserNoisedUserBirthYearAndGenderEnabled() {
   return base::FeatureList::IsEnabled(
-      ukm::UkmService::kReportUserNoisedUserBirthYearAndGender);
+      ukm::kReportUserNoisedUserBirthYearAndGender);
 }
 
 uint64_t UkmTestHelper::GetClientId() {

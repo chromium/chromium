@@ -35,8 +35,9 @@ bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
 }  // namespace
 
 // static
-const base::Feature DemographicMetricsProvider::kDemographicMetricsReporting = {
-    "DemographicMetricsReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDemographicMetricsReporting,
+             "DemographicMetricsReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DemographicMetricsProvider::DemographicMetricsProvider(
     std::unique_ptr<ProfileClient> profile_client,

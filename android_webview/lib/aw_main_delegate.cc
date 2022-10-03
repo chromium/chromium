@@ -293,8 +293,7 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     features.DisableIfNotSet(::features::kInstalledApp);
 
-    features.EnableIfNotSet(
-        metrics::UnsentLogStoreMetrics::kRecordLastUnsentLogMetadataMetrics);
+    features.EnableIfNotSet(metrics::kRecordLastUnsentLogMetadataMetrics);
 
     features.DisableIfNotSet(::features::kPeriodicBackgroundSync);
 

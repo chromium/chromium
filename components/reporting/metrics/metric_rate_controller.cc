@@ -11,8 +11,9 @@
 namespace reporting {
 
 // static
-const base::Feature MetricRateController::kEnableTelemetryTestingRates{
-    "EnableTelemetryTestingRates", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableTelemetryTestingRates,
+             "EnableTelemetryTestingRates",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 MetricRateController::MetricRateController(
     base::RepeatingClosure task,

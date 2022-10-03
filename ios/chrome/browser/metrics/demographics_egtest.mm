@@ -73,24 +73,20 @@ const metrics::UserDemographicsProto::Gender kTestGender =
   // method exists somewhere--but not necessarily in this class.
   if ([self isRunningTest:@selector
             (testUKMDemographicsReportingWithFeatureEnabled)]) {
+    config.features_enabled.push_back(metrics::kDemographicMetricsReporting);
     config.features_enabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
-    config.features_enabled.push_back(
-        ukm::UkmService::kReportUserNoisedUserBirthYearAndGender);
+        ukm::kReportUserNoisedUserBirthYearAndGender);
   } else if ([self isRunningTest:@selector
                    (testUKMDemographicsReportingWithFeatureDisabled)]) {
+    config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
     config.features_disabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
-    config.features_disabled.push_back(
-        ukm::UkmService::kReportUserNoisedUserBirthYearAndGender);
+        ukm::kReportUserNoisedUserBirthYearAndGender);
   } else if ([self isRunningTest:@selector
                    (testUMADemographicsReportingWithFeatureEnabled)]) {
-    config.features_enabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+    config.features_enabled.push_back(metrics::kDemographicMetricsReporting);
   } else if ([self isRunningTest:@selector
                    (testUMADemographicsReportingWithFeatureDisabled)]) {
-    config.features_disabled.push_back(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+    config.features_disabled.push_back(metrics::kDemographicMetricsReporting);
   }
   return config;
 }

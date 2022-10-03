@@ -168,8 +168,9 @@ void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
 }  // namespace
 
 // static
-const base::Feature UkmService::kReportUserNoisedUserBirthYearAndGender = {
-    "UkmReportNoisedUserBirthYearAndGender", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kReportUserNoisedUserBirthYearAndGender,
+             "UkmReportNoisedUserBirthYearAndGender",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UkmService::LogCanBeParsed(const std::string& serialized_data) {
   Report report;

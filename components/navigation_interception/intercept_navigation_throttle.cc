@@ -12,8 +12,9 @@
 namespace navigation_interception {
 
 // Note: this feature is a no-op on non-Android platforms.
-const base::Feature InterceptNavigationThrottle::kAsyncCheck{
-    "AsyncNavigationIntercept", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAsyncCheck,
+             "AsyncNavigationIntercept",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 InterceptNavigationThrottle::InterceptNavigationThrottle(
     content::NavigationHandle* navigation_handle,

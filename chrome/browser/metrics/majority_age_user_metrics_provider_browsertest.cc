@@ -53,7 +53,7 @@ class MajorityAgeUserMetricsProviderTest
  public:
   MajorityAgeUserMetricsProviderTest() : SyncTest(SINGLE_CLIENT) {
     scoped_feature_list_.InitAndEnableFeature(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+        metrics::kDemographicMetricsReporting);
   }
 
   int GetAge() { return GetParam(); }
@@ -117,7 +117,7 @@ class MajorityAgeUserMetricsProviderGuestModeTest
  public:
   MajorityAgeUserMetricsProviderGuestModeTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        metrics::DemographicMetricsProvider::kDemographicMetricsReporting);
+        metrics::kDemographicMetricsReporting);
   }
 
  private:

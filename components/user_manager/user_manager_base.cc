@@ -120,8 +120,9 @@ std::string UserTypeToString(UserType user_type) {
 const char UserManagerBase::kLegacySupervisedUsersHistogramName[] =
     "ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen";
 // static
-const base::Feature UserManagerBase::kRemoveLegacySupervisedUsersOnStartup{
-    "RemoveLegacySupervisedUsersOnStartup", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kRemoveLegacySupervisedUsersOnStartup,
+             "RemoveLegacySupervisedUsersOnStartup",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 void UserManagerBase::RegisterPrefs(PrefRegistrySimple* registry) {

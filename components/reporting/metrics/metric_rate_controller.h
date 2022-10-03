@@ -17,12 +17,12 @@ namespace reporting {
 
 class ReportingSettings;
 
+BASE_DECLARE_FEATURE(kEnableTelemetryTestingRates);
+
 // Control reporting rate based on the reporting setting specified by the
 // setting path.
 class MetricRateController {
  public:
-  static const base::Feature kEnableTelemetryTestingRates;
-
   MetricRateController(base::RepeatingClosure task,
                        ReportingSettings* reporting_settings,
                        const std::string& rate_setting_path,

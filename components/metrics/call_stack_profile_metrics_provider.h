@@ -17,6 +17,9 @@ namespace metrics {
 
 class ChromeUserMetricsExtension;
 
+// base::Feature for reporting CPU profiles. Provided here for test use.
+BASE_DECLARE_FEATURE(kSamplingProfilerReporting);
+
 // Performs metrics logging for the stack sampling profiler.
 class CallStackProfileMetricsProvider : public MetricsProvider {
  public:
@@ -61,9 +64,6 @@ class CallStackProfileMetricsProvider : public MetricsProvider {
       ChromeUserMetricsExtension* uma_proto) override;
 
  protected:
-  // base::Feature for reporting CPU profiles. Provided here for test use.
-  static const base::Feature kSamplingProfilerReporting;
-
   // Reset the static state to the defaults after startup.
   static void ResetStaticStateForTesting();
 };

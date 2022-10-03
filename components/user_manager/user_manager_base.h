@@ -34,6 +34,9 @@ class SingleThreadTaskRunner;
 
 namespace user_manager {
 
+// Feature that removes legacy supervised users.
+BASE_DECLARE_FEATURE(kRemoveLegacySupervisedUsersOnStartup);
+
 // Base implementation of the UserManager interface.
 class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
  public:
@@ -72,8 +75,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Histogram for tracking the number of deprecated legacy supervised user
   // cryptohomes remaining in the wild.
   static const char kLegacySupervisedUsersHistogramName[];
-  // Feature that removes legacy supervised users.
-  static const base::Feature kRemoveLegacySupervisedUsersOnStartup;
 
   // Registers UserManagerBase preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);

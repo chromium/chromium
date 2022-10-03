@@ -229,9 +229,9 @@ PendingProfiles::PendingProfiles() = default;
 
 // CallStackProfileMetricsProvider --------------------------------------------
 
-const base::Feature
-    CallStackProfileMetricsProvider::kSamplingProfilerReporting = {
-        "SamplingProfilerReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kSamplingProfilerReporting,
+             "SamplingProfilerReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CallStackProfileMetricsProvider::CallStackProfileMetricsProvider() = default;
 CallStackProfileMetricsProvider::~CallStackProfileMetricsProvider() = default;

@@ -93,8 +93,9 @@ bool ReportQueueProvider::IsEncryptedReportingPipelineEnabled() {
 }
 
 // static
-const base::Feature ReportQueueProvider::kEncryptedReportingPipeline{
-    "EncryptedReportingPipeline", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEncryptedReportingPipeline,
+             "EncryptedReportingPipeline",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 ReportQueueProvider::ReportQueueProvider(
     StorageModuleCreateCallback storage_create_cb)
