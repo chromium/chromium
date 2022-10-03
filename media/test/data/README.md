@@ -819,13 +819,6 @@ ffmpeg -i red-green.mp4 -vcodec copy -vbsf h264_mp4toannexb -an red-green.h264
 
 ## Misc Test Files
 
-#### switch_1080p_720p_240frames
-#### switch_1080p_720p_240frames.h264
-Extract 240 frames using ffmpeg from
-http://commondatastorage.googleapis.com/chromiumos-test-assets-public/MSE/switch_1080p_720p.mp4.
-
-The frame sizes change between 1080p and 720p every 24 frames.
-
 ### VEA test files:
 
 #### bear_320x192_40frames.yuv.webm
