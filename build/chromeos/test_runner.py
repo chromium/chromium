@@ -208,23 +208,9 @@ class RemoteTest:
     # side Tast bin returns 0 even for failed tests.)
     return test_proc.returncode
 
-  def post_run(self, return_code):
+  def post_run(self, _):
     if self._on_device_script:
       os.remove(self._on_device_script)
-    # Create a simple json results file for a test run. The results will contain
-    # only one test (suite_name), and will either be a PASS or FAIL depending on
-    # return_code.
-    if self._test_launcher_summary_output:
-      result = (
-          base_test_result.ResultType.FAIL
-          if return_code else base_test_result.ResultType.PASS)
-      suite_result = base_test_result.BaseTestResult(self.suite_name, result)
-      run_results = base_test_result.TestRunResults()
-      run_results.AddResult(suite_result)
-      with open(self._test_launcher_summary_output, 'w') as f:
-        json.dump(json_results.GenerateResultsDict([run_results]), f)
-      if self._rdb_client:
-        self._rdb_client.Post(self.suite_name, result, None, None, None)
 
   @staticmethod
   def get_artifacts(path):
