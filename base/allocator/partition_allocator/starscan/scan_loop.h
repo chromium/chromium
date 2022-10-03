@@ -38,7 +38,7 @@
 namespace partition_alloc::internal {
 
 // Iterates over range of memory using the best available SIMD extension.
-// Assumes that 64bit platforms have cage support and the begin pointer of
+// Assumes that 64bit platforms have pool support and the begin pointer of
 // incoming ranges are properly aligned. The class is designed around the CRTP
 // version of the "template method" (in GoF terms). CRTP is needed for fast
 // static dispatch.
@@ -75,7 +75,8 @@ class ScanLoop {
 template <typename Derived>
 void ScanLoop<Derived>::Run(uintptr_t begin, uintptr_t end) {
 // We allow vectorization only for 64bit since they require support of the
-// 64bit cage, and only for x86 because a special instruction set is required.
+// 64bit regular pool, and only for x86 because a special instruction set is
+// required.
 #if defined(ARCH_CPU_X86_64)
   if (simd_type_ == SimdSupport::kAVX2)
     return RunAVX2(begin, end);
@@ -95,8 +96,8 @@ void ScanLoop<Derived>::RunUnvectorized(uintptr_t begin, uintptr_t end) {
 #if defined(PA_HAS_64_BITS_POINTERS)
   // If the read value is a pointer into the PA region, it's likely
   // MTE-tagged. Piggyback on |mask| to untag, for efficiency.
-  const uintptr_t mask = Derived::CageMask() & kPtrUntagMask;
-  const uintptr_t base = Derived::CageBase();
+  const uintptr_t mask = Derived::RegularPoolMask() & kPtrUntagMask;
+  const uintptr_t base = Derived::RegularPoolBase();
 #endif
   for (; begin < end; begin += sizeof(uintptr_t)) {
     // Read the region word-by-word. Everything that we read is a potential
@@ -128,24 +129,24 @@ __attribute__((target("avx2"))) void ScanLoop<Derived>::RunAVX2(uintptr_t begin,
   // example, according to the Intel docs, on Broadwell and Haswell the CPI of
   // vmovdqa (_mm256_load_si256) is twice smaller (0.25) than that of vmovapd
   // (_mm256_load_pd).
-  const __m256i vbase = _mm256_set1_epi64x(derived().CageBase());
+  const __m256i vbase = _mm256_set1_epi64x(derived().RegularPoolBase());
   // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |cage_mask| to untag, for efficiency.
-  const __m256i cage_mask =
-      _mm256_set1_epi64x(derived().CageMask() & kPtrUntagMask);
+  // MTE-tagged. Piggyback on |regular_pool_mask| to untag, for efficiency.
+  const __m256i regular_pool_mask =
+      _mm256_set1_epi64x(derived().RegularPoolMask() & kPtrUntagMask);
 
   static_assert(sizeof(__m256i) == kBytesInVector);
   for (; begin <= (end - kBytesInVector); begin += kBytesInVector) {
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const __m256i maybe_ptrs =
         _mm256_load_si256(reinterpret_cast<__m256i*>(begin));
-    const __m256i vand = _mm256_and_si256(maybe_ptrs, cage_mask);
+    const __m256i vand = _mm256_and_si256(maybe_ptrs, regular_pool_mask);
     const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
     const int mask = _mm256_movemask_pd(_mm256_castsi256_pd(vcmp));
     if (PA_LIKELY(!mask))
       continue;
     // It's important to extract pointers from the already loaded vector.
-    // Otherwise, new loads can break in-cage assumption checked above.
+    // Otherwise, new loads can break in-pool assumption checked above.
     if (mask & 0b0001)
       derived().CheckPointer(_mm256_extract_epi64(maybe_ptrs, 0));
     if (mask & 0b0010)
@@ -167,24 +168,24 @@ __attribute__((target("sse4.1"))) void ScanLoop<Derived>::RunSSE4(
   static constexpr size_t kWordsInVector = 2;
   static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
   PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
-  const __m128i vbase = _mm_set1_epi64x(derived().CageBase());
+  const __m128i vbase = _mm_set1_epi64x(derived().RegularPoolBase());
   // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |cage_mask| to untag, for efficiency.
-  const __m128i cage_mask =
-      _mm_set1_epi64x(derived().CageMask() & kPtrUntagMask);
+  // MTE-tagged. Piggyback on |regular_pool_mask| to untag, for efficiency.
+  const __m128i regular_pool_mask =
+      _mm_set1_epi64x(derived().RegularPoolMask() & kPtrUntagMask);
 
   static_assert(sizeof(__m128i) == kBytesInVector);
   for (; begin <= (end - kBytesInVector); begin += kBytesInVector) {
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const __m128i maybe_ptrs =
         _mm_loadu_si128(reinterpret_cast<__m128i*>(begin));
-    const __m128i vand = _mm_and_si128(maybe_ptrs, cage_mask);
+    const __m128i vand = _mm_and_si128(maybe_ptrs, regular_pool_mask);
     const __m128i vcmp = _mm_cmpeq_epi64(vand, vbase);
     const int mask = _mm_movemask_pd(_mm_castsi128_pd(vcmp));
     if (PA_LIKELY(!mask))
       continue;
     // It's important to extract pointers from the already loaded vector.
-    // Otherwise, new loads can break in-cage assumption checked above.
+    // Otherwise, new loads can break in-pool assumption checked above.
     if (mask & 0b01) {
       derived().CheckPointer(_mm_cvtsi128_si64(maybe_ptrs));
     }
@@ -208,22 +209,22 @@ void ScanLoop<Derived>::RunNEON(uintptr_t begin, uintptr_t end) {
   static constexpr size_t kWordsInVector = 2;
   static constexpr size_t kBytesInVector = kWordsInVector * sizeof(uintptr_t);
   PA_SCAN_DCHECK(!(begin % kAlignmentRequirement));
-  const uint64x2_t vbase = vdupq_n_u64(derived().CageBase());
+  const uint64x2_t vbase = vdupq_n_u64(derived().RegularPoolBase());
   // If the read value is a pointer into the PA region, it's likely
-  // MTE-tagged. Piggyback on |cage_mask| to untag, for efficiency.
-  const uint64x2_t cage_mask =
-      vdupq_n_u64(derived().CageMask() & kPtrUntagMask);
+  // MTE-tagged. Piggyback on |regular_pool_mask| to untag, for efficiency.
+  const uint64x2_t regular_pool_mask =
+      vdupq_n_u64(derived().RegularPoolMask() & kPtrUntagMask);
 
   for (; begin <= (end - kBytesInVector); begin += kBytesInVector) {
     // Keep it MTE-untagged. See DisableMTEScope for details.
     const uint64x2_t maybe_ptrs = vld1q_u64(reinterpret_cast<uint64_t*>(begin));
-    const uint64x2_t vand = vandq_u64(maybe_ptrs, cage_mask);
+    const uint64x2_t vand = vandq_u64(maybe_ptrs, regular_pool_mask);
     const uint64x2_t vcmp = vceqq_u64(vand, vbase);
     const uint32_t max = vmaxvq_u32(vreinterpretq_u32_u64(vcmp));
     if (PA_LIKELY(!max))
       continue;
     // It's important to extract pointers from the already loaded vector.
-    // Otherwise, new loads can break in-cage assumption checked above.
+    // Otherwise, new loads can break in-pool assumption checked above.
     if (vgetq_lane_u64(vcmp, 0))
       derived().CheckPointer(vgetq_lane_u64(maybe_ptrs, 0));
     if (vgetq_lane_u64(vcmp, 1))

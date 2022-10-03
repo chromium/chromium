@@ -27,11 +27,11 @@ class TestScanLoop final : public ScanLoop<TestScanLoop> {
   void Reset() { visited_ = 0; }
 
  private:
-  static constexpr uintptr_t kCageMask = 0xffffff0000000000;
+  static constexpr uintptr_t kRegularPoolMask = 0xffffff0000000000;
   static constexpr uintptr_t kBasePtr = 0x0000560000000000;
 
-  static uintptr_t CageBase() { return kBasePtr; }
-  static uintptr_t CageMask() { return kCageMask; }
+  static uintptr_t RegularPoolBase() { return kBasePtr; }
+  static uintptr_t RegularPoolMask() { return kRegularPoolMask; }
 
   void CheckPointer(uintptr_t maybe_ptr) { ++visited_; }
 
@@ -59,7 +59,7 @@ void TestOnRangeWithAlignment(TestScanLoop& sl,
 
 }  // namespace
 
-TEST(PartitionAllocScanLoopTest, UnvectorizedWithCage) {
+TEST(PartitionAllocScanLoopTest, UnvectorizedWithRegularPool) {
   {
     TestScanLoop sl(SimdSupport::kUnvectorized);
     TestOnRangeWithAlignment<8>(sl, 0u, kInvalidPtr, kInvalidPtr, kInvalidPtr);
