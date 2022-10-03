@@ -1131,6 +1131,7 @@ crbug.com/591099 external/wpt/css/css-writing-modes/inline-box-border-vlr-001.ht
 crbug.com/591099 external/wpt/css/css-writing-modes/line-box-direction-vrl-009.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/line-box-height-vlr-021.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/line-box-height-vlr-023.xht [ Failure ]
+crbug.com/464569 external/wpt/css/css-writing-modes/margin-collapse-vrl-022.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/ortho-htb-alongside-vrl-floats-006.xht [ Failure ]
 crbug.com/591099 external/wpt/css/css-writing-modes/ortho-htb-alongside-vrl-floats-014.xht [ Failure ]
 crbug.com/1281318 external/wpt/css/css-writing-modes/padding-percent-orthogonal-dynamic.html [ Failure ]
