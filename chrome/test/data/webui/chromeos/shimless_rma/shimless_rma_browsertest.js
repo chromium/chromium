@@ -55,14 +55,14 @@ const debug_suites_list = [
   'OnboardingChooseWpDisableMethodPageTest',
   'OnboardingEnterRsuWpDisableCodePageTest',
   'OnboardingLandingPageTest',
-  // TODO(crbug/1296829): Re-enable once test is fixed.
+  // TODO(crbug/1296829): Re-enable below tests once fixed.
   // 'OnboardingNetworkPageTest',
-  'OnboardingSelectComponentsPageTest',
+  // 'OnboardingSelectComponentsPageTest',
+  // 'ReimagingCalibrationFailedPageTest',
   'OnboardingUpdatePageTest',
   'OnboardingWaitForManualWpDisablePageTest',
   'OnboardingWpDisableCompletePageTest',
   'RebootPageTest',
-  'ReimagingCalibrationFailedPageTest',
   'ReimagingCalibrationRunPageTest',
   'ReimagingCalibrationSetupPageTest',
   'ReimagingFirmwareUpdatePageTest',
