@@ -3123,8 +3123,12 @@ TEST_F(JobControllerLimitMultipleH2Requests,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(
+      kSite1, kSite1, /*is_cross_site=*/false);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(
+      kSite2, kSite2, /*is_cross_site=*/false);
 
   tcp_data_ = std::make_unique<SequencedSocketData>(
       MockConnect(SYNCHRONOUS, ERR_IO_PENDING), base::span<MockRead>(),
@@ -3188,10 +3192,10 @@ TEST_F(JobControllerLimitMultipleH2Requests,
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
-      kNetworkIsolationKey1, SecureDnsPolicy::kAllow);
+      kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id2(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
-      kNetworkIsolationKey2, SecureDnsPolicy::kAllow);
+      kNetworkAnonymizationKey2, SecureDnsPolicy::kAllow);
   EXPECT_EQ(static_cast<uint32_t>(kNumRequests),
             socket_pool->NumConnectJobsInGroupForTesting(group_id0));
   EXPECT_EQ(1u, socket_pool->NumConnectJobsInGroupForTesting(group_id1));

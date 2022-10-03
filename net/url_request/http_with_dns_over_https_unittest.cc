@@ -300,7 +300,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
 
   ClientSocketPool::GroupId group_id(
       url::SchemeHostPort(request_info.url), PrivacyMode::PRIVACY_MODE_DISABLED,
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   EXPECT_EQ(network_session
                 ->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,
                                 ProxyServer::Direct())

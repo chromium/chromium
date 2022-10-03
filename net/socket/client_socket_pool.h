@@ -15,7 +15,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
@@ -99,7 +99,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     GroupId();
     GroupId(url::SchemeHostPort destination,
             PrivacyMode privacy_mode,
-            NetworkIsolationKey network_isolation_key,
+            NetworkAnonymizationKey network_anonymization_key,
             SecureDnsPolicy secure_dns_policy);
     GroupId(const GroupId& group_id);
 
@@ -112,8 +112,8 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
     PrivacyMode privacy_mode() const { return privacy_mode_; }
 
-    const NetworkIsolationKey& network_isolation_key() const {
-      return network_isolation_key_;
+    const NetworkAnonymizationKey& network_anonymization_key() const {
+      return network_anonymization_key_;
     }
 
     SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
@@ -122,17 +122,19 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     std::string ToString() const;
 
     bool operator==(const GroupId& other) const {
-      return std::tie(destination_, privacy_mode_, network_isolation_key_,
+      return std::tie(destination_, privacy_mode_, network_anonymization_key_,
                       secure_dns_policy_) ==
              std::tie(other.destination_, other.privacy_mode_,
-                      other.network_isolation_key_, other.secure_dns_policy_);
+                      other.network_anonymization_key_,
+                      other.secure_dns_policy_);
     }
 
     bool operator<(const GroupId& other) const {
-      return std::tie(destination_, privacy_mode_, network_isolation_key_,
+      return std::tie(destination_, privacy_mode_, network_anonymization_key_,
                       secure_dns_policy_) <
              std::tie(other.destination_, other.privacy_mode_,
-                      other.network_isolation_key_, other.secure_dns_policy_);
+                      other.network_anonymization_key_,
+                      other.secure_dns_policy_);
     }
 
    private:
@@ -143,7 +145,7 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     PrivacyMode privacy_mode_;
 
     // Used to separate requests made in different contexts.
-    NetworkIsolationKey network_isolation_key_;
+    NetworkAnonymizationKey network_anonymization_key_;
 
     // Controls the Secure DNS behavior to use when creating this socket.
     SecureDnsPolicy secure_dns_policy_;

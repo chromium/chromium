@@ -406,12 +406,12 @@ ClientSocketPool::GroupId GetGroupId(const TestCase& test) {
   if (test.ssl) {
     return ClientSocketPool::GroupId(
         url::SchemeHostPort(url::kHttpsScheme, "www.google.com", 443),
-        PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+        PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow);
   }
   return ClientSocketPool::GroupId(
       url::SchemeHostPort(url::kHttpScheme, "www.google.com", 80),
-      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow);
 }
 
@@ -438,7 +438,7 @@ class CapturePreconnectsTransportSocketPool : public TransportClientSocketPool {
     last_group_id_ = ClientSocketPool::GroupId(
         url::SchemeHostPort(url::kHttpsScheme,
                             "unexpected.to.conflict.with.anything.test", 9999),
-        PrivacyMode::PRIVACY_MODE_ENABLED, NetworkIsolationKey(),
+        PrivacyMode::PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow);
   }
 
@@ -680,13 +680,13 @@ TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
                          session.get());
   EXPECT_EQ(1, transport_conn_pool->last_num_streams());
   EXPECT_EQ(kKey1,
-            transport_conn_pool->last_group_id().network_isolation_key());
+            transport_conn_pool->last_group_id().network_anonymization_key());
 
   PreconnectHelperForURL(2, kURL, kKey2, SecureDnsPolicy::kAllow,
                          session.get());
   EXPECT_EQ(2, transport_conn_pool->last_num_streams());
   EXPECT_EQ(kKey2,
-            transport_conn_pool->last_group_id().network_isolation_key());
+            transport_conn_pool->last_group_id().network_anonymization_key());
 }
 
 // Verify that preconnects use the specified Secure DNS Tag.
@@ -1792,8 +1792,8 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
             std::move(ssl_config_for_origin),
             /*ssl_config_for_proxy=*/nullptr);
     ClientSocketPool::GroupId group_id(
-        destination, PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
-        SecureDnsPolicy::kAllow);
+        destination, PrivacyMode::PRIVACY_MODE_DISABLED,
+        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
     int rv = connection->Init(
         group_id, socket_params, absl::nullopt /* proxy_annotation_tag */,
         MEDIUM, SocketTag(), ClientSocketPool::RespectLimits::ENABLED,

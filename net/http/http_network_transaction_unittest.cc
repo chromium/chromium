@@ -12740,7 +12740,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           "http://www.example.org/direct",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           false,
       },
@@ -12749,7 +12749,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           "http://[2001:1418:13:1::25]/direct",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "[2001:1418:13:1::25]", 80),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           false,
       },
@@ -12760,7 +12760,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           "https://www.example.org/direct_ssl",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12770,7 +12770,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "[2001:1418:13:1::25]",
                                   443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12780,7 +12780,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForDirectConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12818,7 +12818,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           "http://www.example.org/http_proxy_normal",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           false,
       },
@@ -12829,7 +12829,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           "https://www.example.org/http_connect_ssl",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12840,7 +12840,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForHTTPProxyConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12878,7 +12878,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           "http://www.example.org/socks4_direct",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           false,
       },
@@ -12887,7 +12887,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           "http://www.example.org/socks5_direct",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpScheme, "www.example.org", 80),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           false,
       },
@@ -12898,7 +12898,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           "https://www.example.org/socks4_ssl",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12907,7 +12907,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           "https://www.example.org/socks5_ssl",
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -12918,7 +12918,7 @@ TEST_F(HttpNetworkTransactionTest, GroupIdForSOCKSConnections) {
           ClientSocketPool::GroupId(
               url::SchemeHostPort(url::kHttpsScheme, "host.with.alternate",
                                   443),
-              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+              PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
               SecureDnsPolicy::kAllow),
           true,
       },
@@ -16108,7 +16108,7 @@ TEST_F(HttpNetworkTransactionTest, MultiRoundAuth) {
 
   const ClientSocketPool::GroupId kSocketGroup(
       url::SchemeHostPort(url::kHttpScheme, "www.example.com", 80),
-      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
+      PrivacyMode::PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
       SecureDnsPolicy::kAllow);
 
   // First round of authentication.
