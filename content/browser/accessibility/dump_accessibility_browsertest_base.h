@@ -218,7 +218,7 @@ class DumpAccessibilityTestBase
   void WaitForAllFramesLoaded();
 
   void OnEventRecorded(const std::string& event) const {
-    LOG(INFO) << "++ Platform event: " << event;
+    VLOG(1) << "++ Platform event: " << event;
   }
 
   bool has_performed_default_actions_ = false;
