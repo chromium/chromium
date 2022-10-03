@@ -143,8 +143,9 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This persists client hints between top-level navigations.
-const base::Feature kWebViewClientHintsControllerDelegate{
-    "WebViewClientHintsControllerDelegate", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebViewClientHintsControllerDelegate,
+             "WebViewClientHintsControllerDelegate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace android_webview

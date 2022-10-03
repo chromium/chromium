@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 // Used to gate unwind prerequisites' installation for some unit tests.
-extern const base::Feature kInstallAndroidUnwindDfm;
+BASE_DECLARE_FEATURE(kInstallAndroidUnwindDfm);
 
 namespace {
 

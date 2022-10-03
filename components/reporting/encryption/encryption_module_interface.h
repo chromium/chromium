@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -17,16 +18,16 @@
 
 namespace reporting {
 
+// Feature to enable/disable encryption.
+// By default encryption is enabled and supported by server.
+// Disabled only for testing/stress purposes.
+BASE_DECLARE_FEATURE(kEncryptedReportingFeature);
+
 class EncryptionModuleInterface
     : public base::RefCountedThreadSafe<EncryptionModuleInterface> {
  public:
   // Public key id, as defined by Keystore.
   using PublicKeyId = int32_t;
-
-  // Feature to enable/disable encryption.
-  // By default encryption is enabled and supported by server.
-  // Disabled only for testing/stress purposes.
-  static const char kEncryptedReporting[];
 
   explicit EncryptionModuleInterface(
       base::TimeDelta renew_encryption_key_period = base::Days(1));
