@@ -609,8 +609,10 @@ bool V4L2WritableBufferRef::DoQueue(V4L2RequestRef* request_ref,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer_data_);
 
-  if (request_ref && buffer_data_->queue_->SupportsRequests())
-    request_ref->ApplyQueueBuffer(&(buffer_data_->v4l2_buffer_));
+  if (request_ref && buffer_data_->queue_->SupportsRequests() &&
+      !request_ref->ApplyQueueBuffer(&(buffer_data_->v4l2_buffer_))) {
+    return false;
+  }
 
   bool queued = buffer_data_->QueueBuffer(std::move(video_frame));
 
@@ -1028,7 +1030,8 @@ V4L2Queue::~V4L2Queue() {
 
   if (is_streaming_) {
     VQLOGF(1) << "Queue is still streaming, trying to stop it...";
-    Streamoff();
+    if (!Streamoff())
+      VQLOGF(1) << "Failed to stop queue";
   }
 
   DCHECK(queued_buffers_.empty());
@@ -1036,7 +1039,8 @@ V4L2Queue::~V4L2Queue() {
 
   if (!buffers_.empty()) {
     VQLOGF(1) << "Buffers are still allocated, trying to deallocate them...";
-    DeallocateBuffers();
+    if (!DeallocateBuffers())
+      VQLOGF(1) << "Failed to deallocate queue buffers";
   }
 
   std::move(destroy_cb_).Run();
@@ -1182,7 +1186,8 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
     auto buffer = V4L2Buffer::Create(device_, type_, memory_, *format, i);
 
     if (!buffer) {
-      DeallocateBuffers();
+      if (!DeallocateBuffers())
+        VQLOGF(1) << "Failed to deallocate queue buffers";
 
       return 0;
     }

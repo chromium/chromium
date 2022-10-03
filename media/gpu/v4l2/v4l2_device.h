@@ -96,7 +96,7 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // so this reference becomes invalid.
   // In case of error, false is returned and the buffer is returned to the free
   // list.
-  bool QueueMMap(V4L2RequestRef* request_ref = nullptr) &&;
+  [[nodiscard]] bool QueueMMap(V4L2RequestRef* request_ref = nullptr) &&;
   // Queue a USERPTR buffer, assigning |ptrs| as pointer for each plane.
   // The size of |ptrs| must be equal to the number of planes of this buffer.
   // When requests are supported, a |request_ref| can be passed along this
@@ -105,8 +105,8 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // so this reference becomes invalid.
   // In case of error, false is returned and the buffer is returned to the free
   // list.
-  bool QueueUserPtr(const std::vector<void*>& ptrs,
-                    V4L2RequestRef* request_ref = nullptr) &&;
+  [[nodiscard]] bool QueueUserPtr(const std::vector<void*>& ptrs,
+                                  V4L2RequestRef* request_ref = nullptr) &&;
   // Queue a DMABUF buffer, assigning |fds| as file descriptors for each plane.
   // It is allowed the number of |fds| might be greater than the number of
   // planes of this buffer. It happens when the v4l2 pixel format is single
@@ -117,8 +117,8 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // so this reference becomes invalid.
   // In case of error, false is returned and the buffer is returned to the free
   // list.
-  bool QueueDMABuf(const std::vector<base::ScopedFD>& fds,
-                   V4L2RequestRef* request_ref = nullptr) &&;
+  [[nodiscard]] bool QueueDMABuf(const std::vector<base::ScopedFD>& fds,
+                                 V4L2RequestRef* request_ref = nullptr) &&;
   // Queue a DMABUF buffer, assigning file descriptors of |planes| for planes.
   // It is allowed the number of |planes| might be greater than the number of
   // planes of this buffer. It happens when the v4l2 pixel format is single
@@ -129,8 +129,9 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // so this reference becomes invalid.
   // In case of error, false is returned and the buffer is returned to the free
   // list.
-  bool QueueDMABuf(const std::vector<gfx::NativePixmapPlane>& planes,
-                   V4L2RequestRef* request_ref = nullptr) &&;
+  [[nodiscard]] bool QueueDMABuf(
+      const std::vector<gfx::NativePixmapPlane>& planes,
+      V4L2RequestRef* request_ref = nullptr) &&;
   // Queue a |video_frame| using its file descriptors as DMABUFs. The VideoFrame
   // must have been constructed from its file descriptors.
   // The particularity of this method is that a reference to |video_frame| is
@@ -138,8 +139,8 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // |V4L2ReadableBufferRef::GetVideoFrame()|. |video_frame| is thus guaranteed
   // to be alive until either all the |V4L2ReadableBufferRef| from the dequeued
   // buffer get out of scope, or |V4L2Queue::Streamoff()| is called.
-  bool QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
-                   V4L2RequestRef* request_ref = nullptr) &&;
+  [[nodiscard]] bool QueueDMABuf(scoped_refptr<VideoFrame> video_frame,
+                                 V4L2RequestRef* request_ref = nullptr) &&;
 
   // Returns the number of planes in this buffer.
   size_t PlanesCount() const;
@@ -197,8 +198,8 @@ class MEDIA_GPU_EXPORT V4L2WritableBufferRef {
   // filled.
   // When requests are supported, a |request_ref| can be passed along this
   // the buffer to be submitted.
-  bool DoQueue(V4L2RequestRef* request_ref,
-               scoped_refptr<VideoFrame> video_frame) &&;
+  [[nodiscard]] bool DoQueue(V4L2RequestRef* request_ref,
+                             scoped_refptr<VideoFrame> video_frame) &&;
 
   V4L2WritableBufferRef(const struct v4l2_buffer& v4l2_buffer,
                         base::WeakPtr<V4L2Queue> queue);
@@ -339,11 +340,11 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // This pair is used because not all failures to get the format are
   // necessarily errors, so we need to way to let the use decide whether it
   // is one or not.
-  std::pair<absl::optional<struct v4l2_format>, int> GetFormat();
+  [[nodiscard]] std::pair<absl::optional<struct v4l2_format>, int> GetFormat();
 
   // Codec-specific method to get the visible rectangle of the queue, using the
   // VIDIOC_G_SELECTION ioctl if available, or VIDIOC_G_CROP as a fallback.
-  absl::optional<gfx::Rect> GetVisibleRect();
+  [[nodiscard]] absl::optional<gfx::Rect> GetVisibleRect();
 
   // Allocate |count| buffers for the current format of this queue, with a
   // specific |memory| allocation, and returns the number of buffers allocated
@@ -367,27 +368,27 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // Deallocate all buffers previously allocated by |AllocateBuffers|. Any
   // references to buffers previously allocated held by the client must be
   // released, or this call will fail.
-  bool DeallocateBuffers();
+  [[nodiscard]] bool DeallocateBuffers();
 
   // Returns the memory usage of v4l2 buffers owned by this V4L2Queue which are
   // mapped in user space memory.
-  size_t GetMemoryUsage() const;
+  [[nodiscard]] size_t GetMemoryUsage() const;
 
   // Returns |memory_|, memory type of last buffers allocated by this V4L2Queue.
-  v4l2_memory GetMemoryType() const;
+  [[nodiscard]] v4l2_memory GetMemoryType() const;
 
   // Return a reference to a free buffer for the caller to prepare and submit,
   // or nullopt if no buffer is currently free.
   //
   // If the caller discards the returned reference, the underlying buffer is
   // made available to clients again.
-  absl::optional<V4L2WritableBufferRef> GetFreeBuffer();
+  [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBuffer();
   // Return the buffer at index |requested_buffer_id|, if it is available at
   // this time.
   //
   // If the buffer is currently in use or the provided index is invalid,
   // return |absl::nullopt|.
-  absl::optional<V4L2WritableBufferRef> GetFreeBuffer(
+  [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBuffer(
       size_t requested_buffer_id);
   // Return a V4L2 buffer suitable for the passed VideoFrame.
   //
@@ -404,7 +405,7 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // since it will maximize performance in that case provided the number of
   // different VideoFrames passed to this method does not exceed the number of
   // V4L2 buffers allocated on the queue.
-  absl::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
+  [[nodiscard]] absl::optional<V4L2WritableBufferRef> GetFreeBufferForFrame(
       const VideoFrame& frame);
 
   // Attempt to dequeue a buffer, and return a reference to it if one was
@@ -417,45 +418,46 @@ class MEDIA_GPU_EXPORT V4L2Queue
   // otherwise.
   // Dequeued buffers will not be reused by the driver until all references to
   // them are dropped.
-  std::pair<bool, V4L2ReadableBufferRef> DequeueBuffer();
+  [[nodiscard]] std::pair<bool, V4L2ReadableBufferRef> DequeueBuffer();
 
   // Returns true if this queue is currently streaming.
-  bool IsStreaming() const;
+  [[nodiscard]] bool IsStreaming() const;
   // If not currently streaming, starts streaming. Returns true if we started
   // streaming, or were already streaming, or false if we were not streaming
   // and an error occurred when attempting to start the stream. On failure, any
   // previously-queued buffers will be dequeued without processing and made
   // available to the client, while any buffers held by the client will remain
   // unchanged and their ownership will remain with the client.
-  bool Streamon();
+  [[nodiscard]] bool Streamon();
   // If currently streaming, stops streaming. Also make all queued buffers
   // available to the client again regardless of the streaming state.
   // If an error occurred while attempting to stop streaming, then false is
   // returned and queued buffers are left untouched since the V4L2 queue may
   // still be using them.
-  bool Streamoff();
+  [[nodiscard]] bool Streamoff();
 
   // Returns the number of buffers currently allocated for this queue.
-  size_t AllocatedBuffersCount() const;
+  [[nodiscard]] size_t AllocatedBuffersCount() const;
   // Returns the number of currently free buffers on this queue.
-  size_t FreeBuffersCount() const;
+  [[nodiscard]] size_t FreeBuffersCount() const;
   // Returns the number of buffers currently queued on this queue.
-  size_t QueuedBuffersCount() const;
+  [[nodiscard]] size_t QueuedBuffersCount() const;
 
   // Returns true if requests are supported by this queue.
-  bool SupportsRequests();
+  [[nodiscard]] bool SupportsRequests();
 
   // TODO (b/166275274) : Remove this once V4L2 properly supports modifiers.
   // Out of band method to configure V4L2 for modifier use.
-  absl::optional<struct v4l2_format> SetModifierFormat(uint64_t modifier,
-                                                       const gfx::Size& size);
+  [[nodiscard]] absl::optional<struct v4l2_format> SetModifierFormat(
+      uint64_t modifier,
+      const gfx::Size& size);
 
  private:
   ~V4L2Queue();
 
   // Called when clients request a buffer to be queued.
-  bool QueueBuffer(struct v4l2_buffer* v4l2_buffer,
-                   scoped_refptr<VideoFrame> video_frame);
+  [[nodiscard]] bool QueueBuffer(struct v4l2_buffer* v4l2_buffer,
+                                 scoped_refptr<VideoFrame> video_frame);
 
   const enum v4l2_buf_type type_;
   enum v4l2_memory memory_ = V4L2_MEMORY_MMAP;
@@ -539,7 +541,7 @@ class MEDIA_GPU_EXPORT V4L2RequestRef : public V4L2RequestRefBase {
   // Apply controls to the request.
   bool ApplyCtrls(struct v4l2_ext_controls* ctrls) const;
   // Apply buffer to the request.
-  bool ApplyQueueBuffer(struct v4l2_buffer* buffer) const;
+  [[nodiscard]] bool ApplyQueueBuffer(struct v4l2_buffer* buffer) const;
   // Submits the request to the driver.
   absl::optional<V4L2SubmittedRequestRef> Submit() &&;
 
@@ -563,7 +565,7 @@ class MEDIA_GPU_EXPORT V4L2SubmittedRequestRef : public V4L2RequestRefBase {
   V4L2SubmittedRequestRef& operator=(const V4L2SubmittedRequestRef&) = delete;
 
   // Indicates if the request has completed.
-  bool IsCompleted();
+  [[nodiscard]] bool IsCompleted();
 
  private:
   friend class V4L2RequestRef;
@@ -666,7 +668,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Open a V4L2 device of |type| for use with |v4l2_pixfmt|.
   // Return true on success.
   // The device will be closed in the destructor.
-  virtual bool Open(Type type, uint32_t v4l2_pixfmt) = 0;
+  [[nodiscard]] virtual bool Open(Type type, uint32_t v4l2_pixfmt) = 0;
 
   // Returns the driver name.
   std::string GetDriverName();
@@ -677,7 +679,7 @@ class MEDIA_GPU_EXPORT V4L2Device
 
   // Parameters and return value are the same as for the standard ioctl() system
   // call.
-  virtual int Ioctl(int request, void* arg) = 0;
+  [[nodiscard]] virtual int Ioctl(int request, void* arg) = 0;
 
   // This method sleeps until either:
   // - SetDevicePollInterrupt() is called (on another thread),
@@ -790,11 +792,12 @@ class MEDIA_GPU_EXPORT V4L2Device
   // the caller's sequence if a buffer is ready to be dequeued and/or a V4L2
   // event has been posted. |error_callback| will be posted to the client's
   // sequence if a polling error has occurred.
-  bool StartPolling(V4L2DevicePoller::EventCallback event_callback,
-                    base::RepeatingClosure error_callback);
+  [[nodiscard]] bool StartPolling(
+      V4L2DevicePoller::EventCallback event_callback,
+      base::RepeatingClosure error_callback);
   // Stop polling this V4L2Device if polling was active. No new events will
   // be posted after this method has returned.
-  bool StopPolling();
+  [[nodiscard]] bool StopPolling();
   // Schedule a polling event if polling is enabled. This method is intended
   // to be called from V4L2Queue, clients should not need to call it directly.
   void SchedulePoll();
@@ -837,7 +840,7 @@ class MEDIA_GPU_EXPORT V4L2Device
   // Perform platform-specific initialization of the device instance.
   // Return true on success, false on error or if the particular implementation
   // is not available.
-  virtual bool Initialize() = 0;
+  [[nodiscard]] virtual bool Initialize() = 0;
 
   // Associates a v4l2_buf_type to its queue.
   base::flat_map<enum v4l2_buf_type, V4L2Queue*> queues_;
