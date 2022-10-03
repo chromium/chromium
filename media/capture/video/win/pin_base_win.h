@@ -21,7 +21,7 @@ namespace media {
 
 class PinBase : public IPin,
                 public IMemInputPin,
-                public base::RefCounted<PinBase> {
+                public base::RefCountedThreadSafe<PinBase> {
  public:
   explicit PinBase(IBaseFilter* owner);
 
@@ -98,7 +98,7 @@ class PinBase : public IPin,
   IFACEMETHODIMP_(ULONG) Release() override;
 
  protected:
-  friend class base::RefCounted<PinBase>;
+  friend class base::RefCountedThreadSafe<PinBase>;
   virtual ~PinBase();
 
  private:

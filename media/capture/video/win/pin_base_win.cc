@@ -11,7 +11,7 @@ namespace media {
 
 // Implement IEnumPins.
 class TypeEnumerator final : public IEnumMediaTypes,
-                             public base::RefCounted<TypeEnumerator> {
+                             public base::RefCountedThreadSafe<TypeEnumerator> {
  public:
   explicit TypeEnumerator(PinBase* pin) : pin_(pin), index_(0) {}
 
@@ -26,12 +26,12 @@ class TypeEnumerator final : public IEnumMediaTypes,
   }
 
   IFACEMETHODIMP_(ULONG) AddRef() override {
-    base::RefCounted<TypeEnumerator>::AddRef();
+    base::RefCountedThreadSafe<TypeEnumerator>::AddRef();
     return 1;
   }
 
   IFACEMETHODIMP_(ULONG) Release() override {
-    base::RefCounted<TypeEnumerator>::Release();
+    base::RefCountedThreadSafe<TypeEnumerator>::Release();
     return 1;
   }
 
@@ -96,7 +96,7 @@ class TypeEnumerator final : public IEnumMediaTypes,
   }
 
  private:
-  friend class base::RefCounted<TypeEnumerator>;
+  friend class base::RefCountedThreadSafe<TypeEnumerator>;
   ~TypeEnumerator() {}
 
   void FreeAllocatedMediaTypes(ULONG allocated, AM_MEDIA_TYPE** types) {
@@ -270,12 +270,12 @@ HRESULT PinBase::QueryInterface(REFIID id, void** object_ptr) {
 }
 
 ULONG PinBase::AddRef() {
-  base::RefCounted<PinBase>::AddRef();
+  base::RefCountedThreadSafe<PinBase>::AddRef();
   return 1;
 }
 
 ULONG PinBase::Release() {
-  base::RefCounted<PinBase>::Release();
+  base::RefCountedThreadSafe<PinBase>::Release();
   return 1;
 }
 
