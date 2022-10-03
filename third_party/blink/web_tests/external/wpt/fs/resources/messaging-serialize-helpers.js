@@ -30,22 +30,9 @@ async function serialize_handle(handle) {
 // serialized properties shared by both FileSystemFileHandle and
 // FileSystemDirectoryHandle.
 async function serialize_file_system_handle(handle) {
-  let read_permission = "granted";
-  let write_permission = "granted";
-  // query-permission is part of the File System Acecss API
-  // https://wicg.github.io/file-system-access, which may not be supported
-  if ("queryPermission" in FileSystemHandle.prototype) {
-    read_permission =
-      await handle.queryPermission({ mode: 'read' });
-
-    write_permission =
-      await handle.queryPermission({ mode: 'readwrite' })
-  }
   return {
     kind: handle.kind,
-    name: handle.name,
-    read_permission,
-    write_permission
+    name: handle.name
   };
 }
 
@@ -54,9 +41,7 @@ async function serialize_file_system_handle(handle) {
 // dictionary.  Example output:
 // {
 //   kind: "file",
-//   name: "example-file-name"
-//   read_permission: "granted",
-//   write_permission: "granted",
+//   name: "example-file-name",
 //   contents: "example-file-contents"
 // }
 async function serialize_file_system_file_handle(file_handle) {
@@ -72,9 +57,7 @@ async function serialize_file_system_file_handle(file_handle) {
 // Example output:
 // {
 //   kind: "directory",
-//   name: "example-directory-name"
-//   read_permission: "granted",
-//   write_permission: "granted",
+//   name: "example-directory-name",
 //   files: [<first serialized file>, ...]
 //   directories: [<first serialized subdirectory>, ...]
 // }
@@ -161,14 +144,6 @@ function assert_equals_serialized_file_system_handle(left, right) {
   assert_equals(left.name, right.name,
     'Each FileSystemHandle instance must use the expected "name" ' +
     ' property.');
-
-  assert_equals(left.read_permission, right.read_permission,
-    'Each FileSystemHandle instance must have the expected read ' +
-    ' permission.');
-
-  assert_equals(left.write_permission, right.write_permission,
-    'Each FileSystemHandle instance must have the expected write ' +
-    ' permission.');
 }
 
 // Compares the output of serialize_file_system_file_handle()
