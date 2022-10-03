@@ -70,7 +70,7 @@ void ConfigSource::LoadConfigForUser(const user_manager::User* user) {
   const base::Value* old_configs_value =
       dictionary->FindKeyOfType(kOldConfigsDictKey, base::Value::Type::LIST);
   if (old_configs_value) {
-    for (const auto& config_value : old_configs_value->GetListDeprecated())
+    for (const auto& config_value : old_configs_value->GetList())
       AddAuthenticator(config_value, user);
   }
 }
