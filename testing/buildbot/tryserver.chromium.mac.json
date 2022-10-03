@@ -246,6 +246,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -284,6 +285,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -320,6 +322,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -358,6 +361,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -394,6 +398,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -432,6 +437,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -468,6 +474,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--expected-vendor-id",
           "1002",
@@ -510,6 +517,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--expected-vendor-id",
           "10de",
@@ -552,6 +560,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
           "--expected-vendor-id",
           "8086",
@@ -592,6 +601,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -639,6 +649,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -684,6 +695,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -722,6 +734,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -760,6 +773,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -796,6 +810,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -843,6 +858,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -888,6 +904,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--dont-restore-color-profile-after-test"
         ],
@@ -927,6 +944,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--dont-restore-color-profile-after-test"
         ],
@@ -964,6 +982,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1002,6 +1021,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1040,6 +1060,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1076,6 +1097,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1110,6 +1132,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1144,6 +1167,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1176,6 +1200,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
@@ -1218,6 +1243,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
@@ -1258,6 +1284,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=4"
@@ -1299,6 +1326,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=4"
@@ -1338,6 +1366,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=4"
@@ -1379,6 +1408,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=4"
@@ -1418,6 +1448,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--test-filter=conformance/rendering/gl-drawelements.html",
           "--jobs=4"
@@ -1458,6 +1489,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--test-filter=conformance/rendering/gl-drawelements.html",
           "--jobs=4"

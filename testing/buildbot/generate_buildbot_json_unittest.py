@@ -1700,6 +1700,7 @@ GPU_TELEMETRY_TEST_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1738,6 +1739,7 @@ GPU_TELEMETRY_TEST_OUTPUT_ANDROID = """\
           "--browser=android-chromium",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_chrome",
@@ -1776,6 +1778,7 @@ GPU_TELEMETRY_TEST_OUTPUT_ANDROID_WEBVIEW = """\
           "--browser=android-webview-instrumentation",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_android_webview",
@@ -1814,6 +1817,7 @@ GPU_TELEMETRY_TEST_OUTPUT_FUCHSIA = """\
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -1852,6 +1856,7 @@ GPU_TELEMETRY_TEST_OUTPUT_CAST_STREAMING = """\
           "--browser=cast-streaming-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -1890,6 +1895,7 @@ GPU_TELEMETRY_TEST_OUTPUT_SKYLAB = """\
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc"
         ],
         "merge": {
@@ -1922,6 +1928,7 @@ NVIDIA_GPU_TELEMETRY_TEST_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--gpu-vendor-id",
           "10de",
@@ -1964,6 +1971,7 @@ INTEL_GPU_TELEMETRY_TEST_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--gpu-vendor-id",
           "8086",
@@ -2006,6 +2014,7 @@ INTEL_UHD_GPU_TELEMETRY_TEST_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--gpu-vendor-id",
           "8086",
@@ -2048,6 +2057,7 @@ GPU_TELEMETRY_TEST_VARIANTS_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--platform",
           "device",
@@ -2080,6 +2090,7 @@ GPU_TELEMETRY_TEST_VARIANTS_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "a",
           "b"
@@ -2247,6 +2258,7 @@ GPU_DIMENSIONS_WATERFALL_OUTPUT = """\
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test",

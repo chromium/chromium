@@ -7491,6 +7491,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -7524,6 +7525,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -7557,6 +7559,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -7590,6 +7593,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -8997,6 +9001,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -9030,6 +9035,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -9063,6 +9069,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -9096,6 +9103,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",

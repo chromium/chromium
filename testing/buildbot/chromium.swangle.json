@@ -10,6 +10,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
           "--xvfb",
           "--jobs=4"
@@ -820,6 +821,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
           "--xvfb",
           "--jobs=4"
@@ -861,6 +863,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough",
           "--xvfb",
           "--jobs=4"

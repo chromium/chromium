@@ -17619,6 +17619,7 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=1",
@@ -18675,6 +18676,7 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--jobs=1",
@@ -24503,6 +24505,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
           "1ae0",
@@ -24540,6 +24543,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating"
         ],
         "experiment_percentage": 100,
@@ -24574,6 +24578,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -24617,6 +24622,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test"
         ],
@@ -24651,6 +24657,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "experiment_percentage": 100,
@@ -24685,6 +24692,7 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
         "isolate_name": "telemetry_gpu_integration_test_fuchsia",
@@ -24798,6 +24806,7 @@
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--expected-vendor-id",
           "1ae0",
@@ -24836,6 +24845,7 @@
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
           "--custom-image=workstation.qemu-x64-release"
         ],
@@ -24870,6 +24880,7 @@
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
@@ -24913,6 +24924,7 @@
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--dont-restore-color-profile-after-test",
           "--custom-image=workstation.qemu-x64-release"
@@ -24948,6 +24960,7 @@
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
@@ -24982,6 +24995,7 @@
           "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
+          "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],

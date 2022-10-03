@@ -1013,6 +1013,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # being expected to fail, but passing.
         '--passthrough',
         '-v',
+        '--stable-jobs',
         '--extra-browser-args=%s --js-flags=--expose-gc' % logging_arg,
     ] + args
     result['args'] = self.maybe_fixup_args_array(self.substitute_gpu_args(
