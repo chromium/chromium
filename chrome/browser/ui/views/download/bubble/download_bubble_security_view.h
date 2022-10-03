@@ -11,12 +11,13 @@
 #include "ui/views/view.h"
 
 namespace views {
-class MdTextButton;
 class Checkbox;
 class Label;
 class ImageView;
 class StyledLabel;
 class ImageButton;
+class BubbleDialogDelegate;
+class LabelButton;
 }  // namespace views
 
 class DownloadBubbleUIController;
@@ -28,7 +29,8 @@ class DownloadBubbleSecurityView : public views::View {
   METADATA_HEADER(DownloadBubbleSecurityView);
   DownloadBubbleSecurityView(
       DownloadBubbleUIController* bubble_controller,
-      DownloadBubbleNavigationHandler* navigation_handler);
+      DownloadBubbleNavigationHandler* navigation_handler,
+      views::BubbleDialogDelegate* bubble_delegate);
   DownloadBubbleSecurityView(const DownloadBubbleSecurityView&) = delete;
   DownloadBubbleSecurityView& operator=(const DownloadBubbleSecurityView&) =
       delete;
@@ -41,11 +43,6 @@ class DownloadBubbleSecurityView : public views::View {
   // Update the view after it is visible, in particular asking for focus and
   // announcing accessibility text.
   void UpdateAccessibilityTextAndFocus();
-
-  raw_ptr<views::MdTextButton> keep_button_ = nullptr;
-  raw_ptr<views::MdTextButton> discard_button_ = nullptr;
-  raw_ptr<views::MdTextButton> bypass_deep_scan_button_ = nullptr;
-  raw_ptr<views::MdTextButton> deep_scan_button_ = nullptr;
 
  private:
   void BackButtonPressed();
@@ -62,20 +59,19 @@ class DownloadBubbleSecurityView : public views::View {
                     bool has_checkbox,
                     SkColor color);
   void UpdateButtons();
-  void AddButtons();
 
   // |is_secondary_button| checks if the command/action originated from the
   // secondary button.
   void ProcessButtonClick(DownloadCommands::Command command,
                           bool is_secondary_button);
-  views::MdTextButton* GetButtonForCommand(DownloadCommands::Command command);
   void RecordWarningActionTime(bool is_secondary_button);
 
   raw_ptr<DownloadBubbleRowView> download_row_view_;
   raw_ptr<DownloadBubbleUIController> bubble_controller_ = nullptr;
   raw_ptr<DownloadBubbleNavigationHandler> navigation_handler_ = nullptr;
+  raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
   // The secondary button is the one that may be protected by the checkbox.
-  raw_ptr<views::MdTextButton> secondary_button_ = nullptr;
+  raw_ptr<views::LabelButton> secondary_button_ = nullptr;
   raw_ptr<views::Checkbox> checkbox_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
