@@ -38,19 +38,9 @@ using ::testing::Return;
 namespace media {
 namespace {
 
-// TODO(crbug.com/1334991): Clarify WebRTC audio processing support for 96 kHz
-// input.
-static const int kSupportedSampleRates[] = {8000,
-                                            16000,
-                                            22050,
-                                            32000,
-                                            44100,
-                                            48000
-#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
-                                            ,
-                                            96000
-#endif
-};
+// Test all sample rates observed in UMA metric WebRTC.AudioInputSampleRate.
+static const int kSupportedSampleRates[] = {8000,  11025, 16000, 22050, 24000,
+                                            32000, 44100, 48000, 96000, 192000};
 
 using MockProcessedCaptureCallback =
     base::MockRepeatingCallback<void(const media::AudioBus& audio_bus,

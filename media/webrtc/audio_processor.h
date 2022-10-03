@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // |settings|.NeedWebrtcAudioProcessing() is true, then the output must be in
   // 10 ms chunks: the formats must specify |sample rate|/100 samples per buffer
   // (rounded down). Sample rates which are not divisible by 100 are supported
-  // on a best-effort basis, audio quality and stability may suffer.
+  // on a best-effort basis, audio quality may suffer.
   static std::unique_ptr<AudioProcessor> Create(
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
       LogCallback log_callback,
@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   AudioProcessor(const AudioProcessor&) = delete;
   AudioProcessor& operator=(const AudioProcessor&) = delete;
 
-  // Processes and delivers capture audio in chunks of <= 10 ms to
+  // Processes capture audio and delivers in chunks of <= 10 ms to
   // |deliver_processed_audio_callback_|: Each call to ProcessCapturedAudio()
   // method triggers zero or more calls to |deliver_processed_audio_callback_|,
   // depending on internal FIFO size and content. |num_preferred_channels| is
@@ -219,7 +219,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // Members configured on the owning sequence in the constructor and
   // used on the capture thread:
 
-  // FIFO to provide capture audio in chunks of up to 10 ms.
+  // FIFO to provide capture audio in chunks that can be processed by
+  // webrtc::AudioProcessing.
   std::unique_ptr<AudioProcessorCaptureFifo> capture_fifo_;
 
   // Receives APM processing output.
@@ -247,7 +248,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
 
   // Members accessed only on the playout thread:
 
-  // FIFO to provide playout audio in 10 ms chunks.
+  // FIFO to provide playout audio in chunks that can be processed by
+  // webrtc::AudioProcessing.
   AudioPushFifo playout_fifo_;
 
   // Cached value of the playout delay before adjusting for delay introduced by
