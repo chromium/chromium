@@ -256,7 +256,7 @@
   },
   {
     "name": "arc-nearby-share-fuse-box",
-    "owners": ["tsergeant", "phshah", "cros-sharesheet@google.com"],
+    "owners": ["tsergeant", "alanding", "phshah", "cros-sharesheet@google.com"],
     "expiry_milestone": 111
   },
   {
@@ -4631,11 +4631,6 @@
     "name": "mute-notification-snooze-action",
     "owners": [ "knollr@chromium.org", "peter@chromium.org" ],
     "expiry_milestone": 96
-  },
-  {
-    "name": "nearby-sharing-arc",
-    "owners": [ "phshah", "alanding", "cros-sharesheet@google.com", "arc-app-dev@google.com" ],
-    "expiry_milestone": 99
   },
   {
     "name": "nearby-sharing-one-page-onboarding",

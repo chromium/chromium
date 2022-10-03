@@ -22,15 +22,9 @@ BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
              "ArcDocumentsProviderUnknownSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls ARC Nearby Share support.
-// When enabled, Android apps will show the Nearby Share as a share target in
-// its sharesheet.
-BASE_FEATURE(kEnableArcNearbyShare,
-             "ArcNearbySharing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether files shared to ARC Nearby Share are shared through the
-// FuseBox filesystem, instead of creating a temporary copy.
+// FuseBox filesystem, instead of the default method (through a temporary path
+// managed by file manager).
 BASE_FEATURE(kEnableArcNearbyShareFuseBox,
              "ArcNearbyShareFuseBox",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -93,7 +93,7 @@ struct UpgradeParams {
   base::FilePath demo_session_apps_path;
 
   // Flag to enable ARC Nearby Share support.
-  bool enable_arc_nearby_share = false;
+  bool enable_arc_nearby_share = true;
 };
 
 }  // namespace arc
