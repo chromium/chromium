@@ -32,6 +32,10 @@
 // class.
 @property(nonatomic, weak) id<PromosManagerCommands> handler;
 
+// A generic callback that's invoked immediately after the promo, `identifier`,
+// is displayed.
+- (void)promoWasDisplayed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PROMOS_MANAGER_PROMO_PROTOCOL_H_

@@ -159,6 +159,10 @@
     [handler handleDisplay];
 
     [self.mediator recordImpression:handler.identifier];
+
+    if ([handler respondsToSelector:@selector(promoWasDisplayed)]) {
+      [handler promoWasDisplayed];
+    }
   } else if (provider_it != _viewProviderPromos.end()) {
     id<StandardPromoViewProvider> provider = provider_it->second;
 
@@ -176,6 +180,10 @@
                                         completion:nil];
 
     [self.mediator recordImpression:provider.identifier];
+
+    if ([provider respondsToSelector:@selector(promoWasDisplayed)]) {
+      [provider promoWasDisplayed];
+    }
   } else if (bannered_provider_it != _banneredViewProviderPromos.end()) {
     id<BanneredPromoViewProvider> banneredProvider =
         bannered_provider_it->second;
@@ -194,6 +202,10 @@
                                         completion:nil];
 
     [self.mediator recordImpression:banneredProvider.identifier];
+
+    if ([banneredProvider respondsToSelector:@selector(promoWasDisplayed)]) {
+      [banneredProvider promoWasDisplayed];
+    }
   } else if (alert_provider_it != _alertProviderPromos.end()) {
     id<StandardPromoAlertProvider> alertProvider = alert_provider_it->second;
 
@@ -251,6 +263,10 @@
                                         completion:nil];
 
     [self.mediator recordImpression:alertProvider.identifier];
+
+    if ([alertProvider respondsToSelector:@selector(promoWasDisplayed)]) {
+      [alertProvider promoWasDisplayed];
+    }
   } else {
     NOTREACHED();
   }

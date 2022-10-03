@@ -120,3 +120,6 @@ TEST_F(PromosManagerCoordinatorTest,
 
   [mockCoordinator confirmationAlertDismissAction];
 }
+
+// TODO(crbug.com/1370763): Add unit tests for promoWasDisplayed being
+// called when promo is displayed.
