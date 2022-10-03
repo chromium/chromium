@@ -65,6 +65,43 @@ TEST_F(PriceTrackingUtilsTest,
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), product2));
 }
 
+// Test that a bookmark is updated in-place if revisiting the page and it is
+// detected to be a trackable product.
+TEST_F(PriceTrackingUtilsTest,
+       SetPriceTrackingStateUpdatesAll_SubscribeOldBookmark) {
+  const uint64_t cluster_id = 12345L;
+
+  // This bookmark is intentionally a non-product bookmark to start with.
+  const bookmarks::BookmarkNode* existing_bookmark = bookmark_model_->AddURL(
+      bookmark_model_->other_node(), 0, u"Title", GURL("https://example.com"));
+
+  // Since bookmarking, the shopping service detected that the bookmark is
+  // actually a product.
+  absl::optional<ProductInfo> info;
+  info.emplace();
+  info->product_cluster_id = cluster_id;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+
+  // Simulate successful calls in the subscriptions manager.
+  shopping_service_->SetSubscribeCallbackValue(true);
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  base::RunLoop run_loop;
+  SetPriceTrackingStateForBookmark(
+      shopping_service_.get(), bookmark_model_.get(), existing_bookmark, true,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool success) {
+            EXPECT_TRUE(success);
+            run_loop->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+
+  EXPECT_TRUE(IsBookmarkPriceTracked(bookmark_model_.get(), existing_bookmark));
+  EXPECT_EQ(GetBookmarksWithClusterId(bookmark_model_.get(), cluster_id)[0],
+            existing_bookmark);
+}
+
 // Same as the _SubscriptionSuccess version but the subscription fails on the
 // backend. In this case, the bookmarks should not be updated.
 TEST_F(PriceTrackingUtilsTest,
@@ -159,6 +196,138 @@ TEST_F(PriceTrackingUtilsTest, IsBookmarkPriceTracked_NonProduct) {
                               GURL("http://www.example.com"));
 
   EXPECT_FALSE(IsBookmarkPriceTracked(bookmark_model_.get(), normal_bookmark));
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark) {
+  const std::string new_title = "New Title";
+  const std::string new_image_url = "https://example.com/product_image.png";
+  const std::string new_country_code = "us";
+  const long new_price = 500000L;
+  const std::string new_currency_code = "USD";
+  const uint64_t new_offer_id = 10000L;
+  const uint64_t cluster_id = 12345L;
+
+  // Fill up bookmark meta with some nonsense data.
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_lead_image()->set_url("http://example.com/image.png");
+  power_bookmarks::ShoppingSpecifics* specifics =
+      meta.mutable_shopping_specifics();
+  specifics->set_title("Old Title");
+  specifics->set_country_code("abc");
+  specifics->set_is_price_tracked(true);
+  specifics->set_product_cluster_id(cluster_id);
+  specifics->set_offer_id(67890L);
+  power_bookmarks::ProductPrice* price = specifics->mutable_current_price();
+  price->set_amount_micros(1000000L);
+  price->set_currency_code("XYZ");
+
+  // Provide new information via shopping service (ProductInfo).
+  ProductInfo new_info;
+  new_info.title = new_title;
+  new_info.image_url = GURL(new_image_url);
+  new_info.amount_micros = new_price;
+  new_info.currency_code = new_currency_code;
+  new_info.country_code = new_country_code;
+  new_info.offer_id = new_offer_id;
+  new_info.product_cluster_id = cluster_id;  // This shouldn't change.
+
+  EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  specifics = meta.mutable_shopping_specifics();
+
+  EXPECT_TRUE(specifics->is_price_tracked());
+  EXPECT_EQ(new_title, specifics->title());
+  EXPECT_EQ(new_image_url, meta.lead_image().url());
+  EXPECT_EQ(new_country_code, specifics->country_code());
+  EXPECT_EQ(new_price, specifics->current_price().amount_micros());
+  EXPECT_EQ(new_currency_code, specifics->current_price().currency_code());
+  EXPECT_EQ(new_offer_id, specifics->offer_id());
+  EXPECT_EQ(cluster_id, specifics->product_cluster_id());
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_NoNewData) {
+  const std::string title = "New Title";
+  const std::string image_url = "https://example.com/product_image.png";
+  const std::string country_code = "us";
+  const long price_micros = 500000L;
+  const std::string currency_code = "USD";
+  const uint64_t offer_id = 67890L;
+  const uint64_t cluster_id = 12345L;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_lead_image()->set_url(image_url);
+  power_bookmarks::ShoppingSpecifics* specifics =
+      meta.mutable_shopping_specifics();
+  specifics->set_title(title);
+  specifics->set_country_code(country_code);
+  specifics->set_is_price_tracked(true);
+  specifics->set_product_cluster_id(cluster_id);
+  specifics->set_offer_id(offer_id);
+  power_bookmarks::ProductPrice* price = specifics->mutable_current_price();
+  price->set_amount_micros(price_micros);
+  price->set_currency_code(currency_code);
+
+  // Provide the same information via shopping service (ProductInfo).
+  ProductInfo info;
+  info.title = title;
+  info.image_url = GURL(image_url);
+  info.amount_micros = price_micros;
+  info.currency_code = currency_code;
+  info.country_code = country_code;
+  info.offer_id = offer_id;
+  info.product_cluster_id = cluster_id;
+
+  EXPECT_FALSE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, info));
+
+  specifics = meta.mutable_shopping_specifics();
+
+  EXPECT_TRUE(specifics->is_price_tracked());
+  EXPECT_EQ(title, specifics->title());
+  EXPECT_EQ(image_url, meta.lead_image().url());
+  EXPECT_EQ(country_code, specifics->country_code());
+  EXPECT_EQ(price_micros, specifics->current_price().amount_micros());
+  EXPECT_EQ(currency_code, specifics->current_price().currency_code());
+  EXPECT_EQ(offer_id, specifics->offer_id());
+  EXPECT_EQ(cluster_id, specifics->product_cluster_id());
+}
+
+TEST_F(PriceTrackingUtilsTest,
+       PopulateOrUpdateBookmark_EmptyClusterIdReplaced) {
+  ProductInfo new_info;
+  new_info.product_cluster_id = 12345L;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+
+  EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_EQ(new_info.product_cluster_id,
+            meta.shopping_specifics().product_cluster_id());
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_ClusterIdUnchanged) {
+  const uint64_t cluster_id = 12345L;
+
+  ProductInfo new_info;
+  new_info.product_cluster_id = 99999L;
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_shopping_specifics()->set_product_cluster_id(cluster_id);
+
+  EXPECT_FALSE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_EQ(cluster_id, meta.shopping_specifics().product_cluster_id());
+}
+
+TEST_F(PriceTrackingUtilsTest, PopulateOrUpdateBookmark_ImageRemoved) {
+  ProductInfo new_info;
+  new_info.image_url = GURL("");
+
+  power_bookmarks::PowerBookmarkMeta meta;
+  meta.mutable_lead_image()->set_url("http://example.com/image.png");
+
+  EXPECT_TRUE(PopulateOrUpdateBookmarkMetaIfNeeded(&meta, new_info));
+
+  EXPECT_TRUE(meta.lead_image().url().empty());
 }
 
 }  // namespace

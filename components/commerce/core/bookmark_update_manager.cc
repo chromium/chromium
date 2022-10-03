@@ -104,47 +104,10 @@ void BookmarkUpdateManager::HandleOnDemandResponse(
   if (!meta || !meta->has_shopping_specifics())
     return;
 
-  if (UpdateBookmarkMetaIfNeeded(meta.get(), info.value())) {
+  if (PopulateOrUpdateBookmarkMetaIfNeeded(meta.get(), info.value())) {
     power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, node,
                                               std::move(meta));
   }
-}
-
-bool BookmarkUpdateManager::UpdateBookmarkMetaIfNeeded(
-    power_bookmarks::PowerBookmarkMeta* out_meta,
-    const ProductInfo& info) {
-  bool changed = false;
-
-  if (out_meta->lead_image().url() != info.image_url.spec()) {
-    out_meta->mutable_lead_image()->set_url(info.image_url.spec());
-    changed = true;
-  }
-
-  power_bookmarks::ShoppingSpecifics* specifics =
-      out_meta->mutable_shopping_specifics();
-
-  if (specifics->title() != info.title) {
-    specifics->set_title(info.title);
-    changed = true;
-  }
-
-  if (specifics->country_code() != info.country_code) {
-    specifics->set_country_code(info.country_code);
-    changed = true;
-  }
-
-  if (specifics->current_price().currency_code() != info.currency_code ||
-      specifics->current_price().amount_micros() != info.amount_micros) {
-    specifics->mutable_current_price()->set_currency_code(info.currency_code);
-    specifics->mutable_current_price()->set_amount_micros(info.amount_micros);
-    changed = true;
-  }
-
-  // We're specifically not looking at product or cluster ID since the two
-  // should never change for a product.
-  DCHECK(info.product_cluster_id == specifics->product_cluster_id());
-
-  return changed;
 }
 
 }  // namespace commerce

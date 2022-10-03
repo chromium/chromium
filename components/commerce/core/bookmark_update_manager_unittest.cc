@@ -116,19 +116,6 @@ TEST_F(BookmarkUpdateManagerTest, UpdateNotDoubleScheduled) {
   EXPECT_EQ(original, task);
 }
 
-TEST_F(BookmarkUpdateManagerTest, UpdateBookmarkLogic_ImageRemoved) {
-  ProductInfo new_info;
-  new_info.image_url = GURL("");
-
-  power_bookmarks::PowerBookmarkMeta meta;
-  meta.mutable_lead_image()->set_url("http://example.com/image.png");
-
-  EXPECT_TRUE(
-      BookmarkUpdateManager::UpdateBookmarkMetaIfNeeded(&meta, new_info));
-
-  EXPECT_TRUE(meta.lead_image().url().empty());
-}
-
 TEST_F(BookmarkUpdateManagerTest, RunScheduledTask) {
   test_features_.InitWithFeatures(
       {kShoppingList, kCommerceAllowOnDemandBookmarkUpdates}, {});
