@@ -35,6 +35,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -135,7 +137,26 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     std::string cookie = base::StrCat({"cross-site=", host});
     content::SetCookie(browser()->profile(), host_url,
                        base::StrCat({cookie, ";SameSite=None;Secure"}));
-    ASSERT_EQ(content::GetCookies(browser()->profile(), host_url), cookie);
+    ASSERT_THAT(content::GetCookies(browser()->profile(), host_url),
+                testing::HasSubstr(cookie));
+  }
+
+  void SetPartitionedCookieInContext(const std::string& top_level_host,
+                                     const std::string& embedded_host) {
+    GURL host_url = GetURL(embedded_host);
+    std::string cookie =
+        base::StrCat({"cross-site=", embedded_host, "(partitioned)"});
+    net::CookiePartitionKey partition_key =
+        net::CookiePartitionKey::FromURLForTesting(GetURL(top_level_host));
+    content::SetPartitionedCookie(
+        browser()->profile(), host_url,
+        base::StrCat({cookie, ";SameSite=None;Secure;Partitioned"}),
+        partition_key);
+    ASSERT_THAT(content::GetCookies(
+                    browser()->profile(), host_url,
+                    net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+                    net::CookiePartitionKeyCollection(partition_key)),
+                testing::HasSubstr(cookie));
   }
 
   GURL GetURL(const std::string& host) {
@@ -513,11 +534,11 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIBrowserTest,
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
       /*incognito=*/false, {.expiration = expiration_time}));
-  settings.push_back(ContentSettingPatternSource(
+  settings.emplace_back(
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostC)),
       ContentSettingsPattern::FromURLNoWildcard(GetURL(kHostA)),
       base::Value(CONTENT_SETTING_ALLOW), "preference",
-      /*incognito=*/false));
+      /*incognito=*/false);
 
   browser()
       ->profile()
@@ -1226,6 +1247,92 @@ IN_PROC_BROWSER_TEST_F(
   // kHostC can request storage access here too, again due to
   // implicit grants.
   EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+class StorageAccessAPIWithCHIPSBrowserTest
+    : public StorageAccessAPIBaseBrowserTest {
+ public:
+  StorageAccessAPIWithCHIPSBrowserTest()
+      : StorageAccessAPIBaseBrowserTest(
+            /*permission_grants_unpartitioned_storage=*/false,
+            /*is_storage_partitioned=*/false) {}
+
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+  GetEnabledFeatures() override {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled =
+        StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
+    enabled.push_back({net::features::kPartitionedCookies, {}});
+    enabled.push_back(
+        {net::features::kPartitionedCookiesBypassOriginTrial, {}});
+    enabled.push_back(
+        {blink::features::kStorageAccessAPIForOriginExtension, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithCHIPSBrowserTest,
+                       RequestStorageAccess_CoexistsWithCHIPS) {
+  SetBlockThirdPartyCookies(true);
+
+  SetCrossSiteCookieOnHost(kHostB);
+  SetPartitionedCookieInContext(/*top_level_host=*/kHostA,
+                                /*embedded_host=*/kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+
+  // kHostB starts without unpartitioned cookies:
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "cross-site=b.test(partitioned)");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test(partitioned)");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // kHostB can request storage access, and it is granted (by an implicit
+  // grant):
+  EXPECT_TRUE(storage::test::RequestStorageAccessForFrame(GetFrame()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // When the frame subsequently navigates to an endpoint on kHostB, kHostB's
+  // unpartitioned and partitioned cookies are sent, and the iframe retains
+  // storage access.
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(),
+            "cross-site=b.test; cross-site=b.test(partitioned)");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()),
+            "cross-site=b.test; cross-site=b.test(partitioned)");
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessAPIWithCHIPSBrowserTest,
+                       RequestStorageAccessForOrigin_CoexistsWithCHIPS) {
+  SetBlockThirdPartyCookies(true);
+
+  SetCrossSiteCookieOnHost(kHostB);
+  SetPartitionedCookieInContext(/*top_level_host=*/kHostA,
+                                /*embedded_host=*/kHostB);
+
+  NavigateToPageWithFrame(kHostA);
+
+  // kHostB starts without unpartitioned cookies:
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(), "cross-site=b.test(partitioned)");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test(partitioned)");
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // kHostA can request storage access on behalf of kHostB, and it is granted
+  // (by an implicit grant):
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostB).spec()));
+  EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+
+  // When the frame subsequently navigates to an endpoint on kHostB, kHostB's
+  // unpartitioned and partitioned cookies are sent, and the iframe retains
+  // storage access.
+  NavigateFrameTo(kHostB, "/echoheader?cookie");
+  EXPECT_EQ(GetFrameContent(),
+            "cross-site=b.test; cross-site=b.test(partitioned)");
+  EXPECT_EQ(ReadCookiesViaJS(GetFrame()),
+            "cross-site=b.test; cross-site=b.test(partitioned)");
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 

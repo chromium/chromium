@@ -988,6 +988,18 @@ bool SetCookie(BrowserContext* browser_context,
                net::SamePartyContext::Type party_context =
                    net::SamePartyContext::Type::kSameParty);
 
+// Same as `SetCookie`, but sets a Partitioned cookie with the given partition
+// key. `value` is expected to use the `Partitioned` attribute.
+bool SetPartitionedCookie(
+    BrowserContext* browser_context,
+    const GURL& url,
+    const std::string& value,
+    const net::CookiePartitionKey& cookie_partition_key,
+    net::CookieOptions::SameSiteCookieContext context =
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+    net::SamePartyContext::Type party_context =
+        net::SamePartyContext::Type::kSameParty);
+
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.
 uint32_t DeleteCookies(BrowserContext* browser_context,

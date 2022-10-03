@@ -30,6 +30,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -2138,6 +2139,31 @@ bool SetCookie(BrowserContext* browser_context,
           &result, &run_loop));
   run_loop.Run();
   return result;
+}
+
+bool SetPartitionedCookie(BrowserContext* browser_context,
+                          const GURL& url,
+                          const std::string& value,
+                          const net::CookiePartitionKey& cookie_partition_key,
+                          net::CookieOptions::SameSiteCookieContext context,
+                          net::SamePartyContext::Type party_context) {
+  DCHECK(base::Contains(value, ";Partitioned"));
+  mojo::Remote<network::mojom::CookieManager> cookie_manager;
+  browser_context->GetDefaultStoragePartition()
+      ->GetNetworkContext()
+      ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
+  std::unique_ptr<net::CanonicalCookie> cc(net::CanonicalCookie::Create(
+      url, value, base::Time::Now(), absl::nullopt /* server_time */,
+      cookie_partition_key));
+  DCHECK(cc);
+
+  net::CookieOptions options;
+  options.set_include_httponly();
+  options.set_same_site_cookie_context(context);
+  options.set_same_party_context(net::SamePartyContext(party_context));
+  base::test::TestFuture<net::CookieAccessResult> future;
+  cookie_manager->SetCanonicalCookie(*cc, url, options, future.GetCallback());
+  return future.Get().status.IsInclude();
 }
 
 uint32_t DeleteCookies(BrowserContext* browser_context,
