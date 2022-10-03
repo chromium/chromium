@@ -111,17 +111,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManagerBitmap {
 
   static bool IsAllowedSuperPageForBRPPool(uintptr_t address) {
     // The only potentially dangerous scenario, in which this check is used, is
-    // when the assignment of the first raw_ptr<T> object for a non-GigaCage
-    // address is racing with the allocation of a new GigCage super-page at the
-    // same address. We assume that if raw_ptr<T> is being initialized with a
-    // raw pointer, the associated allocation is "alive"; otherwise, the issue
-    // should be fixed by rewriting the raw pointer variable as raw_ptr<T>.
-    // In the worst case, when such a fix is impossible, we should just undo the
-    // raw pointer -> raw_ptr<T> rewrite of the problematic field. If the
-    // above assumption holds, the existing allocation will prevent us from
-    // reserving the super-page region and, thus, having the race condition.
-    // Since we rely on that external synchronization, the relaxed memory
-    // ordering should be sufficient.
+    // when the assignment of the first raw_ptr<T> object for an address
+    // allocated outside the BRP pool is racing with the allocation of a new
+    // super page at the same address. We assume that if raw_ptr<T> is being
+    // initialized with a raw pointer, the associated allocation is "alive";
+    // otherwise, the issue should be fixed by rewriting the raw pointer
+    // variable as raw_ptr<T>. In the worst case, when such a fix is
+    // impossible, we should just undo the raw pointer -> raw_ptr<T> rewrite of
+    // the problematic field. If the above assumption holds, the existing
+    // allocation will prevent us from reserving the super-page region and,
+    // thus, having the race condition.  Since we rely on that external
+    // synchronization, the relaxed memory ordering should be sufficient.
     return !brp_forbidden_super_page_map_[address >> kSuperPageShift].load(
         std::memory_order_relaxed);
   }

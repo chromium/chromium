@@ -73,7 +73,7 @@ PA_ALWAYS_INLINE void PartitionDirectUnmap(
   // This can create a fake "address space exhaustion" OOM, in the case where
   // e.g. a large allocation is freed on a thread, and another large one is made
   // from another *before* UnmapNow() has finished running. In this case the
-  // second one may not find enough space in the GigaCage, and fail. This is
+  // second one may not find enough space in the pool, and fail. This is
   // expected to be very rare though, and likely preferable to holding the lock
   // while releasing the address space.
   ScopedUnlockGuard unlock{root->lock_};

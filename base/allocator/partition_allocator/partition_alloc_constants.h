@@ -259,18 +259,18 @@ constexpr size_t kSuperPageAlignment = kSuperPageSize;
 constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
-// GigaCage is generally split into two pools, one which supports BackupRefPtr
-// (BRP) and one that doesn't.
+// PartitionAlloc's address space is primarily split into two pools.
+// See `glossary.md`.
 #if defined(PA_HAS_64_BITS_POINTERS)
 // The 3rd, Configurable Pool is only available in 64-bit mode.
 constexpr size_t kNumPools = 3;
-// Maximum GigaCage pool size. With exception of Configurable Pool, it is also
+// Maximum pool size. With exception of Configurable Pool, it is also
 // the actual size, unless PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE is set, which
 // allows to choose a different size at initialization time for certain
 // configurations.
 //
 // Special-case Android and iOS, which incur test failures with larger
-// GigaCage. Regardless, allocating >8GiB with malloc() on these platforms is
+// pools. Regardless, allocating >8GiB with malloc() on these platforms is
 // unrealistic as of 2022.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr size_t kPoolMaxSize = 8 * kGiB;
@@ -318,7 +318,7 @@ constexpr PA_ALWAYS_INLINE size_t MaxSuperPagesInPool() {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // In 64-bit mode, the direct map allocation granularity is super page size,
-// because this is the reservation granularity of the GigaCage.
+// because this is the reservation granularity of the pools.
 constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularity() {
   return kSuperPageSize;
 }
@@ -329,7 +329,7 @@ constexpr PA_ALWAYS_INLINE size_t DirectMapAllocationGranularityShift() {
 #else   // defined(PA_HAS_64_BITS_POINTERS)
 // In 32-bit mode, address space is space is a scarce resource. Use the system
 // allocation granularity, which is the lowest possible address space allocation
-// unit. However, don't go below partition page size, so that GigaCage bitmaps
+// unit. However, don't go below partition page size, so that pool bitmaps
 // don't get too large. See kBytesPer1BitOfBRPPoolBitmap.
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 DirectMapAllocationGranularity() {

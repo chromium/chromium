@@ -17,7 +17,7 @@ namespace partition_alloc {
 struct PoolStats {
   size_t usage = 0;
 
-  // On 32-bit, GigaCage is mainly a logical entity, intermingled with
+  // On 32-bit, pools are mainly logical entities, intermingled with
   // allocations not managed by PartitionAlloc. The "largest available
   // reservation" is not possible to measure in that case.
 #if defined(PA_HAS_64_BITS_POINTERS)

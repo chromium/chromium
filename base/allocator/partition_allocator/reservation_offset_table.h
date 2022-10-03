@@ -60,10 +60,10 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 //
 // *) In 32-bit mode, Y is not used by PartitionAlloc, and cannot be used
 //    until X is unreserved, because PartitionAlloc always uses kSuperPageSize
-//    alignment when reserving address spaces. One can use "GigaCage" to
-//    further determine which part of the supe page is used by PartitionAlloc.
-//    This isn't a problem in 64-bit mode, where allocation granularity is
-//    kSuperPageSize.
+//    alignment when reserving address spaces. One can use check "is in pool?"
+//    to further determine which part of the super page is used by
+//    PartitionAlloc. This isn't a problem in 64-bit mode, where allocation
+//    granularity is kSuperPageSize.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
  public:
 #if defined(PA_HAS_64_BITS_POINTERS)

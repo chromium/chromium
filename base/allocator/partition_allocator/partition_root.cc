@@ -678,7 +678,7 @@ template <bool thread_safe>
 #endif  // #if !defined(ARCH_CPU_64_BITS)
 
   // Out of memory can be due to multiple causes, such as:
-  // - Out of GigaCage virtual address space
+  // - Out of virtual address space in the desired pool
   // - Out of commit due to either our process, or another one
   // - Excessive allocations in the current process
   //

@@ -79,7 +79,7 @@ uintptr_t NextAlignedWithOffset(uintptr_t ptr,
 // allocation. Use PageTag::kChromium as a catch-all category.
 //
 // |file_descriptor_for_shared_alloc| is only used in mapping the shadow
-// GigaCage to the same physical address as the real one in
+// pools to the same physical address as the real one in
 // PartitionAddressSpace::Init(). It should be ignored in other cases.
 //
 // This call will return 0/nullptr if the allocation cannot be satisfied.

@@ -1274,7 +1274,7 @@ PCScanInternal::~PCScanInternal() = default;
 void PCScanInternal::Initialize(PCScan::InitConfig config) {
   PA_DCHECK(!is_initialized_);
 #if defined(PA_HAS_64_BITS_POINTERS)
-  // Make sure that GigaCage is initialized.
+  // Make sure that pools are initialized.
   PartitionAddressSpace::Init();
 #endif
   CommitCardTable();

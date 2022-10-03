@@ -65,12 +65,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   uintptr_t GetPoolBaseAddress(pool_handle handle);
 #endif
 
-  // Reserves address space from GigaCage.
+  // Reserves address space from the pool.
   uintptr_t Reserve(pool_handle handle,
                     uintptr_t requested_address,
                     size_t length);
 
-  // Frees address space back to GigaCage and decommits underlying system pages.
+  // Frees address space back to the pool and decommits underlying system pages.
   void UnreserveAndDecommit(pool_handle handle,
                             uintptr_t address,
                             size_t length);
