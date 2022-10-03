@@ -32,7 +32,10 @@ source_set("infobar_delegates") {
     "tailored_security_service_infobar_delegate.mm",
   ]
 
-  deps = [ "//components/infobars/core" ]
+  deps = [
+    "//components/infobars/core",
+    "//ios/chrome/app/strings:ios_strings",
+  ]
 }
 
 source_set("unit_tests") {

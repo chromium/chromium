@@ -114,6 +114,7 @@ source_set("unit_tests") {
   sources = [ "chrome_icon_unittest.mm" ]
   deps = [
     ":icons",
+    "//ios/chrome/app/strings",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",

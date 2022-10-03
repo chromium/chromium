@@ -17,7 +17,7 @@ source_set("utils") {
     "//base",
     "//components/browser_sync",
     "//components/infobars/core",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//components/sync",
     "//google_apis",
     "//ios/chrome/app/strings",

@@ -144,7 +144,7 @@ source_set("unit_tests") {
     ":tabs_internal",
     "//base",
     "//base/test:test_support",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",

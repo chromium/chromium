@@ -178,6 +178,7 @@ source_set("static_file_ui") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/util",
@@ -265,6 +266,8 @@ source_set("eg2_tests") {
     "//components/policy/test_support:test_support",
     "//components/signin/ios/browser:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/ui:feature_flags",

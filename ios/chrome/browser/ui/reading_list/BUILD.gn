@@ -214,7 +214,7 @@ source_set("eg2_tests") {
     ":reading_list_constants",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/common/ui/table_view:cells_constants",

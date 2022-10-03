@@ -306,6 +306,7 @@ source_set("eg_app_support+eg2") {
     "//components/prefs",
     "//components/query_parser",
     "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",

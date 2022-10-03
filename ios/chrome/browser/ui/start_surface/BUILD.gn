@@ -36,7 +36,7 @@ source_set("start_surface") {
     "//components/favicon/ios",
     "//components/url_param_filter/core",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ui:feature_flags",
@@ -96,7 +96,7 @@ source_set("eg2_tests") {
 
   deps = [
     ":feature_flags",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

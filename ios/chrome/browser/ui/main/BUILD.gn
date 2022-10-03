@@ -158,7 +158,7 @@ source_set("scene") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/application_delegate:url_opener_params",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state",

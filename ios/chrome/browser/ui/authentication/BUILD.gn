@@ -178,6 +178,7 @@ source_set("eg_app_support+eg2") {
     "//components/bookmarks/browser",
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/signin",

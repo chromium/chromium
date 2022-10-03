@@ -96,7 +96,7 @@ source_set("unit_tests") {
     ":features",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",
@@ -143,8 +143,8 @@ source_set("eg2_tests") {
 
   deps = [
     ":features",
-    "//components/strings",
-    "//ios/chrome/app/strings",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/download:mime_types",
     "//ios/chrome/browser/download:test_support",
     "//ios/chrome/browser/ui/infobars/banners:public",

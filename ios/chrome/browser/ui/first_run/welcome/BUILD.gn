@@ -14,7 +14,7 @@ source_set("welcome") {
     ":welcome_ui",
     "//base",
     "//components/metrics",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/first_run",

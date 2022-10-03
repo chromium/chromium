@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/prefs:browser_prefs",

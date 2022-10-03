@@ -15,7 +15,7 @@ source_set("ntp") {
     ":features",
     "//base:base",
     "//components/prefs",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
@@ -55,7 +55,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//components/prefs",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",

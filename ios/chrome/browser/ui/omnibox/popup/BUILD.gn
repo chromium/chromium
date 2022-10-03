@@ -32,6 +32,7 @@ swift_source_set("popup_swift") {
   deps = [
     ":popup_ui_protocols",
     "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/common/ui/colors:swift",
   ]
@@ -161,7 +162,7 @@ source_set("popup_ui") {
     "//base",
     "//components/favicon/core",
     "//components/omnibox/common",
-    "//ios/chrome/app/strings",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
@@ -246,6 +247,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/image_fetcher/core",
     "//components/omnibox/browser",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/favicon",
     "//testing/gtest",
@@ -264,7 +266,8 @@ source_set("eg2_tests") {
   deps = [
     ":popup_accessibility_identifier_constants",
     "//base",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/history:constants",

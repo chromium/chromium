@@ -20,7 +20,7 @@ source_set("session_state") {
     "//build:branding_buildflags",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//components/strings",
+    "//components/strings:components_strings_grit",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/url:constants",

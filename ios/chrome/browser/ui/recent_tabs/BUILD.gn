@@ -24,6 +24,7 @@ source_set("recent_tabs") {
     "//components/sessions",
     "//components/signin/public/identity_manager",
     "//components/sync",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main",

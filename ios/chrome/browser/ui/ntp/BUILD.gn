@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/sessions",
     "//components/variations",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
