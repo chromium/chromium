@@ -84,7 +84,7 @@ std::map<std::string, std::set<std::string>> CreateInstallTypeMap(
     return {};
 
   std::map<std::string, std::set<std::string>> install_type_map;
-  for (const auto& package : packages->GetListDeprecated()) {
+  for (const auto& package : packages->GetList()) {
     if (!package.is_dict())
       continue;
     const base::Value* const install_type =
