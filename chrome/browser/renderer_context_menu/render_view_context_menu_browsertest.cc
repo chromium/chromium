@@ -1696,6 +1696,11 @@ class SearchByRegionBrowserBaseTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    CreateAndSetEventGenerator();
+  }
+
+  // Sets the event generator to the current Browser window
+  void CreateAndSetEventGenerator() {
     gfx::NativeWindow window = browser()->window()->GetNativeWindow();
 #if defined(USE_AURA)
     // When using aura, we need to get the root window in order to send events
@@ -1726,6 +1731,18 @@ class SearchByRegionBrowserBaseTest : public InProcessBrowserTest {
     // clicked. Omit event flags to simulate entering through the keyboard.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, /*event_flags=*/0,
+        base::BindOnce(
+            &SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI,
+            base::Unretained(this)));
+    RightClickToOpenContextMenu();
+  }
+
+  void AttemptLensRegionSearchNewTab() {
+    // |menu_observer_| will cause the search lens for image menu item to be
+    // clicked. Sets a callback to simulate dragging a region on the screen once
+    // the region search UI has been set up.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, ui::EF_MOUSE_BUTTON,
         base::BindOnce(
             &SearchByRegionBrowserBaseTest::SimulateDragAndVerifyOverlayUI,
             base::Unretained(this)));
@@ -2078,6 +2095,39 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
+                       ProgressiveWebAppValidLensRegionSearch) {
+  // Creates a Progressive Web App and set it to the default browser
+  Browser* pwa_browser = InProcessBrowserTest::CreateBrowserForApp(
+      "test_app", browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(pwa_browser, browser());
+  SearchByRegionBrowserBaseTest::CreateAndSetEventGenerator();
+
+  SetupAndLoadPage("/empty.html");
+
+  // The browser should open a draggable UI for a region search. The result
+  // should open in a new tab.
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+
+  SearchByRegionBrowserBaseTest::AttemptLensRegionSearchNewTab();
+
+  // Get the result URL in the new tab and verify.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+  std::string expected_content = GetLensRegionSearchURL().GetContent();
+
+  // Match strings up to the query.
+  std::size_t query_start_pos = new_tab_content.find("?");
+  // Match the query parameters, without the value of start_time.
+  EXPECT_THAT(new_tab_content, testing::MatchesRegex(
+                                   expected_content.substr(0, query_start_pos) +
+                                   ".*ep=crs&re=df&s=&st=\\d+"));
+}
+
+IN_PROC_BROWSER_TEST_F(SearchByRegionWithUnifiedSidePanelBrowserTest,
                        ValidFullscreenLensRegionSearchWithUnifiedSidePanel) {
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
@@ -2131,7 +2181,7 @@ class SearchByImageBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensStandalone,
         std::map<std::string, std::string>{
-            {lens::features::kEnableSidePanelForLens.name, "false"}});
+            {lens::features::kEnableSidePanelForLens.name, "true"}});
     InProcessBrowserTest::SetUp();
   }
 
@@ -2275,8 +2325,47 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
   ASSERT_TRUE(response_received);
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
                        LensImageSearchWithValidImage) {
+  lens::CreateLensSidePanelControllerForTesting(browser());
+  SetupAndLoadValidImagePage();
+
+  content::WebContents* side_panel_contents =
+      lens::GetLensSidePanelWebContentsForTesting(browser());
+  EXPECT_TRUE(side_panel_contents);
+
+  AttemptLensImageSearch();
+
+  // Wait for the image search to commence a navigation upon the side panel web
+  // contents.
+  content::TestNavigationObserver nav_observer(side_panel_contents);
+  nav_observer.Wait();
+
+  std::string expected_content = GetLensImageSearchURL().GetContent();
+  std::string side_panel_content =
+      side_panel_contents->GetLastCommittedURL().GetContent();
+
+  // Match strings up to the query.
+  std::size_t query_start_pos = side_panel_content.find("?");
+  EXPECT_EQ(expected_content.substr(0, query_start_pos),
+            side_panel_content.substr(0, query_start_pos));
+  // Match the query parameters, without the value of start_time.
+  EXPECT_THAT(side_panel_content,
+              testing::MatchesRegex(
+                  ".*ep=ccm&re=dcsp&s=csp&st=\\d+&sideimagesearch=1"));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
+                       LensImageSearchWithValidImageInProgressiveWebApp) {
+  // Creates a Progressive Web App and set it to the default browser
+  Browser* pwa_browser = InProcessBrowserTest::CreateBrowserForApp(
+      "test_app", browser()->profile());
+  CloseBrowserSynchronously(browser());
+  SelectFirstBrowser();
+  ASSERT_EQ(pwa_browser, browser());
+
   SetupAndLoadValidImagePage();
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
