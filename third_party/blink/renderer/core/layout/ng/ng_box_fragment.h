@@ -30,8 +30,14 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   }
 
   absl::optional<LayoutUnit> FirstBaseline() const {
-    return IsWritingModeEqual() ? PhysicalBoxFragment().FirstBaseline()
-                                : absl::nullopt;
+    if (!IsWritingModeEqual())
+      return absl::nullopt;
+
+    auto baseline = PhysicalBoxFragment().FirstBaseline();
+    if (baseline && physical_fragment_.IsScrollContainer())
+      baseline = std::max(LayoutUnit(), std::min(*baseline, BlockSize()));
+
+    return baseline;
   }
 
   LayoutUnit FirstBaselineOrSynthesize(FontBaseline baseline_type) const {
@@ -45,8 +51,14 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   }
 
   absl::optional<LayoutUnit> LastBaseline() const {
-    return IsWritingModeEqual() ? PhysicalBoxFragment().LastBaseline()
-                                : absl::nullopt;
+    if (!IsWritingModeEqual())
+      return absl::nullopt;
+
+    auto baseline = PhysicalBoxFragment().LastBaseline();
+    if (baseline && physical_fragment_.IsScrollContainer())
+      baseline = std::max(LayoutUnit(), std::min(*baseline, BlockSize()));
+
+    return baseline;
   }
 
   LayoutUnit LastBaselineOrSynthesize(FontBaseline baseline_type) const {
