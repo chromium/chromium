@@ -17,22 +17,22 @@ interface FileWriter {
 
 declare namespace chrome {
   export namespace fileSystem {
-    type AcceptsOption = {
-      description?: string,
-      mimeTypes?: string[],
-      extensions?: string[],
-    };
+    interface AcceptsOption {
+      description?: string;
+      mimeTypes?: string[];
+      extensions?: string[];
+    }
 
     type ChooseEntryType =
         'openFile'|'openWritableFile'|'saveFile'|'openDirectory';
 
-    type ChooseEntryOptions = {
-      type?: ChooseEntryType,
-      suggestedName?: string,
-      accepts?: AcceptsOption[],
-      acceptsAllTypes?: boolean,
-      acceptsMultiple?: boolean,
-    };
+    interface ChooseEntryOptions {
+      type?: ChooseEntryType;
+      suggestedName?: string;
+      accepts?: AcceptsOption[];
+      acceptsAllTypes?: boolean;
+      acceptsMultiple?: boolean;
+    }
 
     type ChoosEntryCallback = (entry?: FileSystemFileEntry) => void;
 

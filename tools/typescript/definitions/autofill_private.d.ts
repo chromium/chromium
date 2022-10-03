@@ -36,7 +36,7 @@ declare global {
 
       export interface AddressEntry {
         guid?: string;
-        fullNames?: Array<string>;
+        fullNames?: string[];
         honorific?: string;
         companyName?: string;
         addressLines?: string;
@@ -46,8 +46,8 @@ declare global {
         postalCode?: string;
         sortingCode?: string;
         countryCode?: string;
-        phoneNumbers?: Array<string>;
-        emailAddresses?: Array<string>;
+        phoneNumbers?: string[];
+        emailAddresses?: string[];
         languageCode?: string;
         metadata?: AutofillMetadata;
       }
@@ -65,11 +65,11 @@ declare global {
       }
 
       export interface AddressComponentRow {
-        row: Array<AddressComponent>;
+        row: AddressComponent[];
       }
 
       export interface AddressComponents {
-        components: Array<AddressComponentRow>;
+        components: AddressComponentRow[];
         languageCode: string;
       }
 
@@ -86,38 +86,36 @@ declare global {
       }
 
       export interface ValidatePhoneParams {
-        phoneNumbers: Array<string>;
+        phoneNumbers: string[];
         indexOfNewNumber: number;
         countryCode: string;
       }
 
       export function saveAddress(address: AddressEntry): void;
       export function getCountryList(
-          callback: (entries: Array<CountryEntry>) => void): void;
+          callback: (entries: CountryEntry[]) => void): void;
       export function getAddressComponents(
           countryCode: string,
           callback: (components: AddressComponents) => void): void;
       export function getAddressList(
-          callback: (entries: Array<AddressEntry>) => void): void;
+          callback: (entries: AddressEntry[]) => void): void;
       export function saveCreditCard(card: CreditCardEntry): void;
       export function removeEntry(guid: string): void;
       export function validatePhoneNumbers(
           params: ValidatePhoneParams,
-          callback: (numbers: Array<string>) => void): void;
+          callback: (numbers: string[]) => void): void;
       export function getCreditCardList(
-          callback: (entries: Array<CreditCardEntry>) => void): void;
+          callback: (entries: CreditCardEntry[]) => void): void;
       export function maskCreditCard(guid: string): void;
       export function migrateCreditCards(): void;
       export function logServerCardLinkClicked(): void;
       export function setCreditCardFIDOAuthEnabledState(enabled: boolean): void;
-      export function getUpiIdList(callback: (items: Array<string>) => void):
-          void;
+      export function getUpiIdList(callback: (items: string[]) => void): void;
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
 
       export const onPersonalDataChanged: ChromeEvent<
-          (addresses: Array<AddressEntry>,
-           creditCards: Array<CreditCardEntry>) => void>;
+          (addresses: AddressEntry[], creditCards: CreditCardEntry[]) => void>;
     }
   }
 }

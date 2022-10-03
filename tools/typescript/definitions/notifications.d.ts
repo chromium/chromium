@@ -10,7 +10,7 @@ import {ChromeEvent} from './chrome_event.js';
 declare global {
   export namespace chrome {
     export namespace notifications {
-      export type TemplateType = "basic" | "image" | "list" | "progress";
+      export type TemplateType = 'basic'|'image'|'list'|'progress';
 
       export interface ButtonOptions {
         title: string;
@@ -22,7 +22,7 @@ declare global {
         message: string;
       }
 
-      export type NotificationOptions<T extends boolean = false> = {
+      export interface NotificationOptions {
         contextMessage?: string;
         priority?: number;
         eventTime?: number;
@@ -41,15 +41,15 @@ declare global {
           notificationId: string,
           buttonIndex: number) => void> { }
 
-      export var onButtonClicked: NotificationButtonClickedEvent;
+      export const onButtonClicked: NotificationButtonClickedEvent;
       export function create(
-        notificationId: string,
-        options: NotificationOptions<true>,
-        callback?: (notificationId: string) => void,
-      ): void;
+          notificationId: string,
+          options: NotificationOptions,
+          callback?: (notificationId: string) => void,
+          ): void;
       export function create(
-        options: NotificationOptions<true>,
-        callback?: (notificationId: string) => void): void;
+          options: NotificationOptions,
+          callback?: (notificationId: string) => void): void;
       export function clear(
         notificationId: string,
         callback?: (wasCleared: boolean) => void): void;

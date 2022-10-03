@@ -5,6 +5,6 @@
 /** @fileoverview Definitions for chrome.send API */
 
 declare namespace chrome {
-  function send(msg: string, params?: Array<any>): void;
+  function send(msg: string, params?: any[]): void;
   function getVariableValue(name: string): string;
 }

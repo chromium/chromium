@@ -7,15 +7,15 @@
 
 declare namespace chrome {
   export namespace feedbackPrivate {
-    type AttachedFile = {
-      name: string,
-      data?: Blob,
-    };
+    interface AttachedFile {
+      name: string;
+      data?: Blob;
+    }
 
-    export type SystemInformation = {
-      key: string,
-      value: string,
-    };
+    export interface SystemInformation {
+      key: string;
+      value: string;
+    }
 
     enum FeedbackFlow {
       REGULAR = 'regular',
@@ -24,29 +24,29 @@ declare namespace chrome {
       GOOGLE_INTERNAL = 'googleInternal',
     }
 
-    export type FeedbackInfo = {
-      description: string,
-      attachedFile?: AttachedFile,
-      categoryTag?: string,
-      descriptionPlaceholder?: string,
-      email?: string,
-      pageUrl?: string,
-      productId?: number,
-      screenshot?: Blob,
-      traceId?: number,
-      systemInformation?: SystemInformation[],
-      sendHistograms?: boolean,
-      flow?: FeedbackFlow,
-      attachedFileBlobUuid?: string,
-      screenshotBlobUuid?: string,
-      useSystemWindowFrame?: boolean,
-      sendBluetoothLogs?: boolean,
-      sendTabTitles?: boolean,
-      assistantDebugInfoAllowed?: boolean,
-      fromAssistant?: boolean,
-      includeBluetoothLogs?: boolean,
-      showQuestionnaire?: boolean,
-    };
+    export interface FeedbackInfo {
+      description: string;
+      attachedFile?: AttachedFile;
+      categoryTag?: string;
+      descriptionPlaceholder?: string;
+      email?: string;
+      pageUrl?: string;
+      productId?: number;
+      screenshot?: Blob;
+      traceId?: number;
+      systemInformation?: SystemInformation[];
+      sendHistograms?: boolean;
+      flow?: FeedbackFlow;
+      attachedFileBlobUuid?: string;
+      screenshotBlobUuid?: string;
+      useSystemWindowFrame?: boolean;
+      sendBluetoothLogs?: boolean;
+      sendTabTitles?: boolean;
+      assistantDebugInfoAllowed?: boolean;
+      fromAssistant?: boolean;
+      includeBluetoothLogs?: boolean;
+      showQuestionnaire?: boolean;
+    }
 
     enum Status {
       SUCCESS = 'success',
@@ -75,16 +75,16 @@ declare namespace chrome {
       UPTIME = 'uptime',
     }
 
-    type ReadLogSourceParams = {
-      source: LogSource,
-      incremental: boolean,
-      readerId?: number,
-    };
+    interface ReadLogSourceParams {
+      source: LogSource;
+      incremental: boolean;
+      readerId?: number;
+    }
 
-    type ReadLogSourceResult = {
-      readerId: number,
-      logLines: string[],
-    };
+    interface ReadLogSourceResult {
+      readerId: number;
+      logLines: string[];
+    }
 
     export function getUserEmail(callback: (email: string) => void): void;
 

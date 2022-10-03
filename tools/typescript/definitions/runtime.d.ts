@@ -29,7 +29,7 @@ declare global {
           message: any,
           sender: MessageSender,
           sendResponse: (response?: any) => void) => void> { }
-      export var onMessageExternal: ExtensionMessageEvent;
+      export const onMessageExternal: ExtensionMessageEvent;
     }
   }
 }

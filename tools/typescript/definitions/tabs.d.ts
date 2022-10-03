@@ -53,7 +53,7 @@ declare global {
         sessionId?: string;
       }
 
-      type CreateProperties = {
+      interface CreateProperties {
         windowId?: number;
         index?: number;
         url?: string;
@@ -63,15 +63,15 @@ declare global {
         openerTabId?: number;
       }
 
-      type UpdateProperties = {
-        url?: string,
-        active?: boolean,
-        highlighted?: boolean,
-        selected?: boolean,
-        pinned?: boolean,
-        muted?: boolean,
-        openerTabId?: number,
-        autoDiscardable?: boolean,
+      interface UpdateProperties {
+        url?: string;
+        active?: boolean;
+        highlighted?: boolean;
+        selected?: boolean;
+        pinned?: boolean;
+        muted?: boolean;
+        openerTabId?: number;
+        autoDiscardable?: boolean;
       }
 
       enum ZoomSettingsMode {
@@ -85,11 +85,11 @@ declare global {
         PER_TAB = 'per-tab',
       }
 
-      export type ZoomSettings = {
-        mode?: ZoomSettingsMode,
-        scope?: ZoomSettingsScope,
-        defaultZoomFactor?: number,
-      };
+      export interface ZoomSettings {
+        mode?: ZoomSettingsMode;
+        scope?: ZoomSettingsScope;
+        defaultZoomFactor?: number;
+      }
 
       export const TAB_ID_NONE: number;
 
@@ -119,7 +119,10 @@ declare global {
           tabId: number|undefined,
           callback: (settings: ZoomSettings) => void): void;
 
-      type ZoomChangeInfo = {tabId: number, newZoomFactor: number};
+      interface ZoomChangeInfo {
+        tabId: number;
+        newZoomFactor: number;
+      }
 
       export const onZoomChange: ChromeEvent<(info: ZoomChangeInfo) => void>;
     }

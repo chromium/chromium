@@ -56,7 +56,7 @@ declare global {
           query: string|{
             query: string | undefined,
             url: string|undefined,
-            title: string|undefined
+            title: string|undefined,
           },
           callback: (p1: BookmarkTreeNode[]) => void): void;
 
@@ -75,10 +75,10 @@ declare global {
 
       export function remove(id: string, callback?: () => void): void;
       export function removeTree(id: string, callback?: () => void): void;
-      function _import(callback?: () => void): void;
-      function _export(callback?: () => void): void;
-      export { _import as import };
-      export { _export as export };
+      function importAlias(callback?: () => void): void;
+      function exportAlias(callback?: () => void): void;
+      export {importAlias as import};
+      export {exportAlias as export};
 
       export const onCreated:
           ChromeEvent<(id: string, bookmark: BookmarkTreeNode) => void>;
@@ -92,7 +92,7 @@ declare global {
           ChromeEvent<(id: string, changeInfo: ChangeInfo) => void>;
 
       export interface ReorderInfo {
-        childIds: string[],
+        childIds: string[];
       }
 
       export const onChildrenReordered:

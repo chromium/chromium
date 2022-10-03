@@ -47,10 +47,10 @@ declare global {
       export function openInNewWindow(idList: string[], incognito: boolean):
           void;
 
-      export type DragData = {
+      export interface DragData {
         elements: chrome.bookmarks.BookmarkTreeNode[]|null;
         sameProfile: boolean;
-      };
+      }
 
       export const onDragEnter: ChromeEvent<(p1: DragData) => void>;
       export const onDragLeave: ChromeEvent<() => void>;

@@ -43,13 +43,13 @@ declare global {
         controlledByName?: string;
         enforcement?: Enforcement;
         recommendedValue?: any;
-        userSelectableValues?: Array<any>;
+        userSelectableValues?: any[];
         userControlDisabled?: boolean;
         extensionId?: string;
         extensionCanBeDisabled?: boolean;
       }
 
-      type PrefsCallback = (prefs: Array<PrefObject>) => void;
+      type PrefsCallback = (prefs: PrefObject[]) => void;
 
       export function getAllPrefs(callback: PrefsCallback): void;
       export function getPref(

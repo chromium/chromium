@@ -5,10 +5,10 @@
 declare namespace chrome {
   export namespace contentSettings {
 
-    type GetContenSettingParams = {
-      primaryUrl: string,
-      secondaryUrl?: string,
-    };
+    interface GetContenSettingParams {
+      primaryUrl: string;
+      secondaryUrl?: string;
+    }
 
     interface ContentSetting {
       get(details: GetContenSettingParams,

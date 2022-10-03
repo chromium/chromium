@@ -37,22 +37,22 @@ declare global {
       export interface InputMethod {
         id: string;
         displayName: string;
-        languageCodes: Array<string>;
-        tags: Array<string>;
+        languageCodes: string[];
+        tags: string[];
         enabled?: boolean;
         hasOptionsPage?: boolean;
         isProhibitedByPolicy?: boolean;
       }
 
       export interface InputMethodLists {
-        componentExtensionImes: Array<InputMethod>;
-        thirdPartyExtensionImes: Array<InputMethod>;
+        componentExtensionImes: InputMethod[];
+        thirdPartyExtensionImes: InputMethod[];
       }
 
-      type StringArrayCallback = (strings: Array<string>) => void;
+      type StringArrayCallback = (strings: string[]) => void;
 
       export function getLanguageList(
-          callback: (languages: Array<Language>) => void): void;
+          callback: (languages: Language[]) => void): void;
       export function enableLanguage(languageCode: string): void;
       export function disableLanguage(languageCode: string): void;
       export function setEnableTranslationForLanguage(
@@ -66,8 +66,7 @@ declare global {
       export function getNeverTranslateLanguages(callback: StringArrayCallback):
           void;
       export function getSpellcheckDictionaryStatuses(
-          callback: (statuses: Array<SpellcheckDictionaryStatus>) => void):
-          void;
+          callback: (statuses: SpellcheckDictionaryStatus[]) => void): void;
       export function getSpellcheckWords(callback: StringArrayCallback): void;
       export function addSpellcheckWord(word: string): void;
       export function removeSpellcheckWord(word: string): void;
@@ -81,9 +80,9 @@ declare global {
       export function retryDownloadDictionary(languageCode: string): void;
 
       export const onSpellcheckDictionariesChanged:
-          ChromeEvent<(statuses: Array<SpellcheckDictionaryStatus>) => void>;
+          ChromeEvent<(statuses: SpellcheckDictionaryStatus[]) => void>;
       export const onCustomDictionaryChanged:
-          ChromeEvent<(added: Array<string>, removed: Array<string>) => void>;
+          ChromeEvent<(added: string[], removed: string[]) => void>;
       export const onInputMethodAdded: ChromeEvent<(id: string) => void>;
       export const onInputMethodRemoved: ChromeEvent<(id: string) => void>;
     }

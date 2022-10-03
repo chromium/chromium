@@ -27,8 +27,8 @@ declare namespace chrome {
       offlineEnabled: boolean;
       optionsUrl: string;
       //icons?: Array<IconInfo>;
-      permissions: Array<string>;
-      hostPermissions: Array<string>;
+      permissions: string[];
+      hostPermissions: string[];
       //installType?: ExtensionInstallType;
       //launchType?: LaunchType;
       //availableLaunchTypes?: Array<LaunchType>;

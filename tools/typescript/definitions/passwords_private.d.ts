@@ -158,10 +158,10 @@ declare global {
           id: number,
           callback: (passwordUiEntry: PasswordUiEntry) => void): void;
       export function getSavedPasswordList(
-          callback: (entries: Array<PasswordUiEntry>) => void): void;
+          callback: (entries: PasswordUiEntry[]) => void): void;
       export function getPasswordExceptionList(
-          callback: (entries: Array<ExceptionEntry>) => void): void;
-      export function movePasswordsToAccount(ids: Array<number>): void;
+          callback: (entries: ExceptionEntry[]) => void): void;
+      export function movePasswordsToAccount(ids: number[]): void;
       export function importPasswords(toStore: PasswordStoreSet,
           callback: (results: ImportResults) => void): void;
       export function exportPasswords(callback: () => void): void;
@@ -171,7 +171,7 @@ declare global {
       export function isOptedInForAccountStorage(
           callback: (isOptedIn: boolean) => void): void;
       export function optInForAccountStorage(optIn: boolean): void;
-      export function getInsecureCredentials(): Promise<Array<PasswordUiEntry>>;
+      export function getInsecureCredentials(): Promise<PasswordUiEntry[]>;
       export function muteInsecureCredential(
           credential: PasswordUiEntry, callback?: () => void): void;
       export function unmuteInsecureCredential(
@@ -197,15 +197,15 @@ declare global {
       export function switchBiometricAuthBeforeFillingState(): void;
 
       export const onSavedPasswordsListChanged:
-          ChromeEvent<(entries: Array<PasswordUiEntry>) => void>;
+          ChromeEvent<(entries: PasswordUiEntry[]) => void>;
       export const onPasswordExceptionsListChanged:
-          ChromeEvent<(entries: Array<ExceptionEntry>) => void>;
+          ChromeEvent<(entries: ExceptionEntry[]) => void>;
       export const onPasswordsFileExportProgress:
           ChromeEvent<(progress: PasswordExportProgress) => void>;
       export const onAccountStorageOptInStateChanged:
           ChromeEvent<(optInState: boolean) => void>;
       export const onInsecureCredentialsChanged:
-          ChromeEvent<(credentials: Array<PasswordUiEntry>) => void>;
+          ChromeEvent<(credentials: PasswordUiEntry[]) => void>;
       export const onPasswordCheckStatusChanged:
           ChromeEvent<(status: PasswordCheckStatus) => void>;
       export const onPasswordManagerAuthTimeout:
