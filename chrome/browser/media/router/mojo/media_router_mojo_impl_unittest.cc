@@ -148,9 +148,9 @@ class StubMediaRouterMojoImpl : public MediaRouterMojoImpl {
   ~StubMediaRouterMojoImpl() override = default;
 
   // media_router::MediaRouter:
-  base::Value GetState() const override {
+  base::Value::Dict GetState() const override {
     NOTIMPLEMENTED();
-    return base::Value();
+    return base::Value::Dict();
   }
 
   void GetProviderState(

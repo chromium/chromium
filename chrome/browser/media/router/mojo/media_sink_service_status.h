@@ -39,8 +39,8 @@ class MediaSinkServiceStatus {
       const std::string& media_source,
       const std::vector<MediaSinkInternal>& available_sinks);
 
-  // Returns current status as a JSON string represented by base::Value.
-  base::Value GetStatusAsValue() const;
+  // Returns current status as a JSON string represented by base::Value::Dict.
+  base::Value::Dict GetStatusAsValue() const;
 
   // Returns current status as a JSON string.
   std::string GetStatusAsJSONString() const;

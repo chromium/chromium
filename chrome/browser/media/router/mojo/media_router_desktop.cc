@@ -68,7 +68,7 @@ void MediaRouterDesktop::OnUserGesture() {
 #endif
 }
 
-base::Value MediaRouterDesktop::GetState() const {
+base::Value::Dict MediaRouterDesktop::GetState() const {
   return media_sink_service_status_.GetStatusAsValue();
 }
 
