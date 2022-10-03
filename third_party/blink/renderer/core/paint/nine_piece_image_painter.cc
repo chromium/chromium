@@ -47,15 +47,15 @@ absl::optional<TileParameters> ComputeTileParameters(
     float dst_extent,
     float src_extent,
     float in_scale_factor) {
+  float scaled_tile_extent = src_extent * in_scale_factor;
   switch (tile_rule) {
     case kRoundImageRule: {
       float repetitions =
-          std::max(1.0f, roundf(dst_extent / (src_extent * in_scale_factor)));
+          std::max(1.0f, roundf(dst_extent / scaled_tile_extent));
       float scale_factor = dst_extent / (src_extent * repetitions);
       return TileParameters{scale_factor, 0, 0};
     }
     case kRepeatImageRule: {
-      float scaled_tile_extent = src_extent * in_scale_factor;
       // We want to construct the phase such that the pattern is centered (when
       // stretch is not set for a particular rule).
       float phase = (dst_extent - scaled_tile_extent) / 2;
@@ -63,10 +63,10 @@ absl::optional<TileParameters> ComputeTileParameters(
     }
     case kSpaceImageRule: {
       absl::optional<float> spacing =
-          CalculateSpaceNeeded(dst_extent, src_extent);
+          CalculateSpaceNeeded(dst_extent, scaled_tile_extent);
       if (!spacing)
         return absl::nullopt;
-      return TileParameters{1, *spacing, *spacing};
+      return TileParameters{in_scale_factor, *spacing, *spacing};
     }
     case kStretchImageRule:
       return TileParameters{in_scale_factor, 0, 0};
