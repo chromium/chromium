@@ -21,9 +21,6 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     ssd = True,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 def ios_builder(*, name, **kwargs):
@@ -123,9 +120,6 @@ try_.compilator_builder(
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
     main_list_view = "try",
     os = os.MAC_DEFAULT,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 try_.builder(
@@ -159,9 +153,6 @@ try_.compilator_builder(
     os = os.MAC_12,
     # TODO (crbug.com/1245171): Revert when root issue is fixed
     grace_period = 4 * time.minute,
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
 )
 
 # NOTE: the following trybots aren't sensitive to Mac version on which
