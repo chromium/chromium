@@ -102,6 +102,17 @@ const char kRunCountKey[] = "run_count";
   if (!db.Execute(kPolicyModificationsSql))
     return false;
 
+  static constexpr char kManualSetsSql[] =
+      "CREATE TABLE IF NOT EXISTS manual_sets("
+      "browser_context_id TEXT NOT NULL,"
+      "site TEXT NOT NULL,"
+      "primary_site TEXT NOT NULL,"
+      "site_type INTEGER NOT NULL,"
+      "PRIMARY KEY(browser_context_id,site)"
+      ")WITHOUT ROWID";
+  if (!db.Execute(kManualSetsSql))
+    return false;
+
   return true;
 }
 
@@ -307,6 +318,46 @@ bool FirstPartySetsDatabase::InsertPolicyModifications(
       });
 }
 
+bool FirstPartySetsDatabase::InsertManualSets(
+    const std::string& browser_context_id,
+    const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
+        manual_sets) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit())
+    return false;
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kDeleteSql[] =
+      "DELETE FROM manual_sets WHERE browser_context_id=?";
+  sql::Statement delete_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+  delete_statement.BindString(0, browser_context_id);
+  if (!delete_statement.Run())
+    return false;
+
+  for (const auto& [site, entry] : manual_sets) {
+    DCHECK(!site.opaque());
+    static constexpr char kInsertSql[] =
+        "INSERT INTO "
+        "manual_sets(browser_context_id,site,primary_site,site_type)"
+        "VALUES(?,?,?,?)";
+    sql::Statement insert_statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+    insert_statement.BindString(0, browser_context_id);
+    insert_statement.BindString(1, site.Serialize());
+    insert_statement.BindString(2, entry.primary().Serialize());
+    insert_statement.BindInt(3, static_cast<int>(entry.site_type()));
+
+    if (!insert_statement.Run())
+      return false;
+  }
+  return transaction.Commit();
+}
+
 net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -487,6 +538,50 @@ FirstPartySetsDatabase::FetchPolicyModifications(
     return {};
 
   return net::FirstPartySetsContextConfig(std::move(results));
+}
+
+base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
+FirstPartySetsDatabase::FetchManualSets(const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit())
+    return {};
+
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>> results;
+  static constexpr char kSelectSql[] =
+      // clang-format off
+      "SELECT site,primary_site,site_type FROM manual_sets "
+      "WHERE browser_context_id=?";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, browser_context_id);
+
+  while (statement.Step()) {
+    absl::optional<net::SchemefulSite> site =
+        FirstPartySetParser::CanonicalizeRegisteredDomain(
+            statement.ColumnString(0), /*emit_errors=*/false);
+
+    absl::optional<net::SchemefulSite> primary =
+        FirstPartySetParser::CanonicalizeRegisteredDomain(
+            statement.ColumnString(1), /*emit_errors=*/false);
+
+    absl::optional<net::SiteType> site_type =
+        DeserializeSiteType(statement.ColumnInt(2));
+
+    // TODO(crbug.com/1314039): Invalid entries should be rare case but
+    // possible. Consider deleting them from DB.
+    if (site.has_value() && primary.has_value() && site_type.has_value()) {
+      results.emplace_back(
+          std::move(site.value()),
+          net::FirstPartySetEntry(primary.value(), site_type.value(),
+                                  /*site_index=*/absl::nullopt));
+    }
+  }
+
+  if (!statement.Succeeded())
+    return {};
+
+  return results;
 }
 
 bool FirstPartySetsDatabase::LazyInit() {

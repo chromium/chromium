@@ -22,6 +22,14 @@ CREATE TABLE IF NOT EXISTS policy_modifications (
    PRIMARY KEY (browser_context_id, site)
 ) WITHOUT ROWID;
 
+CREATE TABLE IF NOT EXISTS manual_sets (
+  browser_context_id TEXT NOT NULL,
+  site TEXT NOT NULL,
+  primary_site TEXT NOT NULL,
+  site_type INTEGER NOT NULL,
+  PRIMARY KEY(browser_context_id, site)
+) WITHOUT ROWID;
+
 CREATE TABLE IF NOT EXISTS browser_context_sites_to_clear (
    browser_context_id TEXT NOT NULL,
    site TEXT NOT NULL,
@@ -58,4 +66,6 @@ INSERT INTO browser_context_sites_to_clear VALUES('b0', 'https://example.test', 
 INSERT INTO browser_contexts_cleared VALUES('b0', 1);
 INSERT INTO policy_modifications VALUES('b2', 'https://member1.test','https://example.test'),
                                        ('b2', 'https://member2.test',NULL);
+INSERT INTO manual_sets VALUES('b2', 'https://aaa.test','https://bbb.test', 1),
+                              ('b2', 'https://bbb.test', 'https://bbb.test', 0);
 COMMIT;

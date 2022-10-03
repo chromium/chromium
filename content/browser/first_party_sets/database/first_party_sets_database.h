@@ -97,6 +97,14 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
       const std::string& browser_context_id,
       const net::FirstPartySetsContextConfig& config);
 
+  // Stores the Manual Sets into manual_sets table, and returns true on success.
+  // Inserting new manual sets will wipe out pre-existing manual sets for the
+  // given 'browser_context_id'
+  [[nodiscard]] bool InsertManualSets(
+      const std::string& browser_context_id,
+      const base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>&
+          manual_sets);
+
   // TODO(crbug.com/1219656): Consider returning absl::nullopt for all the
   // fetching methods when having query errors
 
@@ -118,6 +126,10 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // `browser_context_id`.
   [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyModifications(
       const std::string& browser_context_id);
+
+  // Gets the previously-stored manual_sets for the `browser_context_id`.
+  [[nodiscard]] base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
+  FetchManualSets(const std::string& browser_context_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsDatabaseTest,
