@@ -92,14 +92,7 @@ void ArcGhostWindowView::InitLayout(arc::GhostWindowType type,
   throbber->SetPreferredSize(gfx::Size(diameter, diameter));
   throbber->GetViewAccessibility().OverrideRole(ax::mojom::Role::kImage);
 
-  if (type == arc::GhostWindowType::kFixup) {
-    auto label = std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
-    // TODO(sstan): Set font size or height, according to future UI update.
-    label->SetMultiLine(true);
-    message_label_ = label.get();
-    AddChildView(std::move(label));
-  }
+  SetType(type);
   // TODO(sstan): Set window title and accessible name from saved data.
 }
 
@@ -119,6 +112,28 @@ void ArcGhostWindowView::LoadIcon(const std::string& app_id) {
           ? base::BindOnce(&ArcGhostWindowView::OnIconLoaded,
                            weak_ptr_factory_.GetWeakPtr())
           : std::move(icon_loaded_cb_for_testing_));
+}
+
+void ArcGhostWindowView::SetType(arc::GhostWindowType type) {
+  // Currently the only difference of App Fixup and other type of ghost window
+  // is that App Fixup ghost window has a message label.
+  if (type == arc::GhostWindowType::kFixup) {
+    if (!message_label_) {
+      auto label = std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
+      // TODO(sstan): Set font size or height, according to future UI update.
+      label->SetMultiLine(true);
+      message_label_ = label.get();
+      AddChildView(std::move(label));
+      Layout();
+    }
+  } else {
+    if (message_label_) {
+      RemoveChildView(message_label_);
+      message_label_ = nullptr;
+      Layout();
+    }
+  }
 }
 
 void ArcGhostWindowView::OnIconLoaded(apps::IconValuePtr icon_value) {

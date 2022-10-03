@@ -21,6 +21,7 @@ class ArcGhostWindowDelegate
  public:
   ArcGhostWindowDelegate(exo::ClientControlledShellSurface* shell_surface,
                          int window_id,
+                         const std::string& app_id,
                          int64_t display_id,
                          const gfx::Rect& bounds,
                          chromeos::WindowStateType window_state);
@@ -50,11 +51,16 @@ class ArcGhostWindowDelegate
 
   void OnWindowCloseRequested(int window_id) override;
 
+  void OnAppStatesUpdate(const std::string& app_id,
+                         bool ready,
+                         bool need_fixup) override;
+
  private:
   bool SetDisplayId(int64_t display_id);
   void UpdateWindowInfoToArc();
 
   int window_id_;
+  std::string app_id_;
   gfx::Rect bounds_;
   bool pending_close_;
   int64_t display_id_;

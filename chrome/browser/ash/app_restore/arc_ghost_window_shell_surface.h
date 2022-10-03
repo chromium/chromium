@@ -23,6 +23,8 @@ namespace ash::full_restore {
 // Explicitly identifies ARC ghost surface.
 extern const aura::WindowProperty<bool>* const kArcGhostSurface;
 
+class ArcGhostWindowView;
+
 // ArcGhostWindowShellSurface class is a shell surface which controlled its
 // root surface.
 class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
@@ -42,6 +44,8 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
 
   void OverrideInitParams(views::Widget::InitParams* params) override;
 
+  void SetWindowType(arc::GhostWindowType window_type);
+
   exo::Surface* controller_surface();
 
  private:
@@ -56,6 +60,7 @@ class ArcGhostWindowShellSurface : public exo::ClientControlledShellSurface {
   void SetShellAppId(ui::PropertyHandler* property_handler,
                      const absl::optional<std::string>& id);
 
+  ArcGhostWindowView* view_observer_ = nullptr;
   arc::GhostWindowType type_;
   absl::optional<std::string> app_id_;
 
