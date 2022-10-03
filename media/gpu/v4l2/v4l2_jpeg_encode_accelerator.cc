@@ -10,6 +10,7 @@
 #include <sys/mman.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -1193,7 +1194,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
       // Driver may not have implemented V4L2_CID_JPEG_ACTIVE_MARKER.
       // Ignore any error and assume the driver implements the JPEG stream
       // the way we want it.
-      device_->Ioctl(VIDIOC_QUERY_EXT_CTRL, &queryctrl);
+      std::ignore = device_->Ioctl(VIDIOC_QUERY_EXT_CTRL, &queryctrl);
 
       // Ask for JPEG markers we want. Since not all may be implemented,
       // ask for the common subset of what we want and what is supported.
@@ -1201,7 +1202,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::SetUpJpegParameters(
       ctrl.value = queryctrl.maximum &
                    (V4L2_JPEG_ACTIVE_MARKER_APP0 | V4L2_JPEG_ACTIVE_MARKER_DQT |
                     V4L2_JPEG_ACTIVE_MARKER_DHT);
-      device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls);
+      std::ignore = device_->Ioctl(VIDIOC_S_EXT_CTRLS, &ctrls);
       break;
 
     default:
