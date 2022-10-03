@@ -126,7 +126,10 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererCompositorFinishedToSubmitCompositorFrame";
         default:
-          NOTREACHED();
+          // TODO(crbug.com/1366253): Logs are added to debug NOTREACHED() begin
+          // hit in crbug/1366253. Remove after investigation is finished.
+          NOTREACHED() << "Invalid CC stage after compositor thread: "
+                       << static_cast<int>(compositor_stage);
           return "";
       }
     case EventMetrics::DispatchStage::kRendererMainFinished:
@@ -149,7 +152,10 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererMainFinishedToSubmitCompositorFrame";
         default:
-          NOTREACHED();
+          // TODO(crbug.com/1366253): Logs are added to debug NOTREACHED() begin
+          // hit in crbug/1366253. Remove after investigation is finished.
+          NOTREACHED() << "Invalid CC stage after main thread: "
+                       << static_cast<int>(compositor_stage);
           return "";
       }
     default:
