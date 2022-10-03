@@ -19,6 +19,8 @@
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -87,7 +89,10 @@ class UpgradeInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
-      icon_ = gfx::Image([UIImage imageNamed:@"infobar_update"]);
+      icon_ = gfx::Image(UseSymbols()
+                             ? DefaultSymbolWithPointSize(kInfoCircleSymbol,
+                                                          kSymbolImagePointSize)
+                             : [UIImage imageNamed:@"infobar_update"]);
     }
     return ui::ImageModel::FromImage(icon_);
   }

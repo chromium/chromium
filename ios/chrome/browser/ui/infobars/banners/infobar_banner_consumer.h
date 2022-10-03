@@ -19,8 +19,15 @@
 // The icon displayed by this InfobarBanner.
 - (void)setIconImage:(UIImage*)iconImage;
 
+// The tint color of the icon image.
+- (void)setIconImageTintColor:(UIColor*)iconImageTintColor;
+
 // YES if the icon image should have a default tint applied to its background.
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint;
+
+// The background color of the icon, only applied when
+// [setUseIconBackgroundTint:YES] is called.
+- (void)setIconBackgroundColor:(UIColor*)iconBackgroundColor;
 
 // YES if the banner should be able to present a Modal. Changing this property
 // will immediately update the Banner UI that is related to triggering modal

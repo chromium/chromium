@@ -38,6 +38,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/overlays/infobar_banner/permissions",
     "//ios/chrome/browser/ui/overlays/infobar_banner/reading_list",
     "//ios/chrome/browser/ui/overlays/infobar_banner/save_card",
+    "//ios/chrome/browser/ui/overlays/infobar_banner/sync_error",
     "//ios/chrome/browser/ui/overlays/infobar_banner/tailored_security",
     "//ios/chrome/browser/ui/overlays/infobar_banner/translate:mediators",
     "//ios/chrome/browser/ui/util",

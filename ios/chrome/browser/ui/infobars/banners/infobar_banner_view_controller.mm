@@ -66,6 +66,8 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, strong) UIColor* iconImageTintColor;
+@property(nonatomic, strong) UIColor* iconBackgroundColor;
 @property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 
 // The original position of this InfobarVC view in the parent's view coordinate
@@ -152,12 +154,15 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
         [[UIImageView alloc] initWithImage:self.iconImage];
     iconImageView.contentMode = UIViewContentModeScaleAspectFit;
     iconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    iconImageView.tintColor = self.iconImageTintColor;
 
     UIView* backgroundIconView =
         [[UIView alloc] initWithFrame:iconImageView.frame];
     backgroundIconView.layer.cornerRadius = kIconCornerRadius;
     if (self.useIconBackgroundTint) {
-      backgroundIconView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+      backgroundIconView.backgroundColor =
+          self.iconBackgroundColor ? self.iconBackgroundColor
+                                   : [UIColor colorNamed:kBlueHaloColor];
     }
     backgroundIconView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -415,8 +420,16 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   self.view.accessibilityCustomActions = [self accessibilityActions];
 }
 
+- (void)setIconImageTintColor:(UIColor*)iconImageTintColor {
+  _iconImageTintColor = iconImageTintColor;
+}
+
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint {
   _useIconBackgroundTint = useIconBackgroundTint;
+}
+
+- (void)setIconBackgroundColor:(UIColor*)iconBackgroundColor {
+  _iconBackgroundColor = iconBackgroundColor;
 }
 
 - (void)setRestrictSubtitleTextToSingleLine:

@@ -95,6 +95,8 @@ NSString* const kHistorySymbol = @"clock.arrow.circlepath";
 NSString* const kCheckmarkSealSymbol = @"checkmark.seal";
 NSString* const kWifiSymbol = @"wifi";
 NSString* const kBookmarksSymbol = @"star.fill";
+NSString* const kSyncErrorSymbol =
+    @"exclamationmark.arrow.triangle.2.circlepath";
 
 const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 

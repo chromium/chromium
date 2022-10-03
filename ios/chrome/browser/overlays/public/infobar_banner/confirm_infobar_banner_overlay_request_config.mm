@@ -21,26 +21,15 @@ OVERLAY_USER_DATA_SETUP_IMPL(ConfirmBannerRequestConfig);
 
 ConfirmBannerRequestConfig::ConfirmBannerRequestConfig(
     infobars::InfoBar* infobar)
-    : infobar_(infobar) {
-  DCHECK(infobar_);
-  ConfirmInfoBarDelegate* delegate =
-      static_cast<ConfirmInfoBarDelegate*>(infobar_->delegate());
-  title_text_ = delegate->GetTitleText();
-  message_text_ = delegate->GetMessageText();
-  button_label_text_ =
-      delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
-  icon_image_ = gfx::Image(delegate->GetIcon().Rasterize(nullptr));
-  is_high_priority_ = static_cast<InfoBarIOS*>(infobar)->high_priority();
-  use_icon_background_tint_ = delegate->UseIconBackgroundTint();
-}
+    : ConfirmBannerRequestConfigStorage(infobar) {}
 
 ConfirmBannerRequestConfig::~ConfirmBannerRequestConfig() = default;
 
 void ConfirmBannerRequestConfig::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
   InfobarOverlayRequestConfig::CreateForUserData(
-      user_data, static_cast<InfoBarIOS*>(infobar_),
-      InfobarOverlayType::kBanner, is_high_priority_);
+      user_data, static_cast<InfoBarIOS*>(infobar()),
+      InfobarOverlayType::kBanner, is_high_priority());
 }
 
 }  // namespace confirm_infobar_overlays

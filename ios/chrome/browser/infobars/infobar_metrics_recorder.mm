@@ -128,6 +128,19 @@ const char kInfobarTailoredSecurityServiceBannerDismissTypeHistogram[] =
 const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
     "Mobile.Messages.Modal.Event.InfobarTypePermissions";
 
+// Histogram names for InfobarTypeSyncError.
+// Banner.
+const char kInfobarSyncErrorBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeSyncError";
+const char kInfobarSyncErrorBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeSyncError";
+// Modal.
+const char kInfobarSyncErrorModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeSyncError";
+// Badge.
+const char kInfobarSyncErrorBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeSyncError";
+
 }  // namespace
 
 @interface InfobarMetricsRecorder ()
@@ -188,6 +201,9 @@ const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
       base::UmaHistogramEnumeration(
           kInfobarTailoredSecurityServiceBannerEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeSyncError:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBannerEventHistogram, event);
+      break;
   }
 }
 
@@ -229,6 +245,10 @@ const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
       base::UmaHistogramEnumeration(
           kInfobarTailoredSecurityServiceBannerDismissTypeHistogram,
           dismissType);
+      break;
+    case InfobarType::kInfobarTypeSyncError:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBannerDismissTypeHistogram,
+                                dismissType);
       break;
   }
 }
@@ -272,6 +292,9 @@ const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
       base::UmaHistogramEnumeration(
           kInfobarTailoredSecurityServiceModalEventHistogram, event);
       break;
+    case InfobarType::kInfobarTypeSyncError:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorModalEventHistogram, event);
+      break;
   }
 }
 
@@ -309,6 +332,9 @@ const char kInfobarTailoredSecurityServiceModalEventHistogram[] =
     case InfobarType::kInfobarTypeTailoredSecurityService:
       // TailoredSecurityService infobar doesn't have a badge.
       NOTREACHED();
+      break;
+    case InfobarType::kInfobarTypeSyncError:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBadgeTappedHistogram, state);
       break;
   }
 }

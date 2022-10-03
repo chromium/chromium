@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/test/scoped_feature_list.h"
 #import "components/sync/driver/sync_service_utils.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -13,7 +14,11 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_mock.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/infobar_icon.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -47,6 +52,38 @@ class SyncErrorInfobarDelegateTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 };
+
+// Tests that the delegate's icon configurations is correct when UseSymbol is
+// enabled.
+TEST_F(SyncErrorInfobarDelegateTest, IconConfigsUseSymbol) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kUseSFSymbols);
+
+  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
+      new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
+
+  EXPECT_TRUE(delegate->UseIconBackgroundTint());
+  EXPECT_NSEQ([UIColor colorNamed:kTextPrimaryColor],
+              delegate -> GetIconImageTintColor());
+  EXPECT_NSEQ([UIColor colorNamed:kRed500Color],
+              delegate -> GetIconBackgroundColor());
+  EXPECT_NSEQ(DefaultSymbolTemplateWithPointSize(kSyncErrorSymbol,
+                                                 kSymbolImagePointSize),
+              delegate->GetIcon().GetImage().ToUIImage());
+}
+
+// Tests that the delegate's icon configurations is correct when legacy image
+// asset is used.
+TEST_F(SyncErrorInfobarDelegateTest, IconConfigsNotUseSymbol) {
+  id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
+  std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
+      new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
+
+  EXPECT_FALSE(delegate->UseIconBackgroundTint());
+  EXPECT_EQ(nullptr, delegate->GetIconImageTintColor());
+  EXPECT_EQ(nullptr, delegate->GetIconBackgroundColor());
+}
 
 TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
   ON_CALL(*sync_setup_service_mock(), GetSyncServiceState())

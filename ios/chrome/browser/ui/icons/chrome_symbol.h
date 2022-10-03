@@ -57,6 +57,7 @@ extern NSString* const kHistorySymbol;
 extern NSString* const kCheckmarkSealSymbol;
 extern NSString* const kWifiSymbol;
 extern NSString* const kBookmarksSymbol;
+extern NSString* const kSyncErrorSymbol;
 
 // The corner radius of the symbol with a colorful background.
 extern const CGFloat kColorfulBackgroundSymbolCornerRadius;

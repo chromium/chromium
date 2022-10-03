@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_card_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/save_password_infobar_banner_overlay.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/sync_error_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/tailored_security_service_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/translate_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/update_password_infobar_banner_overlay.h"
@@ -154,6 +155,13 @@ std::unique_ptr<OverlayRequest> DefaultInfobarOverlayRequestFactory(
         return OverlayRequest::CreateWithConfig<
             tailored_security_service_infobar_overlays::
                 TailoredSecurityServiceBannerRequestConfig>(infobar_ios);
+      }
+      return nullptr;
+    case InfobarType::kInfobarTypeSyncError:
+      if (overlay_type == InfobarOverlayType::kBanner) {
+        return OverlayRequest::CreateWithConfig<
+            sync_error_infobar_overlays::SyncErrorBannerRequestConfig>(
+            infobar_ios);
       }
       return nullptr;
     default:

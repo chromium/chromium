@@ -8,6 +8,8 @@ source_set("infobar_banner") {
     "add_to_reading_list_infobar_banner_overlay_request_config.mm",
     "confirm_infobar_banner_overlay_request_config.h",
     "confirm_infobar_banner_overlay_request_config.mm",
+    "confirm_infobar_banner_overlay_request_config_storage.h",
+    "confirm_infobar_banner_overlay_request_config_storage.mm",
     "infobar_banner_overlay_responses.cc",
     "infobar_banner_overlay_responses.h",
     "infobar_banner_placeholder_request_config.h",
@@ -20,6 +22,8 @@ source_set("infobar_banner") {
     "save_card_infobar_banner_overlay_request_config.mm",
     "save_password_infobar_banner_overlay.h",
     "save_password_infobar_banner_overlay.mm",
+    "sync_error_infobar_banner_overlay_request_config.h",
+    "sync_error_infobar_banner_overlay_request_config.mm",
     "tailored_security_service_infobar_banner_overlay_request_config.h",
     "tailored_security_service_infobar_banner_overlay_request_config.mm",
     "translate_infobar_banner_overlay_request_config.h",
@@ -49,8 +53,29 @@ source_set("infobar_banner") {
     "//ios/chrome/browser/ui/reading_list:infobar",
     "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
+    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/web/",
     "//ios/web/public/permissions",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "confirm_infobar_banner_overlay_request_config_unittest.mm" ]
+  deps = [
+    ":infobar_banner",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

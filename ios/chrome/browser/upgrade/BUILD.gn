@@ -22,6 +22,8 @@ source_set("upgrade") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/icons:infobar_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/web/common",

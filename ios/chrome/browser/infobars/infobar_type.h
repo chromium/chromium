@@ -26,6 +26,8 @@ enum class InfobarType {
   kInfobarTypePermissions = 7,
   // Message Infobar for Tailored Security Service.
   kInfobarTypeTailoredSecurityService = 8,
+  // Message Infobar for Sync Error.
+  kInfobarTypeSyncError = 9,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

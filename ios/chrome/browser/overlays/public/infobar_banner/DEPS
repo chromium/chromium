@@ -6,6 +6,8 @@ specific_include_rules = {
   "^confirm_infobar_banner_overlay_request_config.mm": [
     "+ios/chrome/browser/ui/authentication/signin_notification_infobar_delegate.h",
   ],
-
+  "^sync_error_infobar_banner_overlay_request_config.mm": [
+    "+ios/chrome/browser/ui/settings/sync/utils/sync_error_infobar_delegate.h",
+  ],
 }
 

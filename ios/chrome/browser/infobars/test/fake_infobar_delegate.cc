@@ -31,6 +31,18 @@ FakeInfobarDelegate::FakeInfobarDelegate(std::u16string title_text,
           std::move(title_text),
           std::move(message_text)) {}
 
+FakeInfobarDelegate::FakeInfobarDelegate(std::u16string title_text,
+                                         std::u16string message_text,
+                                         std::u16string button_label_text,
+                                         bool use_icon_background_tint,
+                                         ui::ImageModel icon)
+    : identifier_(infobars::InfoBarDelegate::InfoBarIdentifier::TEST_INFOBAR),
+      title_text_(std::move(title_text)),
+      message_text_(std::move(message_text)),
+      button_label_text_(std::move(button_label_text)),
+      use_icon_background_tint_(use_icon_background_tint),
+      icon_(icon) {}
+
 FakeInfobarDelegate::FakeInfobarDelegate(
     infobars::InfoBarDelegate::InfoBarIdentifier identifier,
     std::u16string title_text,
@@ -54,4 +66,19 @@ std::u16string FakeInfobarDelegate::GetTitleText() const {
 // Returns the message string to be displayed for the Infobar.
 std::u16string FakeInfobarDelegate::GetMessageText() const {
   return message_text_;
+}
+
+// Returns the button label string to be displayed for the Infobar.
+std::u16string FakeInfobarDelegate::GetButtonLabel(InfoBarButton button) const {
+  return button_label_text_;
+}
+
+// Returns true if to use icon background tint for the Infobar.
+bool FakeInfobarDelegate::UseIconBackgroundTint() const {
+  return use_icon_background_tint_;
+}
+
+// Returns the icon for the Infobar.
+ui::ImageModel FakeInfobarDelegate::GetIcon() const {
+  return icon_;
 }

@@ -1,14 +1,14 @@
-# Copyright 2020 The Chromium Authors
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("confirm") {
+source_set("sync_error") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "confirm_infobar_banner_interaction_handler.h",
-    "confirm_infobar_banner_interaction_handler.mm",
-    "confirm_infobar_interaction_handler.h",
-    "confirm_infobar_interaction_handler.mm",
+    "sync_error_infobar_banner_interaction_handler.h",
+    "sync_error_infobar_banner_interaction_handler.mm",
+    "sync_error_infobar_interaction_handler.h",
+    "sync_error_infobar_interaction_handler.mm",
   ]
   deps = [
     "//base",
@@ -18,27 +18,30 @@ source_set("confirm") {
     "//ios/chrome/browser/infobars/overlays:util",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers",
     "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
-    "//ios/chrome/browser/overlays/public/infobar_modal",
-    "//ios/chrome/browser/ui/commands",
   ]
 }
 
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "confirm_infobar_banner_interaction_handler_unittest.mm" ]
+  sources = [ "sync_error_infobar_banner_interaction_handler_unittest.mm" ]
   deps = [
-    ":confirm",
+    ":sync_error",
     "//base/test:test_support",
+    "//components/sync/driver",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

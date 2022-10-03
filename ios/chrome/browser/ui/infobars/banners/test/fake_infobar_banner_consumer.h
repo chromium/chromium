@@ -16,6 +16,8 @@
 @property(nonatomic, assign) BOOL presentsModal;
 @property(nonatomic, copy) NSString* titleText;
 @property(nonatomic, copy) NSString* subtitleText;
+@property(nonatomic, strong) UIColor* iconBackgroundColor;
+@property(nonatomic, strong) UIColor* iconImageTintColor;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
 @property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 @end
