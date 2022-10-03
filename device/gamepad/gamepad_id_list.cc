@@ -597,6 +597,8 @@ constexpr struct GamepadInfo {
     {0x2c22, 0x2000, kXInputTypeNone},
     {0x2c22, 0x2300, kXInputTypeNone},
     {0x2c22, 0x2302, kXInputTypeNone},
+    // DJI
+    {0x2ca3, 0x1020, kXInputTypeNone},
     {0x2dc8, 0x1003, kXInputTypeNone},
     {0x2dc8, 0x1080, kXInputTypeNone},
     {0x2dc8, 0x2830, kXInputTypeNone},

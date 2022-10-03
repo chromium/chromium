@@ -485,6 +485,59 @@ void MapperXboxBluetooth(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
+void MapperDjiFpv(const Gamepad& input, Gamepad* mapped) {
+  enum DjiFpvAxis {
+    kDjiFpvAxisGimbalDial = AXIS_INDEX_COUNT,
+    kDjiFpvAxisFlightModeSwitch,
+    kDjiFpvAxisC2Switch,
+    kDjiFpvAxisCount,
+  };
+
+  // DJI FPV Remote Controller 2 incorrectly reports the logical bounds for its
+  // control stick and gimbal dial axes as [-1024,+1024] when the actual bounds
+  // are [-660,+660].
+  constexpr double kDjiFpvAxisScale = 1024.0 / 660.0;
+
+  double flight_mode_axis;
+  if (input.buttons[6].pressed)
+    flight_mode_axis = -1.0;
+  else if (input.buttons[7].pressed)
+    flight_mode_axis = 1.0;
+  else
+    flight_mode_axis = 0.0;
+
+  double c2_axis;
+  if (input.buttons[4].pressed)
+    c2_axis = 0.0;
+  else if (input.buttons[5].pressed)
+    c2_axis = -1.0;
+  else
+    c2_axis = 1.0;
+
+  *mapped = input;
+  mapped->buttons[BUTTON_INDEX_PRIMARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_SECONDARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_TERTIARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_QUATERNARY] = NullButton();
+  mapped->buttons[BUTTON_INDEX_LEFT_SHOULDER] =
+      input.buttons[2];  // Flight Pause/RTH
+  mapped->buttons[BUTTON_INDEX_RIGHT_SHOULDER] =
+      input.buttons[3];  // Shutter/Record
+  mapped->buttons[BUTTON_INDEX_LEFT_TRIGGER] = NullButton();
+  mapped->buttons[BUTTON_INDEX_RIGHT_TRIGGER] = input.buttons[1];  // Start/Stop
+  mapped->buttons[BUTTON_INDEX_BACK_SELECT] = input.buttons[0];    // C1
+  mapped->axes[AXIS_INDEX_LEFT_STICK_X] = input.axes[3] * kDjiFpvAxisScale;
+  mapped->axes[AXIS_INDEX_LEFT_STICK_Y] = -input.axes[2] * kDjiFpvAxisScale;
+  mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[0] * kDjiFpvAxisScale;
+  mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = -input.axes[1] * kDjiFpvAxisScale;
+  mapped->axes[kDjiFpvAxisGimbalDial] = input.axes[4] * kDjiFpvAxisScale;
+  mapped->axes[kDjiFpvAxisFlightModeSwitch] = flight_mode_axis;
+  mapped->axes[kDjiFpvAxisC2Switch] = c2_axis;
+
+  mapped->buttons_length = 9;
+  mapped->axes_length = kDjiFpvAxisCount;
+}
+
 constexpr struct MappingData {
   GamepadId gamepad_id;
   GamepadStandardMappingFunction function;
@@ -549,6 +602,8 @@ constexpr struct MappingData {
     {GamepadId::kOnLiveProduct100a, MapperOnLiveWireless},
     // OUYA Controller
     {GamepadId::kOuyaProduct0001, MapperOUYA},
+    // DJI FPV Remote Controller 2
+    {GamepadId::kDjiProduct1020, MapperDjiFpv},
     // SCUF Vantage, SCUF Vantage 2
     {GamepadId::kScufProduct7725, MapperDualshock4},
     // boom PSX+N64 USB Converter

@@ -61,12 +61,22 @@ constexpr size_t kSpecialUsagesLen = std::size(kSpecialUsages);
 // value in the range -1.0 <= x <= 1.0.
 template <class T>
 float NormalizeAxis(T value, T min, T max) {
+  if (min == max)
+    return 0.0f;
+
   return (2.0f * (value - min) / static_cast<float>(max - min)) - 1.0f;
 }
 
 // Returns a 32-bit mask with the lowest |bits| bits set.
 unsigned long GetBitmask(unsigned short bits) {
   return (1 << bits) - 1;
+}
+
+// Interprets `value` as a signed value with `bits` bits and extends the sign
+// bit as needed. Assumes all higher-order bits in `value` are already zero.
+int32_t SignExtend(uint32_t value, size_t bits) {
+  const int32_t mask = 1U << (bits - 1);
+  return (value ^ mask) - mask;
 }
 
 }  // namespace
@@ -574,9 +584,20 @@ void RawInputGamepadDeviceWin::UpdateAxisValue(size_t axis_index,
                          axis.caps.Range.UsageMin, &axis_value, preparsed_data_,
                          reinterpret_cast<PCHAR>(input.data.hid.bRawData),
                          input.data.hid.dwSizeHid) == HIDP_STATUS_SUCCESS) {
-    axis.value = NormalizeAxis(axis_value & axis.bitmask,
-                               axis.caps.LogicalMin & axis.bitmask,
-                               axis.caps.LogicalMax & axis.bitmask);
+    ULONG logical_min = axis.caps.LogicalMin & axis.bitmask;
+    ULONG logical_max = axis.caps.LogicalMax & axis.bitmask;
+    if (logical_min < logical_max) {
+      // If the unsigned logical min is less than the unsigned logical max then
+      // assume `axis_value` is always non-negative.
+      axis.value =
+          NormalizeAxis(axis_value & axis.bitmask, logical_min, logical_max);
+    } else {
+      // Sign-extend before normalizing.
+      axis.value = NormalizeAxis(
+          SignExtend(axis_value & axis.bitmask, axis.caps.BitSize),
+          SignExtend(logical_min, axis.caps.BitSize),
+          SignExtend(logical_max, axis.caps.BitSize));
+    }
     return;
   }
 
