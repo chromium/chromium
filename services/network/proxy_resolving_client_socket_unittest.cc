@@ -463,11 +463,11 @@ TEST_P(ProxyResolvingClientSocketTest, ReadWriteErrors) {
     std::vector<net::MockWrite> writes;
     std::vector<net::MockRead> reads;
     if (!test.is_direct) {
-      writes.push_back(
-          net::MockWrite("CONNECT example.com:80 HTTP/1.1\r\n"
-                         "Host: example.com:80\r\n"
-                         "Proxy-Connection: keep-alive\r\n\r\n"));
-      reads.push_back(net::MockRead("HTTP/1.1 200 Success\r\n\r\n"));
+      writes.emplace_back(
+          "CONNECT example.com:80 HTTP/1.1\r\n"
+          "Host: example.com:80\r\n"
+          "Proxy-Connection: keep-alive\r\n\r\n");
+      reads.emplace_back("HTTP/1.1 200 Success\r\n\r\n");
     }
     if (test.is_read_error) {
       reads.emplace_back(test.is_error_sync ? net::SYNCHRONOUS : net::ASYNC,

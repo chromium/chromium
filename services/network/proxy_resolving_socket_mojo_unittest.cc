@@ -275,15 +275,13 @@ TEST_P(ProxyResolvingSocketTest, BasicReadWrite) {
   int sequence_number = 0;
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.push_back(
-          net::MockRead(net::ASYNC, &kTestMsg[i], 1, sequence_number++));
+      reads.emplace_back(net::ASYNC, &kTestMsg[i], 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
-      reads.push_back(net::MockRead(net::ASYNC, net::OK, sequence_number++));
+      reads.emplace_back(net::ASYNC, net::OK, sequence_number++);
     }
     for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.push_back(
-          net::MockWrite(net::ASYNC, &kTestMsg[i], 1, sequence_number++));
+      writes.emplace_back(net::ASYNC, &kTestMsg[i], 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);

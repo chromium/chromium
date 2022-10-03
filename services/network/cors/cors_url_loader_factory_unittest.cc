@@ -91,7 +91,7 @@ class CorsURLLoaderFactoryTest : public testing::Test {
   }
 
   void CreateLoaderAndStart(const ResourceRequest& request) {
-    url_loaders_.emplace_back(mojo::Remote<mojom::URLLoader>());
+    url_loaders_.emplace_back();
     test_cors_loader_clients_.emplace_back(
         std::make_unique<TestURLLoaderClient>());
     cors_url_loader_factory_->CreateLoaderAndStart(

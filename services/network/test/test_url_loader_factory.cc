@@ -159,8 +159,7 @@ bool TestURLLoaderFactory::CreateLoaderAndStartInternal(
 
   Redirects redirects;
   for (auto& redirect : it->second.redirects) {
-    redirects.push_back(
-        std::make_pair(redirect.first, redirect.second.Clone()));
+    redirects.emplace_back(redirect.first, redirect.second.Clone());
   }
   SimulateResponse(client, std::move(redirects), it->second.head.Clone(),
                    it->second.content, it->second.status, it->second.flags);

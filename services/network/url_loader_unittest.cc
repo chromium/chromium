@@ -3808,8 +3808,7 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
         loader_remote.InitWithNewPipeAndPassReceiver(), request,
         client.CreateRemote());
 
-    loaders.emplace_back(
-        std::make_pair(std::move(url_loader), std::move(loader_remote)));
+    loaders.emplace_back(std::move(url_loader), std::move(loader_remote));
   }
 
   base::RunLoop().RunUntilIdle();

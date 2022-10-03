@@ -506,7 +506,7 @@ void WebSocket::SendMessage(mojom::WebSocketMessageType type,
   const bool do_not_fragment =
       reassemble_short_messages_ && data_length <= kSmallMessageThreshhold;
 
-  pending_send_data_frames_.push(DataFrame(type, data_length, do_not_fragment));
+  pending_send_data_frames_.emplace(type, data_length, do_not_fragment);
 
   // Safe if ReadAndSendFromDataPipe() deletes |this| because this method is
   // only called from mojo.

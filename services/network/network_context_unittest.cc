@@ -1360,7 +1360,7 @@ TEST_F(NetworkContextTest, CertReporting) {
         net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
     ASSERT_TRUE(result.verified_cert);
     net::SHA256HashValue hash = {{0x00, 0x01}};
-    result.public_key_hashes.push_back(net::HashValue(hash));
+    result.public_key_hashes.emplace_back(hash);
     result.is_issued_by_known_root = true;
     net::MockCertVerifier mock_verifier;
     mock_verifier.AddResultForCert(pkp_test_server.GetCertificate(), result,

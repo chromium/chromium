@@ -534,14 +534,14 @@ absl::optional<std::string> TrustTokenRequestSigningHelper::
     const SuitableTrustTokenOrigin& issuer = kv.first;
     const std::vector<uint8_t>& signature = kv.second;
 
-    keys_and_signatures.emplace_back(net::structured_headers::ParameterizedItem(
+    keys_and_signatures.emplace_back(
         net::structured_headers::Item(
             issuer.Serialize(),
             net::structured_headers::Item::ItemType::kStringType),
         // records_per_issuer is guaranteed to have all of the keys that
         // signatures_per_issuer does, so using |at| is safe:
         ConstructKeyAndSignaturePair(records_per_issuer.at(issuer), signature,
-                                     *signer_)));
+                                     *signer_));
   }
 
   header_items[kSignatureHeaderSignaturesKey] =

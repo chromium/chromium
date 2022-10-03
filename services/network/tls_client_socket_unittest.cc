@@ -971,15 +971,13 @@ TEST_P(TLSClientSocketIoModeTest, MultipleWriteToTLSSocket) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kSecretMsgSize; ++i) {
-      writes.push_back(
-          net::MockWrite(mode, &kSecretMsg[i], 1, sequence_number++));
+      writes.emplace_back(mode, &kSecretMsg[i], 1, sequence_number++);
     }
     for (size_t i = 0; i < kSecretMsgSize; ++i) {
-      reads.push_back(
-          net::MockRead(net::ASYNC, &kSecretMsg[i], 1, sequence_number++));
+      reads.emplace_back(net::ASYNC, &kSecretMsg[i], 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
-      reads.push_back(net::MockRead(mode, net::OK, sequence_number++));
+      reads.emplace_back(mode, net::OK, sequence_number++);
     }
   }
   net::SequencedSocketData data_provider(reads, writes);

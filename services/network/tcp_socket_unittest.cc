@@ -221,8 +221,7 @@ class TestServer {
                 mojo::PendingRemote<mojom::TCPConnectedSocket> connected_socket,
                 mojo::ScopedDataPipeConsumerHandle receive_pipe_handle,
                 mojo::ScopedDataPipeProducerHandle send_pipe_handle) {
-    connected_sockets_.push_back(
-        mojo::Remote<mojom::TCPConnectedSocket>(std::move(connected_socket)));
+    connected_sockets_.emplace_back(std::move(connected_socket));
     server_socket_receive_handle_ = std::move(receive_pipe_handle);
     server_socket_send_handle_ = std::move(send_pipe_handle);
     std::move(callback).Run(result);
@@ -905,14 +904,13 @@ TEST_P(TCPSocketWithMockSocketTest, ReadAndWriteMultiple) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.push_back(net::MockRead(mode, &kTestMsg[i], 1, sequence_number++));
+      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
-      reads.push_back(net::MockRead(mode, net::OK, sequence_number++));
+      reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.push_back(
-          net::MockWrite(mode, &kTestMsg[i], 1, sequence_number++));
+      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -957,14 +955,13 @@ TEST_P(TCPSocketWithMockSocketTest, PartialStreamSocketWrite) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (size_t i = 0; i < kMsgSize; ++i) {
-      reads.push_back(net::MockRead(mode, &kTestMsg[i], 1, sequence_number++));
+      reads.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
     if (j == kNumIterations - 1) {
-      reads.push_back(net::MockRead(mode, net::OK, sequence_number++));
+      reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (size_t i = 0; i < kMsgSize; ++i) {
-      writes.push_back(
-          net::MockWrite(mode, &kTestMsg[i], 1, sequence_number++));
+      writes.emplace_back(mode, &kTestMsg[i], 1, sequence_number++);
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);

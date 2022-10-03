@@ -300,9 +300,8 @@ TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
     if (!commitment_result)
       continue;
 
-    parsed_entries.emplace_back(Entry(std::move(*maybe_issuer),
-                                      raw_key_from_json,
-                                      std::move(commitment_result)));
+    parsed_entries.emplace_back(std::move(*maybe_issuer), raw_key_from_json,
+                                std::move(commitment_result));
   }
 
   // Deterministically deduplicate entries corresponding to the same issuer,

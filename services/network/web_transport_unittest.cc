@@ -208,8 +208,7 @@ class TestClient final : public mojom::WebTransportClient {
 
   // mojom::WebTransportClient implementation.
   void OnDatagramReceived(base::span<const uint8_t> data) override {
-    received_datagrams_.push_back(
-        std::vector<uint8_t>(data.begin(), data.end()));
+    received_datagrams_.emplace_back(data.begin(), data.end());
   }
   void OnIncomingStreamClosed(uint32_t stream_id, bool fin_received) override {
     closed_incoming_streams_.insert(std::make_pair(stream_id, fin_received));

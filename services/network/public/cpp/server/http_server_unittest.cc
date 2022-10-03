@@ -209,7 +209,7 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
 
   void OnHttpRequest(int connection_id,
                      const HttpServerRequestInfo& info) override {
-    requests_.push_back(std::make_pair(info, connection_id));
+    requests_.emplace_back(info, connection_id);
     if (requests_.size() == quit_after_request_count_) {
       run_loop_quit_func_.Run();
     }

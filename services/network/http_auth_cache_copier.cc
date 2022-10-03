@@ -15,9 +15,9 @@ HttpAuthCacheCopier::~HttpAuthCacheCopier() = default;
 base::UnguessableToken HttpAuthCacheCopier::SaveHttpAuthCache(
     const net::HttpAuthCache& cache) {
   base::UnguessableToken key = base::UnguessableToken::Create();
-  auto cache_it = caches_.emplace(std::make_pair(
+  auto cache_it = caches_.emplace(
       key, std::make_unique<net::HttpAuthCache>(
-               cache.key_server_entries_by_network_isolation_key())));
+               cache.key_server_entries_by_network_isolation_key()));
   DCHECK(cache_it.second);
   cache_it.first->second->CopyProxyEntriesFrom(cache);
   return key;

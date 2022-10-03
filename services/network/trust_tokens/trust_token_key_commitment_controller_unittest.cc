@@ -238,7 +238,7 @@ TEST_F(TrustTokenKeyCommitmentControllerTest, Redirect) {
   redirect_info.status_code = 301;
   redirect_info.new_url = GURL("https://unused-redirect-destination.com/");
   network::TestURLLoaderFactory::Redirects redirects;
-  redirects.push_back({redirect_info, network::mojom::URLResponseHead::New()});
+  redirects.emplace_back(redirect_info, network::mojom::URLResponseHead::New());
   auto head = network::CreateURLResponseHead(net::HTTP_OK);
   factory.AddResponse(IssuerDotComKeyCommitmentPath(), std::move(head),
                       /*content=*/"", network::URLLoaderCompletionStatus(),

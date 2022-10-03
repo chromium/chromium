@@ -137,7 +137,7 @@ TEST_F(TestURLLoaderFactoryTest, Redirects) {
   redirect_info.status_code = 301;
   redirect_info.new_url = GURL("http://example2.test/");
   TestURLLoaderFactory::Redirects redirects;
-  redirects.push_back({redirect_info, mojom::URLResponseHead::New()});
+  redirects.emplace_back(redirect_info, mojom::URLResponseHead::New());
   URLLoaderCompletionStatus status;
   std::string content = "foo";
   factory()->AddResponse(url, mojom::URLResponseHead::New(), content, status,
