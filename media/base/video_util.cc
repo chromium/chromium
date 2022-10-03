@@ -101,6 +101,9 @@ SkColorType SkColorTypeForPlane(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_NV12:
       return plane == VideoFrame::kYPlane ? kAlpha_8_SkColorType
                                           : kR8G8_unorm_SkColorType;
+    case PIXEL_FORMAT_P016LE:
+      return plane == VideoFrame::kYPlane ? kA16_unorm_SkColorType
+                                          : kR16G16_unorm_SkColorType;
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_ABGR:
       return kRGBA_8888_SkColorType;

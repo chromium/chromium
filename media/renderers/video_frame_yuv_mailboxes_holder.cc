@@ -302,6 +302,7 @@ VideoFrameYUVMailboxesHolder::VideoPixelFormatToSkiaValues(
   // we do assume 8 bit formats. With that exception, anything else should work.
   switch (video_format) {
     case PIXEL_FORMAT_NV12:
+    case PIXEL_FORMAT_P016LE:
       return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
     case PIXEL_FORMAT_I420:
       return {SkYUVAInfo::PlaneConfig::kY_U_V, SkYUVAInfo::Subsampling::k420};

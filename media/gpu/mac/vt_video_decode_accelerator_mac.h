@@ -265,6 +265,9 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Format of the assigned picture buffers.
   VideoPixelFormat picture_format_ = PIXEL_FORMAT_UNKNOWN;
 
+  // Corresponding GpuMemoryBuffer format.
+  gfx::BufferFormat buffer_format_ = gfx::BufferFormat::YUV_420_BIPLANAR;
+
   // Frames that have not yet been decoded, keyed by bitstream ID; maintains
   // ownership of Frame objects while they flow through VideoToolbox.
   base::flat_map<int32_t, std::unique_ptr<Frame>> pending_frames_;
