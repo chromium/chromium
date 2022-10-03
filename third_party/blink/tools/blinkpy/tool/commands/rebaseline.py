@@ -158,14 +158,7 @@ class AbstractRebaseliningCommand(Command):
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_ACTUAL, '.' + suffix)
 
-    def _file_name_for_expected_result(self, test_name, suffix, is_wpt=False):
-        if is_wpt:
-            # *-actual.txt produced by wptrunner are actually manifest files
-            # that can make the test pass if renamed to *.ini.
-            file_name = self._host_port.get_file_path_for_wpt_test(test_name)
-            assert file_name, ('Cannot find %s in WPT' % test_name)
-            return file_name + '.ini'
-
+    def _file_name_for_expected_result(self, test_name, suffix):
         # output_filename takes extensions starting with '.'.
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.' + suffix)
@@ -354,7 +347,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 debug_build_steps.add((builder, step))
 
         build_steps_to_fallback_paths = defaultdict(dict)
-        wpt_build_steps = set()
         #TODO: we should make the selection of (builder, step) deterministic
         for builder, step in list(release_build_steps) + list(
                 debug_build_steps):
@@ -370,11 +362,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                         build_steps_to_fallback_paths[is_legacy_step].values()):
                     build_steps_to_fallback_paths[
                         is_legacy_step][builder, step] = fallback_path
-            else:
-                wpt_build_steps.add((builder, step))
-        return (set(build_steps_to_fallback_paths[True]) |
-                set(build_steps_to_fallback_paths[False]) |
-                wpt_build_steps)
+        return (set(build_steps_to_fallback_paths[True])
+                | set(build_steps_to_fallback_paths[False]))
 
     def baseline_fetch_url_resultdb(self, test_name, build):
         # TODO(crbug.com/1213998): Optimize the loop through all artifact_list.
@@ -398,18 +387,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                             artifact_fetch_urls.append(artifact['fetchUrl'])
                             done = True
         return artifact_fetch_urls
-
-    def _can_optimize(self, builder_name):
-        # TODO(crbug.com/1154085): Undo this special case when we have WPT
-        # bots on more ports.
-        # We may be rebaselining only a subset of all platforms, in which
-        # case we need to copy any existing baselines first to avoid clobbering
-        # results from platforms that were not run. See
-        # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_baseline_fallback.md#rebaseline
-        #
-        # However when running in modes that don't interact with the optimizer,
-        # we don't want to do this copying.
-        return not self._tool.builders.is_wpt_builder(builder_name)
 
     def _rebaseline_args(self,
                          test,
@@ -468,7 +445,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     lines_to_remove[test].append(port_name)
                 continue
 
-            if suffixes and self._can_optimize(build.builder_name):
+            if suffixes:
                 test_port_pairs_to_suffixes[test, port_name].update(suffixes)
 
             flag_spec_option = self._tool.builders.flag_specific_option(
@@ -538,8 +515,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         test_set = set()
         baseline_subset = self._filter_baseline_set_builders(test_baseline_set)
         for test, build, step_name, _ in baseline_subset:
-            if not self._can_optimize(build.builder_name):
-                continue
             # Use the suffixes information to determine whether to proceed with the optimize
             # step. Suffixes are not passed to the optimizer.
             if resultDB:
@@ -742,8 +717,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 suffixes.add('txt')
             if 'actual_audio' in artifact_fetch_url:
                 suffixes.add('wav')
-            if self._tool.builders.is_wpt_builder(build.builder_name):
-                suffixes.add('txt')
         return suffixes
 
     def _suffixes_for_actual_failures(self, test, build, step_name=None):
@@ -760,11 +733,6 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         test_result = self._result_for_test(test, build, step_name)
         if not test_result:
             return set()
-        # Regardless of the test type, we only need the text output (i.e. the
-        # INI manifest) on a WPT bot (a reftest produces both text and image
-        # output, but the image is only informative).
-        if self._tool.builders.is_wpt_builder(build.builder_name):
-            return {'txt'}
         return test_result.suffixes_for_test_result()
 
     def _test_passed_unexpectedly(self, test, build, port_name,

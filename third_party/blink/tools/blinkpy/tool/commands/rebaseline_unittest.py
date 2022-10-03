@@ -11,13 +11,11 @@ from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.tool.commands.rebaseline import (
-    AbstractRebaseliningCommand, AbstractParallelRebaselineCommand, Rebaseline,
-    TestBaselineSet)
+    AbstractParallelRebaselineCommand, Rebaseline, TestBaselineSet)
 from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.web_tests.builder_list import BuilderList
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
-from blinkpy.web_tests.port.test import (add_manifest_to_mock_filesystem,
-                                         MOCK_WEB_TESTS)
+from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
 class BaseTestCase(unittest.TestCase):
@@ -216,25 +214,6 @@ class BaseTestCase(unittest.TestCase):
                     step_name='blink_web_tests (with patch)'))
 
 
-class TestAbstractRebaselineCommand(BaseTestCase):
-    """Tests for the base class of a rebaseline command.
-
-    This class only contains test cases for utility methods.
-    """
-
-    command_constructor = AbstractRebaseliningCommand
-
-    def test_file_name_for_expected_result(self):
-        # pylint: disable=protected-access
-        add_manifest_to_mock_filesystem(self.tool.port_factory.get())
-        self.assertEqual(
-            self.command._file_name_for_expected_result(
-                'external/wpt/console/console-is-a-namespace.any.worker.html',
-                'txt',
-                is_wpt=True),
-            'external/wpt/console/console-is-a-namespace.any.js.ini')
-
-
 class TestAbstractParallelRebaselineCommand(BaseTestCase):
     """Tests for the base class of multiple rebaseline commands.
 
@@ -256,19 +235,6 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
             build_steps_to_fetch, {
                 ('MOCK Win7', 'blink_web_tests (with patch)'),
                 ('MOCK Win10', 'blink_web_tests (with patch)'),
-            })
-
-        build_steps_to_fetch = self.command.build_steps_to_fetch_from([
-            ('MOCK Trusty', 'blink_web_tests (with patch)'),
-            ('MOCK wpt(1)', 'blink_web_tests (with patch)'),
-            ('MOCK wpt(2)', 'blink_web_tests (with patch)'),
-        ])
-        # All ports are unique.
-        self.assertEqual(
-            build_steps_to_fetch, {
-                ('MOCK Trusty', 'blink_web_tests (with patch)'),
-                ('MOCK wpt(1)', 'blink_web_tests (with patch)'),
-                ('MOCK wpt(2)', 'blink_web_tests (with patch)'),
             })
 
     def test_builders_to_fetch_from_flag_specific(self):
@@ -330,24 +296,6 @@ class TestAbstractParallelRebaselineCommand(BaseTestCase):
             MOCK_WEB_TESTS + 'x/foo-expected.png',
             MOCK_WEB_TESTS + 'x/foo-expected.txt',
         ])
-
-    def test_suffixes_for_actual_failures_for_wpt(self):
-        self.tool.results_fetcher.set_results(
-            Build('some-wpt-bot'),
-            WebTestResults({
-                'tests': {
-                    'wpt.html': {
-                        'expected': 'PASS',
-                        'actual': 'FAIL',
-                    }
-                }
-            }))
-        self.assertEqual(
-            # pylint: disable=protected-access
-            self.command._suffixes_for_actual_failures('wpt.html',
-                                                       Build('some-wpt-bot')),
-            {'txt'},
-        )
 
     def test_suffixes_for_actual_failures_for_non_wpt(self):
         # pylint: disable=protected-access

@@ -238,7 +238,10 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     to_remove.add(try_builder)
             try_builders = try_builders - to_remove
 
-        return try_builders
+        return set([
+            builder for builder in try_builders
+            if not self._tool.builders.is_wpt_builder(builder)
+        ])
 
     @property
     def cq_try_bots(self):
