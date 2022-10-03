@@ -60,13 +60,13 @@ constexpr SkColor kPenColors[] = {
 enum ProjectorTool { kToolNone, kToolPen };
 
 ProjectorTool GetCurrentTool() {
-  auto* controller = Shell::Get()->projector_controller();
-  // ProjctorController may not be available yet as the ProjectorAnnotationTray
+  auto* projector_controller = Shell::Get()->projector_controller();
+  // ProjectorController may not be available yet as the ProjectorAnnotationTray
   // is created before it.
-  if (!controller)
+  if (!projector_controller)
     return kToolNone;
 
-  if (controller->IsAnnotatorEnabled())
+  if (projector_controller->IsAnnotatorEnabled())
     return kToolPen;
   return kToolNone;
 }
@@ -100,6 +100,21 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       pen_view_(nullptr) {
+  SetPressedCallback(base::BindRepeating(
+      [](ProjectorAnnotationTray* projector_annotation_tray,
+         const ui::Event& event) {
+        if ((event.IsMouseEvent() &&
+             event.AsMouseEvent()->IsRightMouseButton()) ||
+            (event.IsGestureEvent() &&
+             event.AsGestureEvent()->details().type() ==
+                 ui::ET_GESTURE_LONG_PRESS)) {
+          projector_annotation_tray->ShowBubble();
+          return;
+        }
+
+        projector_annotation_tray->ToggleAnnotator();
+      },
+      base::Unretained(this)));
   image_view_->SetTooltipText(GetTooltip());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -110,30 +125,6 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
 }
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
-
-bool ProjectorAnnotationTray::PerformAction(const ui::Event& event) {
-  ToggleAnnotator();
-  return true;
-}
-
-void ProjectorAnnotationTray::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED) {
-    return;
-  }
-  if (event->IsRightMouseButton()) {
-    ShowBubble();
-  } else if (event->IsLeftMouseButton()) {
-    ToggleAnnotator();
-  }
-}
-
-void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->details().type() == ui::ET_GESTURE_LONG_PRESS) {
-    ShowBubble();
-  } else if (event->details().type() == ui::ET_GESTURE_TAP) {
-    ToggleAnnotator();
-  }
-}
 
 void ProjectorAnnotationTray::ClickedOutsideBubble() {
   CloseBubble();
@@ -288,18 +279,18 @@ void ProjectorAnnotationTray::ToggleAnnotator() {
 }
 
 void ProjectorAnnotationTray::EnableAnnotatorWithPenColor() {
-  auto* controller = Shell::Get()->projector_controller();
-  DCHECK(controller);
+  auto* projector_controller = Shell::Get()->projector_controller();
+  DCHECK(projector_controller);
   AnnotatorTool tool;
   tool.color = current_pen_color_;
-  controller->SetAnnotatorTool(tool);
-  controller->EnableAnnotatorTool();
+  projector_controller->SetAnnotatorTool(tool);
+  projector_controller->EnableAnnotatorTool();
 }
 
 void ProjectorAnnotationTray::DeactivateActiveTool() {
-  auto* controller = Shell::Get()->projector_controller();
-  DCHECK(controller);
-  controller->ResetTools();
+  auto* projector_controller = Shell::Get()->projector_controller();
+  DCHECK(projector_controller);
+  projector_controller->ResetTools();
 }
 
 void ProjectorAnnotationTray::UpdateIcon() {
