@@ -147,6 +147,12 @@ def try_builder(
     # TODO(crbug.com/1346781): Enable everywhere.
     experiments.setdefault("chromium_swarming.expose_merge_script_failures", 20)
 
+    # TODO(crbug.com/1314194): Enable weetbix everywhere. Remove once chromium
+    # recipe is updated to use this by default.
+    experiments.setdefault("weetbix.enable_weetbix_exonerations", 100)
+    experiments.setdefault("weetbix.retry_weak_exonerations", 100)
+    experiments.setdefault("enable_weetbix_queries", 100)
+
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "chrome-luci-data.chromium.try_test_results",
