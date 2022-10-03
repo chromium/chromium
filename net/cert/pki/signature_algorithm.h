@@ -9,6 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace net {
 
@@ -45,13 +46,6 @@ enum class SignatureAlgorithm {
   kRsaPssSha256,
   kRsaPssSha384,
   kRsaPssSha512,
-  // These algorithms can be parsed but are not supported.
-  // TODO(https://crbug.com/1321688): Remove these.
-  kRsaPkcs1Md2,
-  kRsaPkcs1Md4,
-  kRsaPkcs1Md5,
-  kDsaSha1,
-  kDsaSha256,
 };
 
 // Parses AlgorithmIdentifier as defined by RFC 5280 section 4.1.1.2:

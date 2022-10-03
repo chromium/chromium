@@ -99,6 +99,11 @@ class CertBuilder {
                        EVP_PKEY* key,
                        CBB* out_signature);
 
+  static bool SignDataWithDigest(const EVP_MD* digest,
+                                 base::StringPiece tbs_data,
+                                 EVP_PKEY* key,
+                                 CBB* out_signature);
+
   // Returns a DER encoded AlgorithmIdentifier TLV for |signature_algorithm|
   // empty string on error.
   static std::string SignatureAlgorithmToDer(

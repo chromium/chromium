@@ -53,14 +53,6 @@ std::string Sha1WithRSAEncryption() {
                      std::end(kSha1WithRSAEncryption));
 }
 
-std::string Md5WithRSAEncryption() {
-  const uint8_t kMd5WithRSAEncryption[] = {0x30, 0x0d, 0x06, 0x09, 0x2a,
-                                           0x86, 0x48, 0x86, 0xf7, 0x0d,
-                                           0x01, 0x01, 0x04, 0x05, 0x00};
-  return std::string(std::begin(kMd5WithRSAEncryption),
-                     std::end(kMd5WithRSAEncryption));
-}
-
 std::string EcdsaWithSha256() {
   const uint8_t kDer[] = {0x30, 0x0a, 0x06, 0x08, 0x2a, 0x86,
                           0x48, 0xce, 0x3d, 0x04, 0x03, 0x02};
@@ -255,12 +247,7 @@ bool CertBuilder::SignData(SignatureAlgorithm signature_algorithm,
 
   int expected_pkey_id = 1;
   const EVP_MD* digest;
-
   switch (signature_algorithm) {
-    case SignatureAlgorithm::kRsaPkcs1Md5:
-      expected_pkey_id = EVP_PKEY_RSA;
-      digest = EVP_md5();
-      break;
     case SignatureAlgorithm::kRsaPkcs1Sha1:
       expected_pkey_id = EVP_PKEY_RSA;
       digest = EVP_sha1();
@@ -298,21 +285,25 @@ bool CertBuilder::SignData(SignatureAlgorithm signature_algorithm,
     case SignatureAlgorithm::kRsaPssSha256:
     case SignatureAlgorithm::kRsaPssSha384:
     case SignatureAlgorithm::kRsaPssSha512:
-    case SignatureAlgorithm::kRsaPkcs1Md2:
-    case SignatureAlgorithm::kRsaPkcs1Md4:
-    case SignatureAlgorithm::kDsaSha1:
-    case SignatureAlgorithm::kDsaSha256:
       // Unsupported algorithms.
       return false;
   }
 
+  return expected_pkey_id == EVP_PKEY_id(key) &&
+         SignDataWithDigest(digest, tbs_data, key, out_signature);
+}
+
+// static
+bool CertBuilder::SignDataWithDigest(const EVP_MD* digest,
+                                     base::StringPiece tbs_data,
+                                     EVP_PKEY* key,
+                                     CBB* out_signature) {
   const uint8_t* tbs_bytes = reinterpret_cast<const uint8_t*>(tbs_data.data());
   bssl::ScopedEVP_MD_CTX ctx;
   uint8_t* sig_out;
   size_t sig_len;
 
-  return expected_pkey_id == EVP_PKEY_id(key) &&
-         EVP_DigestSignInit(ctx.get(), nullptr, digest, nullptr, key) &&
+  return EVP_DigestSignInit(ctx.get(), nullptr, digest, nullptr, key) &&
          EVP_DigestSign(ctx.get(), nullptr, &sig_len, tbs_bytes,
                         tbs_data.size()) &&
          CBB_reserve(out_signature, &sig_out, sig_len) &&
@@ -325,8 +316,6 @@ bool CertBuilder::SignData(SignatureAlgorithm signature_algorithm,
 std::string CertBuilder::SignatureAlgorithmToDer(
     SignatureAlgorithm signature_algorithm) {
   switch (signature_algorithm) {
-    case SignatureAlgorithm::kRsaPkcs1Md5:
-      return Md5WithRSAEncryption();
     case SignatureAlgorithm::kRsaPkcs1Sha1:
       return Sha1WithRSAEncryption();
     case SignatureAlgorithm::kRsaPkcs1Sha256:

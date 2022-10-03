@@ -7,6 +7,7 @@
 
 #include "net/cert/pem.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/verify_certificate_chain.h"
@@ -74,8 +75,8 @@ TYPED_TEST_P(VerifyCertificateChainSingleRootTest, UnknownExtension) {
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, WeakSignature) {
-  this->RunTest("target-signed-with-md5/main.test");
-  this->RunTest("intermediate-signed-with-md5/main.test");
+  this->RunTest("target-signed-with-sha1/main.test");
+  this->RunTest("intermediate-signed-with-sha1/main.test");
 }
 
 TYPED_TEST_P(VerifyCertificateChainSingleRootTest, WrongSignature) {

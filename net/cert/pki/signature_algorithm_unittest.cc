@@ -1373,8 +1373,7 @@ TEST(SignatureAlgorithmTest, ParseDerMd5WithRsaEncryptionNullParams) {
       0x05, 0x00,  // NULL (0 bytes)
   };
   // clang-format on
-  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr),
-            SignatureAlgorithm::kRsaPkcs1Md5);
+  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr), absl::nullopt);
 }
 
 // Parses a md4WithRSAEncryption which contains a NULL parameters field.
@@ -1391,8 +1390,7 @@ TEST(SignatureAlgorithmTest, ParseDerMd4WithRsaEncryptionNullParams) {
       0x05, 0x00,  // NULL (0 bytes)
   };
   // clang-format on
-  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr),
-            SignatureAlgorithm::kRsaPkcs1Md4);
+  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr), absl::nullopt);
 }
 
 // Parses a md2WithRSAEncryption which contains a NULL parameters field.
@@ -1409,8 +1407,7 @@ TEST(SignatureAlgorithmTest, ParseDerMd2WithRsaEncryptionNullParams) {
       0x05, 0x00,  // NULL (0 bytes)
   };
   // clang-format on
-  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr),
-            SignatureAlgorithm::kRsaPkcs1Md2);
+  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr), absl::nullopt);
 }
 
 // Parses a dsaWithSha1 which contains no parameters field.
@@ -1425,8 +1422,7 @@ TEST(SignatureAlgorithmTest, ParseDerDsaWithSha1NoParams) {
       0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x03,
   };
   // clang-format on
-  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr),
-            SignatureAlgorithm::kDsaSha1);
+  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr), absl::nullopt);
 }
 
 // Parses a dsaWithSha1 which contains a NULL parameters field.
@@ -1443,8 +1439,7 @@ TEST(SignatureAlgorithmTest, ParseDerDsaWithSha1NullParams) {
       0x05, 0x00,  // NULL (0 bytes)
   };
   // clang-format on
-  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr),
-            SignatureAlgorithm::kDsaSha1);
+  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr), absl::nullopt);
 }
 
 // Parses a dsaWithSha256 which contains no parameters field.
@@ -1459,8 +1454,7 @@ TEST(SignatureAlgorithmTest, ParseDerDsaWithSha256NoParams) {
       0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x03, 0x02
   };
   // clang-format on
-  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr),
-            SignatureAlgorithm::kDsaSha256);
+  EXPECT_EQ(ParseSignatureAlgorithm(der::Input(kData), nullptr), absl::nullopt);
 }
 
 }  // namespace

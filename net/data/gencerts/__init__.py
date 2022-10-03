@@ -318,20 +318,20 @@ class Certificate(object):
     # "verify_certificate_chain_unittest/my_test/generate_chains.py"
     script_path = os.path.realpath(g_invoking_script_path)
     script_path = "/".join(script_path.split(os.sep)[-3:])
-    m.update(script_path)
+    m.update(script_path.encode('utf-8'))
 
     # Mix in the path_id, which corresponds to a unique path for the
     # certificate under out/ (and accounts for non-unique certificate names).
-    m.update(self.path_id)
+    m.update(self.path_id.encode('utf-8'))
 
-    serial_bytes = m.digest()
+    serial_bytes = bytearray(m.digest())
 
     # SHA1 digest is 20 bytes long, which is appropriate for a serial number.
     # However, need to also make sure the most significant bit is 0 so it is
     # not a "negative" number.
-    serial_bytes = chr(ord(serial_bytes[0]) & 0x7F) + serial_bytes[1:]
+    serial_bytes[0] = serial_bytes[0] & 0x7F
 
-    return serial_bytes.encode("hex")
+    return serial_bytes.hex()
 
 
   def get_csr_path(self):

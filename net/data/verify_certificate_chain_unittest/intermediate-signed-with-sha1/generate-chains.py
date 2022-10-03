@@ -2,7 +2,6 @@
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Certificate chain where the intermediate has a valid signature, however uses
 MD5 in the signature algorithm."""
 
@@ -16,7 +15,7 @@ root = gencerts.create_self_signed_root_certificate('Root')
 
 # Intermediate.
 intermediate = gencerts.create_intermediate_certificate('Intermediate', root)
-intermediate.set_signature_hash('md5')
+intermediate.set_signature_hash('sha1')
 
 # Target certificate.
 target = gencerts.create_end_entity_certificate('Target', intermediate)

@@ -70,16 +70,6 @@ bool SimplePathBuilderDelegate::IsSignatureAlgorithmAcceptable(
     case SignatureAlgorithm::kRsaPssSha384:
     case SignatureAlgorithm::kRsaPssSha512:
       return true;
-
-    case SignatureAlgorithm::kRsaPkcs1Md2:
-    case SignatureAlgorithm::kRsaPkcs1Md4:
-    case SignatureAlgorithm::kRsaPkcs1Md5:
-    case SignatureAlgorithm::kDsaSha1:
-    case SignatureAlgorithm::kDsaSha256:
-      // TODO(https://crbug.com/1321688): We do not implement DSA, MD2, MD4, or
-      // MD5 anyway. Remove them from the parser altogether, so code does not
-      // need to handle them.
-      return false;
   }
 }
 

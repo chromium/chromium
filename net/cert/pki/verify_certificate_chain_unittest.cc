@@ -17,8 +17,7 @@ class VerifyCertificateChainTestDelegate {
  public:
   static void Verify(const VerifyCertChainTest& test,
                      const std::string& test_file_path) {
-    SimplePathBuilderDelegate delegate(
-        1024, SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1);
+    SimplePathBuilderDelegate delegate(1024, test.digest_policy);
 
     CertPathErrors errors;
     // TODO(eroman): Check user_constrained_policy_set.

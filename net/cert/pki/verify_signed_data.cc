@@ -155,15 +155,6 @@ bool VerifySignedData(SignatureAlgorithm algorithm,
       digest = EVP_sha512();
       is_rsa_pss = true;
       break;
-
-    case SignatureAlgorithm::kDsaSha1:
-    case SignatureAlgorithm::kDsaSha256:
-    case SignatureAlgorithm::kRsaPkcs1Md2:
-    case SignatureAlgorithm::kRsaPkcs1Md4:
-    case SignatureAlgorithm::kRsaPkcs1Md5:
-      // DSA, MD2, MD4, and MD5 are not supported. See
-      // https://crbug.com/1321688.
-      return false;
   }
 
   if (expected_pkey_id != EVP_PKEY_id(public_key))

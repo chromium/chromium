@@ -4,9 +4,11 @@
 
 #include "net/test/revocation_builder.h"
 
+#include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
@@ -378,24 +380,13 @@ std::string BuildOCSPResponseWithResponseData(
                             FinishCBB(basic_ocsp_response_cbb.get()));
 }
 
-std::string BuildCrl(const std::string& crl_issuer_subject,
-                     EVP_PKEY* crl_issuer_key,
-                     const std::vector<uint64_t>& revoked_serials,
-                     absl::optional<SignatureAlgorithm> signature_algorithm) {
+std::string BuildCrlWithSigner(
+    const std::string& crl_issuer_subject,
+    EVP_PKEY* crl_issuer_key,
+    const std::vector<uint64_t>& revoked_serials,
+    const std::string& signature_algorithm_tlv,
+    base::OnceCallback<bool(std::string, CBB*)> signer) {
   if (!crl_issuer_key) {
-    ADD_FAILURE();
-    return std::string();
-  }
-  if (!signature_algorithm)
-    signature_algorithm =
-        CertBuilder::DefaultSignatureAlgorithmForKey(crl_issuer_key);
-  if (!signature_algorithm) {
-    ADD_FAILURE();
-    return std::string();
-  }
-  std::string signature_algorithm_tlv =
-      CertBuilder::SignatureAlgorithmToDer(*signature_algorithm);
-  if (signature_algorithm_tlv.empty()) {
     ADD_FAILURE();
     return std::string();
   }
@@ -463,11 +454,54 @@ std::string BuildCrl(const std::string& crl_issuer_subject,
       !CBBAddBytes(&cert_list, signature_algorithm_tlv) ||
       !CBB_add_asn1(&cert_list, &signature, CBS_ASN1_BITSTRING) ||
       !CBB_add_u8(&signature, 0 /* no unused bits */) ||
-      !CertBuilder::SignData(*signature_algorithm, tbs_tlv, crl_issuer_key,
-                             &signature)) {
+      !std::move(signer).Run(tbs_tlv, &signature)) {
     ADD_FAILURE();
     return std::string();
   }
   return FinishCBB(crl_cbb.get());
 }
+
+std::string BuildCrl(const std::string& crl_issuer_subject,
+                     EVP_PKEY* crl_issuer_key,
+                     const std::vector<uint64_t>& revoked_serials,
+                     absl::optional<SignatureAlgorithm> signature_algorithm) {
+  if (!signature_algorithm) {
+    signature_algorithm =
+        CertBuilder::DefaultSignatureAlgorithmForKey(crl_issuer_key);
+  }
+  if (!signature_algorithm) {
+    ADD_FAILURE();
+    return std::string();
+  }
+  std::string signature_algorithm_tlv =
+      CertBuilder::SignatureAlgorithmToDer(*signature_algorithm);
+  if (signature_algorithm_tlv.empty()) {
+    ADD_FAILURE();
+    return std::string();
+  }
+
+  auto signer =
+      base::BindLambdaForTesting([&](std::string tbs_tlv, CBB* signature) {
+        return CertBuilder::SignData(*signature_algorithm, tbs_tlv,
+                                     crl_issuer_key, signature);
+      });
+  return BuildCrlWithSigner(crl_issuer_subject, crl_issuer_key, revoked_serials,
+                            signature_algorithm_tlv, signer);
+}
+
+std::string BuildCrlWithAlgorithmTlvAndDigest(
+    const std::string& crl_issuer_subject,
+    EVP_PKEY* crl_issuer_key,
+    const std::vector<uint64_t>& revoked_serials,
+    const std::string& signature_algorithm_tlv,
+    const EVP_MD* digest) {
+  auto signer =
+      base::BindLambdaForTesting([&](std::string tbs_tlv, CBB* signature) {
+        return CertBuilder::SignDataWithDigest(digest, tbs_tlv, crl_issuer_key,
+                                               signature);
+      });
+  return BuildCrlWithSigner(crl_issuer_subject, crl_issuer_key, revoked_serials,
+                            signature_algorithm_tlv, signer);
+}
+
 }  // namespace net

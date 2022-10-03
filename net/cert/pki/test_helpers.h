@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/cert/pki/parsed_certificate.h"
+#include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/verify_certificate_chain.h"
 #include "net/der/input.h"
@@ -108,6 +109,9 @@ struct VerifyCertChainTest {
 
   // The expected errors/warnings from verification (as a string).
   std::string expected_errors;
+
+  SimplePathBuilderDelegate::DigestPolicy digest_policy =
+      SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1;
 
   // Returns true if |expected_errors| contains any high severity errors (a
   // non-empty expected_errors doesn't necessarily mean verification is

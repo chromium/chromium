@@ -13,6 +13,7 @@
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
+#include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/der/parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
@@ -201,6 +202,7 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
   bool has_time = false;
   bool has_errors = false;
   bool has_key_purpose = false;
+  bool has_digest_policy = false;
 
   base::StringPiece kExpectedErrors = "expected_errors:";
 
@@ -269,6 +271,17 @@ bool ReadVerifyCertChainTestFromFile(const std::string& file_path_ascii,
         test->last_cert_trust = CertificateTrust::ForUnspecified();
       } else {
         ADD_FAILURE() << "Unrecognized last_cert_trust: " << value;
+        return false;
+      }
+    } else if (GetValue("digest_policy: ", line_piece, &value,
+                        &has_digest_policy)) {
+      if (value == "STRONG") {
+        test->digest_policy = SimplePathBuilderDelegate::DigestPolicy::kStrong;
+      } else if (value == "ALLOW_SHA_1") {
+        test->digest_policy =
+            SimplePathBuilderDelegate::DigestPolicy::kWeakAllowSha1;
+      } else {
+        ADD_FAILURE() << "Unrecognized digest_policy: " << value;
         return false;
       }
     } else if (base::StartsWith(line_piece, "#")) {

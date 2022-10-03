@@ -387,16 +387,8 @@ bool AreSHA1IntermediatesAllowed() {
   switch (*cert_algorithm) {
     case SignatureAlgorithm::kRsaPkcs1Sha1:
     case SignatureAlgorithm::kEcdsaSha1:
-    case SignatureAlgorithm::kDsaSha1:
       verify_result->has_sha1 = true;
       return true;  // For now.
-
-    case SignatureAlgorithm::kRsaPkcs1Md2:
-    case SignatureAlgorithm::kRsaPkcs1Md4:
-    case SignatureAlgorithm::kRsaPkcs1Md5:
-      // TODO(https://crbug.com/1321688): Remove these from the parser
-      // altogether.
-      return false;
 
     case SignatureAlgorithm::kRsaPkcs1Sha256:
     case SignatureAlgorithm::kRsaPkcs1Sha384:
@@ -407,7 +399,6 @@ bool AreSHA1IntermediatesAllowed() {
     case SignatureAlgorithm::kRsaPssSha256:
     case SignatureAlgorithm::kRsaPssSha384:
     case SignatureAlgorithm::kRsaPssSha512:
-    case SignatureAlgorithm::kDsaSha256:
       return true;
   }
 

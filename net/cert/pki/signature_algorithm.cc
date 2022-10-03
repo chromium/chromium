@@ -17,21 +17,6 @@ namespace net {
 
 namespace {
 
-// md2WithRSAEncryption
-// In dotted notation: 1.2.840.113549.1.1.2
-const uint8_t kOidMd2WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                            0x0d, 0x01, 0x01, 0x02};
-
-// md4WithRSAEncryption
-// In dotted notation: 1.2.840.113549.1.1.3
-const uint8_t kOidMd4WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                            0x0d, 0x01, 0x01, 0x03};
-
-// md5WithRSAEncryption
-// In dotted notation: 1.2.840.113549.1.1.4
-const uint8_t kOidMd5WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                            0x0d, 0x01, 0x01, 0x04};
-
 // From RFC 5912:
 //
 //     sha1WithRSAEncryption OBJECT IDENTIFIER ::= {
@@ -131,24 +116,6 @@ const uint8_t kOidEcdsaWithSha512[] = {0x2a, 0x86, 0x48, 0xce,
 // In dotted notation: 1.2.840.113549.1.1.10
 const uint8_t kOidRsaSsaPss[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
                                  0x0d, 0x01, 0x01, 0x0a};
-
-// From RFC 5912:
-//
-//     dsa-with-sha1 OBJECT IDENTIFIER ::=  {
-//      iso(1) member-body(2) us(840) x9-57(10040) x9algorithm(4) 3 }
-//
-// In dotted notation: 1.2.840.10040.4.3
-const uint8_t kOidDsaWithSha1[] = {0x2a, 0x86, 0x48, 0xce, 0x38, 0x04, 0x03};
-
-// From RFC 5912:
-//
-//     dsa-with-sha256 OBJECT IDENTIFIER  ::=  {
-//      joint-iso-ccitt(2) country(16) us(840) organization(1) gov(101)
-//      csor(3) algorithms(4) id-dsa-with-sha2(3) 2 }
-//
-// In dotted notation: 2.16.840.1.101.3.4.3.2
-const uint8_t kOidDsaWithSha256[] = {0x60, 0x86, 0x48, 0x01, 0x65,
-                                     0x03, 0x04, 0x03, 0x02};
 
 // From RFC 5912:
 //
@@ -391,15 +358,6 @@ absl::optional<SignatureAlgorithm> ParseSignatureAlgorithm(
   if (oid == der::Input(kOidSha1WithRsaSignature) && IsNullOrEmpty(params)) {
     return SignatureAlgorithm::kRsaPkcs1Sha1;
   }
-  if (oid == der::Input(kOidMd2WithRsaEncryption) && IsNullOrEmpty(params)) {
-    return SignatureAlgorithm::kRsaPkcs1Md2;
-  }
-  if (oid == der::Input(kOidMd4WithRsaEncryption) && IsNullOrEmpty(params)) {
-    return SignatureAlgorithm::kRsaPkcs1Md4;
-  }
-  if (oid == der::Input(kOidMd5WithRsaEncryption) && IsNullOrEmpty(params)) {
-    return SignatureAlgorithm::kRsaPkcs1Md5;
-  }
 
   // RFC 5912 requires that the parameters for ECDSA algorithms be absent
   // ("PARAMS TYPE NULL ARE absent"):
@@ -420,16 +378,6 @@ absl::optional<SignatureAlgorithm> ParseSignatureAlgorithm(
     return ParseRsaPss(params);
   }
 
-  // RFC 5912 requires that the parameters for DSA algorithms be absent.
-  //
-  // TODO(svaldez): Add warning about non-strict parsing.
-  if (oid == der::Input(kOidDsaWithSha1) && IsNullOrEmpty(params)) {
-    return SignatureAlgorithm::kDsaSha1;
-  }
-  if (oid == der::Input(kOidDsaWithSha256) && IsNullOrEmpty(params)) {
-    return SignatureAlgorithm::kDsaSha256;
-  }
-
   // Unknown signature algorithm.
   if (errors) {
     errors->AddError(kUnknownSignatureAlgorithm,
@@ -446,8 +394,7 @@ absl::optional<DigestAlgorithm> GetTlsServerEndpointDigestAlgorithm(
   // implement this within the library, so callers do not need to condition over
   // all algorithms.
   switch (alg) {
-    // If the single digest algorithm is MD5 or SHA-1, use SHA-256.
-    case SignatureAlgorithm::kRsaPkcs1Md5:
+    // If the single digest algorithm is SHA-1, use SHA-256.
     case SignatureAlgorithm::kRsaPkcs1Sha1:
     case SignatureAlgorithm::kEcdsaSha1:
       return DigestAlgorithm::Sha256;
@@ -473,13 +420,6 @@ absl::optional<DigestAlgorithm> GetTlsServerEndpointDigestAlgorithm(
       return DigestAlgorithm::Sha384;
     case SignatureAlgorithm::kRsaPssSha512:
       return DigestAlgorithm::Sha512;
-
-    // Do not return anything for these legacy algorithms.
-    case SignatureAlgorithm::kDsaSha1:
-    case SignatureAlgorithm::kDsaSha256:
-    case SignatureAlgorithm::kRsaPkcs1Md2:
-    case SignatureAlgorithm::kRsaPkcs1Md4:
-      return absl::nullopt;
   }
   return absl::nullopt;
 }

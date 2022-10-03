@@ -65,6 +65,13 @@ std::string BuildCrl(
     const std::vector<uint64_t>& revoked_serials,
     absl::optional<SignatureAlgorithm> signature_algorithm = absl::nullopt);
 
+std::string BuildCrlWithAlgorithmTlvAndDigest(
+    const std::string& crl_issuer_subject,
+    EVP_PKEY* crl_issuer_key,
+    const std::vector<uint64_t>& revoked_serials,
+    const std::string& signature_algorithm_tlv,
+    const EVP_MD* digest);
+
 }  // namespace net
 
 #endif  // NET_TEST_REVOCATION_BUILDER_H_
