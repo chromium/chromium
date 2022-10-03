@@ -49,6 +49,10 @@ void CaptureModeTestApi::StartForRegion(bool for_video) {
   controller_->Start(CaptureModeEntryType::kQuickSettings);
 }
 
+void CaptureModeTestApi::SetCaptureModeSource(CaptureModeSource source) {
+  controller_->SetSource(source);
+}
+
 bool CaptureModeTestApi::IsSessionActive() const {
   return controller_->IsActive();
 }
@@ -196,6 +200,10 @@ void CaptureModeTestApi::SetOnCameraVideoFrameRendered(
   DCHECK(camera_controller->camera_preview_view_);
   camera_controller->camera_preview_view_->camera_video_renderer_
       .on_video_frame_rendered_for_test_ = std::move(callback);
+}
+
+views::Widget* CaptureModeTestApi::GetCameraPreviewWidget() {
+  return controller_->camera_controller()->camera_preview_widget();
 }
 
 void CaptureModeTestApi::SetType(bool for_video) {
