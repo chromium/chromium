@@ -254,6 +254,7 @@ class SubmitFeedbackButton : public IconButton {
         kSubmitFeedbackButtonMarginBottom, kSubmitFeedbackButtonMarginRight)));
     SetIconColor(channel_indicator_utils::GetFgColor(channel_));
     SetIconSize(kSubmitFeedbackButtonIconSize);
+    SetBackgroundColor(channel_indicator_utils::GetBgColor(channel_));
     SetPreferredSize(
         gfx::Size(kSubmitFeedbackButtonWidth, kSubmitFeedbackButtonHeight));
 
