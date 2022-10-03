@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -58,17 +59,20 @@ TEST(UpdaterTest, UpdaterExitCode) {
 // Tests that the updater test target version resource contains specific
 // information to disambiguate the binary. For Windows builds and during tests,
 // the "updater_test.exe" file is being installed as "updater.exe", therefore
-// it is useful to tell them apart.
+// it is useful to have a hint of information available somewhere, to determine
+// whether "updater.exe" is the test variant or the production variant.
 TEST(UpdaterTest, UpdaterTestVersionResource) {
   base::FilePath this_executable_path;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &this_executable_path));
-
-  const base::FilePath executable_test(FILE_PATH_LITERAL("updater_test.exe"));
+  const base::FilePath updater_test_name(FILE_PATH_LITERAL("updater_test.exe"));
+  const base::FilePath updater_test_path(
+      this_executable_path.DirName().Append(updater_test_name));
+  ASSERT_TRUE(base::PathExists(updater_test_path)) << updater_test_path;
   const std::unique_ptr<FileVersionInfoWin> version_info =
-      FileVersionInfoWin::CreateFileVersionInfoWin(
-          this_executable_path.DirName().Append(executable_test));
-
-  EXPECT_EQ(version_info->original_filename(), executable_test.AsUTF16Unsafe());
+      FileVersionInfoWin::CreateFileVersionInfoWin(updater_test_path);
+  ASSERT_NE(version_info, nullptr);
+  EXPECT_EQ(version_info->original_filename(),
+            updater_test_name.AsUTF16Unsafe());
 }
 
 // Checks that the unit test has the SE_DEBUG_NAME privilege when the process is
