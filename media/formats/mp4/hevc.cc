@@ -124,6 +124,10 @@ bool HEVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
   }
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (!arrays.size()) {
+    DVLOG(1) << "Could not found HVCCNALArray";
+    return true;
+  }
   // Parse the color space and hdr metadata.
   std::vector<uint8_t> param_sets;
   HEVC::ConvertConfigToAnnexB(*this, &param_sets);
