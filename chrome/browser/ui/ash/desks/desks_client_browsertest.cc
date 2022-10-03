@@ -2171,8 +2171,16 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
+// Flaky on Lsan/Msan, b/250558930.
+#if defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER)
+#define MAYBE_SystemUILaunchMultipleDeskTemplates \
+  DISABLED_SystemUILaunchMultipleDeskTemplates
+#else
+#define MAYBE_SystemUILaunchMultipleDeskTemplates \
+  SystemUILaunchMultipleDeskTemplates
+#endif
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
-                       SystemUILaunchMultipleDeskTemplates) {
+                       MAYBE_SystemUILaunchMultipleDeskTemplates) {
   const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
