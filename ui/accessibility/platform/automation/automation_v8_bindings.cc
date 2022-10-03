@@ -12,10 +12,12 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_text_utils.h"
+#include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_position.h"
 #include "ui/accessibility/platform/automation/automation_tree_manager_owner.h"
@@ -425,7 +427,7 @@ class NodeIDPlusEventWrapper
     int node_id = args[1].As<v8::Int32>()->Value();
 
     std::tuple<ax::mojom::Event, AXEventGenerator::Event> event_type =
-        automation_router_->ParseEventType(
+        AutomationEventTypeToAXEventTuple(
             *v8::String::Utf8Value(isolate, args[2]));
 
     // Check this is an event type we don't use in automation:
@@ -467,7 +469,100 @@ class NodeIDPlusEventWrapper
 AutomationV8Bindings::AutomationV8Bindings(AutomationTreeManagerOwner* owner,
                                            AutomationV8Router* router)
     : automation_tree_manager_owner_(owner), automation_v8_router_(router) {}
+
 AutomationV8Bindings::~AutomationV8Bindings() = default;
+
+void AutomationV8Bindings::SendTreeChangeEvent(
+    int observer_id,
+    const AXTreeID& tree_id,
+    int node_id,
+    ax::mojom::Mutation change_type) {
+  base::Value::List args;
+  args.Append(observer_id);
+  args.Append(tree_id.ToString());
+  args.Append(node_id);
+  args.Append(automation_v8_router_->GetTreeChangeTypeString(change_type));
+  automation_v8_router_->DispatchEvent("automationInternal.onTreeChange", args);
+}
+
+void AutomationV8Bindings::SendNodesRemovedEvent(const ui::AXTreeID& tree_id,
+                                                 const std::vector<int>& ids) {
+  base::Value::List args;
+  args.Append(tree_id.ToString());
+  {
+    base::Value nodes(base::Value::Type::LIST);
+    for (auto id : ids)
+      nodes.Append(id);
+    args.Append(std::move(nodes));
+  }
+
+  automation_v8_router_->DispatchEvent("automationInternal.onNodesRemoved",
+                                       args);
+}
+
+void AutomationV8Bindings::SendChildTreeIDEvent(
+    const ui::AXTreeID& child_tree_id) {
+  base::Value::List args;
+  args.Append(child_tree_id.ToString());
+  automation_v8_router_->DispatchEvent("automationInternal.onChildTreeID",
+                                       args);
+}
+
+void AutomationV8Bindings::SendAutomationEvent(
+    const AXTreeID& tree_id,
+    const AXEvent& event,
+    const gfx::Point& mouse_location,
+    const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type) {
+  const std::string automation_event_type_str =
+      automation_v8_router_->GetEventTypeString(event_type);
+
+  base::Value event_params(base::Value::Type::DICTIONARY);
+  event_params.SetKey("treeID", base::Value(tree_id.ToString()));
+  event_params.SetKey("targetID", base::Value(event.id));
+  event_params.SetKey("eventType", base::Value(automation_event_type_str));
+
+  event_params.SetKey("eventFrom", base::Value(ui::ToString(event.event_from)));
+  event_params.SetKey("eventFromAction",
+                      base::Value(ui::ToString(event.event_from_action)));
+  event_params.SetKey("actionRequestID", base::Value(event.action_request_id));
+  event_params.SetKey("mouseX", base::Value(mouse_location.x()));
+  event_params.SetKey("mouseY", base::Value(mouse_location.y()));
+
+  // Populate intents.
+  base::Value value_intents(base::Value::Type::LIST);
+  for (const auto& intent : event.event_intents) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetKey("command", base::Value(ui::ToString(intent.command)));
+    dict.SetKey("inputEventType",
+                base::Value(ui::ToString(intent.input_event_type)));
+    dict.SetKey("textBoundary",
+                base::Value(ui::ToString(intent.text_boundary)));
+    dict.SetKey("moveDirection",
+                base::Value(ui::ToString(intent.move_direction)));
+    value_intents.Append(std::move(dict));
+  }
+
+  event_params.SetKey("intents", std::move(value_intents));
+
+  base::Value::List args;
+  args.Append(std::move(event_params));
+  automation_v8_router_->DispatchEvent(
+      "automationInternal.onAccessibilityEvent", args);
+}
+
+void AutomationV8Bindings::SendTreeSerializationError(
+    const ui::AXTreeID& tree_id) {
+  base::Value::List args;
+  args.Append(tree_id.ToString());
+  automation_v8_router_->DispatchEvent(
+      "automationInternal.onAccessibilityTreeSerializationError", args);
+}
+
+void AutomationV8Bindings::SendOnAllEventListenersRemoved() {
+  automation_v8_router_->DispatchEvent(
+      "automationInternal.onAllAutomationEventListenersRemoved",
+      base::Value::List());
+}
 
 void AutomationV8Bindings::AddV8Routes() {
   // It's safe to use base::Unretained(this) here because these bindings

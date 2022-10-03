@@ -32,9 +32,6 @@ api::automation::EventType AXEventToAutomationEventType(
 api::automation::EventType AXGeneratedEventToAutomationEventType(
     ui::AXEventGenerator::Event event_type);
 
-std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>
-AutomationEventTypeToAXEventTuple(api::automation::EventType event_type);
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_RENDERER_API_AUTOMATION_AUTOMATION_API_CONVERTERS_H_

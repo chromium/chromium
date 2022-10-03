@@ -41,10 +41,6 @@ class AX_EXPORT AutomationV8Router {
   // Methods converting to and from strings
   //
 
-  // Parses a string representing an event type into an Event tuple.
-  virtual std::tuple<ax::mojom::Event, AXEventGenerator::Event> ParseEventType(
-      const std::string& event_type) const = 0;
-
   // Parses a string representing the tree change observer filter.
   virtual TreeChangeObserverFilter ParseTreeChangeObserverFilter(
       const std::string& filter) const = 0;
@@ -55,6 +51,11 @@ class AX_EXPORT AutomationV8Router {
   virtual std::string GetOffscreenStateString() const = 0;
   virtual std::string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const = 0;
+  virtual std::string GetTreeChangeTypeString(
+      ax::mojom::Mutation change_type) const = 0;
+  virtual std::string GetEventTypeString(
+      const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type)
+      const = 0;
 
   //
   // Methods for routing Javascript methods to C++.

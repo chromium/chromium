@@ -5,6 +5,7 @@
 #include "extensions/renderer/api/automation/automation_api_converters.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_event_generator.h"
 
 namespace extensions {
 
@@ -119,18 +120,6 @@ api::automation::EventType AXGeneratedEventToAutomationEventType(
   }
 
   return (*enum_map)[static_cast<int>(event_type)];
-}
-
-std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>
-AutomationEventTypeToAXEventTuple(api::automation::EventType event_type) {
-  const char* val = api::automation::ToString(event_type);
-  ax::mojom::Event ax_event = ax::mojom::Event::kNone;
-  ui::MaybeParseAXEnum<ax::mojom::Event>(val, &ax_event);
-  ui::AXEventGenerator::Event generated_event =
-      ui::AXEventGenerator::Event::NONE;
-  ui::MaybeParseGeneratedEvent(val, &generated_event);
-  return std::tuple<ax::mojom::Event, ui::AXEventGenerator::Event>(
-      ax_event, generated_event);
 }
 
 }  // namespace extensions

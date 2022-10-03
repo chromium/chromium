@@ -64,8 +64,8 @@ class AutomationInternalCustomBindingsTest
   void SendOnAccessibilityEvents(
       const ExtensionMsg_AccessibilityEventBundleParams& event_bundle,
       bool is_active_profile) {
-    automation_internal_bindings_->OnAccessibilityEvents(event_bundle,
-                                                         is_active_profile);
+    automation_internal_bindings_->HandleAccessibilityEvents(event_bundle,
+                                                             is_active_profile);
   }
 
   bool CallGetFocusInternal(ui::AutomationAXTreeWrapper* top_wrapper,

@@ -5,11 +5,16 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_TREE_MANAGER_OWNER_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_TREE_MANAGER_OWNER_H_
 
+#include <vector>
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_event_generator.h"
+#include "ui/accessibility/ax_relative_bounds.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
 #include "ui/accessibility/platform/automation/automation_ax_tree_wrapper.h"
+#include "ui/gfx/geometry/point.h"
 #include "v8/include/v8-isolate.h"
 
 // TODO(crbug.com/1357889): Remove this after migrating test logic to
@@ -19,6 +24,7 @@ class AutomationInternalCustomBindingsTest;
 }
 
 namespace ui {
+class AutomationV8Bindings;
 
 // Virtual class that owns one or more AutomationAXTreeWrappers.
 // TODO(crbug.com/1357889): Merge some of this interface with
@@ -28,33 +34,26 @@ class AX_EXPORT AutomationTreeManagerOwner {
   AutomationTreeManagerOwner();
   virtual ~AutomationTreeManagerOwner();
 
-  //
-  // Virtual methods for sending data to the hosting bindings system.
-  // TODO(crbug.com/1357889): Create implementations of these through
-  // creating V8 values, and a virtual method to take V8 values and
-  // dispatch them. V8 logic should go in AutomationV8Bindings.
-  //
+  virtual AutomationV8Bindings* GetAutomationV8Bindings() const = 0;
+  virtual void NotifyTreeEventListenersChanged() = 0;
 
   // Sends an event to automation in V8 that the nodes with IDs |ids|
   // have been removed from the |tree|.
-  virtual void SendNodesRemovedEvent(AXTree* tree,
-                                     const std::vector<int>& ids) = 0;
+  void SendNodesRemovedEvent(AXTree* tree, const std::vector<int>& ids);
 
   // Sends an event to automation in V8 that the |node| in |tree| has
   // undergone a |change_type| mutation.
-  virtual bool SendTreeChangeEvent(ax::mojom::Mutation change_type,
-                                   AXTree* tree,
-                                   AXNode* node) = 0;
+  bool SendTreeChangeEvent(ax::mojom::Mutation change_type,
+                           AXTree* tree,
+                           AXNode* node);
 
   // Sends an AXEvent to automation in V8.
-  virtual void SendAutomationEvent(
+  void SendAutomationEvent(
       AXTreeID tree_id,
       const gfx::Point& mouse_location,
       const AXEvent& event,
       absl::optional<AXEventGenerator::Event> generated_event_type =
-          absl::optional<AXEventGenerator::Event>()) = 0;
-
-  virtual void NotifyTreeEventListenersChanged() = 0;
+          absl::optional<AXEventGenerator::Event>());
 
   // Gets the hosting node in a parent tree.
   AXNode* GetHostInParentTree(
@@ -164,18 +163,22 @@ class AX_EXPORT AutomationTreeManagerOwner {
  protected:
   friend class extensions::AutomationInternalCustomBindingsTest;
 
-  void CacheAutomationTreeWrapperForTreeID(
-      const AXTreeID& tree_id,
-      AutomationAXTreeWrapper* tree_wrapper);
+  void OnAccessibilityEvents(const ui::AXTreeID& tree_id,
+                             const std::vector<AXEvent>& events,
+                             const std::vector<AXTreeUpdate>& updates,
+                             const gfx::Point& mouse_location,
+                             bool is_active_profile);
+
+  void OnAccessibilityLocationChange(const ui::AXTreeID& tree_id,
+                                     int node_id,
+                                     AXRelativeBounds new_location);
 
   // Invalidates this AutomationTreeManagerOnwer.
   void Invalidate();
 
   bool HasTreesWithEventListeners();
 
-  const std::vector<TreeChangeObserver>& tree_change_observers() {
-    return tree_change_observers_;
-  }
+  void MaybeSendOnAllAutomationEventListenersRemoved();
 
  private:
   // Given an initial AutomationAXTreeWrapper, return the
@@ -184,6 +187,10 @@ class AX_EXPORT AutomationTreeManagerOwner {
   bool GetFocusInternal(AutomationAXTreeWrapper* top_tree,
                         AutomationAXTreeWrapper** out_tree,
                         AXNode** out_node);
+
+  void CacheAutomationTreeWrapperForTreeID(
+      const AXTreeID& tree_id,
+      AutomationAXTreeWrapper* tree_wrapper);
 
   void RemoveAutomationTreeWrapperFromCache(const AXTreeID& tree_id);
 
@@ -214,6 +221,8 @@ class AX_EXPORT AutomationTreeManagerOwner {
 
   // The global focused node id.
   int32_t focus_id_ = -1;
+
+  bool is_active_profile_ = true;
 };
 
 }  // namespace ui

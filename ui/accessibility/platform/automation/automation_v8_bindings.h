@@ -31,10 +31,27 @@ class AX_EXPORT AutomationV8Bindings {
   AutomationV8Bindings& operator=(const AutomationV8Bindings&) = delete;
   virtual ~AutomationV8Bindings();
 
+  //
+  // Methods for sending C++ events back to Javascript.
+  //
+  void SendTreeChangeEvent(int observer_id,
+                           const AXTreeID& tree_id,
+                           int node_id,
+                           ax::mojom::Mutation change_type);
+  void SendNodesRemovedEvent(const ui::AXTreeID& tree_id,
+                             const std::vector<int>& ids);
+  void SendChildTreeIDEvent(const ui::AXTreeID& child_tree_id);
+  void SendAutomationEvent(
+      const AXTreeID& tree_id,
+      const AXEvent& event,
+      const gfx::Point& mouse_location,
+      const std::tuple<ax::mojom::Event, AXEventGenerator::Event>& event_type);
+  void SendTreeSerializationError(const ui::AXTreeID& tree_id);
+  void SendOnAllEventListenersRemoved();
+
   void AddV8Routes();
 
-  // TODO(crbug.com/1357889): Move remaining RouteNodeIDFunction usages from
-  // AutomationInternalCustomBindings and make this private.
+ private:
   void RouteNodeIDFunction(
       const std::string& name,
       base::RepeatingCallback<void(v8::Isolate* isolate,
@@ -42,7 +59,6 @@ class AX_EXPORT AutomationV8Bindings {
                                    ui::AutomationAXTreeWrapper* tree_wrapper,
                                    ui::AXNode* node)> callback);
 
- private:
   void RouteTreeIDFunction(
       const std::string& name,
       void (*callback)(v8::Isolate* isolate,

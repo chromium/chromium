@@ -15,6 +15,15 @@ bool AX_EXPORT ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type);
 bool AX_EXPORT
 ShouldIgnoreGeneratedEventForAutomation(AXEventGenerator::Event event_type);
 
+std::tuple<ax::mojom::Event, AXEventGenerator::Event> AX_EXPORT
+MakeTupleForAutomationFromEventTypes(
+    const ax::mojom::Event& ax_event,
+    const AXEventGenerator::Event& generated_event);
+
+// Parses a string representing an event type into an Event tuple.
+std::tuple<ax::mojom::Event, AXEventGenerator::Event> AX_EXPORT
+AutomationEventTypeToAXEventTuple(const char* event_type_string);
+
 // Possible tree changes to listen to using addTreeChangeObserver. Note that
 // listening to all tree changes can be expensive.
 enum TreeChangeObserverFilter {

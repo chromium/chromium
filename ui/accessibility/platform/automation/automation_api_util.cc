@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/automation/automation_api_util.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_event_generator.h"
 
 namespace ui {
@@ -180,6 +181,49 @@ bool ShouldIgnoreGeneratedEventForAutomation(
 
   NOTREACHED();
   return false;
+}
+
+std::tuple<ax::mojom::Event, AXEventGenerator::Event>
+MakeTupleForAutomationFromEventTypes(
+    const ax::mojom::Event& ax_event,
+    const AXEventGenerator::Event& generated_event) {
+  std::tuple<ax::mojom::Event, AXEventGenerator::Event> result;
+  // Prefer generated events if they exist.
+  if (generated_event != AXEventGenerator::Event::NONE) {
+    result = std::make_tuple(ax::mojom::Event::kNone, generated_event);
+  } else {
+    // For events that are available as AX events and generated events, use the
+    // generated type.
+    AXEventGenerator::Event equivalent_event = AXEventGenerator::Event::NONE;
+    MaybeParseGeneratedEvent(ToString(ax_event), &equivalent_event);
+    if (equivalent_event != AXEventGenerator::Event::NONE)
+      result = std::make_tuple(ax::mojom::Event::kNone, equivalent_event);
+    else
+      result = std::make_tuple(ax_event, AXEventGenerator::Event::NONE);
+  }
+
+  // At most one of the AXEvent / generated event should be populated.
+  DCHECK(std::get<0>(result) == ax::mojom::Event::kNone ||
+         std::get<1>(result) == AXEventGenerator::Event::NONE);
+
+  return result;
+}
+
+std::tuple<ax::mojom::Event, AXEventGenerator::Event>
+AutomationEventTypeToAXEventTuple(const char* event_type_string) {
+  // Prefer generated event types if they exist.
+  AXEventGenerator::Event generated_event = AXEventGenerator::Event::NONE;
+  MaybeParseGeneratedEvent(event_type_string, &generated_event);
+  if (generated_event != AXEventGenerator::Event::NONE) {
+    return std::tuple<ax::mojom::Event, AXEventGenerator::Event>(
+        ax::mojom::Event::kNone, generated_event);
+  }
+
+  // Otherwise use the AX event type.
+  ax::mojom::Event ax_event = ax::mojom::Event::kNone;
+  MaybeParseAXEnum<ax::mojom::Event>(event_type_string, &ax_event);
+  return std::tuple<ax::mojom::Event, AXEventGenerator::Event>(
+      ax_event, AXEventGenerator::Event::NONE);
 }
 
 }  // namespace ui

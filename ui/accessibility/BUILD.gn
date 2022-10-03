@@ -5,6 +5,7 @@
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -313,6 +314,10 @@ test("accessibility_unittests") {
     "//ui/accessibility/mojom",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_extensions) {
+    sources += [ "platform/automation/automation_api_util_unittest.cc" ]
+  }
 
   if (is_fuchsia) {
     sources += [
