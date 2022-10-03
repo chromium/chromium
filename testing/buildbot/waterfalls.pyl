@@ -3411,11 +3411,6 @@
           'isolated_scripts': 'ios15_beta_simulator_tests'
         },
       },
-      'ios15-sdk-device': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'ios15-sdk-simulator': {
         'additional_compile_targets': [
           'all',
@@ -3449,6 +3444,11 @@
         'test_suites': {
           'isolated_scripts': 'ios16_beta_simulator_tests'
         },
+      },
+      'ios16-sdk-device': {
+        'additional_compile_targets': [
+          'all',
+        ],
       },
       # ios16-sdk-sim compiles with xcode version n, and runs
       # testers with xcode n during an xcode roll.

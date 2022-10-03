@@ -1024,20 +1024,6 @@
       "use_remoteexec": true
     }
   },
-  "ios15-sdk-device": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "ios_enable_code_signing": false,
-      "ios_set_attributes_for_xcode_project_generation": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "arm64",
-      "target_environment": "device",
-      "target_os": "ios",
-      "use_remoteexec": true
-    }
-  },
   "ios15-sdk-simulator": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,
@@ -1062,6 +1048,20 @@
       "target_environment": "simulator",
       "target_os": "ios",
       "use_goma": true
+    }
+  },
+  "ios16-sdk-device": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_run_ios_unittests_with_xctest": true,
+      "ios_enable_code_signing": false,
+      "ios_set_attributes_for_xcode_project_generation": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_cpu": "arm64",
+      "target_environment": "device",
+      "target_os": "ios",
+      "use_remoteexec": true
     }
   },
   "ios16-sdk-simulator": {

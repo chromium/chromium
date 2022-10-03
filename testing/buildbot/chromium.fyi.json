@@ -65992,11 +65992,6 @@
       }
     ]
   },
-  "ios15-sdk-device": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "ios15-sdk-simulator": {
     "additional_compile_targets": [
       "all"
@@ -79565,6 +79560,11 @@
         "test_id_prefix": "ninja://url:url_unittests/",
         "variant_id": "iPhone X 16.1"
       }
+    ]
+  },
+  "ios16-sdk-device": {
+    "additional_compile_targets": [
+      "all"
     ]
   },
   "ios16-sdk-simulator": {
