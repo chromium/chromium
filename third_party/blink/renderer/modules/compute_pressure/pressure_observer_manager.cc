@@ -11,11 +11,22 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+using device::mojom::blink::PressureFactor;
 using device::mojom::blink::PressureState;
 
 namespace blink {
 
 namespace {
+
+V8PressureFactor::Enum PressureFactorToV8PressureFactor(PressureFactor factor) {
+  switch (factor) {
+    case PressureFactor::kThermal:
+      return V8PressureFactor::Enum::kThermal;
+    case PressureFactor::kPowerSupply:
+      return V8PressureFactor::Enum::kPowerSupply;
+  }
+  NOTREACHED();
+}
 
 V8PressureState::Enum PressureStateToV8PressureState(PressureState state) {
   switch (state) {
@@ -28,6 +39,7 @@ V8PressureState::Enum PressureStateToV8PressureState(PressureState state) {
     case PressureState::kCritical:
       return V8PressureState::Enum::kCritical;
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -129,11 +141,16 @@ void PressureObserverManager::OnUpdate(
   HeapVector<Member<blink::PressureObserver>> observers(
       registered_observers_[source_index]);
   for (const auto& observer : observers) {
+    Vector<V8PressureFactor> v8_factors;
+    for (const auto& factor : update->factors) {
+      v8_factors.push_back(
+          V8PressureFactor(PressureFactorToV8PressureFactor(factor)));
+    }
     // TODO(crbug.com/1342184): Consider other sources.
     // For now, "cpu" is the only source.
     observer->OnUpdate(
         GetExecutionContext(), V8PressureSource::Enum::kCpu,
-        PressureStateToV8PressureState(update->state),
+        PressureStateToV8PressureState(update->state), std::move(v8_factors),
         static_cast<DOMHighResTimeStamp>(update->timestamp.ToDoubleT()));
   }
 }

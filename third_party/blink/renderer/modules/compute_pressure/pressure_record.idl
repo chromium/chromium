@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://wicg.github.io/compute-pressure/#dom-pressurefactor
+enum PressureFactor { "thermal", "power-supply" };
+
 // https://wicg.github.io/compute-pressure/#dom-pressurestate
 enum PressureState {
   "nominal",
@@ -17,6 +20,6 @@ enum PressureState {
 ] dictionary PressureRecord {
   PressureSource source;
   PressureState state;
+  sequence<PressureFactor> factors;
   DOMHighResTimeStamp time;
-  // TODO(crbug.com/1356191): Implement factors.
 };

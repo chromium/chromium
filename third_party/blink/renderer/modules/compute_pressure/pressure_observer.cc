@@ -99,12 +99,14 @@ void PressureObserver::Trace(blink::Visitor* visitor) const {
 void PressureObserver::OnUpdate(ExecutionContext* execution_context,
                                 V8PressureSource::Enum source,
                                 V8PressureState::Enum state,
+                                const Vector<V8PressureFactor>& factors,
                                 DOMHighResTimeStamp timestamp) {
-  if (!HasChangeInData(source, state))
+  if (!HasChangeInData(source, state, factors))
     return;
 
   auto* record = PressureRecord::Create();
   record->setSource(V8PressureSource(source));
+  record->setFactors(factors);
   record->setState(V8PressureState(state));
   record->setTime(timestamp);
 
@@ -150,10 +152,17 @@ HeapVector<Member<PressureRecord>> PressureObserver::takeRecords() {
 }
 
 // https://wicg.github.io/compute-pressure/#dfn-has-change-in-data
-bool PressureObserver::HasChangeInData(V8PressureSource::Enum source,
-                                       V8PressureState::Enum state) const {
+bool PressureObserver::HasChangeInData(
+    V8PressureSource::Enum source,
+    V8PressureState::Enum state,
+    const Vector<V8PressureFactor>& factors) const {
   const auto& last_record = last_record_map_[static_cast<size_t>(source)];
-  return last_record ? last_record->state() != state : true;
+
+  if (!last_record)
+    return true;
+
+  return last_record->state() != state ||
+         !base::ranges::equal(last_record->factors(), factors);
 }
 
 }  // namespace blink

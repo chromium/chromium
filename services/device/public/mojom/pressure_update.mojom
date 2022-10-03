@@ -6,6 +6,13 @@ module device.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 
+enum PressureFactor {
+  // Current pressure factor is thermal.
+  kThermal,
+  // Current pressure factor is power supply.
+  kPowerSupply,
+};
+
 enum PressureState {
   // Current workloads are causing minimal pressure, allowing the
   // system to run at a lower clock frequency to preserve power.
@@ -25,5 +32,6 @@ enum PressureState {
 // Represents availability of compute resources.
 struct PressureUpdate {
   PressureState state;
+  array<PressureFactor> factors;
   mojo_base.mojom.Time timestamp;
 };

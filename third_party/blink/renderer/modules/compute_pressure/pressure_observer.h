@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -58,11 +59,14 @@ class PressureObserver final : public ScriptWrappable {
   void OnUpdate(ExecutionContext*,
                 V8PressureSource::Enum,
                 V8PressureState::Enum,
+                const Vector<V8PressureFactor>&,
                 DOMHighResTimeStamp);
 
  private:
   // Verifies if there is data change in between last update and new one.
-  bool HasChangeInData(V8PressureSource::Enum, V8PressureState::Enum) const;
+  bool HasChangeInData(V8PressureSource::Enum,
+                       V8PressureState::Enum,
+                       const Vector<V8PressureFactor>&) const;
 
   // Scheduled method to invoke callback.
   void ReportToCallback(ExecutionContext*);

@@ -1767,6 +1767,7 @@ crbug.com/626703 [ Win ] external/wpt/html/editing/dnd/events/historical-manual.
 
 # Remove from virtual tests when ComputePressure is turned on by default.
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_basic.tentative.https.window.html [ Skip ]
+crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_basic_async.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_detached_iframe.tentative.https.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_different_quantizations_across_iframes.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_different_quantizations.tentative.https.window.html [ Skip ]
@@ -1774,6 +1775,7 @@ crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_disconnect.tent
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Skip ]
+crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_factors.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_multiple_across_iframes.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_multiple.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_observe_idempotent.tentative.https.window.html [ Skip ]
@@ -1781,6 +1783,7 @@ crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_observe_unobser
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_supported_sources.tentative.https.window.html [ Skip ]
 crbug.com/1196419 external/wpt/compute-pressure/compute_pressure_take_records.tentative.https.window.html [ Skip ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_basic.tentative.https.window.html [ Pass ]
+crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_basic_async.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_detached_iframe.tentative.https.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_different_quantizations_across_iframes.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_different_quantizations.tentative.https.window.html [ Pass ]
@@ -1788,6 +1791,7 @@ crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html [ Pass ]
+crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_factors.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_multiple_across_iframes.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_multiple.tentative.https.window.html [ Pass ]
 crbug.com/1196419 virtual/compute-pressure/external/wpt/compute-pressure/compute_pressure_observe_idempotent.tentative.https.window.html [ Pass ]

@@ -77,7 +77,17 @@ void PressureManagerImpl::AddClient(
 void PressureManagerImpl::UpdateClients(mojom::PressureState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::Time timestamp = base::Time::Now();
-  mojom::PressureUpdate update(state, timestamp);
+  std::vector<mojom::PressureFactor> factors;
+
+  // https://wicg.github.io/compute-pressure/#contributing-factors
+  if (state == mojom::PressureState::kSerious ||
+      state == mojom::PressureState::kCritical) {
+    // TODO(crbug.com/1365627): Implement algorithm for pressure factors.
+    factors.push_back(mojom::PressureFactor::kThermal);
+    factors.push_back(mojom::PressureFactor::kPowerSupply);
+  }
+
+  mojom::PressureUpdate update(state, std::move(factors), timestamp);
   for (auto& client : clients_) {
     client->PressureStateChanged(update.Clone());
   }

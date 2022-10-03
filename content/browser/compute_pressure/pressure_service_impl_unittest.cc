@@ -27,6 +27,7 @@
 
 namespace content {
 
+using device::mojom::PressureFactor;
 using device::mojom::PressureState;
 using device::mojom::PressureUpdate;
 
@@ -185,11 +186,47 @@ TEST_F(PressureServiceImplTest, BindObserver) {
             blink::mojom::PressureStatus::kOk);
 
   const base::Time time = base::Time::Now() + kRateLimit;
-  PressureUpdate update(PressureState::kNominal, time);
+  PressureUpdate update(PressureState::kNominal, {PressureFactor::kThermal},
+                        time);
   pressure_manager_overrider_->UpdateClients(update);
   observer.WaitForUpdate();
   ASSERT_EQ(observer.updates().size(), 1u);
   EXPECT_EQ(observer.updates()[0], update);
+}
+
+TEST_F(PressureServiceImplTest, UpdatePressureFactors) {
+  FakePressureObserver observer;
+  ASSERT_EQ(pressure_service_impl_sync_->BindObserver(
+                observer.BindNewPipeAndPassRemote()),
+            blink::mojom::PressureStatus::kOk);
+
+  const base::Time time = base::Time::Now() + kRateLimit;
+  PressureUpdate update1(PressureState::kNominal,
+                         {PressureFactor::kPowerSupply}, time);
+
+  pressure_manager_overrider_->UpdateClients(update1);
+  observer.WaitForUpdate();
+  ASSERT_EQ(observer.updates().size(), 1u);
+  EXPECT_EQ(observer.updates()[0], update1);
+  observer.updates().clear();
+
+  PressureUpdate update2(
+      PressureState::kCritical,
+      {PressureFactor::kThermal, PressureFactor::kPowerSupply},
+      time + kRateLimit * 2.5);
+  pressure_manager_overrider_->UpdateClients(update2);
+  observer.WaitForUpdate();
+  ASSERT_EQ(observer.updates().size(), 1u);
+  EXPECT_EQ(observer.updates()[0], update2);
+  observer.updates().clear();
+
+  PressureUpdate update3(PressureState::kCritical, {PressureFactor::kThermal},
+                         time + kRateLimit * 3.5);
+  pressure_manager_overrider_->UpdateClients(update3);
+  observer.WaitForUpdate();
+  ASSERT_EQ(observer.updates().size(), 1u);
+  EXPECT_EQ(observer.updates()[0], update3);
+  observer.updates().clear();
 }
 
 TEST_F(PressureServiceImplTest, UpdateRateLimiting) {
@@ -199,15 +236,18 @@ TEST_F(PressureServiceImplTest, UpdateRateLimiting) {
             blink::mojom::PressureStatus::kOk);
 
   const base::Time time = base::Time::Now();
-  PressureUpdate update1(PressureState::kNominal, time + kRateLimit);
+  PressureUpdate update1(PressureState::kNominal, {PressureFactor::kThermal},
+                         time + kRateLimit);
   pressure_manager_overrider_->UpdateClients(update1);
   observer.WaitForUpdate();
   observer.updates().clear();
 
   // The first update should be blocked due to rate-limiting.
-  PressureUpdate update2(PressureState::kCritical, time + kRateLimit * 1.5);
+  PressureUpdate update2(PressureState::kCritical, {PressureFactor::kThermal},
+                         time + kRateLimit * 1.5);
   pressure_manager_overrider_->UpdateClients(update2);
-  PressureUpdate update3(PressureState::kFair, time + kRateLimit * 2);
+  PressureUpdate update3(PressureState::kFair, {PressureFactor::kThermal},
+                         time + kRateLimit * 2);
   pressure_manager_overrider_->UpdateClients(update3);
   observer.WaitForUpdate();
 
@@ -226,9 +266,10 @@ TEST_F(PressureServiceImplTest, NoVisibility) {
   test_rvh()->SimulateWasHidden();
 
   // The first two updates should be blocked due to invisibility.
-  PressureUpdate update1(PressureState::kNominal, time + kRateLimit);
+  PressureUpdate update1(PressureState::kNominal, {}, time + kRateLimit);
   pressure_manager_overrider_->UpdateClients(update1);
-  PressureUpdate update2(PressureState::kCritical, time + kRateLimit * 2);
+  PressureUpdate update2(PressureState::kCritical, {PressureFactor::kThermal},
+                         time + kRateLimit * 2);
   pressure_manager_overrider_->UpdateClients(update2);
   task_environment()->RunUntilIdle();
 
@@ -237,7 +278,8 @@ TEST_F(PressureServiceImplTest, NoVisibility) {
   // The third update should be dispatched. It should not be rate-limited by the
   // time proximity to the second update, because the second update is not
   // dispatched.
-  PressureUpdate update3(PressureState::kFair, time + kRateLimit * 2.5);
+  PressureUpdate update3(PressureState::kFair, {PressureFactor::kThermal},
+                         time + kRateLimit * 2.5);
   pressure_manager_overrider_->UpdateClients(update3);
   observer.WaitForUpdate();
 

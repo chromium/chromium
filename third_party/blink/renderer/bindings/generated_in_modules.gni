@@ -1324,6 +1324,8 @@ generated_enumeration_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_connection_state.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source_type.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_presentation_source_type.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_factor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_factor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.cc",
