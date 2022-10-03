@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,12 +56,13 @@ absl::optional<AttributionAggregationKeys> AttributionAggregationKeys::FromJSON(
       return absl::nullopt;
 
     const std::string* s = maybe_string_value.GetIfString();
-    if (!s)
-      return absl::nullopt;
-
     absl::uint128 key;
-    if (!base::HexStringToUInt128(*s, &key))
+
+    if (!s ||
+        !base::StartsWith(*s, "0x", base::CompareCase::INSENSITIVE_ASCII) ||
+        !base::HexStringToUInt128(*s, &key)) {
       return absl::nullopt;
+    }
 
     keys.emplace_back(key_id, key);
   }

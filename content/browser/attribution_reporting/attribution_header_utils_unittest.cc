@@ -40,6 +40,8 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
       {"Not a dictionary", base::Value(base::Value::List()), absl::nullopt},
       {"key not a string", base::test::ParseJson(R"({"key":123})"),
        absl::nullopt},
+      {"key doesn't start with 0x", base::test::ParseJson(R"({"key":"159"})"),
+       absl::nullopt},
       {"Invalid key", base::test::ParseJson(R"({"key":"0xG59"})"),
        absl::nullopt},
       {"One valid key", base::test::ParseJson(R"({"key":"0x159"})"),
