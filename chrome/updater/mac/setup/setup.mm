@@ -420,6 +420,9 @@ int PromoteCandidate(UpdaterScope scope) {
   if (!StartLaunchdServiceJob(scope))
     return kErrorFailedToStartLaunchdActiveServiceJob;
 
+  if (!InstallKeystone(scope))
+    return kErrorFailedToInstallLegacyUpdater;
+
   // Wait for launchd to finish the load operation for the update service.
   base::PlatformThread::Sleep(base::Seconds(2));
 

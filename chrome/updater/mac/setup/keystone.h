@@ -15,16 +15,19 @@ namespace updater {
 
 struct RegistrationRequest;
 
-// Replaces a keystone installation with this updater's shims. Calls
-// `register_callback` with data from Keystone's ticket store if needed.
-// Returns true if conversion succeeded.
-bool ConvertKeystone(UpdaterScope scope,
-                     base::RepeatingCallback<void(const RegistrationRequest&)>
-                         register_callback);
+// Installs Keystone and the necessary supporting files.
+bool InstallKeystone(UpdaterScope scope);
 
 // Uninstalls Keystone from the system. Does not remove Keystone's ticket
 // stores.
 void UninstallKeystone(UpdaterScope scope);
+
+// `Calls register_callback` with data from Keystone's ticket store if needed.
+// This is a best-effort operation, tickets with errors are not migrated.
+void MigrateKeystoneTickets(
+    UpdaterScope scope,
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback);
 
 namespace internal {
 
