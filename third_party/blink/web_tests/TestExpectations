@@ -7188,3 +7188,4 @@ crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.share
 crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.html [ Failure Pass ]
 crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.serviceworker.html [ Failure Pass ]
 crbug.com/1370353 external/wpt/resource-timing/delivery-type.tentative.any.worker.html [ Failure Pass ]
+crbug.com/1368767 wpt_internal/webmidi/requestmidiaccess-basic.https.html [ Failure Pass ]
