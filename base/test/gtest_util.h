@@ -72,6 +72,19 @@
 
 #endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
 
+// `BASE_EXPECT_DEATH` is similar to gtest's `EXPECT_DEATH_IF_SUPPORTED`. It
+// takes into account that Android does not support them.
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
+#define BASE_EXPECT_DEATH EXPECT_DEATH
+
+#else  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
+#define BASE_EXPECT_DEATH(statement, matcher) \
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, "", )
+
+#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+
 namespace base {
 
 class FilePath;

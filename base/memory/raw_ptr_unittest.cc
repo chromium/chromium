@@ -1656,7 +1656,7 @@ TEST_F(BackupRefPtrTest, ReinterpretCast) {
   raw_ptr<void>* wrapped_ptr = reinterpret_cast<raw_ptr<void>*>(&ptr);
   // The reference count cookie check should detect that the allocation has
   // been already freed.
-  EXPECT_DEATH_IF_SUPPORTED(*wrapped_ptr = nullptr, "");
+  BASE_EXPECT_DEATH(*wrapped_ptr = nullptr, "");
 }
 #endif
 
@@ -1692,7 +1692,7 @@ TEST_F(BackupRefPtrTest, RawPtrMayDangle) {
   void* ptr = allocator_.root()->Alloc(16, "");
   raw_ptr<void, DisableDanglingPtrDetection> dangling_ptr = ptr;
   allocator_.root()->Free(ptr);  // No dangling raw_ptr reported.
-  dangling_ptr = nullptr;       // No dangling raw_ptr reported.
+  dangling_ptr = nullptr;        // No dangling raw_ptr reported.
 }
 
 TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
@@ -1701,10 +1701,10 @@ TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
   void* ptr = allocator_.root()->Alloc(16, "");
   raw_ptr<void> dangling_ptr = ptr;
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  EXPECT_DEATH_IF_SUPPORTED(
+  BASE_EXPECT_DEATH(
       {
         allocator_.root()->Free(ptr);  // Dangling raw_ptr detected.
-        dangling_ptr = nullptr;       // Dangling raw_ptr released.
+        dangling_ptr = nullptr;        // Dangling raw_ptr released.
       },
       AllOf(HasSubstr("Detected dangling raw_ptr"),
             HasSubstr("The memory was freed at:"),
@@ -1807,10 +1807,10 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
   raw_ptr<int> ptr =
       static_cast<int*>(allocator_.root()->Alloc(sizeof(int), ""));
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  EXPECT_DEATH_IF_SUPPORTED(
+  BASE_EXPECT_DEATH(
       {
         allocator_.root()->Free(ptr.get());  // Dangling raw_ptr detected.
-        ptr = nullptr;                      // Dangling raw_ptr released.
+        ptr = nullptr;                       // Dangling raw_ptr released.
       },
       AllOf(HasSubstr("Detected dangling raw_ptr"),
             HasSubstr("The memory was freed at:"),
