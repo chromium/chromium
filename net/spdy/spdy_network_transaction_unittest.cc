@@ -6662,7 +6662,7 @@ class SpdyNetworkTransactionPushUrlTest
     // to check that NetworkAnonymizationKeys are respected.
     feature_list_.InitWithFeatures(
         /* enabled_features */
-        {TransportSecurityState::kDynamicExpectCTFeature,
+        {kDynamicExpectCTFeature,
          features::kPartitionExpectCTStateByNetworkIsolationKey,
          features::kPartitionConnectionsByNetworkIsolationKey,
          features::kPartitionHttpServerPropertiesByNetworkIsolationKey},

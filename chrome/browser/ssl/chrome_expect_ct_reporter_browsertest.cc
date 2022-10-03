@@ -34,8 +34,7 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
  public:
   ExpectCTBrowserTest() : CertVerifierBrowserTest() {
     feature_list_.InitWithFeatures(
-        {network::features::kExpectCTReporting,
-         net::TransportSecurityState::kDynamicExpectCTFeature},
+        {network::features::kExpectCTReporting, net::kDynamicExpectCTFeature},
         {});
 
     // Expect-CT reporting depends on actually enforcing Certificate

@@ -916,7 +916,7 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
-      {net::TransportSecurityState::kDynamicExpectCTFeature,
+      {net::kDynamicExpectCTFeature,
        net::features::kPartitionExpectCTStateByNetworkIsolationKey},
       // disabled_features
       {});

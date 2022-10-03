@@ -2942,7 +2942,7 @@ TEST_F(SpdySessionTest, VerifyDomainAuthenticationExpectCT) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey,
        features::kPartitionConnectionsByNetworkIsolationKey,
        features::kPartitionSSLSessionsByNetworkIsolationKey},
@@ -6732,7 +6732,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithExpectCTError) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey,
        features::kPartitionConnectionsByNetworkIsolationKey,
        features::kPartitionSSLSessionsByNetworkIsolationKey},
@@ -7226,7 +7226,7 @@ TEST(CanPoolTest, CanPoolExpectCT) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey},
       /* disabled_features */
       {});

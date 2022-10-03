@@ -71,8 +71,7 @@ const size_t kReportCacheKeyLength = 16;
 bool g_ct_required_for_testing = false;
 
 bool IsDynamicExpectCTEnabled() {
-  return base::FeatureList::IsEnabled(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  return base::FeatureList::IsEnabled(kDynamicExpectCTFeature);
 }
 
 base::Value GetPEMEncodedChainAsList(const net::X509Certificate* cert_chain) {
@@ -382,12 +381,14 @@ bool DecodeHSTSPreload(const std::string& search_hostname, PreloadResult* out) {
 }  // namespace
 
 // static
-const base::Feature TransportSecurityState::kDynamicExpectCTFeature{
-    "DynamicExpectCT", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kDynamicExpectCTFeature,
+             "DynamicExpectCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
-const base::Feature TransportSecurityState::kCertificateTransparencyEnforcement{
-    "CertificateTransparencyEnforcement", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCertificateTransparencyEnforcement,
+             "CertificateTransparencyEnforcement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source) {

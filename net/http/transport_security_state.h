@@ -39,6 +39,15 @@ class NetworkIsolationKey;
 class SSLInfo;
 class X509Certificate;
 
+// Feature that controls whether Expect-CT HTTP headers are parsed, processed,
+// and stored.
+NET_EXPORT BASE_DECLARE_FEATURE(kDynamicExpectCTFeature);
+
+// Feature that controls whether Certificate Transparency is enforced. This
+// feature is default enabled and meant only as an emergency killswitch. It
+// will not enable enforcement in platforms that otherwise have it disabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kCertificateTransparencyEnforcement);
+
 void NET_EXPORT_PRIVATE SetTransportSecurityStateSourceForTesting(
     const TransportSecurityStateSource* source);
 
@@ -391,15 +400,6 @@ class NET_EXPORT TransportSecurityState {
     // CT was required for the connection but valid CT info was not provided.
     CT_REQUIREMENTS_NOT_MET,
   };
-
-  // Feature that controls whether Expect-CT HTTP headers are parsed, processed,
-  // and stored.
-  static const base::Feature kDynamicExpectCTFeature;
-
-  // Feature that controls whether Certificate Transparency is enforced. This
-  // feature is default enabled and meant only as an emergency killswitch. It
-  // will not enable enforcement in platforms that otherwise have it disabled.
-  static const base::Feature kCertificateTransparencyEnforcement;
 
   TransportSecurityState();
 

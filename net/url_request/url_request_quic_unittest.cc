@@ -151,8 +151,7 @@ class URLRequestQuicTest
     context_builder_->SetCertVerifier(std::move(cert_verifier));
     context_builder_->set_net_log(NetLog::Get());
 
-    scoped_feature_list_.InitAndEnableFeature(
-        TransportSecurityState::kDynamicExpectCTFeature);
+    scoped_feature_list_.InitAndEnableFeature(kDynamicExpectCTFeature);
   }
 
   void TearDown() override {

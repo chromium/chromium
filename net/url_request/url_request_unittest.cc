@@ -6490,8 +6490,7 @@ TEST_F(URLRequestTestHTTP, PreloadExpectCTHeader) {
 // Tests that Expect CT HTTP headers are processed correctly.
 TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
@@ -6540,8 +6539,7 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
 // processed.
 TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(

@@ -367,10 +367,8 @@ class TransportSecurityStateTest : public ::testing::Test,
     FastForwardBy(base::Days(1));
 
     // By default Expect-CT should be disabled, but enable it for tests.
-    EXPECT_FALSE(base::FeatureList::IsEnabled(
-        TransportSecurityState::kDynamicExpectCTFeature));
-    scoped_feature_list_.InitAndEnableFeature(
-        TransportSecurityState::kDynamicExpectCTFeature);
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kDynamicExpectCTFeature));
+    scoped_feature_list_.InitAndEnableFeature(kDynamicExpectCTFeature);
   }
 
   ~TransportSecurityStateTest() override {
@@ -795,8 +793,7 @@ TEST_F(TransportSecurityStateTest, NewPinsOverride) {
 
 TEST_F(TransportSecurityStateTest, DeleteAllDynamicDataBetween) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   TransportSecurityState::ExpectCTState expect_ct_state;
 
   TransportSecurityState state;
@@ -848,7 +845,7 @@ TEST_F(TransportSecurityStateTest, DeleteDynamicDataForHost) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey},
       /* disabled_features */
       {});
@@ -1789,7 +1786,7 @@ class CTEmergencyDisableTest
       scoped_feature_list_.Init();
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          TransportSecurityState::kCertificateTransparencyEnforcement);
+          kCertificateTransparencyEnforcement);
     }
   }
   void SetUp() override {
@@ -2109,8 +2106,7 @@ TEST_F(TransportSecurityStateTest, RequireCTForSymantecManagedCAs) {
 // Tests that dynamic Expect-CT state is cleared from ClearDynamicData().
 TEST_F(TransportSecurityStateTest, DynamicExpectCTStateCleared) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const std::string host("example.test");
   TransportSecurityState state;
   TransportSecurityState::ExpectCTState expect_ct_state;
@@ -2132,8 +2128,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTStateCleared) {
 // Tests that dynamic Expect-CT state can be added and retrieved.
 TEST_F(TransportSecurityStateTest, DynamicExpectCTState) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const std::string host("example.test");
   TransportSecurityState state;
   TransportSecurityState::ExpectCTState expect_ct_state;
@@ -2184,8 +2179,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTDeduping) {
   SignedCertificateTimestampAndStatusList sct_list;
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   base::Time now = base::Time::Now();
   TransportSecurityState state;
   MockExpectCTReporter reporter;
@@ -2244,8 +2238,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTCompliantConnection) {
   SignedCertificateTimestampAndStatusList sct_list;
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState state;
   MockExpectCTReporter reporter;
@@ -2274,8 +2267,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTHeaderProcessingDeduping) {
   ssl.ct_policy_compliance = ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   TransportSecurityState state;
   MockExpectCTReporter reporter;
   state.SetExpectCTReporter(&reporter);
@@ -2298,8 +2290,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTHeaderProcessingDeduping) {
 // enabled.
 TEST_F(TransportSecurityStateTest, DynamicExpectCTStateDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndDisableFeature(kDynamicExpectCTFeature);
   const std::string host("example.test");
   TransportSecurityState state;
   TransportSecurityState::ExpectCTState expect_ct_state;
@@ -2323,8 +2314,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCT) {
   // First test that the header is not processed when the feature is disabled.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(
-        TransportSecurityState::kDynamicExpectCTFeature);
+    feature_list.InitAndDisableFeature(kDynamicExpectCTFeature);
     TransportSecurityState state;
     state.ProcessExpectCTHeader(kHeader, HostPortPair("example.test", 443), ssl,
                                 NetworkIsolationKey());
@@ -2336,8 +2326,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCT) {
   // Now test that the header is processed when the feature is enabled.
   {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        TransportSecurityState::kDynamicExpectCTFeature);
+    feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
     base::Time now = base::Time::Now();
     TransportSecurityState state;
     MockExpectCTReporter reporter;
@@ -2364,8 +2353,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTPrivateRoot) {
   ssl.ct_policy_compliance = ct::CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS;
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   TransportSecurityState state;
   MockExpectCTReporter reporter;
   state.SetExpectCTReporter(&reporter);
@@ -2396,8 +2384,7 @@ TEST_F(TransportSecurityStateTest, DynamicExpectCTNoComplianceDetails) {
   ssl.cert = cert2;
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   TransportSecurityState state;
   MockExpectCTReporter reporter;
   state.SetExpectCTReporter(&reporter);
@@ -2435,8 +2422,7 @@ TEST_F(TransportSecurityStateTest,
   NetworkIsolationKey network_isolation_key =
       NetworkIsolationKey::CreateTransient();
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   TransportSecurityState state;
   MockExpectCTReporter reporter;
   state.SetExpectCTReporter(&reporter);
@@ -2478,8 +2464,7 @@ TEST_F(TransportSecurityStateTest, CheckCTRequirementsWithExpectCT) {
   NetworkIsolationKey network_isolation_key =
       NetworkIsolationKey::CreateTransient();
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState state;
   MockExpectCTReporter reporter;
@@ -2621,8 +2606,7 @@ TEST_F(TransportSecurityStateTest, CheckCTRequirementsWithExpectCTAndDelegate) {
       NetworkIsolationKey::CreateTransient();
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState state;
   MockExpectCTReporter reporter;
@@ -2681,8 +2665,7 @@ TEST_F(TransportSecurityStateTest,
       NetworkIsolationKey::CreateTransient();
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState state;
   MockExpectCTReporter reporter;
@@ -3459,8 +3442,7 @@ TEST_F(TransportSecurityStateTest,
   HostPortPair host_port_pair(kDomain, 443);
 
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   const base::Time expiry = base::Time::Now() + base::Seconds(1000);
 
@@ -3550,7 +3532,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTPriority) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey},
       // disabled_features
       {});
@@ -3813,8 +3795,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTPriority) {
 TEST_F(TransportSecurityStateTest, PruneExpectCTDelay) {
   const GURL report_uri(kReportUri);
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState state;
   base::Time expiry = base::Time::Now() + base::Days(10);
@@ -3880,7 +3861,7 @@ TEST_F(TransportSecurityStateTest, PruneExpectCTNetworkIsolationKeyLimit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey},
       // disabled_features
       {});

@@ -90,8 +90,7 @@ INSTANTIATE_TEST_SUITE_P(All, TransportSecurityPersisterTest, testing::Bool());
 // Tests that LoadEntries() clears existing non-static entries.
 TEST_P(TransportSecurityPersisterTest, LoadEntriesClearsExistingState) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   TransportSecurityState::STSState sts_state;
   TransportSecurityState::ExpectCTState expect_ct_state;
@@ -160,8 +159,7 @@ TEST_P(TransportSecurityPersisterTest, SerializeData2) {
 
 TEST_P(TransportSecurityPersisterTest, SerializeData3) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   // Add an entry.
   base::Time expiry = base::Time::Now() + base::Seconds(1000);
@@ -309,8 +307,7 @@ TEST_P(TransportSecurityPersisterTest, DeserializeDataOldMergedDictionary) {
 // Tests that dynamic Expect-CT state is serialized and deserialized correctly.
 TEST_P(TransportSecurityPersisterTest, ExpectCT) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   TransportSecurityState::ExpectCTState expect_ct_state;
   static const char kTestDomain[] = "example.test";
@@ -352,8 +349,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCT) {
 // when there is also STS data present.
 TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   TransportSecurityState::ExpectCTState expect_ct_state;
   static const char kTestDomain[] = "example.test";
@@ -390,8 +386,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTWithSTSDataPresent) {
 // is disabled.
 TEST_P(TransportSecurityPersisterTest, ExpectCTDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndDisableFeature(kDynamicExpectCTFeature);
   const GURL report_uri(kReportUri);
   TransportSecurityState::ExpectCTState expect_ct_state;
   static const char kTestDomain[] = "example.test";
@@ -417,8 +412,7 @@ TEST_P(TransportSecurityPersisterTest, ExpectCTDisabled) {
 // the feature enabled or disabled, based on partition_expect_ct_state().
 TEST_P(TransportSecurityPersisterTest, ExpectCTWithNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   const GURL report_uri(kReportUri);
   static const char kTestDomain[] = "example.test";
@@ -505,7 +499,7 @@ TEST_P(TransportSecurityPersisterTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey},
       // disabled_features
       {});

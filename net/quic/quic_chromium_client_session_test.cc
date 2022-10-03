@@ -1716,7 +1716,7 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolExpectCT) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /* enabled_features */
-      {TransportSecurityState::kDynamicExpectCTFeature,
+      {kDynamicExpectCTFeature,
        features::kPartitionExpectCTStateByNetworkIsolationKey,
        features::kPartitionConnectionsByNetworkIsolationKey},
       /* disabled_features */

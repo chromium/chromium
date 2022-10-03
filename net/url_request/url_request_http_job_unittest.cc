@@ -383,8 +383,7 @@ class URLRequestHttpJobWithMockSocketsTest : public TestWithTaskEnvironment {
     auto context_builder = CreateTestURLRequestContextBuilder();
     context_builder->set_client_socket_factory_for_testing(&socket_factory_);
     context_ = context_builder->Build();
-    scoped_feature_list_.InitAndEnableFeature(
-        TransportSecurityState::kDynamicExpectCTFeature);
+    scoped_feature_list_.InitAndEnableFeature(kDynamicExpectCTFeature);
   }
 
   MockClientSocketFactory socket_factory_;

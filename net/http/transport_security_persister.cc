@@ -97,8 +97,7 @@ std::string LoadState(const base::FilePath& path) {
 }
 
 bool IsDynamicExpectCTEnabled() {
-  return base::FeatureList::IsEnabled(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  return base::FeatureList::IsEnabled(kDynamicExpectCTFeature);
 }
 
 // Serializes STS data from |state| to a Value.

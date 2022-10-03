@@ -348,8 +348,7 @@ void NetInternalsTest::MessageHandler::ResetNetworkContextForTesting(
 NetInternalsTest::NetInternalsTest()
     : test_server_started_(false) {
   message_handler_ = std::make_unique<MessageHandler>(this);
-  scoped_feature_list_.InitAndEnableFeature(
-      net::TransportSecurityState::kDynamicExpectCTFeature);
+  scoped_feature_list_.InitAndEnableFeature(net::kDynamicExpectCTFeature);
 }
 
 NetInternalsTest::~NetInternalsTest() {

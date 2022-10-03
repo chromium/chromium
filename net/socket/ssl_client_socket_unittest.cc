@@ -4020,8 +4020,7 @@ TEST_P(SSLClientSocketVersionTest, IgnoreCertificateErrorsBypassesRequiredCT) {
 // absence of CT information is a socket error.
 TEST_P(SSLClientSocketVersionTest, CTIsRequiredByExpectCT) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      TransportSecurityState::kDynamicExpectCTFeature);
+  feature_list.InitAndEnableFeature(kDynamicExpectCTFeature);
 
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));

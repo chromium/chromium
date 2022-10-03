@@ -1426,7 +1426,7 @@ class SignedExchangeExpectCTReportBrowserTest
   SignedExchangeExpectCTReportBrowserTest() {
     feature_list_.InitWithFeatures(
         // enabled_features
-        {net::TransportSecurityState::kDynamicExpectCTFeature,
+        {net::kDynamicExpectCTFeature,
          net::features::kPartitionExpectCTStateByNetworkIsolationKey,
          // These last two are not strictly necessary, but make this test more
          // robust against enabling NetworkIsolationKeys everywhere.

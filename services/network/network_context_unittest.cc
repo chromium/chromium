@@ -4953,7 +4953,7 @@ TEST_F(NetworkContextTest, FactoryParams_DisableSecureDns) {
 TEST_F(NetworkContextTest, ExpectCT) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {net::TransportSecurityState::kDynamicExpectCTFeature,
+      {net::kDynamicExpectCTFeature,
        net::features::kPartitionExpectCTStateByNetworkIsolationKey},
       {});
 
