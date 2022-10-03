@@ -81,10 +81,19 @@ void ChromeDataUseMeasurement::ReportDataUsage(TrafficDirection dir,
     UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", message_size_bytes);
 
 #if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1339449): remove this after running experiment.
   if (base::FeatureList::IsEnabled(kRunLegacyDataUseMeasurment)) {
-    int64_t bytes = 0;
-    net::android::traffic_stats::GetCurrentUidRxBytes(&bytes);
-    net::android::traffic_stats::GetCurrentUidTxBytes(&bytes);
+    bytes_transferred_since_last_traffic_stats_query_ += message_size_bytes;
+    // Minimum number of bytes that should be reported by the network delegate
+    // before Android's TrafficStats API is queried (if Chrome is not in
+    // background). This reduces the overhead of repeatedly calling the API.
+    static const int64_t kMinDelegateBytes = 25000;
+    if (bytes_transferred_since_last_traffic_stats_query_ >= kMinDelegateBytes) {
+      bytes_transferred_since_last_traffic_stats_query_ = 0;
+      int64_t bytes = 0;
+      net::android::traffic_stats::GetCurrentUidRxBytes(&bytes);
+      net::android::traffic_stats::GetCurrentUidTxBytes(&bytes);
+    }
   }
 #endif
 }
