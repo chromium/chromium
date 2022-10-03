@@ -12,6 +12,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
@@ -77,31 +79,16 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
       std::ref(*provider));
 }
 
-struct NextDoneCallbackHolder {
-  base::OnceClosure Get() {
-    auto value = std::move(next_done_callback_).value_or(base::DoNothing());
-    next_done_callback_ = absl::nullopt;
-    return value;
-  }
-
-  void Set(base::OnceClosure next_done_callback) {
-    next_done_callback_ = std::move(next_done_callback);
-  }
-
-  static NextDoneCallbackHolder& GetInstance() {
-    static base::NoDestructor<NextDoneCallbackHolder> kInstance{};
-    return *kInstance;
-  }
-
- private:
-  absl::optional<base::OnceClosure> next_done_callback_;
-};
+base::OnceClosure& GetNextDoneCallbackInstance() {
+  static base::NoDestructor<base::OnceClosure> kInstance{base::NullCallback()};
+  return *kInstance;
+}
 
 }  // namespace
 
 void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
     base::OnceClosure done_callback) {
-  NextDoneCallbackHolder::GetInstance().Set(std::move(done_callback));
+  GetNextDoneCallbackInstance() = std::move(done_callback);
 }
 
 absl::optional<GURL> GetAppToInstallFromCommandLine(
@@ -137,12 +124,11 @@ void MaybeInstallAppFromCommandLine(
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
                                     Profile& profile) {
-  base::OnceClosure done = NextDoneCallbackHolder::GetInstance().Get();
-  DCHECK(!done.is_null());
+  base::OnceClosure& done = GetNextDoneCallbackInstance();
 
   MaybeInstallAppFromCommandLine(
       command_line, CreateProductionInstallApplicationFromUrl(profile),
-      std::move(done));
+      done.is_null() ? base::DoNothing() : std::move(done));
 }
 
 }  // namespace web_app
