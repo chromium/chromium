@@ -20,6 +20,7 @@ namespace content {
 class AttributionDataHostManager;
 class AttributionObserver;
 class AttributionTrigger;
+class BrowsingDataFilterBuilder;
 class StorableSource;
 class StoredSource;
 class WebContents;
@@ -69,9 +70,18 @@ class AttributionManager {
   // `delete_begin` and `delete_end` time.
   //
   // If `filter` is null, then consider all storage keys in storage as matching.
+  //
+  // Precondition: `filter` should be built from the `filter_builder`, as well
+  // as any check that requires inspecting the `SpecialStoragePolicy` which
+  // isn't covered by `BrowsingDataFilterBuilder`.
+  //
+  // The only reason `filter_builder` needs to be passed here is for
+  // communication with the Android system of the raw data in the filter. Caller
+  // maintains ownership of `filter_builder`.
   virtual void ClearData(base::Time delete_begin,
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,
+                         BrowsingDataFilterBuilder* filter_builder,
                          bool delete_rate_limit_data,
                          base::OnceClosure done) = 0;
 };

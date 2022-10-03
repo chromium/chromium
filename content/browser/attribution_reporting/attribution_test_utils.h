@@ -326,6 +326,7 @@ class MockAttributionManager : public AttributionManager {
               (base::Time delete_begin,
                base::Time delete_end,
                StoragePartition::StorageKeyMatcherFunction filter,
+               BrowsingDataFilterBuilder* filter_builder,
                bool delete_rate_limit_data,
                base::OnceClosure done),
               (override));

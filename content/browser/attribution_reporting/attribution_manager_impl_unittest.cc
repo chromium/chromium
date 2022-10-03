@@ -44,6 +44,7 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -835,6 +836,7 @@ TEST_F(AttributionManagerImplTest, ClearData) {
         start, start + base::Minutes(1),
         base::BindLambdaForTesting(
             [match_url](const blink::StorageKey&) { return match_url; }),
+        /*filter_builder=*/nullptr,
         /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
     run_loop.Run();
 
@@ -1193,6 +1195,7 @@ TEST_F(AttributionManagerImplTest, ClearData_NotifiesObservers) {
   attribution_manager_->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating([](const blink::StorageKey&) { return false; }),
+      /*filter_builder=*/nullptr,
       /*delete_rate_limit_data=*/true, run_loop.QuitClosure());
   run_loop.Run();
 }
@@ -1611,9 +1614,11 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
                 ElementsAre(SourceDebugKeyIs(test_case.expected_debug_key)))
         << test_case.name;
 
-    attribution_manager_->ClearData(
-        base::Time::Min(), base::Time::Max(), base::NullCallback(),
-        /*delete_rate_limit_data=*/true, base::DoNothing());
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    /*filter=*/base::NullCallback(),
+                                    /*filter_builder=*/nullptr,
+                                    /*delete_rate_limit_data=*/true,
+                                    base::DoNothing());
   }
 }
 
@@ -1643,9 +1648,11 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
                           TriggerDebugKeyIs(test_case.expected_debug_key))))
         << test_case.name;
 
-    attribution_manager_->ClearData(
-        base::Time::Min(), base::Time::Max(), base::NullCallback(),
-        /*delete_rate_limit_data=*/true, base::DoNothing());
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    /*filter=*/base::NullCallback(),
+                                    /*filter_builder=*/nullptr,
+                                    /*delete_rate_limit_data=*/true,
+                                    base::DoNothing());
   }
 }
 
@@ -1724,9 +1731,11 @@ TEST_F(AttributionManagerImplTest, DebugReport_SentImmediately) {
       EXPECT_THAT(report_sender_->debug_calls(), IsEmpty());
     }
 
-    attribution_manager_->ClearData(
-        base::Time::Min(), base::Time::Max(), base::NullCallback(),
-        /*delete_rate_limit_data=*/true, base::DoNothing());
+    attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
+                                    /*filter=*/base::NullCallback(),
+                                    /*filter_builder=*/nullptr,
+                                    /*delete_rate_limit_data=*/true,
+                                    base::DoNothing());
 
     ::testing::Mock::VerifyAndClear(&observer);
   }

@@ -2592,10 +2592,22 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
          remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED);
   if (attribution_manager &&
       (remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED)) {
-    attribution_manager->ClearData(
-        begin, end, generic_filter,
-        remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
-        CreateTaskCompletionClosure(TracingDataType::kConversions));
+    if (storage_key_origin_empty) {
+      attribution_manager->ClearData(
+          begin, end, generic_filter, filter_builder,
+          remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
+          CreateTaskCompletionClosure(TracingDataType::kConversions));
+    } else if (storage_key.IsFirstPartyContext()) {
+      // Attribution Reporting API doesn't support cross-site data deletion.
+      std::unique_ptr<BrowsingDataFilterBuilder> effective_filter_builder =
+          BrowsingDataFilterBuilder::Create(
+              BrowsingDataFilterBuilder::Mode::kDelete);
+      effective_filter_builder->AddOrigin(storage_key.origin());
+      attribution_manager->ClearData(
+          begin, end, generic_filter, effective_filter_builder.get(),
+          remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
+          CreateTaskCompletionClosure(TracingDataType::kConversions));
+    }
   }
 
   if (aggregation_service &&

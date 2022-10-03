@@ -120,6 +120,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  StoragePartition::StorageKeyMatcherFunction filter,
+                 BrowsingDataFilterBuilder* filter_builder,
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
 
