@@ -60,7 +60,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kSplitHostCacheByNetworkIsolationKey);
-    network_isolation_key_ = NetworkIsolationKey::CreateTransient();
+    network_anoymization_key_ = NetworkAnonymizationKey::CreateTransient();
 #if BUILDFLAG(IS_WIN)
     auto auth_library =
         std::make_unique<MockAuthLibrary>(const_cast<wchar_t*>(NEGOSSP_NAME));
@@ -240,7 +240,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     SSLInfo null_ssl_info;
     int rv = factory_->CreateAuthHandlerFromString(
         "Negotiate", HttpAuth::AUTH_SERVER, null_ssl_info,
-        network_isolation_key(), scheme_host_port, NetLogWithSource(),
+        network_anonymization_key(), scheme_host_port, NetLogWithSource(),
         resolver_.get(), &generic_handler);
     if (rv != OK)
       return rv;
@@ -256,14 +256,14 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     return http_auth_preferences_.get();
   }
 
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anoymization_key_;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anoymization_key_;
 
 #if BUILDFLAG(IS_WIN)
   std::unique_ptr<SecPkgInfoW> security_package_;
@@ -358,7 +358,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   resolve_params.include_canonical_name = true;
   resolve_params.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
-      resolver()->CreateRequest(scheme_host_port, NetworkIsolationKey(),
+      resolver()->CreateRequest(scheme_host_port, NetworkAnonymizationKey(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback2;
   int result = host_request1->Start(callback2.callback());
@@ -367,7 +367,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
   // to make sure the right NetworkIsolationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
-      resolver()->CreateRequest(scheme_host_port, network_isolation_key(),
+      resolver()->CreateRequest(scheme_host_port, network_anonymization_key(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback3;
   result = host_request2->Start(callback3.callback());
@@ -400,7 +400,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   resolve_params.include_canonical_name = true;
   resolve_params.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
-      resolver()->CreateRequest(scheme_host_port, NetworkIsolationKey(),
+      resolver()->CreateRequest(scheme_host_port, NetworkAnonymizationKey(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback2;
   int result = host_request1->Start(callback2.callback());
@@ -409,7 +409,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
   // to make sure the right NetworkIsolationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
-      resolver()->CreateRequest(scheme_host_port, network_isolation_key(),
+      resolver()->CreateRequest(scheme_host_port, network_anonymization_key(),
                                 NetLogWithSource(), resolve_params);
   TestCompletionCallback callback3;
   result = host_request2->Start(callback3.callback());

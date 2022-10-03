@@ -527,7 +527,7 @@ class HostResolverManager::RequestImpl
  public:
   RequestImpl(NetLogWithSource source_net_log,
               HostResolver::Host request_host,
-              NetworkIsolationKey network_isolation_key,
+              NetworkAnonymizationKey network_anonymization_key,
               absl::optional<ResolveHostParameters> optional_parameters,
               base::WeakPtr<ResolveContext> resolve_context,
               HostCache* host_cache,
@@ -535,11 +535,11 @@ class HostResolverManager::RequestImpl
               const base::TickClock* tick_clock)
       : source_net_log_(std::move(source_net_log)),
         request_host_(std::move(request_host)),
-        network_isolation_key_(
+        network_anonymization_key_(
             base::FeatureList::IsEnabled(
                 features::kSplitHostCacheByNetworkIsolationKey)
-                ? std::move(network_isolation_key)
-                : NetworkIsolationKey()),
+                ? std::move(network_anonymization_key)
+                : NetworkAnonymizationKey()),
         parameters_(optional_parameters ? std::move(optional_parameters).value()
                                         : ResolveHostParameters()),
         resolve_context_(std::move(resolve_context)),
@@ -703,8 +703,8 @@ class HostResolverManager::RequestImpl
 
   const HostResolver::Host& request_host() const { return request_host_; }
 
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_isolation_key() const {
+    return network_anonymization_key_;
   }
 
   const ResolveHostParameters& parameters() const { return parameters_; }
@@ -760,8 +760,8 @@ class HostResolverManager::RequestImpl
                    parameters_.cache_usage !=
                        ResolveHostParameters::CacheUsage::DISALLOWED);
           dict.Set("is_speculative", parameters_.is_speculative);
-          dict.Set("network_isolation_key",
-                   network_isolation_key_.ToDebugString());
+          dict.Set("network_anonymization_key",
+                   network_anonymization_key_.ToDebugString());
           dict.Set("secure_dns_policy",
                    base::strict_cast<int>(parameters_.secure_dns_policy));
           return base::Value(std::move(dict));
@@ -793,7 +793,7 @@ class HostResolverManager::RequestImpl
   const NetLogWithSource source_net_log_;
 
   const HostResolver::Host request_host_;
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
   ResolveHostParameters parameters_;
   base::WeakPtr<ResolveContext> resolve_context_;
   const raw_ptr<HostCache> host_cache_;
@@ -2872,13 +2872,13 @@ HostResolverManager::CreateNetworkBoundHostResolverManager(
 std::unique_ptr<HostResolver::ResolveHostRequest>
 HostResolverManager::CreateRequest(
     absl::variant<url::SchemeHostPort, HostPortPair> host,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     absl::optional<ResolveHostParameters> optional_parameters,
     ResolveContext* resolve_context,
     HostCache* host_cache) {
   return CreateRequest(HostResolver::Host(std::move(host)),
-                       std::move(network_isolation_key), std::move(net_log),
+                       std::move(network_anonymization_key), std::move(net_log),
                        std::move(optional_parameters), resolve_context,
                        host_cache);
 }
@@ -2886,7 +2886,7 @@ HostResolverManager::CreateRequest(
 std::unique_ptr<HostResolver::ResolveHostRequest>
 HostResolverManager::CreateRequest(
     HostResolver::Host host,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     absl::optional<ResolveHostParameters> optional_parameters,
     ResolveContext* resolve_context,
@@ -2900,7 +2900,7 @@ HostResolverManager::CreateRequest(
   DCHECK(registered_contexts_.HasObserver(resolve_context));
 
   return std::make_unique<RequestImpl>(
-      std::move(net_log), std::move(host), std::move(network_isolation_key),
+      std::move(net_log), std::move(host), std::move(network_anonymization_key),
       std::move(optional_parameters), resolve_context->GetWeakPtr(), host_cache,
       weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }

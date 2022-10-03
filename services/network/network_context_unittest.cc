@@ -1494,6 +1494,9 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   ASSERT_TRUE(ip_address.AssignFromIPLiteral("1.2.3.4"));
   net::NetworkIsolationKey network_isolation_key =
       net::NetworkIsolationKey::CreateTransient();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          network_isolation_key);
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->set_host_resolver(
       std::make_unique<net::MockCachingHostResolver>());
@@ -1538,7 +1541,7 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
-      host_resolver.CreateRequest(kHostPortPair, network_isolation_key,
+      host_resolver.CreateRequest(kHostPortPair, network_anonymization_key,
                                   net::NetLogWithSource(), params);
   net::TestCompletionCallback callback1;
   int result = request1->Start(callback1.callback());
@@ -1547,13 +1550,14 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   // Check that the hostname is not in the DNS cache for other possible NIKs.
   const url::Origin kDestinationOrigin =
       url::Origin::Create(GURL(base::StringPrintf("https://%s", kHostname)));
-  const net::NetworkIsolationKey kOtherNiks[] = {
-      net::NetworkIsolationKey(),
-      net::NetworkIsolationKey(kDestinationOrigin /* top_frame_origin */,
-                               kDestinationOrigin /* frame_origin */)};
-  for (const auto& other_nik : kOtherNiks) {
+  const net::NetworkAnonymizationKey kOtherNaks[] = {
+      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(
+          net::SchemefulSite(kDestinationOrigin) /* top_frame_origin */,
+          net::SchemefulSite(kDestinationOrigin) /* frame_origin */)};
+  for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
-        host_resolver.CreateRequest(kHostPortPair, other_nik,
+        host_resolver.CreateRequest(kHostPortPair, other_nak,
                                     net::NetLogWithSource(), params);
     net::TestCompletionCallback callback2;
     result = request2->Start(callback2.callback());

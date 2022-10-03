@@ -31,8 +31,12 @@ bool IsPrivateHost(HostResolver* host_resolver,
   HostResolver::ResolveHostParameters parameters;
   parameters.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
-      host_resolver->CreateRequest(host_port_pair, network_isolation_key,
-                                   net_log, parameters);
+      host_resolver->CreateRequest(
+          host_port_pair,
+          net::NetworkAnonymizationKey::
+              CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                  network_isolation_key),
+          net_log, parameters);
 
   int rv = request->Start(base::BindOnce([](int error) { NOTREACHED(); }));
   DCHECK_NE(rv, ERR_IO_PENDING);

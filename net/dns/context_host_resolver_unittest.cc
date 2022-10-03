@@ -128,7 +128,7 @@ TEST_F(ContextHostResolverTest, Resolve) {
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   TestCompletionCallback callback;
@@ -160,7 +160,7 @@ TEST_F(ContextHostResolverTest, ResolveWithScheme) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpsScheme, "example.com", 100),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -183,7 +183,7 @@ TEST_F(ContextHostResolverTest, ResolveWithSchemeAndIpLiteral) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpsScheme, "[1234::5678]", 100),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -213,7 +213,7 @@ TEST_F(ContextHostResolverTest, DestroyRequest) {
                                        false /* enable_caching */));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   TestCompletionCallback callback;
@@ -316,7 +316,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver) {
                                        false /* enable_caching */));
   std::unique_ptr<HostResolver::ResolveHostRequest> request1 =
       resolver1->CreateRequest(HostPortPair("example.com", 100),
-                               NetworkIsolationKey(), NetLogWithSource(),
+                               NetworkAnonymizationKey(), NetLogWithSource(),
                                absl::nullopt);
   auto resolver2 = std::make_unique<ContextHostResolver>(
       manager_.get(),
@@ -324,7 +324,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver) {
                                        false /* enable_caching */));
   std::unique_ptr<HostResolver::ResolveHostRequest> request2 =
       resolver2->CreateRequest(HostPortPair("google.com", 100),
-                               NetworkIsolationKey(), NetLogWithSource(),
+                               NetworkAnonymizationKey(), NetLogWithSource(),
                                absl::nullopt);
 
   TestCompletionCallback callback1;
@@ -366,7 +366,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver_CompletedRequests) {
                                        false /* enable_caching */));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   // Complete request and then destroy the resolver.
@@ -400,7 +400,7 @@ TEST_F(ContextHostResolverTest, DestroyResolver_DelayedStartRequest) {
                                        false /* enable_caching */));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   resolver = nullptr;
@@ -454,7 +454,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_PendingRequest) {
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   TestCompletionCallback callback;
@@ -489,7 +489,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_CompletedRequests) {
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   // Complete request and then shutdown the resolver.
@@ -514,11 +514,11 @@ TEST_F(ContextHostResolverTest, OnShutdown_SubsequentRequests) {
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request1 =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
   std::unique_ptr<HostResolver::ResolveHostRequest> request2 =
       resolver->CreateRequest(HostPortPair("127.0.0.1", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   TestCompletionCallback callback1;
@@ -575,7 +575,7 @@ TEST_F(ContextHostResolverTest, OnShutdown_DelayedStartRequest) {
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
 
   resolver->OnShutdown();
@@ -640,7 +640,7 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
       HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               parameters);
 
   TestCompletionCallback callback;
@@ -673,7 +673,7 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
 
   std::unique_ptr<HostResolver::ResolveHostRequest> caching_request =
       resolver->CreateRequest(HostPortPair("example.com", 103),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
   TestCompletionCallback caching_callback;
   int rv = caching_request->Start(caching_callback.callback());
@@ -683,7 +683,7 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
   local_resolve_parameters.source = HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<HostResolver::ResolveHostRequest> cached_request =
       resolver->CreateRequest(HostPortPair("example.com", 100),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               local_resolve_parameters);
 
   TestCompletionCallback callback;
@@ -700,6 +700,8 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCache) {
 TEST_F(ContextHostResolverTest, ResultsAddedToCacheWithNetworkIsolationKey) {
   const SchemefulSite kSite(GURL("https://origin.test/"));
   const NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey(
+      kSite, kSite, /*is_cross_site=*/false);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -723,7 +725,7 @@ TEST_F(ContextHostResolverTest, ResultsAddedToCacheWithNetworkIsolationKey) {
 
   std::unique_ptr<HostResolver::ResolveHostRequest> caching_request =
       resolver->CreateRequest(HostPortPair("example.com", 103),
-                              kNetworkIsolationKey, NetLogWithSource(),
+                              kNetworkAnonymizationKey, NetLogWithSource(),
                               absl::nullopt);
   TestCompletionCallback caching_callback;
   int rv = caching_request->Start(caching_callback.callback());
@@ -875,8 +877,8 @@ TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
     auto resolver = std::make_unique<ContextHostResolver>(
         manager.get(), std::move(resolve_context));
     std::unique_ptr<HostResolver::ResolveHostRequest> request =
-        resolver->CreateRequest(host, NetworkIsolationKey(), NetLogWithSource(),
-                                absl::nullopt);
+        resolver->CreateRequest(host, NetworkAnonymizationKey(),
+                                NetLogWithSource(), absl::nullopt);
 
     TestCompletionCallback callback;
     int rv = request->Start(callback.callback());
@@ -908,8 +910,8 @@ TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
   auto resolver = std::make_unique<ContextHostResolver>(
       manager_.get(), std::move(resolve_context));
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
-      resolver->CreateRequest(host, NetworkIsolationKey(), NetLogWithSource(),
-                              absl::nullopt);
+      resolver->CreateRequest(host, NetworkAnonymizationKey(),
+                              NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());

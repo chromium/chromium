@@ -55,7 +55,7 @@ TEST(MappedHostResolverTest, Inclusion) {
   TestCompletionCallback callback;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("www.google.com", 80),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
   int rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -69,8 +69,8 @@ TEST(MappedHostResolverTest, Inclusion) {
 
   // Try resolving "www.google.com:80". Should be remapped to "baz.com:80".
   request = resolver->CreateRequest(HostPortPair("www.google.com", 80),
-                                    NetworkIsolationKey(), NetLogWithSource(),
-                                    absl::nullopt);
+                                    NetworkAnonymizationKey(),
+                                    NetLogWithSource(), absl::nullopt);
   rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
@@ -81,8 +81,8 @@ TEST(MappedHostResolverTest, Inclusion) {
   // Try resolving "foo.com:77". This will NOT be remapped, so result
   // is "foo.com:77".
   request = resolver->CreateRequest(HostPortPair("foo.com", 77),
-                                    NetworkIsolationKey(), NetLogWithSource(),
-                                    absl::nullopt);
+                                    NetworkAnonymizationKey(),
+                                    NetLogWithSource(), absl::nullopt);
   rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
@@ -95,8 +95,8 @@ TEST(MappedHostResolverTest, Inclusion) {
 
   // Try resolving "chromium.org:61". Should be remapped to "proxy:99".
   request = resolver->CreateRequest(HostPortPair("chromium.org", 61),
-                                    NetworkIsolationKey(), NetLogWithSource(),
-                                    absl::nullopt);
+                                    NetworkAnonymizationKey(),
+                                    NetLogWithSource(), absl::nullopt);
   rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
@@ -119,7 +119,7 @@ TEST(MappedHostResolverTest, MapsHostWithScheme) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpScheme, "to.map.test", 155),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -148,7 +148,7 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToIpLiteral) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpScheme, "host.test", 156),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -174,7 +174,7 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToNonCanon) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpScheme, "host.test", 157),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -200,7 +200,7 @@ TEST(MappedHostResolverTest, MapsHostWithSchemeToNameWithPort) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpScheme, "host.test", 158),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -225,7 +225,7 @@ TEST(MappedHostResolverTest, HandlesUnmappedHostWithScheme) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kHttpsScheme, "unmapped.test", 155),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
@@ -260,7 +260,7 @@ TEST(MappedHostResolverTest, Exclusion) {
   // Try resolving "www.google.com". Should not be remapped due to exclusion).
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("www.google.com", 80),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
   int rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -271,8 +271,8 @@ TEST(MappedHostResolverTest, Exclusion) {
 
   // Try resolving "chrome.com:80". Should be remapped to "baz:80".
   request = resolver->CreateRequest(HostPortPair("chrome.com", 80),
-                                    NetworkIsolationKey(), NetLogWithSource(),
-                                    absl::nullopt);
+                                    NetworkAnonymizationKey(),
+                                    NetLogWithSource(), absl::nullopt);
   rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
@@ -300,7 +300,7 @@ TEST(MappedHostResolverTest, SetRulesFromString) {
   // Try resolving "www.google.com". Should be remapped to "baz".
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("www.google.com", 80),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
   int rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -311,8 +311,8 @@ TEST(MappedHostResolverTest, SetRulesFromString) {
 
   // Try resolving "chrome.net:80". Should be remapped to "bar:60".
   request = resolver->CreateRequest(HostPortPair("chrome.net", 80),
-                                    NetworkIsolationKey(), NetLogWithSource(),
-                                    absl::nullopt);
+                                    NetworkAnonymizationKey(),
+                                    NetLogWithSource(), absl::nullopt);
   rv = request->Start(callback.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback.WaitForResult();
@@ -355,7 +355,7 @@ TEST(MappedHostResolverTest, MapToError) {
   TestCompletionCallback callback1;
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(HostPortPair("www.google.com", 80),
-                              NetworkIsolationKey(), NetLogWithSource(),
+                              NetworkAnonymizationKey(), NetLogWithSource(),
                               absl::nullopt);
   int rv = request->Start(callback1.callback());
   EXPECT_THAT(rv, IsError(ERR_NAME_NOT_RESOLVED));
@@ -364,8 +364,8 @@ TEST(MappedHostResolverTest, MapToError) {
   // Try resolving www.foo.com --> Should succeed.
   TestCompletionCallback callback2;
   request = resolver->CreateRequest(HostPortPair("www.foo.com", 80),
-                                    NetworkIsolationKey(), NetLogWithSource(),
-                                    absl::nullopt);
+                                    NetworkAnonymizationKey(),
+                                    NetLogWithSource(), absl::nullopt);
   rv = request->Start(callback2.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   rv = callback2.WaitForResult();
@@ -388,7 +388,7 @@ TEST(MappedHostResolverTest, MapHostWithSchemeToError) {
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       resolver->CreateRequest(
           url::SchemeHostPort(url::kWssScheme, "host.test", 155),
-          NetworkIsolationKey(), NetLogWithSource(), absl::nullopt);
+          NetworkAnonymizationKey(), NetLogWithSource(), absl::nullopt);
 
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());
