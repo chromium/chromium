@@ -78,7 +78,7 @@ void SigninReauthHandler::HandleCancel(const base::Value::List& args) {
 sync_pb::UserConsentTypes::AccountPasswordsConsent
 SigninReauthHandler::BuildConsent(const base::Value::List& args) const {
   CHECK_EQ(2U, args.size());
-  base::Value::ConstListView consent_description = args[0].GetListDeprecated();
+  const base::Value::List& consent_description = args[0].GetList();
   const std::string& consent_confirmation = args[1].GetString();
 
   // The strings returned by the WebUI are not free-form, they must belong into
