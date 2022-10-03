@@ -372,8 +372,8 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
     MOCK_METHOD(void, RegisterComplete, (), (override));
 
    private:
-    void CheckSequence() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker); }
-    SEQUENCE_CHECKER(sequence_checker);
+    void CheckSequence() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
+    SEQUENCE_CHECKER(sequence_checker_);
   };
 
   base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
