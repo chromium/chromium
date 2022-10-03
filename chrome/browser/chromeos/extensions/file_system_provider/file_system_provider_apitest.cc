@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -154,6 +156,18 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
 
  private:
   ash::FakeChromeUserManager user_manager_;
+};
+
+class FileSystemProviderServiceWorkerApiTest
+    : public FileSystemProviderApiTest {
+ public:
+  FileSystemProviderServiceWorkerApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsFSPInServiceWorkers);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Mount) {
@@ -334,6 +348,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderApiTest, Unresponsive_App) {
   AbortOnUnresponsivePerformer performer(browser()->profile());
   ASSERT_TRUE(RunExtensionTest("file_system_provider/unresponsive_app",
                                {.launch_as_platform_app = true},
+                               {.load_as_component = true}))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, WriteFile) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/write_file",
+                               {.extension_url = "test.html"},
                                {.load_as_component = true}))
       << message_;
 }

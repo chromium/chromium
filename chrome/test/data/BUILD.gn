@@ -56,6 +56,7 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "cast:closure_compile",
+    "extensions/api_test/file_system_provider/service_worker:closure_compile",
   ]
 
   if (!is_android) {
