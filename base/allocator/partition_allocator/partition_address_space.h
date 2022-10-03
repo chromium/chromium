@@ -38,10 +38,6 @@ namespace internal {
 // address space themselves and provide the mapping to PartitionAlloc.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
-  static PA_ALWAYS_INLINE internal::pool_handle GetRegularPool() {
-    return setup_.regular_pool_;
-  }
-
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   static PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
@@ -52,16 +48,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif
 
-  static PA_ALWAYS_INLINE internal::pool_handle GetBRPPool() {
-    return setup_.brp_pool_;
-  }
-
-  // The Configurable Pool can be created inside an existing mapping; we
-  // keep the information with the other pool setup data.
-  static PA_ALWAYS_INLINE internal::pool_handle GetConfigurablePool() {
-    return setup_.configurable_pool_;
-  }
-
   static PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
       uintptr_t address) {
     // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
@@ -71,15 +57,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     pool_handle pool = 0;
     uintptr_t base = 0;
     if (IsInRegularPool(address)) {
-      pool = GetRegularPool();
+      pool = kRegularPoolHandle;
       base = setup_.regular_pool_base_address_;
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     } else if (IsInBRPPool(address)) {
-      pool = GetBRPPool();
+      pool = kBRPPoolHandle;
       base = setup_.brp_pool_base_address_;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     } else if (IsInConfigurablePool(address)) {
-      pool = GetConfigurablePool();
+      PA_DCHECK(IsConfigurablePoolInitialized());
+      pool = kConfigurablePoolHandle;
       base = setup_.configurable_pool_base_address_;
     } else {
       PA_NOTREACHED();
@@ -108,12 +95,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static PA_ALWAYS_INLINE bool IsInitialized() {
     // Either neither or both regular and BRP pool are initialized. The
     // configurable pool is initialized separately.
-    if (setup_.regular_pool_) {
-      PA_DCHECK(setup_.brp_pool_ != 0);
+    if (setup_.regular_pool_base_address_ != kUninitializedPoolBaseAddress) {
+      PA_DCHECK(setup_.brp_pool_base_address_ != kUninitializedPoolBaseAddress);
       return true;
     }
 
-    PA_DCHECK(setup_.brp_pool_ == 0);
+    PA_DCHECK(setup_.brp_pool_base_address_ == kUninitializedPoolBaseAddress);
     return false;
   }
 
@@ -280,10 +267,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
           regular_pool_base_mask_(0),
           brp_pool_base_mask_(0),
 #endif
-          configurable_pool_base_mask_(0),
-          regular_pool_(0),
-          brp_pool_(0),
-          configurable_pool_(0) {
+          configurable_pool_base_mask_(0) {
     }
 
     // Using a union to enforce padding.
@@ -297,10 +281,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         uintptr_t brp_pool_base_mask_;
 #endif
         uintptr_t configurable_pool_base_mask_;
-
-        pool_handle regular_pool_;
-        pool_handle brp_pool_;
-        pool_handle configurable_pool_;
       };
 
       char one_cacheline_[kPartitionCachelineSize];

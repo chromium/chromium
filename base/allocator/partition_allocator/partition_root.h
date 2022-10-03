@@ -632,12 +632,14 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   internal::pool_handle ChoosePool() const {
     if (flags.use_configurable_pool) {
-      return internal::GetConfigurablePool();
+      PA_DCHECK(IsConfigurablePoolAvailable());
+      return internal::kConfigurablePoolHandle;
     }
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    return brp_enabled() ? internal::GetBRPPool() : internal::GetRegularPool();
+    return brp_enabled() ? internal::kBRPPoolHandle
+                         : internal::kRegularPoolHandle;
 #else
-    return internal::GetRegularPool();
+    return internal::kRegularPoolHandle;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   }
 

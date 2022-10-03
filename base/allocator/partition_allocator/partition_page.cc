@@ -312,7 +312,7 @@ void UnmapNow(uintptr_t reservation_start,
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  if (pool == GetBRPPool()) {
+  if (pool == kBRPPoolHandle) {
     // In 32-bit mode, the beginning of a reservation may be excluded from the
     // BRP pool, so shift the pointer. Other pools don't have this logic.
     PA_DCHECK(IsManagedByPartitionAllocBRPPool(
@@ -327,8 +327,8 @@ void UnmapNow(uintptr_t reservation_start,
   } else
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   {
-    PA_DCHECK(pool == GetRegularPool() ||
-              (IsConfigurablePoolAvailable() && pool == GetConfigurablePool()));
+    PA_DCHECK(pool == kRegularPoolHandle || (IsConfigurablePoolAvailable() &&
+                                             pool == kConfigurablePoolHandle));
     // Non-BRP pools don't need adjustment that BRP needs in 32-bit mode.
     PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
               IsManagedByPartitionAllocConfigurablePool(reservation_start));

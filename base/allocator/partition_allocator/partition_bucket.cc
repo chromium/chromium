@@ -126,7 +126,7 @@ uintptr_t ReserveMemoryFromPool(pool_handle pool,
   // allocation honors the block list. Find a better address otherwise.
 #if !defined(PA_HAS_64_BITS_POINTERS) && \
     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  if (pool == GetBRPPool()) {
+  if (pool == kBRPPoolHandle) {
     constexpr int kMaxRandomAddressTries = 10;
     for (int i = 0; i < kMaxRandomAddressTries; ++i) {
       if (!reserved_address ||
@@ -317,7 +317,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is
     // used, allocate a SystemPage for RefCount "bitmap" (only one of its
     // elements will be used).
-    if (pool == GetBRPPool()) {
+    if (pool == kBRPPoolHandle) {
       ScopedSyscallTimer timer{root};
       RecommitSystemPages(reservation_start + SystemPageSize() * 2,
                           SystemPageSize(),
@@ -817,7 +817,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::InitializeSuperPage(
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
   // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is
   // used, allocate a SystemPage for RefCount bitmap.
-  if (root->ChoosePool() == GetBRPPool()) {
+  if (root->ChoosePool() == kBRPPoolHandle) {
     ScopedSyscallTimer timer{root};
     RecommitSystemPages(super_page + SystemPageSize() * 2, SystemPageSize(),
                         PageAccessibilityConfiguration::kReadWrite,

@@ -161,19 +161,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   static AddressPoolManager singleton_;
 };
 
-PA_ALWAYS_INLINE pool_handle GetRegularPool() {
-  return kRegularPoolHandle;
-}
-
-PA_ALWAYS_INLINE pool_handle GetBRPPool() {
-  return kBRPPoolHandle;
-}
-
-PA_ALWAYS_INLINE pool_handle GetConfigurablePool() {
-  PA_DCHECK(IsConfigurablePoolAvailable());
-  return kConfigurablePoolHandle;
-}
-
 }  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_ADDRESS_POOL_MANAGER_H_

@@ -278,13 +278,13 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   uintptr_t addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance().Reserve(
-        GetRegularPool(), 0,
+        kRegularPoolHandle, 0,
         AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap *
             kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(!(addrs[i] & kSuperPageOffsetMask));
     AddressPoolManager::GetInstance().MarkUsed(
-        GetRegularPool(), addrs[i],
+        kRegularPoolHandle, addrs[i],
         AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap *
             kNumPages[i]);
   }
@@ -308,11 +308,11 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByRegularPool) {
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
     AddressPoolManager::GetInstance().MarkUnused(
-        GetRegularPool(), addrs[i],
+        kRegularPoolHandle, addrs[i],
         AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap *
             kNumPages[i]);
     AddressPoolManager::GetInstance().UnreserveAndDecommit(
-        GetRegularPool(), addrs[i],
+        kRegularPoolHandle, addrs[i],
         AddressPoolManagerBitmap::kBytesPer1BitOfRegularPoolBitmap *
             kNumPages[i]);
     EXPECT_FALSE(AddressPoolManager::IsManagedByRegularPool(addrs[i]));
@@ -328,10 +328,10 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
   uintptr_t addrs[kAllocCount];
   for (size_t i = 0; i < kAllocCount; ++i) {
     addrs[i] = AddressPoolManager::GetInstance().Reserve(
-        GetBRPPool(), 0, kSuperPageSize * kNumPages[i]);
+        kBRPPoolHandle, 0, kSuperPageSize * kNumPages[i]);
     EXPECT_TRUE(addrs[i]);
     EXPECT_TRUE(!(addrs[i] & kSuperPageOffsetMask));
-    AddressPoolManager::GetInstance().MarkUsed(GetBRPPool(), addrs[i],
+    AddressPoolManager::GetInstance().MarkUsed(kBRPPoolHandle, addrs[i],
                                                kSuperPageSize * kNumPages[i]);
   }
 
@@ -360,10 +360,10 @@ TEST(PartitionAllocAddressPoolManagerTest, IsManagedByBRPPool) {
     }
   }
   for (size_t i = 0; i < kAllocCount; ++i) {
-    AddressPoolManager::GetInstance().MarkUnused(GetBRPPool(), addrs[i],
+    AddressPoolManager::GetInstance().MarkUnused(kBRPPoolHandle, addrs[i],
                                                  kSuperPageSize * kNumPages[i]);
     AddressPoolManager::GetInstance().UnreserveAndDecommit(
-        GetBRPPool(), addrs[i], kSuperPageSize * kNumPages[i]);
+        kBRPPoolHandle, addrs[i], kSuperPageSize * kNumPages[i]);
     EXPECT_FALSE(AddressPoolManager::IsManagedByRegularPool(addrs[i]));
     EXPECT_FALSE(AddressPoolManager::IsManagedByBRPPool(addrs[i]));
   }
@@ -376,18 +376,18 @@ TEST(PartitionAllocAddressPoolManagerTest, RegularPoolUsageChanges) {
   const size_t usage_before = dumper.regular_pool_usage_;
 
   const uintptr_t address = AddressPoolManager::GetInstance().Reserve(
-      GetRegularPool(), 0, kSuperPageSize);
+      kRegularPoolHandle, 0, kSuperPageSize);
   ASSERT_TRUE(address);
-  AddressPoolManager::GetInstance().MarkUsed(GetRegularPool(), address,
+  AddressPoolManager::GetInstance().MarkUsed(kRegularPoolHandle, address,
                                              kSuperPageSize);
 
   AddressPoolManager::GetInstance().DumpStats(&dumper);
   EXPECT_GT(dumper.regular_pool_usage_, usage_before);
 
-  AddressPoolManager::GetInstance().MarkUnused(GetRegularPool(), address,
+  AddressPoolManager::GetInstance().MarkUnused(kRegularPoolHandle, address,
                                                kSuperPageSize);
   AddressPoolManager::GetInstance().UnreserveAndDecommit(
-      GetRegularPool(), address, kSuperPageSize);
+      kRegularPoolHandle, address, kSuperPageSize);
 
   AddressPoolManager::GetInstance().DumpStats(&dumper);
   EXPECT_EQ(dumper.regular_pool_usage_, usage_before);

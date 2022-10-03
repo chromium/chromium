@@ -289,12 +289,12 @@ void AddressPoolManager::GetPoolStats(const pool_handle handle,
 
 bool AddressPoolManager::GetStats(AddressSpaceStats* stats) {
   // Get 64-bit pool stats.
-  GetPoolStats(GetRegularPool(), &stats->regular_pool_stats);
+  GetPoolStats(kRegularPoolHandle, &stats->regular_pool_stats);
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-  GetPoolStats(GetBRPPool(), &stats->brp_pool_stats);
+  GetPoolStats(kBRPPoolHandle, &stats->brp_pool_stats);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (IsConfigurablePoolAvailable()) {
-    GetPoolStats(GetConfigurablePool(), &stats->configurable_pool_stats);
+    GetPoolStats(kConfigurablePoolHandle, &stats->configurable_pool_stats);
   }
   return true;
 }
