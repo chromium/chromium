@@ -2283,13 +2283,10 @@ crbug.com/492664 external/wpt/css/css-writing-modes/text-combine-upright-value-a
 crbug.com/381684 [ Mac ] fonts/family-fallback-gardiner.html [ Skip ]
 crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
 
-crbug.com/1121942 printing/block-with-overflow-in-bottom-aligned-fixedpos.html [ Crash Failure ]
 crbug.com/1311165 printing/fixed-positioned-but-static-headers-and-footers.html [ Crash Failure ]
 crbug.com/1121942 [ Debug Mac11 ] printing/fixed-positioned-child-shouldnt-print.html [ Crash Failure Pass ]
 crbug.com/1121942 printing/fixed-positioned-headers-and-footers-clipped.html [ Crash Failure ]
-crbug.com/1121942 printing/fixed-positioned-headers-and-footers-larger-than-page.html [ Crash Failure ]
 crbug.com/1121942 printing/fixed-positioned-overflow-scroll.html [ Crash Failure ]
-crbug.com/1121942 printing/flexbox-with-overflow-in-bottom-aligned-fixedpos.html [ Crash Failure ]
 crbug.com/377696 printing/setPrinting.html [ Failure ]
 crbug.com/1121942 printing/width-overflow.html [ Failure ]
 
