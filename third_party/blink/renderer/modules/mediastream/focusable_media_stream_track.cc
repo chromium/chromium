@@ -43,7 +43,7 @@ FocusableMediaStreamTrack::FocusableMediaStreamTrack(
 
 #if !BUILDFLAG(IS_ANDROID)
 void FocusableMediaStreamTrack::CloseFocusWindowOfOpportunity() {
-  promise_settled_ = true;
+  focus_window_of_opportunity_is_open_ = false;
 }
 #endif
 
@@ -72,10 +72,10 @@ void FocusableMediaStreamTrack::focus(
   }
   focus_called_ = true;
 
-  if (promise_settled_) {
+  if (!focus_window_of_opportunity_is_open_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The microtask on which the Promise was settled has terminated.");
+        "The window of opportunity for focus-decision is closed.");
     return;
   }
 
@@ -110,7 +110,8 @@ void FocusableMediaStreamTrack::CloneInternal(
 #if !BUILDFLAG(IS_ANDROID)
   // Copied for completeness, but should never be read on clones.
   cloned_track->focus_called_ = focus_called_;
-  cloned_track->promise_settled_ = promise_settled_;
+  cloned_track->focus_window_of_opportunity_is_open_ =
+        focus_window_of_opportunity_is_open_;
 #endif
 }
 
