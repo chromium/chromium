@@ -687,15 +687,6 @@
   </message>
 
   <!-- Personalization section. -->
-  <message name="IDS_OS_SETTINGS_TAG_PERSONALIZATION" desc="Text for search result item which, when clicked, navigates the user to personalization settings. Alternate phrase for: 'Customization', 'Personal'">
-    Personalization
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_PERSONALIZATION_ALT1" desc="Text for search result item which, when clicked, navigates the user to personalization settings. Alternate phrase for: 'Personalization settings', 'Personal'">
-    Customization
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_PERSONALIZATION_ALT2" desc="Text for search result item which, when clicked, navigates the user to personalization settings. Alternate phrase for: 'Personalization settings', 'Customization'">
-    Personal
-  </message>
   <message name="IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE" desc="Text for search result item which, when clicked, navigates the user to the settings page page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Sign-in image', 'Login image', 'Profile picture', 'Profile image'">
     Change device account image
   </message>
@@ -710,15 +701,6 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4" desc="Text for search result item which, when clicked, navigates the user to the settings page page where they can change their device account image (visible on log-in screen). Alternate phrase for: 'Change device account image', 'Sign-in image', 'Login image', 'Profile picture'">
     Profile image
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Background', 'Desktop'">
-    Change wallpaper
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT1" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Change wallpaper', 'Desktop'">
-    Background
-  </message>
-  <message name="IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT2" desc="Text for search result item which, when clicked, navigates the user to wallpaper settings. Alternate phrase for: 'Change wallpaper', 'Background'">
-    Desktop
   </message>
 
   <!-- Search and Assistant section. -->
