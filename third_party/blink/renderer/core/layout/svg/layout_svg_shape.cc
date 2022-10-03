@@ -79,7 +79,7 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
 
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
-  SVGResources::UpdatePaints(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdatePaints(*this, old_style, StyleRef());
 
   // Most of the stroke attributes (caps, joins, miters, width, etc.) will cause
   // a re-layout which will clear the stroke-path cache; however, there are a
@@ -98,7 +98,7 @@ void LayoutSVGShape::StyleDidChange(StyleDifference diff,
 
 void LayoutSVGShape::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearPaints(*GetElement(), Style());
+  SVGResources::ClearPaints(*this, Style());
   LayoutSVGModelObject::WillBeDestroyed();
 }
 

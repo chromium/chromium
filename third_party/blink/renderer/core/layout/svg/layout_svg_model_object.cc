@@ -103,7 +103,7 @@ gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
 
 void LayoutSVGModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearEffects(*GetElement(), Style());
+  SVGResources::ClearEffects(*this);
   LayoutObject::WillBeDestroyed();
 }
 
@@ -144,7 +144,7 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
   SetHasTransformRelatedProperty(
       StyleRef().HasTransformRelatedPropertyForSVG());
 
-  SVGResources::UpdateEffects(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdateEffects(*this, old_style);
 
   if (!Parent())
     return;

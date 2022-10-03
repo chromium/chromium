@@ -62,15 +62,13 @@ SelectionStyleScope::SelectionStyleScope(const LayoutObject& layout_object,
   if (styles_are_equal_)
     return;
   DCHECK(!layout_object.IsSVGInlineText());
-  auto& element = To<SVGElement>(*layout_object_.GetNode());
-  SVGResources::UpdatePaints(element, nullptr, selection_style_);
+  SVGResources::UpdatePaints(layout_object_, nullptr, selection_style_);
 }
 
 SelectionStyleScope::~SelectionStyleScope() {
   if (styles_are_equal_)
     return;
-  auto& element = To<SVGElement>(*layout_object_.GetNode());
-  SVGResources::ClearPaints(element, &selection_style_);
+  SVGResources::ClearPaints(layout_object_, &selection_style_);
 }
 
 enum class SvgPaintMode { kText, kTextDecoration };

@@ -56,12 +56,12 @@ void LayoutSVGPath::StyleDidChange(StyleDifference diff,
                                    const ComputedStyle* old_style) {
   NOT_DESTROYED();
   LayoutSVGShape::StyleDidChange(diff, old_style);
-  SVGResources::UpdateMarkers(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdateMarkers(*this, old_style);
 }
 
 void LayoutSVGPath::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearMarkers(*GetElement(), Style());
+  SVGResources::ClearMarkers(*this, Style());
   LayoutSVGShape::WillBeDestroyed();
 }
 

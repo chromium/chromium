@@ -47,18 +47,18 @@ class SVGResources {
   static SVGElementResourceClient* GetClient(const LayoutObject&);
   static gfx::RectF ReferenceBoxForEffects(const LayoutObject&);
 
-  static void UpdateEffects(SVGElement&,
-                            const ComputedStyle* old_style,
-                            const ComputedStyle&);
-  static void ClearEffects(SVGElement&, const ComputedStyle*);
-  static void UpdatePaints(SVGElement&,
+  static void UpdateEffects(LayoutObject&, const ComputedStyle* old_style);
+  static void ClearEffects(const LayoutObject&);
+  static void UpdatePaints(const LayoutObject&,
                            const ComputedStyle* old_style,
-                           const ComputedStyle&);
-  static void ClearPaints(SVGElement&, const ComputedStyle*);
-  static void UpdateMarkers(SVGElement&,
-                            const ComputedStyle* old_style,
-                            const ComputedStyle&);
-  static void ClearMarkers(SVGElement&, const ComputedStyle*);
+                           const ComputedStyle& style);
+  static void ClearPaints(const LayoutObject&, const ComputedStyle* style);
+  static void UpdateMarkers(const LayoutObject&,
+                            const ComputedStyle* old_style);
+  static void ClearMarkers(const LayoutObject&, const ComputedStyle* style);
+
+ private:
+  static SVGElementResourceClient& EnsureClient(const LayoutObject&);
 };
 
 class SVGElementResourceClient final

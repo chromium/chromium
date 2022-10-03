@@ -35,12 +35,12 @@ void LayoutNGSVGText::StyleDidChange(StyleDifference diff,
   if (needs_text_metrics_update_ && diff.HasDifference())
     diff.SetNeedsFullLayout();
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::StyleDidChange(diff, old_style);
-  SVGResources::UpdatePaints(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdatePaints(*this, old_style, StyleRef());
 }
 
 void LayoutNGSVGText::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearPaints(*GetElement(), Style());
+  SVGResources::ClearPaints(*this, Style());
   LayoutNGBlockFlowMixin<LayoutSVGBlock>::WillBeDestroyed();
 }
 

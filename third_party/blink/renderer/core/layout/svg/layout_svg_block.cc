@@ -48,7 +48,7 @@ SVGElement* LayoutSVGBlock::GetElement() const {
 
 void LayoutSVGBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearEffects(*GetElement(), Style());
+  SVGResources::ClearEffects(*this);
   LayoutBlockFlow::WillBeDestroyed();
 }
 
@@ -126,7 +126,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  SVGResources::UpdateEffects(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdateEffects(*this, old_style);
 
   if (!Parent())
     return;
