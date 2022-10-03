@@ -326,8 +326,6 @@ blink_core_sources_html = [
   "html_li_element.h",
   "html_link_element.cc",
   "html_link_element.h",
-  "html_main_element.cc",
-  "html_main_element.h",
   "html_map_element.cc",
   "html_map_element.h",
   "html_marquee_element.cc",

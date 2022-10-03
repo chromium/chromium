@@ -37,7 +37,7 @@ class SoftNavigationHeuristics
   void UserInitiatedClick(ScriptState*);
   void ClickEventEnded(ScriptState*);
   void SawURLChange(ScriptState*, const String& url);
-  void ModifiedMain(ScriptState*);
+  void ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.

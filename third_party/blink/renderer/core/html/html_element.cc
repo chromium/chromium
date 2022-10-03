@@ -181,22 +181,10 @@ HTMLElement* GetParentForDirectionality(const HTMLElement& element,
   return DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(element));
 }
 
-bool IsDescendentOfMainElement(const Node* node) {
-  DCHECK(node);
-  do {
-    if (IsA<HTMLMainElement>(node)) {
-      return true;
-    }
-    node = node->parentNode();
-  } while (node);
-  return false;
-}
-
 void CheckSoftNavigationHeuristicsTracking(const Document& document,
                                            const Node* insertion_point) {
   DCHECK(insertion_point);
-  if (document.IsTrackingSoftNavigationHeuristics() &&
-      IsDescendentOfMainElement(insertion_point)) {
+  if (document.IsTrackingSoftNavigationHeuristics()) {
     LocalDOMWindow* window = document.domWindow();
     if (!window) {
       return;
@@ -213,7 +201,7 @@ void CheckSoftNavigationHeuristicsTracking(const Document& document,
     SoftNavigationHeuristics* heuristics =
         SoftNavigationHeuristics::From(*window);
     DCHECK(heuristics);
-    heuristics->ModifiedMain(script_state);
+    heuristics->ModifiedDOM(script_state);
   }
 }
 

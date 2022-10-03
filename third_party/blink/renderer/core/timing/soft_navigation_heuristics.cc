@@ -36,15 +36,6 @@ void LogToConsole(LocalFrame* frame,
   window->AddConsoleMessage(console_message);
 }
 
-void LogToConsole(ScriptState* script_state,
-                  mojom::blink::ConsoleMessageLevel level,
-                  const String& message) {
-  DCHECK(script_state);
-  ScriptState::Scope scope(script_state);
-  LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
-  LogToConsole(frame, level, message);
-}
-
 }  // namespace
 
 // static
@@ -136,17 +127,11 @@ void SoftNavigationHeuristics::SawURLChange(ScriptState* script_state,
                                             const String& url) {
   if (!SetFlagIfDescendantAndCheck(script_state, FlagType::kURLChange, url)) {
     ResetHeuristic();
-  } else {
-    LogToConsole(script_state, mojom::blink::ConsoleMessageLevel::kVerbose,
-                 String("URL change."));
   }
 }
 
-void SoftNavigationHeuristics::ModifiedMain(ScriptState* script_state) {
-  if (SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification)) {
-    LogToConsole(script_state, mojom::blink::ConsoleMessageLevel::kVerbose,
-                 String("Modified main element."));
-  }
+void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
+  SetFlagIfDescendantAndCheck(script_state, FlagType::kMainModification);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
