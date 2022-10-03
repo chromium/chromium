@@ -51,6 +51,14 @@
       ]
     },
     {
+      // Optional capabilities, dependent on availability of tracing services.
+      protocol: [
+          "fuchsia.tracing.perfetto.ProducerConnector",
+          "fuchsia.tracing.provider.Registry",
+      ],
+      availability: "optional",
+    },
+    {
       // Optional capabilities, dependent on ContextFeatureFlags.
       protocol: [
 

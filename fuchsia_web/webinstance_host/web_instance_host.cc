@@ -330,7 +330,10 @@ std::vector<std::string> GetRequiredServicesForConfig(
       "fuchsia.logger.LogSink",        "fuchsia.memorypressure.Provider",
       "fuchsia.process.Launcher",
       "fuchsia.settings.Display",  // Used if preferred theme is DEFAULT.
-      "fuchsia.sysmem.Allocator",      "fuchsia.ui.scenic.Scenic"};
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.tracing.perfetto.ProducerConnector",
+      "fuchsia.tracing.provider.Registry",
+      "fuchsia.ui.scenic.Scenic"};
 
   // TODO(crbug.com/1209031): Provide these conditionally, once corresponding
   // ContextFeatureFlags have been defined.

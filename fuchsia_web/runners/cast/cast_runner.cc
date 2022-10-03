@@ -74,6 +74,8 @@ static constexpr const char* kServices[] = {
     "fuchsia.process.Launcher",
     "fuchsia.settings.Display",
     "fuchsia.sysmem.Allocator",
+    "fuchsia.tracing.perfetto.ProducerConnector",
+    "fuchsia.tracing.provider.Registry",
     "fuchsia.ui.composition.Allocator",
     "fuchsia.ui.composition.Flatland",
     "fuchsia.ui.input3.Keyboard",
