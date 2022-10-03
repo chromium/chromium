@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 
 #import "base/command_line.h"
+#import "base/containers/contains.h"
 #import "base/files/file_util.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_string_value_serializer.h"
@@ -1027,7 +1028,7 @@ NSString* SerializedValue(const base::Value* value) {
   std::vector<variations::VariationID> ids = provider->GetVariationsVector(
       {variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
        variations::GOOGLE_WEB_PROPERTIES_FIRST_PARTY});
-  return std::find(ids.begin(), ids.end(), variationID) != ids.end();
+  return base::Contains(ids, variationID);
 }
 
 + (BOOL)isTriggerVariationEnabled:(int)variationID {
@@ -1036,7 +1037,7 @@ NSString* SerializedValue(const base::Value* value) {
   std::vector<variations::VariationID> ids = provider->GetVariationsVector(
       {variations::GOOGLE_WEB_PROPERTIES_TRIGGER_ANY_CONTEXT,
        variations::GOOGLE_WEB_PROPERTIES_TRIGGER_FIRST_PARTY});
-  return std::find(ids.begin(), ids.end(), variationID) != ids.end();
+  return base::Contains(ids, variationID);
 }
 
 + (BOOL)isUKMEnabled {

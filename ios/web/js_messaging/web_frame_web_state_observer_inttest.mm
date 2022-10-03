@@ -4,6 +4,7 @@
 
 #import "ios/web/public/test/web_test_with_web_state.h"
 
+#import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "ios/testing/embedded_test_server_handlers.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -56,7 +57,7 @@ ACTION_P(VerifyChildWebFrame, web_state) {
 
   web::WebFramesManager* manager = web_state->GetWebFramesManager();
   auto frames = manager->GetAllWebFrames();
-  EXPECT_TRUE(frames.end() != std::find(frames.begin(), frames.end(), arg1));
+  EXPECT_TRUE(base::Contains(frames, arg1));
   EXPECT_NE(manager->GetMainWebFrame(), arg1);
 }
 }

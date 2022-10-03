@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 
+#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -124,8 +125,8 @@ overflow_menu::Destination HighestUnshown(
 void Swap(std::vector<overflow_menu::Destination>& ranking,
           overflow_menu::Destination from,
           overflow_menu::Destination to) {
-  auto from_loc = std::find(ranking.begin(), ranking.end(), from);
-  auto to_loc = std::find(ranking.begin(), ranking.end(), to);
+  auto from_loc = base::ranges::find(ranking, from);
+  auto to_loc = base::ranges::find(ranking, to);
   *from_loc = to;
   *to_loc = from;
 }

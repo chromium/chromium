@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 
-#import <algorithm>
 #import <memory>
 #import <vector>
 
+#import "base/containers/contains.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -29,8 +29,7 @@ class TestObserver : public web::WebStateObserver {
   ~TestObserver() override {}
 
   bool WasInvokedFor(web::WebState* web_state) {
-    return std::find(invoker_web_states_.begin(), invoker_web_states_.end(),
-                     web_state) != invoker_web_states_.end();
+    return base::Contains(invoker_web_states_, web_state);
   }
 
   void Reset() { invoker_web_states_.clear(); }

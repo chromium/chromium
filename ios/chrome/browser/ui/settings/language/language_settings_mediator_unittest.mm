@@ -6,6 +6,7 @@
 #import <string>
 #import <vector>
 
+#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -193,14 +194,12 @@ TEST_F(LanguageSettingsMediatorTest, TestSupportedLanguagesItems) {
 
   std::vector<std::string> language_codes =
       ExtractLanguageCodesFromLanguageItems(language_items);
-  EXPECT_TRUE(std::find(language_codes.begin(), language_codes.end(), "fa") !=
-              language_codes.end());
+  EXPECT_TRUE(base::Contains(language_codes, "fa"));
 
   translate_prefs()->AddToLanguageList("fa", /*force_blocked=*/false);
   language_items = [mediator() supportedLanguagesItems];
   language_codes = ExtractLanguageCodesFromLanguageItems(language_items);
-  EXPECT_FALSE(std::find(language_codes.begin(), language_codes.end(), "fa") !=
-               language_codes.end());
+  EXPECT_FALSE(base::Contains(language_codes, "fa"));
 }
 
 // Tests that the list of accept language items is as expected.

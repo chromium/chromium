@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 
+#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
@@ -143,8 +144,7 @@ using base::SysNSStringToUTF16;
     (const std::vector<password_manager::CredentialUIEntry>&)credentials {
   PasswordDetails* password =
       [[PasswordDetails alloc] initWithCredential:_credential];
-  password.compromised = std::find(credentials.begin(), credentials.end(),
-                                   _credential) != credentials.end();
+  password.compromised = base::Contains(credentials, _credential);
   [self.consumer setPassword:password];
 }
 

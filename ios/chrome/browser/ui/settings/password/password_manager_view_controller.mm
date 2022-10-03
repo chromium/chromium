@@ -10,6 +10,7 @@
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -1818,12 +1819,11 @@ bool ShouldShowSettingsUI() {
     auto removeCredential =
         [](std::vector<password_manager::CredentialUIEntry>& credentials,
            const password_manager::CredentialUIEntry& credential) {
-          auto iterator =
-              std::find(credentials.begin(), credentials.end(), credential);
+          auto iterator = base::ranges::find(credentials, credential);
           if (iterator != credentials.end())
             credentials.erase(iterator);
         };
-    
+
     if (itemType == ItemTypeBlocked) {
       removeCredential(_blockedSites, credential);
     } else {

@@ -6,13 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
-#import <algorithm>
 #import <iterator>
 #import <map>
 #import <numeric>
 #import <set>
 #import <vector>
 
+#import "base/containers/contains.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -395,11 +395,10 @@ std::vector<promos_manager::Promo> PromosManager::LeastRecentlyShown(
     // If the current impression's promo already exists in
     // `active_promos_sorted_by_least_recently_shown`, move onto the next
     // impression.
-    if (std::find(active_promos_sorted_by_least_recently_shown.begin(),
-                  active_promos_sorted_by_least_recently_shown.end(),
-                  impression.promo) !=
-        active_promos_sorted_by_least_recently_shown.end())
+    if (base::Contains(active_promos_sorted_by_least_recently_shown,
+                       impression.promo)) {
       continue;
+    }
 
     if (active_promos.count(impression.promo))
       active_promos_sorted_by_least_recently_shown.push_back(impression.promo);
@@ -413,11 +412,10 @@ std::vector<promos_manager::Promo> PromosManager::LeastRecentlyShown(
   // Never-before-seen promos are considered less recently seen than previously
   // seen promos.
   for (promos_manager::Promo unseen_promo : active_promos) {
-    if (std::find(active_promos_sorted_by_least_recently_shown.begin(),
-                  active_promos_sorted_by_least_recently_shown.end(),
-                  unseen_promo) ==
-        active_promos_sorted_by_least_recently_shown.end())
+    if (!base::Contains(active_promos_sorted_by_least_recently_shown,
+                        unseen_promo)) {
       active_promos_sorted_by_least_recently_shown.push_back(unseen_promo);
+    }
   }
 
   std::reverse(active_promos_sorted_by_least_recently_shown.begin(),

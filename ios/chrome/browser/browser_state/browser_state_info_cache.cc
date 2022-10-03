@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -81,7 +81,7 @@ void BrowserStateInfoCache::RemoveBrowserState(
   base::Value* cache = update.Get();
   std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
   cache->RemoveKey(key);
-  sorted_keys_.erase(std::find(sorted_keys_.begin(), sorted_keys_.end(), key));
+  sorted_keys_.erase(base::ranges::find(sorted_keys_, key));
 
   for (auto& observer : observer_list_)
     observer.OnBrowserStateWasRemoved(browser_state_path);

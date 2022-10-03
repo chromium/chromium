@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/check.h"
+#import "base/containers/contains.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/notreached.h"
@@ -192,8 +193,7 @@
       [NSMutableArray arrayWithCapacity:languages.size()];
   for (const auto& language : languages) {
     // Ignore languages already in the accept languages list.
-    if (std::find(acceptLanguageCodes.begin(), acceptLanguageCodes.end(),
-                  language.code) != acceptLanguageCodes.end()) {
+    if (base::Contains(acceptLanguageCodes, language.code)) {
       continue;
     }
     LanguageItem* languageItem = [self languageItemFromLanguage:language];
