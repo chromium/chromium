@@ -99,6 +99,11 @@ void AccessCodeCastIntegrationBrowserTest::SetUp() {
   CastConfigControllerMediaRouter::SetMediaRouterForTest(nullptr);
 #endif
   InProcessBrowserTest::SetUp();
+
+  // This command removes the verify pixels switch so that our TestDialog code
+  // does not automatically take pixel screenshots.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      "browser-ui-tests-verify-pixels");
 }
 
 void AccessCodeCastIntegrationBrowserTest::SetUpInProcessBrowserTestFixture() {
@@ -252,9 +257,7 @@ void AccessCodeCastIntegrationBrowserTest::EnableAccessCodeCasting() {
   base::RunLoop().RunUntilIdle();
 }
 
-content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
-  content::WebContentsAddedObserver observer;
-
+void AccessCodeCastIntegrationBrowserTest::ShowUi(const std::string& name) {
   CastModeSet tab_mode = {MediaCastMode::TAB_MIRROR};
   std::unique_ptr<MediaRouteStarter> starter =
       std::make_unique<MediaRouteStarter>(
@@ -262,14 +265,16 @@ content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
   AccessCodeCastDialog::Show(
       tab_mode, std::move(starter),
       AccessCodeCastDialogOpenLocation::kBrowserCastMenu);
+}
 
-  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+content::WebContents* AccessCodeCastIntegrationBrowserTest::ShowDialog() {
+  content::WebContentsAddedObserver observer;
+  // This string is empty since the ShowUi function requires a string. We do not
+  // need one in the context we are using the function.
+  ShowUi("");
+  EXPECT_TRUE(VerifyUi());
   content::WebContents* dialog_contents = observer.GetWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(dialog_contents));
-
-  auto* web_ui = dialog_contents->GetWebUI();
-  EXPECT_TRUE(web_ui);
-  EXPECT_TRUE(web_ui->CanCallJavascript());
 
   return dialog_contents;
 }

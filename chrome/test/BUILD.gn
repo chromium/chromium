@@ -349,6 +349,10 @@ static_library("test_support") {
     }
     allow_circular_includes_from = [ ":test_support_ui_android" ]
   } else {
+    sources += [
+      "../browser/ui/test/test_browser_dialog.cc",
+      "../browser/ui/test/test_browser_dialog.h",
+    ]
     public_deps += [
       # Android uses //chrome:chrome_android_core instead of the //chrome/app
       # target.

@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
@@ -44,7 +45,7 @@ namespace media_router {
 // Base class that generates an access code cast dialog and all objects that are
 // required for interacting with the dialog.
 class AccessCodeCastIntegrationBrowserTest
-    : public MixinBasedInProcessBrowserTest {
+    : public SupportsTestDialog<MixinBasedInProcessBrowserTest> {
  public:
   AccessCodeCastIntegrationBrowserTest();
   ~AccessCodeCastIntegrationBrowserTest() override;
@@ -66,6 +67,10 @@ class AccessCodeCastIntegrationBrowserTest
   // test case is added that uses this function, make sure to add that test case
   // to  //testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter
   content::WebContents* ShowDialog();
+
+  // TestBrowserDialog:
+  void ShowUi(const std::string& name) override;
+
   void CloseDialog(content::WebContents* dialog_contents);
 
   void SetAccessCode(std::string access_code,
