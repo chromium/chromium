@@ -9,13 +9,14 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
+#include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/multi_threaded_cert_verifier.h"
+#include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
-#include "net/cert/caching_cert_verifier.h"
-#include "net/cert/coalescing_cert_verifier.h"
-#include "net/cert/multi_threaded_cert_verifier.h"
 
 namespace net {
 
@@ -78,21 +79,29 @@ bool CertVerifier::RequestParams::operator<(
 std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
   scoped_refptr<CertVerifyProc> verify_proc;
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  verify_proc =
-      CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
-#elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (!verify_proc &&
+      base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
+    verify_proc = CertVerifyProc::CreateBuiltinWithChromeRootStore(
+        std::move(cert_net_fetcher));
+  }
+#endif
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
+  if (!verify_proc &&
+      base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
     verify_proc =
         CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
-  } else {
+  }
+#endif
+  if (!verify_proc) {
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    verify_proc =
+        CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
+#else
     verify_proc =
         CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher));
-  }
-#else
-  verify_proc =
-      CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher));
 #endif
+  }
 
   return std::make_unique<MultiThreadedCertVerifier>(std::move(verify_proc));
 }
