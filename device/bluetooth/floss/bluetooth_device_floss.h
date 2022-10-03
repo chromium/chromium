@@ -108,6 +108,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // a publicly accessible implementation.
   bool IsBondedImpl() const;
   void SetName(const std::string& name);
+  FlossAdapterClient::BondState GetBondState() { return bond_state_; }
   void SetBondState(FlossAdapterClient::BondState bond_state);
   void SetIsConnected(bool is_connected);
   void SetConnectionState(uint32_t state);
@@ -119,7 +120,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
 
   BluetoothPairingFloss* pairing() const { return pairing_.get(); }
 
-  void InitializeDeviceProperties();
+  void InitializeDeviceProperties(base::OnceClosure callback);
 
  protected:
   // BluetoothDevice override
@@ -139,8 +140,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   void OnConnectToServiceError(ConnectToServiceErrorCallback error_callback,
                                const std::string& error_message);
 
+  void TriggerInitDevicePropertiesCallback();
+
   absl::optional<ConnectCallback> pending_callback_on_connect_profiles_ =
       absl::nullopt;
+
+  absl::optional<base::OnceClosure> pending_callback_on_init_props_ =
+      absl::nullopt;
+
+  // Number of pending device properties to initialize
+  int num_pending_properties_ = 0;
 
   // Address of this device. Changing this should necessitate creating a new
   // BluetoothDeviceFloss object.

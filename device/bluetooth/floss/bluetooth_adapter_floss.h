@@ -167,6 +167,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterFloss final
                         DBusResult<Void> ret);
   void OnStopDiscovery(DiscoverySessionResultCallback callback,
                        DBusResult<Void> ret);
+  // Called when all device properties have been initialized
+  void OnInitializeDeviceProperties(BluetoothDeviceFloss* device_ptr);
   void OnGetConnectionState(const FlossDeviceId& device_id,
                             DBusResult<uint32_t> ret);
   void OnGetBondState(const FlossDeviceId& device_id, DBusResult<uint32_t> ret);

@@ -408,6 +408,12 @@ void BluetoothAdapterFloss::OnStopDiscovery(
   std::move(callback).Run(false, UMABluetoothDiscoverySessionOutcome::SUCCESS);
 }
 
+void BluetoothAdapterFloss::OnInitializeDeviceProperties(
+    BluetoothDeviceFloss* device_ptr) {
+  for (auto& observer : observers_)
+    observer.DeviceAdded(this, device_ptr);
+}
+
 void BluetoothAdapterFloss::OnGetConnectionState(const FlossDeviceId& device_id,
                                                  DBusResult<uint32_t> ret) {
   BluetoothDeviceFloss* device =
@@ -583,7 +589,9 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
     BluetoothDeviceFloss* device_ptr = device_floss.get();
     devices_.emplace(canonical_address, std::move(device_floss));
 
-    device_ptr->InitializeDeviceProperties();
+    device_ptr->InitializeDeviceProperties(
+        base::BindOnce(&BluetoothAdapterFloss::OnInitializeDeviceProperties,
+                       weak_ptr_factory_.GetWeakPtr(), device_ptr));
 
     // TODO(b/204708206): Convert "Paired" and "Connected" property into a
     // property framework.
@@ -595,9 +603,6 @@ void BluetoothAdapterFloss::AdapterFoundDevice(
         base::BindOnce(&BluetoothAdapterFloss::OnGetConnectionState,
                        weak_ptr_factory_.GetWeakPtr(), device_found),
         device_found);
-
-    for (auto& observer : observers_)
-      observer.DeviceAdded(this, device_ptr);
   }
 
   BLUETOOTH_LOG(EVENT) << __func__ << device_found;
@@ -713,6 +718,10 @@ void BluetoothAdapterFloss::DeviceBondStateChanged(
     if (bond_state == FlossAdapterClient::BondState::kNotBonded) {
       AdapterClearedDevice(remote_device);
     }
+    return;
+  }
+
+  if (device->GetBondState() == bond_state) {
     return;
   }
 
