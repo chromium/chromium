@@ -6,9 +6,10 @@ import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory
 import {FirmwareUpdate, UpdatePriority} from 'chrome://accessory-update/firmware_update_types.js';
 import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 export function updateCardTest() {
   /** @type {?UpdateCardElement} */

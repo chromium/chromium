@@ -9,10 +9,11 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {setAccessibilityFeaturesForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {AppState} from 'chrome://scanning/scanning_app_types.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {MockController} from '../../mock_controller.js';
-import {flushTasks, isVisible, waitAfterNextRender} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import {FakeMediaQueryList} from './scanning_app_test_utils.js';
 import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';

@@ -10,7 +10,8 @@ import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, ManagedProp
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {eventToPromise, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.js';
 

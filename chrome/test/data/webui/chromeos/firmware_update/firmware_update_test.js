@@ -14,9 +14,10 @@ import {getUpdateProvider, setUpdateControllerForTesting, setUpdateProviderForTe
 import {mojoString16ToString} from 'chrome://accessory-update/mojo_utils.js';
 import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {eventToPromise, flushTasks} from '../../test_util.js';
+import {eventToPromise} from '../../test_util.js';
 
 export function firmwareUpdateAppTest() {
   /** @type {?FirmwareUpdateAppElement} */

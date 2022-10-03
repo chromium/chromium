@@ -10,9 +10,10 @@ import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://d
 import {OverviewCardElement} from 'chrome://diagnostics/overview_card.js';
 import {SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

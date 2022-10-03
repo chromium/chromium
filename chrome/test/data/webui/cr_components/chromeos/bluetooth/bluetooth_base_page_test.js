@@ -8,9 +8,10 @@ import {SettingsBluetoothBasePageElement} from 'chrome://resources/ash/common/bl
 import {ButtonState} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
-import {eventToPromise, waitAfterNextRender} from '../../../test_util.js';
+import {eventToPromise} from '../../../test_util.js';
 
 suite('CrComponentsBluetoothBasePageTest', function() {
   /** @type {?SettingsBluetoothBasePageElement} */

@@ -8,9 +8,10 @@ import 'chrome://resources/ash/common/network_health/network_diagnostics.js';
 import {setNetworkDiagnosticsServiceForTesting} from 'chrome://resources/ash/common/network_health/mojo_interface_provider.js';
 import {Icons} from 'chrome://resources/ash/common/network_health/network_diagnostics_types.js';
 import {RoutineVerdict} from 'chrome://resources/mojo/chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertGT, assertNotReached, assertTrue} from '../../../chai_assert.js';
-import {flushTasks, isVisible} from '../../../test_util.js';
+import {isVisible} from '../../../test_util.js';
 
 import {FakeNetworkDiagnostics} from './fake_network_diagnostics_routines.js';
 import {getIconFromSrc} from './network_health_test_utils.js';

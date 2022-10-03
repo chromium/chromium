@@ -12,9 +12,10 @@ import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
 import {CpuUsage, SystemDataProviderInterface, SystemInfo} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isChildVisible} from '../../test_util.js';
+import {isChildVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 

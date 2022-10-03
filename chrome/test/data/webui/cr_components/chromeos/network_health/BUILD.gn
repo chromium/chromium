@@ -6,10 +6,12 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [ "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=" + rebase_path(
-                                                               "//ash/webui/connectivity_diagnostics/resources/",
-                                                               root_build_dir) +
-                                                           "\"" ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://connectivity-diagnostics/=" + rebase_path(
+                            "//ash/webui/connectivity_diagnostics/resources/",
+                            root_build_dir) + "\"",
+                    "browser_resolver_prefix_replacements=\"chrome://webui-test/=./gen/chrome/test/data/webui/tsc\"",
+                  ]
   deps = [
     ":fake_network_diagnostics_routines",
     ":network_diagnostics_test",

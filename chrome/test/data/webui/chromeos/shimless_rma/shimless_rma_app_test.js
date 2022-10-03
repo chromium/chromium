@@ -10,9 +10,10 @@ import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interf
 import {ButtonState, ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {RmadErrorCode, State, StateResult} from 'chrome://shimless-rma/shimless_rma_types.js';
 import {disableAllButtons, enableAllButtons} from 'chrome://shimless-rma/shimless_rma_util.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 export function shimlessRMAAppTest() {
   /** @type {?ShimlessRma} */

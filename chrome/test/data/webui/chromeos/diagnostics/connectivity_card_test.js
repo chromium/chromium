@@ -14,9 +14,10 @@ import {Network} from 'chrome://diagnostics/network_health_provider.mojom-webui.
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {TestSuiteStatus} from 'chrome://diagnostics/routine_list_executor.js';
 import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
