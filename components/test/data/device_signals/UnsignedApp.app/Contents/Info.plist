@@ -7,16 +7,12 @@
 	<key>BuildMachineOSBuild</key>
 	<string>13A3007</string>
 	<key>CFBundleExecutable</key>
-	<string>TestApp</string>
-	<key>CFBundleName</key>
-	<string>TestApp</string>
+	<string>UnsignedApp</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>CFBundleShortVersionString</key>
-	<string>10.8</string>
 </dict>
 </plist>

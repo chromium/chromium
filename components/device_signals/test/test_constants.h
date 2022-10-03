@@ -47,6 +47,12 @@ std::string GetTestBundleProductName();
 // Returns the expected product version of the test bundle.
 std::string GetTestBundleProductVersion();
 
+// Returns an absolute path to the UnsignedApp.app test bundle.
+base::FilePath GetUnsignedBundlePath();
+
+// Returns an absolute path to nothing (no file/directory).
+base::FilePath GetUnusedPath();
+
 }  // namespace device_signals::test
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_TEST_TEST_CONSTANTS_H_

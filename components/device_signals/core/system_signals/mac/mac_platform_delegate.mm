@@ -4,10 +4,14 @@
 
 #include "components/device_signals/core/system_signals/mac/mac_platform_delegate.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 
 #include "base/files/file_path.h"
 #import "base/mac/foundation_util.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "crypto/sha2.h"
+#include "net/cert/asn1_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device_signals {
@@ -86,8 +90,54 @@ MacPlatformDelegate::GetProductMetadata(const base::FilePath& file_path) {
 absl::optional<std::vector<std::string>>
 MacPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
     const base::FilePath& file_path) {
-  // TODO(b:231326198): Implement.
-  return absl::nullopt;
+  std::vector<std::string> spki_hashes;
+  base::ScopedCFTypeRef<CFURLRef> file_url =
+      base::mac::FilePathToCFURL(file_path);
+  base::ScopedCFTypeRef<SecStaticCodeRef> file_code;
+  if (SecStaticCodeCreateWithPath(file_url, kSecCSDefaultFlags,
+                                  file_code.InitializeInto()) !=
+      errSecSuccess) {
+    return spki_hashes;
+  }
+
+  base::ScopedCFTypeRef<CFDictionaryRef> signing_information;
+  if (SecCodeCopySigningInformation(file_code, kSecCSSigningInformation,
+                                    signing_information.InitializeInto()) !=
+      errSecSuccess) {
+    return spki_hashes;
+  }
+
+  CFArrayRef cert_chain = base::mac::GetValueFromDictionary<CFArrayRef>(
+      signing_information, kSecCodeInfoCertificates);
+  if (!cert_chain) {
+    return spki_hashes;
+  }
+
+  if (CFArrayGetCount(cert_chain) < 1) {
+    // Empty cert chain.
+    return spki_hashes;
+  }
+
+  // Retrieve leaf certificate.
+  SecCertificateRef leaf_cert = reinterpret_cast<SecCertificateRef>(
+      const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, 0)));
+
+  base::ScopedCFTypeRef<CFDataRef> der_data(SecCertificateCopyData(leaf_cert));
+  if (!der_data) {
+    return spki_hashes;
+  }
+
+  base::StringPiece spki_bytes;
+  if (!net::asn1::ExtractSPKIFromDERCert(
+          base::StringPiece(
+              reinterpret_cast<const char*>(CFDataGetBytePtr(der_data)),
+              CFDataGetLength(der_data)),
+          &spki_bytes)) {
+    return spki_hashes;
+  }
+
+  spki_hashes.push_back(crypto::SHA256HashString(spki_bytes));
+  return spki_hashes;
 }
 
 }  // namespace device_signals

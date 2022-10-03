@@ -15,9 +15,14 @@ static_library("mac") {
   deps = [
     "//base",
     "//components/device_signals/core/common",
+    "//crypto",
+    "//net",
   ]
 
-  frameworks = [ "Foundation.framework" ]
+  frameworks = [
+    "CoreFoundation.framework",
+    "Foundation.framework",
+  ]
 }
 
 source_set("unit_tests") {

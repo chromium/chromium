@@ -18,6 +18,14 @@ An executable file which exposes metadata such as:
 empty.exe
 An executable file which has no metadata and is not signed.
 
+TestApp.app
+Simple test app bundle that is signed and has the following properties:
+- Product Name: TestApp
+- Product Version: 10.8
+
+TestApp.app
+Simple test app bundle that is not signed and does not have product name or version.
+
 Instructions for signing an executable (e.g. signed.exe):
 - Open PowerShell (with admin privileges),
 
@@ -40,3 +48,8 @@ Instructions for adding a second signature to an executable (e.g. multi-signed.e
 cert), but when you get to run the "signtool" command, add the /as flag to append
 the signature (instead of overwriting it).
 signtool sign /as /f C:\self-signed.pfx /p "1231233!a" C:\signed.exe
+
+Instructions for signing the TestApp.app bundle:
+- Create a self-signed certificate in the login keychain via Keychain access
+- Sign the bundle with this command:
+codesign -s <certificate name> ./CalculatorFake.app

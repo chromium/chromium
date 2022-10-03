@@ -69,4 +69,12 @@ std::string GetTestBundleProductVersion() {
   return kTestBundleProductVersion;
 }
 
+base::FilePath GetUnsignedBundlePath() {
+  return GetTestDataDir().AppendASCII("UnsignedApp.app");
+}
+
+base::FilePath GetUnusedPath() {
+  return GetTestDataDir().AppendASCII("Unused");
+}
+
 }  // namespace device_signals::test
