@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/cxx17_backports.h"
@@ -777,10 +778,10 @@ void TabStripModel::SetTabBlocked(int index, bool blocked) {
                                     index);
 }
 
-void TabStripModel::SetTabPinned(int index, bool pinned) {
+int TabStripModel::SetTabPinned(int index, bool pinned) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  SetTabPinnedImpl(index, pinned);
+  return SetTabPinnedImpl(index, pinned);
 }
 
 bool TabStripModel::IsTabPinned(int index) const {
@@ -1426,15 +1427,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       base::RecordAction(UserMetricsAction("TabContextMenu_TogglePinned"));
       std::vector<int> indices = GetIndicesForCommand(context_index);
       bool pin = WillContextMenuPin(context_index);
-      if (pin) {
-        for (size_t i = 0; i < indices.size(); ++i)
-          SetTabPinnedImpl(indices[i], true);
-      } else {
-        // Unpin from the back so that the order is maintained (unpinning can
-        // trigger moving a tab).
-        for (size_t i = indices.size(); i > 0; --i)
-          SetTabPinnedImpl(indices[i - 1], false);
-      }
+      SetTabsPinned(indices, pin);
       break;
     }
 
@@ -2278,14 +2271,10 @@ void TabStripModel::MoveAndSetGroup(
 
   if (new_group.has_value()) {
     // Unpin tabs when grouping -- the states should be mutually exclusive.
-    // Here we manually unpin the tab to avoid moving the tab twice, which can
-    // potentially cause race conditions.
+    // Here we move the tab twice to ensure the tabstrip is always in a valid
+    // state when observers are notified of changes.
     if (IsTabPinned(index)) {
-      contents_data_[index]->set_pinned(false);
-      for (auto& observer : observers_) {
-        observer.TabPinnedStateChanged(
-            this, contents_data_[index]->web_contents(), index);
-      }
+      index = SetTabPinnedImpl(index, false);
     }
 
     absl::optional<tab_groups::TabGroupId> old_group = GetTabGroupForTab(index);
@@ -2365,10 +2354,10 @@ void TabStripModel::GroupTab(int index, const tab_groups::TabGroupId& group) {
   group_model_->GetTabGroup(group)->AddTab();
 }
 
-void TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
+int TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
   CHECK(ContainsIndex(index));
   if (contents_data_[index]->pinned() == pinned)
-    return;
+    return index;
 
   // Upgroup tabs if pinning -- the states should be mutually exclusive.
   if (pinned && group_model_)
@@ -2389,27 +2378,27 @@ void TabStripModel::SetTabPinnedImpl(int index, bool pinned) {
     observer.TabPinnedStateChanged(this, contents_data_[index]->web_contents(),
                                    index);
   }
+
+  return index;
 }
 
 std::vector<int> TabStripModel::SetTabsPinned(const std::vector<int>& indices,
                                               bool pinned) {
   std::vector<int> new_indices;
   if (pinned) {
-    for (size_t i = 0; i < indices.size(); i++) {
-      if (IsTabPinned(indices[i])) {
-        new_indices.push_back(indices[i]);
+    for (int index : indices) {
+      if (IsTabPinned(index)) {
+        new_indices.push_back(index);
       } else {
-        SetTabPinnedImpl(indices[i], true);
-        new_indices.push_back(IndexOfFirstNonPinnedTab() - 1);
+        new_indices.push_back(SetTabPinnedImpl(index, true));
       }
     }
   } else {
-    for (size_t i = indices.size() - 1; i < indices.size(); i--) {
-      if (!IsTabPinned(indices[i])) {
-        new_indices.push_back(indices[i]);
+    for (int index : base::Reversed(indices)) {
+      if (!IsTabPinned(index)) {
+        new_indices.push_back(index);
       } else {
-        SetTabPinnedImpl(indices[i], false);
-        new_indices.push_back(IndexOfFirstNonPinnedTab());
+        new_indices.push_back(SetTabPinnedImpl(index, false));
       }
     }
     std::reverse(new_indices.begin(), new_indices.end());

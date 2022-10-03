@@ -2384,7 +2384,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Pin the first tab, this shouldn't visually reorder anything.
   {
-    tabstrip.SetTabPinned(0, true);
+    EXPECT_EQ(0, tabstrip.SetTabPinned(0, true));
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(1, observer.GetStateCount());
@@ -2399,7 +2399,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Unpin the first tab.
   {
-    tabstrip.SetTabPinned(0, false);
+    EXPECT_EQ(0, tabstrip.SetTabPinned(0, false));
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(1, observer.GetStateCount());
@@ -2414,7 +2414,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Pin the 3rd tab, which should move it to the front.
   {
-    tabstrip.SetTabPinned(2, true);
+    EXPECT_EQ(0, tabstrip.SetTabPinned(2, true));
 
     // The pinning should have resulted in a move and a pinned notification.
     ASSERT_EQ(3, observer.GetStateCount());
@@ -2433,7 +2433,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Pin the tab "1", which shouldn't move anything.
   {
-    tabstrip.SetTabPinned(1, true);
+    EXPECT_EQ(1, tabstrip.SetTabPinned(1, true));
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(1, observer.GetStateCount());
@@ -2448,7 +2448,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Try to move tab "2" to the front, it should be ignored.
   {
-    tabstrip.MoveWebContentsAt(2, 0, false);
+    EXPECT_EQ(2, tabstrip.MoveWebContentsAt(2, 0, false));
 
     // As the order didn't change, we should get a pinned notification.
     ASSERT_EQ(0, observer.GetStateCount());
@@ -2461,7 +2461,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Unpin tab "3", which implicitly moves it to the end.
   {
-    tabstrip.SetTabPinned(0, false);
+    EXPECT_EQ(1, tabstrip.SetTabPinned(0, false));
 
     ASSERT_EQ(3, observer.GetStateCount());
     State state(raw_contents3, 1, MockTabStripModelObserver::MOVE);
@@ -2479,7 +2479,7 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Unpin tab "3", nothing should happen.
   {
-    tabstrip.SetTabPinned(1, false);
+    EXPECT_EQ(1, tabstrip.SetTabPinned(1, false));
 
     ASSERT_EQ(0, observer.GetStateCount());
 
@@ -2490,8 +2490,8 @@ TEST_F(TabStripModelTest, Pinning) {
 
   // Pin "3" and "1".
   {
-    tabstrip.SetTabPinned(0, true);
-    tabstrip.SetTabPinned(1, true);
+    EXPECT_EQ(0, tabstrip.SetTabPinned(0, true));
+    EXPECT_EQ(1, tabstrip.SetTabPinned(1, true));
 
     EXPECT_EQ("1p 3p 2", GetTabStripStateString(tabstrip));
 
@@ -2504,8 +2504,8 @@ TEST_F(TabStripModelTest, Pinning) {
   // Insert "4" between "1" and "3". As "1" and "4" are pinned, "4" should end
   // up after them.
   {
-    tabstrip.InsertWebContentsAt(1, std::move(contents4),
-                                 AddTabTypes::ADD_NONE);
+    EXPECT_EQ(2, tabstrip.InsertWebContentsAt(1, std::move(contents4),
+                                              AddTabTypes::ADD_NONE));
 
     ASSERT_EQ(1, observer.GetStateCount());
     State state(raw_contents4, 2, MockTabStripModelObserver::INSERT);
@@ -3529,7 +3529,7 @@ TEST_F(TabStripModelTest, PinTabInGroupUngroups) {
   PrepareTabs(&strip, 2);
 
   strip.AddToNewGroup({0, 1});
-  strip.SetTabPinned(1, true);
+  EXPECT_EQ(0, strip.SetTabPinned(1, true));
 
   EXPECT_FALSE(strip.GetTabGroupForTab(0).has_value());
   EXPECT_TRUE(strip.GetTabGroupForTab(1).has_value());
