@@ -510,6 +510,18 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
   // the user being unaware a new tab with `url` has been opened (if the window
   // was minimized for example).
   navigate_params.window_action = NavigateParams::SHOW_WINDOW;
+
+  // If we need to create a window, do it now in order to suppress session
+  // restore.
+  navigate_params.browser = chrome::FindTabbedBrowser(profile, false);
+  if (!navigate_params.browser &&
+      Browser::GetCreationStatusForProfile(profile) ==
+          Browser::CreationStatus::kOk) {
+    Browser::CreateParams create_params(profile, navigate_params.user_gesture);
+    create_params.should_trigger_session_restore = false;
+    navigate_params.browser = Browser::Create(create_params);
+  }
+
   Navigate(&navigate_params);
 
   auto* tab = navigate_params.navigated_or_inserted_contents;
@@ -687,28 +699,14 @@ void BrowserServiceLacros::OpenUrlWithProfile(
     return;
   }
 
-  // If there is on-going session restoring task, wait for its completion.
+  // If there is on-going session restoring task, let OnSessionRestored open the
+  // URL on completion.
   if (SessionRestore::IsRestoring(profile)) {
     pending_open_urls_.push_back(
         PendingOpenUrl{profile, url, std::move(params), std::move(callback)});
-    return;
+  } else {
+    OpenUrlImpl(profile, url, std::move(params), std::move(callback));
   }
-
-  // If there's no available browsers, but there's a session to be restored,
-  // trigger it, and wait for its completion.
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfileForSessionRestore(profile);
-  if (!chrome::FindBrowserWithProfile(profile) && session_service &&
-      session_service->ShouldRestore(nullptr)) {
-    pending_open_urls_.push_back(
-        PendingOpenUrl{profile, url, std::move(params), std::move(callback)});
-    session_service->RestoreIfNecessary(StartupTabs(),
-                                        /* restore apps */ false);
-    return;
-  }
-
-  // Otherwise, directly try to open the URL.
-  OpenUrlImpl(profile, url, std::move(params), std::move(callback));
 }
 
 void BrowserServiceLacros::RestoreTabWithProfile(RestoreTabCallback callback,
