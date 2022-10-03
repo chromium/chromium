@@ -2,6 +2,7 @@
   "Android V8 FYI Release (Nexus 5X)": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -70,6 +71,7 @@
   },
   "V8 Android GN (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,

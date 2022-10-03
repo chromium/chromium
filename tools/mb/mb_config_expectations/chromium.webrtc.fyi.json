@@ -2,6 +2,7 @@
   "WebRTC Chromium FYI Android Builder": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -14,6 +15,7 @@
   },
   "WebRTC Chromium FYI Android Builder (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -25,6 +27,7 @@
   },
   "WebRTC Chromium FYI Android Builder ARM64 (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,

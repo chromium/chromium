@@ -1,6 +1,7 @@
 {
   "Android ASAN (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_asan": true,
       "is_clang": true,
@@ -15,6 +16,7 @@
   },
   "Android arm Builder (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -27,6 +29,7 @@
   },
   "Android arm64 Builder (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -40,6 +43,7 @@
   },
   "Android arm64 Builder All Targets (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -53,6 +57,7 @@
   },
   "Android x64 Builder (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -67,6 +72,7 @@
   },
   "Android x64 Builder All Targets (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -81,6 +87,7 @@
   },
   "Android x86 Builder (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": true,
@@ -93,6 +100,7 @@
   },
   "Cast Android (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "enable_cast_receiver": true,
       "ffmpeg_branding": "Chrome",
       "is_cast_android": true,
@@ -108,6 +116,7 @@
   "Deterministic Android": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "is_component_build": false,
       "is_debug": false,
       "strip_debug_info": true,
@@ -118,6 +127,7 @@
   },
   "Deterministic Android (dbg)": {
     "gn_args": {
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
@@ -131,6 +141,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -147,6 +158,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -163,6 +175,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -179,6 +192,7 @@
   "android-arm64-proguard-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -194,6 +208,7 @@
   "android-bfcache-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -207,6 +222,7 @@
   "android-binary-size-generator": {
     "gn_args": {
       "android_channel": "stable",
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_official_build": true,
       "proprietary_codecs": true,
@@ -219,6 +235,7 @@
     "gn_args": {
       "arm_use_neon": false,
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -248,6 +265,7 @@
       "arm_use_neon": false,
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -276,6 +294,7 @@
   "android-cronet-arm64-dbg": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -303,6 +322,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -333,6 +353,7 @@
       "arm_use_neon": false,
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -363,6 +384,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -391,6 +413,7 @@
   "android-cronet-x86-dbg": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -418,6 +441,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
@@ -447,6 +471,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -464,6 +489,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -480,6 +506,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -496,6 +523,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -511,6 +539,7 @@
   "android-pie-arm64-coverage-experimental-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "fail_on_android_expectations": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -526,6 +555,7 @@
   "android-pie-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -542,6 +572,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -559,6 +590,7 @@
       "android_static_analysis": "off",
       "chrome_public_manifest_package": "com.android.chrome",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "enable_proguard_obfuscation": false,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -575,6 +607,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "enable_proguard_obfuscation": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -592,6 +625,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

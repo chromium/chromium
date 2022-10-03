@@ -68,6 +68,7 @@
   },
   "lorenz-graph-dbg": {
     "gn_args": {
+      "debuggable_apks": false,
       "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -101,6 +102,7 @@
         "android_static_analysis": "off",
         "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
+        "debuggable_apks": false,
         "fail_on_android_expectations": true,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
@@ -121,6 +123,7 @@
         "android_static_analysis": "off",
         "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
+        "debuggable_apks": false,
         "fail_on_android_expectations": true,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,

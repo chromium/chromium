@@ -156,6 +156,7 @@
   },
   "android-archive-dbg-goma-rbe-ats-canary": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -165,6 +166,7 @@
   },
   "android-archive-dbg-goma-rbe-ats-latest": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -174,6 +176,7 @@
   },
   "android-archive-dbg-goma-rbe-canary": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -183,6 +186,7 @@
   },
   "android-archive-dbg-goma-rbe-latest": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,

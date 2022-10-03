@@ -3827,7 +3827,12 @@
     },
 
     'android_without_codecs': {
-      'gn_args': 'target_os="android"',
+      # Bots never have a use for android:debuggable="true". They do not use
+      # JWDP (java debugger), and do not need it to access application files
+      # since they always use userdebug OS builds (which have root access).
+      # android:debuggable="true" causes ART to run more slowly, so tests run
+      # faster without it. https://crbug.com/1276429
+      'gn_args': 'target_os="android" debuggable_apks=false',
     },
 
     'angle_deqp_tests': {

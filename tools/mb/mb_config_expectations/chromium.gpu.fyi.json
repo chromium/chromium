@@ -45,6 +45,7 @@
   "GPU FYI Android arm Builder": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -58,6 +59,7 @@
   "GPU FYI Android arm64 Builder": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

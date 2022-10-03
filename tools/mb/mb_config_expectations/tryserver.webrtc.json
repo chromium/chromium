@@ -2,6 +2,7 @@
   "android_chromium_compile": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

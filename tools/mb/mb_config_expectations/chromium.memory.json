@@ -125,6 +125,7 @@
   "android-asan": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_asan": true,
       "is_clang": true,

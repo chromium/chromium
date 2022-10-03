@@ -3,6 +3,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

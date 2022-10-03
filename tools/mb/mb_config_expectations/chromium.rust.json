@@ -1,6 +1,7 @@
 {
   "android-rust-arm-dbg": {
     "gn_args": {
+      "debuggable_apks": false,
       "enable_rust": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
@@ -15,6 +16,7 @@
   "android-rust-arm-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "enable_rust": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

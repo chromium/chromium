@@ -1,6 +1,7 @@
 {
   "android-archive-dbg": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_component_build": true,
       "is_debug": true,
       "symbol_level": 1,
@@ -11,6 +12,7 @@
   "android-archive-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "is_component_build": false,
       "is_debug": false,
       "strip_debug_info": true,
@@ -21,6 +23,7 @@
   },
   "android-official": {
     "gn_args": {
+      "debuggable_apks": false,
       "is_official_build": true,
       "target_os": "android",
       "use_remoteexec": true

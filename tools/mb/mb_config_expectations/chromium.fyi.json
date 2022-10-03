@@ -32,6 +32,7 @@
   "Comparison Android (reclient)": {
     "goma": {
       "gn_args": {
+        "debuggable_apks": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": true,
@@ -45,6 +46,7 @@
     },
     "reclient": {
       "gn_args": {
+        "debuggable_apks": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": true,
@@ -507,6 +509,7 @@
   "Site Isolation Android": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -586,6 +589,7 @@
   "android-backuprefptr-arm-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_backup_ref_ptr_support": true,
       "enable_dangling_raw_ptr_checks": true,
@@ -605,6 +609,7 @@
   "android-backuprefptr-arm64-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "enable_backup_ref_ptr_slow_checks": true,
       "enable_backup_ref_ptr_support": true,
       "enable_dangling_raw_ptr_checks": true,
@@ -625,6 +630,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -644,6 +650,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -662,6 +669,7 @@
     "gn_args": {
       "android_static_analysis": "off",
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -677,6 +685,7 @@
   "android-perfetto-rel": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -692,6 +701,7 @@
       "android_static_analysis": "off",
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
+      "debuggable_apks": false,
       "fail_on_android_expectations": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

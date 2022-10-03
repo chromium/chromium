@@ -3,6 +3,7 @@
     "gn_args": {
       "chrome_pgo_phase": 0,
       "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,

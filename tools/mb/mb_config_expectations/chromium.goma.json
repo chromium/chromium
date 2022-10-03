@@ -2,6 +2,7 @@
   "Chromium Android ARM 32-bit Goma RBE Staging": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -15,6 +16,7 @@
   "Chromium Android ARM 32-bit Goma RBE ToT": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -28,6 +30,7 @@
   "Chromium Android ARM 32-bit Goma RBE ToT (ATS)": {
     "gn_args": {
       "dcheck_always_on": false,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
