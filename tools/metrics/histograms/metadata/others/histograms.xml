@@ -3988,23 +3988,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.CreationTime" units="ms"
-    expires_after="M105">
+    expires_after="M117">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time it took to initialize a new conversions database from
-    scratch. Recorded when the conversion database finishes initialization.
+    scratch. Recorded when the conversion database finishes initialization. Only
+    recorded on platforms with base::ThreadTicks support.
   </summary>
 </histogram>
 
 <histogram name="Conversions.Storage.MigrationTime" units="ms"
-    expires_after="M105">
+    expires_after="M117">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records the time it took to migrate a preexisting conversions database to
     the latest schema. Recorded when the conversion database finishes
-    initialization.
+    initialization. Only recorded on platforms with base::ThreadTicks support.
   </summary>
 </histogram>
 

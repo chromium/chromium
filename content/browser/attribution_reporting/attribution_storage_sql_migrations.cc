@@ -274,7 +274,9 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   DCHECK(db);
   DCHECK(meta_table);
 
-  base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
+  base::ThreadTicks start_timestamp;
+  if (base::ThreadTicks::IsSupported())
+    start_timestamp = base::ThreadTicks::Now();
 
   if (meta_table->GetVersionNumber() == 33) {
     if (!MigrateToVersion34(db, meta_table))
@@ -294,8 +296,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   // Add similar if () blocks for new versions here.
 
-  base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",
-                                base::ThreadTicks::Now() - start_timestamp);
+  if (base::ThreadTicks::IsSupported()) {
+    base::UmaHistogramMediumTimes("Conversions.Storage.MigrationTime",
+                                  base::ThreadTicks::Now() - start_timestamp);
+  }
+
   return true;
 }
 

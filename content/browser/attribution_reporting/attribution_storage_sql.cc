@@ -2023,7 +2023,9 @@ bool AttributionStorageSql::InitializeSchema(bool db_empty) {
 }
 
 bool AttributionStorageSql::CreateSchema() {
-  base::ThreadTicks start_timestamp = base::ThreadTicks::Now();
+  base::ThreadTicks start_timestamp;
+  if (base::ThreadTicks::IsSupported())
+    start_timestamp = base::ThreadTicks::Now();
 
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
@@ -2275,8 +2277,11 @@ bool AttributionStorageSql::CreateSchema() {
   if (!transaction.Commit())
     return false;
 
-  base::UmaHistogramMediumTimes("Conversions.Storage.CreationTime",
-                                base::ThreadTicks::Now() - start_timestamp);
+  if (base::ThreadTicks::IsSupported()) {
+    base::UmaHistogramMediumTimes("Conversions.Storage.CreationTime",
+                                  base::ThreadTicks::Now() - start_timestamp);
+  }
+
   return true;
 }
 
