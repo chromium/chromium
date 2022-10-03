@@ -66,7 +66,11 @@ class MockPressureService {
 
     const timeout = (1 / sampleRate) * 1000;
     this.pressureServiceReadingTimerId_ = window.setInterval(() => {
-      this.sendUpdate();
+      if (this.pressureUpdate_ === null || this.observer_ === null)
+        return;
+      this.pressureUpdate_.timestamp = this.timestamp_++;
+      this.observer_.onUpdate(this.pressureUpdate_);
+      this.updatesDelivered_++;
     }, timeout);
   }
 
@@ -80,14 +84,6 @@ class MockPressureService {
 
   updatesDelivered() {
     return this.updatesDelivered_;
-  }
-
-  sendUpdate() {
-    if (this.pressureUpdate_ === null || this.observer_ === null)
-      return;
-    this.pressureUpdate_.timestamp = this.timestamp_++;
-    this.observer_.onUpdate(this.pressureUpdate_);
-    this.updatesDelivered_++;
   }
 
   setPressureUpdate(state, factors) {

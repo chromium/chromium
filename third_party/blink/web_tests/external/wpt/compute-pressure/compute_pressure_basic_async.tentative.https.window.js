@@ -24,7 +24,7 @@ pressure_test((t, mockPressureService) => {
   observer.observe('cpu');
   observer.unobserve('cpu');
   mockPressureService.setPressureUpdate('critical');
-  mockPressureService.sendUpdate();
+  mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
 
   return new Promise(resolve => t.step_timeout(resolve, 1000));
 }, 'Removing observer before observe() resolves works');
