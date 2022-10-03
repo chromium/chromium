@@ -40,6 +40,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
+#include "components/user_manager/known_user.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -535,8 +536,8 @@ void Service::AddAshSessionObserver() {
     // Note that this account can either be a regular account using real gaia,
     // or a fake gaia account.
     CoreAccountInfo account_info = RetrievePrimaryAccountInfo();
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(account_info.email, account_info.gaia);
+    AccountId account_id = user_manager::known_user::GetAccountId(
+        account_info.email, account_info.gaia, AccountType::GOOGLE);
     scoped_ash_session_observer_ =
         std::make_unique<ScopedAshSessionObserver>(this, account_id);
   }
