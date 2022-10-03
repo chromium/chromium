@@ -440,10 +440,8 @@ void Window::SetTransform(const gfx::Transform& transform) {
   layer()->SetTransform(transform);
 }
 
-void Window::SetLayoutManager(LayoutManager* layout_manager) {
-  if (layout_manager == layout_manager_.get())
-    return;
-  SetLayoutManager(base::WrapUnique(layout_manager));
+void Window::SetLayoutManager(std::nullptr_t) {
+  SetLayoutManagerImpl(nullptr);
 }
 
 std::unique_ptr<WindowTargeter> Window::SetEventTargeter(

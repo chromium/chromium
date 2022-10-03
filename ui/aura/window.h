@@ -295,9 +295,6 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   const gfx::Transform& transform() const;
 
   // Assigns a LayoutManager to size and place child windows.
-  // The Window takes ownership of the LayoutManager.
-  // http://crbug.com/1359135: Use the std::unique_ptr version below.
-  void SetLayoutManager(LayoutManager* layout_manager);
   template <typename LayoutManager>
   LayoutManager* SetLayoutManager(
       std::unique_ptr<LayoutManager> layout_manager) {
@@ -305,6 +302,7 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
     SetLayoutManagerImpl(std::move(layout_manager));
     return layout_manager_local;
   }
+  void SetLayoutManager(std::nullptr_t);
   LayoutManager* layout_manager() { return layout_manager_.get(); }
 
   // Sets a new event-targeter for the window, and returns the previous
