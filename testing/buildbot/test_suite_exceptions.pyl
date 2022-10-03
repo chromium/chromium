@@ -4199,4 +4199,14 @@
       'android-11-x86-rel', # crbug.com/1165280
     ],
   },
+  'wpt_tests_suite': {
+    'modifications': {
+      'win10-wpt-content-shell-fyi-rel': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+      },
+    },
+  },
 }
