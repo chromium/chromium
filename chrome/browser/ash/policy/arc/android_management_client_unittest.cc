@@ -58,7 +58,6 @@ class AndroidManagementClientTest : public testing::Test {
     client_ = std::make_unique<AndroidManagementClient>(
         &service_, shared_url_loader_factory_, account_id, identity_manager);
 
-    service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
   }
 

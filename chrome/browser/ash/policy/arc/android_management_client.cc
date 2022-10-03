@@ -34,7 +34,9 @@ AndroidManagementClient::AndroidManagementClient(
     : device_management_service_(device_management_service),
       url_loader_factory_(url_loader_factory),
       account_id_(account_id),
-      identity_manager_(identity_manager) {}
+      identity_manager_(identity_manager) {
+  device_management_service_->ScheduleInitialization(0);
+}
 
 AndroidManagementClient::~AndroidManagementClient() {}
 

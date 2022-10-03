@@ -34,8 +34,6 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
 
   ~ArcAndroidManagementChecker() override;
 
-  static void StartClient();
-
   // Starts the check. On completion |callback| will be invoked with the
   // |result|. This must not be called if there is inflight check.
   // If the instance is destructed while it has inflight check, then the

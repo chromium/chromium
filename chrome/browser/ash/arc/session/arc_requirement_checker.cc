@@ -39,10 +39,7 @@ absl::optional<bool> g_enable_check_android_management_in_tests;
 
 ArcRequirementChecker::ArcRequirementChecker(Profile* profile,
                                              ArcSupportHost* support_host)
-    : profile_(profile), support_host_(support_host) {
-  if (g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
-    ArcAndroidManagementChecker::StartClient();
-}
+    : profile_(profile), support_host_(support_host) {}
 
 ArcRequirementChecker::~ArcRequirementChecker() {
   profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(

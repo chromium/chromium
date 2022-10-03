@@ -64,11 +64,6 @@ ArcAndroidManagementChecker::~ArcAndroidManagementChecker() {
   identity_manager_->RemoveObserver(this);
 }
 
-// static
-void ArcAndroidManagementChecker::StartClient() {
-  GetDeviceManagementService()->ScheduleInitialization(0);
-}
-
 void ArcAndroidManagementChecker::StartCheck(CheckCallback callback) {
   DCHECK(callback_.is_null());
 
