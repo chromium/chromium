@@ -971,7 +971,12 @@ void CameraDeviceDelegate::ConfigureStreams(
     stream_config->streams.push_back(std::move(still_capture_stream));
 
     int32_t max_yuv_width = 0, max_yuv_height = 0;
-    if (IsYUVReprocessingSupported(&max_yuv_width, &max_yuv_height)) {
+    bool is_recording_multi_stream =
+        camera_app_device->GetCaptureIntent() ==
+            cros::mojom::CaptureIntent::VIDEO_RECORD &&
+        camera_app_device->IsMultipleStreamsEnabled();
+    if (IsYUVReprocessingSupported(&max_yuv_width, &max_yuv_height) &&
+        !is_recording_multi_stream) {
       auto reprocessing_stream_input = cros::mojom::Camera3Stream::New();
       reprocessing_stream_input->id =
           static_cast<uint64_t>(StreamType::kYUVInput);
