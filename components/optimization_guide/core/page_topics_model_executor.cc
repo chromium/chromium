@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/page_topics_model_executor.h"
 
+#include <ctype.h>
+
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -23,6 +25,10 @@ namespace {
 // Semantically, the none category is attached to data for which we can say
 // with certainty that no single label in the taxonomy is appropriate.
 const int32_t kNoneCategoryId = -2;
+
+// The |kMeaninglessPrefixV2MinVersion| needed to support meaningless prefix v2.
+// This should be compared with the version provided the model metadata.
+const int32_t kMeaninglessPrefixV2MinVersion = 2;
 
 const base::FilePath::CharType kOverrideListBasePath[] =
     FILE_PATH_LITERAL("override_list.pb.gz");
@@ -91,6 +97,45 @@ LoadOverrideListFromFile(const base::FilePath& path) {
   return override_list;
 }
 
+// Returns the length of the leading meaningless prefix of a host name as
+// defined for the Topics Model.
+//
+// The full list of meaningless prefixes are:
+//   ^(www[0-9]*|web|ftp|wap|home)$
+//   ^(m|mobile|amp|w)$
+int MeaninglessPrefixLength(const std::string& host) {
+  size_t len = host.size();
+
+  int dots = std::count(host.begin(), host.end(), '.');
+  if (dots < 2) {
+    return 0;
+  }
+
+  if (len > 4 && base::StartsWith(host, "www")) {
+    // Check that all characters after "www" and up to first "." are
+    // digits.
+    for (size_t i = 3; i < len; ++i) {
+      if (host[i] == '.') {
+        return i + 1;
+      }
+      if (!isdigit(host[i])) {
+        return 0;
+      }
+    }
+  } else {
+    static const auto* kMeaninglessPrefixesLenMap = new std::set<std::string>(
+        {"web", "ftp", "wap", "home", "m", "w", "amp", "mobile"});
+
+    size_t prefix_len = host.find('.');
+    std::string prefix = host.substr(0, prefix_len);
+    const auto& it = kMeaninglessPrefixesLenMap->find(prefix);
+    if (it != kMeaninglessPrefixesLenMap->end() && len > it->size() + 1) {
+      return it->size() + 1;
+    }
+  }
+  return 0;
+}
+
 }  // namespace
 
 PageTopicsModelExecutor::PageTopicsModelExecutor(
@@ -127,13 +172,22 @@ void PageTopicsModelExecutor::ExecuteJob(
       std::move(on_job_complete_callback), std::move(job));
 }
 
-// static
-std::string PageTopicsModelExecutor::PreprocessHost(const std::string& host) {
+std::string PageTopicsModelExecutor::PreprocessHost(
+    const std::string& host) const {
   std::string output = base::ToLowerASCII(host);
 
-  // Strip the 'www.' if it exists.
-  if (base::StartsWith(output, "www.")) {
-    output = output.substr(4);
+  // Meaningless prefix v2 is only supported/required for
+  // |kMeaninglessPrefixV2MinVersion| and on.
+  if (version_ >= kMeaninglessPrefixV2MinVersion) {
+    int idx = MeaninglessPrefixLength(output);
+    if (idx > 0) {
+      output = output.substr(idx);
+    }
+  } else {
+    // Strip the 'www.' if it exists.
+    if (base::StartsWith(output, "www.")) {
+      output = output.substr(4);
+    }
   }
 
   static const char kCharsToReplaceWithSpace[] = {'-', '_', '.', '+'};
@@ -360,6 +414,12 @@ void PageTopicsModelExecutor::OnModelUpdated(
   // New model, new override list.
   override_list_file_path_ = absl::nullopt;
   override_list_ = absl::nullopt;
+
+  absl::optional<proto::PageTopicsModelMetadata> model_metadata =
+      ParsedSupportedFeaturesForLoadedModel<proto::PageTopicsModelMetadata>();
+  if (model_metadata) {
+    version_ = model_metadata->version();
+  }
 
   for (const base::FilePath& path : model_info.GetAdditionalFiles()) {
     DCHECK(path.IsAbsolute());

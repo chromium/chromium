@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/page_entities_model_executor.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
+#include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -25,6 +26,15 @@
 namespace optimization_guide {
 
 namespace {
+
+const char kPageTopicsModelMetadataTypeUrl[] =
+    "type.googleapis.com/"
+    "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata";
+
+// The current version the client supports for the topics model. This
+// should be incremented any time there is a client code change to how the
+// topics model works that needs to be side-channeled to the server.
+extern const int32_t kTopicsModelVersion = 2;
 
 base::TaskTraits GetTaskTraits() {
   base::TaskTraits task_traits = {base::MayBlock(),
@@ -85,10 +95,15 @@ void PageContentAnnotationsModelManager::SetUpPageTopicsV2Model(
   if (page_topics_model_executor_)
     return;
 
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_version(kTopicsModelVersion);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
   page_topics_model_executor_ = std::make_unique<PageTopicsModelExecutor>(
       optimization_guide_model_provider,
       base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits()),
-      absl::nullopt);
+      any_metadata);
 }
 
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(

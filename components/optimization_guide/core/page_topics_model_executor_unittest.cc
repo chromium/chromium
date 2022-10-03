@@ -26,6 +26,12 @@
 
 namespace optimization_guide {
 
+const char kPageTopicsModelMetadataTypeUrl[] =
+    "type.googleapis.com/"
+    "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata";
+
+extern const int32_t kTopicsModelVersion = 2;
+
 class ModelObserverTracker : public TestOptimizationGuideModelProvider {
  public:
   void AddObserverForOptimizationTargetModel(
@@ -360,7 +366,7 @@ TEST_F(PageTopicsModelExecutorTest,
             BatchAnnotationResult::CreatePageTopicsResult("", absl::nullopt));
 }
 
-TEST_F(PageTopicsModelExecutorTest, HostPreprocessing) {
+TEST_F(PageTopicsModelExecutorTest, HostPreprocessingV1) {
   std::vector<std::pair<std::string, std::string>> tests = {
       {"www.chromium.org", "chromium org"},
       {"foo-bar.com", "foo bar com"},
@@ -370,7 +376,117 @@ TEST_F(PageTopicsModelExecutorTest, HostPreprocessing) {
       {"www.foo-bar_.baz.com", "foo bar  baz com"},
       {"www.foo-bar-baz.com", "foo bar baz com"},
       {"WwW.LOWER-CASE.com", "lower case com"},
+      {"m.foo.com", "m foo com"},
+      {"www2.foo.com", "www2 foo com"},
   };
+
+  for (const auto& test : tests) {
+    std::string raw_host = test.first;
+    std::string processed_host = test.second;
+
+    std::string got_input;
+    // The callback is run synchronously in this test.
+    model_executor()->ExecuteOnSingleInput(
+        AnnotationType::kPageTopics, raw_host,
+        base::BindOnce(
+            [](std::string* got_input_out,
+               const BatchAnnotationResult& result) {
+              EXPECT_EQ(result.type(), AnnotationType::kPageTopics);
+              *got_input_out = result.input();
+            },
+            &got_input));
+    EXPECT_EQ(raw_host, got_input);
+    EXPECT_EQ(processed_host, model_executor()->inputs().back());
+  }
+}
+
+TEST_F(PageTopicsModelExecutorTest, HostPreprocessingV2) {
+  std::vector<std::pair<std::string, std::string>> tests = {
+      {"www.chromium.org", "chromium org"},
+      {"foo-bar.com", "foo bar com"},
+      {"foo_bar.com", "foo bar com"},
+      {"cats.co.uk", "cats co uk"},
+      {"cats+dogs.com", "cats dogs com"},
+      {"www.foo-bar_.baz.com", "foo bar  baz com"},
+      {"www.foo-bar-baz.com", "foo bar baz com"},
+      {"WwW.LOWER-CASE.com", "lower case com"},
+      {"m.foo.com", "foo com"},
+      {"web.foo.com", "foo com"},
+      {"ftp.foo.com", "foo com"},
+      {"www2.foo.com", "foo com"},
+      {"home.foo.com", "foo com"},
+      {"amp.foo.com", "foo com"},
+      {"mobile.foo.com", "foo com"},
+      {"wap.foo.com", "foo com"},
+      {"w.foo.com", "foo com"},
+      {"www-blaah.foo.com", "www blaah foo com"},
+      {"www123.foo.com", "foo com"},
+      {"www.com", "www com"},
+      {"m.com", "m com"},
+      {"WEB.foo.com", "foo com"},
+  };
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_version(kTopicsModelVersion);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendPageTopicsModelToExecutor(any_metadata);
+
+  for (const auto& test : tests) {
+    std::string raw_host = test.first;
+    std::string processed_host = test.second;
+
+    std::string got_input;
+    // The callback is run synchronously in this test.
+    model_executor()->ExecuteOnSingleInput(
+        AnnotationType::kPageTopics, raw_host,
+        base::BindOnce(
+            [](std::string* got_input_out,
+               const BatchAnnotationResult& result) {
+              EXPECT_EQ(result.type(), AnnotationType::kPageTopics);
+              *got_input_out = result.input();
+            },
+            &got_input));
+    EXPECT_EQ(raw_host, got_input);
+    EXPECT_EQ(processed_host, model_executor()->inputs().back());
+  }
+}
+
+TEST_F(PageTopicsModelExecutorTest, PreprocessingNewVersion) {
+  std::vector<std::pair<std::string, std::string>> tests = {
+      {"www.chromium.org", "chromium org"},
+      {"foo-bar.com", "foo bar com"},
+      {"foo_bar.com", "foo bar com"},
+      {"cats.co.uk", "cats co uk"},
+      {"cats+dogs.com", "cats dogs com"},
+      {"www.foo-bar_.baz.com", "foo bar  baz com"},
+      {"www.foo-bar-baz.com", "foo bar baz com"},
+      {"WwW.LOWER-CASE.com", "lower case com"},
+      {"m.foo.com", "foo com"},
+      {"web.foo.com", "foo com"},
+      {"ftp.foo.com", "foo com"},
+      {"www2.foo.com", "foo com"},
+      {"home.foo.com", "foo com"},
+      {"amp.foo.com", "foo com"},
+      {"mobile.foo.com", "foo com"},
+      {"wap.foo.com", "foo com"},
+      {"w.foo.com", "foo com"},
+      {"www-blaah.foo.com", "www blaah foo com"},
+      {"www123.foo.com", "foo com"},
+      {"www.com", "www com"},
+      {"m.com", "m com"},
+      {"WEB.foo.com", "foo com"},
+  };
+
+  optimization_guide::proto::Any any_metadata;
+  any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
+  proto::PageTopicsModelMetadata model_metadata;
+  model_metadata.set_version(kTopicsModelVersion + 1);
+  model_metadata.SerializeToString(any_metadata.mutable_value());
+
+  SendPageTopicsModelToExecutor(any_metadata);
 
   for (const auto& test : tests) {
     std::string raw_host = test.first;

@@ -68,8 +68,10 @@ message TopicTaxonomy {
 message PageTopicsModelMetadata {
   reserved 4;
 
-  // The version of the model sent by the server, and thus, will only be
-  // populated by the server.
+  // The version is specified by the client as what functionality outside the
+  // model the client supports (e.g., pre/post processing). When provided from
+  // the server, it specifies which of these support functions for the model is
+  // expected to use.
   optional int64 version = 1;
   // The supported output.
   //
