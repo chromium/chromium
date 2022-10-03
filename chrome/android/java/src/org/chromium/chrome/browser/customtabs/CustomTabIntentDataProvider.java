@@ -550,8 +550,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private void addShareOption(Intent intent, Context context) {
         int shareState = IntentUtils.safeGetIntExtra(
                 intent, CustomTabsIntent.EXTRA_SHARE_STATE, CustomTabsIntent.SHARE_STATE_DEFAULT);
-        if (shareState == CustomTabsIntent.SHARE_STATE_ON
-                || shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
+        if (shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(CustomButtonParamsImpl.createShareButton(
                         context, getColorProvider().getToolbarColor()));
@@ -561,6 +560,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 logShareOptionLocation(ShareOptionLocation.TOOLBAR_FULL_MENU_FALLBACK);
             } else {
                 logShareOptionLocation(ShareOptionLocation.NO_SPACE);
+            }
+        } else if (shareState == CustomTabsIntent.SHARE_STATE_ON) {
+            if (mToolbarButtons.isEmpty()) {
+                mToolbarButtons.add(CustomButtonParamsImpl.createShareButton(
+                        context, getColorProvider().getToolbarColor()));
+                logShareOptionLocation(ShareOptionLocation.TOOLBAR);
+            } else {
+                mShowShareItemInMenu = true;
+                logShareOptionLocation(ShareOptionLocation.MENU);
             }
         } else {
             mShowShareItemInMenu = IntentUtils.safeGetBooleanExtra(intent,

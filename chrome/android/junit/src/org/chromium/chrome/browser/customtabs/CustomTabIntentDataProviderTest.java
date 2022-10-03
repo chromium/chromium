@@ -205,7 +205,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void shareStateOn_buttonInToolbarAndCustomMenuItems_hasNoShare() {
+    public void shareStateOn_buttonInToolbarAndCustomMenuItems_hasShareItemInMenu() {
         ArrayList<Bundle> buttons =
                 new ArrayList<>(Collections.singleton(createActionButtonInToolbarBundle()));
         Intent intent =
@@ -221,7 +221,7 @@ public class CustomTabIntentDataProviderTest {
 
         assertEquals(BUTTON_DESCRIPTION,
                 dataProvider.getCustomButtonsOnToolbar().get(0).getDescription());
-        assertFalse(dataProvider.shouldShowShareMenuItem());
+        assertTrue(dataProvider.shouldShowShareMenuItem());
     }
 
     @Test
