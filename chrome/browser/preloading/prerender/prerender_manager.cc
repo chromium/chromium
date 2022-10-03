@@ -378,8 +378,9 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
       *(match.search_terms_args);
   const std::u16string& search_terms = search_terms_args.search_terms;
 
-  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
-      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents()));
+  content::PreloadingURLMatchCallback same_url_matcher =
+      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+                          web_contents()->GetBrowserContext());
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
 
@@ -413,7 +414,8 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
   // instead.
   if (!skip_template_url_service_for_testing_) {
     TemplateURLService* template_url_service =
-        GetTemplateURLServiceFromWebContents(*web_contents());
+        GetTemplateURLServiceFromBrowserContext(
+            web_contents()->GetBrowserContext());
     if (!template_url_service) {
       return;
     }
@@ -423,7 +425,8 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
     base::UmaHistogramBoolean(
         "Prerender.Experimental.DefaultSearchEngine."
         "SearchTermExtractorCorrectness",
-        IsSearchDestinationMatch(search_terms, *web_contents(),
+        IsSearchDestinationMatch(search_terms,
+                                 web_contents()->GetBrowserContext(),
                                  match.destination_url));
 
     {
@@ -511,8 +514,8 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
     // dedicated method of SearchPrerenderTask.
 
     bool is_search_destination_match = IsSearchDestinationMatch(
-        search_prerender_task_->prerendered_search_terms(), *web_contents(),
-        opened_url);
+        search_prerender_task_->prerendered_search_terms(),
+        web_contents()->GetBrowserContext(), opened_url);
 
     if (is_search_destination_match) {
       // We may want to record this metric on AutocompleteMatch selected relying
@@ -570,7 +573,7 @@ void PrerenderManager::StartPrerenderSearchResultInternal(
   // to call std::ref.
   base::RepeatingCallback<bool(const GURL&)> url_match_predicate =
       base::BindRepeating(&IsSearchDestinationMatch, search_terms,
-                          std::ref(*web_contents()));
+                          web_contents()->GetBrowserContext());
 
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(

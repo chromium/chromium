@@ -3,17 +3,33 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/preloading/chrome_preloading.h"
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
 using content::PreloadingPredictor;
+
+namespace {
+
+bool IsSideSearch(content::BrowserContext* browser_context, const GURL& url) {
+  const TemplateURLService* const template_url_service =
+      GetTemplateURLServiceFromBrowserContext(browser_context);
+  if (!template_url_service)
+    return false;
+
+  auto* default_search_provider =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_search_provider)
+    return false;
+
+  return default_search_provider->ContainsSideSearchParam(url) ||
+         default_search_provider->ContainsSideImageSearchParam(url);
+}
+
+}  // namespace
 
 content::PreloadingPredictor ToPreloadingPredictor(
     ChromePreloadingPredictor predictor) {
@@ -25,10 +41,9 @@ content::PreloadingEligibility ToPreloadingEligibility(
   return static_cast<content::PreloadingEligibility>(eligibility);
 }
 
-TemplateURLService* GetTemplateURLServiceFromWebContents(
-    content::WebContents& web_contents) {
-  if (Profile* profile =
-          Profile::FromBrowserContext(web_contents.GetBrowserContext())) {
+TemplateURLService* GetTemplateURLServiceFromBrowserContext(
+    content::BrowserContext* browser_context) {
+  if (Profile* profile = Profile::FromBrowserContext(browser_context)) {
     return TemplateURLServiceFactory::GetForProfile(profile);
   }
   return nullptr;
@@ -50,24 +65,29 @@ std::u16string ExtractSearchTermsFromURL(
   return matched_search_terms;
 }
 
-std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
-                                         const GURL& url) {
+std::u16string ExtractSearchTermsFromURL(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
   const TemplateURLService* const template_url_service =
-      GetTemplateURLServiceFromWebContents(web_contents);
+      GetTemplateURLServiceFromBrowserContext(browser_context);
   return ExtractSearchTermsFromURL(template_url_service, url);
 }
 
 // Returns true when the two given URLs are considered as navigating to the same
 // search term.
 bool IsSearchDestinationMatch(const std::u16string& preloading_search_terms,
-                              content::WebContents& web_contents,
+                              content::BrowserContext* browser_context,
                               const GURL& navigation_url) {
   // Return false in case search_terms are empty as we only match with valid
   // search terms.
   if (preloading_search_terms.empty())
     return false;
 
+  // Disable for side search as the formatting is different on those pages.
+  if (IsSideSearch(browser_context, navigation_url))
+    return false;
+
   std::u16string matched_search_terms =
-      ExtractSearchTermsFromURL(web_contents, navigation_url);
+      ExtractSearchTermsFromURL(browser_context, navigation_url);
   return matched_search_terms == preloading_search_terms;
 }

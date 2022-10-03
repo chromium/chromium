@@ -228,8 +228,9 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // PreloadingAttempt in that case.
   content::PreloadingAttempt* attempt = nullptr;
   DCHECK(web_contents);
-  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
-      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+  content::PreloadingURLMatchCallback same_url_matcher =
+      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+                          web_contents->GetBrowserContext());
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
@@ -643,8 +644,9 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
         match.destination_url, template_url_service->search_terms_data(),
         &search_terms);
 
-    content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
-        &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+    content::PreloadingURLMatchCallback same_url_matcher =
+        base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+                            web_contents->GetBrowserContext());
 
     // Create PreloadingPrediction for this match.
     preloading_data->AddPreloadingPrediction(
@@ -711,8 +713,9 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       preload_url, template_url_service->search_terms_data(), &search_terms);
 
-  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
-      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+  content::PreloadingURLMatchCallback same_url_matcher =
+      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+                          web_contents->GetBrowserContext());
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
 
@@ -915,8 +918,9 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   if (!BaseSearchProvider::ShouldPrerender(match))
     return;
 
-  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
-      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+  content::PreloadingURLMatchCallback same_url_matcher =
+      base::BindRepeating(&IsSearchDestinationMatch, search_terms,
+                          web_contents->GetBrowserContext());
 
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt.
@@ -966,7 +970,8 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
       navigation_url, template_url_service->search_terms_data(), &search_terms);
 
-  if (search_terms.length() == 0) {
+  if (search_terms.length() == 0 ||
+      !IsSearchDestinationMatch(search_terms, profile_, navigation_url)) {
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }

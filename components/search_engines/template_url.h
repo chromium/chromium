@@ -890,6 +890,12 @@ class TemplateURL {
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
+  // Returns whether |url| query contains a side search param.
+  bool ContainsSideSearchParam(const GURL& url) const;
+
+  // Returns whether |url| query contains a side image search param.
+  bool ContainsSideImageSearchParam(const GURL& url) const;
+
  private:
   friend class TemplateURLService;
 
