@@ -86,6 +86,7 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
  unsigned long        framesReceived;
  DOMString            decoderImplementation;
  DOMString            playoutId;
+ boolean              powerEfficientDecoder;
 };
 
 dictionary RTCRemoteInboundRtpStreamStats : RTCReceivedRtpStreamStats {
@@ -128,6 +129,7 @@ dictionary RTCOutboundRtpStreamStats : RTCSentRtpStreamStats {
              unsigned long        firCount;
              unsigned long        pliCount;
              DOMString            encoderImplementation;
+             boolean              powerEfficientEncoder;
              boolean              active;
 };
 

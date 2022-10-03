@@ -7,7 +7,8 @@ typedef (USVString or URLPatternInit) URLPatternInput;
 
 [Exposed=(Window,Worker)]
 interface URLPattern {
-  constructor(optional URLPatternInput input = {}, optional USVString baseURL);
+  constructor(URLPatternInput input, USVString baseURL, optional URLPatternOptions options = {});
+  constructor(optional URLPatternInput input = {}, optional URLPatternOptions options = {});
 
   boolean test(optional URLPatternInput input = {}, optional USVString baseURL);
 
@@ -33,6 +34,10 @@ dictionary URLPatternInit {
   USVString search;
   USVString hash;
   USVString baseURL;
+};
+
+dictionary URLPatternOptions {
+  boolean ignoreCase = false;
 };
 
 dictionary URLPatternResult {

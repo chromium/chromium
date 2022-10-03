@@ -16113,6 +16113,19 @@
      ]
     },
     "printing": {
+     "animated-image-print.html": [
+      "7c7665366d4585a74a15b35bf869ec6a839e58a0",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-image-print.html": [
       "8d294107406e902bae7b368a8e34100221cea2d2",
       [
@@ -38662,6 +38675,19 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "float-root.html": [
+       "ee7f70e7844d9db7c247a4c7bc14be4634fbdba4",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/floats/float-root-ref.html",
           "=="
          ]
         ],
@@ -81699,6 +81725,19 @@
        {}
       ]
      ],
+     "change-break-after2.html": [
+      "b35a187a29cb84bbe56200a31b61bafb1cb20b40",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "change-break-before.html": [
       "303a1fb00d691448ab238c9b52782a303af6056f",
       [
@@ -81732,6 +81771,71 @@
        [
         [
          "/css/css-break/change-inline-color-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "class-c-breakpoint-after-float-000.html": [
+      "46880977bbbb1bdf7837a25f11f4348d7c651032",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "class-c-breakpoint-after-float-001.html": [
+      "be675ccf48727ac5851b7528497c7db05cf56aea",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "class-c-breakpoint-after-float-002.html": [
+      "110b4e7e1af5f98caed40c6fc34d3154911bba6c",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "class-c-breakpoint-after-float-003.html": [
+      "0923e1ac9e344cfd2216a405c8c26b88d86e363e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "class-c-breakpoint-after-float-004.html": [
+      "30cdc56db7dc2d971326babc783cbf2b1288a85a",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -108744,7 +108848,7 @@
       ]
      ],
      "flexbox-baseline-multi-line-horiz-002.html": [
-      "bd13de7f9743aeeeada53374d506a1b59607260f",
+      "a58a7ec5f5e13d9348e08c86b4b7566cce1118fe",
       [
        null,
        [
@@ -108796,7 +108900,7 @@
       ]
      ],
      "flexbox-baseline-multi-line-vert-002.html": [
-      "5bffc84630f679b5ae799cd9a75b240b5fd7fbd9",
+      "062d808d897b5421954f9148ec55171d2b00ddf3",
       [
        null,
        [
@@ -129980,7 +130084,7 @@
        ]
       ],
       "image-orientation-none-cross-origin.html": [
-       "f36f899056aa5e073cff2b420da5b08c8d1cb3b1",
+       "c8db1df5c1801eaa6e37bb6f0ee76d80824c64a3",
        [
         null,
         [
@@ -133563,7 +133667,7 @@
        ]
       ],
       "flex-baseline.https.html": [
-       "0b0e147a2cfed61fc0bec2e73982d8b89946e958",
+       "ce869bee373df77ef8026a192725b95bc7b903d5",
        [
         null,
         [
@@ -137063,7 +137167,7 @@
      "clip-path": {
       "animations": {
        "clip-path-animation-filter.html": [
-        "c5e3eb5dbdbd88e8ff66366bf4a0f2be76cec53a",
+        "cbfa8baaa769a25ca57aaa5d6f271b26810a8bf6",
         [
          null,
          [
@@ -137079,11 +137183,11 @@
             [
              [
               0,
-              1
+              10
              ],
              [
               0,
-              38
+              150
              ]
             ]
            ]
@@ -137092,7 +137196,7 @@
         ]
        ],
        "clip-path-animation-fixed-position-rounding-error.html": [
-        "deba3002e2122841176e4bc0f5bdcf5b8cc813d9",
+        "12d984b32a24cbfa2d7582ef0e0d431dc6223333",
         [
          null,
          [
@@ -137101,23 +137205,7 @@
            "=="
           ]
          ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              129
-             ],
-             [
-              0,
-              115
-             ]
-            ]
-           ]
-          ]
-         }
+         {}
         ]
        ],
        "clip-path-animation-fixed-position.html": [
@@ -137259,6 +137347,32 @@
          }
         ]
        ],
+       "clip-path-animation-svg-zoom.html": [
+        "c79c098c62239900e6740b7a83af8c3f6497f9be",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-svg-zoom-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "clip-path-animation-svg.html": [
+        "676fe5ee5789d27654c5e73baef4c7a1eaf2e8ee",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-svg-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-animation-three-keyframes1.html": [
         "61e24e6208b3a3c522240d0699883cc44efcbbfe",
         [
@@ -137299,6 +137413,19 @@
            ]
           ]
          }
+        ]
+       ],
+       "clip-path-animation-zoom.html": [
+        "5573318a516c6a2f53a476df03f34abe9a622513",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-animation-zoom-ref.html",
+           "=="
+          ]
+         ],
+         {}
         ]
        ],
        "clip-path-animation.html": [
@@ -222071,6 +222198,23 @@
        {}
       ]
      ],
+     "margin-collapse-vlr-023.xht": [
+      "e655202e103396ab8a21fcaffa0437d52ee7a68a",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/margin-collapse-022-023-1.xht",
+         "=="
+        ],
+        [
+         "/css/css-writing-modes/reference/margin-collapse-022-023-2.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "margin-collapse-vlr-025.xht": [
       "e31c193205f2846407eef6216f10800e60e9b7b8",
       [
@@ -222182,6 +222326,23 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "margin-collapse-vrl-022.xht": [
+      "a83835e306dca89c32ad5a519aace0e259b90672",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/margin-collapse-022-023-1.xht",
+         "=="
+        ],
+        [
+         "/css/css-writing-modes/reference/margin-collapse-022-023-2.xht",
          "=="
         ]
        ],
@@ -230494,6 +230655,21 @@
         [
          "/css/motion/offset-rotate-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    },
+    "printing": {
+     "animated-image-print-image-orientation-none.html": [
+      "d5ec1a8e237e2d362586e67c96b7f4717078c700",
+      [
+       null,
+       [
+        [
+         "/css/reference/blank.html",
+         "!="
         ]
        ],
        {}
@@ -244045,6 +244221,32 @@
         {}
        ]
       ],
+      "operator-dictionary-arabic-001.html": [
+       "05d2714af5fcfe2503eea6d2c16f53d589b448c6",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/operator-dictionary-arabic-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "operator-dictionary-arabic-002.html": [
+       "d116e1778dd5e4c9548c9db34b11a7085a27f43c",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/operator-dictionary-arabic-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "operator-dictionary-empty-and-three-chars.html": [
        "231041c17fe905eca09020fed8e59bc2693ec8a6",
        [
@@ -254286,6 +254488,10 @@
      "4a3b092593547bdd8b4d14b148faf07a0634e03d",
      []
     ],
+    "removeTrack-after-setSinkId.https-expected.txt": [
+     "82777173e784cac937d5364d48b8dc2e35f5616b",
+     []
+    ],
     "secure-context-expected.txt": [
      "7619133d2d6796301347b12488577f42eb6c43ab",
      []
@@ -255772,6 +255978,10 @@
     ],
     "README.md": [
      "05bacb7f16db124a998a98ce242775fae91078bd",
+     []
+    ],
+    "idlharness.https.window-expected.txt": [
+     "4d3c7af3fdf238963230cab091a83c6ecdbe03b3",
      []
     ],
     "resources": {
@@ -261196,6 +261406,10 @@
       ],
       "float-nowrap-5-ref.html": [
        "7f400841037cfb79bafa2c41d3834cdd942445f4",
+       []
+      ],
+      "float-root-ref.html": [
+       "1f593f460a0da7dbde9a2c8b3f96628d88f7c9df",
        []
       ],
       "float-table-align-left-quirk-ref.html": [
@@ -271868,7 +272082,7 @@
       []
      ],
      "flexbox-baseline-multi-line-horiz-002-ref.html": [
-      "361f0965b29b616bf2fb0510c1ea9e112dd8321a",
+      "491144cc212662434a35f29d5752f9329d966e16",
       []
      ],
      "flexbox-baseline-multi-line-horiz-003-ref.html": [
@@ -271884,7 +272098,7 @@
       []
      ],
      "flexbox-baseline-multi-line-vert-002-ref.html": [
-      "f66096644b17694c7f423013357eea049a666edd",
+      "15538f74faecb7726a77a74a5a41eddcf5bfd525",
       []
      ],
      "flexbox-baseline-nested-001-ref.html": [
@@ -282972,7 +283186,7 @@
         []
        ],
        "image-orientation-none-cross-origin-ref.html": [
-        "0d6f9654b28f2cc679139e7732a5e4bb5410c8ed",
+        "1ac90177701e172fc48c9819bbaf1393905893cc",
         []
        ],
        "image-orientation-none-cross-origin-svg-ref.html": [
@@ -284631,12 +284845,24 @@
         "b548c5d590edeef0d7aa8a8b4461fed72d2460c7",
         []
        ],
+       "clip-path-animation-svg-ref.html": [
+        "6cc3b4d58bd2ce7c1c9aef9df84dbff47d783f34",
+        []
+       ],
+       "clip-path-animation-svg-zoom-ref.html": [
+        "8d620ceb69806f6bccb3ca30d78df3656745193d",
+        []
+       ],
        "clip-path-animation-three-keyframes1-ref.html": [
         "965d259d26e5f96df22b8a7e72040b8791f065b0",
         []
        ],
        "clip-path-animation-three-keyframes2-ref.html": [
         "afc8c855617b9777f05c6d42ba2682e077dfb663",
+        []
+       ],
+       "clip-path-animation-zoom-ref.html": [
+        "99126195a13b6e09a9e6080277a454d19c8576bf",
         []
        ],
        "clip-path-transition-ref.html": [
@@ -298648,11 +298874,11 @@
       []
      ],
      "acos-asin-atan-atan2-computed-expected.txt": [
-      "15263b2bd5044f179904ec084dbc6a52fc217e81",
+      "29b1424a2d6eb71959140dfa34b72cd187ce1955",
       []
      ],
      "acos-asin-atan-atan2-serialize-expected.txt": [
-      "b44f21ebf6f55428a63e37644e03a0075ac572d3",
+      "c65d9726456679ae3ff06aee9dbc226571ec7910",
       []
      ],
      "animations": {
@@ -300384,6 +300610,14 @@
        "2154a8d3f773c80e62c28ec7f789b3cbe677e125",
        []
       ],
+      "margin-collapse-022-023-1.xht": [
+       "f54f3271fb032f8c3a5b0accba50e44ccb3ecaa3",
+       []
+      ],
+      "margin-collapse-022-023-2.xht": [
+       "dab33c3937369f4b2e79edabd41ed74207ba1378",
+       []
+      ],
       "mongolian-orientation-001-ref.html": [
        "66cb618b4a67303857100049314614e6cee1cbd0",
        []
@@ -301930,7 +302164,7 @@
       []
      ],
      "getComputedStyle-detached-subtree-expected.txt": [
-      "46cdaa702b2072fc9d1c82e5e14c7d0328d142b2",
+      "49adafd97aa9214e12f4a4e1ac1e530706563b23",
       []
      ],
      "getComputedStyle-insets-absolute-expected.txt": [
@@ -301942,7 +302176,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "8733ff9138182aa80dd50a2eccb64b6384cda96c",
+      "5ab221bc88209056bce2e7b249b03bc3ab22a4f9",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -305944,7 +306178,7 @@
     ],
     "include": {
      "editor-test-utils.js": [
-      "fe97251d8dd49e3595365470a2612220b4d396d9",
+      "8d8e778836a51f1936e2de551df90d804fbcc973",
       []
      ],
      "implementation.js": [
@@ -306351,6 +306585,282 @@
      ],
      "insertparagraph-with-white-space-style.tentative_white-space=pre-line_command=insertText-expected.txt": [
       "0a1558f09a8a22d35229c09f6b9aaac5a0bf96a5",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=nowrap-expected.txt": [
+      "1caf3cbce61564904e56f2e0b646083b92e98006",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-expected.txt": [
+      "0740327b380d1fc66b50713fada34b086af28ff3",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-line-expected.txt": [
+      "b77126f006456f4d58b0cbc32dcecb21b1ae88eb",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
+      "89407ebec720f835faf80e1b5ccbc9ffad4feb84",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=normal-expected.txt": [
+      "3f0400c3aa8886e21e2ecc0d147c9dc18a055777",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-expected.txt": [
+      "35ec88b1203d74d58300ea9e343d2095ed7b6949",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
+      "dd44c818d690f3a2a95ba06c7f95e6fc12d33550",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=nowrap_right-white-space=pre-wrap-expected.txt": [
+      "3489bd6201b8e91f52a5715de94395d1fbba678d",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=normal-expected.txt": [
+      "eefb680e7188d913deea3a7649c65bae45fafcc6",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=nowrap-expected.txt": [
+      "9d09c9298a2cc674d142b83714a1d97302a267d3",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=pre-expected.txt": [
+      "0fb6c64ac209340e7935612fcf060030707fc3fe",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
+      "9a299466bf12b2bf78129f081eb08b3ff4614043",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
+      "33b1d020a2a51a39372b84fa4b7b70bcd35cfa60",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=nowrap-expected.txt": [
+      "893fed64511d828344a4bab87623cc8b779025e6",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
+      "3a3a696c85a5406f3e085b52dec871e2f2c87209",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
+      "bea81b19c211ca2c4441cf8b3adfdf6043e25474",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=normal-expected.txt": [
+      "11f143635fd37f464cb7a77a92ba967093e8d673",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=nowrap-expected.txt": [
+      "fa19a8712ae89b7a0f4a9b1563f4f9dbbdb6d434",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-line-expected.txt": [
+      "4430b214f8d4f77a058e417c02e6be3ef3795a4f",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=backspace_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
+      "ff1659c881ecf12fa1d0a874bc141cc3066f82c7",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=nowrap-expected.txt": [
+      "f8e084abbca30ea1966ae3489262ad550e184ddf",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-expected.txt": [
+      "11c539c401ea4b2b8f3d97d1b445f1f0dd62a99a",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-line-expected.txt": [
+      "0534d5ff734f3207c5b7a92b2d8a658bbc9651f2",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
+      "86a9de0ff170275254b8901ad6e9a2920fd0c70a",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=normal-expected.txt": [
+      "7008119f156d3a2094443f6fb73f70c9938ef190",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-expected.txt": [
+      "929c104efb5f0976ea27395dd981c965d0727020",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
+      "a65c05df4f39fa7dbccea740fb6e773b89cbbb3f",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=nowrap_right-white-space=pre-wrap-expected.txt": [
+      "a7a5b7d8818d763b3f6a967028adf2d6d4d6172b",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=normal-expected.txt": [
+      "6d01104c948e20e1badd41ad8e209539966f147b",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=nowrap-expected.txt": [
+      "b48d7d897a059d49881c88a0a89402e8e9a6c84f",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=pre-expected.txt": [
+      "129716b46307497458d153970175cdc97e0eaa3c",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
+      "0d2a04d535b6e17be89764d4cd9d6ee4ddeebe93",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
+      "da5721db9173ab1b10ce6e172c1d1095e9c03d1c",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=nowrap-expected.txt": [
+      "e2a1bc37343523518f2fdb2bc5874661da308152",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
+      "39612153b0e2772e638f099bf00b9b22a52a96ff",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
+      "0bea179a324ad3635aa5115c08f1a24f772728f5",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=normal-expected.txt": [
+      "f924cbad0b7329936a2dae18654a3a9be501065e",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=nowrap-expected.txt": [
+      "9ef2ef55e992613cfdd457ae690715225af29fa3",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-line-expected.txt": [
+      "2d1d0c2bb1383e59833b0381cc74f6fa75a25d75",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=forwarddelete_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
+      "711cab7ff19bcd7fd453abe224d24fd529499e0d",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=nowrap-expected.txt": [
+      "08aed2350b8a38ac09eda9b9e60ac723161d4d15",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-expected.txt": [
+      "e8cd550206d344136661243c07b4f1fe08c49b66",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-line-expected.txt": [
+      "51759b33a8f9be70020c20940692276b263b3e80",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=normal_right-white-space=pre-wrap-expected.txt": [
+      "2ee87d00bf8bb5cbebd7d68f940bcaa34f447476",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=normal-expected.txt": [
+      "7e62ff5f2446fa40b2a7f0576407e38be1680a97",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-expected.txt": [
+      "064b6323af67ccc82e26c2d1b5db2ed81a1907e7",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-line-expected.txt": [
+      "6308b3315c9e2bc55ecd21c0de5849d8818e9edf",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=nowrap_right-white-space=pre-wrap-expected.txt": [
+      "fe88c8977845b8178d6fcefb805a96099f36824f",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=normal-expected.txt": [
+      "94911116260d3726a3d8e767223db1088b469df7",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=nowrap-expected.txt": [
+      "313e4106f3b1f8a7085e875273438b5b1d7374c3",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=pre-expected.txt": [
+      "c7426871255149a322e0dcd874ac8a0f7345629b",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-line_right-white-space=pre-wrap-expected.txt": [
+      "2e78a64dad11d0ec87d49135d4cc88210a6dfc09",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=normal-expected.txt": [
+      "71a706c272b67e6f7c62429aadea189ef16baee3",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=nowrap-expected.txt": [
+      "8e55f0541ef62be135f3679fdecd354e9936009b",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-expected.txt": [
+      "81938b51653e397ca04ebb4f990bdf769e4e490c",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre-wrap_right-white-space=pre-line-expected.txt": [
+      "ab1638b9e43a2362aee5468d8c57e125aec84bc0",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=normal-expected.txt": [
+      "cdd5ac4f31759914c836090e572b611283c258c6",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=nowrap-expected.txt": [
+      "58deb41c460ce08cc29060aa67ea8032186698dd",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-line-expected.txt": [
+      "ce35e0a0e46b59fe5f6443dcecd43f6d162e99f9",
+      []
+     ],
+     "join-different-white-space-style-paragraphs_method=select-boundary_left-white-space=pre_right-white-space=pre-wrap-expected.txt": [
+      "15e629a787814d1cb20abe090191112bffa9eae6",
+      []
+     ],
+     "join-pre-and-other-block_method=backspace_block=blockquote-expected.txt": [
+      "81b20ff5cfa9384c78f15093977091111c24dea5",
+      []
+     ],
+     "join-pre-and-other-block_method=backspace_block=div-expected.txt": [
+      "4a7d3841f759367092c0c85fa3d89b269cdfebd2",
+      []
+     ],
+     "join-pre-and-other-block_method=backspace_block=p-expected.txt": [
+      "71abbaa94ef61f642467426969dcf4f7f7225fc9",
+      []
+     ],
+     "join-pre-and-other-block_method=forwarddelete_block=blockquote-expected.txt": [
+      "020b7ad8da1ca3abd9040278ff034860d0fbfc7c",
+      []
+     ],
+     "join-pre-and-other-block_method=forwarddelete_block=div-expected.txt": [
+      "dce1811c7fd4ab86423d9f9258e7f60cf92cad0d",
+      []
+     ],
+     "join-pre-and-other-block_method=forwarddelete_block=p-expected.txt": [
+      "4ddfae22d2e5c399efad0c4990f0d24cd5ffc0c0",
+      []
+     ],
+     "join-pre-and-other-block_method=select-boundary_block=blockquote-expected.txt": [
+      "683fed9bd88865c923acc981c5d39054490afe50",
+      []
+     ],
+     "join-pre-and-other-block_method=select-boundary_block=div-expected.txt": [
+      "b770dd85edefd489498d35ec201833ee7e402c41",
+      []
+     ],
+     "join-pre-and-other-block_method=select-boundary_block=p-expected.txt": [
+      "4d0b531729c1276e278d64c7b78441ae3feaeb6b",
       []
      ],
      "keeping-attributes-at-joining-elements.tentative_method=backspace-expected.txt": [
@@ -308781,10 +309291,6 @@
       "1759381fdc4141302f1b95868550ead76d9f5ca7",
       []
      ],
-     "screen-wake-lock-reporting.https.html.headers": [
-      "5d910ce6df801980a26fb191589201f614ed02af",
-      []
-     ],
      "serial-reporting.https.html.headers": [
       "be3e6afd423f767369725724eb3509447c852a59",
       []
@@ -308861,10 +309367,6 @@
      ],
      "feature-policy-report-json.js": [
       "08a0ecaded8c5af917be1ae1287d455483205e45",
-      []
-     ],
-     "feature-policy-screen-wakelock.html": [
-      "6feed51d498651c6565517df3afb49076bcb7c57",
       []
      ],
      "feature-policy-serial-worker.html": [
@@ -309066,19 +309568,19 @@
       }
      },
      "idlharness.any-expected.txt": [
-      "6bb633c40b208bd5c5932195ea0ddb8c2a6f7ebf",
+      "e7dd305403874c89cddef0e1e2b74e6fe556d396",
       []
      ],
      "idlharness.any.serviceworker-expected.txt": [
-      "a91294156f25ce42682f28ba77dad7f47229bce4",
+      "c58dcffbe864dc813b282c1ccfe5641e95f0c69f",
       []
      ],
      "idlharness.any.sharedworker-expected.txt": [
-      "a91294156f25ce42682f28ba77dad7f47229bce4",
+      "c58dcffbe864dc813b282c1ccfe5641e95f0c69f",
       []
      ],
      "idlharness.any.worker-expected.txt": [
-      "a91294156f25ce42682f28ba77dad7f47229bce4",
+      "c58dcffbe864dc813b282c1ccfe5641e95f0c69f",
       []
      ],
      "policies": {
@@ -314376,6 +314878,10 @@
         []
        ]
       },
+      "sandbox-document-open-mutation.window-expected.txt": [
+       "cae3f93f7db86341d707b45783dbe497ab13cce8",
+       []
+      ],
       "sandbox-inherited-from-required-csp-expected.txt": [
        "c8fea4afb7ec2dccf74d7e396810e170f12aaf72",
        []
@@ -317515,7 +318021,7 @@
        []
       ],
       "iframe-test.js": [
-       "84b065fab7676be7f3de3061c143ef7dd83de449",
+       "a18688caf786bb54d19df621b984dad3f9c1d411",
        []
       ],
       "popup-test.js": [
@@ -317551,6 +318057,10 @@
       "restrict-properties": {
        "README.md": [
         "b3c24c3f82d2dbf07eefa9fa2e88fcf3817473d2",
+        []
+       ],
+       "coop-rp-in-navigation-chain.https.html.headers": [
+        "073ce7adfbd81cb7c0b2f91f96c8349b6677f26c",
         []
        ],
        "iframe-popup-to-so.https.html.headers": [
@@ -323150,18 +323660,6 @@
          "749d55c61831a927f68c07e288647196b8637cf0",
          []
         ],
-        "resource-selection-invoke-load-expected.txt": [
-         "24f41e88274c7f0f85650928a7f972eb1d96feba",
-         []
-        ],
-        "resource-selection-invoke-pause-expected.txt": [
-         "2ea718e23506328088f88c0d65ecf1f24f6451ce",
-         []
-        ],
-        "resource-selection-invoke-play-expected.txt": [
-         "8b87ae363401480238a78b364668d2294375b2a2",
-         []
-        ],
         "resource-selection-pointer-control-expected.txt": [
          "8e2e73a3c47dad4025131218154f1da4ecaee9ce",
          []
@@ -323188,10 +323686,6 @@
         ],
         "resource-selection-pointer-remove-text-expected.txt": [
          "f9c52c5b3c8a7d9271e6726cab0d96a7c278d5a7",
-         []
-        ],
-        "resource-selection-remove-source-expected.txt": [
-         "138c4d5c00f2e6c1df9bbdbc932644d24b07eb1d",
          []
         ],
         "resource-selection-remove-src-expected.txt": [
@@ -330091,7 +330585,7 @@
      []
     ],
     "FedCM.idl": [
-     "5ab4c56104fa44b6ddd570998875b2e845738061",
+     "55f1cc09d935229638a7c5dda8519759737f5e18",
      []
     ],
     "FileAPI.idl": [
@@ -330358,10 +330852,6 @@
      "f679e0fe5587f2feedbceb06931ef701156a9f97",
      []
     ],
-    "css-device-adapt.idl": [
-     "c03b4208c1c96ae6ae8495f0092f1b17b2411df1",
-     []
-    ],
     "css-font-loading.idl": [
      "6f2e16dd6411909cbd343993c1e6383a0c212101",
      []
@@ -330503,7 +330993,11 @@
      []
     ],
     "fetch.idl": [
-     "6532e748dae8b35d512ae9d57a411b5a1967126d",
+     "ba69c462f623e8d01cef07822f3b93039cf1676b",
+     []
+    ],
+    "fido.idl": [
+     "32b6c75abd2893d73d58dc37a0e0a56e8b896121",
      []
     ],
     "file-system-access.idl": [
@@ -330675,7 +331169,7 @@
      []
     ],
     "mediacapture-streams.idl": [
-     "fd7097645347d25a171cf6084a7a01f7155cef21",
+     "5b41f3fa6538e211d350af3f2e819054aa3e72b6",
      []
     ],
     "mediacapture-transform.idl": [
@@ -330947,7 +331441,7 @@
      []
     ],
     "trusted-types.idl": [
-     "d6db850cdb773c8788b3e57b99baf75cfd6a2546",
+     "23562381294e59493880857584f6ac9200254ee2",
      []
     ],
     "ua-client-hints.idl": [
@@ -330963,7 +331457,7 @@
      []
     ],
     "urlpattern.idl": [
-     "4faa1c935b0830d0a288f7138afdb617b42599e9",
+     "e342eb50abd6d229707a8bbbb2853969471549f1",
      []
     ],
     "user-timing.idl": [
@@ -331091,7 +331585,7 @@
      []
     ],
     "webrtc-stats.idl": [
-     "9458096214ab85d6c6d7334b985038683c78a38a",
+     "ea300a2407af86469f58304fb17a6a92e7b53830",
      []
     ],
     "webrtc-svc.idl": [
@@ -331099,7 +331593,7 @@
      []
     ],
     "webrtc.idl": [
-     "4b0813fb7d36f7ce8b8d4c9313e47c0ee2726c95",
+     "5b53441ba39271358e858e052d407a47f790c68c",
      []
     ],
     "websockets.idl": [
@@ -331111,7 +331605,7 @@
      []
     ],
     "webusb.idl": [
-     "336bbd743c90883186933b01dd74f5d1df8024e8",
+     "fb0a71f307d8b96e9a447067bc569595ada0f107",
      []
     ],
     "webvr.tentative.idl": [
@@ -332102,6 +332596,14 @@
       ],
       "op-dict-9-notref.html": [
        "b976536fac416789cfeb145874a32c539005bd56",
+       []
+      ],
+      "operator-dictionary-arabic-001-ref.html": [
+       "88e0f5f736b01924362336191a7294677c8a044f",
+       []
+      ],
+      "operator-dictionary-arabic-002-ref.html": [
+       "f72fdc8403719b0d07a283ad725975ce72dfe056",
        []
       ],
       "operator-dictionary-empty-and-three-chars-ref.html": [
@@ -335397,6 +335899,10 @@
       "12fc99b50b2e4c875c0b31d0d81d3a3f33e0eea3",
       []
      ],
+     "screen-wake-lock-reporting.https.html.headers": [
+      "66f07f4c1c3f106517d4e21f2edd613465ab1672",
+      []
+     ],
      "serial-report-only.https.html.headers": [
       "cee26394d3e87669135e31485b975e43b4bfcfb7",
       []
@@ -335520,7 +336026,7 @@
       []
      ],
      "permissions-policy-screen-wakelock.html": [
-      "6feed51d498651c6565517df3afb49076bcb7c57",
+      "5b8f1aa8bc5262ce63f3176525f7966f71bbf03a",
       []
      ],
      "permissions-policy-serial-worker.html": [
@@ -338182,7 +338688,7 @@
       []
      ],
      "cacheable-and-validated.py": [
-      "31f0e3ab417a69079f20748751b2d6be9a7d5552",
+      "97de8662777de8fda9b679dfe550106bb2c1bbb6",
       []
      ],
      "close.html": [
@@ -338426,7 +338932,7 @@
       []
      ],
      "redirect-cors.py": [
-      "ea67cb8e7ac4e61045d05af51f066db48bfdf101",
+      "655b862fcd677da2405a5f323f4bad1ce1e67e05",
       []
      ],
      "redirect-without-location.py": [
@@ -338942,16 +339448,16 @@
       []
      ]
     },
-    "wakelock-disabled-by-feature-policy.https.html.headers": [
-     "5d910ce6df801980a26fb191589201f614ed02af",
+    "wakelock-disabled-by-permissions-policy.https.html.headers": [
+     "66f07f4c1c3f106517d4e21f2edd613465ab1672",
      []
     ],
-    "wakelock-enabled-by-feature-policy.https.html.headers": [
-     "7810751f8051c14818b290aa9ea7edab04bca3e9",
+    "wakelock-enabled-by-permissions-policy.https.html.headers": [
+     "ea7d848e74f9187bbae7e2f60e8342b509d85263",
      []
     ],
-    "wakelock-enabled-on-self-origin-by-feature-policy.https.html.headers": [
-     "6bc94277cf9a4610c33274bd5b984e41d389622a",
+    "wakelock-enabled-on-self-origin-by-permissions-policy.https.html.headers": [
+     "9849d6b89b34583b77b073b5867a642ff05c5079",
      []
     ]
    },
@@ -344679,7 +345185,7 @@
        []
       ],
       "SVGGeometryElement.isPointInFill-01-expected.txt": [
-       "92f723f90544c025784f9892ebe976f2c816a595",
+       "0aade2cb737a5552860af534718e01c333dcd1d2",
        []
       ],
       "SVGGeometryElement.isPointInStroke-01-expected.txt": [
@@ -348815,7 +349321,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "7ae2346c7f47d83ecca8edee916539ab428b07a0",
+     "aab3ad3d13619265e1a3e7e5e5815b1d625048e8",
      []
     ],
     "legacy": {
@@ -349107,7 +349613,7 @@
      []
     ],
     "supported-stats-expected.txt": [
-     "7b8fbe8bc418573d8afe54aa9e5b2d9ebdea4361",
+     "66839af4e9e3fd3775ef95b059ba6aebe723681a",
      []
     ]
    },
@@ -367849,6 +368355,15 @@
       }
      ]
     ],
+    "removeTrack-after-setSinkId.https.html": [
+     "393082052b10f5a63f19dda7151d25d27b7fe486",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "secure-context.html": [
      "7b4dd229a62071b4079050698c7d5b512966a030",
      [
@@ -376633,6 +377148,24 @@
         [
          "script",
          "resources/pressure-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idlharness.https.window.js": [
+     "1cdfb59be031ce1fccda43609c61b00a401c245a",
+     [
+      "compute-pressure/idlharness.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
         ]
        ]
       }
@@ -391408,6 +391941,34 @@
         {}
        ]
       ],
+      "flex-align-baseline-flex-001.html": [
+       "dda6c379eb8d995f4f990cf93a49d2903acb6374",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-flex-002.html": [
+       "fc8e9f769c37d1c3fae01498819cb51477ffc893",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-flex-003.html": [
+       "0d2c2a72aea1c850b79ccf997883025f3f20638d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-flex-004.html": [
+       "eaedd817283ffbff98204a1a3babc2e31843c56a",
+       [
+        null,
+        {}
+       ]
+      ],
       "flex-align-baseline-grid-001.html": [
        "d4bba0871aba1b902f5f43be8b5e2974aceb76fa",
        [
@@ -394465,6 +395026,34 @@
       ],
       "grid-align-baseline-fieldset-003.html": [
        "38fc5b5eb87a7ff0b40a6d75e96f26041ce5c1d1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-flex-001.html": [
+       "d00472474b866e74c77f519b52f46207fa2c3fba",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-flex-002.html": [
+       "b6df9d7d733784ad31685d6a0ae8f8f85bc17550",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-flex-003.html": [
+       "7fdc921b2780e866b65ae93670d8b7ffaa78bcda",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-flex-004.html": [
+       "447f008e0e48b960702f39c1445c76d786158206",
        [
         null,
         {}
@@ -407668,6 +408257,27 @@
         null,
         {}
        ]
+      ],
+      "toggle-visibility-computed.tentative.html": [
+       "89cc80aa704cab163678ec222008b996f710d3e3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-visibility-invalid.tentative.html": [
+       "c238834901841c41e079c361468a0212c6963259",
+       [
+        null,
+        {}
+       ]
+      ],
+      "toggle-visibility-valid.tentative.html": [
+       "3541a6f13701cb6f279a043bd7268d884d41b1be",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "toggle-activation-with-groups.tentative.html": [
@@ -411971,7 +412581,7 @@
       ]
      ],
      "acos-asin-atan-atan2-serialize.html": [
-      "4db5af1617d9691a8f106ff54713c8a166173a24",
+      "27c0a4fb856d068252401328a7bec650e0b948bf",
       [
        null,
        {}
@@ -411980,6 +412590,13 @@
      "animations": {
       "calc-interpolation.html": [
        "40379a13fb2736ed5839e55a58c7cba581155e77",
+       [
+        null,
+        {}
+       ]
+      ],
+      "line-height-lh-transition.html": [
+       "08c01874957aa931137e42dc1b30ddfd85e2d12b",
        [
         null,
         {}
@@ -412287,6 +412904,13 @@
        {}
       ]
      ],
+     "lh-unit-003.html": [
+      "e22a4b95b109532b39b38d08a31ac08281b74b30",
+      [
+       null,
+       {}
+      ]
+     ],
      "line-break-ch-unit.html": [
       "295b418f304a76cde4dba21a1d24022557882b18",
       [
@@ -412505,7 +413129,7 @@
       ]
      ],
      "sin-cos-tan-serialize.html": [
-      "365145d9b13dc305d86d3db72dfa8be2235293c3",
+      "72287d6f3c5111b6dcc44e667a66f018a87ba732",
       [
        null,
        {}
@@ -418491,6 +419115,22 @@
       ]
      ]
     },
+    "scoped-registry": {
+     "CustomElementRegistry-constructor.tentative.html": [
+      "d80a1fbe6c80aea79f2d7adc01d85b0e3ca7e50b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "ShadowRoot-init-registry.tentative.html": [
+      "f9bc5b5b5686a0f5cb43ea653f623ba164c5cabb",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "state": {
      "tentative": {
       "ElementInternals-states.html": [
@@ -423926,6 +424566,1332 @@
        "editing/other/insertparagraph-with-white-space-style.tentative.html?white-space=pre-wrap&command=insertText",
        {
         "timeout": "long"
+       }
+      ]
+     ],
+     "join-different-white-space-style-left-line-and-right-paragraph.html": [
+      "48fa581115228567660771aa126f133f444159bc",
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=backspace&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-line-and-right-paragraph.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "join-different-white-space-style-left-paragraph-and-right-line.html": [
+      "b55cacc44baf0dc96553851006fd55caa9dcef58",
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=backspace&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "join-different-white-space-style-paragraphs.html": [
+      "605f2a4483ba9d35f23be5fb816ecc590f638c8f",
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=backspace&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=normal&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=normal&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=normal&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=normal&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=nowrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=nowrap&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-line&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-line&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-line&right-white-space=pre-wrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=normal",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=nowrap",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=pre",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "editing/other/join-different-white-space-style-paragraphs.html?method=select-boundary&left-white-space=pre-wrap&right-white-space=pre-line",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "join-pre-and-other-block.html": [
+      "39e455a8484f96ed8967168fff6d22f8725592a6",
+      [
+       "editing/other/join-pre-and-other-block.html?method=backspace&block=blockquote",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=backspace&block=div",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=backspace&block=p",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=forwarddelete&block=blockquote",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=forwarddelete&block=div",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=forwarddelete&block=p",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=select-boundary&block=blockquote",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=select-boundary&block=div",
+       {
+        "testdriver": true
+       }
+      ],
+      [
+       "editing/other/join-pre-and-other-block.html?method=select-boundary&block=p",
+       {
+        "testdriver": true
        }
       ]
      ],
@@ -439246,13 +441212,6 @@
        {
         "testdriver": true
        }
-      ]
-     ],
-     "screen-wake-lock-reporting.https.html": [
-      "4ddfc69f86506d7ad3538213ce3d770a13a4f9bc",
-      [
-       null,
-       {}
       ]
      ],
      "serial-reporting.https.html": [
@@ -458249,6 +460208,13 @@
        "1bc116ada46d39b0e7b17dc448cab0c33707057a",
        [
         null,
+        {}
+       ]
+      ],
+      "sandbox-document-open-mutation.window.js": [
+       "713ca612c5a450f8390240b8fb33a6c1268aedf9",
+       [
+        "html/browsers/sandboxing/sandbox-document-open-mutation.window.html",
         {}
        ]
       ],
@@ -481542,6 +483508,15 @@
      ],
      "tentative": {
       "restrict-properties": {
+       "coop-rp-in-navigation-chain.https.html": [
+        "e5c877517488f755e08f69233439a817dd444164",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
        "iframe-popup-to-so.https.html": [
         "740ff2595aa5891cfaf99a04cd281e71e4d4bc74",
         [
@@ -509798,7 +511773,7 @@
       ]
      ],
      "mediasource-worker-handle.html": [
-      "a921acdec9e4015f8671a1c78e477e2559a59821",
+      "6129e05ffb4a82963e781fe79b5d6066b787a73d",
       [
        null,
        {}
@@ -521304,6 +523279,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "screen-wake-lock-reporting.https.html": [
+      "4ddfc69f86506d7ad3538213ce3d770a13a4f9bc",
+      [
+       null,
+       {}
       ]
      ],
      "serial-report-only.https.html": [
@@ -536592,6 +538574,85 @@
       {}
      ]
     ],
+    "delivery-type.tentative.any.js": [
+     "e2b408fdd74f29fff40b11e83e9ecb804b295490",
+     [
+      "resource-timing/delivery-type.tentative.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/resource-timing/resources/resource-loaders.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "resource-timing/delivery-type.tentative.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/resource-timing/resources/resource-loaders.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "resource-timing/delivery-type.tentative.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/resource-timing/resources/resource-loaders.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "resource-timing/delivery-type.tentative.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/resource-timing/resources/resource-loaders.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "document-domain-no-impact-opener.html": [
      "69df2f27fa5b195f7b956714cf816a61e18258b8",
      [
@@ -539046,29 +541107,29 @@
       {}
      ]
     ],
-    "wakelock-disabled-by-feature-policy.https.html": [
-     "ba26028ca3514d2a7045a845b720785163cd565f",
+    "wakelock-disabled-by-permissions-policy.https.html": [
+     "fe4147b46cdd3949b25ce0f328a082979e635203",
      [
       null,
       {}
      ]
     ],
-    "wakelock-enabled-by-feature-policy-attribute-redirect-on-load.https.html": [
-     "14e549e77d36d0e115432b5be02e6b678f83cd3c",
+    "wakelock-enabled-by-permissions-policy-attribute-redirect-on-load.https.html": [
+     "acfce43f96247949d7e4963970d0502d9c0b5d5d",
      [
       null,
       {}
      ]
     ],
-    "wakelock-enabled-by-feature-policy-attribute.https.html": [
-     "f4ba6f4475a7e7afc2dc9cee9d9b870b8eddc5cc",
+    "wakelock-enabled-by-permissions-policy-attribute.https.html": [
+     "c2be3a45080a36bd7d90244aa73aca0ee2190368",
      [
       null,
       {}
      ]
     ],
-    "wakelock-enabled-by-feature-policy.https.html": [
-     "a73851e955892d1eed33978b21ad93bef30ca648",
+    "wakelock-enabled-by-permissions-policy.https.html": [
+     "cc9106967ef522b307c3c079846a36e43e3b3b73",
      [
       null,
       {
@@ -539076,8 +541137,8 @@
       }
      ]
     ],
-    "wakelock-enabled-on-self-origin-by-feature-policy.https.html": [
-     "277c291204902d93418cf20bec7962259d9010a7",
+    "wakelock-enabled-on-self-origin-by-permissions-policy.https.html": [
+     "5b90b4f4ce0dddc3463effa61bf7d213e5d57ab3",
      [
       null,
       {
@@ -539151,8 +541212,8 @@
       }
      ]
     ],
-    "wakelock-supported-by-feature-policy.html": [
-     "a55eb54ba1c48ae7d5330ed1281029d71f0a23e9",
+    "wakelock-supported-by-permissions-policy.html": [
+     "cc0bb963b16ed086e29d6cfbe4b6fb19468f025e",
      [
       null,
       {}
@@ -539379,6 +541440,13 @@
      ],
      "view-timeline-axis-parsing.html": [
       "ffcc36c32086d9720bd0b5b2d9f8542cee02769f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "view-timeline-dynamic.html": [
+      "483fa36cc16a77bf1ae0223c951023c894874230",
       [
        null,
        {}
@@ -548209,7 +550277,7 @@
      ]
     ],
     "requestStorageAccess.sub.window.js": [
-     "308ad4333658de2780955a09408139d773776f25",
+     "4600f5214315c47bfac4019b75fcc4c6ab9cc7a7",
      [
       "storage-access-api/requestStorageAccess.sub.window.html",
       {
@@ -554109,6 +556177,13 @@
         {}
        ]
       ],
+      "ellipse-hittest.html": [
+       "70b54e0726fbfe349cebaac13d1b4101c2e50327",
+       [
+        null,
+        {}
+       ]
+      ],
       "focus-events.svg": [
        "bf307b79fdf10c578d93332f57d4de2ab844eb34",
        [
@@ -554118,6 +556193,34 @@
       ],
       "focus-tabindex-default-value.svg": [
        "3af1acffd8de01618fb1dc9e8a753bcbb0357f1c",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rect-hittest-001.html": [
+       "4256628bc6a68684f8e99df81f255301a836e39a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "rect-hittest-002.html": [
+       "7eb70f85308cc6ad29ec7a1657c7fe00bf49fc58",
+       [
+        null,
+        {}
+       ]
+      ],
+      "svg-pointer-events-bbox.html": [
+       "8db9149c231d1f4812b76610e3488ecd74787625",
+       [
+        null,
+        {}
+       ]
+      ],
+      "svg-small-big-path.html": [
+       "ba0e403f6d690d4f176f4060ab4b1327091eb6ae",
        [
         null,
         {}
@@ -555387,7 +557490,7 @@
        ]
       ],
       "SVGGeometryElement.isPointInFill-01.svg": [
-       "f9ae97e402dbe0d586853fff81fd1056d8cac78d",
+       "326c52298daf22345e06f7c4469a78c8752e7050",
        [
         null,
         {}
@@ -586782,6 +588885,36 @@
       {}
      ]
     ],
+    "localstorage-cross-origin-iframe.tentative.https.window.js": [
+     "39812f27a003757317d566cafbd7d31bfd205199",
+     [
+      "webstorage/localstorage-cross-origin-iframe.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/html/cross-origin-embedder-policy/credentialless/resources/common.js"
+        ],
+        [
+         "script",
+         "/html/anonymous-iframe/resources/common.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "missing_arguments.window.js": [
      "2e41a22ec70cedc30bae3bb3b0974572b85ee6c7",
      [
@@ -608429,20 +610562,6 @@
      ],
      "form-controls-vrl-005.xht": [
       "f873373ca91017423d69569185764be0ef7af9a9",
-      [
-       null,
-       {}
-      ]
-     ],
-     "margin-collapse-vlr-023.xht": [
-      "d72e475af535685719345fc37ac4fa729d174b98",
-      [
-       null,
-       {}
-      ]
-     ],
-     "margin-collapse-vrl-022.xht": [
-      "05cce8bd953f862ad7059b442951f102e516e049",
       [
        null,
        {}

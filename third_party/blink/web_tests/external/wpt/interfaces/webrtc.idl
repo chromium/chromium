@@ -178,6 +178,7 @@ interface RTCIceCandidate {
   readonly attribute DOMString? relatedAddress;
   readonly attribute unsigned short? relatedPort;
   readonly attribute DOMString? usernameFragment;
+  readonly attribute RTCIceServerTransportProtocol? relayProtocol;
   RTCIceCandidateInit toJSON();
 };
 
@@ -204,6 +205,12 @@ enum RTCIceCandidateType {
   "srflx",
   "prflx",
   "relay"
+};
+
+enum RTCIceServerTransportProtocol {
+  "udp",
+  "tcp",
+  "tls",
 };
 
 [Exposed=Window]

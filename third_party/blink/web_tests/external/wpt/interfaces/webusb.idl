@@ -16,7 +16,7 @@ dictionary USBDeviceRequestOptions {
   required sequence<USBDeviceFilter> filters;
 };
 
-[Exposed=(DedicatedWorker,SharedWorker,Window), SecureContext]
+[Exposed=(Worker,Window), SecureContext]
 interface USB : EventTarget {
   attribute EventHandler onconnect;
   attribute EventHandler ondisconnect;
@@ -29,7 +29,7 @@ partial interface Navigator {
   [SameObject] readonly attribute USB usb;
 };
 
-[Exposed=(DedicatedWorker,SharedWorker), SecureContext]
+[Exposed=Worker, SecureContext]
 partial interface WorkerNavigator {
   [SameObject] readonly attribute USB usb;
 };

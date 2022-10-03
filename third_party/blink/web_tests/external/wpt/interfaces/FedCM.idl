@@ -13,10 +13,10 @@ partial dictionary CredentialRequestOptions {
 };
 
 dictionary IdentityCredentialRequestOptions {
-  sequence<IdentityProvider> providers;
+  sequence<IdentityProviderConfig> providers;
 };
 
-dictionary IdentityProvider {
+dictionary IdentityProviderConfig {
   required USVString configURL;
   required USVString clientId;
   USVString nonce;
@@ -30,4 +30,10 @@ dictionary IdentityCredentialLogoutRPsRequest {
 [Exposed=Window, SecureContext]
 partial interface IdentityCredential {
   static Promise<undefined> logoutRPs(sequence<IdentityCredentialLogoutRPsRequest> logoutRequests);
+};
+
+[Exposed=Window, SecureContext]
+interface IdentityProvider {
+  static undefined login();
+  static undefined logout();
 };

@@ -360,4 +360,28 @@ class EditorTestUtils {
       throw `Failed to set selection to the given ranges whose length is ${ranges.length}, but only ${this.selection.rangeCount} ranges are added`;
     }
   }
+
+  // Originated from normalizeSerializedStyle in include/tests.js
+  normalizeStyleAttributeValues() {
+    for (const element of Array.from(
+      this.editingHost.querySelectorAll("[style]")
+    )) {
+      element.setAttribute(
+        "style",
+        element
+          .getAttribute("style")
+          // Random spacing differences
+          .replace(/; ?$/, "")
+          .replace(/: /g, ":")
+          // Gecko likes "transparent"
+          .replace(/transparent/g, "rgba(0, 0, 0, 0)")
+          // WebKit likes to look overly precise
+          .replace(/, 0.496094\)/g, ", 0.5)")
+          // Gecko converts anything with full alpha to "transparent" which
+          // then becomes "rgba(0, 0, 0, 0)", so we have to make other
+          // browsers match
+          .replace(/rgba\([0-9]+, [0-9]+, [0-9]+, 0\)/g, "rgba(0, 0, 0, 0)")
+      );
+    }
+  }
 }

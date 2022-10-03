@@ -32,5 +32,16 @@
         const img = document.getElementById('corsImage')
         img.src = img.src.replace(new URL(img.src).origin, get_host_info().HTTP_REMOTE_ORIGIN)
     </script>
+    <p>The image should not rotate respecting their EXIF orientation because
+       image-orientation: none is specified.</p>
+    <div><img id="blobImage" src="support/exif-orientation-3-lr.jpg"/></div>
+    <script>
+        fetch(img.src).then((resp) {
+          return blob;
+        }).then((blob) => {
+          const img = document.getElementById('blobImage')
+          img.src = blob;
+        });
+    </script>
 </body>
 </html>

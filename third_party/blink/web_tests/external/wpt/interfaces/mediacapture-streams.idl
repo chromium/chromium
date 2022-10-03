@@ -174,7 +174,7 @@ enum MediaDeviceKind {
   "videoinput"
 };
 
-[Exposed=Window]
+[Exposed=Window, SecureContext]
 interface InputDeviceInfo : MediaDeviceInfo {
   MediaTrackCapabilities getCapabilities();
 };
