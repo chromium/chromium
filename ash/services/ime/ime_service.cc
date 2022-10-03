@@ -26,12 +26,6 @@ namespace ime {
 
 namespace {
 
-enum SimpleDownloadError {
-  SIMPLE_DOWNLOAD_ERROR_OK = 0,
-  SIMPLE_DOWNLOAD_ERROR_FAILED = -1,
-  SIMPLE_DOWNLOAD_ERROR_ABORTED = -2,
-};
-
 // Compose a relative FilePath beased on a C-string path.
 base::FilePath RelativePathFromCStr(const char* path) {
   // Target path MUST be relative for security concerns.
@@ -235,7 +229,7 @@ int ImeService::SimpleDownloadToFileV2(const char* url,
                                        const char* file_path,
                                        SimpleDownloadCallbackV2 callback) {
   if (!platform_access_.is_bound()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_ABORTED, url, "");
+    callback(SIMPLE_DOWNLOAD_STATUS_ABORTED, url, "");
     LOG(ERROR) << "Failed to download due to missing binding.";
   } else {
     platform_access_->DownloadImeFileTo(
@@ -253,9 +247,9 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
                                           const std::string& url_str,
                                           const base::FilePath& file) {
   if (file.empty()) {
-    callback(SIMPLE_DOWNLOAD_ERROR_FAILED, url_str.c_str(), "");
+    callback(SIMPLE_DOWNLOAD_STATUS_INVALID_ARGUMENT, url_str.c_str(), "");
   } else {
-    callback(SIMPLE_DOWNLOAD_ERROR_OK, url_str.c_str(),
+    callback(SIMPLE_DOWNLOAD_STATUS_OK, url_str.c_str(),
              ResolveDownloadPath(file).c_str());
   }
 }

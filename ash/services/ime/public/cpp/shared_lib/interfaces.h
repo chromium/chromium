@@ -65,8 +65,17 @@ struct MojoSystemThunks;
 namespace ash {
 namespace ime {
 
+enum SimpleDownloadStatusCode {
+  // The download succeeded.
+  SIMPLE_DOWNLOAD_STATUS_OK = 0,
+  // The download failed due to an invalid url or path.
+  SIMPLE_DOWNLOAD_STATUS_INVALID_ARGUMENT = -1,
+  // The download failed because Chrome disconnected from IME Service.
+  SIMPLE_DOWNLOAD_STATUS_ABORTED = -2,
+};
+
 // A simple downloading callback with the downloading URL as return.
-typedef void (*SimpleDownloadCallbackV2)(int status_code,
+typedef void (*SimpleDownloadCallbackV2)(SimpleDownloadStatusCode status_code,
                                          const char* url,
                                          const char* file_path);
 
