@@ -148,7 +148,7 @@ void WebContentsObserverProxy::PrimaryMainDocumentElementAvailable() {
 
 void WebContentsObserverProxy::DidStartNavigation(
     NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf
+  // TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf
   // experiment is finished.
   TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_didStartNavigation");
 
@@ -176,9 +176,16 @@ void WebContentsObserverProxy::DidFinishNavigation(
   // Remove after fixing https://crbug/905461.
   TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_didFinishNavigation");
 
-  Java_WebContentsObserverProxy_didFinishNavigation(
-      AttachCurrentThread(), java_observer_,
-      navigation_handle->GetJavaNavigationHandle());
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    Java_WebContentsObserverProxy_didFinishNavigationInPrimaryMainFrame(
+        AttachCurrentThread(), java_observer_,
+        navigation_handle->GetJavaNavigationHandle());
+  } else if (base::FeatureList::IsEnabled(
+                 features::kNotifyJavaSpuriouslyToMeasurePerf)) {
+    Java_WebContentsObserverProxy_didFinishNavigationNoop(
+        AttachCurrentThread(), java_observer_,
+        navigation_handle->GetJavaNavigationHandle());
+  }
 }
 
 void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
@@ -211,7 +218,7 @@ void WebContentsObserverProxy::DidFinishLoad(RenderFrameHost* render_frame_host,
 
 void WebContentsObserverProxy::DOMContentLoaded(
     RenderFrameHost* render_frame_host) {
-  // TODO(crbug.com/1351884) Remove when NotifyJavaSupriouslyToMeasurePerf
+  // TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf
   // experiment is finished.
   TRACE_EVENT0("browser", "Java_WebContentsObserverProxy_DOMContentLoaded");
 

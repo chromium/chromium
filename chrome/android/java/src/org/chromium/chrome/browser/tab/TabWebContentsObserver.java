@@ -269,38 +269,46 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didFinishNavigation(NavigationHandle navigation) {
+        public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
             RewindableIterator<TabObserver> observers = mTab.getTabObservers();
             while (observers.hasNext()) {
-                observers.next().onDidFinishNavigation(mTab, navigation);
+                observers.next().onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
             }
 
             if (navigation.errorCode() != NetError.OK) {
-                if (navigation.isInPrimaryMainFrame()) mTab.didFailPageLoad(navigation.errorCode());
+                mTab.didFailPageLoad(navigation.errorCode());
             }
             mLastUrl = navigation.getUrl();
 
             if (!navigation.hasCommitted()) return;
 
-            if (navigation.isInPrimaryMainFrame()) {
-                if (!mTab.isDestroyed()) {
-                    TabStateAttributes.from(mTab).setIsTabStateDirty(true);
-                }
-                mTab.updateTitle();
-                mTab.handleDidFinishNavigation(navigation.getUrl(), navigation.pageTransition());
-                mTab.setIsShowingErrorPage(navigation.isErrorPage());
+            if (!mTab.isDestroyed()) {
+                TabStateAttributes.from(mTab).setIsTabStateDirty(true);
+            }
+            mTab.updateTitle();
+            mTab.handleDidFinishNavigation(navigation.getUrl(), navigation.pageTransition());
+            mTab.setIsShowingErrorPage(navigation.isErrorPage());
 
-                observers.rewind();
-                while (observers.hasNext()) {
-                    observers.next().onUrlUpdated(mTab);
-                }
+            observers.rewind();
+            while (observers.hasNext()) {
+                observers.next().onUrlUpdated(mTab);
             }
 
-            if (navigation.isInPrimaryMainFrame()) {
-                // Stop swipe-to-refresh animation.
-                SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
-                if (handler != null) handler.didStopRefreshing();
+            // Stop swipe-to-refresh animation.
+            SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
+            if (handler != null) handler.didStopRefreshing();
+        }
+
+        @Override
+        public void didFinishNavigationNoop(NavigationHandle navigation) {
+            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            while (observers.hasNext()) {
+                observers.next().onDidFinishNavigationNoop(mTab, navigation);
             }
+
+            // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
+            // didFinishNavigation has the same behavior as before.
+            mLastUrl = navigation.getUrl();
         }
 
         @Override

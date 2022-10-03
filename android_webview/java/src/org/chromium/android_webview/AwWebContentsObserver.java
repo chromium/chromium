@@ -120,18 +120,15 @@ public class AwWebContentsObserver extends WebContentsObserver {
     }
 
     @Override
-    public void didFinishNavigation(NavigationHandle navigation) {
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
         String url = navigation.getUrl().getPossiblyInvalidSpec();
         if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
-            processFailedLoad(
-                    navigation.isInPrimaryMainFrame(), navigation.errorCode(), navigation.getUrl());
+            processFailedLoad(true, navigation.errorCode(), navigation.getUrl());
         }
 
         if (!navigation.hasCommitted()) return;
 
         mCommittedNavigation = true;
-
-        if (!navigation.isInPrimaryMainFrame()) return;
 
         AwContentsClient client = mAwContentsClient.get();
         if (client != null) {

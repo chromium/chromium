@@ -71,9 +71,8 @@ public class QualityEnforcer {
 
     private final CustomTabTabObserver mTabObserver = new CustomTabTabObserver() {
         @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
-                    || navigation.isSameDocument()) {
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+            if (!navigation.hasCommitted() || navigation.isSameDocument()) {
                 return;
             }
 
@@ -102,6 +101,11 @@ public class QualityEnforcer {
                             newUrl.getSpec(), navigation.httpStatusCode());
                 }
             }
+        }
+
+        @Override
+        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+            if (!navigation.isInPrimaryMainFrame()) return;
         }
 
         @Override

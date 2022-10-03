@@ -152,10 +152,20 @@ class WebContentsObserverProxy extends WebContentsObserver {
 
     @Override
     @CalledByNative
-    public void didFinishNavigation(NavigationHandle navigation) {
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
         handleObserverCall();
         for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
-            mObserversIterator.next().didFinishNavigation(navigation);
+            mObserversIterator.next().didFinishNavigationInPrimaryMainFrame(navigation);
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
+    public void didFinishNavigationNoop(NavigationHandle navigation) {
+        handleObserverCall();
+        for (mObserversIterator.rewind(); mObserversIterator.hasNext();) {
+            mObserversIterator.next().didFinishNavigationNoop(navigation);
         }
         finishObserverCall();
     }

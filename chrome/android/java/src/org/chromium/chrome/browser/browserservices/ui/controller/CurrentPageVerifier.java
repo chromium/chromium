@@ -66,12 +66,14 @@ public class CurrentPageVerifier implements NativeInitObserver {
     /** A {@link TabObserver} that checks whether we are on a verified page on navigation. */
     private final CustomTabTabObserver mVerifyOnPageLoadObserver = new CustomTabTabObserver() {
         @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()
-                    || navigation.isSameDocument()) {
-                return;
-            }
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+            if (!navigation.hasCommitted() || navigation.isSameDocument()) return;
             verify(navigation.getUrl().getSpec());
+        }
+
+        @Override
+        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+            if (!navigation.isInPrimaryMainFrame()) return;
         }
 
         @Override

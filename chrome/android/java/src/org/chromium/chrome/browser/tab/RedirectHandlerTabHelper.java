@@ -95,7 +95,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
     }
 
     @Override
-    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+    public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
         if (navigation.isPageActivation()) {
             // Page Activations (e.g. for back/forward cache or Prerender) don't trigger
             // NavigationThrottles, so the RedirectHandler doesn't have insight into these
@@ -103,6 +103,13 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
             // part of the previous navigation chain.
             mRedirectHandler.clear();
         }
+    }
+
+    @Override
+    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
+        // didFinishNavigation has the same behavior as before.
+        onDidFinishNavigationInPrimaryMainFrame(tab, navigation);
     }
 
     @Override

@@ -416,7 +416,8 @@ public class CouponPersistedTabData extends PersistedTabData {
             }
 
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
                 String scheme = navigationHandle.getUrl().getScheme();
                 if (!scheme.equals(UrlConstants.HTTP_SCHEME)
                         && !scheme.equals(UrlConstants.HTTPS_SCHEME)) {
@@ -424,6 +425,13 @@ public class CouponPersistedTabData extends PersistedTabData {
                 }
                 resetCoupon();
                 prefetchOnNewNavigation(tab);
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+                // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
+                // didFinishNavigation has the same behavior as before.
+                onDidFinishNavigationInPrimaryMainFrame(tab, navigationHandle);
             }
         };
         tab.addObserver(mUrlUpdatedObserver);

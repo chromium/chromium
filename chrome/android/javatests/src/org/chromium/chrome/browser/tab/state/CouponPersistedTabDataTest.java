@@ -399,8 +399,8 @@ public class CouponPersistedTabDataTest {
                         EXPECTED_UNITS_GENERAL_CASE_AMOUNT, SERIALIZE_DESERIALIZE_DISCOUNT_TYPE);
         CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab, coupon);
         Assert.assertNotNull(couponPersistedTabData.getCoupon());
-        couponPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
-                tab, navigationHandle);
+        couponPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNull(couponPersistedTabData.getCoupon());
     }
 
@@ -418,8 +418,8 @@ public class CouponPersistedTabDataTest {
                         EXPECTED_UNITS_GENERAL_CASE_AMOUNT, SERIALIZE_DESERIALIZE_DISCOUNT_TYPE);
         CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab, coupon);
         Assert.assertNotNull(couponPersistedTabData.getCoupon());
-        couponPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
-                tab, navigationHandle);
+        couponPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNotNull(couponPersistedTabData.getCoupon());
     }
 

@@ -574,7 +574,6 @@ public class ShoppingPersistedTabDataTest {
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
         NavigationHandle navigationHandle = mock(NavigationHandle.class);
-        doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(navigationHandle).isSameDocument();
         doReturn(false).when(navigationHandle).isValidSearchFormUrl();
         doReturn(true).when(navigationHandle).hasCommitted();
@@ -586,8 +585,8 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.setCurrencyCode("USD");
         shoppingPersistedTabData.setPriceDropGurl(ShoppingPersistedTabDataTestUtils.DEFAULT_GURL);
         Assert.assertNotNull(shoppingPersistedTabData.getPriceDrop());
-        shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
-                tab, navigationHandle);
+        shoppingPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(tab, navigationHandle);
         Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
     }
 
@@ -724,12 +723,11 @@ public class ShoppingPersistedTabDataTest {
         Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID,
                 ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-        doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         GURL gurl = new GURL("https://www.google.com");
         doReturn(gurl).when(mNavigationHandle).getUrl();
         doReturn(true).when(mNavigationHandle).hasCommitted();
-        shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
-                tab, mNavigationHandle);
+        shoppingPersistedTabData.getUrlUpdatedObserverForTesting()
+                .onDidFinishNavigationInPrimaryMainFrame(tab, mNavigationHandle);
         ShoppingPersistedTabDataTestUtils.verifyOptimizationGuideCalledWithNavigationHandle(
                 mOptimizationGuideBridgeJniMock, gurl);
     }

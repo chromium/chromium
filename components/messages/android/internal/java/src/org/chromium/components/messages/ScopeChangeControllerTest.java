@@ -33,7 +33,6 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ScopeChangeControllerTest {
-    private static final boolean IS_MAIN_FRAME = true;
     private static final boolean IS_SAME_DOCUMENT = true;
     private static final boolean IS_RELOAD = true;
     private static final boolean DID_COMMIT = true;
@@ -87,36 +86,29 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.didFinishNavigation(
-                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandle(!IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called for a refresh"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(
-                createNavigationHandle(!IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for a subframe"))
-                .onScopeChange(any());
-
-        observer.didFinishNavigation(
-                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandle(!IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called for uncommitted navigations"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(
-                createNavigationHandle(IS_MAIN_FRAME, IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandle(IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called for same document navigations"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(
-                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandle(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
         expectedOnScopeChangeCalls++;
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
@@ -162,8 +154,8 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.didFinishNavigation(
-                createNavigationHandle(IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandle(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
         verify(delegate,
                 times(1).description("Delegate should not be called when navigation is ignored"))
                 .onScopeChange(any());
@@ -221,44 +213,37 @@ public class ScopeChangeControllerTest {
         Assert.assertEquals("Scope type should be inactive when page is hidden",
                 ChangeType.INACTIVE, captor.getValue().changeType);
 
-        observer.didFinishNavigation(createNavigationHandleWithUrl(
-                IS_MAIN_FRAME, !IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT, gurl1));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT, gurl1));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called for a refresh"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(createNavigationHandleWithUrl(
-                !IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl1));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for a subframe"))
-                .onScopeChange(any());
-
-        observer.didFinishNavigation(createNavigationHandleWithUrl(
-                IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT, gurl1));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT, gurl1));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called for uncommitted navigations"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(createNavigationHandleWithUrl(
-                IS_MAIN_FRAME, IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl1));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl1));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description("Delegate should not be called for same document navigations"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(createNavigationHandleWithUrl(
-                IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl2));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl2));
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
                         .description(
                                 "Delegate should be not called when page is navigated to same domain"))
                 .onScopeChange(any());
 
-        observer.didFinishNavigation(createNavigationHandleWithUrl(
-                IS_MAIN_FRAME, !IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl3));
+        observer.didFinishNavigationInPrimaryMainFrame(
+                createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl3));
         expectedOnScopeChangeCalls++;
         verify(delegate,
                 times(expectedOnScopeChangeCalls)
@@ -280,15 +265,14 @@ public class ScopeChangeControllerTest {
     }
 
     private NavigationHandle createNavigationHandle(
-            boolean isMainFrame, boolean isSameDocument, boolean isReload, boolean didCommit) {
-        return createNavigationHandleWithUrl(
-                isMainFrame, isSameDocument, isReload, didCommit, null);
+            boolean isSameDocument, boolean isReload, boolean didCommit) {
+        return createNavigationHandleWithUrl(isSameDocument, isReload, didCommit, null);
     }
 
-    private NavigationHandle createNavigationHandleWithUrl(boolean isMainFrame,
+    private NavigationHandle createNavigationHandleWithUrl(
             boolean isSameDocument, boolean isReload, boolean didCommit, GURL url) {
-        NavigationHandle handle = new NavigationHandle(0, url, null, null, isMainFrame,
-                isSameDocument, true, null, 0, false, false, false, false, -1, false, isReload);
+        NavigationHandle handle = new NavigationHandle(0, url, null, null, true, isSameDocument,
+                true, null, 0, false, false, false, false, -1, false, isReload);
         handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0, false);
         return handle;
     }

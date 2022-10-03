@@ -263,7 +263,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
         }
 
         @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
             mNavigationOccurred = true;
         }
     }

@@ -217,7 +217,7 @@ public interface TabObserver {
     void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle);
 
     /**
-     * TODO(crbug.com/1337446) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
      * No-op, for measuring performance of calling didStartNavigation in only the primary main
      * frame vs calling it in all frames.
      */
@@ -232,12 +232,20 @@ public interface TabObserver {
     void onDidRedirectNavigation(Tab tab, NavigationHandle navigationHandle);
 
     /**
-     * Called when a navigation is finished i.e. committed, aborted or replaced by a new one.
+     * Called when a navigation is finished i.e. committed, aborted or replaced by a new one, in the
+     * primary main frame.
      * @param tab The notifying {@link Tab}.
      * @param navigationHandle Pointer to a NavigationHandle representing the navigation.
      *                         Its lifetime end at the end of this function.
      */
-    void onDidFinishNavigation(Tab tab, NavigationHandle navigation);
+    void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation);
+
+    /**
+     * TODO(crbug.com/1351884) Remove when NotifyJavaSpuriouslyToMeasurePerf experiment is finished.
+     * No-op, for measuring performance of calling didFinishNavigation in only the primary main
+     * frame vs calling it in all frames.
+     */
+    void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle);
 
     /**
      * Called when the page has painted something non-empty.

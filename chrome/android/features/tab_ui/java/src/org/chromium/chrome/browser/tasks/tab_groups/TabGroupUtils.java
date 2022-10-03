@@ -132,8 +132,8 @@ public class TabGroupUtils {
 
         sTabModelSelectorTabObserver = new TabModelSelectorTabObserver(selector) {
             @Override
-            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
-                if (!navigationHandle.isInPrimaryMainFrame()) return;
+            public void onDidFinishNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
                 if (tab.isIncognito()) return;
                 if (!navigationHandle.hasCommitted()) return;
 
@@ -145,6 +145,11 @@ public class TabGroupUtils {
                             tab.getView(), null);
                     sTabModelSelectorTabObserver.destroy();
                 }
+            }
+
+            @Override
+            public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame()) return;
             }
         };
     }

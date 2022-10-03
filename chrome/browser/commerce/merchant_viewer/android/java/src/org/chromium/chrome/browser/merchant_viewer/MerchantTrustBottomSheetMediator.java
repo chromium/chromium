@@ -114,11 +114,16 @@ public class MerchantTrustBottomSheetMediator {
             }
 
             @Override
-            public void didFinishNavigation(NavigationHandle navigation) {
-                if (navigation.isInPrimaryMainFrame() && navigation.hasCommitted()) {
+            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                if (navigation.hasCommitted()) {
                     mToolbarModel.set(
                             BottomSheetToolbarProperties.URL, mWebContents.get().getVisibleUrl());
                 }
+            }
+
+            @Override
+            public void didFinishNavigationNoop(NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
         };
 

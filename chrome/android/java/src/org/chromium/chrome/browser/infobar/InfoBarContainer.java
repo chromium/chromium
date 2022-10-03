@@ -109,10 +109,15 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         }
 
         @Override
-        public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-            if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()) {
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+            if (navigation.hasCommitted()) {
                 setHidden(false);
             }
+        }
+
+        @Override
+        public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+            if (!navigation.isInPrimaryMainFrame()) return;
         }
 
         @Override

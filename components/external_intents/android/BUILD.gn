@@ -97,3 +97,40 @@ android_library("unit_device_javatests") {
     "//url:origin_java",
   ]
 }
+
+android_library("test_support_java") {
+  testonly = true
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  sources = [ "javatests/src/org/chromium/components/external_intents/TestChildFrameNavigationObserver.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_child_frame_navigation_observer.cc",
+    "test_child_frame_navigation_observer.h",
+  ]
+
+  deps = [
+    ":test_support_java_jni_headers",
+    "//base",
+    "//content/public/browser:browser",
+  ]
+}
+
+generate_jni("test_support_java_jni_headers") {
+  testonly = true
+
+  sources = [ "javatests/src/org/chromium/components/external_intents/TestChildFrameNavigationObserver.java" ]
+}

@@ -177,12 +177,17 @@ public class ActivityTabStartupMetricsTracker {
                     }
 
                     @Override
-                    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
+                    public void onDidFinishNavigationInPrimaryMainFrame(
+                            Tab tab, NavigationHandle navigation) {
                         boolean isTrackedPage = navigation.hasCommitted()
-                                && navigation.isInPrimaryMainFrame() && !navigation.isErrorPage()
-                                && !navigation.isSameDocument()
+                                && !navigation.isErrorPage() && !navigation.isSameDocument()
                                 && UrlUtilities.isHttpOrHttps(navigation.getUrl());
                         registerFinishNavigation(isTrackedPage);
+                    }
+
+                    @Override
+                    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+                        registerFinishNavigation(false);
                     }
                 };
         mPageLoadMetricsObserver = new PageLoadMetricsObserverImpl();
