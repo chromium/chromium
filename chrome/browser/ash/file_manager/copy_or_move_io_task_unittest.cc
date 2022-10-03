@@ -551,8 +551,11 @@ class CopyOrMoveIOTaskWithScansTest
 
       EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(source_url))
           .WillOnce(Return(iter->second));
-    } else if (auto iter = directory_scanning_expectations_.find(source_url);
-               iter != directory_scanning_expectations_.end()) {
+      return;
+    }
+
+    if (auto iter = directory_scanning_expectations_.find(source_url);
+        iter != directory_scanning_expectations_.end()) {
       // Scan for directory detected.
       EXPECT_CALL(*delegate, UploadData(_))
           .WillOnce(
@@ -569,11 +572,12 @@ class CopyOrMoveIOTaskWithScansTest
               .WillOnce(Return(scanning_expectation.second));
         }
       }
-    } else {
-      // Expect no scans if we set no expectation.
-      EXPECT_CALL(*delegate, UploadData(_)).Times(0);
-      EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(source_url)).Times(0);
+      return;
     }
+
+    // Expect no scans if we set no expectation.
+    EXPECT_CALL(*delegate, UploadData(_)).Times(0);
+    EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(source_url)).Times(0);
   }
 
   // Expect a scan for the file specified using `file_info`.
