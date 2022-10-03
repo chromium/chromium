@@ -252,12 +252,10 @@ class DropdownItemViewInfoListBuilder {
                 autocompleteResult.groupSuggestionsBySearchVsURL(
                         1, Math.min(numVisibleSuggestions, firstSuggestionWithHeader));
             }
+            mBuiltListHasFullyConcealedElements = (numVisibleSuggestions < suggestionsCount);
             if (numVisibleSuggestions < firstSuggestionWithHeader) {
-                mBuiltListHasFullyConcealedElements = true;
                 autocompleteResult.groupSuggestionsBySearchVsURL(
                         numVisibleSuggestions, firstSuggestionWithHeader);
-            } else {
-                mBuiltListHasFullyConcealedElements = false;
             }
         }
 
