@@ -444,8 +444,6 @@ try_.orchestrator_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     tryjob = try_.job(),
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
     experiments = {
         "remove_src_checkout_experiment": 100,
     },

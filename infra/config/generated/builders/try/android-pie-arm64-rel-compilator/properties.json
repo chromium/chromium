@@ -48,13 +48,6 @@
       }
     }
   },
-  "$build/code_coverage": {
-    "coverage_test_types": [
-      "unit",
-      "overall"
-    ],
-    "use_java_coverage": true
-  },
   "$build/flakiness": {
     "check_for_flakiness": true
   },

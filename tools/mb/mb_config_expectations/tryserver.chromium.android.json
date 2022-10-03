@@ -791,7 +791,6 @@
   "android-pie-arm64-rel": {
     "gn_args": {
       "android_static_analysis": "off",
-      "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "fail_on_android_expectations": true,
@@ -805,8 +804,7 @@
       "system_webview_package_name": "com.google.android.apps.chrome",
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true,
-      "use_jacoco_coverage": true
+      "use_goma": true
     }
   },
   "android-pie-arm64-wpt-rel-non-cq": {
