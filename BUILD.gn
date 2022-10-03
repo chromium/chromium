@@ -906,7 +906,7 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
       "//chrome:chrome",
       "//remoting/client",
       "//remoting/host:host",
-      "//tools/traffic_annotation/summary:annotations_xml",
+      "//tools/traffic_annotation:annotations_xml",
     ]
 
     if (is_win) {
@@ -920,7 +920,7 @@ if (is_chromeos_ash) {
     deps = [
       "//chrome",
       "//chromeos",
-      "//tools/traffic_annotation/summary:annotations_xml",
+      "//tools/traffic_annotation:annotations_xml",
     ]
   }
 }
@@ -931,7 +931,7 @@ if (is_android) {
   group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome/android:chrome_public_apk",
-      "//tools/traffic_annotation/summary:annotations_xml",
+      "//tools/traffic_annotation:annotations_xml",
     ]
   }
 }
