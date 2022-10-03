@@ -8,6 +8,10 @@
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace printing {
 
 // PrintBackendTest makes use of a real print backend instance, and thus will
@@ -64,10 +68,10 @@ TEST_F(PrintBackendTest, MANUAL_GetXmlPrinterCapabilitiesForXpsDriver) {
   EXPECT_EQ(GetPrintBackend()->EnumeratePrinters(printer_list),
             mojom::ResultCode::kSuccess);
   for (const auto& printer : printer_list) {
-    std::string capabilities;
-    EXPECT_EQ(GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
-                  printer.printer_name, capabilities),
-              mojom::ResultCode::kSuccess);
+    base::expected<std::string, mojom::ResultCode> result =
+        GetPrintBackend()->GetXmlPrinterCapabilitiesForXpsDriver(
+            printer.printer_name);
+    EXPECT_TRUE(result.has_value());
   }
 }
 

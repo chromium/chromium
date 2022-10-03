@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_hglobal.h"
@@ -474,14 +475,16 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
   return base::MakeRefCounted<PrintBackendWin>();
 }
 
-mojom::ResultCode PrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
-    const std::string& printer_name,
-    std::string& capabilities) {
+base::expected<std::string, mojom::ResultCode>
+PrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
+    const std::string& printer_name) {
   ScopedXPSInitializer xps_initializer;
   CHECK(xps_initializer.initialized());
 
-  if (!IsValidPrinter(printer_name))
-    return GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode());
+  if (!IsValidPrinter(printer_name)) {
+    return base::unexpected(
+        GetResultCodeFromSystemErrorCode(logging::GetLastSystemErrorCode()));
+  }
 
   HPTPROVIDER provider = nullptr;
   std::wstring wide_printer_name = base::UTF8ToWide(printer_name);
@@ -490,14 +493,14 @@ mojom::ResultCode PrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
   ScopedProvider scoped_provider(provider);
   if (FAILED(hr) || !provider) {
     LOG(ERROR) << "Failed to open provider";
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
   Microsoft::WRL::ComPtr<IStream> print_capabilities_stream;
   hr = CreateStreamOnHGlobal(/*hGlobal=*/nullptr, /*fDeleteOnRelease=*/TRUE,
                              &print_capabilities_stream);
   if (FAILED(hr) || !print_capabilities_stream.Get()) {
     LOG(ERROR) << "Failed to create stream";
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
   base::win::ScopedBstr error;
   hr = XPSModule::GetPrintCapabilities(provider, /*print_ticket=*/nullptr,
@@ -508,17 +511,19 @@ mojom::ResultCode PrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
 
     // Failures from getting print capabilities don't give a system error,
     // so just indicate general failure.
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
-  hr = StreamOnHGlobalToString(print_capabilities_stream.Get(), &capabilities);
+  std::string capabilities_xml;
+  hr = StreamOnHGlobalToString(print_capabilities_stream.Get(),
+                               &capabilities_xml);
 
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to convert stream to string";
-    return mojom::ResultCode::kFailed;
+    return base::unexpected(mojom::ResultCode::kFailed);
   }
   DVLOG(2) << "Printer capabilities info: Name = " << printer_name
-           << ", capabilities = " << capabilities;
-  return mojom::ResultCode::kSuccess;
+           << ", capabilities = " << capabilities_xml;
+  return capabilities_xml;
 }
 
 }  // namespace printing

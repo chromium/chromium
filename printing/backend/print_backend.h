@@ -20,6 +20,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 // This is the interface for platform-specific code for a print backend
 namespace printing {
 
@@ -256,9 +260,9 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 #if BUILDFLAG(IS_WIN)
 
   // This method uses the XPS API to get the printer capabilities.
-  mojom::ResultCode GetXmlPrinterCapabilitiesForXpsDriver(
-      const std::string& printer_name,
-      std::string& capabilities);
+  // Returns raw XML string on success, or mojom::ResultCode on failure.
+  base::expected<std::string, mojom::ResultCode>
+  GetXmlPrinterCapabilitiesForXpsDriver(const std::string& printer_name);
 
 #endif  // BUILDFLAG(IS_WIN)
 
