@@ -40452,7 +40452,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3380" label="EmailFieldFilled_PredictedTypeMatch"/>
   <int value="3381" label="PhoneFieldFilled_PredictedTypeMatch"/>
   <int value="3382" label="EmailFieldFilled_PatternMatch"/>
-  <int value="3383" label="LastLetterSpacingAffectsRendering"/>
+  <int value="3383" label="OBSOLETE_LastLetterSpacingAffectsRendering"/>
   <int value="3384" label="V8FontData_GetTables_Method"/>
   <int value="3385" label="V8FontData_Blob_Method"/>
   <int value="3386" label="OBSOLETE_V8FontManager_Query_Method"/>

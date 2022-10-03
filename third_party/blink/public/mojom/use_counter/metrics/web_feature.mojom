@@ -2686,7 +2686,7 @@ enum WebFeature {
   kEmailFieldFilled_PredictedTypeMatch = 3380,
   kPhoneFieldFilled_PredictedTypeMatch = 3381,
   kEmailFieldFilled_PatternMatch = 3382,
-  kLastLetterSpacingAffectsRendering = 3383,
+  kOBSOLETE_LastLetterSpacingAffectsRendering = 3383,
   kV8FontData_GetTables_Method = 3384,
   kV8FontData_Blob_Method = 3385,
   kOBSOLETE_V8FontManager_Query_Method = 3386,

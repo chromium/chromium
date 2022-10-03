@@ -116,11 +116,6 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   bool UseFirstLineStyle() const;
   void CheckConsistency() const;
 
-  bool ShouldReportLetterSpacingUseCounterForTesting(
-      const LayoutObject* layout_object,
-      bool first_line,
-      const LayoutBlockFlow* block_flow);
-
   // This function is available after PrepareLayout(), only for SVG <text>.
   const Vector<std::pair<unsigned, NGSvgCharacterData>>& SvgCharacterDataList()
       const;

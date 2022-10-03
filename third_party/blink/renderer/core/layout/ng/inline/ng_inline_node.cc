@@ -72,87 +72,6 @@ float CalculateWidthForTextCombine(const NGInlineItemsData& data) {
       });
 }
 
-bool IsLeftAligned(const ComputedStyle& style) {
-  switch (style.GetTextAlign()) {
-    case ETextAlign::kStart:
-      return IsLtr(style.Direction());
-    case ETextAlign::kEnd:
-      return IsRtl(style.Direction());
-    case ETextAlign::kLeft:
-    case ETextAlign::kWebkitLeft:
-      return true;
-    case ETextAlign::kCenter:
-    case ETextAlign::kWebkitCenter:
-    case ETextAlign::kJustify:
-    case ETextAlign::kRight:
-    case ETextAlign::kWebkitRight:
-      return false;
-  }
-  NOTREACHED();
-  return false;
-}
-
-bool HasLetterSpacingWorkAround(const LayoutObject* layout_object,
-                                bool first_line,
-                                const LayoutBlockFlow* block_flow) {
-  // All we need to know is whether it computes to 0 or not, so any
-  // |maxmimum_value| can work.
-  const LayoutUnit maximum_value(100);
-  if (MinimumValueForLength(block_flow->StyleRef(first_line).TextIndent(),
-                            maximum_value))
-    return true;
-
-  // Margin/padding maybe applied to <span> or to the containing block. Sum up
-  // to the containing block. ex.:
-  //   <div style="letter-spacing: 1em">
-  //     <span style="margin-left: 1em>text</span>
-  //   </div>
-  LayoutUnit margin_padding_start;
-  LayoutUnit margin_padding_end;
-  DCHECK(!layout_object->IsText());
-  for (;; layout_object = layout_object->Parent()) {
-    const ComputedStyle& style = layout_object->StyleRef(first_line);
-    if (style.MayHavePadding() || style.MayHaveMargin()) {
-      margin_padding_start +=
-          MinimumValueForLength(style.MarginStart(), maximum_value) +
-          MinimumValueForLength(style.PaddingStart(), maximum_value);
-      margin_padding_end +=
-          MinimumValueForLength(style.MarginEnd(), maximum_value) +
-          MinimumValueForLength(style.PaddingEnd(), maximum_value);
-    }
-    if (layout_object == block_flow)
-      break;
-  }
-  return margin_padding_start != margin_padding_end;
-}
-
-bool ShouldReportLetterSpacingUseCounter(const LayoutObject* layout_object,
-                                         bool first_line,
-                                         const LayoutBlockFlow* block_flow) {
-  DCHECK(layout_object->IsText());
-  layout_object = layout_object->Parent();
-  const ComputedStyle& style = layout_object->StyleRef(first_line);
-  DCHECK(style.GetFont().GetFontDescription().LetterSpacing());
-
-  // Count only when the containing block has `letter-spacing`. For now, we
-  // don't count cases like:
-  //   <div><span style="letter-spacing: 1em">text</span></div>
-  const ComputedStyle& block_style = block_flow->StyleRef(first_line);
-  if (layout_object != block_flow &&
-      !block_style.GetFont().GetFontDescription().LetterSpacing())
-    return false;
-
-  if (((layout_object->HasBoxDecorationBackground() ||
-        block_flow->HasBoxDecorationBackground() ||
-        !IsLeftAligned(block_style)) &&
-       HasLetterSpacingWorkAround(layout_object, first_line, block_flow)) ||
-      // Workaround for `text-decoration` is complicated, just include all.
-      !style.AppliedTextDecorations().empty())
-    return true;
-
-  return false;
-}
-
 // Estimate the number of NGInlineItem to minimize the vector expansions.
 unsigned EstimateInlineItemsCount(const LayoutBlockFlow& block) {
   unsigned count = 0;
@@ -1477,14 +1396,6 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
     if (UNLIKELY(spacing.SetSpacing(font.GetFontDescription()))) {
       DCHECK(!IsTextCombine()) << GetLayoutBlockFlow();
       shape_result->ApplySpacing(spacing);
-      if (spacing.LetterSpacing() &&
-          ShouldReportLetterSpacingUseCounter(
-              start_item.GetLayoutObject(),
-              start_item.StyleVariant() == NGStyleVariant::kFirstLine,
-              GetLayoutBlockFlow())) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kLastLetterSpacingAffectsRendering);
-      }
     }
 
     // If the text is from one item, use the ShapeResult as is.
@@ -2041,14 +1952,6 @@ void NGInlineNode::CheckConsistency() const {
            item.Style() == item.GetLayoutObject()->Style());
   }
 #endif
-}
-
-bool NGInlineNode::ShouldReportLetterSpacingUseCounterForTesting(
-    const LayoutObject* layout_object,
-    bool first_line,
-    const LayoutBlockFlow* block_flow) {
-  return ShouldReportLetterSpacingUseCounter(layout_object, first_line,
-                                             block_flow);
 }
 
 const Vector<std::pair<unsigned, NGSvgCharacterData>>&
