@@ -1158,6 +1158,17 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         _THIRD_PARTY_EXCEPT_BLINK,
       ],
     ),
+    BanRule(
+      r'base::Feature k',
+      (
+          'Please use BASE_DECLARE_FEATURE() or BASE_FEATURE() instead of ',
+          'directly declaring/defining features.'
+      ),
+      True,
+      [
+        _THIRD_PARTY_EXCEPT_BLINK,
+      ],
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
