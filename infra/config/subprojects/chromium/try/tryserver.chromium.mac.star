@@ -309,8 +309,9 @@ ios_builder(
     cpu = cpu.ARM64,
 )
 
-ios_builder(
+try_.orchestrator_builder(
     name = "ios-simulator",
+    compilator = "ios-simulator-compilator",
     branch_selector = branches.STANDARD_MILESTONE,
     mirrors = [
         "ci/ios-simulator",
@@ -322,8 +323,26 @@ ios_builder(
     coverage_test_types = ["overall", "unit"],
     tryjob = try_.job(),
     experiments = {
+        "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
     },
+    use_orchestrator_pool = True,
+)
+
+try_.compilator_builder(
+    name = "ios-simulator-compilator",
+    builderless = False,
+    check_for_flakiness = True,
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    experiments = {
+        "luci.buildbucket.omit_python2": 100,
+    },
+    os = os.MAC_DEFAULT,
+    ssd = None,
+    xcode = xcode.x14main,
 )
 
 ios_builder(

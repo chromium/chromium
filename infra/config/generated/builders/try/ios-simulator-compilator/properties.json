@@ -1,8 +1,4 @@
 {
-  "$build/chromium_orchestrator": {
-    "compilator": "ios-simulator-compilator",
-    "compilator_watcher_git_revision": "7809a690bbd935bcb3b4d922e24cabe168aaabc8"
-  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -57,6 +53,12 @@
   "$build/flakiness": {
     "check_for_flakiness": true
   },
+  "$build/goma": {
+    "jobs": 150,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -65,5 +67,10 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
-  "recipe": "chromium/orchestrator"
+  "orchestrator": {
+    "builder_group": "tryserver.chromium.mac",
+    "builder_name": "ios-simulator"
+  },
+  "recipe": "chromium/compilator",
+  "xcode_build_version": "14a5294g"
 }
