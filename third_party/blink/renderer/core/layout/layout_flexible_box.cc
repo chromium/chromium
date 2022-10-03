@@ -962,7 +962,8 @@ bool LayoutFlexibleBox::CanAvoidLayoutForNGChild(const LayoutBox& child) const {
   // If the last layout was done with a different override size, or different
   // definite-ness, we need to force-relayout so that percentage sizes are
   // resolved correctly.
-  const NGLayoutResult* cached_layout_result = child.GetCachedLayoutResult();
+  const NGLayoutResult* cached_layout_result =
+      child.GetSingleCachedLayoutResult();
   if (!cached_layout_result)
     return false;
 

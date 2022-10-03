@@ -75,6 +75,14 @@ inline bool InvolvedInBlockFragmentation(const NGBoxFragmentBuilder& builder) {
          IsResumingLayout(builder.PreviousBreakToken());
 }
 
+// Return the fragment index (into the layout results vector in LayoutBox),
+// based on incoming break token.
+inline wtf_size_t FragmentIndex(const NGBlockBreakToken* incoming_break_token) {
+  if (incoming_break_token && !incoming_break_token->IsBreakBefore())
+    return incoming_break_token->SequenceNumber() + 1;
+  return 0;
+}
+
 // Calculate the final "break-between" value at a class A or C breakpoint. This
 // is the combination of all break-before and break-after values that met at the
 // breakpoint.

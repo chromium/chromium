@@ -271,7 +271,8 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
 
   // Update the layout results vector in LayoutBox with the new result.
   void StoreResultInLayoutBox(const NGLayoutResult*,
-                              const NGBlockBreakToken*) const;
+                              const NGBlockBreakToken*,
+                              bool clear_trailing_results = false) const;
 
   // After we run the layout algorithm, this function copies back the geometry
   // data to the layout box.

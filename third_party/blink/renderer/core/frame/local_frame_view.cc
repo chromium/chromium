@@ -1472,7 +1472,7 @@ static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
     // pre-layout, but also clearing |NeedsLayout()| without updating
     // |CachedLayoutResult| is harmful.
     if (const auto* box = DynamicTo<LayoutBox>(root)) {
-      if (box->GetCachedLayoutResult())
+      if (box->GetSingleCachedLayoutResult())
         return false;
     }
   }

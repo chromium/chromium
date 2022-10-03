@@ -1587,7 +1587,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
             .ClampNegativeToZero();
 
     NGConstraintSpace child_space = CreateConstraintSpaceForChild(
-        child, child_data,
+        child, child_break_token, child_data,
         {child_available_inline_size, ChildAvailableSize().block_size},
         /* is_new_fc */ true, opportunity.rect.start_offset.block_offset);
 
@@ -1745,8 +1745,9 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
                        /* is_new_fc */ false);
   child_data.is_pushed_by_floats = is_pushed_by_floats;
   NGConstraintSpace child_space = CreateConstraintSpaceForChild(
-      child, child_data, ChildAvailableSize(), /* is_new_fc */ false,
-      forced_bfc_block_offset, has_clearance_past_adjoining_floats,
+      child, child_break_token, child_data, ChildAvailableSize(),
+      /* is_new_fc */ false, forced_bfc_block_offset,
+      has_clearance_past_adjoining_floats,
       previous_inflow_position->block_end_annotation_space);
   auto minimum_top = CreateMinimumTopScopeForChild(child, child_data);
   const NGLayoutResult* layout_result =
@@ -1935,8 +1936,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     child_data->is_pushed_by_floats = layout_result->IsPushedByFloats();
 
     NGConstraintSpace new_child_space = CreateConstraintSpaceForChild(
-        child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
-        child_bfc_block_offset);
+        child, child_break_token, *child_data, ChildAvailableSize(),
+        /* is_new_fc */ false, child_bfc_block_offset);
     auto minimum_top = CreateMinimumTopScopeForChild(child, *child_data);
     layout_result =
         LayoutInflow(new_child_space, child_break_token, early_break_,
@@ -1957,8 +1958,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
              !layout_result->IsPushedByFloats());
 
       new_child_space = CreateConstraintSpaceForChild(
-          child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
-          child_bfc_block_offset);
+          child, child_break_token, *child_data, ChildAvailableSize(),
+          /* is_new_fc */ false, child_bfc_block_offset);
       auto minimum_top2 = CreateMinimumTopScopeForChild(child, *child_data);
       layout_result = LayoutInflow(new_child_space, child_break_token,
                                    early_break_, column_spanner_path_, &child,
@@ -2610,6 +2611,7 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
 
 NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     const NGLayoutInputNode child,
+    const NGBreakToken* child_break_token,
     const NGInflowChildData& child_data,
     const LogicalSize child_available_size,
     bool is_new_fc,
@@ -2673,22 +2675,25 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     // to the child algorithm for where floats should be placed. If it doesn't
     // have this flag, or gets this estimate wrong, it'll relayout with the
     // appropriate "forced" BFC block-offset.
-    if (child.IsBlock() && child.GetLayoutBox()->GetCachedLayoutResult()) {
-      const auto& prev_space = child.GetLayoutBox()
-                                   ->GetCachedLayoutResult()
-                                   ->GetConstraintSpaceForCaching();
+    if (child.IsBlock()) {
+      if (const NGLayoutResult* cached_result =
+              child.GetLayoutBox()->GetCachedLayoutResult(
+                  To<NGBlockBreakToken>(child_break_token))) {
+        const auto& prev_space = cached_result->GetConstraintSpaceForCaching();
 
-      // To increase the hit-rate we adjust the previous "optimistic"/"forced"
-      // BFC block-offset by how much the child has shifted from the previous
-      // layout.
-      LayoutUnit bfc_block_delta = child_data.bfc_offset_estimate.block_offset -
-                                   prev_space.BfcOffset().block_offset;
-      if (prev_space.ForcedBfcBlockOffset()) {
-        builder.SetOptimisticBfcBlockOffset(*prev_space.ForcedBfcBlockOffset() +
-                                            bfc_block_delta);
-      } else if (prev_space.OptimisticBfcBlockOffset()) {
-        builder.SetOptimisticBfcBlockOffset(
-            *prev_space.OptimisticBfcBlockOffset() + bfc_block_delta);
+        // To increase the hit-rate we adjust the previous "optimistic"/"forced"
+        // BFC block-offset by how much the child has shifted from the previous
+        // layout.
+        LayoutUnit bfc_block_delta =
+            child_data.bfc_offset_estimate.block_offset -
+            prev_space.BfcOffset().block_offset;
+        if (prev_space.ForcedBfcBlockOffset()) {
+          builder.SetOptimisticBfcBlockOffset(
+              *prev_space.ForcedBfcBlockOffset() + bfc_block_delta);
+        } else if (prev_space.OptimisticBfcBlockOffset()) {
+          builder.SetOptimisticBfcBlockOffset(
+              *prev_space.OptimisticBfcBlockOffset() + bfc_block_delta);
+        }
       }
     }
   } else if (ConstraintSpace().OptimisticBfcBlockOffset()) {
@@ -3159,7 +3164,8 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
       ComputeChildData(previous_inflow_position, placeholder,
                        /* child_break_token */ nullptr, is_new_fc);
   const NGConstraintSpace space = CreateConstraintSpaceForChild(
-      placeholder, child_data, available_size, is_new_fc);
+      placeholder, /* child_break_token */ nullptr, child_data, available_size,
+      is_new_fc);
 
   auto minimum_top = CreateMinimumTopScopeForChild(placeholder, child_data);
   const NGLayoutResult* result = placeholder.Layout(space);

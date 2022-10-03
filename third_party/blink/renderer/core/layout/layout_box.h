@@ -49,6 +49,7 @@ class LayoutBlockFlow;
 class LayoutMultiColumnSpannerPlaceholder;
 class NGBoxFragmentBuilder;
 class NGBlockBreakToken;
+class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
 class NGLayoutResult;
@@ -1182,7 +1183,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void InvalidateItems(const NGLayoutResult&);
 
-  void SetCachedLayoutResult(const NGLayoutResult*);
+  void SetCachedLayoutResult(const NGLayoutResult*, wtf_size_t index);
 
   // Store one layout result (with its physical fragment) at the specified
   // index.
@@ -1235,8 +1236,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     SetShouldDoFullPaintInvalidation();
   }
 
-  const NGLayoutResult* GetCachedLayoutResult() const;
+  const NGLayoutResult* GetCachedLayoutResult(const NGBlockBreakToken*) const;
   const NGLayoutResult* GetCachedMeasureResult() const;
+
+  // Call in situations where we know that there's at most one fragment. A
+  // DCHECK will fail if there are multiple fragments.
+  const NGLayoutResult* GetSingleCachedLayoutResult() const;
 
   // Returns the last layout result for this block flow with the given
   // constraint space and break token, or null if it is not up-to-date or
@@ -1252,6 +1257,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const NGConstraintSpace&,
       const NGBlockBreakToken*,
       const NGEarlyBreak*,
+      const NGColumnSpannerPath*,
       absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
       NGLayoutCacheStatus* out_cache_status);
 

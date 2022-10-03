@@ -208,7 +208,12 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   LayoutUnit block_size = fragment_geometry.border_box_size.block_size;
   bool is_initial_block_size_indefinite = block_size == kIndefiniteSize;
   if (is_initial_block_size_indefinite) {
-    LayoutUnit intrinsic_block_size = layout_result.IntrinsicBlockSize();
+    LayoutUnit intrinsic_block_size;
+    // Intrinsic block-size is only defined if the node is unfragmented.
+    if (!physical_fragment.IsFirstForNode() || physical_fragment.BreakToken())
+      intrinsic_block_size = kIndefiniteSize;
+    else
+      intrinsic_block_size = layout_result.IntrinsicBlockSize();
 
     // Grid/flex/fieldset can have their children calculate their size based on
     // their parent's final block-size. E.g.

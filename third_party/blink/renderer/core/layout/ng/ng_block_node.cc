@@ -107,12 +107,6 @@ inline LayoutMultiColumnFlowThread* GetFlowThread(const LayoutBox& box) {
   return GetFlowThread(DynamicTo<LayoutBlockFlow>(box));
 }
 
-inline wtf_size_t FragmentIndex(const NGBlockBreakToken* incoming_break_token) {
-  if (incoming_break_token && !incoming_break_token->IsBreakBefore())
-    return incoming_break_token->SequenceNumber() + 1;
-  return 0;
-}
-
 // The entire purpose of this function is to avoid allocating space on the stack
 // for all layout algorithms for each node we lay out. Therefore it must not be
 // inline.
@@ -405,7 +399,8 @@ const NGLayoutResult* NGBlockNode::Layout(
   // internal shared vector.
   // In order for the caching logic to work correctly we need to set the
   // pointer to the value previous shared vector.
-  if (const NGLayoutResult* previous_result = box_->GetCachedLayoutResult()) {
+  if (const NGLayoutResult* previous_result =
+          box_->GetCachedLayoutResult(break_token)) {
     constraint_space.ExclusionSpace().PreInitialize(
         previous_result->GetConstraintSpaceForCaching().ExclusionSpace());
   }
@@ -420,9 +415,9 @@ const NGLayoutResult* NGBlockNode::Layout(
   // before attempting to hit the cache.
   bool needed_layout = box_->NeedsLayout();
 
-  const NGLayoutResult* layout_result =
-      box_->CachedLayoutResult(constraint_space, break_token, early_break,
-                               &fragment_geometry, &cache_status);
+  const NGLayoutResult* layout_result = box_->CachedLayoutResult(
+      constraint_space, break_token, early_break, column_spanner_path,
+      &fragment_geometry, &cache_status);
   if (cache_status == NGLayoutCacheStatus::kHit) {
     DCHECK(layout_result);
 
@@ -475,9 +470,9 @@ const NGLayoutResult* NGBlockNode::Layout(
       // Try the cache again. Container query matching may have affected
       // elements in the subtree, so that we need full layout instead of
       // simplified layout, for instance.
-      layout_result =
-          box_->CachedLayoutResult(constraint_space, break_token, early_break,
-                                   &fragment_geometry, &cache_status);
+      layout_result = box_->CachedLayoutResult(
+          constraint_space, break_token, early_break, column_spanner_path,
+          &fragment_geometry, &cache_status);
     }
   }
 
@@ -636,7 +631,7 @@ const NGLayoutResult* NGBlockNode::Layout(
 
 const NGLayoutResult* NGBlockNode::SimplifiedLayout(
     const NGPhysicalFragment& previous_fragment) const {
-  const NGLayoutResult* previous_result = box_->GetCachedLayoutResult();
+  const NGLayoutResult* previous_result = box_->GetSingleCachedLayoutResult();
   DCHECK(previous_result);
 
   // We might be be trying to perform simplfied layout on a fragment in the
@@ -767,7 +762,13 @@ const NGLayoutResult* NGBlockNode::CachedLayoutResultForOutOfFlowPositioned(
   if (box_->NeedsLayout())
     return nullptr;
 
-  const NGLayoutResult* cached_layout_result = box_->GetCachedLayoutResult();
+  // If there are multiple fragments, we wouldn't know which one to use, since
+  // no break token is passed.
+  if (box_->PhysicalFragmentCount() > 1)
+    return nullptr;
+
+  const NGLayoutResult* cached_layout_result =
+      box_->GetSingleCachedLayoutResult();
   if (!cached_layout_result)
     return nullptr;
 
@@ -872,7 +873,16 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
 #endif
   }
 
-  StoreResultInLayoutBox(layout_result, break_token);
+  // If we miss the cache for one result (fragment), we need to clear the
+  // remaining ones, to make sure that we don't hit the cache for subsequent
+  // fragments. If we re-lay out (which is what we just did), there's no way to
+  // tell what happened in this subtree. Some fragment vector in the subtree may
+  // have been tampered with, which would cause trouble if we start hitting the
+  // cache again later on.
+  bool clear_trailing_results =
+      break_token || box_->PhysicalFragmentCount() > 1;
+
+  StoreResultInLayoutBox(layout_result, break_token, clear_trailing_results);
 
   if (block_flow) {
     const NGFragmentItems* items = physical_fragment.Items();
@@ -910,13 +920,14 @@ void NGBlockNode::FinishLayout(LayoutBlockFlow* block_flow,
   CopyFragmentDataToLayoutBox(constraint_space, *layout_result, break_token);
 }
 
-void NGBlockNode::StoreResultInLayoutBox(
-    const NGLayoutResult* result,
-    const NGBlockBreakToken* break_token) const {
+void NGBlockNode::StoreResultInLayoutBox(const NGLayoutResult* result,
+                                         const NGBlockBreakToken* break_token,
+                                         bool clear_trailing_results) const {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
+  wtf_size_t fragment_idx = 0;
 
   if (fragment.IsOnlyForNode()) {
-    box_->SetCachedLayoutResult(std::move(result));
+    box_->SetCachedLayoutResult(std::move(result), 0);
   } else {
     // Add all layout results (and fragments) generated from a node to a list in
     // the layout object. Some extra care is required to correctly overwrite
@@ -924,8 +935,12 @@ void NGBlockNode::StoreResultInLayoutBox(
     // token corresponds with the fragment index in the layout object (off by 1,
     // though). When writing back a layout result, we remove any fragments in
     // the layout box at higher indices than that of the one we're writing back.
-    box_->SetLayoutResult(std::move(result), FragmentIndex(break_token));
+    fragment_idx = FragmentIndex(break_token);
+    box_->SetLayoutResult(std::move(result), fragment_idx);
   }
+
+  if (clear_trailing_results)
+    box_->ShrinkLayoutResults(fragment_idx + 1);
 }
 
 MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
@@ -1874,7 +1889,7 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
   DCHECK(!constraint_space.HasBlockFragmentation() ||
          box_->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks);
 
-  const NGLayoutResult* old_layout_result = box_->GetCachedLayoutResult();
+  const NGLayoutResult* old_layout_result = box_->GetSingleCachedLayoutResult();
   const NGLayoutResult* old_measure_result = box_->GetCachedMeasureResult();
 
   const NGLayoutResult* layout_result =
@@ -1960,12 +1975,12 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
       // UpdateAfterLayout() did.
       box_->RestoreLegacyLayoutResults(old_measure_result, old_layout_result);
 
-      box_->SetCachedLayoutResult(layout_result);
+      box_->SetCachedLayoutResult(layout_result, 0);
 
       // If |SetCachedLayoutResult| did not update cached |LayoutResult|,
       // |NeedsLayout()| flag should not be cleared.
       if (needed_layout) {
-        if (layout_result != box_->GetCachedLayoutResult()) {
+        if (layout_result != box_->GetSingleCachedLayoutResult()) {
           // TODO(kojii): If we failed to update CachedLayoutResult for other
           // reasons, we'd like to review it.
           NOTREACHED();
@@ -1988,7 +2003,7 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
           *layout_result, constraint_space, layout_result->EndMarginStrut(),
           layout_result->BfcLineOffset(), layout_result->BfcBlockOffset(),
           LayoutUnit() /* block_offset_delta */);
-      box_->SetCachedLayoutResult(layout_result);
+      box_->SetCachedLayoutResult(layout_result, 0);
     }
   }
 

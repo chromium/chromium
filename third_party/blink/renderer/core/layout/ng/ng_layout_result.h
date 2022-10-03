@@ -709,6 +709,7 @@ class CORE_EXPORT NGLayoutResult final
           // This will initialize "both" members of the union.
           tallest_unbreakable_block_size(
               rare_data.tallest_unbreakable_block_size),
+          block_size_for_fragmentation(rare_data.block_size_for_fragmentation),
           exclusion_space(rare_data.exclusion_space),
           custom_layout_data(rare_data.custom_layout_data),
           annotation_overflow(rare_data.annotation_overflow),

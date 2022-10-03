@@ -1013,7 +1013,7 @@ void LayoutBox::UpdateFromStyle() {
 void LayoutBox::LayoutSubtreeRoot() {
   NOT_DESTROYED();
   if (RuntimeEnabledFeatures::LayoutNGEnabled() && !IsLayoutNGObject() &&
-      GetCachedLayoutResult()) {
+      GetSingleCachedLayoutResult()) {
     // If this object is laid out by the legacy engine, while its containing
     // block is laid out by NG, it means that we normally (when laying out
     // starting at the real root, i.e. LayoutView) enter layout of this object
@@ -1027,7 +1027,7 @@ void LayoutBox::LayoutSubtreeRoot() {
     // Make a copy of the cached constraint space, since we'll overwrite the
     // layout result object as part of performing layout.
     auto constraint_space =
-        GetCachedLayoutResult()->GetConstraintSpaceForCaching();
+        GetSingleCachedLayoutResult()->GetConstraintSpaceForCaching();
 
     NGBlockNode(this).Layout(constraint_space);
 
@@ -3264,13 +3264,15 @@ bool LayoutBox::NGPhysicalFragmentList::Contains(
   return IndexOf(fragment) != kNotFound;
 }
 
-void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
+void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result,
+                                      wtf_size_t index) {
   NOT_DESTROYED();
-  DCHECK(!result->PhysicalFragment().BreakToken());
-  DCHECK(To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
-
   if (result->GetConstraintSpaceForCaching().CacheSlot() ==
       NGCacheSlot::kMeasure) {
+    DCHECK(!result->PhysicalFragment().BreakToken());
+    DCHECK(
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode());
+    DCHECK_EQ(index, 0u);
     // We don't early return here, when setting the "measure" result we also
     // set the "layout" result.
     if (measure_result_)
@@ -3297,7 +3299,7 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
         .SetFragmentChildrenInvalid();
   }
 
-  SetLayoutResult(std::move(result), 0);
+  SetLayoutResult(result, index);
 }
 
 void LayoutBox::SetLayoutResult(const NGLayoutResult* result,
@@ -3455,17 +3457,15 @@ void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
   ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
 }
 
-const NGLayoutResult* LayoutBox::GetCachedLayoutResult() const {
+const NGLayoutResult* LayoutBox::GetCachedLayoutResult(
+    const NGBlockBreakToken* break_token) const {
   NOT_DESTROYED();
-  if (layout_results_.empty())
+  wtf_size_t index = FragmentIndex(break_token);
+  if (index >= layout_results_.size())
     return nullptr;
-  // Only return re-usable results.
-  const NGLayoutResult* result = layout_results_[0];
-  if (!To<NGPhysicalBoxFragment>(result->PhysicalFragment()).IsOnlyForNode())
-    return nullptr;
+  const NGLayoutResult* result = layout_results_[index];
   DCHECK(!result->PhysicalFragment().IsLayoutObjectDestroyedOrMoved() ||
          BeingDestroyed());
-  DCHECK_EQ(layout_results_.size(), 1u);
   return result;
 }
 
@@ -3479,6 +3479,11 @@ const NGLayoutResult* LayoutBox::GetCachedMeasureResult() const {
     return nullptr;
 
   return measure_result_;
+}
+
+const NGLayoutResult* LayoutBox::GetSingleCachedLayoutResult() const {
+  DCHECK_LE(layout_results_.size(), 1u);
+  return GetCachedLayoutResult(nullptr);
 }
 
 const NGLayoutResult* LayoutBox::GetLayoutResult(wtf_size_t i) const {

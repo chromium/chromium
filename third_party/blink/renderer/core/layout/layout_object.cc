@@ -1273,8 +1273,12 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
       return false;
 
     if (const NGLayoutResult* layout_result =
-            layout_box->GetCachedLayoutResult()) {
+            layout_box->GetCachedLayoutResult(nullptr)) {
       const NGPhysicalFragment& fragment = layout_result->PhysicalFragment();
+
+      // Fragmented nodes cannot be relayout roots.
+      if (fragment.BreakToken())
+        return false;
 
       // In LayoutNG, if box has any OOF descendants, they are propagated to
       // parent. Therefore, we must mark parent chain for layout.

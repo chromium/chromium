@@ -420,7 +420,7 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
   // cooperate on e.g. margin collapsing.
   DCHECK(this->CreatesNewFormattingContext());
 
-  const NGLayoutResult* previous_result = Base::GetCachedLayoutResult();
+  const NGLayoutResult* previous_result = Base::GetSingleCachedLayoutResult();
   bool is_layout_root = !Base::View()->GetLayoutState()->Next();
 
   // If we are a layout root, use the previous space if available. This will

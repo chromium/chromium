@@ -43,7 +43,7 @@ LayoutNGTable::~LayoutNGTable() = default;
 
 wtf_size_t LayoutNGTable::ColumnCount() const {
   NOT_DESTROYED();
-  const NGLayoutResult* cached_layout_result = GetCachedLayoutResult();
+  const NGLayoutResult* cached_layout_result = GetCachedLayoutResult(nullptr);
   if (!cached_layout_result)
     return 0;
   return cached_layout_result->TableColumnCount();

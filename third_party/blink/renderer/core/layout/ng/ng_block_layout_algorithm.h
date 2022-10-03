@@ -103,6 +103,7 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // Creates a new constraint space for the current child.
   NGConstraintSpace CreateConstraintSpaceForChild(
       const NGLayoutInputNode child,
+      const NGBreakToken* child_break_token,
       const NGInflowChildData& child_data,
       const LogicalSize child_available_size,
       bool is_new_fc,
