@@ -69,8 +69,8 @@ void SetExperimentIds(const base::Value::List& list) {
 //    the value that the feature will hold until overriden by the server or the
 //    command line. Here's an exmaple:
 //
-//      const base::Feature kSuperSecretSauce{
-//          "enable_super_secret_sauce", base::FEATURE_DISABLED_BY_DEFAULT};
+//      BASE_FEATURE(kSuperSecretSauce, "SuperSecretSauce",
+//                   base::FEATURE_DISABLED_BY_DEFAULT);
 //
 //    IMPORTANT NOTE:
 //    The first parameter that you pass in the definition is the feature's name.

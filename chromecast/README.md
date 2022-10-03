@@ -14,7 +14,7 @@ comments of the header file. The basics are:
  * Add your new feature to the list of `kFeatures` in `cast_features.cc`
 
 ```c++
-const base::Feature kMyFeature{"my_feature", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMyFeature, "my_feature", base::FEATURE_DISABLED_BY_DEFAULT);
 
 
 const base::Feature* kFeatures[] = {
