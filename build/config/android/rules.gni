@@ -618,8 +618,8 @@ if (enable_java_templates) {
   # foo_features.cc:
   #
   # // A feature.
-  # const base::Feature kSomeFeature{"SomeFeature",
-  #                                  base::FEATURE_DISABLED_BY_DEFAULT};
+  # BASE_FEATURE(kSomeFeature, "SomeFeature",
+  #              base::FEATURE_DISABLED_BY_DEFAULT);
   #
   # FooFeatures.java.tmpl
   #
