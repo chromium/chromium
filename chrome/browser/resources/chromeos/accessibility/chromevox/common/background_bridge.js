@@ -53,18 +53,6 @@ BackgroundBridge.BrailleCommandHandler = {
   },
 };
 
-BackgroundBridge.ChromeVoxBackground = {
-  /**
-   * Gets the voice currently used by ChromeVox when calling tts.
-   * @return {!Promise<string>}
-   */
-  async getCurrentVoice() {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.ChromeVoxBackground.TARGET,
-        BridgeConstants.ChromeVoxBackground.Action.GET_CURRENT_VOICE);
-  },
-};
-
 BackgroundBridge.ChromeVoxPrefs = {
   /**
    * Get the prefs (not including keys).
@@ -340,6 +328,19 @@ BackgroundBridge.PanelBackground = {
         BridgeConstants.PanelBackground.Action.WAIT_FOR_PANEL_COLLAPSE);
   },
 };
+
+BackgroundBridge.TtsBackground = {
+  /**
+   * Gets the voice currently used by ChromeVox when calling tts.
+   * @return {!Promise<string>}
+   */
+  async getCurrentVoice() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.TtsBackground.TARGET,
+        BridgeConstants.TtsBackground.Action.GET_CURRENT_VOICE);
+  },
+};
+
 
 BackgroundBridge.UserActionMonitor = {
   /**

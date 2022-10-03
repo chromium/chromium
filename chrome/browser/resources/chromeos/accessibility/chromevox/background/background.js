@@ -9,13 +9,15 @@ import {CursorRange} from '../../common/cursors/range.js';
 import {InstanceChecker} from '../../common/instance_checker.js';
 import {AbstractEarcons} from '../common/abstract_earcons.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
+import {CompositeTts} from '../common/composite_tts.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import {QueueMode, TtsSpeechProperties} from '../common/tts_interface.js';
+import {QueueMode, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
 import {JaPhoneticMap} from '../third_party/tamachiyomi/ja_phonetic_map.js';
 
+import {BrailleBackground} from './braille/braille_background.js';
 import {BrailleCommandHandler} from './braille/braille_command_handler.js';
 import {ChromeVox} from './chromevox.js';
 import {ChromeVoxState} from './chromevox_state.js';
@@ -57,8 +59,8 @@ export class Background extends ChromeVoxState {
   constructor() {
     super();
 
-    /** @private {TtsBackground} */
-    this.backgroundTts_ = null;
+    /** @private {!TtsBackground} */
+    this.backgroundTts_ = new TtsBackground();
 
     /** @private {CursorRange} */
     this.currentRange_ = null;
@@ -80,17 +82,24 @@ export class Background extends ChromeVoxState {
 
     /** @private {boolean} */
     this.talkBackEnabled_ = false;
+
+    /** @private {TtsInterface} */
+    this.tts_ = new CompositeTts()
+                    .add(this.backgroundTts)
+                    .add(ConsoleTts.getInstance());
   }
 
   /** @override */
   init() {
     // Initialize legacy background page first.
-    ChromeVoxBackground.init(this);
+    ChromeVoxBackground.init();
 
     chrome.accessibilityPrivate.onIntroduceChromeVox.addListener(
         () => this.onIntroduceChromeVox_());
 
-
+    // Export globals on ChromeVox.
+    ChromeVox.braille = BrailleBackground.instance;
+    ChromeVox.tts = this.tts_;
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
       get: () => this.earcons_,
@@ -210,11 +219,6 @@ export class Background extends ChromeVoxState {
     let url = root.docUrl;
     url = url.substring(0, url.indexOf('#')) || url;
     ChromeVox.position[url] = position;
-  }
-
-  /** @override */
-  set backgroundTts(newBackgroundTts) {
-    this.backgroundTts_ = newBackgroundTts;
   }
 
   /** @override */

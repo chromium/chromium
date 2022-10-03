@@ -11,7 +11,6 @@ import {AbstractTts} from '../common/abstract_tts.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
-import {CompositeTts} from '../common/composite_tts.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {Msgs} from '../common/msgs.js';
 import {QueueMode, TtsInterface, TtsSpeechProperties} from '../common/tts_interface.js';
@@ -34,32 +33,7 @@ export class ChromeVoxBackground {
   constructor() {
     ChromeVoxBackground.readPrefs();
 
-    /**
-     * Chrome's actual TTS which knows and cares about pitch, volume, etc.
-     * @type {TtsBackground}
-     * @private
-     */
-    this.backgroundTts_ = new TtsBackground();
-
-    /**
-     * @type {TtsInterface}
-     */
-    this.tts = new CompositeTts()
-                   .add(this.backgroundTts_)
-                   .add(ConsoleTts.getInstance());
-
     this.addBridgeListener();
-
-    /**
-     * The actual Braille service.
-     * @type {BrailleBackground}
-     * @private
-     */
-    this.backgroundBraille_ = BrailleBackground.instance;
-
-    // Export globals on ChromeVox.
-    ChromeVox.tts = this.tts;
-    ChromeVox.braille = this.backgroundBraille_;
 
     // Build a regexp to match all allowed urls.
     let matches = [];
@@ -162,7 +136,7 @@ export class ChromeVoxBackground {
       return;
     }
 
-    this.tts.speak(
+    ChromeVox.tts.speak(
         msg['text'],
         /** @type {QueueMode} */ (msg['queueMode']),
         new TtsSpeechProperties(msg['properties']));
@@ -186,28 +160,8 @@ export class ChromeVoxBackground {
     });
   }
 
-  /**
-   * Gets the voice currently used by ChromeVox when calling tts.
-   * @return {string}
-   */
-  getCurrentVoice() {
-    return this.backgroundTts_.currentVoice;
-  }
-
-  /**
-   * Initializes classic background object.
-   * @param {!ChromeVoxState} chromeVoxState The new background object.
-   */
-  static init(chromeVoxState) {
-    // Create the background page object and export a function window['speak']
-    // so that other background pages can access it. Also export the prefs
-    // object for access by the options page.
+  /** Initializes classic background object. */
+  static init() {
     const background = new ChromeVoxBackground();
-
-    chromeVoxState.backgroundTts = background.backgroundTts_;
-    BridgeHelper.registerHandler(
-        BridgeConstants.ChromeVoxBackground.TARGET,
-        BridgeConstants.ChromeVoxBackground.Action.GET_CURRENT_VOICE,
-        () => background.getCurrentVoice());
   }
 }

@@ -92,11 +92,6 @@ export class ChromeVoxState {
   setCurrentRange(newRange, opt_fromEditing) {}
 
   /**
-   * @param {TtsBackground} newBackgroundTts
-   */
-  set backgroundTts(newBackgroundTts) {}
-
-  /**
    * @param {boolean} newValue
    */
   set isReadingContinuously(newValue) {}

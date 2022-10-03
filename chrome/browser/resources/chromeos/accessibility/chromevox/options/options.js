@@ -253,7 +253,7 @@ export class OptionsPage {
 
     async function setVoiceList() {
       const selectedVoice =
-          await BackgroundBridge.ChromeVoxBackground.getCurrentVoice();
+          await BackgroundBridge.TtsBackground.getCurrentVoice();
       const addVoiceOption = (visibleVoiceName, voiceName) => {
         const option = document.createElement('option');
         option.voiceName = voiceName;
