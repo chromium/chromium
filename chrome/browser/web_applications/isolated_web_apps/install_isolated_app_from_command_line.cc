@@ -29,6 +29,40 @@ namespace web_app {
 
 namespace {
 
+void ReportInstallationResult(
+    base::expected<InstallIsolatedAppCommandSuccess,
+                   InstallIsolatedAppCommandError> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Isolated app auto installation "
+                  "failed. Error: "
+               << result.error();
+  }
+}
+
+void ScheduleInstallIsolatedApp(WebAppProvider& provider,
+                                GURL url,
+                                base::OnceClosure callback) {
+  DCHECK(url.is_valid());
+  DCHECK(!callback.is_null());
+
+  provider.command_manager().ScheduleCommand(
+      std::make_unique<InstallIsolatedAppCommand>(
+          url, std::make_unique<WebAppUrlLoader>(),
+          provider.install_finalizer(),
+          base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
+}
+
+void InstallApplicationFromUrl(WebAppProvider& provider,
+                               GURL url,
+                               base::OnceClosure callback) {
+  DCHECK(url.is_valid());
+  DCHECK(!callback.is_null());
+
+  provider.on_registry_ready().Post(
+      FROM_HERE, base::BindOnce(ScheduleInstallIsolatedApp, std::ref(provider),
+                                url, std::move(callback)));
+}
+
 base::RepeatingCallback<void(GURL url, base::OnceClosure callback)>
 CreateProductionInstallApplicationFromUrl(Profile& profile) {
   WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
@@ -41,42 +75,7 @@ CreateProductionInstallApplicationFromUrl(Profile& profile) {
     return base::DoNothing();
   }
 
-  return base::BindRepeating(
-      [](WebAppProvider& provider, GURL url, base::OnceClosure callback) {
-        DCHECK(!callback.is_null());
-
-        provider.on_registry_ready().Post(
-            FROM_HERE,
-            base::BindOnce(
-                [](WebAppProvider& provider, GURL url,
-                   base::OnceClosure callback) {
-                  base::OnceCallback<void(
-                      base::expected<InstallIsolatedAppCommandSuccess,
-                                     InstallIsolatedAppCommandError>)>
-                      install_isolated_app_callback = base::BindOnce(
-                          [](base::expected<InstallIsolatedAppCommandSuccess,
-                                            InstallIsolatedAppCommandError>
-                                 result) {
-                            if (!result.has_value()) {
-                              LOG(ERROR) << "Isolated app auto installation "
-                                            "failed. Error: "
-                                         << result.error();
-                            }
-                          });
-
-                  DCHECK(url.is_valid());
-                  std::unique_ptr<InstallIsolatedAppCommand> command =
-                      std::make_unique<InstallIsolatedAppCommand>(
-                          url, std::make_unique<WebAppUrlLoader>(),
-                          provider.install_finalizer(),
-                          std::move(install_isolated_app_callback)
-                              .Then(std::move(callback)));
-                  provider.command_manager().ScheduleCommand(
-                      std::move(command));
-                },
-                std::ref(provider), url, std::move(callback)));
-      },
-      std::ref(*provider));
+  return base::BindRepeating(InstallApplicationFromUrl, std::ref(*provider));
 }
 
 base::OnceClosure& GetNextDoneCallbackInstance() {
