@@ -550,8 +550,8 @@ TEST_F(ResourceSchedulerTest, OneLowLoadsUntilCriticalComplete) {
 TEST_F(ResourceSchedulerTest, MaxRequestsPerHostForSpdyWhenNotDelayable) {
   InitializeScheduler();
   context_->http_server_properties()->SetSupportsSpdy(
-      url::SchemeHostPort("https", "spdyhost", 443), net::NetworkIsolationKey(),
-      true);
+      url::SchemeHostPort("https", "spdyhost", 443),
+      net::NetworkAnonymizationKey(), true);
 
   // Add more than max-per-host low-priority requests.
   std::vector<std::unique_ptr<TestRequest>> requests;
@@ -575,7 +575,7 @@ TEST_F(ResourceSchedulerTest,
   InitializeScheduler();
   context_->http_server_properties()->SetSupportsSpdy(
       url::SchemeHostPort("https", "spdyhost", 443),
-      kIsolationInfo1.network_isolation_key(), true);
+      kIsolationInfo1.network_anonymization_key(), true);
 
   // Add more than max-per-host low-priority requests.
   std::vector<std::unique_ptr<TestRequest>> requests;
@@ -1110,7 +1110,7 @@ TEST_F(ResourceSchedulerTest, NewSpdyHostInDelayableRequests) {
   EXPECT_FALSE(low1->started());
   context_->http_server_properties()->SetSupportsSpdy(
       url::SchemeHostPort("http", "spdyhost1", 8080),
-      net::NetworkIsolationKey(), true);
+      net::NetworkAnonymizationKey(), true);
   low1_spdy.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(low1->started());
@@ -1123,7 +1123,7 @@ TEST_F(ResourceSchedulerTest, NewSpdyHostInDelayableRequests) {
   EXPECT_TRUE(low2_spdy->started());
   context_->http_server_properties()->SetSupportsSpdy(
       url::SchemeHostPort("http", "spdyhost2", 8080),
-      net::NetworkIsolationKey(), true);
+      net::NetworkAnonymizationKey(), true);
   ChangeRequestPriority(low2_spdy.get(), net::LOWEST);
   base::RunLoop().RunUntilIdle();
   std::unique_ptr<TestRequest> low2(NewRequest("http://host/low", net::LOWEST));
@@ -1157,7 +1157,7 @@ TEST_F(ResourceSchedulerTest,
   EXPECT_FALSE(low1->started());
   context_->http_server_properties()->SetSupportsSpdy(
       url::SchemeHostPort("http", "spdyhost1", 8080),
-      net::NetworkIsolationKey(), true);
+      net::NetworkAnonymizationKey(), true);
   low1_spdy.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(low1->started());
@@ -1170,7 +1170,7 @@ TEST_F(ResourceSchedulerTest,
   EXPECT_TRUE(low2_spdy->started());
   context_->http_server_properties()->SetSupportsSpdy(
       url::SchemeHostPort("http", "spdyhost2", 8080),
-      net::NetworkIsolationKey(), true);
+      net::NetworkAnonymizationKey(), true);
   ChangeRequestPriority(low2_spdy.get(), net::LOWEST);
   base::RunLoop().RunUntilIdle();
   std::unique_ptr<TestRequest> low2(NewRequest("http://host/low", net::LOWEST));
@@ -1715,8 +1715,8 @@ TEST_F(ResourceSchedulerTest,
 
   InitializeScheduler();
   context_->http_server_properties()->SetSupportsSpdy(
-      url::SchemeHostPort("https", "spdyhost", 443), net::NetworkIsolationKey(),
-      true);
+      url::SchemeHostPort("https", "spdyhost", 443),
+      net::NetworkAnonymizationKey(), true);
 
   // Should be in sync with resource_scheduler.cc for effective connection type
   // of 2G.
@@ -1761,7 +1761,7 @@ TEST_F(ResourceSchedulerTest,
   InitializeScheduler();
   context_->http_server_properties()->SetSupportsSpdy(
       url::SchemeHostPort("https", "spdyhost", 443),
-      kIsolationInfo1.network_isolation_key(), true);
+      kIsolationInfo1.network_anonymization_key(), true);
 
   // Should be in sync with resource_scheduler.cc for effective connection type
   // of 2G.
@@ -1821,8 +1821,8 @@ TEST_F(ResourceSchedulerTest,
 
   InitializeScheduler();
   context_->http_server_properties()->SetSupportsSpdy(
-      url::SchemeHostPort("https", "spdyhost", 443), net::NetworkIsolationKey(),
-      true);
+      url::SchemeHostPort("https", "spdyhost", 443),
+      net::NetworkAnonymizationKey(), true);
 
   // Should be in sync with resource_scheduler.cc for effective connection type
   // of 4G.

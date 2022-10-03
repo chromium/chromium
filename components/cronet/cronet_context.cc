@@ -169,7 +169,7 @@ void SetQuicHint(net::URLRequestContext* context,
   net::AlternativeService alternative_service(
       net::kProtoQUIC, "", static_cast<uint16_t>(quic_hint->alternate_port));
   context->http_server_properties()->SetQuicAlternativeService(
-      quic_server, net::NetworkIsolationKey(), alternative_service,
+      quic_server, net::NetworkAnonymizationKey(), alternative_service,
       base::Time::Max(), quic::ParsedQuicVersionVector());
 }
 

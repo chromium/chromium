@@ -263,7 +263,7 @@ int HttpStreamFactory::Job::Preconnect(int num_streams) {
       request_info_.url.SchemeIsCryptographic();
   if (connect_one_stream || http_server_properties->SupportsRequestPriority(
                                 url::SchemeHostPort(request_info_.url),
-                                request_info_.network_isolation_key)) {
+                                request_info_.network_anonymization_key)) {
     num_streams_ = 1;
   } else {
     num_streams_ = num_streams;
@@ -428,7 +428,7 @@ bool HttpStreamFactory::Job::CanUseExistingSpdySession() const {
   if (proxy_info_.is_direct() &&
       session_->http_server_properties()->RequiresHTTP11(
           url::SchemeHostPort(request_info_.url),
-          request_info_.network_isolation_key)) {
+          request_info_.network_anonymization_key)) {
     return false;
   }
 
@@ -852,14 +852,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   if (http_server_properties) {
     http_server_properties->MaybeForceHTTP11(
         url::SchemeHostPort(request_info_.url),
-        request_info_.network_isolation_key, &server_ssl_config_);
+        request_info_.network_anonymization_key, &server_ssl_config_);
     if (proxy_info_.is_https()) {
       http_server_properties->MaybeForceHTTP11(
           url::SchemeHostPort(
               url::kHttpsScheme,
               proxy_info_.proxy_server().host_port_pair().host(),
               proxy_info_.proxy_server().host_port_pair().port()),
-          request_info_.network_isolation_key, &proxy_ssl_config_);
+          request_info_.network_anonymization_key, &proxy_ssl_config_);
     }
   }
 
@@ -1237,9 +1237,9 @@ int HttpStreamFactory::Job::DoCreateStream() {
   HttpServerProperties* http_server_properties =
       session_->http_server_properties();
   if (http_server_properties) {
-    http_server_properties->SetSupportsSpdy(scheme_host_port,
-                                            request_info_.network_isolation_key,
-                                            true /* supports_spdy */);
+    http_server_properties->SetSupportsSpdy(
+        scheme_host_port, request_info_.network_anonymization_key,
+        true /* supports_spdy */);
   }
 
   // Create a SpdyHttpStream or a BidirectionalStreamImpl attached to the
@@ -1349,7 +1349,7 @@ bool HttpStreamFactory::Job::ShouldThrottleConnectForSpdy() const {
       spdy_session_key_.host_port_pair().port());
   // Only throttle the request if the server is believed to support H2.
   return session_->http_server_properties()->GetSupportsSpdy(
-      scheme_host_port, request_info_.network_isolation_key);
+      scheme_host_port, request_info_.network_anonymization_key);
 }
 
 }  // namespace net

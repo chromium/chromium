@@ -68,7 +68,10 @@ void HttpStreamFactory::ProcessAlternativeServices(
   }
 
   session->http_server_properties()->SetAlternativeServices(
-      RewriteHost(http_server), network_isolation_key,
+      RewriteHost(http_server),
+      NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+              network_isolation_key),
       net::ProcessAlternativeServices(
           alternative_service_vector, session->params().enable_http2,
           session->params().enable_quic,

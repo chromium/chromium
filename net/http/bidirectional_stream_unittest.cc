@@ -1728,7 +1728,7 @@ TEST_F(BidirectionalStreamTest, TestHonorAlternativeServiceHeader) {
 
   AlternativeServiceInfoVector alternative_service_info_vector =
       http_session_->http_server_properties()->GetAlternativeServiceInfos(
-          url::SchemeHostPort(default_url_), NetworkIsolationKey());
+          url::SchemeHostPort(default_url_), NetworkAnonymizationKey());
   ASSERT_EQ(1u, alternative_service_info_vector.size());
   AlternativeService alternative_service(kProtoQUIC, "www.example.org", 443);
   EXPECT_EQ(alternative_service,

@@ -1068,12 +1068,12 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   EXPECT_FALSE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   // Set a property.
   network_context->url_request_context()
       ->http_server_properties()
-      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey(), true);
+      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey(), true);
   // Deleting the context will cause it to flush state. Wait for the pref
   // service to flush to disk.
   network_context.reset();
@@ -1093,7 +1093,7 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   EXPECT_TRUE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   // Now check that ClearNetworkingHistoryBetween clears the data.
   base::RunLoop run_loop2;
@@ -1104,7 +1104,7 @@ TEST_F(NetworkContextTest, HttpServerPropertiesToDisk) {
   EXPECT_FALSE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   // Destroy the network context and let any pending writes complete before
   // destroying |temp_dir|, to avoid leaking any files.
@@ -1146,12 +1146,12 @@ TEST_F(NetworkContextTest, DataDirectoryAsHandle) {
   EXPECT_FALSE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   // Set a property.
   network_context->url_request_context()
       ->http_server_properties()
-      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey(), true);
+      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey(), true);
   // Deleting the context will cause it to flush state. Wait for the pref
   // service to flush to disk.
   network_context.reset();
@@ -1171,7 +1171,7 @@ TEST_F(NetworkContextTest, DataDirectoryAsHandle) {
   EXPECT_TRUE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   // Now check that ClearNetworkingHistoryBetween clears the data.
   base::RunLoop run_loop2;
@@ -1182,7 +1182,7 @@ TEST_F(NetworkContextTest, DataDirectoryAsHandle) {
   EXPECT_FALSE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   // Destroy the network context and let any pending writes complete before
   // destroying |temp_dir|, to avoid leaking any files.
@@ -1204,14 +1204,14 @@ TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {
   EXPECT_FALSE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
   network_context->url_request_context()
       ->http_server_properties()
-      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey(), true);
+      ->SetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey(), true);
   EXPECT_TRUE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 
   base::RunLoop run_loop;
   network_context->ClearNetworkingHistoryBetween(
@@ -1221,7 +1221,7 @@ TEST_F(NetworkContextTest, ClearHttpServerPropertiesInMemory) {
   EXPECT_FALSE(
       network_context->url_request_context()
           ->http_server_properties()
-          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkIsolationKey()));
+          ->GetSupportsSpdy(kSchemeHostPort, net::NetworkAnonymizationKey()));
 }
 
 // Checks that ClearNetworkingHistoryBetween() clears network quality prefs.

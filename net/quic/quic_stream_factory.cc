@@ -1978,10 +1978,10 @@ void QuicStreamFactory::MarkAllActiveSessionsGoingAway(
 
 void QuicStreamFactory::ConfigureInitialRttEstimate(
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     quic::QuicConfig* config) {
   const base::TimeDelta* srtt =
-      GetServerNetworkStatsSmoothedRtt(server_id, network_isolation_key);
+      GetServerNetworkStatsSmoothedRtt(server_id, network_anonymization_key);
   // Sometimes *srtt is negative. See https://crbug.com/1225616.
   // TODO(ricea): When the root cause of the negative value is fixed, change the
   // non-negative assertion to a DCHECK.
@@ -2014,19 +2014,19 @@ void QuicStreamFactory::ConfigureInitialRttEstimate(
 
 int64_t QuicStreamFactory::GetServerNetworkStatsSmoothedRttInMicroseconds(
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) const {
+    const NetworkAnonymizationKey& network_anonymization_key) const {
   const base::TimeDelta* srtt =
-      GetServerNetworkStatsSmoothedRtt(server_id, network_isolation_key);
+      GetServerNetworkStatsSmoothedRtt(server_id, network_anonymization_key);
   return srtt == nullptr ? 0 : srtt->InMicroseconds();
 }
 
 const base::TimeDelta* QuicStreamFactory::GetServerNetworkStatsSmoothedRtt(
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) const {
+    const NetworkAnonymizationKey& network_anonymization_key) const {
   url::SchemeHostPort server("https", server_id.host(), server_id.port());
   const ServerNetworkStats* stats =
       http_server_properties_->GetServerNetworkStats(server,
-                                                     network_isolation_key);
+                                                     network_anonymization_key);
   if (stats == nullptr)
     return nullptr;
   return &(stats->srtt);

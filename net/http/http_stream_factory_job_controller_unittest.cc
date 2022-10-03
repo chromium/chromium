@@ -314,11 +314,11 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     base::Time expiration = base::Time::Now() + base::Days(1);
     if (alternative_service.protocol == kProtoQUIC) {
       session_->http_server_properties()->SetQuicAlternativeService(
-          server, NetworkIsolationKey(), alternative_service, expiration,
+          server, NetworkAnonymizationKey(), alternative_service, expiration,
           quic_context_.params()->supported_versions);
     } else {
       session_->http_server_properties()->SetHttp2AlternativeService(
-          server, NetworkIsolationKey(), alternative_service, expiration);
+          server, NetworkAnonymizationKey(), alternative_service, expiration);
     }
   }
 
@@ -327,12 +327,12 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
     const url::SchemeHostPort server(request_info.url);
     const AlternativeServiceInfoVector alternative_service_info_vector =
         session_->http_server_properties()->GetAlternativeServiceInfos(
-            server, NetworkIsolationKey());
+            server, NetworkAnonymizationKey());
     EXPECT_EQ(1u, alternative_service_info_vector.size());
     EXPECT_EQ(should_mark_broken,
               session_->http_server_properties()->IsAlternativeServiceBroken(
                   alternative_service_info_vector[0].alternative_service(),
-                  NetworkIsolationKey()));
+                  NetworkAnonymizationKey()));
   }
 
   void TestAltJobSucceedsAfterMainJobFailed(
@@ -1281,7 +1281,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       {quic::ParsedQuicVersion::Unsupported()});
 
   request_ =
@@ -1313,14 +1313,14 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       quic_context_.params()->supported_versions);
 
   // Enable QUIC but mark the alternative service as recently broken.
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   session_->http_server_properties()->MarkAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey());
+      alternative_service, NetworkAnonymizationKey());
 
   request_ =
       job_controller_->Start(&request_delegate_, nullptr, net_log_with_source_,
@@ -1371,18 +1371,18 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
   base::Time expiration = base::Time::Now() + base::Days(1);
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       quic_context_.params()->supported_versions);
 
   // Enable QUIC but mark the alternative service as recently broken.
   QuicStreamFactory* quic_stream_factory = session_->quic_stream_factory();
   quic_stream_factory->set_is_quic_known_to_work_on_current_network(true);
   session_->http_server_properties()->MarkAlternativeServiceRecentlyBroken(
-      alternative_service, NetworkIsolationKey());
+      alternative_service, NetworkAnonymizationKey());
 
   // Confirm the alt service.
   session_->http_server_properties()->ConfirmAlternativeService(
-      alternative_service, NetworkIsolationKey());
+      alternative_service, NetworkAnonymizationKey());
 
   request_ =
       job_controller_->Start(&request_delegate_, nullptr, net_log_with_source_,
@@ -2289,7 +2289,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
-      NetworkIsolationKey(), stats1);
+      NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
@@ -2362,7 +2362,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCP) {
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
-      NetworkIsolationKey(), stats1);
+      NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
@@ -2426,7 +2426,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
-      NetworkIsolationKey(), stats1);
+      NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
@@ -2459,7 +2459,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, ResumeMainJobLaterCanceled) {
   // Now the alt service is marked as broken (e.g. through a different request),
   // so only non-alt job is restarted.
   session_->http_server_properties()->MarkAlternativeServiceBroken(
-      alternative_service, NetworkIsolationKey());
+      alternative_service, NetworkAnonymizationKey());
 
   job_controller_->OnStreamFailed(job_factory_.main_job(), ERR_FAILED,
                                   SSLConfig());
@@ -2504,7 +2504,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   stats1.srtt = base::Seconds(100);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
-      NetworkIsolationKey(), stats1);
+      NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
@@ -2566,7 +2566,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   stats1.srtt = base::Microseconds(10);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
-      NetworkIsolationKey(), stats1);
+      NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
@@ -2656,7 +2656,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   job_controller_->Preconnect(/*num_streams=*/5);
   // Only one job is started.
@@ -2713,7 +2713,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   // Sets server support HTTP/2, using kNetworkIsolationKey.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, kNetworkIsolationKey1, true);
+      server, kNetworkAnonymizationKey1, true);
 
   job_controller_->Preconnect(/*num_streams=*/5);
   // Only one job is started.
@@ -2798,7 +2798,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   stats1.srtt = base::Milliseconds(100);
   session_->http_server_properties()->SetServerNetworkStats(
       url::SchemeHostPort(GURL("https://www.google.com")),
-      NetworkIsolationKey(), stats1);
+      NetworkAnonymizationKey(), stats1);
 
   url::SchemeHostPort server(request_info.url);
   AlternativeService alternative_service(kProtoQUIC, server.host(), 443);
@@ -2840,7 +2840,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   // Start a non-preconnect request.
   std::unique_ptr<HttpStreamRequest> stream_request = job_controller_->Start(
@@ -3066,7 +3066,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequests) {
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   std::vector<std::unique_ptr<MockHttpStreamRequestDelegate>> request_delegates;
   std::vector<std::unique_ptr<HttpStreamRequest>> requests;
@@ -3123,12 +3123,10 @@ TEST_F(JobControllerLimitMultipleH2Requests,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey1(
-      kSite1, kSite1, /*is_cross_site=*/false);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const NetworkAnonymizationKey kNetworkAnonymizationKey2(
-      kSite2, kSite2, /*is_cross_site=*/false);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>(
       MockConnect(SYNCHRONOUS, ERR_IO_PENDING), base::span<MockRead>(),
@@ -3141,7 +3139,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, kNetworkIsolationKey1, true);
+      server, kNetworkAnonymizationKey1, true);
 
   std::vector<std::unique_ptr<MockHttpStreamRequestDelegate>> request_delegates;
   std::vector<std::unique_ptr<HttpStreamRequest>> requests;
@@ -3238,7 +3236,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequestsFirstRequestHang) {
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   std::vector<std::unique_ptr<MockHttpStreamRequestDelegate>> request_delegates;
   std::vector<std::unique_ptr<HttpStreamRequest>> requests;
@@ -3312,7 +3310,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   std::vector<std::unique_ptr<MockHttpStreamRequestDelegate>> request_delegates;
   std::vector<std::unique_ptr<HttpStreamRequest>> requests;
@@ -3369,7 +3367,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultiplePreconnects) {
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   std::vector<std::unique_ptr<MockHttpStreamRequestDelegate>> request_delegates;
   for (int i = 0; i < kNumRequests; ++i) {
@@ -3417,7 +3415,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, H1NegotiatedForFirstRequest) {
   // Sets server support HTTP/2.
   url::SchemeHostPort server(request_info.url);
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   std::vector<std::unique_ptr<MockHttpStreamRequestDelegate>> request_delegates;
   std::vector<std::unique_ptr<HttpStreamRequest>> requests;
@@ -3483,7 +3481,7 @@ TEST_F(JobControllerLimitMultipleH2Requests, QuicJobNotThrottled) {
 
   // Sets server support HTTP/2.
   session_->http_server_properties()->SetSupportsSpdy(
-      server, NetworkIsolationKey(), true);
+      server, NetworkAnonymizationKey(), true);
 
   // Use default job factory so that Resume() is not mocked out.
   HttpStreamFactory::JobFactory default_job_factory;
@@ -3660,7 +3658,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
 
   // Set alternative service with no advertised version.
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       quic::ParsedQuicVersionVector());
 
   AlternativeServiceInfo alt_svc_info =
@@ -3675,7 +3673,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   quic::ParsedQuicVersionVector supported_versions =
       quic_context_.params()->supported_versions;
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       supported_versions);
 
   alt_svc_info = JobControllerPeer::GetAlternativeServiceInfoFor(
@@ -3718,7 +3716,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   quic::ParsedQuicVersionVector mixed_quic_versions = {
       unsupported_version_1, quic_context_.params()->supported_versions[0]};
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       mixed_quic_versions);
 
   alt_svc_info = JobControllerPeer::GetAlternativeServiceInfoFor(
@@ -3731,7 +3729,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, GetAlternativeServiceInfoFor) {
   // Set alternative service for the same server with two unsupported QUIC
   // versions: |unsupported_version_1|, |unsupported_version_2|.
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(), alternative_service, expiration,
+      server, NetworkAnonymizationKey(), alternative_service, expiration,
       {unsupported_version_1, unsupported_version_2});
 
   alt_svc_info = JobControllerPeer::GetAlternativeServiceInfoFor(
@@ -3832,7 +3830,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
   quic::ParsedQuicVersionVector supported_versions =
       quic_context_.params()->supported_versions;
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(),
+      server, NetworkAnonymizationKey(),
       AlternativeService(kProtoQUIC, "www.example.com", 443), expiration,
       supported_versions);
 
@@ -3857,7 +3855,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, QuicHostAllowlist) {
   EXPECT_EQ(supported_versions, advertised_versions);
 
   session_->http_server_properties()->SetQuicAlternativeService(
-      server, NetworkIsolationKey(),
+      server, NetworkAnonymizationKey(),
       AlternativeService(kProtoQUIC, "www.example.org", 443), expiration,
       supported_versions);
 
@@ -4032,7 +4030,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
   bool IsAlternativeServiceBroken(GURL& url) {
     return session_->http_server_properties()->IsAlternativeServiceBroken(
         AlternativeService(kProtoQUIC, HostPortPair::FromURL(url)),
-        NetworkIsolationKey());
+        NetworkAnonymizationKey());
   }
 
   raw_ptr<HttpStreamFactory::JobController> job_controller2_ = nullptr;
