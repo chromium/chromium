@@ -155,6 +155,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
         remote_host_contacted_info.remote_host(0);
     EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
     EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
+    EXPECT_EQ(remote_host_info.connection_protocol(),
+              RemoteHostInfo::HTTP_HTTPS);
   }
 }
 

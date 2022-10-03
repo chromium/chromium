@@ -109,6 +109,9 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 // Enables reporting of remote hosts contacted by extensions in telemetry.
 BASE_DECLARE_FEATURE(kExtensionTelemetryReportContactedHosts);
 
+// Enables reporting of remote hosts contacted by extensions via websockets;
+BASE_DECLARE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket);
+
 // Enables collection of potential password theft data and uploads
 // telemetry reports to SB servers.
 BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);

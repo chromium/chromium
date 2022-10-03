@@ -6,25 +6,38 @@
 #define CHROME_BROWSER_SAFE_BROWSING_EXTENSION_TELEMETRY_REMOTE_HOST_CONTACTED_SIGNAL_H_
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_signal.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
 
+using RemoteHostInfo = ExtensionTelemetryReportRequest::SignalInfo::
+    RemoteHostContactedInfo::RemoteHostInfo;
+
 // A signal that is created when an extension initiates a web request.
 class RemoteHostContactedSignal : public ExtensionSignal {
  public:
-  RemoteHostContactedSignal(const extensions::ExtensionId& extension_id,
-                            const GURL& host_url);
+  RemoteHostContactedSignal(
+      const extensions::ExtensionId& extension_id,
+      const GURL& host_url,
+      RemoteHostInfo::ProtocolType protocol = RemoteHostInfo::HTTP_HTTPS);
   ~RemoteHostContactedSignal() override;
 
   // ExtensionSignal:
   ExtensionSignalType GetType() const override;
 
-  const GURL& contacted_host_url() const { return contacted_host_url_; }
+  const GURL& remote_host_url() const { return remote_host_url_; }
+
+  const RemoteHostInfo::ProtocolType& protocol_type() const {
+    return protocol_;
+  }
 
  protected:
   // Url of the remote contacted host.
-  GURL contacted_host_url_;
+  GURL remote_host_url_;
+
+  // The protocol used to contact the remote host.
+  RemoteHostInfo::ProtocolType protocol_;
 };
 
 }  // namespace safe_browsing

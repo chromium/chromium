@@ -118,6 +118,10 @@ BASE_FEATURE(kExtensionTelemetryReportContactedHosts,
              "SafeBrowsingExtensionTelemetryReportContactedHosts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
+             "SafeBrowsingExtensionTelemetryReportHostsContactedViaWebsocket",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -234,6 +238,7 @@ constexpr struct {
     {&kEnhancedProtectionPhase2IOS, true},
     {&kExtensionTelemetry, true},
     {&kExtensionTelemetryReportContactedHosts, true},
+    {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
     {&kExtensionTelemetryCookiesGetAllSignal, true},
     {&kExtensionTelemetryPersistence, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},

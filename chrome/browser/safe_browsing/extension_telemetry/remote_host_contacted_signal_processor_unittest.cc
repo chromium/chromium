@@ -21,7 +21,8 @@ using RemoteHostInfo =
 
 constexpr const char* kExtensionId[] = {"crx-0", "crx-1"};
 const char* host_urls[] = {"http://www.google.com", "http://www.youtube.com"};
-
+RemoteHostInfo::ProtocolType protocolType[] = {RemoteHostInfo::HTTP_HTTPS,
+                                               RemoteHostInfo::WEBSOCKET};
 class RemoteHostContactedSignalProcessorTest : public ::testing::Test {
  protected:
   RemoteHostContactedSignalProcessorTest() = default;
@@ -36,7 +37,8 @@ TEST_F(RemoteHostContactedSignalProcessorTest,
 
 TEST_F(RemoteHostContactedSignalProcessorTest,
        StoresDataAfterProcessingSignal) {
-  auto signal = RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
+  auto signal = RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]),
+                                          protocolType[0]);
   processor_.ProcessSignal(signal);
 
   // Verify that processor now has some data to report.
@@ -47,28 +49,28 @@ TEST_F(RemoteHostContactedSignalProcessorTest,
   EXPECT_FALSE(processor_.GetSignalInfoForReport(kExtensionId[1]));
 }
 
-// Test contacted_count and mapping functionalities.
+// Test contacted_count, protocol type, and mapping functionalities.
 TEST_F(RemoteHostContactedSignalProcessorTest, ReportsSignalInfoCorrectly) {
   // Process 3 signals for the first extension, each corresponding to the
   // web request sent to the first test url.
   for (int i = 0; i < 3; i++) {
-    auto signal =
-        RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]));
-    processor_.ProcessSignal(signal);
+    auto signal = RemoteHostContactedSignal(kExtensionId[0], GURL(host_urls[0]),
+                                            protocolType[0]);
+    processor_.ProcessSignal(std::move(signal));
   }
 
   // Process 3 signals for the second extension. Two signal corresponds to the
   // web request sent to the first url, the third to the web request
   // sent to the second url.
   for (int i = 0; i < 2; i++) {
-    auto signal =
-        RemoteHostContactedSignal(kExtensionId[1], GURL(host_urls[0]));
-    processor_.ProcessSignal(signal);
+    auto signal = RemoteHostContactedSignal(kExtensionId[1], GURL(host_urls[0]),
+                                            protocolType[0]);
+    processor_.ProcessSignal(std::move(signal));
   }
   {
-    auto signal =
-        RemoteHostContactedSignal(kExtensionId[1], GURL(host_urls[1]));
-    processor_.ProcessSignal(signal);
+    auto signal = RemoteHostContactedSignal(kExtensionId[1], GURL(host_urls[1]),
+                                            protocolType[1]);
+    processor_.ProcessSignal(std::move(signal));
   }
 
   // Retrieve signal info for first extension.
@@ -93,11 +95,13 @@ TEST_F(RemoteHostContactedSignalProcessorTest, ReportsSignalInfoCorrectly) {
     const RemoteHostContactedInfo& remote_host_contacted_info =
         extension_0_signal_info->remote_host_contacted_info();
 
-    // Verify data stored : only 1 url (contacted 3 times).
+    // Verify data stored : only 1 url (contacted 3 times) and
+    // contacted via HTTP_HTTPS protocol.
     ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 1);
     const RemoteHostInfo& remote_host_info =
         remote_host_contacted_info.remote_host(0);
     EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(3));
+    EXPECT_EQ(remote_host_info.connection_protocol(), protocolType[0]);
   }
 
   // Verify signal info contents for second extension.
@@ -105,21 +109,23 @@ TEST_F(RemoteHostContactedSignalProcessorTest, ReportsSignalInfoCorrectly) {
     const RemoteHostContactedInfo& remote_host_contacted_info =
         extension_1_signal_info->remote_host_contacted_info();
 
-    // Verify data stored : 2 URLs (2 contacted counts for 1st, 1 for the 2nd).
+    // Verify data stored : 2 URLs (2 contacted counts for 1st, 1 for the 2nd)
+    // and contacted via HTTP_HTTPS and WEBSOCKET protocols.
     ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 2);
     {
       const RemoteHostInfo& remote_host_info =
           remote_host_contacted_info.remote_host(0);
       EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(2));
+      EXPECT_EQ(remote_host_info.connection_protocol(), protocolType[0]);
     }
     {
       const RemoteHostInfo& remote_host_info =
           remote_host_contacted_info.remote_host(1);
       EXPECT_EQ(remote_host_info.contact_count(), static_cast<uint32_t>(1));
+      EXPECT_EQ(remote_host_info.connection_protocol(), protocolType[1]);
     }
   }
 }
-
 }  // namespace
 
 }  // namespace safe_browsing

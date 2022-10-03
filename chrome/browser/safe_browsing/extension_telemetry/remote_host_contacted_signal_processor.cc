@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
 
@@ -21,15 +20,16 @@ void RemoteHostContactedSignalProcessor::ProcessSignal(
   const auto& rhc_signal =
       static_cast<const RemoteHostContactedSignal&>(signal);
   // Extract only the host portion of the urls.
-  const std::string host_url = rhc_signal.contacted_host_url().host();
-  ++((remote_host_url_store_[rhc_signal.extension_id()])[host_url]);
+  std::string host_url = rhc_signal.remote_host_url().host();
+  ++(((remote_host_info_store_[rhc_signal.extension_id()])
+          [rhc_signal.protocol_type()])[host_url]);
 }
 
 std::unique_ptr<ExtensionTelemetryReportRequest_SignalInfo>
 RemoteHostContactedSignalProcessor::GetSignalInfoForReport(
     const extensions::ExtensionId& extension_id) {
-  auto remote_host_url_store_it = remote_host_url_store_.find(extension_id);
-  if (remote_host_url_store_it == remote_host_url_store_.end())
+  auto remote_host_info_store_it = remote_host_info_store_.find(extension_id);
+  if (remote_host_info_store_it == remote_host_info_store_.end())
     return nullptr;
 
   // Create the signal info protobuf.
@@ -40,21 +40,26 @@ RemoteHostContactedSignalProcessor::GetSignalInfoForReport(
       remote_host_contacted_info =
           signal_info->mutable_remote_host_contacted_info();
 
-  for (auto& remote_host_contacted_urls_it : remote_host_url_store_it->second) {
-    ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo_RemoteHostInfo*
-        remote_host_pb = remote_host_contacted_info->add_remote_host();
-    remote_host_pb->set_url(std::move(remote_host_contacted_urls_it.first));
-    remote_host_pb->set_contact_count(remote_host_contacted_urls_it.second);
+  for (auto& remote_host_urls_by_protocol_it :
+       remote_host_info_store_it->second) {
+    for (auto& remote_host_urls_it : remote_host_urls_by_protocol_it.second) {
+      ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo_RemoteHostInfo*
+          remote_host_pb = remote_host_contacted_info->add_remote_host();
+      remote_host_pb->set_url(std::move(remote_host_urls_it.first));
+      remote_host_pb->set_contact_count(remote_host_urls_it.second);
+      remote_host_pb->set_connection_protocol(
+          remote_host_urls_by_protocol_it.first);
+    }
   }
 
   // Clear the data in the remote host urls store.
-  remote_host_url_store_.erase(remote_host_url_store_it);
+  remote_host_info_store_.erase(remote_host_info_store_it);
 
   return signal_info;
 }
 
 bool RemoteHostContactedSignalProcessor::HasDataToReportForTest() const {
-  return !remote_host_url_store_.empty();
+  return !remote_host_info_store_.empty();
 }
 
 }  // namespace safe_browsing
