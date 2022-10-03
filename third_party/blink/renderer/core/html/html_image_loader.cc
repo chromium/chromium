@@ -67,8 +67,6 @@ void HTMLImageLoader::NoImageResourceToLoad() {
 }
 
 void HTMLImageLoader::ImageNotifyFinished(ImageResourceContent*) {
-  recordreplay::Assert("HTMLImageLoader::ImageNotifyFinished Start");
-
   ImageResourceContent* cached_image = GetContent();
   Element* element = GetElement();
   ImageLoader::ImageNotifyFinished(cached_image);
@@ -95,8 +93,6 @@ void HTMLImageLoader::ImageNotifyFinished(ImageResourceContent*) {
   if ((load_error || cached_image->GetResponse().HttpStatusCode() >= 400) &&
       html_image_element)
     html_image_element->RenderFallbackContent(nullptr);
-
-  recordreplay::Assert("HTMLImageLoader::ImageNotifyFinished Done");
 }
 
 }  // namespace blink

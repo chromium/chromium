@@ -92,7 +92,6 @@ Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
 }
 
 bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
-  recordreplay::Assert("Sequence::DidProcessTask Start");
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   // There should never be a call to DidProcessTask without an associated
   // WillRunTask().
@@ -101,13 +100,11 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   // See comment on TaskSource::task_runner_ for lifetime management details.
   if (queue_.empty()) {
     ReleaseTaskRunner();
-    recordreplay::Assert("Sequence::DidProcessTask #1");
     return false;
   }
   // Let the caller re-enqueue this non-empty Sequence regardless of
   // |run_result| so it can continue churning through this Sequence's tasks and
   // skip/delete them in the proper scope.
-  recordreplay::Assert("Sequence::DidProcessTask #2");
   return true;
 }
 
@@ -133,22 +130,16 @@ Task Sequence::Clear(TaskSource::Transaction* transaction) {
 }
 
 void Sequence::ReleaseTaskRunner() {
-  recordreplay::Assert("Sequence::ReleaseTaskRunner Start");
   if (!task_runner()) {
-    recordreplay::Assert("Sequence::ReleaseTaskRunner #1");
     return;
   }
   if (execution_mode() == TaskSourceExecutionMode::kParallel) {
-    recordreplay::Assert("Sequence::ReleaseTaskRunner #2");
     static_cast<PooledParallelTaskRunner*>(task_runner())
         ->UnregisterSequence(this);
-    recordreplay::Assert("Sequence::ReleaseTaskRunner #3");
   }
   // No member access after this point, releasing |task_runner()| might delete
   // |this|.
-  recordreplay::Assert("Sequence::ReleaseTaskRunner #4");
   task_runner()->Release();
-  recordreplay::Assert("Sequence::ReleaseTaskRunner Done");
 }
 
 Sequence::Sequence(const TaskTraits& traits,

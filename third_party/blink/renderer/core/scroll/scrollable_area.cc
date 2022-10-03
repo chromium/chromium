@@ -256,8 +256,6 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType scroll_type,
                                      mojom::blink::ScrollBehavior behavior,
                                      ScrollCallback on_finish) {
-  recordreplay::Assert("ScrollableArea::SetScrollOffset Start");
-
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
@@ -266,24 +264,15 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
 
   if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
     if (sequencer->FilterNewScrollOrAbortCurrent(scroll_type)) {
-      recordreplay::Assert("ScrollableArea::SetScrollOffset #1");
       return;
     }
   }
 
   ScrollOffset clamped_offset = ClampScrollOffset(offset);
 
-  recordreplay::Assert("ScrollableArea::SetScrollOffset #1.1 %s %s %s",
-                       offset.ToString().Utf8().c_str(),
-                       clamped_offset.ToString().Utf8().c_str(),
-                       GetScrollOffset().ToString().Utf8().c_str());
-
   if (clamped_offset == GetScrollOffset()) {
-    recordreplay::Assert("ScrollableArea::SetScrollOffset #2");
     return;
   }
-
-  recordreplay::Assert("ScrollableArea::SetScrollOffset #3");
 
   TRACE_EVENT2("blink", "ScrollableArea::SetScrollOffset", "cur_x",
                GetScrollOffset().Width(), "cur_y", GetScrollOffset().Height());
@@ -321,8 +310,6 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
     default:
       NOTREACHED();
   }
-
-  recordreplay::Assert("ScrollableArea::SetScrollOffset Done");
 }
 
 void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
@@ -342,7 +329,6 @@ void ScrollableArea::ProgrammaticScrollHelper(
     mojom::blink::ScrollBehavior scroll_behavior,
     bool is_sequenced_scroll,
     ScrollCallback on_finish) {
-  recordreplay::Assert("ScrollableArea::ProgrammaticScrollHelper");
   CancelScrollAnimation();
 
   ScrollCallback callback = std::move(on_finish);
@@ -402,8 +388,6 @@ PhysicalRect ScrollableArea::ScrollIntoView(
 
 void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
                                          mojom::blink::ScrollType scroll_type) {
-  recordreplay::Assert("ScrollableArea::ScrollOffsetChanged Start");
-
   TRACE_EVENT2("input", "ScrollableArea::scrollOffsetChanged", "x",
                offset.Width(), "y", offset.Height());
   TRACE_EVENT_INSTANT1("input", "Type", TRACE_EVENT_SCOPE_THREAD, "type",
@@ -420,7 +404,6 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   // If the layout object has been detached as a result of updating the scroll
   // this object will be cleaned up shortly.
   if (HasBeenDisposed()) {
-    recordreplay::Assert("ScrollableArea::ScrollOffsetChanged #1");
     return;
   }
 
@@ -459,7 +442,6 @@ void ScrollableArea::ScrollOffsetChanged(const ScrollOffset& offset,
   }
 
   GetScrollAnimator().SetCurrentOffset(offset);
-  recordreplay::Assert("ScrollableArea::ScrollOffsetChanged Done");
 }
 
 bool ScrollableArea::ScrollBehaviorFromString(
@@ -999,8 +981,6 @@ bool ScrollableArea::PerformSnapping(
   base::Optional<FloatPoint> snap_point = GetSnapPositionAndSetTarget(strategy);
   if (!snap_point)
     return false;
-  recordreplay::Assert("ScrollableArea::PerformSnapping #1 %s",
-                       snap_point.value().ToString().Utf8().c_str());
   CancelScrollAnimation();
   CancelProgrammaticScrollAnimation();
   SetScrollOffset(ScrollPositionToOffset(snap_point.value()),

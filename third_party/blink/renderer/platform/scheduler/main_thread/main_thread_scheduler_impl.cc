@@ -953,12 +953,10 @@ void MainThreadSchedulerImpl::WillBeginFrame(const viz::BeginFrameArgs& args) {
 }
 
 void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
-  recordreplay::Assert("MainThreadSchedulerImpl::DidCommitFrameToCompositor Start");
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "MainThreadSchedulerImpl::DidCommitFrameToCompositor");
   helper_.CheckOnValidThread();
   if (helper_.IsShutdown()) {
-    recordreplay::Assert("MainThreadSchedulerImpl::DidCommitFrameToCompositor #1");
     return;
   }
 
@@ -972,7 +970,6 @@ void MainThreadSchedulerImpl::DidCommitFrameToCompositor() {
   }
 
   main_thread_only().idle_time_estimator.DidCommitFrameToCompositor();
-  recordreplay::Assert("MainThreadSchedulerImpl::DidCommitFrameToCompositor Done");
 }
 
 void MainThreadSchedulerImpl::BeginFrameNotExpectedSoon() {
@@ -1471,17 +1468,12 @@ bool MainThreadSchedulerImpl::IsHighPriorityWorkAnticipated() {
 }
 
 bool MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork() {
-  recordreplay::Assert("MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork Start");
-
   helper_.CheckOnValidThread();
   if (helper_.IsShutdown()) {
-    recordreplay::Assert("MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork #1");
     return false;
   }
 
   MaybeUpdatePolicy();
-
-  recordreplay::Assert("MainThreadSchedulerImpl::ShouldYieldForHighPriorityWork #2");
 
   // We only yield if there's a urgent task to be run now, or we are expecting
   // one soon (touch start).
@@ -1536,7 +1528,6 @@ void MainThreadSchedulerImpl::RunIdleTasksForTesting(
 void MainThreadSchedulerImpl::MaybeUpdatePolicy() {
   helper_.CheckOnValidThread();
   if (policy_may_need_update_.IsSet()) {
-    recordreplay::Assert("MainThreadSchedulerImpl::MaybeUpdatePolicy #1");
     UpdatePolicy();
   }
 }
@@ -1568,8 +1559,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   any_thread_lock_.AssertAcquired();
   if (helper_.IsShutdown())
     return;
-
-  recordreplay::Assert("MainThreadSchedulerImpl::UpdatePolicyLocked");
 
   base::TimeTicks now = helper_.NowTicks();
   policy_may_need_update_.SetWhileLocked(false);
@@ -1603,7 +1592,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   }
 
   if (new_policy_duration > base::TimeDelta()) {
-    recordreplay::Assert("MainThreadSchedulerImpl::UpdatePolicyLocked #3");
     main_thread_only().current_policy_expiration_time =
         now + new_policy_duration;
     delayed_update_policy_runner_.SetDeadline(FROM_HERE, new_policy_duration,
@@ -1733,7 +1721,6 @@ void MainThreadSchedulerImpl::UpdatePolicyLocked(UpdateType update_type) {
   Policy old_policy = main_thread_only().current_policy;
   main_thread_only().current_policy = new_policy;
 
-  recordreplay::Assert("MainThreadSchedulerImpl::UpdatePolicyLocked #10");
   UpdateCompositorTaskQueuePriority();
 
   UpdateStateForAllTaskQueues(old_policy);
@@ -2242,7 +2229,6 @@ void MainThreadSchedulerImpl::OnIdlePeriodStarted() {
 }
 
 void MainThreadSchedulerImpl::OnIdlePeriodEnded() {
-  recordreplay::Assert("MainThreadSchedulerImpl::OnIdlePeriodEnded");
   base::AutoLock lock(any_thread_lock_);
   any_thread().last_idle_period_end_time = helper_.NowTicks();
   any_thread().in_idle_period = false;
@@ -2739,10 +2725,6 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
-  recordreplay::Assert("MainThreadSchedulerImpl::OnTaskCompleted %lu %lu",
-                       recordreplay::PointerId(this),
-                       recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
-
   // Microtasks may detach the task queue and invalidate |queue|.
   PerformMicrotaskCheckpoint();
 
@@ -2776,9 +2758,6 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
   // Unset the state of |task_priority_for_tracing|.
   main_thread_only().task_priority_for_tracing = base::nullopt;
 
-  recordreplay::Assert("MainThreadSchedulerImpl::OnTaskCompleted #1 %lu",
-                       recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
-
   RecordTaskUkm(queue.get(), task, *task_timing);
 
   main_thread_only().compositor_priority_experiments.OnTaskCompleted(
@@ -2792,9 +2771,6 @@ void MainThreadSchedulerImpl::RecordTaskUkm(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
     const TaskQueue::TaskTiming& task_timing) {
-  recordreplay::Assert("MainThreadSchedulerImpl::RecordTaskUkm %lu %lu",
-                       recordreplay::PointerId(this),
-                       recordreplay::PointerId(queue ? queue->GetFrameScheduler() : nullptr));
   if (!helper_.ShouldRecordTaskUkm(task_timing.has_thread_time()))
     return;
 
@@ -2830,9 +2806,6 @@ UkmRecordingStatus MainThreadSchedulerImpl::RecordTaskUkmImpl(
     const TaskQueue::TaskTiming& task_timing,
     FrameSchedulerImpl* frame_scheduler,
     bool precise_attribution) {
-  recordreplay::Assert("MainThreadSchedulerImpl::RecordTaskUkmImpl %lu",
-                       recordreplay::PointerId(frame_scheduler));
-
   // Skip tasks which have deleted the frame or the page scheduler.
   if (!frame_scheduler)
     return UkmRecordingStatus::kErrorMissingFrame;

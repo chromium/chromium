@@ -142,8 +142,6 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     void AddWorker(scoped_refptr<WorkerThread> worker) {
       if (!worker)
         return;
-      recordreplay::Assert("WorkerContainer::AddWorker %lu",
-                           recordreplay::PointerId(worker.get()));
       if (!first_worker_)
         first_worker_ = std::move(worker);
       else
@@ -153,12 +151,8 @@ class ThreadGroupImpl::ScopedCommandsExecutor
     template <typename Action>
     void ForEachWorker(Action action) {
       if (first_worker_) {
-        recordreplay::Assert("WorkerContainer::ForEachWorker #1 %lu",
-                             recordreplay::PointerId(first_worker_.get()));
         action(first_worker_.get());
         for (scoped_refptr<WorkerThread> worker : additional_workers_) {
-          recordreplay::Assert("WorkerContainer::ForEachWorker #2 %lu",
-                               recordreplay::PointerId(worker.get()));
           action(worker.get());
         }
       } else {
@@ -589,8 +583,6 @@ void ThreadGroupImpl::WorkerThreadDelegateImpl::OnMainEntry(
 
 RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
     WorkerThread* worker) {
-  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Start %lu", recordreplay::PointerId(this));
-
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(!worker_only().is_running_task);
 
@@ -600,7 +592,6 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   DCHECK(ContainsWorker(outer_->workers_, worker));
 
   if (!CanGetWorkLockRequired(&executor, worker)) {
-    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1");
     return nullptr;
   }
 
@@ -619,22 +610,18 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   while (!task_source && !outer_->priority_queue_.IsEmpty()) {
     // Enforce the CanRunPolicy and that no more than |max_best_effort_tasks_|
     // BEST_EFFORT tasks run concurrently.
-    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1.1");
     priority = outer_->priority_queue_.PeekSortKey().priority();
     if (!outer_->task_tracker_->CanRunPriority(priority) ||
         (priority == TaskPriority::BEST_EFFORT &&
          outer_->num_running_best_effort_tasks_ >=
              outer_->max_best_effort_tasks_)) {
-      recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1.2");
       break;
     }
 
     task_source = outer_->TakeRegisteredTaskSource(&executor);
-    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #1.3 %d", !!task_source);
   }
   if (!task_source) {
     OnWorkerBecomesIdleLockRequired(worker);
-    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #2");
     return nullptr;
   }
 
@@ -647,11 +634,9 @@ RegisteredTaskSource ThreadGroupImpl::WorkerThreadDelegateImpl::GetWork(
   if (outer_->after_start().wakeup_after_getwork &&
       outer_->after_start().wakeup_strategy !=
           WakeUpStrategy::kCentralizedWakeUps) {
-    recordreplay::Assert("WorkerThreadDelegateImpl::GetWork #3");
     outer_->EnsureEnoughWorkersLockRequired(&executor);
   }
 
-  recordreplay::Assert("WorkerThreadDelegateImpl::GetWork Done %d", !!task_source);
   return task_source;
 }
 
@@ -1021,13 +1006,6 @@ size_t ThreadGroupImpl::GetDesiredNumAwakeWorkersLockRequired() const {
   const size_t workers_for_foreground_task_sources =
       num_running_or_queued_foreground_task_sources;
 
-  recordreplay::Assert("ThreadGroupImpl::GetDesiredNumAwakeWorkersLockRequired %lu %lu %lu %lu %lu",
-                       workers_for_best_effort_task_sources,
-                       workers_for_foreground_task_sources,
-                       max_tasks_,
-                       num_running_tasks_,
-                       num_running_best_effort_tasks_);
-
   return std::min({workers_for_best_effort_task_sources +
                        workers_for_foreground_task_sources,
                    max_tasks_, kMaxNumberOfWorkers});
@@ -1041,12 +1019,8 @@ void ThreadGroupImpl::DidUpdateCanRunPolicy() {
 
 void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
     BaseScopedCommandsExecutor* base_executor) {
-  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired Start %lu",
-                       max_tasks_);
-
   // Don't do anything if the thread group isn't started.
   if (max_tasks_ == 0 || UNLIKELY(join_for_testing_started_)) {
-    recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired #1");
     return;
   }
 
@@ -1057,9 +1031,6 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
       GetDesiredNumAwakeWorkersLockRequired();
   const size_t num_awake_workers = GetNumAwakeWorkersLockRequired();
 
-  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired #1.1 %lu %lu",
-                       desired_num_awake_workers, num_awake_workers);
-
   size_t num_workers_to_wake_up =
       ClampSub(desired_num_awake_workers, num_awake_workers);
   if (after_start().wakeup_strategy == WakeUpStrategy::kExponentialWakeUps) {
@@ -1068,9 +1039,6 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
              WakeUpStrategy::kSerializedWakeUps) {
     num_workers_to_wake_up = std::min(num_workers_to_wake_up, size_t(1U));
   }
-
-  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired #2 %lu",
-                       num_workers_to_wake_up);
 
   // Wake up the appropriate number of workers.
   for (size_t i = 0; i < num_workers_to_wake_up; ++i) {
@@ -1093,8 +1061,6 @@ void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(
 
   // Ensure that the number of workers is periodically adjusted if needed.
   MaybeScheduleAdjustMaxTasksLockRequired(executor);
-
-  recordreplay::Assert("ThreadGroupImpl::EnsureEnoughWorkersLockRequired Done");
 }
 
 void ThreadGroupImpl::AdjustMaxTasks() {

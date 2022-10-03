@@ -98,24 +98,12 @@ bool WaitableEvent::IsSignaled() {
 class SyncWaiter : public WaitableEvent::Waiter {
  public:
   SyncWaiter()
-      : fired_(false), signaling_event_(nullptr), lock_("SyncWaiter.lock_"), cv_(&lock_) {
-    // https://linear.app/replay/issue/RUN-513
-    recordreplay::RegisterPointer(this);
-  }
+      : fired_(false), signaling_event_(nullptr), lock_("SyncWaiter.lock_"), cv_(&lock_) {}
 
-  ~SyncWaiter() override {
-    // https://linear.app/replay/issue/RUN-513
-    recordreplay::UnregisterPointer(this);
-  }
+  ~SyncWaiter() override {}
 
   bool Fire(WaitableEvent* signaling_event) override {
     base::AutoLock locked(lock_);
-
-    // https://linear.app/replay/issue/RUN-513
-    recordreplay::Assert("SyncWaiter::Fire %d %d %d",
-                        recordreplay::PointerId(this),
-                        recordreplay::PointerId(signaling_event),
-                        fired_);
 
     if (fired_)
       return false;
@@ -215,9 +203,6 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     sw.cv()->declare_only_used_while_idle();
   sw.lock()->Acquire();
 
-  // https://linear.app/replay/issue/RUN-513
-  recordreplay::Assert("WaitableEvent::TimedWait #0.1 %d", recordreplay::PointerId(&sw));
-
   Enqueue(&sw);
   kernel_->lock_.Release();
   // We are violating locking order here by holding the SyncWaiter lock but not
@@ -232,12 +217,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
       wait_delta.is_max() ? TimeTicks::Max()
                           : subtle::TimeTicksNowIgnoringOverride() + wait_delta;
 
-  // https://linear.app/replay/issue/RUN-513
-  recordreplay::Assert("WaitableEvent::TimedWait #1 %ld", end_time.ToInternalValue());
-
   for (TimeDelta remaining = wait_delta; remaining > TimeDelta() && !sw.fired();) {
-    // https://linear.app/replay/issue/RUN-513
-    recordreplay::Assert("WaitableEvent::TimedWait #2 %d", end_time.is_max());
     if (end_time.is_max())
       sw.cv()->Wait();
     else
@@ -245,13 +225,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
     remaining = end_time.is_max()
                     ? TimeDelta::Max()
                     : end_time - subtle::TimeTicksNowIgnoringOverride();
-    // https://linear.app/replay/issue/RUN-513
-    recordreplay::Assert("WaitableEvent::TimedWait #2.1 %ld %d %d",
-                         remaining.ToInternalValue(), remaining > TimeDelta(), sw.fired());
   }
-
-  // https://linear.app/replay/issue/RUN-513
-  recordreplay::Assert("WaitableEvent::TimedWait #3");
 
   // Get the SyncWaiter signaled state before releasing the lock.
   const bool return_value = sw.fired();
@@ -329,9 +303,6 @@ size_t WaitableEvent::WaitMany(WaitableEvent** raw_waitables,
     // enqueued anywhere.
     return waitables[r].second;
   }
-
-  // https://linear.app/replay/issue/RUN-513
-  recordreplay::Assert("WaitableEvent::WaitMany #5 %d", recordreplay::PointerId(&sw));
 
   // At this point, we hold the locks on all the WaitableEvents and we have
   // enqueued our waiter in them all.

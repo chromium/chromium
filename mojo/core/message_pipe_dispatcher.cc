@@ -102,16 +102,9 @@ MessagePipeDispatcher::MessagePipeDispatcher(NodeController* node_controller,
       port_, base::MakeRefCounted<PortObserverThunk>(this));
 
   recordreplay::RegisterPointer(this);
-  recordreplay::Assert("MessagePipeDispatcher %lu %lu %lu",
-                       recordreplay::PointerId(this),
-                       port_.name().v1, port_.name().v2);
 }
 
 bool MessagePipeDispatcher::Fuse(MessagePipeDispatcher* other) {
-  recordreplay::Assert("MessagePipeDispatcher::Fuse %lu %lu %lu %lu",
-                       port_.name().v1, port_.name().v2,
-                       other->port_.name().v1, other->port_.name().v2);
-
   node_controller_->SetPortObserver(port_, nullptr);
   node_controller_->SetPortObserver(other->port_, nullptr);
 

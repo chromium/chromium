@@ -214,10 +214,6 @@ TaskSource::RunStatus JobTaskSource::WillRunTask() {
   const size_t max_concurrency =
       GetMaxConcurrency(state_before_add.worker_count());
 
-  // https://github.com/RecordReplay/backend/issues/5661
-  recordreplay::Assert("JobTaskSource::WillRunTask #1 %lu %lu",
-                       max_concurrency, state_before_add.worker_count());
-
   if (state_before_add.worker_count() < max_concurrency)
     state_before_add = state_.IncrementWorkerCount();
   const size_t worker_count_before_add = state_before_add.worker_count();
@@ -235,16 +231,12 @@ size_t JobTaskSource::GetRemainingConcurrency() const {
   // It is safe to read |state_| without a lock since this variable is atomic,
   // and no other state is synchronized with GetRemainingConcurrency().
   const auto state = TS_UNCHECKED_READ(state_).Load();
-  recordreplay::Assert("JobTaskSource::GetRemainingConcurrency START %d %d",
-                       state.is_canceled(), state.worker_count());
   if (state.is_canceled())
     return 0;
   const size_t max_concurrency = GetMaxConcurrency(state.worker_count());
   // Avoid underflows.
   if (state.worker_count() > max_concurrency)
     return 0;
-  recordreplay::Assert("JobTaskSource::GetRemainingConcurrency #1 %lu %lu",
-                       max_concurrency, state.worker_count());
   return max_concurrency - state.worker_count();
 }
 
@@ -338,7 +330,6 @@ Task JobTaskSource::TakeTask(TaskSource::Transaction* transaction) {
 bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
   // Lock is needed to access |join_flag_| below and signal
   // |worker_released_condition_|.
-  recordreplay::Assert("JobTaskSource::DidProcessTask Start");
   CheckedAutoLock auto_lock(worker_lock_);
   const auto state_before_sub = state_.DecrementWorkerCount();
 
@@ -347,7 +338,6 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
 
   // A canceled task source should never get re-enqueued.
   if (state_before_sub.is_canceled()) {
-    recordreplay::Assert("JobTaskSource::DidProcessTask #1");
     return false;
   }
 
@@ -356,10 +346,8 @@ bool JobTaskSource::DidProcessTask(TaskSource::Transaction* /*transaction*/) {
   // Re-enqueue the TaskSource if the task ran and the worker count is below the
   // max concurrency.
   // |worker_count - 1| to exclude the returning thread.
-  bool rv = state_before_sub.worker_count() <=
-            GetMaxConcurrency(state_before_sub.worker_count() - 1);
-  recordreplay::Assert("JobTaskSource::DidProcessTask #2 %d", rv);
-  return rv;
+  return state_before_sub.worker_count() <=
+         GetMaxConcurrency(state_before_sub.worker_count() - 1);
 }
 
 TaskSourceSortKey JobTaskSource::GetSortKey(

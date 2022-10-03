@@ -94,8 +94,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
   }
 
   MojoResult RemoveHandle(Handle handle) {
-    recordreplay::Assert("WaitSet::State::RemoveHandle %u", handle.value());
-
     DCHECK(trap_handle_.is_valid());
 
     scoped_refptr<Context> context;
@@ -116,7 +114,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       // Ensure that we never return this handle as a ready result again. Note
       // that it's removal from |handle_to_context_| above ensures it will never
       // be added back to this map.
-      recordreplay::Assert("WaitSet::State::RemoveHandle #1");
       ready_handles_.erase(handle);
     }
 
@@ -215,7 +212,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
     size_t index = base::WaitableEvent::WaitMany(events.container().data(),
                                                  events.container().size());
-    recordreplay::Assert("WaitSet::State::Wait #9 %lu", index);
     base::AutoLock lock(lock_);
 
     // Pop as many handles as we can out of the ready set and return them. Note
@@ -229,17 +225,14 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
       if (signals_states)
         signals_states[i] = it->second.signals_state;
       ready_handles_.erase(it);
-      recordreplay::Assert("WaitSet::State::Wait #10 %u %u", ready_handles[i].value(), ready_results[i]);
     }
 
     // If the caller cares, let them know which user event unblocked us, if any.
     if (ready_event) {
       if (events.container()[index] == &handle_event_) {
-        recordreplay::Assert("WaitSet::State::Wait #11");
         *ready_event = nullptr;
       } else {
         *ready_event = events.container()[index];
-        recordreplay::Assert("WaitSet::State::Wait #12 %lu", recordreplay::PointerId(*ready_event));
       }
     }
   }
@@ -284,15 +277,11 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
               MojoResult result,
               MojoHandleSignalsState signals_state,
               Context* context) {
-    recordreplay::Assert("WaitSet::State::Notify %u %u %u",
-                         handle.value(), result, signals_state);
-
     base::AutoLock lock(lock_);
 
     // This notification may have raced with RemoveHandle() from another
     // sequence. We only signal the WaitSet if that's not the case.
     if (handle_to_context_.count(handle)) {
-      recordreplay::Assert("WaitSet::State::Notify #1");
       ready_handles_[handle] = {result, signals_state};
       handle_event_.Signal();
     }

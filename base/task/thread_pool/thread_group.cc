@@ -138,7 +138,6 @@ ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired()
                                 TaskPriority::USER_BLOCKING);
   if (num_queued == 0 ||
       !task_tracker_->CanRunPriority(TaskPriority::HIGHEST)) {
-    recordreplay::Assert("ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired #1");
     return 0U;
   }
   auto priority = priority_queue_.PeekSortKey().priority();
@@ -146,15 +145,10 @@ ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired()
       priority == TaskPriority::USER_BLOCKING) {
     // Assign the correct number of workers for the top TaskSource (-1 for the
     // worker that is already accounted for in |num_queued|).
-    recordreplay::Assert("ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired #2 %lu %lu",
-                         num_queued,
-                         priority_queue_.PeekTaskSource()->GetRemainingConcurrency());
     return std::max<size_t>(
         1, num_queued +
                priority_queue_.PeekTaskSource()->GetRemainingConcurrency() - 1);
   }
-  recordreplay::Assert("ThreadGroup::GetNumAdditionalWorkersForForegroundTaskSourcesLockRequired #3 %lu",
-                       num_queued);
   return num_queued;
 }
 
@@ -206,15 +200,12 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
 
   auto run_status = priority_queue_.PeekTaskSource().WillRunTask();
 
-  recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource Start %d", run_status);
-
   if (run_status == TaskSource::RunStatus::kDisallowed) {
     executor->ScheduleReleaseTaskSource(priority_queue_.PopTaskSource());
     return nullptr;
   }
 
   if (run_status == TaskSource::RunStatus::kAllowedSaturated) {
-    recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource #1");
     return priority_queue_.PopTaskSource();
   }
 
@@ -229,10 +220,8 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
   RegisteredTaskSource task_source =
       task_tracker_->RegisterTaskSource(priority_queue_.PeekTaskSource().get());
   if (!task_source) {
-    recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource #2");
     return priority_queue_.PopTaskSource();
   }
-  recordreplay::Assert("ThreadGroup::TakeRegisteredTaskSource #3");
   // Replace the top task_source and then update the queue.
   std::swap(priority_queue_.PeekTaskSource(), task_source);
   if (!disable_fair_scheduling_) {
@@ -285,15 +274,7 @@ void ThreadGroup::InvalidateAndHandoffAllTaskSourcesToOtherThreadGroup(
 bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   DCHECK(TS_UNCHECKED_READ(max_allowed_sort_key_).is_lock_free());
 
-  // https://linear.app/replay/issue/RUN-574
-  recordreplay::Assert("ThreadGroup::ShouldYield Start %d %d %ld",
-                       sort_key.priority(),
-                       (int)sort_key.worker_count(),
-                       sort_key.ready_time().ToInternalValue());
-
   if (!task_tracker_->CanRunPriority(sort_key.priority())) {
-    // https://linear.app/replay/issue/RUN-574
-    recordreplay::Assert("ThreadGroup::ShouldYield #1");
     return true;
   }
   // It is safe to read |max_allowed_sort_key_| without a lock since this
@@ -302,15 +283,10 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   auto max_allowed_sort_key =
       TS_UNCHECKED_READ(max_allowed_sort_key_).load(std::memory_order_relaxed);
 
-  // https://linear.app/replay/issue/RUN-574
-  recordreplay::Assert("ThreadGroup::ShouldYield #2 %d", max_allowed_sort_key);
-
   // To reduce unnecessary yielding, a task will never yield to a BEST_EFFORT
   // task regardless of its worker_count.
   if (sort_key.priority() > max_allowed_sort_key.priority ||
       max_allowed_sort_key.priority == TaskPriority::BEST_EFFORT) {
-    // https://linear.app/replay/issue/RUN-574
-    recordreplay::Assert("ThreadGroup::ShouldYield #3");
     return false;
   }
   // Otherwise, a task only yields to a task of equal priority if its
@@ -318,8 +294,6 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   // worker doesn't yield to a job with 0 workers.
   if (sort_key.priority() == max_allowed_sort_key.priority &&
       sort_key.worker_count() <= max_allowed_sort_key.worker_count + 1) {
-    // https://linear.app/replay/issue/RUN-574
-    recordreplay::Assert("ThreadGroup::ShouldYield #4");
     return false;
   }
 
@@ -328,9 +302,6 @@ bool ThreadGroup::ShouldYield(TaskSourceSortKey sort_key) {
   max_allowed_sort_key =
       TS_UNCHECKED_READ(max_allowed_sort_key_)
           .exchange(kMaxYieldSortKey, std::memory_order_relaxed);
-
-  // https://linear.app/replay/issue/RUN-574
-  recordreplay::Assert("ThreadGroup::ShouldYield #5 %d", max_allowed_sort_key);
 
   // Another thread might have decided to yield and racily reset
   // |max_allowed_sort_key_|, in which case this thread doesn't yield.

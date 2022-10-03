@@ -95,27 +95,10 @@ void DisplayItemRasterInvalidator::Generate() {
     }
   }
 
-  // https://linear.app/replay/issue/RUN-467
-  recordreplay::Assert("DisplayItemRasterInvalidator::Generate #5");
-
   for (const auto& item : clients_to_invalidate) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("DisplayItemRasterInvalidator::Generate #6 KEY %d OLD %d %d %d %d NEW %d %d %d %d",
-                         item.key,
-                         item.value.old_visual_rect.X(),
-                         item.value.old_visual_rect.Y(),
-                         item.value.old_visual_rect.Width(),
-                         item.value.old_visual_rect.Height(),
-                         item.value.new_visual_rect.X(),
-                         item.value.new_visual_rect.Y(),
-                         item.value.new_visual_rect.Width(),
-                         item.value.new_visual_rect.Height());
     GenerateRasterInvalidation(*item.value.client, item.value.old_visual_rect,
                                item.value.new_visual_rect, item.value.reason);
   }
-
-  // https://linear.app/replay/issue/RUN-467
-  recordreplay::Assert("DisplayItemRasterInvalidator::Generate Done");
 }
 
 DisplayItemIterator DisplayItemRasterInvalidator::MatchNewDisplayItemInOldChunk(

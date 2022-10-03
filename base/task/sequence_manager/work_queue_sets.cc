@@ -24,8 +24,6 @@ WorkQueueSets::WorkQueueSets(const char* name,
 WorkQueueSets::~WorkQueueSets() = default;
 
 void WorkQueueSets::AddQueue(WorkQueue* work_queue, size_t set_index) {
-  recordreplay::Assert("WorkQueueSets::AddQueue %lu %lu",
-                       recordreplay::PointerId(work_queue), set_index);
   DCHECK(!work_queue->work_queue_sets());
   DCHECK_LT(set_index, work_queue_heaps_.size());
   DCHECK(!work_queue->heap_handle().IsValid());
@@ -42,8 +40,6 @@ void WorkQueueSets::AddQueue(WorkQueue* work_queue, size_t set_index) {
 }
 
 void WorkQueueSets::RemoveQueue(WorkQueue* work_queue) {
-  recordreplay::Assert("WorkQueueSets::RemoveQueue %lu",
-                       recordreplay::PointerId(work_queue));
   DCHECK_EQ(this, work_queue->work_queue_sets());
   work_queue->AssignToWorkQueueSets(nullptr);
   if (!work_queue->heap_handle().IsValid())
@@ -57,8 +53,6 @@ void WorkQueueSets::RemoveQueue(WorkQueue* work_queue) {
 }
 
 void WorkQueueSets::ChangeSetIndex(WorkQueue* work_queue, size_t set_index) {
-  recordreplay::Assert("WorkQueueSets::ChangeSetIndex %lu %lu",
-                       recordreplay::PointerId(work_queue), set_index);
   DCHECK_EQ(this, work_queue->work_queue_sets());
   DCHECK_LT(set_index, work_queue_heaps_.size());
   EnqueueOrder enqueue_order;
@@ -80,8 +74,6 @@ void WorkQueueSets::ChangeSetIndex(WorkQueue* work_queue, size_t set_index) {
 }
 
 void WorkQueueSets::OnQueuesFrontTaskChanged(WorkQueue* work_queue) {
-  recordreplay::Assert("WorkQueueSets::OnQueuesFrontTaskChanged %lu",
-                       recordreplay::PointerId(work_queue));
   EnqueueOrder enqueue_order;
   size_t set_index = work_queue->work_queue_set_index();
   DCHECK_EQ(this, work_queue->work_queue_sets());
@@ -102,8 +94,6 @@ void WorkQueueSets::OnQueuesFrontTaskChanged(WorkQueue* work_queue) {
 }
 
 void WorkQueueSets::OnTaskPushedToEmptyQueue(WorkQueue* work_queue) {
-  recordreplay::Assert("WorkQueueSets::OnTaskPushedToEmptyQueue %lu",
-                       recordreplay::PointerId(work_queue));
   // NOTE if this function changes, we need to keep |WorkQueueSets::AddQueue| in
   // sync.
   DCHECK_EQ(this, work_queue->work_queue_sets());
@@ -122,8 +112,6 @@ void WorkQueueSets::OnTaskPushedToEmptyQueue(WorkQueue* work_queue) {
 }
 
 void WorkQueueSets::OnPopMinQueueInSet(WorkQueue* work_queue) {
-  recordreplay::Assert("WorkQueueSets::OnPopMinQueueInSet %lu",
-                       recordreplay::PointerId(work_queue));
   // Assume that |work_queue| contains the lowest enqueue_order.
   size_t set_index = work_queue->work_queue_set_index();
   DCHECK_EQ(this, work_queue->work_queue_sets());
@@ -149,8 +137,6 @@ void WorkQueueSets::OnPopMinQueueInSet(WorkQueue* work_queue) {
 }
 
 void WorkQueueSets::OnQueueBlocked(WorkQueue* work_queue) {
-  recordreplay::Assert("WorkQueueSets::OnQueueBlocked %lu",
-                       recordreplay::PointerId(work_queue));
   DCHECK_EQ(this, work_queue->work_queue_sets());
   base::internal::HeapHandle heap_handle = work_queue->heap_handle();
   if (!heap_handle.IsValid())
@@ -163,22 +149,18 @@ void WorkQueueSets::OnQueueBlocked(WorkQueue* work_queue) {
 }
 
 WorkQueue* WorkQueueSets::GetOldestQueueInSet(size_t set_index) const {
-  recordreplay::Assert("WorkQueueSets::GetOldestQueueInSet Start %lu", set_index);
   DCHECK_LT(set_index, work_queue_heaps_.size());
   if (work_queue_heaps_[set_index].empty())
     return nullptr;
   WorkQueue* queue = work_queue_heaps_[set_index].Min().value;
   DCHECK_EQ(set_index, queue->work_queue_set_index());
   DCHECK(queue->heap_handle().IsValid());
-  recordreplay::Assert("WorkQueueSets::GetOldestQueueInSet Done %lu",
-                       recordreplay::PointerId(queue));
   return queue;
 }
 
 WorkQueue* WorkQueueSets::GetOldestQueueAndEnqueueOrderInSet(
     size_t set_index,
     EnqueueOrder* out_enqueue_order) const {
-  recordreplay::Assert("WorkQueueSets::GetOldestQueueAndEnqueueOrderInSet Start %lu", set_index);
   DCHECK_LT(set_index, work_queue_heaps_.size());
   if (work_queue_heaps_[set_index].empty())
     return nullptr;
@@ -188,8 +170,6 @@ WorkQueue* WorkQueueSets::GetOldestQueueAndEnqueueOrderInSet(
   EnqueueOrder enqueue_order;
   DCHECK(oldest.value->GetFrontTaskEnqueueOrder(&enqueue_order) &&
          oldest.key == enqueue_order);
-  recordreplay::Assert("WorkQueueSets::GetOldestQueueAndEnqueueOrderInSet Done %lu",
-                       recordreplay::PointerId(oldest.value));
   return oldest.value;
 }
 
@@ -261,8 +241,6 @@ bool WorkQueueSets::ContainsWorkQueueForTest(
 void WorkQueueSets::CollectSkippedOverLowerPriorityTasks(
     const internal::WorkQueue* selected_work_queue,
     std::vector<const Task*>* result) const {
-  recordreplay::Assert("WorkQueueSets::CollectSkippedOverLowerPriorityTasks %lu",
-                       recordreplay::PointerId(selected_work_queue));
   EnqueueOrder selected_enqueue_order;
   CHECK(selected_work_queue->GetFrontTaskEnqueueOrder(&selected_enqueue_order));
   for (size_t priority = selected_work_queue->work_queue_set_index() + 1;

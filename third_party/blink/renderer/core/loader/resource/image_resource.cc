@@ -512,7 +512,6 @@ void ImageResource::UpdateImage(
     scoped_refptr<SharedBuffer> shared_buffer,
     ImageResourceContent::UpdateImageOption update_image_option,
     bool all_data_received) {
-  recordreplay::Assert("ImageResource::UpdateImage Start");
   bool is_multipart = !!multipart_parser_;
   auto result = GetContent()->UpdateImage(std::move(shared_buffer), GetStatus(),
                                           update_image_option,
@@ -534,7 +533,6 @@ void ImageResource::UpdateImage(
     //    (b) after returning ImageResource::updateImage().
     DecodeError(all_data_received);
   }
-  recordreplay::Assert("ImageResource::UpdateImage Done");
 }
 
 void ImageResource::FlagAsUserAgentResource() {

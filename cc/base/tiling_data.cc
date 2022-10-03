@@ -251,6 +251,7 @@ gfx::Rect TilingData::TileBounds(int i, int j) const {
 }
 
 gfx::Rect TilingData::TileBoundsWithBorder(int i, int j) const {
+  // https://linear.app/replay/issue/RUN-465
   recordreplay::Assert("TilingData::TileBoundsWithBorder %d %d %d %d %d %d %d",
                        i, j,
                        max_texture_size_.width(), max_texture_size_.height(), border_texels_,

@@ -398,9 +398,6 @@ void SyncChannel::SyncContext::Clear() {
 }
 
 bool SyncChannel::SyncContext::OnMessageReceived(const Message& msg) {
-  recordreplay::Assert("SyncChannel::SyncContext::OnMessageReceived %lu %d",
-                       recordreplay::PointerId(this), msg.routing_id());
-
   // Give the filters a chance at processing this message.
   if (TryFilters(msg))
     return true;

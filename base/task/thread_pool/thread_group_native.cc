@@ -115,8 +115,6 @@ void ThreadGroupNative::UpdateMinAllowedPriorityLockRequired() {
 }
 
 RegisteredTaskSource ThreadGroupNative::GetWork() {
-  recordreplay::Assert("ThreadGroupNative::GetWork Start");
-
   ScopedCommandsExecutor workers_executor(this);
   CheckedAutoLock auto_lock(lock_);
   DCHECK_GT(num_pending_threadpool_work_, 0U);
@@ -128,7 +126,6 @@ RegisteredTaskSource ThreadGroupNative::GetWork() {
     priority = priority_queue_.PeekSortKey().priority();
     // Enforce the CanRunPolicy.
     if (!task_tracker_->CanRunPriority(priority)) {
-      recordreplay::Assert("ThreadGroupNative::GetWork #1");
       return nullptr;
     }
 
@@ -136,7 +133,6 @@ RegisteredTaskSource ThreadGroupNative::GetWork() {
   }
   UpdateMinAllowedPriorityLockRequired();
 
-  recordreplay::Assert("ThreadGroupNative::GetWork Done %d", !!task_source);
   return task_source;
 }
 

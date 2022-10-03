@@ -725,7 +725,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
     std::unique_ptr<InputHandlerProxy::DidOverscrollParams> overscroll_params,
     const WebInputEventAttribution& attribution,
     std::unique_ptr<cc::EventMetrics> metrics) {
-  recordreplay::Assert("WidgetInputHandlerManager::DidHandleInputEventSentToCompositor Start");
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToCompositor",
                "Disposition", event_disposition);
@@ -758,7 +757,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
         FROM_HERE,
         base::BindOnce(&WidgetInputHandlerManager::FindScrollTargetOnMainThread,
                        this, event_position, std::move(result_callback)));
-    recordreplay::Assert("WidgetInputHandlerManager::DidHandleInputEventSentToCompositor #1");
     return;
   }
 
@@ -786,11 +784,9 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
     HandledEventCallback handled_event = base::BindOnce(
         &WidgetInputHandlerManager::DidHandleInputEventSentToMain, this,
         std::move(callback));
-    recordreplay::Assert("WidgetInputHandlerManager::DidHandleInputEventSentToCompositor #1.1");
     input_event_queue_->HandleEvent(std::move(event), dispatch_type, ack_state,
                                     attribution, std::move(metrics),
                                     std::move(handled_event));
-    recordreplay::Assert("WidgetInputHandlerManager::DidHandleInputEventSentToCompositor #2");
     return;
   }
 
@@ -803,8 +799,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
                                     allowed_touch_action_.value())
                               : nullptr);
   }
-
-  recordreplay::Assert("WidgetInputHandlerManager::DidHandleInputEventSentToCompositor Done");
 }
 
 void WidgetInputHandlerManager::DidHandleInputEventSentToMainFromWidgetBase(

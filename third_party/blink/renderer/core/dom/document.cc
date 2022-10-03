@@ -982,9 +982,6 @@ AtomicString Document::ConvertLocalName(const AtomicString& name) {
 // SVGElementFactory because they don't support prefixes correctly.
 Element* Document::CreateRawElement(const QualifiedName& qname,
                                     CreateElementFlags flags) {
-  recordreplay::Assert("Document::CreateRawElement %s %s",
-                       qname.NamespaceURI().Utf8().c_str(),
-                       qname.LocalName().Utf8().c_str());
   Element* element = nullptr;
   if (qname.NamespaceURI() == html_names::xhtmlNamespaceURI) {
     // https://html.spec.whatwg.org/C/#elements-in-the-dom:element-interface
@@ -1937,32 +1934,25 @@ bool Document::NeedsFullLayoutTreeUpdate() const {
   recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate Start");
 
   if (!IsActive() || !View()) {
-    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #1");
     return false;
   }
   if (style_engine_->NeedsFullStyleUpdate()) {
-    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #2");
     return true;
   }
   if (!use_elements_needing_update_.IsEmpty()) {
-    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #3");
     return true;
   }
   // We have scheduled an invalidation set on the document node which means any
   // element may need a style recalc.
   if (NeedsStyleInvalidation()) {
-    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #4");
     return true;
   }
   if (IsSlotAssignmentOrLegacyDistributionDirty()) {
-    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #5");
     return true;
   }
   if (document_animations_->NeedsAnimationTimingUpdate()) {
-    recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #6");
     return true;
   }
-  recordreplay::Assert("Document::NeedsFullLayoutTreeUpdate #7");
   return false;
 }
 
@@ -2497,27 +2487,19 @@ bool Document::NeedsLayoutTreeUpdateForNode(const Node& node,
 bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     const Node& node,
     bool ignore_adjacent_style) const {
-  recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked Start %d",
-                       recordreplay::PointerId(&node));
-
   if (node.IsShadowRoot()) {
-    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #1");
     return false;
   }
   if (GetDisplayLockDocumentState().LockedDisplayLockCount() == 0 &&
       !NeedsLayoutTreeUpdate()) {
-    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #2");
     return false;
   }
   if (!node.isConnected()) {
-    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #3");
     return false;
   }
 
   if (NeedsFullLayoutTreeUpdate() || node.NeedsStyleRecalc() ||
       node.NeedsStyleInvalidation()) {
-    recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #4 %d %d",
-                         node.NeedsStyleRecalc(), node.NeedsStyleInvalidation());
     return true;
   }
   for (const ContainerNode* ancestor = LayoutTreeBuilderTraversal::Parent(node);
@@ -2525,13 +2507,11 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
     if (ShadowRoot* root = ancestor->GetShadowRoot()) {
       if (root->NeedsStyleRecalc() || root->NeedsStyleInvalidation() ||
           root->NeedsAdjacentStyleRecalc()) {
-        recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #5");
         return true;
       }
     }
     if (ancestor->NeedsStyleRecalc() || ancestor->NeedsStyleInvalidation() ||
         (ancestor->NeedsAdjacentStyleRecalc() && !ignore_adjacent_style)) {
-      recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #6");
       return true;
     }
     auto* element = DynamicTo<Element>(ancestor);
@@ -2541,39 +2521,30 @@ bool Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(
       // Even if the ancestor is style-clean, we might've previously
       // blocked a style traversal going to the ancestor or its descendants.
       if (context->StyleTraversalWasBlocked()) {
-        recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #7");
         DCHECK(context->IsLocked());
         return true;
       }
     }
   }
-  recordreplay::Assert("Document::NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked #8");
   return false;
 }
 
 void Document::UpdateStyleAndLayoutTreeForNode(const Node* node) {
-  recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode Start %d",
-                       recordreplay::PointerId(node));
-
   DCHECK(node);
   if (!node->InActiveDocument()) {
     // If |node| is not in the active document, we can't update its style or
     // layout tree.
     DCHECK_EQ(node->ownerDocument(), this);
-    recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode #1");
     return;
   }
   DCHECK(!InStyleRecalc())
       << "UpdateStyleAndLayoutTreeForNode called from within style recalc";
   if (!NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*node)) {
-    recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode #2");
     return;
   }
 
   DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(node);
   UpdateStyleAndLayoutTree();
-
-  recordreplay::Assert("Document::UpdateStyleAndLayoutTreeForNode Done");
 }
 
 void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node) {
@@ -5516,7 +5487,6 @@ void Document::EnqueueUniqueAnimationFrameEvent(Event* event) {
 void Document::EnqueueScrollEventForNode(Node* target) {
   // Per the W3C CSSOM View Module only scroll events fired at the document
   // should bubble.
-  recordreplay::Assert("Document::EnqueueScrollEventForNode");
   overscroll_accumulated_delta_x_ = overscroll_accumulated_delta_y_ = 0;
   Event* scroll_event = target->IsDocumentNode()
                             ? Event::CreateBubble(event_type_names::kScroll)
@@ -7482,12 +7452,10 @@ void Document::CancelAnimationFrame(int id) {
 
 void Document::ServiceScriptedAnimations(
     base::TimeTicks monotonic_animation_start_time) {
-  recordreplay::Assert("Document::ServiceScriptedAnimations Start");
   auto start_time = base::TimeTicks::Now();
   scripted_animation_controller_->ServiceScriptedAnimations(
       monotonic_animation_start_time);
   if (GetFrame()) {
-    recordreplay::Assert("Document::ServiceScriptedAnimations #1");
     GetFrame()->GetFrameScheduler()->AddTaskTime(base::TimeTicks::Now() -
                                                  start_time);
   }
@@ -7722,18 +7690,15 @@ bool Document::HaveRenderBlockingResourcesLoaded() const {
 }
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
-  recordreplay::Assert("Document::GetCachedLocale Start %s", locale.Utf8().c_str());
   AtomicString locale_key = locale;
   if (locale.IsEmpty() ||
       !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled()) {
-    recordreplay::Assert("Document::GetCachedLocale #1");
     return Locale::DefaultLocale();
   }
   LocaleIdentifierToLocaleMap::AddResult result =
       locale_cache_.insert(locale_key, nullptr);
   if (result.is_new_entry)
     result.stored_value->value = Locale::Create(locale_key);
-  recordreplay::Assert("Document::GetCachedLocale Done");
   return *(result.stored_value->value);
 }
 

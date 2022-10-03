@@ -2030,7 +2030,6 @@ void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
 }
 
 void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
-  recordreplay::Assert("WebFrameWidgetImpl::BeginCommitCompositorFrame");
   commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
 }
 
@@ -2188,8 +2187,6 @@ void WebFrameWidgetImpl::RecordEndOfFrameMetrics(
     cc::ActiveFrameSequenceTrackers trackers) {
   if (!LocalRootImpl())
     return;
-
-  recordreplay::Assert("WebFrameWidgetImpl::RecordEndOfFrameMetrics");
 
   LocalRootImpl()
       ->GetFrame()

@@ -563,9 +563,6 @@ void XMLHttpRequest::ChangeState(State new_state) {
 }
 
 void XMLHttpRequest::DispatchReadyStateChangeEvent() {
-  recordreplay::Assert("XMLHttpRequest::DispatchReadyStateChangeEvent %lu",
-                       recordreplay::PointerId(this));
-
   if (!GetExecutionContext())
     return;
 
@@ -1270,9 +1267,6 @@ void XMLHttpRequest::ClearResponse() {
   // be careful with this initialization.
   received_length_ = 0;
 
-  recordreplay::Assert("XMLHttpRequest::ClearResponse Start %lu",
-                       recordreplay::PointerId(this));
-
   response_ = ResourceResponse();
 
   response_text_.Clear();
@@ -1675,13 +1669,8 @@ bool XMLHttpRequest::ResponseIsHTML() const {
 }
 
 int XMLHttpRequest::status() const {
-  recordreplay::Assert("XMLHttpRequest::status %lu %d %d",
-                       recordreplay::PointerId(this), (int)state_, error_);
-
   if (state_ == kUnsent || state_ == kOpened || error_)
     return 0;
-
-  recordreplay::Assert("XMLHttpRequest::status #1 %d", response_.HttpStatusCode());
 
   if (response_.HttpStatusCode())
     return response_.HttpStatusCode();
@@ -1762,8 +1751,6 @@ void XMLHttpRequest::DidFinishLoading(uint64_t identifier) {
 }
 
 void XMLHttpRequest::DidFinishLoadingInternal() {
-  recordreplay::Assert("XMLHttpRequest::DidFinishLoadingInternal Start");
-
   if (response_document_parser_) {
     // |DocumentParser::finish()| tells the parser that we have reached end of
     // the data.  When using |HTMLDocumentParser|, which works asynchronously,
@@ -1772,7 +1759,6 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
     // |notifyParserStopped| to progress state.
     response_document_parser_->Finish();
     DCHECK(response_document_);
-    recordreplay::Assert("XMLHttpRequest::DidFinishLoadingInternal #1");
     return;
   }
 
@@ -1794,8 +1780,6 @@ void XMLHttpRequest::DidFinishLoadingInternal() {
 
   ClearVariablesForLoading();
   EndLoading();
-
-  recordreplay::Assert("XMLHttpRequest::DidFinishLoadingInternal Done");
 }
 
 void XMLHttpRequest::DidFinishLoadingFromBlob() {
@@ -1836,7 +1820,6 @@ void XMLHttpRequest::NotifyParserStopped() {
 }
 
 void XMLHttpRequest::EndLoading() {
-  recordreplay::Assert("XMLHttpRequest::EndLoading Start");
   probe::DidFinishXHR(GetExecutionContext(), this);
 
   if (loader_) {
@@ -1851,14 +1834,10 @@ void XMLHttpRequest::EndLoading() {
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
     LocalFrame* frame = window->GetFrame();
-    recordreplay::Assert("XMLHttpRequest::EndLoading #0 %d %d", !!frame, cors::IsOkStatus(status()));
     if (frame && cors::IsOkStatus(status())) {
-      recordreplay::Assert("XMLHttpRequest::EndLoading #1");
       frame->GetPage()->GetChromeClient().AjaxSucceeded(frame);
     }
   }
-
-  recordreplay::Assert("XMLHttpRequest::EndLoading Done");
 }
 
 void XMLHttpRequest::DidSendData(uint64_t bytes_sent,
@@ -1886,9 +1865,6 @@ void XMLHttpRequest::DidReceiveResponse(uint64_t identifier,
                                         const ResourceResponse& response) {
   // TODO(yhirano): Remove this CHECK: see https://crbug.com/570946.
   CHECK(&response);
-
-  recordreplay::Assert("XMLHttpRequest::DidReceiveResponse Start %lu %d",
-                       recordreplay::PointerId(this), response.HttpStatusCode());
 
   DVLOG(1) << this << " didReceiveResponse(" << identifier << ")";
   ScopedEventDispatchProtect protect(&event_dispatch_recursion_level_);

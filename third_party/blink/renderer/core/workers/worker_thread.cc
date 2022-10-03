@@ -760,9 +760,6 @@ void WorkerThread::PrepareForShutdownOnWorkerThread() {
 }
 
 void WorkerThread::PerformShutdownOnWorkerThread() {
-  recordreplay::Assert("WorkerThread::PerformShutdownOnWorkerThread %lu",
-                       recordreplay::PointerId(this));
-
   DCHECK(IsCurrentThread());
   {
     MutexLocker lock(mutex_);
@@ -864,9 +861,6 @@ void WorkerThread::PauseOrFreeze(mojom::FrameLifecycleState state) {
 
 void WorkerThread::PauseOrFreezeOnWorkerThread(
     mojom::FrameLifecycleState state) {
-  recordreplay::Assert("WorkerThread::PauseOrFreezeOnWorkerThread %lu",
-                       recordreplay::PointerId(this));
-
   DCHECK(IsCurrentThread());
   DCHECK(state == mojom::FrameLifecycleState::kFrozen ||
          state == mojom::FrameLifecycleState::kPaused);

@@ -691,13 +691,10 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
   DCHECK(!RuntimeEnabledFeatures::ForceSynchronousHTMLParsingEnabled());
   TRACE_EVENT0("blink", "HTMLDocumentParser::EnqueueTokenizedChunk");
 
-  recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk Start");
-
   DCHECK(chunk);
   DCHECK(GetDocument());
 
   if (!IsParsing()) {
-    recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk #1");
     return;
   }
 
@@ -739,8 +736,6 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
     // Delay sending some requests if meta tag based CSP is present or
     // if AppCache was used to fetch the HTML but was not yet initialized for
     // this document.
-    recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk #2 %d",
-                         !!pending_csp_meta_token_);
     if (pending_csp_meta_token_ ||
         ((!base::FeatureList::IsEnabled(
               blink::features::kVerifyHTMLFetchedFromAppCacheBeforeDelay) ||
@@ -769,8 +764,6 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
 
   if (!IsPaused() && !IsScheduledForUnpause())
     parser_scheduler_->ScheduleForUnpause();
-
-  recordreplay::Assert("HTMLDocumentParser::EnqueueTokenizedChunk Done");
 }
 
 void HTMLDocumentParser::DidReceiveEncodingDataFromBackgroundParser(
@@ -856,7 +849,6 @@ void HTMLDocumentParser::DiscardSpeculationsAndResumeFrom(
       last_chunk_before_script->preload_scanner_checkpoint;
   checkpoint->unparsed_input = input_.Current().ToString().IsolatedCopy();
   // FIXME: This should be passed in instead of cleared.
-  recordreplay::Assert("HTMLDocumentParser::DiscardSpeculationsAndResumeFrom");
   input_.Current().Clear();
 
   DCHECK(checkpoint->unparsed_input.IsSafeToSendToAnotherThread());
@@ -1045,8 +1037,6 @@ bool HTMLDocumentParser::PumpTokenizer() {
   int budget = max_tokenization_budget_;
 
   while (!should_yield) {
-    recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #0");
-
     const auto next_token_status = CanTakeNextToken();
     if (next_token_status == NoTokens) {
       // No tokens left to process in this pump, so break
@@ -1066,27 +1056,21 @@ bool HTMLDocumentParser::PumpTokenizer() {
       RUNTIME_CALL_TIMER_SCOPE(
           V8PerIsolateData::MainThreadIsolate(),
           RuntimeCallStats::CounterId::kHTMLTokenizerNextToken);
-      recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #1 %u",
-                           input_.Current().length());
       if (!tokenizer_->NextToken(input_.Current(), Token()))
         break;
       budget--;
     }
     ConstructTreeFromHTMLToken();
     if (!should_run_until_completion && !IsPaused()) {
-      recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #2");
       DCHECK_EQ(task_runner_state_->GetMode(), kAllowDeferredParsing);
       should_yield = budget <= 0;
       should_yield |= scheduler_->ShouldYieldForHighPriorityWork();
       should_yield &= task_runner_state_->HaveExitedHeader();
-      recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #3");
     } else {
       should_yield = false;
     }
     DCHECK(IsStopped() || Token().IsUninitialized());
   }
-
-  recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #4");
 
   if (IsStopped())
     return false;
@@ -1104,8 +1088,6 @@ bool HTMLDocumentParser::PumpTokenizer() {
         preload_scanner_ = CreatePreloadScanner(
             TokenPreloadScanner::ScannerType::kMainDocument);
         preload_scanner_->AppendToEnd(input_.Current());
-        recordreplay::Assert("HTMLDocumentParser::PumpTokenizer #2 %u",
-                             input_.Current().length());
       }
       ScanAndPreload(preload_scanner_.get());
     }
@@ -1226,8 +1208,6 @@ void HTMLDocumentParser::insert(const String& sourceArg) {
     delete[] chars;
   }
 
-  recordreplay::Assert("HTMLDocumentParser::insert Start %u %d", source.length(), source.Is8Bit());
-
   if (IsStopped())
     return;
 
@@ -1244,9 +1224,6 @@ void HTMLDocumentParser::insert(const String& sourceArg) {
   SegmentedString excluded_line_number_source(source);
   excluded_line_number_source.SetExcludeLineNumbers();
   input_.InsertAtCurrentInsertionPoint(excluded_line_number_source);
-
-  recordreplay::Assert("HTMLDocumentParser::insert #1 %u",
-                        input_.Current().length());
 
   // Pump the the tokenizer to build the document from the given insert point.
   // Should process everything available and not defer anything.
@@ -1383,8 +1360,6 @@ void HTMLDocumentParser::Append(const String& input_source) {
   }
 
   input_.AppendToEnd(source);
-  recordreplay::Assert("HTMLDocumentParser::Append #1 %u",
-                        input_.Current().length());
 
   task_runner_state_->SetHaveSeenFirstByte();
 
@@ -1719,8 +1694,6 @@ void HTMLDocumentParser::ParseDocumentFragment(
 void HTMLDocumentParser::AppendBytes(const char* data, size_t length) {
   TRACE_EVENT2("blink", "HTMLDocumentParser::appendBytes", "size",
                (unsigned)length, "parser", (void*)this);
-
-  recordreplay::Assert("HTMLDocumentParser::AppendBytes %lu %u", length, data[0]);
 
   DCHECK(Thread::MainThread()->IsCurrentThread());
 

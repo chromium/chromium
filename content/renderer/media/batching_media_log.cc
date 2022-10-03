@@ -135,8 +135,6 @@ void BatchingMediaLog::AddLogRecordLocked(
     if (ipc_send_pending_)
       return;
 
-    recordreplay::Assert("BatchingMediaLog::AddLogRecordLocked #5");
-
     ipc_send_pending_ = true;
     delay_for_next_ipc_send = base::TimeDelta::FromSeconds(1) -
                               (tick_clock_->NowTicks() - last_ipc_send_time_);
@@ -258,8 +256,6 @@ void BatchingMediaLog::MaybeQueueEvent_Locked(
                  base::NumberToString(media::MediaLog::kLogLimit) +
                  " messages per second. Futher entries will be dropped.";
   DLOG(WARNING) << message;
-
-  recordreplay::Assert("BatchingMediaLog::MaybeQueueEvent_Locked #1");
 
   queued_media_events_.emplace_back();
   queued_media_events_.back().id = event->id;

@@ -416,8 +416,6 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
     RegisteredTaskSource task_source) {
   DCHECK(task_source);
 
-  recordreplay::Assert("TaskTracker::RunAndPopNextTask Start");
-
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
 
   // Run the next task in |task_source|.
@@ -438,8 +436,6 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
     AfterRunTask(task_source->shutdown_behavior());
   const bool task_source_must_be_queued = task_source.DidProcessTask();
   // |task_source| should be reenqueued iff requested by DidProcessTask().
-  recordreplay::Assert("TaskTracker::RunAndPopNextTask Done %d",
-                       task_source_must_be_queued);
   if (task_source_must_be_queued)
     return task_source;
   return nullptr;
@@ -628,35 +624,28 @@ scoped_refptr<TaskSource> TaskTracker::UnregisterTaskSource(
 }
 
 void TaskTracker::DecrementNumItemsBlockingShutdown() {
-  recordreplay::Assert("TaskTracker::DecrementNumItemsBlockingShutdown Start");
   const bool shutdown_started_and_no_items_block_shutdown =
       state_->DecrementNumItemsBlockingShutdown();
   if (!shutdown_started_and_no_items_block_shutdown) {
-    recordreplay::Assert("TaskTracker::DecrementNumItemsBlockingShutdown #1");
     return;
   }
 
   CheckedAutoLock auto_lock(shutdown_lock_);
   DCHECK(shutdown_event_);
   shutdown_event_->Signal();
-  recordreplay::Assert("TaskTracker::DecrementNumItemsBlockingShutdown Done");
 }
 
 void TaskTracker::DecrementNumIncompleteTaskSources() {
-  recordreplay::Assert("TaskTracker::DecrementNumIncompleteTaskSources Start");
   const auto prev_num_incomplete_task_sources =
       num_incomplete_task_sources_.fetch_sub(1);
   DCHECK_GE(prev_num_incomplete_task_sources, 1);
   if (prev_num_incomplete_task_sources == 1) {
-    recordreplay::Assert("TaskTracker::DecrementNumIncompleteTaskSources #1");
     {
       CheckedAutoLock auto_lock(flush_lock_);
       flush_cv_->Signal();
     }
-    recordreplay::Assert("TaskTracker::DecrementNumIncompleteTaskSources #2");
     CallFlushCallbackForTesting();
   }
-  recordreplay::Assert("TaskTracker::DecrementNumIncompleteTaskSources Done");
 }
 
 void TaskTracker::CallFlushCallbackForTesting() {

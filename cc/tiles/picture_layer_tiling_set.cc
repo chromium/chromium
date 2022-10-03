@@ -176,9 +176,6 @@ void PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit(
     const Region& layer_invalidation,
     float minimum_contents_scale,
     float maximum_contents_scale) {
-  recordreplay::Assert("PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit %d",
-                       recordreplay::PointerId(this));
-
   RemoveTilingsBelowScaleKey(minimum_contents_scale);
   RemoveTilingsAboveScaleKey(maximum_contents_scale);
 

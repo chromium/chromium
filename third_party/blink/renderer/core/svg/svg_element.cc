@@ -522,13 +522,7 @@ void SVGElement::UpdateRelativeLengthsInformation(
 
 void SVGElement::InvalidateRelativeLengthClients(
     SubtreeLayoutScope* layout_scope) {
-  // https://linear.app/replay/issue/RUN-569
-  recordreplay::Assert("SVGElement::InvalidateRelativeLengthClients Start %d",
-                       recordreplay::PointerId(this));
-
   if (!isConnected()) {
-    // https://linear.app/replay/issue/RUN-569
-    recordreplay::Assert("SVGElement::InvalidateRelativeLengthClients #1");
     return;
   }
 

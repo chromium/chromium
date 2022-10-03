@@ -122,7 +122,6 @@ int PageResourceDataUse::CalculateNewlyReceivedBytes() {
 }
 
 mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
-  recordreplay::Assert("PageResourceDataUse::GetResourceDataUpdate %s", mime_type_.c_str());
   DCHECK(cache_type_ == mojom::CacheType::kMemory ? is_complete_ : true);
   mojom::ResourceDataUpdatePtr resource_data_update =
       mojom::ResourceDataUpdate::New();

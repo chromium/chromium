@@ -61,8 +61,6 @@ void TaskQueueSelector::DisableQueue(internal::TaskQueueImpl* queue) {
 
 void TaskQueueSelector::SetQueuePriority(internal::TaskQueueImpl* queue,
                                          TaskQueue::QueuePriority priority) {
-  recordreplay::Assert("TaskQueueSelector::SetQueuePriority %lu %lu",
-                       recordreplay::PointerId(queue), priority);
   DCHECK_LT(priority, TaskQueue::kQueuePriorityCount);
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (queue->IsQueueEnabled()) {
@@ -174,11 +172,8 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
     SelectTaskOption option) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
 
-  recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService Start");
-
   auto highest_priority = GetHighestPendingPriority(option);
   if (!highest_priority.has_value()) {
-    recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #1");
     return nullptr;
   }
 
@@ -200,8 +195,6 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
             :
 #endif
             ChooseImmediateOnlyWithPriority<SetOperationOldest>(priority);
-    recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #2 %lu",
-                         recordreplay::PointerId(queue));
     return queue;
   }
 
@@ -221,8 +214,6 @@ WorkQueue* TaskQueueSelector::SelectWorkQueueToService(
     immediate_starvation_count_ = 0;
   }
 
-  recordreplay::Assert("TaskQueueSelector::SelectWorkQueueToService #3 %lu",
-                       recordreplay::PointerId(queue));
   return queue;
 }
 
@@ -239,18 +230,14 @@ void TaskQueueSelector::SetTaskQueueSelectorObserver(Observer* observer) {
 
 Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
     SelectTaskOption option) const {
-  recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority Start %d", option);
-
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (!active_priority_tracker_.HasActivePriority()) {
-    recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #1");
     return nullopt;
   }
 
   TaskQueue::QueuePriority highest_priority =
       active_priority_tracker_.HighestActivePriority();
   if (option != SelectTaskOption::kSkipDelayedTask) {
-    recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #2 %d", highest_priority);
     return highest_priority;
   }
 
@@ -258,12 +245,10 @@ Optional<TaskQueue::QueuePriority> TaskQueueSelector::GetHighestPendingPriority(
        highest_priority = NextPriority(highest_priority)) {
     if (active_priority_tracker_.IsActive(highest_priority) &&
         !immediate_work_queue_sets_.IsSetEmpty(highest_priority)) {
-      recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #3 %d", highest_priority);
       return highest_priority;
     }
   }
 
-  recordreplay::Assert("TaskQueueSelector::GetHighestPendingPriority #4");
   return nullopt;
 }
 
@@ -283,8 +268,6 @@ TaskQueueSelector::ActivePriorityTracker::ActivePriorityTracker() = default;
 void TaskQueueSelector::ActivePriorityTracker::SetActive(
     TaskQueue::QueuePriority priority,
     bool is_active) {
-  recordreplay::Assert("ActivePriorityTracker::SetActive %d %d", priority, is_active);
-
   DCHECK_LT(priority, TaskQueue::QueuePriority::kQueuePriorityCount);
   DCHECK_NE(IsActive(priority), is_active);
   if (is_active) {

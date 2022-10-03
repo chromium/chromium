@@ -111,18 +111,11 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
     TileMapKey key(iter.index());
     auto find = tiles_.find(key);
 
-    // https://github.com/RecordReplay/backend/issues/5707
-    recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #1 %d %d %d",
-                         key.index_x, key.index_y, find != tiles_.end());
-
     if (find != tiles_.end())
       continue;
 
     Tile::CreateInfo info = CreateInfoForTile(key.index_x, key.index_y);
     if (ShouldCreateTileAt(info)) {
-      // https://github.com/RecordReplay/backend/issues/5707
-      recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #2");
-
       Tile* tile = CreateTile(info);
 
       // If this is the pending tree, then the active twin tiling may contain
@@ -151,9 +144,6 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
         }
       }
     }
-
-    // https://github.com/RecordReplay/backend/issues/5707
-    recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #3");
   }
   VerifyLiveTilesRect();
 }
@@ -348,11 +338,7 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
 }
 
 Tile::CreateInfo PictureLayerTiling::CreateInfoForTile(int i, int j) const {
-  recordreplay::Assert("PictureLayerTiling::CreateInfoForTile Start %d",
-                       recordreplay::PointerId(this));
   gfx::Rect tile_rect = tiling_data_.TileBoundsWithBorder(i, j);
-  recordreplay::Assert("PictureLayerTiling::CreateInfoForTile %d %d %d %d %d %d",
-                       i, j, tile_rect.x(), tile_rect.y(), tile_rect.width(), tile_rect.height());
   tile_rect.set_size(tiling_data_.max_texture_size());
   gfx::Rect enclosing_layer_rect =
       EnclosingLayerRectFromContentsRect(tile_rect);
@@ -377,8 +363,6 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // creating tiles that are different from the current active tree, which is
   // represented by the logic in the rest of the function.
   if (tree_ == ACTIVE_TREE) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #1");
     return true;
   }
 
@@ -386,15 +370,11 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   const PictureLayerTiling* active_twin =
       client_->GetPendingOrActiveTwinTiling(this);
   if (!active_twin) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #2");
     return true;
   }
 
   // Pending tree will override the entire active tree if indices don't match.
   if (!TilingMatchesTileIndices(active_twin)) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #3");
     return true;
   }
 
@@ -404,8 +384,6 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin.
   if (can_use_lcd_text() != active_twin->can_use_lcd_text() ||
       raster_transform() != active_twin->raster_transform()) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #4");
     return true;
   }
 
@@ -413,8 +391,6 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // the pending tree should create one.
   if (!active_twin->raster_source()->IntersectsRect(info.enclosing_layer_rect,
                                                     *active_twin->client())) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #5");
     return true;
   }
 
@@ -424,16 +400,9 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // Do the intersection test in content space to match the corresponding check
   // on the active tree and avoid floating point inconsistencies.
   for (gfx::Rect layer_rect : *layer_invalidation) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #5.1 %d %d %d %d",
-                         layer_rect.x(), layer_rect.y(),
-                         layer_rect.width(), layer_rect.height());
-
     gfx::Rect invalid_content_rect =
         EnclosingContentsRectFromLayerRect(layer_rect);
     if (invalid_content_rect.Intersects(info.content_rect)) {
-      // https://linear.app/replay/issue/RUN-467
-      recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #6");
       return true;
     }
   }
@@ -444,14 +413,10 @@ bool PictureLayerTiling::ShouldCreateTileAt(
   // display content, which will have to come from the pending tree.
   if (!active_twin->TileAt(i, j) &&
       current_visible_rect_.Intersects(info.content_rect)) {
-    // https://linear.app/replay/issue/RUN-467
-    recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #7");
     return true;
   }
 
   // In all other cases, the pending tree doesn't need to create a tile.
-  // https://linear.app/replay/issue/RUN-467
-  recordreplay::Assert("PictureLayerTiling::ShouldCreateTileAt #8");
   return false;
 }
 

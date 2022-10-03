@@ -561,8 +561,6 @@ void ChildThreadImpl::OnFieldTrialGroupFinalized(
 }
 
 void ChildThreadImpl::Init(const Options& options) {
-  recordreplay::Assert("ChildThreadImpl::Init Start");
-
   TRACE_EVENT0("startup", "ChildThreadImpl::Init");
   g_lazy_child_thread_impl_tls.Pointer()->Set(this);
   on_channel_error_called_ = false;
@@ -705,14 +703,11 @@ void ChildThreadImpl::Init(const Options& options) {
   // In single-process mode, there is no need to synchronize trials to the
   // browser process (because it's the same process).
   if (!IsInBrowserProcess()) {
-    recordreplay::Assert("ChildThreadImpl::Init #1");
     field_trial_syncer_.reset(
         new variations::ChildProcessFieldTrialSyncer(this));
     field_trial_syncer_->InitFieldTrialObserving(
         *base::CommandLine::ForCurrentProcess());
   }
-
-  recordreplay::Assert("ChildThreadImpl::Init Done");
 }
 
 ChildThreadImpl::~ChildThreadImpl() {

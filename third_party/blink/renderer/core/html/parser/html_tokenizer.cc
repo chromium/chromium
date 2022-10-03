@@ -136,10 +136,6 @@ bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
 }
 
 bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
-  recordreplay::Assert("HTMLTokenizer::NextToken Start %lu %u %u",
-                       recordreplay::PointerId(this),
-                       source.length(), source.length() ? source.CurrentChar() : 0);
-
   // If we have a token in progress, then we're supposed to be called back
   // with the same token so we can finish it.
   DCHECK(!token_ || token_ == &token ||
@@ -155,18 +151,14 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     temporary_buffer_.clear();
     if (state_ == HTMLTokenizer::kDataState) {
       // We're back in the data state, so we must be done with the tag.
-      recordreplay::Assert("HTMLTokenizer::NextToken #1");
       return true;
     }
   }
 
   if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source)) {
-    recordreplay::Assert("HTMLTokenizer::NextToken #2");
     return HaveBufferedCharacterToken();
   }
   UChar cc = input_stream_preprocessor_.NextInputCharacter();
-
-  recordreplay::Assert("HTMLTokenizer::NextToken #3 %d", state_);
 
   // Source: http://www.whatwg.org/specs/web-apps/current-work/#tokenisation0
   switch (state_) {

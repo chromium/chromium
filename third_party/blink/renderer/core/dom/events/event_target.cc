@@ -495,15 +495,11 @@ bool EventTarget::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
     const AddEventListenerOptionsResolved* options) {
-  recordreplay::Assert("EventTarget::AddEventListenerInternal Start");
-
   if (!listener) {
-    recordreplay::Assert("EventTarget::AddEventListenerInternal #1");
     return false;
   }
 
   if (options->hasSignal() && options->signal()->aborted()) {
-    recordreplay::Assert("EventTarget::AddEventListenerInternal #2");
     return false;
   }
 
@@ -562,7 +558,6 @@ bool EventTarget::AddEventListenerInternal(
     }
   }
 
-  recordreplay::Assert("EventTarget::AddEventListenerInternal Done %d", added);
   return added;
 }
 
@@ -748,10 +743,6 @@ bool EventTarget::dispatchEventForBindings(Event* event,
 
   event->SetTrusted(false);
 
-  // https://linear.app/replay/issue/RUN-466
-  recordreplay::Assert("EventTarget::dispatchEventForBindings #5 %lu",
-                       recordreplay::PointerId(this));
-
   // Return whether the event was cancelled or not to JS not that it
   // might have actually been default handled; so check only against
   // CanceledByEventHandler.
@@ -760,12 +751,6 @@ bool EventTarget::dispatchEventForBindings(Event* event,
 }
 
 DispatchEventResult EventTarget::DispatchEvent(Event& event, const char* why) {
-  // https://linear.app/replay/issue/RUN-466
-  recordreplay::Assert("EventTarget::DispatchEvent %lu %s %s",
-                       recordreplay::PointerId(this),
-                       event.type().GetString().Ascii().c_str(),
-                       why);
-
   event.SetTrusted(true);
   return DispatchEventInternal(event);
 }
@@ -848,9 +833,6 @@ void EventTarget::CountLegacyEvents(
 }
 
 DispatchEventResult EventTarget::FireEventListeners(Event& event) {
-  recordreplay::Assert("EventTarget::FireEventListeners %lu",
-                       recordreplay::PointerId(this));
-
 #if DCHECK_IS_ON()
   DCHECK(!EventDispatchForbiddenScope::IsEventDispatchForbidden());
 #endif
@@ -1021,13 +1003,10 @@ void EventTarget::RemoveAllEventListeners() {
 }
 
 void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
-  recordreplay::Assert("EventTarget::EnqueueEvent %lu %lu",
-                       recordreplay::PointerId(this), recordreplay::PointerId(&event));
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return;
   probe::AsyncTaskScheduled(context, event.type(), event.async_task_id());
-  recordreplay::Assert("EventTarget::EnqueueEvent #1");
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
       WTF::Bind(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
@@ -1036,8 +1015,6 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
 
 void EventTarget::DispatchEnqueuedEvent(Event* event,
                                         ExecutionContext* context) {
-  recordreplay::Assert("EventTarget::DispatchEnqueuedEvent %lu %lu",
-                       recordreplay::PointerId(this), recordreplay::PointerId(event));
   if (!GetExecutionContext()) {
     probe::AsyncTaskCanceled(context, event->async_task_id());
     return;

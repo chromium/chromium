@@ -300,8 +300,6 @@ ScriptPromise SubtleCrypto::digest(ScriptState* script_state,
                                    const AlgorithmIdentifier& raw_algorithm,
                                    const BufferSource& raw_data,
                                    ExceptionState& exception_state) {
-  recordreplay::Assert("SubtleCrypto::digest Start");
-
   // Method described by:
   // https://w3c.github.io/webcrypto/Overview.html#SubtleCrypto-method-digest
 
@@ -315,7 +313,6 @@ ScriptPromise SubtleCrypto::digest(ScriptState* script_state,
   if (!NormalizeAlgorithm(script_state->GetIsolate(), raw_algorithm,
                           kWebCryptoOperationDigest, normalized_algorithm,
                           exception_state)) {
-    recordreplay::Assert("SubtleCrypto::digest #1");
     return ScriptPromise();
   }
 
@@ -328,7 +325,6 @@ ScriptPromise SubtleCrypto::digest(ScriptState* script_state,
   Platform::Current()->Crypto()->Digest(normalized_algorithm, std::move(data),
                                         result->Result(),
                                         std::move(task_runner));
-  recordreplay::Assert("SubtleCrypto::digest Done");
   return result->Promise();
 }
 

@@ -304,7 +304,6 @@ std::unique_ptr<ThrottlingURLLoader> ThrottlingURLLoader::CreateLoaderAndStart(
 }
 
 ThrottlingURLLoader::~ThrottlingURLLoader() {
-  recordreplay::Assert("ThrottlingURLLoader::~ThrottlingURLLoader %lu", recordreplay::PointerId(this));
   recordreplay::UnregisterPointer(this);
 
   if (inside_delegate_calls_ > 0) {

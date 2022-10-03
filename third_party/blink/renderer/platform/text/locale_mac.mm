@@ -70,7 +70,6 @@ static NSLocale* DetermineLocale(const String& locale) {
 }
 
 std::unique_ptr<Locale> Locale::Create(const String& locale) {
-  recordreplay::Assert("Locale::Create %s", locale.Utf8().c_str());
   return LocaleMac::Create(DetermineLocale(locale));
 }
 
@@ -106,13 +105,11 @@ LocaleMac::LocaleMac(NSLocale* locale)
 LocaleMac::~LocaleMac() {}
 
 std::unique_ptr<LocaleMac> LocaleMac::Create(const String& locale_identifier) {
-  recordreplay::Assert("LocaleMac::Create #1");
   NSLocale* locale = [NSLocale localeWithLocaleIdentifier:locale_identifier];
   return LocaleMac::Create(locale);
 }
 
 std::unique_ptr<LocaleMac> LocaleMac::Create(NSLocale* locale) {
-  recordreplay::Assert("LocaleMac::Create #2");
   return base::WrapUnique(new LocaleMac(locale));
 }
 

@@ -208,7 +208,6 @@ void MessagePumpCFRunLoopBase::ScheduleDelayedWorkImpl(TimeDelta delta) {
   } else {
     CFRunLoopTimerSetTolerance(delayed_work_timer_, 0);
   }
-  recordreplay::Assert("ScheduleDelayedWorkImpl %.2f", delta.InSecondsF());
   CFRunLoopTimerSetNextFireDate(
       delayed_work_timer_, CFAbsoluteTimeGetCurrent() + delta.InSecondsF());
 }
@@ -634,14 +633,11 @@ MessagePumpNSRunLoop::~MessagePumpNSRunLoop() {
 }
 
 void MessagePumpNSRunLoop::DoRun(Delegate* delegate) {
-  recordreplay::Assert("MessagePumpNSRunLoop::DoRun Start");
   while (keep_running()) {
     // NSRunLoop manages autorelease pools itself.
-    recordreplay::Assert("MessagePumpNSRunLoop::DoRun #1");
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                              beforeDate:[NSDate distantFuture]];
   }
-  recordreplay::Assert("MessagePumpNSRunLoop::Done");
 }
 
 bool MessagePumpNSRunLoop::DoQuit() {

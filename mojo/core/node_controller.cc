@@ -59,8 +59,6 @@ ports::NodeName GetRandomNodeName() {
 }
 
 Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
-  recordreplay::Assert("SerializeEventMessage Start %d", event->type());
-
   if (event->type() == ports::Event::Type::kUserMessage) {
     // User message events must already be partially serialized.
     return UserMessageImpl::FinalizeEventMessage(
@@ -72,7 +70,6 @@ Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
   auto message = NodeChannel::CreateEventMessage(size, size, &data, 0);
   event->Serialize(data);
 
-  recordreplay::Assert("SerializeEventMessage Done %lu %lu", size, message->data_num_bytes());
   return message;
 }
 
@@ -277,8 +274,6 @@ int NodeController::SendUserMessage(
 
 void NodeController::MergePortIntoInviter(const std::string& name,
                                           const ports::PortRef& port) {
-  recordreplay::Assert("NodeController::MergePortIntoInviter Start");
-
   scoped_refptr<NodeChannel> inviter;
   bool reject_merge = false;
   {
@@ -288,8 +283,6 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     // |pending_port_merges_|.
     base::AutoLock lock(pending_port_merges_lock_);
     inviter = GetInviterChannel();
-    recordreplay::Assert("NodeController::MergePortIntoInviter #1 %d %d",
-                         reject_pending_merges_, !!inviter);
     if (reject_pending_merges_) {
       reject_merge = true;
     } else if (!inviter) {
@@ -301,13 +294,10 @@ void NodeController::MergePortIntoInviter(const std::string& name,
     node_->ClosePort(port);
     DVLOG(2) << "Rejecting port merge for name " << name
              << " due to closed inviter channel.";
-    recordreplay::Assert("NodeController::MergePortIntoInviter #2");
     return;
   }
 
-  recordreplay::Assert("NodeController::MergePortIntoInviter #3");
   inviter->RequestPortMerge(port.name(), name);
-  recordreplay::Assert("NodeController::MergePortIntoInviter Done");
 }
 
 int NodeController::MergeLocalPorts(const ports::PortRef& port0,
@@ -769,11 +759,6 @@ void NodeController::ForwardEvent(const ports::NodeName& node,
                                   ports::ScopedEvent event) {
   DCHECK(event);
 
-  recordreplay::Assert("NodeController::ForwardEvent %d %lu %lu %lu %lu",
-                       node == name_,
-                       name_.v1, name_.v2,
-                       node.v1, node.v2);
-
   if (node == name_)
     node_->AcceptEvent(std::move(event));
   else
@@ -794,8 +779,6 @@ void NodeController::BroadcastEvent(ports::ScopedEvent event) {
 }
 
 void NodeController::PortStatusChanged(const ports::PortRef& port) {
-  recordreplay::Assert("NodeController::PortStatusChanged Start");
-
   scoped_refptr<ports::UserData> user_data;
   node_->GetUserData(port, &user_data);
 
@@ -806,8 +789,6 @@ void NodeController::PortStatusChanged(const ports::PortRef& port) {
     DVLOG(2) << "Ignoring status change for " << port.name() << " because it "
              << "doesn't have an observer.";
   }
-
-  recordreplay::Assert("NodeController::PortStatusChanged Done");
 }
 
 void NodeController::OnAcceptInvitee(const ports::NodeName& from_node,
@@ -1059,13 +1040,10 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
                                     Channel::MessagePtr channel_message) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  recordreplay::Assert("NodeController::OnEventMessage Start");
-
   auto event = DeserializeEventMessage(from_node, std::move(channel_message));
   if (!event) {
     // We silently ignore unparseable events, as they may come from a process
     // running a newer version of Mojo.
-    recordreplay::Assert("NodeController::OnEventMessage #1");
     DVLOG(1) << "Ignoring invalid or unknown event from " << from_node;
     return;
   }
@@ -1073,8 +1051,6 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
   node_->AcceptEvent(std::move(event));
 
   AttemptShutdownIfRequested();
-
-  recordreplay::Assert("NodeController::OnEventMessage Done");
 }
 
 void NodeController::OnRequestPortMerge(

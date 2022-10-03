@@ -26,7 +26,6 @@ WatcherDispatcher::WatcherDispatcher(MojoTrapEventHandler handler)
 
 void WatcherDispatcher::NotifyHandleState(Dispatcher* dispatcher,
                                           const HandleSignalsState& state) {
-  recordreplay::Assert("WatcherDispatcher::NotifyHandleState %lu", recordreplay::PointerId(this));
   base::AutoLock lock(lock_);
   auto it = watched_handles_.find(dispatcher);
   if (it == watched_handles_.end())
@@ -72,8 +71,6 @@ void WatcherDispatcher::InvokeWatchCallback(uintptr_t context,
                                             MojoResult result,
                                             const HandleSignalsState& state,
                                             MojoTrapEventFlags flags) {
-  recordreplay::Assert("WatcherDispatcher::InvokeWatchCallback Start");
-
   MojoTrapEvent event;
   event.struct_size = sizeof(event);
   event.trigger_context = context;
@@ -96,14 +93,11 @@ void WatcherDispatcher::InvokeWatchCallback(uintptr_t context,
     // state management possible in user code.
     base::AutoLock lock(lock_);
     if (closed_ && result != MOJO_RESULT_CANCELLED) {
-      recordreplay::Assert("WatcherDispatcher::InvokeWatchCallback #1");
       return;
     }
   }
 
   handler_(&event);
-
-  recordreplay::Assert("WatcherDispatcher::InvokeWatchCallback Done");
 }
 
 Dispatcher::Type WatcherDispatcher::GetType() const {
@@ -222,26 +216,21 @@ MojoResult WatcherDispatcher::CancelWatch(uintptr_t context) {
 
 MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
                                   MojoTrapEvent* blocking_events) {
-  recordreplay::Assert("WatcherDispatcher::Arm Start");
   base::AutoLock lock(lock_);
   if (num_blocking_events && !blocking_events) {
-    recordreplay::Assert("WatcherDispatcher::Arm #1");
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
   if (closed_) {
-    recordreplay::Assert("WatcherDispatcher::Arm #2");
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
   if (watched_handles_.empty()) {
-    recordreplay::Assert("WatcherDispatcher::Arm #3");
     return MOJO_RESULT_NOT_FOUND;
   }
 
   if (ready_watches_.empty()) {
     // Fast path: No watches are ready to notify, so we're done.
     armed_ = true;
-    recordreplay::Assert("WatcherDispatcher::Arm #4");
     return MOJO_RESULT_OK;
   }
 
@@ -295,7 +284,6 @@ MojoResult WatcherDispatcher::Arm(uint32_t* num_blocking_events,
     }
   }
 
-  recordreplay::Assert("WatcherDispatcher::Arm Done");
   return MOJO_RESULT_FAILED_PRECONDITION;
 }
 

@@ -30,11 +30,7 @@ RequestContext::RequestContext(Source source)
 }
 
 RequestContext::~RequestContext() {
-  recordreplay::Assert("RequestContext::~RequestContext Start");
-
   if (IsCurrent()) {
-    recordreplay::Assert("RequestContext::~RequestContext #1");
-
     // NOTE: Callbacks invoked by this destructor are allowed to initiate new
     // EDK requests on this thread, so we need to reset the thread-local context
     // pointer before calling them. We persist the original notification source
@@ -68,25 +64,19 @@ RequestContext::~RequestContext() {
       // treating all nested trap events as if they originated from a local API
       // call even if this is a system RequestContext.
       RequestContext inner_context(Source::LOCAL_API_CALL);
-      recordreplay::Assert("RequestContext::~RequestContext #2");
       watch->InvokeCallback(MOJO_RESULT_CANCELLED, closed_state, flags);
-      recordreplay::Assert("RequestContext::~RequestContext #3");
     }
 
     for (const WatchNotifyFinalizer& watch :
          watch_notify_finalizers_.container()) {
       RequestContext inner_context(source_);
-      recordreplay::Assert("RequestContext::~RequestContext #4");
       watch.watch->InvokeCallback(watch.result, watch.state, flags);
-      recordreplay::Assert("RequestContext::~RequestContext #5");
     }
   } else {
     // It should be impossible for nested contexts to have finalizers.
     DCHECK(watch_notify_finalizers_.container().empty());
     DCHECK(watch_cancel_finalizers_.container().empty());
   }
-
-  recordreplay::Assert("RequestContext::~RequestContext Done");
 }
 
 // static
@@ -98,7 +88,6 @@ RequestContext* RequestContext::current() {
 void RequestContext::AddWatchNotifyFinalizer(scoped_refptr<Watch> watch,
                                              MojoResult result,
                                              const HandleSignalsState& state) {
-  recordreplay::Assert("RequestContext::AddWatchNotifyFinalizer");
   DCHECK(IsCurrent());
   watch_notify_finalizers_->push_back(
       WatchNotifyFinalizer(std::move(watch), result, state));

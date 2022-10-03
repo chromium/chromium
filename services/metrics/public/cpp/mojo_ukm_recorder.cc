@@ -37,13 +37,7 @@ void MojoUkmRecorder::RecordNavigation(
 }
 
 void MojoUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
-  // https://github.com/RecordReplay/backend/issues/5663
-  recordreplay::Assert("MojoUkmRecorder::AddEntry Start");
-
   interface_->AddEntry(std::move(entry));
-
-  // https://github.com/RecordReplay/backend/issues/5663
-  recordreplay::Assert("MojoUkmRecorder::AddEntry Done");
 }
 
 void MojoUkmRecorder::MarkSourceForDeletion(ukm::SourceId source_id) {

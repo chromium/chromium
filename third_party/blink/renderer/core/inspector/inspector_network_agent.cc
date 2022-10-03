@@ -1138,7 +1138,6 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     maybe_frame_id = frame_id;
 
   double wallTime = base::Time::Now().ToDoubleT();
-  recordreplay::Assert("InspectorNetworkAgent::WillSendRequestInternal %.2f", wallTime);
 
   if (PermitRecordReplayBrowserEvents()) {
     uint64_t bookmark = request.GetRecordReplayBookmark().value_or(0);
@@ -1442,7 +1441,6 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
   }
 
   double timestamp = base::TimeTicks::Now().since_origin().InSecondsF();
-  recordreplay::Assert("InspectorNetworkAgent::DidReceiveData %lf", timestamp);
 
   if (PermitRecordReplayBrowserEvents()) {
     base::DictionaryValue dict;
@@ -1498,7 +1496,6 @@ void InspectorNetworkAgent::DidFinishLoading(
       resources_data_->GetAndClearPendingEncodedDataLength(request_id));
   if (pending_encoded_data_length > 0) {
     double timestamp = base::TimeTicks::Now().since_origin().InSecondsF();
-    recordreplay::Assert("InspectorNetworkAgent::DidFinishLoading %lf", timestamp);
 
     GetFrontend()->dataReceived(
         request_id, timestamp, 0,

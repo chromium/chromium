@@ -28,7 +28,6 @@ TimeTicks LazyNow::Now() {
   // but in some test environments clock intentionally starts from zero.
   if (!now_) {
     DCHECK(tick_clock_);  // It can fire only on use after std::move.
-    recordreplay::Assert("LazyNow::Now #1");
     now_ = tick_clock_->NowTicks();
   }
   return *now_;

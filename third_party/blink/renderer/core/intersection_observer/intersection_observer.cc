@@ -498,7 +498,6 @@ IntersectionObserver::GetDeliveryBehavior() const {
 }
 
 void IntersectionObserver::Deliver() {
-  recordreplay::Assert("IntersectionObserver::Deliver %lu", recordreplay::PointerId(this));
   if (!needs_delivery_)
     return;
   needs_delivery_ = 0;

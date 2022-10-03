@@ -494,10 +494,6 @@ void IpcPacketSocket::SetError(int error) {
 
 void IpcPacketSocket::OnOpen(const net::IPEndPoint& local_address,
                              const net::IPEndPoint& remote_address) {
-  recordreplay::Assert("IpcPacketSocket::OnOpen %s %s",
-                       local_address.ToString().c_str(),
-                       remote_address.ToString().c_str());
-
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!jingle_glue::IPEndPointToSocketAddress(local_address, &local_address_)) {

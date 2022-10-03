@@ -2383,7 +2383,6 @@ bool LocalFrame::ConsumeTransientUserActivation(
 void LocalFrame::NotifyUserActivation(
     mojom::blink::UserActivationNotificationType notification_type,
     bool need_browser_verification) {
-  recordreplay::Assert("LocalFrame::NotifyUserActivation Start");
   mojom::blink::UserActivationUpdateType update_type =
       need_browser_verification
           ? mojom::blink::UserActivationUpdateType::
@@ -2394,7 +2393,6 @@ void LocalFrame::NotifyUserActivation(
                                                       notification_type);
   Client()->NotifyUserActivation();
   NotifyUserActivationInFrameTree(notification_type);
-  recordreplay::Assert("LocalFrame::NotifyUserActivation Done");
 }
 
 bool LocalFrame::ConsumeTransientUserActivation(

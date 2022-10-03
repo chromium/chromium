@@ -209,7 +209,6 @@ void RecordReplayPaintFinished(const SkPixmap& pixmap) {
   }
 
   size_t bookmark = gLastCommitBookmark;
-  recordreplay::Assert("RecordReplayPaintFinished %lu", bookmark);
 
   if (bookmark) {
     gCurrentPixmap = &pixmap;

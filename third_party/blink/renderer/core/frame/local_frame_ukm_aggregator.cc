@@ -25,9 +25,7 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     : aggregator_(aggregator),
       metric_index_(metric_index),
       clock_(clock),
-      start_time_(clock_->NowTicks()) {
-  recordreplay::Assert("ScopedUkmHierarchicalTimer #1");
-}
+      start_time_(clock_->NowTicks()) {}
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
     ScopedUkmHierarchicalTimer&& other)
@@ -35,14 +33,12 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::ScopedUkmHierarchicalTimer(
       metric_index_(other.metric_index_),
       clock_(other.clock_),
       start_time_(other.start_time_) {
-  recordreplay::Assert("ScopedUkmHierarchicalTimer #2");
   other.aggregator_ = nullptr;
 }
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
     ~ScopedUkmHierarchicalTimer() {
   if (aggregator_ && base::TimeTicks::IsHighResolution()) {
-    recordreplay::Assert("~ScopedUkmHierarchicalTimer #1");
     aggregator_->RecordSample(metric_index_, start_time_, clock_->NowTicks());
   }
 }
@@ -125,7 +121,6 @@ LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
 
 LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer
 LocalFrameUkmAggregator::GetScopedTimer(size_t metric_index) {
-  recordreplay::Assert("LocalFrameUkmAggregator::GetScopedTimer");
   return ScopedUkmHierarchicalTimer(this, metric_index, clock_);
 }
 

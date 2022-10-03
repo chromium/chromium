@@ -14,24 +14,6 @@
 
 #include <dlfcn.h>
 
-// There are linker problems if we try to use recordreplay::Assert here.
-static void (*gRecordReplayAssertFn)(const char*, va_list);
-
-static void RecordReplayAssert(const char* aFormat, ...) {
-  if (!gRecordReplayAssertFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayAssert");
-    if (!fnptr) {
-      return;
-    }
-    gRecordReplayAssertFn = reinterpret_cast<void(*)(const char*, va_list)>(fnptr);
-  }
-
-  va_list ap;
-  va_start(ap, aFormat);
-  gRecordReplayAssertFn(aFormat, ap);
-  va_end(ap);
-}
-
 static void (*gRecordReplayRegisterPointerFn)(void*);
 
 static bool RecordReplayRegisterPointer(void* ptr) {
@@ -106,10 +88,7 @@ bool PostTaskAndReplyTaskRunner::PostTask(const Location& from_here,
 }  // namespace
 
 bool TaskRunner::PostTask(const Location& from_here, OnceClosure task) {
-  RecordReplayAssert("TaskRunner::PostTask Start %lu", RecordReplayPointerId(this));
-  bool rv = PostDelayedTask(from_here, std::move(task), base::TimeDelta());
-  RecordReplayAssert("TaskRunner::PostTask Done %d", rv);
-  return rv;
+  return PostDelayedTask(from_here, std::move(task), base::TimeDelta());
 }
 
 bool TaskRunner::PostTaskAndReply(const Location& from_here,

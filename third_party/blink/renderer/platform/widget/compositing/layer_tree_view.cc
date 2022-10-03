@@ -167,18 +167,13 @@ void LayerTreeView::DidUpdateLayers() {
 }
 
 void LayerTreeView::BeginMainFrame(const viz::BeginFrameArgs& args) {
-  recordreplay::Assert("LayerTreeView::BeginMainFrame Start");
   if (!delegate_) {
-    recordreplay::Assert("LayerTreeView::BeginMainFrame #1");
     return;
   }
   if (web_main_thread_scheduler_) {
-    recordreplay::Assert("LayerTreeView::BeginMainFrame #2");
     web_main_thread_scheduler_->WillBeginFrame(args);
-    recordreplay::Assert("LayerTreeView::BeginMainFrame #3");
   }
   delegate_->BeginMainFrame(args.frame_time);
-  recordreplay::Assert("LayerTreeView::BeginMainFrame Done");
 }
 
 void LayerTreeView::OnDeferMainFrameUpdatesChanged(bool status) {

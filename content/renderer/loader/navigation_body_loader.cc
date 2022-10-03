@@ -295,8 +295,6 @@ void NavigationBodyLoader::ReadFromDataPipe() {
     uint32_t available = 0;
     MojoResult result =
         handle_->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
-    recordreplay::Assert("NavigationBodyLoader::ReadFromDataPipe %u %u",
-                         available, available ? ((const char*)buffer)[0] : 0);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher_.ArmOrNotify();
       return;

@@ -101,7 +101,6 @@ void SoftwareRenderer::BeginDrawingFrame() {
 }
 
 void SoftwareRenderer::FinishDrawingFrame() {
-  recordreplay::Assert("SoftwareRenderer::FinishDrawingFrame Start");
   TRACE_EVENT0("viz", "SoftwareRenderer::FinishDrawingFrame");
   current_framebuffer_canvas_.reset();
   current_canvas_ = nullptr;
@@ -109,7 +108,6 @@ void SoftwareRenderer::FinishDrawingFrame() {
   if (root_canvas_)
     output_device_->EndPaint();
   root_canvas_ = nullptr;
-  recordreplay::Assert("SoftwareRenderer::FinishDrawingFrame Done");
 }
 
 void SoftwareRenderer::SwapBuffers(SwapFrameData swap_frame_data) {

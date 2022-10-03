@@ -237,15 +237,12 @@ void Core::RequestShutdown(base::OnceClosure callback) {
 }
 
 MojoHandle Core::ExtractMessagePipeFromInvitation(const std::string& name) {
-  recordreplay::Assert("Core::ExtractMessagePipeFromInvitation Overload Start");
   RequestContext request_context;
   ports::PortRef port0, port1;
   GetNodeController()->node()->CreatePortPair(&port0, &port1);
   MojoHandle handle = AddDispatcher(new MessagePipeDispatcher(
       GetNodeController(), port0, kUnknownPipeIdForDebug, 1));
-  recordreplay::Assert("Core::ExtractMessagePipeFromInvitation Overload #1");
   GetNodeController()->MergePortIntoInviter(name, port1);
-  recordreplay::Assert("Core::ExtractMessagePipeFromInvitation Overload Done");
   return handle;
 }
 
@@ -337,21 +334,16 @@ MojoResult Core::ArmTrap(MojoHandle trap_handle,
                          const MojoArmTrapOptions* options,
                          uint32_t* num_blocking_events,
                          MojoTrapEvent* blocking_events) {
-  recordreplay::Assert("Core::ArmTrap Start");
   if (options && options->struct_size < sizeof(*options)) {
-    recordreplay::Assert("Core::ArmTrap #1");
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
   RequestContext request_context;
   scoped_refptr<Dispatcher> watcher = GetDispatcher(trap_handle);
   if (!watcher || watcher->GetType() != Dispatcher::Type::WATCHER) {
-    recordreplay::Assert("Core::ArmTrap #2");
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
-  MojoResult rv = watcher->Arm(num_blocking_events, blocking_events);
-  recordreplay::Assert("Core::ArmTrap Done %d", rv);
-  return rv;
+  return watcher->Arm(num_blocking_events, blocking_events);
 }
 
 MojoResult Core::CreateMessage(const MojoCreateMessageOptions* options,
@@ -368,16 +360,13 @@ MojoResult Core::CreateMessage(const MojoCreateMessageOptions* options,
 }
 
 MojoResult Core::DestroyMessage(MojoMessageHandle message_handle) {
-  recordreplay::Assert("Core::DestroyMessage Start");
   if (!message_handle) {
-    recordreplay::Assert("Core::DestroyMessage #1");
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
 
   RequestContext request_context;
   delete reinterpret_cast<ports::UserMessageEvent*>(message_handle);
 
-  recordreplay::Assert("Core::DestroyMessage Done");
   return MOJO_RESULT_OK;
 }
 
@@ -513,10 +502,6 @@ MojoResult Core::CreateMessagePipe(const MojoCreateMessagePipeOptions* options,
   ports::PortRef port0, port1;
   GetNodeController()->node()->CreatePortPair(&port0, &port1);
 
-  recordreplay::Assert("Core::CreateMessagePipe %lu %lu %lu %lu",
-                       port0.name().v1, port0.name().v2,
-                       port1.name().v1, port1.name().v2);
-
   DCHECK(message_pipe_handle0);
   DCHECK(message_pipe_handle1);
 
@@ -609,9 +594,6 @@ MojoResult Core::FuseMessagePipes(MojoHandle handle0,
       static_cast<MessagePipeDispatcher*>(dispatcher0.get());
   MessagePipeDispatcher* mpd1 =
       static_cast<MessagePipeDispatcher*>(dispatcher1.get());
-
-  recordreplay::Assert("Core::FuseMessagePipes %lu %lu",
-                       recordreplay::PointerId(mpd0), recordreplay::PointerId(mpd1));
 
   if (!mpd0->Fuse(mpd1))
     return MOJO_RESULT_FAILED_PRECONDITION;
@@ -1238,8 +1220,6 @@ MojoResult Core::ExtractMessagePipeFromInvitation(
     uint32_t name_num_bytes,
     const MojoExtractMessagePipeFromInvitationOptions* options,
     MojoHandle* message_pipe_handle) {
-  recordreplay::Assert("Core::ExtractMessagePipeFromInvitation Start");
-
   if (options && options->struct_size < sizeof(*options))
     return MOJO_RESULT_INVALID_ARGUMENT;
   if (!message_pipe_handle)

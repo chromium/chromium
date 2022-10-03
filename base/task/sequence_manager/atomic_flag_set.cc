@@ -46,10 +46,6 @@ void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
   DCHECK(group_);
   recordreplay::AutoOrderedLock lock(outer_->ordered_lock_id_);
 
-  // https://linear.app/replay/issue/RUN-568
-  recordreplay::Assert("AtomicFlagSet::AtomicFlag::SetActive %d %d %d",
-                       outer_->ordered_lock_id_, flag_bit_, active);
-
   if (active) {
     // Release semantics are required to ensure that all memory accesses made on
     // this thread happen-before any others done on the thread running the
@@ -66,10 +62,6 @@ void AtomicFlagSet::AtomicFlag::SetActive(bool active) {
 void AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag() {
   if (!group_)
     return;
-
-  // https://linear.app/replay/issue/RUN-568
-  recordreplay::Assert("AtomicFlagSet::AtomicFlag::ReleaseAtomicFlag %d %d",
-                       outer_->ordered_lock_id_, flag_bit_);
 
   DCHECK_CALLED_ON_VALID_THREAD(outer_->associated_thread_->thread_checker);
   SetActive(false);
@@ -114,19 +106,11 @@ AtomicFlagSet::AtomicFlag AtomicFlagSet::AddFlag(RepeatingClosure callback) {
   if (group->IsFull())
     RemoveFromPartiallyFreeList(group);
 
-  // https://linear.app/replay/issue/RUN-568
-  recordreplay::Assert("AtomicFlagSet::AddFlag %d %d",
-                       ordered_lock_id_, flag_bit);
-
   return AtomicFlag(this, group, flag_bit);
 }
 
 void AtomicFlagSet::RunActiveCallbacks() const {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
-
-  // https://linear.app/replay/issue/RUN-568
-  recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks Start %d",
-                       ordered_lock_id_);
 
   for (Group* iter = alloc_list_head_.get(); iter; iter = iter->next.get()) {
     // Acquire semantics are required to guarantee that all memory side-effects
@@ -139,9 +123,6 @@ void AtomicFlagSet::RunActiveCallbacks() const {
         &iter->flags, size_t{0}, std::memory_order_acquire);
     }
 
-    // https://linear.app/replay/issue/RUN-568
-    recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks #1 %lu", active_flags);
-
     // This is O(number of bits set).
     while (active_flags) {
       int index = Group::IndexOfFirstFlagSet(active_flags);
@@ -149,9 +130,6 @@ void AtomicFlagSet::RunActiveCallbacks() const {
       active_flags ^= size_t{1} << index;
       iter->flag_callbacks[index].Run();
     }
-
-    // https://linear.app/replay/issue/RUN-568
-    recordreplay::Assert("AtomicFlagSet::RunActiveCallbacks #2");
   }
 }
 

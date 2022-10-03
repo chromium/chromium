@@ -724,13 +724,6 @@ void PictureLayerImpl::UpdateRasterSource(
     Region* new_invalidation,
     const PictureLayerTilingSet* pending_set,
     const PaintWorkletRecordMap* pending_paint_worklet_records) {
-  // https://linear.app/replay/issue/RUN-467
-  recordreplay::Assert("PictureLayerImpl::UpdateRasterSource");
-  for (gfx::Rect rect : *new_invalidation) {
-    recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #1 %d %d %d %d",
-                         rect.x(), rect.y(), rect.width(), rect.height());
-  }
-
   // The bounds and the pile size may differ if the pile wasn't updated (ie.
   // PictureLayer::Update didn't happen). In that case the pile will be empty.
   DCHECK(raster_source->GetSize().IsEmpty() ||
@@ -782,12 +775,6 @@ void PictureLayerImpl::UpdateRasterSource(
                 new_display_item_list->discardable_image_map()
                     .content_color_usage());
 
-        // https://linear.app/replay/issue/RUN-467
-        recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #4 %d %d %d",
-                             needs_full_invalidation,
-                             raster_source->GetSize().width(),
-                             raster_source->GetSize().height());
-
         if (needs_full_invalidation)
           new_invalidation->Union(gfx::Rect(raster_source->GetSize()));
       }
@@ -803,13 +790,6 @@ void PictureLayerImpl::UpdateRasterSource(
   // TODO(khushalsagar): UMA the number of animated images in layer?
   if (recording_updated)
     RegisterAnimatedImages();
-
-  // https://linear.app/replay/issue/RUN-467
-  recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #5");
-  for (gfx::Rect rect : *new_invalidation) {
-    recordreplay::Assert("PictureLayerImpl::UpdateRasterSource #5.1 %d %d %d %d",
-                         rect.x(), rect.y(), rect.width(), rect.height());
-  }
 
   // The |new_invalidation| must be cleared before updating tilings since they
   // access the invalidation through the PictureLayerTilingClient interface.

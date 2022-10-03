@@ -613,7 +613,6 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
 }
 
 void Scheduler::FinishImplFrame() {
-  recordreplay::Assert("Scheduler::FinishImplFrame Start");
   DCHECK(!needs_finish_frame_for_synchronous_compositor_);
   state_machine_.OnBeginImplFrameIdle();
 
@@ -644,7 +643,6 @@ void Scheduler::FinishImplFrame() {
 
   if (compositor_thread_pipeline_)
     compositor_thread_pipeline_->NotifyFrameFinished();
-  recordreplay::Assert("Scheduler::FinishImplFrame Done");
 }
 
 void Scheduler::SendDidNotProduceFrame(const viz::BeginFrameArgs& args,
@@ -762,8 +760,6 @@ void Scheduler::ScheduleBeginImplFrameDeadline() {
 }
 
 void Scheduler::OnBeginImplFrameDeadline() {
-  recordreplay::Assert("Scheduler::OnBeginImplFrameDeadline Start");
-
   TRACE_EVENT0("cc,benchmark", "Scheduler::OnBeginImplFrameDeadline");
   begin_impl_frame_deadline_task_.Cancel();
   // We split the deadline actions up into two phases so the state machine
@@ -785,8 +781,6 @@ void Scheduler::OnBeginImplFrameDeadline() {
     FinishImplFrameSynchronous();
   else
     FinishImplFrame();
-
-  recordreplay::Assert("Scheduler::OnBeginImplFrameDeadline Done");
 }
 
 void Scheduler::FinishImplFrameSynchronous() {

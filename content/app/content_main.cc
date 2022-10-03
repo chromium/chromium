@@ -160,14 +160,11 @@ void CommonSubprocessInit() {
 }
 
 void InitializeMojo(mojo::core::Configuration* config) {
-  recordreplay::Assert("InitializeMojo Start");
-
   // If this is the browser process and there's no Mojo invitation pipe on the
   // command line, we will serve as the global Mojo broker.
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   const bool is_browser = !command_line.HasSwitch(switches::kProcessType);
   if (is_browser) {
-    recordreplay::Assert("InitializeMojo #1");
     if (mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line)) {
       config->is_broker_process = false;
       config->force_direct_shared_memory_allocation = true;
@@ -186,7 +183,6 @@ void InitializeMojo(mojo::core::Configuration* config) {
   }
 
   if (!IsMojoCoreSharedLibraryEnabled()) {
-    recordreplay::Assert("InitializeMojo #2");
     mojo::core::Init(*config);
     return;
   }
@@ -195,7 +191,6 @@ void InitializeMojo(mojo::core::Configuration* config) {
     // Note that when dynamic Mojo Core is used, initialization for child
     // processes happens elsewhere. See ContentMainRunnerImpl::Run() and
     // ChildProcess construction.
-    recordreplay::Assert("InitializeMojo #3");
     return;
   }
 
@@ -207,8 +202,6 @@ void InitializeMojo(mojo::core::Configuration* config) {
   MojoResult result =
       mojo::LoadAndInitializeCoreLibrary(GetMojoCoreSharedLibraryPath(), flags);
   CHECK_EQ(MOJO_RESULT_OK, result);
-
-  recordreplay::Assert("InitializeMojo Done");
 }
 
 }  // namespace
@@ -312,22 +305,14 @@ int RunContentProcess(const ContentMainParams& params,
     InitializeMac();
 #endif
 
-    recordreplay::Assert("RunContentProcess #10");
-
     mojo::core::Configuration mojo_config;
     mojo_config.max_message_num_bytes = kMaximumMojoMessageSize;
     InitializeMojo(&mojo_config);
 
-    recordreplay::Assert("RunContentProcess #11");
-
     ui::RegisterPathProvider();
     tracker = base::debug::GlobalActivityTracker::Get();
 
-    recordreplay::Assert("RunContentProcess #12");
-
     exit_code = content_main_runner->Initialize(content_main_params);
-
-    recordreplay::Assert("RunContentProcess #13");
 
     if (exit_code >= 0) {
       if (tracker) {

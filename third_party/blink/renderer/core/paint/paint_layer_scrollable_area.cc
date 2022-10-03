@@ -1842,13 +1842,11 @@ base::Optional<FloatPoint>
 PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
     const cc::SnapSelectionStrategy& strategy) {
   if (!RareData() || !RareData()->snap_container_data_) {
-    recordreplay::Assert("PaintLayerScrollableArea::GetSnapPositionAndSetTarget #1");
     return base::nullopt;
   }
 
   cc::SnapContainerData& data = RareData()->snap_container_data_.value();
   if (!data.size()) {
-    recordreplay::Assert("PaintLayerScrollableArea::GetSnapPositionAndSetTarget #2");
     return base::nullopt;
   }
 
@@ -1857,12 +1855,9 @@ PaintLayerScrollableArea::GetSnapPositionAndSetTarget(
   base::Optional<FloatPoint> snap_point;
   if (data.FindSnapPosition(strategy, &snap_position, &snap_targets)) {
     snap_point = FloatPoint(snap_position.x(), snap_position.y());
-    recordreplay::Assert("PaintLayerScrollableArea::GetSnapPositionAndSetTarget #3 %s",
-                         snap_point.value().ToString().Utf8().c_str());
   }
   if (data.SetTargetSnapAreaElementIds(snap_targets))
     GetLayoutBox()->SetNeedsPaintPropertyUpdate();
-  recordreplay::Assert("PaintLayerScrollableArea::GetSnapPositionAndSetTarget Done");
   return snap_point;
 }
 

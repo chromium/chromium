@@ -238,9 +238,6 @@ void FileHandlerManager::DisableAutomaticFileHandlerCleanupForTesting() {
 }
 
 int FileHandlerManager::CleanupAfterOriginTrials() {
-  recordreplay::Assert("FileHandlerManager::CleanupAfterOriginTrials Start %lu",
-                       recordreplay::PointerId(this));
-
   int cleaned_up_count = 0;
   for (const AppId& app_id : registrar_->GetAppIds()) {
     if (!AreFileHandlersEnabled(app_id))
@@ -255,7 +252,6 @@ int FileHandlerManager::CleanupAfterOriginTrials() {
     cleaned_up_count++;
   }
 
-  recordreplay::Assert("FileHandlerManager::CleanupAfterOriginTrials Done");
   return cleaned_up_count;
 }
 

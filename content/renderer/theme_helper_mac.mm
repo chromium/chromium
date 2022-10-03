@@ -18,9 +18,6 @@ namespace content {
 void SystemColorsDidChange(int aqua_color_variant,
                            const std::string& highlight_text_color,
                            const std::string& highlight_color) {
-  recordreplay::Assert("SystemColorsDidChange %s %s",
-                       highlight_text_color.c_str(), highlight_color.c_str());
-
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 
   // Register the defaults in the NSArgumentDomain, which is considered

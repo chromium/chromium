@@ -184,8 +184,6 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     const DrawImage& image,
     const TracingInfo& tracing_info,
     DecodeTaskType task_type) {
-  recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal Start");
-
   CacheKey key = CacheKey::FromDrawImage(
       image, GetColorTypeForPaintImage(image.target_color_space(),
                                        image.paint_image()));
@@ -196,13 +194,11 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   // If the target size is empty, we can skip this image during draw (and thus
   // we don't need to decode it or ref it).
   if (key.target_size().IsEmpty()) {
-    recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal #1");
     return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
   }
 
   if (!UseCacheForDrawImage(image)) {
-    recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal #2");
     return TaskResult(/*need_unref=*/false, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
   }
@@ -246,7 +242,6 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
   // If we already have a locked entry, then we can just use that. Otherwise
   // we'll have to create a task.
   if (cache_entry->is_locked) {
-    recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal #3");
     return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
                       /*can_do_hardware_accelerated_decode=*/false);
   }
@@ -262,7 +257,6 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
         this, key, image.paint_image(), task_type, tracing_info);
   }
 
-  recordreplay::Assert("SoftwareImageDecodeCache::GetTaskForImageAndRefInternal Done");
   return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
 }
 
@@ -340,7 +334,6 @@ SoftwareImageDecodeCache::TaskProcessingResult
 SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
                                                  const PaintImage& paint_image,
                                                  CacheEntry* entry) {
-  recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary Start");
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::DecodeImageIfNecessary", "key",
                key.ToString());
@@ -365,14 +358,12 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   // If we can use the original decode, we'll definitely need a decode.
   if (key.type() == CacheKey::kOriginal) {
     base::AutoUnlock release(lock_);
-    recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary #1");
     local_cache_entry = Utils::DoDecodeImage(
         key, paint_image,
         GetColorTypeForPaintImage(key.target_color_space(), paint_image),
         generator_client_id_,
         base::BindOnce(&SoftwareImageDecodeCache::ClearCache,
                        base::Unretained(this)));
-    recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary #2");
   } else {
     // Attempt to find a cached decode to generate a scaled/subrected decode
     // from.
@@ -461,7 +452,6 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   }
 
   if (!local_cache_entry) {
-    recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary #3");
     entry->decode_failed = true;
     return TaskProcessingResult::kCancelled;
   }
@@ -482,7 +472,6 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
     DCHECK(entry->is_locked);
   }
 
-  recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary Done");
   return TaskProcessingResult::kFullDecode;
 }
 
@@ -626,7 +615,6 @@ void SoftwareImageDecodeCache::ReduceCacheUsageUntilWithinLimit(size_t limit) {
 }
 
 void SoftwareImageDecodeCache::ReduceCacheUsage() {
-  recordreplay::Assert("SoftwareImageDecodeCache::ReduceCacheUsage");
   base::AutoLock lock(lock_);
   ReduceCacheUsageUntilWithinLimit(max_items_in_cache_);
 }

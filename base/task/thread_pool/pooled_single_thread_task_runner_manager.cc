@@ -408,9 +408,7 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure closure,
                        TimeDelta delay) override {
-    recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask Start");
     if (!g_manager_is_alive) {
-      recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask #1");
       return false;
     }
 
@@ -418,12 +416,10 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
 
     if (!outer_->task_tracker_->WillPostTask(&task,
                                              sequence_->shutdown_behavior())) {
-      recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask #2");
       return false;
     }
 
     if (task.delayed_run_time.is_null()) {
-      recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask #3");
       return GetDelegate()->PostTaskNow(sequence_, std::move(task));
     }
 
@@ -435,7 +431,6 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
                  Unretained(GetDelegate()), sequence_),
         this);
 
-    recordreplay::Assert("PooledSingleThreadTaskRunner::PostDelayedTask Done");
     return true;
   }
 
@@ -454,8 +449,6 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
 
  private:
   ~PooledSingleThreadTaskRunner() override {
-    recordreplay::Assert("~PooledSingleThreadTaskRunner %lu", recordreplay::PointerId(this));
-
     // Only unregister if this is a DEDICATED SingleThreadTaskRunner. SHARED
     // task runner WorkerThreads are managed separately as they are reused.
     // |g_manager_is_alive| avoids a use-after-free should this
@@ -478,8 +471,6 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
         thread_mode_ == SingleThreadTaskRunnerThreadMode::DEDICATED) {
       outer_->UnregisterWorkerThread(worker_);
     }
-
-    recordreplay::Assert("~PooledSingleThreadTaskRunner Done");
   }
 
   WorkerThreadDelegate* GetDelegate() const {

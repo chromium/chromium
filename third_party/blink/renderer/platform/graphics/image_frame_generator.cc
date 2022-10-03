@@ -110,12 +110,9 @@ bool ImageFrameGenerator::DecodeAndScale(
     size_t row_bytes,
     ImageDecoder::AlphaOption alpha_option,
     cc::PaintImage::GeneratorClientId client_id) {
-  recordreplay::Assert("ImageFrameGenerator::DecodeAndScale Start");
-
   {
     MutexLocker lock(generator_mutex_);
     if (decode_failed_) {
-      recordreplay::Assert("ImageFrameGenerator::DecodeAndScale #1");
       return false;
     }
   }
@@ -159,12 +156,10 @@ bool ImageFrameGenerator::DecodeAndScale(
   decode_failed_ = decode_failed;
   if (decode_failed_) {
     DCHECK(!current_decode_succeeded);
-    recordreplay::Assert("ImageFrameGenerator::DecodeAndScale #2");
     return false;
   }
 
   if (!current_decode_succeeded) {
-    recordreplay::Assert("ImageFrameGenerator::DecodeAndScale #3");
     return false;
   }
 
@@ -172,7 +167,6 @@ bool ImageFrameGenerator::DecodeAndScale(
   if (frame_count != 0u)
     frame_count_ = frame_count;
 
-  recordreplay::Assert("ImageFrameGenerator::DecodeAndScale Done");
   return true;
 }
 

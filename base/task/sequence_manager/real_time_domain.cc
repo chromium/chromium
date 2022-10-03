@@ -27,25 +27,20 @@ TimeTicks RealTimeDomain::Now() const {
 }
 
 Optional<TimeDelta> RealTimeDomain::DelayTillNextTask(LazyNow* lazy_now) {
-  recordreplay::Assert("RealTimeDomain::DelayTillNextTask Start");
-
   Optional<TimeTicks> next_run_time = NextScheduledRunTime();
   if (!next_run_time) {
-    recordreplay::Assert("RealTimeDomain::DelayTillNextTask #1");
     return nullopt;
   }
 
   TimeTicks now = lazy_now->Now();
   if (now >= next_run_time) {
     // Overdue work needs to be run immediately.
-    recordreplay::Assert("RealTimeDomain::DelayTillNextTask #2");
     return TimeDelta();
   }
 
   TimeDelta delay = *next_run_time - now;
   TRACE_EVENT1("sequence_manager", "RealTimeDomain::DelayTillNextTask",
                "delay_ms", delay.InMillisecondsF());
-  recordreplay::Assert("RealTimeDomain::DelayTillNextTask Done %.2f", delay.InSecondsF());
   return delay;
 }
 

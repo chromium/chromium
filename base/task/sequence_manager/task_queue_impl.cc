@@ -73,18 +73,11 @@ bool TaskQueueImpl::GuardedTaskPoster::PostTask(PostedTask task) {
   // has to do this) as it can lead to a deadlock and defer it instead.
   ScopedDeferTaskPosting disallow_task_posting;
 
-  recordreplay::Assert("TaskQueueImpl::GuardedTaskPoster::PostTask Start");
-
   auto token = operations_controller_.TryBeginOperation();
-
-  recordreplay::Assert("TaskQueueImpl::GuardedTaskPoster::PostTask #1 %d", !!token);
-
   if (!token)
     return false;
 
   outer_->PostTask(std::move(task));
-
-  recordreplay::Assert("TaskQueueImpl::GuardedTaskPoster::PostTask Done");
   return true;
 }
 
@@ -299,7 +292,6 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     LazyNow lazy_now = any_thread_.time_domain->CreateLazyNow();
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
     if (add_queue_time_to_tasks || delayed_fence_allowed_) {
-      recordreplay::Assert("TaskQueueImpl::PostImmediateTaskImpl #1");
       task.queue_time = lazy_now.Now();
     }
 
@@ -308,9 +300,6 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     // risk breaking the assumption that sequence numbers increase monotonically
     // within a queue.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
-
-    recordreplay::Assert("TaskQueueImpl::PostImmediateTaskImpl #2 %lu",
-                        (size_t)sequence_number);
 
     bool was_immediate_incoming_queue_empty =
         any_thread_.immediate_incoming_queue.empty();
@@ -383,9 +372,6 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
     // Lock-free fast path for delayed tasks posted from the main thread.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
 
-    recordreplay::Assert("TaskQueueImpl::PostDelayedTaskImpl #1 %lu",
-                        (size_t)sequence_number);
-
     TimeTicks time_domain_now = main_thread_only().time_domain->Now();
     TimeTicks time_domain_delayed_run_time = time_domain_now + task.delay;
     if (sequence_manager_->GetAddQueueTimeToTasks())
@@ -401,9 +387,6 @@ void TaskQueueImpl::PostDelayedTaskImpl(PostedTask task,
     // because it causes two main thread tasks to be run.  Should this
     // assumption prove to be false in future, we may need to revisit this.
     EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
-
-    recordreplay::Assert("TaskQueueImpl::PostDelayedTaskImpl #2 %lu",
-                        (size_t)sequence_number);
 
     TimeTicks time_domain_now;
     {
@@ -483,8 +466,6 @@ void TaskQueueImpl::ScheduleDelayedWorkTask(Task pending_task) {
 }
 
 void TaskQueueImpl::ReloadEmptyImmediateWorkQueue() {
-  recordreplay::Assert("TaskQueueImpl::ReloadEmptyImmediateWorkQueue");
-
   DCHECK(main_thread_only().immediate_work_queue->Empty());
   main_thread_only().immediate_work_queue->TakeImmediateIncomingQueueTasks();
 
@@ -599,9 +580,6 @@ Optional<TimeTicks> TaskQueueImpl::GetNextScheduledWakeUp() {
 }
 
 void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
-  recordreplay::Assert("TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue %lu",
-                       recordreplay::PointerId(this));
-
   // Enqueue all delayed tasks that should be running now, skipping any that
   // have been canceled.
   WorkQueue::TaskPusher delayed_work_queue_task_pusher(
@@ -626,9 +604,6 @@ void TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue(LazyNow* lazy_now) {
     ActivateDelayedFenceIfNeeded(GetTaskDesiredExecutionTime(*task));
     DCHECK(!task->enqueue_order_set());
     task->set_enqueue_order(sequence_manager_->GetNextSequenceNumber());
-
-    recordreplay::Assert("TaskQueueImpl::MoveReadyDelayedTasksToWorkQueue %lu",
-                         task->enqueue_order());
 
     delayed_work_queue_task_pusher.Push(task);
     main_thread_only().delayed_incoming_queue.pop();
@@ -662,8 +637,6 @@ void TaskQueueImpl::TraceQueueSize() const {
 }
 
 void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
-  recordreplay::Assert("TaskQueueImpl::SetQueuePriority %lu %d",
-                       recordreplay::PointerId(this), priority);
   const TaskQueue::QueuePriority previous_priority = GetQueuePriority();
   if (priority == previous_priority)
     return;
@@ -694,9 +667,6 @@ void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
     main_thread_only()
         .enqueue_order_at_which_we_became_unblocked_with_normal_priority =
         sequence_manager_->GetNextSequenceNumber();
-
-    recordreplay::Assert("TaskQueueImpl::SetQueuePriority %lu",
-                         main_thread_only().enqueue_order_at_which_we_became_unblocked_with_normal_priority);
   }
 }
 
@@ -847,9 +817,6 @@ void TaskQueueImpl::InsertFence(TaskQueue::InsertFencePosition position) {
   EnqueueOrder current_fence = position == TaskQueue::InsertFencePosition::kNow
                                    ? sequence_manager_->GetNextSequenceNumber()
                                    : EnqueueOrder::blocking_fence();
-
-  recordreplay::Assert("TaskQueueImpl::InsertFence %d %lu",
-                       position, (size_t)current_fence);
 
   // Tasks posted after this point will have a strictly higher enqueue order
   // and will be blocked from running.
@@ -1375,9 +1342,6 @@ void TaskQueueImpl::OnQueueUnblocked() {
 
   main_thread_only().enqueue_order_at_which_we_became_unblocked =
       sequence_manager_->GetNextSequenceNumber();
-
-  recordreplay::Assert("TaskQueueImpl::OnQueueUnblocked %lu",
-                       main_thread_only().enqueue_order_at_which_we_became_unblocked);
 
   static_assert(TaskQueue::QueuePriority::kLowPriority >
                     TaskQueue::QueuePriority::kNormalPriority,

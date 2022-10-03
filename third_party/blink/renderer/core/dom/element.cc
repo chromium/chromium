@@ -687,7 +687,6 @@ Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
 }
 
 Element& Element::CloneWithChildren(Document* nullable_factory) const {
-  recordreplay::Assert("Element::CloneWithChildren %lu", recordreplay::PointerId(this));
   Element& clone = CloneWithoutAttributesAndChildren(
       nullable_factory ? *nullable_factory : GetDocument());
   // This will catch HTML elements in the wrong namespace that are not correctly
@@ -1497,10 +1496,7 @@ LayoutBox* Element::GetLayoutBoxForScrolling() const {
 }
 
 double Element::scrollLeft() {
-  recordreplay::Assert("Element::scrollLeft Start");
-
   if (!InActiveDocument()) {
-    recordreplay::Assert("Element::scrollLeft #1");
     return 0;
   }
 
@@ -1509,16 +1505,13 @@ double Element::scrollLeft() {
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
     if (GetDocument().domWindow()) {
-      recordreplay::Assert("Element::scrollLeft #2");
       return GetDocument().domWindow()->scrollX();
     }
-    recordreplay::Assert("Element::scrollLeft #3");
     return 0;
   }
 
   LayoutBox* box = GetLayoutBoxForScrolling();
   if (!box) {
-    recordreplay::Assert("Element::scrollLeft #4");
     return 0;
   }
   if (PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea()) {
@@ -1535,7 +1528,6 @@ double Element::scrollLeft() {
         scrollable_area->GetScrollOffset().Width(), *GetLayoutBox());
   }
 
-  recordreplay::Assert("Element::scrollLeft Done");
   return 0;
 }
 
@@ -2872,8 +2864,6 @@ void Element::RecalcStyleForTraversalRootAncestor() {
 
 void Element::RecalcStyle(const StyleRecalcChange change,
                           const StyleRecalcContext& style_recalc_context) {
-  recordreplay::Assert("Element::RecalcStyle Start %lu", recordreplay::PointerId(this));
-
   DCHECK(InActiveDocument());
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(!GetDocument().Lifecycle().InDetach());
@@ -2919,7 +2909,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     }
     if (HasCustomStyleCallbacks())
       DidRecalcStyle(child_change);
-    recordreplay::Assert("Element::RecalcStyle #1");
     return;
   }
 
@@ -2939,7 +2928,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   if (child_change.TraverseChildren(*this)) {
     SelectorFilterParentScope filter_scope(*this);
     if (ShadowRoot* root = GetShadowRoot()) {
-      recordreplay::Assert("Element::RecalcStyle #2");
       root->RecalcDescendantStyles(child_change, child_recalc_context);
       // Sad panda. This is only to clear ensured ComputedStyles for elements
       // outside the flat tree for getComputedStyle() in the cases where we
@@ -2947,14 +2935,12 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       // make sure we clear out-of-date ComputedStyles outside the flat tree
       // in Element::EnsureComputedStyle().
       if (child_change.RecalcDescendants()) {
-        recordreplay::Assert("Element::RecalcStyle #3");
         RecalcDescendantStyles(StyleRecalcChange::kClearEnsured,
                                child_recalc_context);
       }
     } else if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(this)) {
       slot->RecalcStyleForSlotChildren(child_change, child_recalc_context);
     } else {
-      recordreplay::Assert("Element::RecalcStyle #4");
       RecalcDescendantStyles(child_change, child_recalc_context);
     }
   }
@@ -2975,8 +2961,6 @@ void Element::RecalcStyle(const StyleRecalcChange change,
 
   if (HasCustomStyleCallbacks())
     DidRecalcStyle(child_change);
-
-  recordreplay::Assert("Element::RecalcStyle Done");
 }
 
 scoped_refptr<ComputedStyle> Element::PropagateInheritedProperties() {
@@ -3018,9 +3002,6 @@ static const StyleRecalcChange ApplyComputedStyleDiff(
 StyleRecalcChange Element::RecalcOwnStyle(
     const StyleRecalcChange change,
     const StyleRecalcContext& style_recalc_context) {
-  // https://linear.app/replay/issue/RUN-569
-  recordreplay::Assert("Element::RecalcOwnStyle %d", recordreplay::PointerId(this));
-
   DCHECK(GetDocument().InStyleRecalc());
   if (change.RecalcChildren() && HasRareData() && NeedsStyleRecalc()) {
     // This element needs recalc because its parent changed inherited

@@ -660,10 +660,7 @@ bool WebURLLoader::Context::OnReceivedRedirect(
 
 void WebURLLoader::Context::OnReceivedResponse(
     network::mojom::URLResponseHeadPtr head) {
-  recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse Start");
-
   if (!client_) {
-    recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse #1");
     return;
   }
 
@@ -681,8 +678,6 @@ void WebURLLoader::Context::OnReceivedResponse(
   PopulateURLResponse(url_, *head, &response, report_raw_headers_, request_id_);
 
   client_->DidReceiveResponse(response);
-
-  recordreplay::Assert("WebURLLoader::Context::OnReceivedResponse Done");
 
   // DidReceiveResponse() may have triggered a cancel, causing the |client_| to
   // go away.
@@ -784,7 +779,6 @@ WebURLLoader::WebURLLoader() {
 }
 
 WebURLLoader::~WebURLLoader() {
-  recordreplay::Assert("WebURLLoader::~WebURLLoader %lu", recordreplay::PointerId(this));
   recordreplay::UnregisterPointer(this);
   Cancel();
 }
@@ -911,9 +905,6 @@ void WebURLLoader::PopulateURLResponse(
   const net::HttpResponseHeaders* headers = head.headers.get();
   if (!headers)
     return;
-
-  recordreplay::Assert("WebURLLoader::PopulateURLResponse #5 %d",
-                       headers->response_code());
 
   WebURLResponse::HTTPVersion version = WebURLResponse::kHTTPVersionUnknown;
   if (headers->GetHttpVersion() == net::HttpVersion(0, 9))

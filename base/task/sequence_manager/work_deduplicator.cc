@@ -46,7 +46,6 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::OnDelayedWorkRequested()
 }
 
 void WorkDeduplicator::OnWorkStarted() {
-  recordreplay::Assert("WorkDeduplicator::OnWorkStarted");
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(state_.load() & kBoundFlag, kBoundFlag);
   // Clear kPendingDoWorkFlag and mark us as in a DoWork.
@@ -55,7 +54,6 @@ void WorkDeduplicator::OnWorkStarted() {
 }
 
 void WorkDeduplicator::WillCheckForMoreWork() {
-  recordreplay::Assert("WorkDeduplicator::WillCheckForMoreWork");
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(state_.load() & kBoundFlag, kBoundFlag);
   // Clear kPendingDoWorkFlag if it was set.
@@ -67,8 +65,6 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::DidCheckForMoreWork(
     NextTask next_task) {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   DCHECK_EQ(state_.load() & kBoundFlag, kBoundFlag);
-  recordreplay::Assert("WorkDeduplicator::DidCheckForMoreWork %d",
-                       next_task == NextTask::kIsImmediate);
   if (next_task == NextTask::kIsImmediate) {
     state_.store(State::kDoWorkPending);
     return ShouldScheduleWork::kScheduleImmediate;
@@ -78,9 +74,7 @@ WorkDeduplicator::ShouldScheduleWork WorkDeduplicator::DidCheckForMoreWork(
   // thread determined that the next task wasn't immediate. In that case, that
   // other thread relies on us to return kScheduleImmediate.
   recordreplay::AutoOrderedLock ordered(state_ordered_lock_id_);
-  bool v = (state_.fetch_and(~kInDoWorkFlag) & kPendingDoWorkFlag);
-  recordreplay::Assert("WorkDeduplicator::DidCheckForMoreWork #1 %d", v);
-  return v
+  return (state_.fetch_and(~kInDoWorkFlag) & kPendingDoWorkFlag)
              ? ShouldScheduleWork::kScheduleImmediate
              : ShouldScheduleWork::kNotNeeded;
 }

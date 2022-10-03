@@ -122,8 +122,6 @@ void ProxyMain::DidCompletePageScaleAnimation() {
 
 void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
-  recordreplay::Assert("ProxyMain::BeginMainFrame Start");
-
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
 
@@ -168,7 +166,6 @@ void ProxyMain::BeginMainFrame(
                                   CommitEarlyOutReason::ABORTED_NOT_VISIBLE,
                                   begin_main_frame_start_time,
                                   std::move(empty_swap_promises)));
-    recordreplay::Assert("ProxyMain::BeginMainFrame #1");
     return;
   }
 
@@ -208,7 +205,6 @@ void ProxyMain::BeginMainFrame(
     // previously requested pipeline stages.
     deferred_final_pipeline_stage_ =
         std::max(final_pipeline_stage_, deferred_final_pipeline_stage_);
-    recordreplay::Assert("ProxyMain::BeginMainFrame #2");
     return;
   }
 
@@ -296,7 +292,6 @@ void ProxyMain::BeginMainFrame(
     // When we stop deferring commits, we should resume any previously requested
     // pipeline stages.
     deferred_final_pipeline_stage_ = final_pipeline_stage_;
-    recordreplay::Assert("ProxyMain::BeginMainFrame #3");
     return;
   }
 
@@ -316,14 +311,12 @@ void ProxyMain::BeginMainFrame(
   // list in advance, and "painting" amounts to copying the Blink display list
   // to corresponding  cc display list. An exception is for painted scrollbars,
   // which paint eagerly during layer update.
-  recordreplay::Assert("ProxyMain::BeginMainFrame #4 %d", should_update_layers);
   bool updated = should_update_layers && layer_tree_host_->UpdateLayers();
 
   // If updating the layers resulted in a content update, we need a commit.
   if (updated)
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
-  recordreplay::Assert("ProxyMain::BeginMainFrame #5");
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId());
@@ -355,7 +348,6 @@ void ProxyMain::BeginMainFrame(
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
         begin_main_frame_state->active_sequence_trackers);
-    recordreplay::Assert("ProxyMain::BeginMainFrame #4");
     return;
   }
 
@@ -397,8 +389,6 @@ void ProxyMain::BeginMainFrame(
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
-
-  recordreplay::Assert("ProxyMain::BeginMainFrame Done");
 }
 
 void ProxyMain::DidPresentCompositorFrame(

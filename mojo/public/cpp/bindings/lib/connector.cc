@@ -222,8 +222,6 @@ ScopedMessagePipeHandle Connector::PassMessagePipe() {
 }
 
 void Connector::RaiseError() {
-  recordreplay::Assert("Connector::RaiseError");
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   HandleError(true, true);
@@ -238,8 +236,6 @@ void Connector::SetConnectionGroup(ConnectionGroup::Ref ref) {
 }
 
 bool Connector::WaitForIncomingMessage() {
-  recordreplay::Assert("Connector::WaitForIncomingMessage Start");
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error_)
@@ -394,9 +390,6 @@ void Connector::OnSyncHandleWatcherHandleReady(MojoResult result) {
 }
 
 void Connector::OnHandleReadyInternal(MojoResult result) {
-  recordreplay::Assert("Connector::OnHandleReadyInternal Start %lu %u",
-                       recordreplay::PointerId(this), result);
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
@@ -483,8 +476,6 @@ MojoResult Connector::ReadMessage(Message* message) {
 }
 
 bool Connector::DispatchMessage(Message message) {
-  recordreplay::Assert("Connector::DispatchMessage Start");
-
   DCHECK(!paused_);
 
   base::WeakPtr<Connector> weak_self = weak_self_;
@@ -563,28 +554,20 @@ void Connector::ScheduleDispatchOfPendingMessagesOrWaitForMore(
 }
 
 void Connector::ReadAllAvailableMessages() {
-  recordreplay::Assert("Connector::ReadAllAvailableMessages Start");
-
   if (paused_ || error_) {
-    recordreplay::Assert("Connector::ReadAllAvailableMessages #1");
     return;
   }
 
   base::WeakPtr<Connector> weak_self = weak_self_;
 
   do {
-    recordreplay::Assert("Connector::ReadAllAvailableMessages #2");
-
     Message message;
     MojoResult rv = ReadMessage(&message);
-
-    recordreplay::Assert("Connector::ReadAllAvailableMessages #3 %d", rv);
 
     switch (rv) {
       case MOJO_RESULT_OK:
         DCHECK(!message.IsNull());
         if (!DispatchMessage(std::move(message)) || !weak_self || paused_) {
-          recordreplay::Assert("Connector::ReadAllAvailableMessages #4");
           return;
         }
         break;
@@ -608,32 +591,22 @@ void Connector::ReadAllAvailableMessages() {
                     false /* force_async_handler */);
         return;
     }
-
-    recordreplay::Assert("Connector::ReadAllAvailableMessages #5");
   } while (weak_self && should_dispatch_messages_immediately());
-
-  recordreplay::Assert("Connector::ReadAllAvailableMessages #6 %d", !!weak_self);
 
   if (weak_self) {
     const auto pending_message_count = QueryPendingMessageCount();
     ScheduleDispatchOfPendingMessagesOrWaitForMore(pending_message_count);
   }
-
-  recordreplay::Assert("Connector::ReadAllAvailableMessages Done");
 }
 
 void Connector::CancelWait() {
-  recordreplay::Assert("Connector::CancelWait %lu", recordreplay::PointerId(this));
   peer_remoteness_tracker_.reset();
   handle_watcher_.reset();
   sync_watcher_.reset();
 }
 
 void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
-  recordreplay::Assert("Connector::HandleError Start");
-
   if (error_ || !message_pipe_.is_valid()) {
-    recordreplay::Assert("Connector::HandleError #1");
     return;
   }
 
@@ -648,19 +621,14 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     force_pipe_reset = true;
 
   if (force_pipe_reset) {
-    recordreplay::Assert("Connector::HandleError #2");
     CancelWait();
-    recordreplay::Assert("Connector::HandleError #3");
     internal::MayAutoLock locker(&lock_);
     message_pipe_.reset();
     MessagePipe dummy_pipe;
     message_pipe_ = std::move(dummy_pipe.handle0);
   } else {
-    recordreplay::Assert("Connector::HandleError #4");
     CancelWait();
   }
-
-  recordreplay::Assert("Connector::HandleError #5");
 
   if (force_async_handler) {
     if (!paused_)
@@ -670,8 +638,6 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
     if (connection_error_handler_)
       std::move(connection_error_handler_).Run();
   }
-
-  recordreplay::Assert("Connector::HandleError Done");
 }
 
 void Connector::EnsureSyncWatcherExists() {

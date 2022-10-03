@@ -358,7 +358,6 @@ void HTMLLinkElement::LinkLoaded() {
   if (rel_attribute_.IsLinkPrefetch()) {
     UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchLoadEvent);
   }
-  recordreplay::Assert("HTMLLinkElement::LinkLoaded");
   DispatchEvent(*Event::Create(event_type_names::kLoad), "HTMLLinkElement::LinkLoaded");
 }
 

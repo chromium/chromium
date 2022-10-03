@@ -32,7 +32,6 @@ void UkmRecorderInterface::Create(
 }
 
 void UkmRecorderInterface::AddEntry(ukm::mojom::UkmEntryPtr ukm_entry) {
-  recordreplay::Assert("UkmRecorderInterface::AddEntry %lu", recordreplay::PointerId(this));
   ukm_recorder_->AddEntry(std::move(ukm_entry));
 }
 

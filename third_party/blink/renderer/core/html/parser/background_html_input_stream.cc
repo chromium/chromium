@@ -35,8 +35,6 @@ BackgroundHTMLInputStream::BackgroundHTMLInputStream()
       total_checkpoint_token_count_(0) {}
 
 void BackgroundHTMLInputStream::Append(const String& input) {
-  recordreplay::Assert("BackgroundHTMLInputStream::Append %u %u", input.length(), input[0]);
-
   current_.Append(SegmentedString(input));
   segments_.push_back(input);
 }
@@ -119,8 +117,6 @@ void BackgroundHTMLInputStream::RewindTo(HTMLInputCheckpoint checkpoint_index,
   first_valid_segment_index_ = 0;
 
   UpdateTotalCheckpointTokenCount();
-
-  recordreplay::Assert("BackgroundHTMLInputStream::RewindTo %u", current_.length());
 }
 
 void BackgroundHTMLInputStream::UpdateTotalCheckpointTokenCount() {

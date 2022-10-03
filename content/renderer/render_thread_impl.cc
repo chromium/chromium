@@ -885,7 +885,6 @@ void RenderThreadImpl::SetResourceRequestSenderDelegate(
 }
 
 void RenderThreadImpl::InitializeCompositorThread() {
-  recordreplay::Assert("RenderThreadImpl::InitializeCompositorThread START");
   blink_platform_impl_->CreateAndSetCompositorThread();
   compositor_task_runner_ = blink_platform_impl_->CompositorThreadTaskRunner();
 
@@ -895,7 +894,6 @@ void RenderThreadImpl::InitializeCompositorThread() {
                      false));
   GetContentClient()->renderer()->PostCompositorThreadCreated(
       compositor_task_runner_.get());
-  recordreplay::Assert("RenderThreadImpl::InitializeCompositorThread DONE");
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

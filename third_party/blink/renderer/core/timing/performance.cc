@@ -923,14 +923,12 @@ ScriptPromise Performance::profile(ScriptState* script_state,
 }
 
 void Performance::RegisterPerformanceObserver(PerformanceObserver& observer) {
-  recordreplay::Assert("Performance::RegisterPerformanceObserver %lu", recordreplay::PointerId(this));
   observer_filter_options_ |= observer.FilterOptions();
   observers_.insert(&observer);
 }
 
 void Performance::UnregisterPerformanceObserver(
     PerformanceObserver& old_observer) {
-  recordreplay::Assert("Performance::UnregisterPerformanceObserver %lu", recordreplay::PointerId(this));
   observers_.erase(&old_observer);
   UpdatePerformanceObserverFilterOptions();
 }
@@ -943,23 +941,18 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 }
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
-  recordreplay::Assert("Performance::NotifyObserversOfEntry Start %lu",
-                       recordreplay::PointerId(this));
   DCHECK(entry.EntryTypeEnum() != PerformanceEntry::kEvent ||
          RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   bool observer_found = false;
   for (auto& observer : observers_) {
-    recordreplay::Assert("Performance::NotifyObserversOfEntry #1");
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&
         observer->CanObserve(entry)) {
-      recordreplay::Assert("Performance::NotifyObserversOfEntry #2");
       observer->EnqueuePerformanceEntry(entry);
       observer_found = true;
     }
   }
   if (observer_found && entry.EntryTypeEnum() == PerformanceEntry::kPaint)
     UseCounter::Count(GetExecutionContext(), WebFeature::kPaintTimingObserved);
-  recordreplay::Assert("Performance::NotifyObserversOfEntry Done");
 }
 
 bool Performance::HasObserverFor(
@@ -968,7 +961,6 @@ bool Performance::HasObserverFor(
 }
 
 void Performance::ActivateObserver(PerformanceObserver& observer) {
-  recordreplay::Assert("Performance::ActivateObserver %d", active_observers_.IsEmpty());
   if (active_observers_.IsEmpty())
     deliver_observations_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
 

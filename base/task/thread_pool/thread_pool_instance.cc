@@ -53,10 +53,8 @@ ThreadPoolInstance::ScopedBestEffortExecutionFence::
 #if !defined(OS_NACL)
 // static
 void ThreadPoolInstance::CreateAndStartWithDefaultParams(StringPiece name) {
-  recordreplay::Assert("ThreadPoolInstance::CreateAndStartWithDefaultParams Start");
   Create(name);
   g_thread_pool->StartWithDefaultParams();
-  recordreplay::Assert("ThreadPoolInstance::CreateAndStartWithDefaultParams Done");
 }
 
 void ThreadPoolInstance::StartWithDefaultParams() {
@@ -73,9 +71,7 @@ void ThreadPoolInstance::StartWithDefaultParams() {
 #endif  // !defined(OS_NACL)
 
 void ThreadPoolInstance::Create(StringPiece name) {
-  recordreplay::Assert("ThreadPoolInstance::Create Start");
   Set(std::make_unique<internal::ThreadPoolImpl>(name));
-  recordreplay::Assert("ThreadPoolInstance::Create Done");
 }
 
 // static

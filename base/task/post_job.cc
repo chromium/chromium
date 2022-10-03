@@ -32,7 +32,6 @@ bool JobDelegate::ShouldYield() {
   // ShouldYield() shouldn't be called again after returning true.
   DCHECK(!last_should_yield_);
 #endif  // DCHECK_IS_ON()
-  recordreplay::Assert("JobDelegate::ShouldYield Start");
   const bool should_yield =
       task_source_->ShouldYield() ||
       (pooled_task_runner_delegate_ &&
@@ -41,10 +40,6 @@ bool JobDelegate::ShouldYield() {
 #if DCHECK_IS_ON()
   last_should_yield_ = should_yield;
 #endif  // DCHECK_IS_ON()
-  recordreplay::Assert("JobDelegate::ShouldYield Done %d %d %d",
-                       should_yield,
-                       task_source_->ShouldYield(),
-                       !!pooled_task_runner_delegate_);
   return should_yield;
 }
 
@@ -59,7 +54,6 @@ void JobDelegate::NotifyConcurrencyIncrease() {
 uint8_t JobDelegate::GetTaskId() {
   if (task_id_ == kInvalidTaskId)
     task_id_ = task_source_->AcquireTaskId();
-  recordreplay::Assert("JobDelegate::GetTaskId %lu %u", recordreplay::PointerId(this), task_id_);
   return task_id_;
 }
 

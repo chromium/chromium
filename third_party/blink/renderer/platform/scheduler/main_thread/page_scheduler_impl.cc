@@ -884,7 +884,6 @@ void PageSchedulerImpl::UpdateWakeUpBudgetPools(
 }
 
 void PageSchedulerImpl::NotifyFrames() {
-  recordreplay::Assert("PageSchedulerImpl::NotifyFrames %lu", recordreplay::PointerId(this));
   std::vector<FrameSchedulerImpl*> frame_scheduler_vector;
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler_vector.push_back(frame_scheduler);
@@ -1061,7 +1060,6 @@ PageSchedulerImpl::PageLifecycleStateTracker::
 }
 
 FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
-  recordreplay::Assert("PageSchedulerImpl::SelectFrameForUkmAttribution %lu", recordreplay::PointerId(this));
   std::vector<FrameSchedulerImpl*> frame_scheduler_vector;
   for (FrameSchedulerImpl* frame_scheduler : frame_schedulers_) {
     frame_scheduler_vector.push_back(frame_scheduler);
@@ -1071,8 +1069,6 @@ FrameSchedulerImpl* PageSchedulerImpl::SelectFrameForUkmAttribution() {
 
   for (FrameSchedulerImpl* frame_scheduler : frame_scheduler_vector) {
     if (frame_scheduler->GetUkmRecorder()) {
-      recordreplay::Assert("PageSchedulerImpl::SelectFrameForUkmAttribution %lu",
-                           recordreplay::PointerId(frame_scheduler));
       return frame_scheduler;
     }
   }

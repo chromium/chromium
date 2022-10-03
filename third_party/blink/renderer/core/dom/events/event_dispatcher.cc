@@ -56,9 +56,6 @@
 namespace blink {
 
 DispatchEventResult EventDispatcher::DispatchEvent(Node& node, Event& event) {
-  recordreplay::Assert("EventDispatcher::DispatchEvent %lu %lu",
-                       recordreplay::PointerId(&node), recordreplay::PointerId(&event));
-
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                "EventDispatcher::dispatchEvent");
 #if DCHECK_IS_ON()

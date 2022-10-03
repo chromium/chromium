@@ -117,7 +117,6 @@ SyncHandleRegistry::EventCallbackSubscription SyncHandleRegistry::RegisterEvent(
 }
 
 bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
-  recordreplay::Assert("SyncHandleRegistry::Wait Start %lu", recordreplay::PointerId(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t num_ready_handles;
@@ -126,13 +125,10 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
   scoped_refptr<SyncHandleRegistry> preserver(this);
   while (true) {
-    recordreplay::Assert("SyncHandleRegistry::Wait #1");
     V8RecordReplayMaybeTerminate(nullptr, nullptr);
 
     for (size_t i = 0; i < count; ++i) {
-      recordreplay::Assert("SyncHandleRegistry::Wait #2");
       if (*should_stop[i]) {
-        recordreplay::Assert("SyncHandleRegistry::Wait #3");
         return true;
       }
     }
@@ -143,16 +139,11 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
     num_ready_handles = 1;
     wait_set_.Wait(&ready_event, &num_ready_handles, &ready_handle,
                    &ready_handle_result);
-    recordreplay::Assert("SyncHandleRegistry::Wait #3.1 %lu", num_ready_handles);
     if (num_ready_handles) {
       DCHECK_EQ(1u, num_ready_handles);
       const auto iter = handles_.find(ready_handle);
-      recordreplay::Assert("SyncHandleRegistry::Wait #3.2 %u", ready_handle.value());
       iter->second.Run(ready_handle_result);
-      recordreplay::Assert("SyncHandleRegistry::Wait #3.3");
     }
-
-    recordreplay::Assert("SyncHandleRegistry::Wait #4 %lu", recordreplay::PointerId(ready_event));
 
     if (ready_event) {
       const auto iter = events_.find(ready_event);
@@ -160,9 +151,7 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
       {
         base::AutoReset<bool> in_nested_wait(&in_nested_wait_, true);
-        recordreplay::Assert("SyncHandleRegistry::Wait #4.1");
         iter->second->Notify();
-        recordreplay::Assert("SyncHandleRegistry::Wait #4.2");
       }
 
       // Notify() above may have both added and removed event registrations, for

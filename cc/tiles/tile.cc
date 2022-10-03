@@ -42,9 +42,6 @@ Tile::Tile(TileManager* tile_manager,
       raster_task_scheduled_with_checker_images_(false),
       id_(tile_manager->GetUniqueTileId()) {
   recordreplay::RegisterPointer(this);
-  recordreplay::Assert("Tile::Tile %d %d %d %d",
-                       enclosing_layer_rect_.x(), enclosing_layer_rect_.y(),
-                       enclosing_layer_rect_.width(), enclosing_layer_rect_.height());
   raster_rects_.emplace_back(info.content_rect, info.raster_transform);
 }
 

@@ -182,7 +182,6 @@ bool RemoteFontFaceSource::IsValid() const {
 }
 
 void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
-  recordreplay::Assert("RemoteFontFaceSource::NotifyFinished %lu", recordreplay::PointerId(this));
   ExecutionContext* execution_context = font_selector_->GetExecutionContext();
   if (!execution_context)
     return;

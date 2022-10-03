@@ -615,8 +615,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation(
         full_context_.direct_compositing_reasons &
         CompositingReason::kDirectReasonsForPaintOffsetTranslationProperty;
     state.rendering_context_id = context_.current.rendering_context_id;
-    recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdatePaintOffsetTranslation #1 %d",
-                         state.rendering_context_id);
     if (IsA<LayoutView>(object_)) {
       DCHECK(object_.GetFrame());
       state.flags.is_frame_paint_offset_translation = true;
@@ -987,8 +985,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
         // does not exist in an existing rendering context, it establishes a
         // new one.
         state.rendering_context_id = context_.current.rendering_context_id;
-        recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdateTransform #1 %d",
-                             state.rendering_context_id);
         if (style.Preserves3D() && !state.rendering_context_id) {
           // When recording/replaying we need a consistent context ID, so use
           // the pointer ID of the object instead of its hash.
@@ -998,8 +994,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
             state.rendering_context_id =
                 PtrHash<const LayoutObject>::GetHash(&object_);
           }
-          recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdateTransform #2 %d",
-                              state.rendering_context_id);
         }
 
         // TODO(crbug.com/1185254): Make this work correctly for block
@@ -1054,8 +1048,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
     context_.current.transform = transform;
     if (object_.StyleRef().Preserves3D()) {
       context_.current.rendering_context_id = transform->RenderingContextId();
-      recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdateTransform #3 %d",
-                           context_.current.rendering_context_id);
       context_.current.should_flatten_inherited_transform = false;
     } else {
       context_.current.rendering_context_id = 0;
@@ -1900,8 +1892,6 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
       state.flags.flattens_inherited_transform =
           context_.current.should_flatten_inherited_transform;
       state.rendering_context_id = context_.current.rendering_context_id;
-      recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdatePerspective #1 %d",
-                           state.rendering_context_id);
       OnUpdate(properties_->UpdatePerspective(*context_.current.transform,
                                               std::move(state)));
     } else {
@@ -2110,8 +2100,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
           full_context_.direct_compositing_reasons &
           CompositingReason::kDirectReasonsForScrollTranslationProperty;
       state.rendering_context_id = context_.current.rendering_context_id;
-      recordreplay::Assert("FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation #1 %d",
-                           state.rendering_context_id);
       state.scroll = properties_->Scroll();
       // If scroll and transform are both present, we should use the
       // transform property tree node to determine visibility of the

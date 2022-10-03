@@ -87,7 +87,6 @@ void MessagePipeReader::SetPeerPid(int32_t peer_pid) {
 }
 
 void MessagePipeReader::Receive(MessageView message_view) {
-  recordreplay::Assert("MessagePipeReader::Receive %lu", recordreplay::PointerId(this));
   if (message_view.bytes().empty()) {
     delegate_->OnBrokenDataReceived();
     return;

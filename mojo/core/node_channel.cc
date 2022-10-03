@@ -421,7 +421,6 @@ void NodeChannel::AcceptBrokerClient(const ports::NodeName& broker_name,
 
 void NodeChannel::RequestPortMerge(const ports::PortName& connector_port_name,
                                    const std::string& token) {
-  recordreplay::Assert("NodeChannel::RequestPortMerge Start");
   RequestPortMergeData* data;
   Channel::MessagePtr message =
       CreateMessage(MessageType::REQUEST_PORT_MERGE,
@@ -429,7 +428,6 @@ void NodeChannel::RequestPortMerge(const ports::PortName& connector_port_name,
   data->connector_port_name = connector_port_name;
   memcpy(data + 1, token.data(), token.size());
   WriteChannelMessage(std::move(message));
-  recordreplay::Assert("NodeChannel::RequestPortMerge Done");
 }
 
 void NodeChannel::RequestIntroduction(const ports::NodeName& name) {
@@ -458,9 +456,7 @@ void NodeChannel::Introduce(const ports::NodeName& name,
 }
 
 void NodeChannel::SendChannelMessage(Channel::MessagePtr message) {
-  recordreplay::Assert("NodeChannel::SendChannelMessage Start");
   WriteChannelMessage(std::move(message));
-  recordreplay::Assert("NodeChannel::SendChannelMessage Done");
 }
 
 void NodeChannel::Broadcast(Channel::MessagePtr message) {
@@ -574,18 +570,14 @@ void NodeChannel::OnChannelMessage(const void* payload,
                                    std::vector<PlatformHandle> handles) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
 
-  recordreplay::Assert("NodeChannel::OnChannelMessage Start");
-
   RequestContext request_context(RequestContext::Source::SYSTEM);
 
   if (payload_size <= sizeof(Header)) {
-    recordreplay::Assert("NodeChannel::OnChannelMessage #1");
     delegate_->OnChannelError(remote_node_name_, this);
     return;
   }
 
   const Header* header = static_cast<const Header*>(payload);
-  recordreplay::Assert("NodeChannel::OnChannelMessage #2 %d", header->type);
   switch (header->type) {
     case MessageType::ACCEPT_INVITEE: {
       AcceptInviteeData data;
@@ -711,7 +703,6 @@ void NodeChannel::OnChannelMessage(const void* payload,
     }
 
     case MessageType::INTRODUCE: {
-      recordreplay::Assert("NodeChannel::OnChannelMessage #3");
       IntroductionData data;
       if (GetMessagePayloadMinimumSized<IntroductionData, IntroductionDataV0>(
               payload, payload_size, &data)) {
@@ -730,7 +721,6 @@ void NodeChannel::OnChannelMessage(const void* payload,
                                std::move(channel_handle), data.capabilities);
         return;
       }
-      recordreplay::Assert("NodeChannel::OnChannelMessage #6");
       break;
     }
 

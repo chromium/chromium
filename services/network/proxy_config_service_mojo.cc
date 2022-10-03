@@ -53,8 +53,6 @@ void ProxyConfigServiceMojo::OnProxyConfigUpdated(
 
 void ProxyConfigServiceMojo::FlushProxyConfig(
     FlushProxyConfigCallback callback) {
-  recordreplay::Assert("ProxyConfigServiceMojo::FlushProxyConfig %lu",
-                       recordreplay::PointerId(this));
   std::move(callback).Run();
 }
 

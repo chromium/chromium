@@ -21,7 +21,6 @@ PooledSequencedTaskRunner::PooledSequencedTaskRunner(
 }
 
 PooledSequencedTaskRunner::~PooledSequencedTaskRunner() {
-  recordreplay::Assert("~PooledSequencedTaskRunner %lu", recordreplay::PointerId(this));
   recordreplay::UnregisterPointer(this);
 }
 

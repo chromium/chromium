@@ -494,10 +494,6 @@ bool DOMWebSocket::HasPendingActivity() const {
 
 void DOMWebSocket::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {
-  // https://linear.app/replay/issue/RUN-569
-  recordreplay::Assert("DOMWebSocket::ContextLifecycleStateChanged Start %d",
-                       recordreplay::PointerId(this));
-
   if (state == mojom::FrameLifecycleState::kRunning) {
     event_queue_->Unpause();
 
@@ -508,9 +504,6 @@ void DOMWebSocket::ContextLifecycleStateChanged(
   } else {
     event_queue_->Pause();
   }
-
-  // https://linear.app/replay/issue/RUN-569
-  recordreplay::Assert("DOMWebSocket::ContextLifecycleStateChanged Done");
 }
 
 void DOMWebSocket::DidConnect(const String& subprotocol,

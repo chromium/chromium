@@ -938,8 +938,6 @@ FFmpegDemuxer::FFmpegDemuxer(
 }
 
 FFmpegDemuxer::~FFmpegDemuxer() {
-  recordreplay::Assert("FFmpegDemuxer::~FFmpegDemuxer Start");
-
   DCHECK(!init_cb_);
   DCHECK(!pending_seek_cb_);
 
@@ -952,8 +950,6 @@ FFmpegDemuxer::~FFmpegDemuxer() {
   // earlier call to Abort() on |data_source_| prevents further access to it.
   blocking_task_runner_->DeleteSoon(FROM_HERE, url_protocol_.release());
   blocking_task_runner_->DeleteSoon(FROM_HERE, glue_.release());
-
-  recordreplay::Assert("FFmpegDemuxer::~FFmpegDemuxer Done");
 }
 
 std::string FFmpegDemuxer::GetDisplayName() const {

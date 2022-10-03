@@ -429,22 +429,17 @@ bool ThreadPoolImpl::PostTaskWithSequenceNow(Task task,
 
 bool ThreadPoolImpl::PostTaskWithSequence(Task task,
                                           scoped_refptr<Sequence> sequence) {
-  recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence Start");
-
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
   DCHECK(sequence);
 
   if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior())) {
-    recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence #1");
     return false;
   }
 
   if (task.delayed_run_time.is_null()) {
-    bool rv = PostTaskWithSequenceNow(std::move(task), std::move(sequence));
-    recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence #2 %d", rv);
-    return rv;
+    return PostTaskWithSequenceNow(std::move(task), std::move(sequence));
   } else {
     // It's safe to take a ref on this pointer since the caller must have a ref
     // to the TaskRunner in order to post.
@@ -461,14 +456,11 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
         std::move(task_runner));
   }
 
-  recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence Done");
   return true;
 }
 
 bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
-  recordreplay::Assert("ThreadPoolImpl::ShouldYield Start");
   if (disable_job_yield_) {
-    recordreplay::Assert("ThreadPoolImpl::ShouldYield #1");
     return false;
   }
   const TaskPriority priority = task_source->priority_racy();
@@ -477,7 +469,6 @@ bool ThreadPoolImpl::ShouldYield(const TaskSource* task_source) {
   // A task whose priority changed and is now running in the wrong thread group
   // should yield so it's rescheduled in the right one.
   if (!thread_group->IsBoundToCurrentThread()) {
-    recordreplay::Assert("ThreadPoolImpl::ShouldYield #2");
     return true;
   }
   return GetThreadGroupForTraits({priority, task_source->thread_policy()})

@@ -730,9 +730,6 @@ void HttpResponseHeaders::ParseStatusLine(
   response_code_ = recordreplay::RecordReplayValue("HttpResponseHeaders::ParseStatusLine response code",
                                                    response_code_);
 
-  recordreplay::Assert("HttpResponseHeaders::ParseStatusLine #5 %s %d",
-                       base::MakeStringPiece(code, p).as_string().c_str(), response_code_);
-
   // Skip whitespace.
   while (p < line_end && *p == ' ')
     ++p;

@@ -196,8 +196,6 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
 }
 
 void IdleHelper::EndIdlePeriod() {
-  recordreplay::Assert("IdleHelper::EndIdlePeriod");
-
   if (is_shutdown_)
     return;
 
@@ -226,7 +224,6 @@ void IdleHelper::WillProcessTask(const base::PendingTask& pending_task,
 }
 
 void IdleHelper::DidProcessTask(const base::PendingTask& pending_task) {
-  recordreplay::Assert("IdleHelper::DidProcessTask Start");
   helper_->CheckOnValidThread();
   DCHECK(!is_shutdown_);
   DCHECK(IsInIdlePeriod(state_.idle_period_state()));
@@ -243,7 +240,6 @@ void IdleHelper::DidProcessTask(const base::PendingTask& pending_task) {
       EndIdlePeriod();
     }
   }
-  recordreplay::Assert("IdleHelper::DidProcessTask Done");
 }
 
 void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {

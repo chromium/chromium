@@ -132,8 +132,6 @@ void CryptoResultImpl::ClearResolver() {
 
 void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
                                          const WebString& error_details) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithError");
-
   if (!resolver_)
     return;
 
@@ -156,8 +154,6 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
 
 void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
                                           unsigned bytes_size) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithBuffer");
-
   if (!resolver_)
     return;
 
@@ -167,8 +163,6 @@ void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
 
 void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
                                         unsigned length) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithJson");
-
   if (!resolver_)
     return;
 
@@ -193,8 +187,6 @@ void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
 }
 
 void CryptoResultImpl::CompleteWithBoolean(bool b) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithBoolean");
-
   if (!resolver_)
     return;
 
@@ -203,8 +195,6 @@ void CryptoResultImpl::CompleteWithBoolean(bool b) {
 }
 
 void CryptoResultImpl::CompleteWithKey(const WebCryptoKey& key) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithKey");
-
   if (!resolver_)
     return;
 
@@ -214,8 +204,6 @@ void CryptoResultImpl::CompleteWithKey(const WebCryptoKey& key) {
 
 void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
                                            const WebCryptoKey& private_key) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithKeyPair");
-
   if (!resolver_)
     return;
 
@@ -236,8 +224,6 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
 }
 
 void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
-  recordreplay::Assert("CryptoResultImpl::CompleteWithError #2");
-
   if (!resolver_)
     return;
 
@@ -246,8 +232,6 @@ void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
 }
 
 void CryptoResultImpl::Cancel() {
-  recordreplay::Assert("CryptoResultImpl::Cancel");
-
   DCHECK(cancel_);
   cancel_->Cancel();
   cancel_ = nullptr;

@@ -262,7 +262,6 @@ RendererResourceCoordinatorImpl::RendererResourceCoordinatorImpl(
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
     V8ContextDescriptionPtr v8_desc,
     IframeAttributionDataPtr iframe_attribution_data) {
-  recordreplay::Assert("RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated Start");
   DCHECK(service_);
   // Calls to this can arrive on any thread (due to workers, etc), but the
   // interface itself is bound to the main thread. In this case, once we've
@@ -280,7 +279,6 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated(
     service_->OnV8ContextCreated(std::move(v8_desc),
                                  std::move(iframe_attribution_data));
   }
-  recordreplay::Assert("RendererResourceCoordinatorImpl::DispatchOnV8ContextCreated Done");
 }
 
 void RendererResourceCoordinatorImpl::DispatchOnV8ContextDetached(

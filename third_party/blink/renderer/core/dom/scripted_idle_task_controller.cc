@@ -33,23 +33,18 @@ class IdleRequestCallbackWrapper
   static void IdleTaskFired(
       scoped_refptr<IdleRequestCallbackWrapper> callback_wrapper,
       base::TimeTicks deadline) {
-    recordreplay::Assert("IdleTaskFired Start");
     if (ScriptedIdleTaskController* controller =
             callback_wrapper->Controller()) {
       // If we are going to yield immediately, reschedule the callback for
       // later.
-      recordreplay::Assert("IdleTaskFired #1");
       if (ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
-        recordreplay::Assert("IdleTaskFired #2");
         controller->ScheduleCallback(std::move(callback_wrapper),
                                      /* timeout_millis */ 0);
         return;
       }
-      recordreplay::Assert("IdleTaskFired #3");
       controller->CallbackFired(callback_wrapper->Id(), deadline,
                                 IdleDeadline::CallbackType::kCalledWhenIdle);
     }
-    recordreplay::Assert("IdleTaskFired #4");
     callback_wrapper->Cancel();
   }
 
@@ -199,8 +194,6 @@ void ScriptedIdleTaskController::RunCallback(
     return;
   IdleTask* idle_task = idle_task_iter->value;
   DCHECK(idle_task);
-
-  recordreplay::Assert("ScriptedIdleTaskController::RunCallback #1");
 
   base::TimeDelta allotted_time =
       std::max(deadline - base::TimeTicks::Now(), base::TimeDelta());

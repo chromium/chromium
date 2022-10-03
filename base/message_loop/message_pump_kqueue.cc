@@ -162,8 +162,6 @@ MessagePumpKqueue::~MessagePumpKqueue() {}
 void MessagePumpKqueue::Run(Delegate* delegate) {
   AutoReset<bool> reset_keep_running(&keep_running_, true);
 
-  recordreplay::Assert("MessagePumpKqueue::Run Start %d", keep_running_);
-
   while (keep_running_) {
     mac::ScopedNSAutoreleasePool pool;
 
@@ -172,12 +170,7 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
       break;
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
-
-    recordreplay::Assert("MessagePumpKqueue::Run #2.0 %d", next_work_info.is_immediate());
-
     do_more_work |= next_work_info.is_immediate();
-
-    recordreplay::Assert("MessagePumpKqueue::Run #2.1 %d %d", do_more_work, keep_running_);
 
     if (!keep_running_)
       break;
@@ -186,8 +179,6 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
       continue;
 
     do_more_work |= delegate->DoIdleWork();
-
-    recordreplay::Assert("MessagePumpKqueue::Run #2.2 %d %d", do_more_work, keep_running_);
 
     if (!keep_running_)
       break;
@@ -463,7 +454,6 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
       if (controller) {
         auto scoped_do_native_work = delegate->BeginNativeWork();
         controller->watcher()->OnMachMessageReceived(port);
-        recordreplay::Assert("MessagePumpKqueue::ProcessEvents #2");
       }
     } else if (event->filter == EVFILT_TIMER) {
       // The wakeup timer fired.
@@ -489,7 +479,6 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, int count) {
     }
   }
 
-  recordreplay::Assert("MessagePumpKqueue::ProcessEvents Done %d", did_work);
   return did_work;
 }
 

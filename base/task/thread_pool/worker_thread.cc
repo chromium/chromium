@@ -276,8 +276,6 @@ NOINLINE void WorkerThread::RunBackgroundDedicatedCOMWorker() {
 #endif  // defined(OS_WIN)
 
 void WorkerThread::RunWorker() {
-  recordreplay::Assert("WorkerThread::RunWorker Start");
-
   DCHECK_EQ(self_, this);
   TRACE_EVENT_INSTANT0("base", "WorkerThread born", TRACE_EVENT_SCOPE_THREAD);
   TRACE_EVENT_BEGIN0("base", "WorkerThread active");
@@ -285,11 +283,7 @@ void WorkerThread::RunWorker() {
   if (worker_thread_observer_)
     worker_thread_observer_->OnWorkerThreadMainEntry();
 
-  recordreplay::Assert("WorkerThread::RunWorker #1");
-
   delegate_->OnMainEntry(this);
-
-  recordreplay::Assert("WorkerThread::RunWorker #2");
 
   // Background threads can take an arbitrary amount of time to complete, do not
   // watch them for hangs. Ignore priority boosting for now.
@@ -306,11 +300,9 @@ void WorkerThread::RunWorker() {
 
   // A WorkerThread starts out waiting for work.
   {
-    recordreplay::Assert("WorkerThread::RunWorker #3");
     TRACE_EVENT_END0("base", "WorkerThread active");
     delegate_->WaitForWork(&wake_up_event_);
     TRACE_EVENT_BEGIN0("base", "WorkerThread active");
-    recordreplay::Assert("WorkerThread::RunWorker #4");
   }
 
   while (!ShouldExit()) {
@@ -327,8 +319,6 @@ void WorkerThread::RunWorker() {
     // Get the task source containing the next task to execute.
     RegisteredTaskSource task_source = delegate_->GetWork(this);
 
-    recordreplay::Assert("WorkerThread::RunWorker #4.1 %d", !!task_source);
-
     if (!task_source) {
       // Exit immediately if GetWork() resulted in detaching this worker.
       if (ShouldExit())
@@ -336,22 +326,14 @@ void WorkerThread::RunWorker() {
 
       TRACE_EVENT_END0("base", "WorkerThread active");
       hang_watch_scope.reset();
-      recordreplay::Assert("WorkerThread::RunWorker #5");
       delegate_->WaitForWork(&wake_up_event_);
-      recordreplay::Assert("WorkerThread::RunWorker #6");
       TRACE_EVENT_BEGIN0("base", "WorkerThread active");
       continue;
     }
 
-    recordreplay::Assert("WorkerThread::RunWorker #7");
-
     task_source = task_tracker_->RunAndPopNextTask(std::move(task_source));
 
-    recordreplay::Assert("WorkerThread::RunWorker #7.1");
-
     delegate_->DidProcessTask(std::move(task_source));
-
-    recordreplay::Assert("WorkerThread::RunWorker #7.2");
 
     // Calling WakeUp() guarantees that this WorkerThread will run Tasks from
     // TaskSources returned by the GetWork() method of |delegate_| until it

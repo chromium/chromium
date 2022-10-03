@@ -539,8 +539,6 @@ std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
                     base::BindRepeating(
                         [](const std::unique_ptr<v8::JobTask>& job_task,
                            base::JobDelegate* delegate) {
-                          recordreplay::Assert("V8Platform::PostJob callback %lu",
-                                               recordreplay::PointerId(delegate));
                           JobDelegateImpl delegate_impl(delegate);
                           job_task->Run(&delegate_impl);
                         },

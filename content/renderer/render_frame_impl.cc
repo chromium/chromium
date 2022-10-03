@@ -2767,7 +2767,6 @@ void RenderFrameImpl::NotifyResourceResponseReceived(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::RequestDestination request_destination,
     int32_t previews_state) {
-  recordreplay::Assert("RenderFrameImpl::NotifyResourceResponseReceived");
   if (!blink::IsRequestDestinationFrame(request_destination)) {
     GetFrameHost()->SubresourceResponseStarted(response_url,
                                                response_head->cert_status);
@@ -3771,9 +3770,6 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker;
 
-  recordreplay::Assert("RenderFrameImpl::CreateChildFrame #1 %s %s",
-                       name.Utf8().c_str(), frame_unique_name.c_str());
-
   // Now create the child frame in the browser via an asynchronous call.
   GetFrameHost()->CreateChildFrame(
       child_routing_id,
@@ -4530,7 +4526,6 @@ void RenderFrameImpl::DidObserveLazyLoadBehavior(
 
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
                                              int world_id) {
-  recordreplay::Assert("RenderFrameImpl::DidCreateScriptContext Start");
   if (((enabled_bindings_ & BINDINGS_POLICY_MOJO_WEB_UI) ||
        enable_mojo_js_bindings_) &&
       IsMainFrame() && world_id == ISOLATED_WORLD_ID_GLOBAL) {
@@ -4540,11 +4535,8 @@ void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
   }
 
   for (auto& observer : observers_) {
-    recordreplay::Assert("RenderFrameImpl::DidCreateScriptContext #1");
     observer.DidCreateScriptContext(context, world_id);
   }
-
-  recordreplay::Assert("RenderFrameImpl::DidCreateScriptContext Done");
 }
 
 void RenderFrameImpl::WillReleaseScriptContext(v8::Local<v8::Context> context,

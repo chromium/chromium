@@ -25,14 +25,11 @@ void AssociatedInterfaceRegistry::RemoveInterface(const std::string& name) {
 bool AssociatedInterfaceRegistry::TryBindInterface(
     const std::string& name,
     mojo::ScopedInterfaceEndpointHandle* handle) {
-  recordreplay::Assert("AssociatedInterfaceRegistry::TryBindInterface Start");
   auto it = interfaces_.find(name);
   if (it == interfaces_.end()) {
-    recordreplay::Assert("AssociatedInterfaceRegistry::TryBindInterface #1");
     return false;
   }
   it->second.Run(std::move(*handle));
-  recordreplay::Assert("AssociatedInterfaceRegistry::TryBindInterface Done");
   return true;
 }
 

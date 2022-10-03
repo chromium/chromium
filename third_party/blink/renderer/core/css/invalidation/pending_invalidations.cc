@@ -31,17 +31,9 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
 
   if (node.GetStyleChangeType() < kSubtreeStyleChange) {
     for (auto& invalidation_set : invalidation_lists.descendants) {
-      // https://linear.app/replay/issue/RUN-556
-      recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #4 %d",
-                           recordreplay::PointerId(invalidation_set.get()));
-
       if (invalidation_set->WholeSubtreeInvalid()) {
         auto* shadow_root = DynamicTo<ShadowRoot>(node);
         auto* subtree_root = shadow_root ? &shadow_root->host() : &node;
-
-        // https://linear.app/replay/issue/RUN-556
-        recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #5 %d %d",
-                             !!shadow_root, recordreplay::PointerId(subtree_root));
 
         subtree_root->SetNeedsStyleRecalc(
             kSubtreeStyleChange, StyleChangeReasonForTracing::Create(
@@ -51,10 +43,6 @@ void PendingInvalidations::ScheduleInvalidationSetsForNode(
       }
 
       if (invalidation_set->InvalidatesSelf() && node.IsElementNode()) {
-        // https://linear.app/replay/issue/RUN-556
-        recordreplay::Assert("PendingInvalidations::ScheduleInvalidationSetsForNode #6 %d",
-                             recordreplay::PointerId(&node));
-
         node.SetNeedsStyleRecalc(kLocalStyleChange,
                                  StyleChangeReasonForTracing::Create(
                                      style_change_reason::kStyleInvalidator));
@@ -162,16 +150,10 @@ void PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants(
 
   InvalidationLists invalidation_lists;
   for (const auto& invalidation_set : pending_invalidations.Siblings()) {
-    // https://linear.app/replay/issue/RUN-556
-    recordreplay::Assert("PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants #5 %d",
-                         recordreplay::PointerId(invalidation_set.get()));
     invalidation_lists.descendants.push_back(invalidation_set);
     if (DescendantInvalidationSet* descendants =
             To<SiblingInvalidationSet>(*invalidation_set)
                 .SiblingDescendants()) {
-      // https://linear.app/replay/issue/RUN-556
-      recordreplay::Assert("PendingInvalidations::RescheduleSiblingInvalidationsAsDescendants #6 %d",
-                           recordreplay::PointerId(descendants));
       invalidation_lists.descendants.push_back(descendants);
     }
   }

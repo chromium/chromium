@@ -619,15 +619,9 @@ void LayerTreeHost::OnDeferCommitsChanged(bool defer_status) {
 
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate() {
-  // https://linear.app/replay/issue/RUN-569
-  recordreplay::Assert("LayerTreeHost::SetNeedsAnimate Start");
-
   proxy_->SetNeedsAnimate();
   swap_promise_manager_.NotifySwapPromiseMonitorsOfSetNeedsCommit();
   events_metrics_manager_.SaveActiveEventMetrics();
-
-  // https://linear.app/replay/issue/RUN-569
-  recordreplay::Assert("LayerTreeHost::SetNeedsAnimate Done");
 }
 
 void LayerTreeHost::SetNeedsAnimateIfNotInsideMainFrame() {
@@ -726,15 +720,11 @@ void LayerTreeHost::CompositeForTest(base::TimeTicks frame_begin_time,
 }
 
 bool LayerTreeHost::UpdateLayers() {
-  recordreplay::Assert("LayerTreeHost::UpdateLayers Start");
-
   if (!root_layer()) {
     property_trees_.clear();
     viewport_property_ids_ = ViewportPropertyIds();
     return false;
   }
-
-  recordreplay::Assert("LayerTreeHost::UpdateLayers #1");
 
   DCHECK(!root_layer()->parent());
   base::ElapsedTimer timer;

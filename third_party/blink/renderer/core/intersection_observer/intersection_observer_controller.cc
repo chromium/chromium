@@ -25,7 +25,6 @@ IntersectionObserverController::IntersectionObserverController(
 IntersectionObserverController::~IntersectionObserverController() = default;
 
 void IntersectionObserverController::PostTaskToDeliverNotifications() {
-  recordreplay::Assert("IntersectionObserverController::PostTaskToDeliverNotifications Start");
   DCHECK(GetExecutionContext());
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
@@ -34,7 +33,6 @@ void IntersectionObserverController::PostTaskToDeliverNotifications() {
           WTF::Bind(&IntersectionObserverController::DeliverNotifications,
                     WrapWeakPersistent(this),
                     IntersectionObserver::kPostTaskToDeliver));
-  recordreplay::Assert("IntersectionObserverController::PostTaskToDeliverNotifications Done");
 }
 
 void IntersectionObserverController::ScheduleIntersectionObserverForDelivery(
@@ -68,7 +66,6 @@ void IntersectionObserverController::DeliverNotifications(
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameUkmAggregator& ukm_aggregator) {
-  recordreplay::Assert("IntersectionObserverController::ComputeIntersections Start");
   needs_occlusion_tracking_ = false;
   if (GetExecutionContext()) {
     TRACE_EVENT0("blink",
@@ -81,9 +78,7 @@ bool IntersectionObserverController::ComputeIntersections(
     for (auto& observer : observers_to_process) {
       if (observer->HasObservations()) {
         SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator, observer->GetUkmMetricId());
-        recordreplay::Assert("IntersectionObserverController::ComputeIntersections #1");
         needs_occlusion_tracking_ |= observer->ComputeIntersections(flags);
-        recordreplay::Assert("IntersectionObserverController::ComputeIntersections #2");
       } else {
         tracked_explicit_root_observers_.erase(observer);
       }
@@ -95,13 +90,10 @@ bool IntersectionObserverController::ComputeIntersections(
     for (auto& observation : observations_to_process) {
       SCOPED_UMA_AND_UKM_TIMER(ukm_aggregator,
                                observation->Observer()->GetUkmMetricId());
-      recordreplay::Assert("IntersectionObserverController::ComputeIntersections #3");
       observation->ComputeIntersection(flags);
-      recordreplay::Assert("IntersectionObserverController::ComputeIntersections #4");
       needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
     }
   }
-  recordreplay::Assert("IntersectionObserverController::ComputeIntersections Done");
   return needs_occlusion_tracking_;
 }
 

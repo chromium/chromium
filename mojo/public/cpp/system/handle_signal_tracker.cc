@@ -67,14 +67,10 @@ void HandleSignalTracker::Arm() {
 
 void HandleSignalTracker::OnNotify(MojoResult result,
                                    const HandleSignalsState& state) {
-  recordreplay::Assert("HandleSignalTracker::OnNotify Start");
-
   last_known_state_ = state;
   Arm();
   if (notification_callback_)
     notification_callback_.Run(state);
-
-  recordreplay::Assert("HandleSignalTracker::OnNotify Done");
 }
 
 }  // namespace mojo

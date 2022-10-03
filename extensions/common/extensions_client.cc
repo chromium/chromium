@@ -118,8 +118,6 @@ void ExtensionsClient::DoInitialize() {
   DCHECK(!ManifestHandler::IsRegistrationFinalized());
   PermissionsInfo* permissions_info = PermissionsInfo::GetInstance();
 
-  recordreplay::Assert("ExtensionsClient::DoInitialize");
-
   const base::ElapsedTimer timer;
   for (const auto& provider : api_providers_) {
     provider->RegisterManifestHandlers();

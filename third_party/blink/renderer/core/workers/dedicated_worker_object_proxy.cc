@@ -60,8 +60,6 @@ DedicatedWorkerObjectProxy::~DedicatedWorkerObjectProxy() {
 
 void DedicatedWorkerObjectProxy::PostMessageToWorkerObject(
     BlinkTransferableMessage message) {
-  recordreplay::Assert("DedicatedWorkerObjectProxy::PostMessageToWorkerObject %lu",
-                       recordreplay::PointerId(this));
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kPostedMessage),
       FROM_HERE,

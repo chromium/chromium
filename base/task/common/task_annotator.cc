@@ -118,8 +118,6 @@ void TaskAnnotator::WillQueueTask(const char* trace_event_name,
 
 void TaskAnnotator::RunTask(const char* trace_event_name,
                             PendingTask* pending_task) {
-  recordreplay::Assert("TaskAnnotator::RunTask Start");
-
   DCHECK(trace_event_name);
   DCHECK(pending_task);
 
@@ -185,8 +183,6 @@ void TaskAnnotator::RunTask(const char* trace_event_name,
   task_backtrace.front() = nullptr;
   task_backtrace.back() = nullptr;
   debug::Alias(&task_backtrace);
-
-  recordreplay::Assert("TaskAnnotator::RunTask Done");
 }
 
 uint64_t TaskAnnotator::GetTaskTraceID(const PendingTask& task) const {

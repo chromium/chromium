@@ -511,8 +511,6 @@ String FontFace::status() const {
 }
 
 void FontFace::SetLoadStatus(LoadStatusType status) {
-  recordreplay::Assert("FontFace::SetLoadStatus Start %lu %d", recordreplay::PointerId(this), status);
-
   status_ = status;
   DCHECK(status_ != kError || error_);
 

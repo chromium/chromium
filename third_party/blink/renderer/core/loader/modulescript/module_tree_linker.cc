@@ -301,8 +301,6 @@ void ModuleTreeLinker::FetchRootInline(ModuleScript* module_script) {
 // #fetch-a-module-script-tree, #fetch-an-import()-module-script-graph, and
 // #fetch-a-module-worker-script-tree, and IMSGF.
 void ModuleTreeLinker::NotifyModuleLoadFinished(ModuleScript* module_script) {
-  recordreplay::Assert("ModuleTreeLinker::NotifyModuleLoadFinished Start");
-
   CHECK_GT(num_incomplete_fetches_, 0u);
   --num_incomplete_fetches_;
 
@@ -326,7 +324,6 @@ void ModuleTreeLinker::NotifyModuleLoadFinished(ModuleScript* module_script) {
   if (state_ != State::kFetchingDependencies) {
     // We may reach here if one of the descendant failed to load, and the other
     // descendants fetches were in flight.
-    recordreplay::Assert("ModuleTreeLinker::NotifyModuleLoadFinished #1");
     return;
   }
 
@@ -347,7 +344,6 @@ void ModuleTreeLinker::NotifyModuleLoadFinished(ModuleScript* module_script) {
   if (!module_script) {
     result_ = nullptr;
     AdvanceState(State::kFinished);
-    recordreplay::Assert("ModuleTreeLinker::NotifyModuleLoadFinished #2");
     return;
   }
 
@@ -364,8 +360,6 @@ void ModuleTreeLinker::NotifyModuleLoadFinished(ModuleScript* module_script) {
   // <spec label="IMSGF" step="5">Fetch the descendants of result given fetch
   // client settings object, destination, and visited set.</spec>
   FetchDescendants(module_script);
-
-  recordreplay::Assert("ModuleTreeLinker::NotifyModuleLoadFinished Done");
 }
 
 // <specdef

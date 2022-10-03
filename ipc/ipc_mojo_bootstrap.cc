@@ -774,8 +774,6 @@ class ChannelAssociatedGroupController
   }
 
   void NotifyEndpointOfError(Endpoint* endpoint, bool force_async) {
-    recordreplay::Assert("NotifyEndpointOfError Start");
-
     lock_.AssertAcquired();
     DCHECK(endpoint->task_runner() && endpoint->client());
     if (endpoint->task_runner()->RunsTasksInCurrentSequence() && !force_async) {
@@ -792,8 +790,6 @@ class ChannelAssociatedGroupController
                              NotifyEndpointOfErrorOnEndpointThread,
                          this, endpoint->id(), base::Unretained(endpoint)));
     }
-
-    recordreplay::Assert("NotifyEndpointOfError Done");
   }
 
   void NotifyEndpointOfErrorOnEndpointThread(mojo::InterfaceId id,
@@ -921,8 +917,6 @@ class ChannelAssociatedGroupController
   }
 
   void AcceptOnProxyThread(mojo::Message message) {
-    recordreplay::Assert("AcceptOnProxyThread Start");
-
     DCHECK(proxy_task_runner_->BelongsToCurrentThread());
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mojom"),
                  "ChannelAssociatedGroupController::AcceptOnProxyThread");
@@ -933,13 +927,11 @@ class ChannelAssociatedGroupController
     base::AutoLock locker(lock_);
     Endpoint* endpoint = FindEndpoint(id);
     if (!endpoint) {
-      recordreplay::Assert("AcceptOnProxyThread #1");
       return;
     }
 
     mojo::InterfaceEndpointClient* client = endpoint->client();
     if (!client) {
-      recordreplay::Assert("AcceptOnProxyThread #2");
       return;
     }
 
@@ -959,8 +951,6 @@ class ChannelAssociatedGroupController
 
     if (!result)
       RaiseError();
-
-    recordreplay::Assert("AcceptOnProxyThread Done");
   }
 
   void AcceptSyncMessage(mojo::InterfaceId interface_id, uint32_t message_id) {

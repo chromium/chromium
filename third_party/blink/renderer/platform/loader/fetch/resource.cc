@@ -241,8 +241,6 @@ void Resource::CheckResourceIntegrity() {
 void Resource::NotifyFinished() {
   CHECK(IsLoaded());
 
-  recordreplay::Assert("Resource::NotifyFinished %lu", recordreplay::PointerId(this));
-
   ResourceClientWalker<ResourceClient> w(clients_);
   while (ResourceClient* c = w.Next()) {
     MarkClientFinished(c);

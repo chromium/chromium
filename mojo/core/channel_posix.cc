@@ -67,7 +67,6 @@ class MessageView {
   MessageView& operator=(MessageView&& other) = default;
 
   ~MessageView() {
-    recordreplay::Assert("MessageView::~MessageView %d", !!message_);
     if (message_) {
       UMA_HISTOGRAM_TIMES("Mojo.Channel.WriteMessageLatency",
                           base::TimeTicks::Now() - start_time_);
@@ -365,10 +364,6 @@ void ChannelPosix::OnFileCanWriteWithoutBlocking(int fd) {
 // cannot be written, it's queued and a wait is initiated to write the message
 // ASAP on the I/O thread.
 bool ChannelPosix::WriteNoLock(MessageView message_view) {
-  recordreplay::Assert("ChannelPosix::WriteNoLock %d %lu",
-                       socket_.get(),
-                       message_view.data_num_bytes());
-
   if (server_.is_valid()) {
     outgoing_messages_.emplace_front(std::move(message_view));
     return true;

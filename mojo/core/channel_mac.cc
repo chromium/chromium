@@ -228,10 +228,6 @@ class ChannelMac : public Channel,
   bool RequestSendDeadNameNotification() {
     base::mac::ScopedMachSendRight previous;
 
-    recordreplay::Assert("RequestSendDeadNameNotification %d %d %d %d",
-                         send_port_.get(), MACH_NOTIFY_DEAD_NAME,
-                         receive_port_.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE);
-
     kern_return_t kr = mach_port_request_notification(
         mach_task_self(), send_port_.get(), MACH_NOTIFY_DEAD_NAME, 0,
         receive_port_.get(), MACH_MSG_TYPE_MAKE_SEND_ONCE,
@@ -346,8 +342,6 @@ class ChannelMac : public Channel,
   }
 
   bool SendMessageLocked(MessagePtr message) {
-    recordreplay::Assert("ChannelMac::SendMessageLocked Start %lu", message->data_num_bytes());
-
     DCHECK(!send_buffer_contains_message_);
     base::BufferIterator<char> buffer(
         reinterpret_cast<char*>(send_buffer_.address()), send_buffer_.size());
@@ -421,8 +415,6 @@ class ChannelMac : public Channel,
       }
     }
 
-    recordreplay::Assert("ChannelMac::SendMessageLocked #1 %lu %d", buffer.position(), transfer_message_ool);
-
     if (transfer_message_ool) {
       auto* descriptor = buffer.MutableObject<mach_msg_ool_descriptor_t>();
       descriptor->address = const_cast<void*>(message->data());
@@ -440,14 +432,11 @@ class ChannelMac : public Channel,
       memcpy(data.data(), message->data(), message->data_num_bytes());
     }
 
-    recordreplay::Assert("ChannelMac::SendMessageLocked #2 %lu", buffer.position());
-
     header->msgh_size = round_msg(buffer.position());
     return MachMessageSendLocked(header);
   }
 
   bool MachMessageSendLocked(mach_msg_header_t* header) {
-    recordreplay::Assert("MachMessageSendLocked %lu", header->msgh_size);
     kern_return_t kr = mach_msg(header, MACH_SEND_MSG | MACH_SEND_TIMEOUT,
                                 header->msgh_size, 0, MACH_PORT_NULL,
                                 /*timeout=*/0, MACH_PORT_NULL);

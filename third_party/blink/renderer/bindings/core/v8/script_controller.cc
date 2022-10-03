@@ -297,12 +297,10 @@ bool ScriptController::CanExecuteScript(ExecuteScriptPolicy policy) {
 
 scoped_refptr<DOMWrapperWorld>
 ScriptController::CreateNewInspectorIsolatedWorld(const String& world_name) {
-  recordreplay::Assert("ScriptController::CreateNewInspectorIsolatedWorld Start");
   scoped_refptr<DOMWrapperWorld> world = DOMWrapperWorld::Create(
       GetIsolate(), DOMWrapperWorld::WorldType::kInspectorIsolated);
   // Bail out if we could not create an isolated world.
   if (!world) {
-    recordreplay::Assert("ScriptController::CreateNewInspectorIsolatedWorld #1");
     return nullptr;
   }
   if (!world_name.IsEmpty()) {
@@ -311,7 +309,6 @@ ScriptController::CreateNewInspectorIsolatedWorld(const String& world_name) {
   }
   // Make sure the execution context exists.
   WindowProxy(*world);
-  recordreplay::Assert("ScriptController::CreateNewInspectorIsolatedWorld Done");
   return world;
 }
 

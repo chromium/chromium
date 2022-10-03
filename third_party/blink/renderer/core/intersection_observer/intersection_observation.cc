@@ -47,9 +47,7 @@ IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
 void IntersectionObservation::ComputeIntersection(
     const IntersectionGeometry::RootGeometry& root_geometry,
     unsigned compute_flags) {
-  recordreplay::Assert("IntersectionObservation::ComputeIntersection Start %lu", recordreplay::PointerId(this));
   if (!ShouldCompute(compute_flags)) {
-    recordreplay::Assert("IntersectionObservation::ComputeIntersection #1");
     return;
   }
   DCHECK(observer_->root());
@@ -58,13 +56,10 @@ void IntersectionObservation::ComputeIntersection(
       root_geometry, *observer_->root(), *Target(), observer_->thresholds(),
       observer_->TargetMargin(), geometry_flags, cached_rects_.get());
   ProcessIntersectionGeometry(geometry);
-  recordreplay::Assert("IntersectionObservation::ComputeIntersection Done");
 }
 
 void IntersectionObservation::ComputeIntersection(unsigned compute_flags) {
-  recordreplay::Assert("IntersectionObservation::ComputeIntersection2 Start %lu", recordreplay::PointerId(this));
   if (!ShouldCompute(compute_flags)) {
-    recordreplay::Assert("IntersectionObservation::ComputeIntersection2 #1");
     return;
   }
   unsigned geometry_flags = GetIntersectionGeometryFlags(compute_flags);
@@ -72,7 +67,6 @@ void IntersectionObservation::ComputeIntersection(unsigned compute_flags) {
       observer_->root(), *Target(), observer_->RootMargin(),
       observer_->thresholds(), observer_->TargetMargin(), geometry_flags);
   ProcessIntersectionGeometry(geometry);
-  recordreplay::Assert("IntersectionObservation::ComputeIntersection2 Done");
 }
 
 void IntersectionObservation::TakeRecords(
@@ -223,7 +217,6 @@ void IntersectionObservation::ProcessIntersectionGeometry(
 
   if (last_threshold_index_ != geometry.ThresholdIndex() ||
       last_is_visible_ != geometry.IsVisible()) {
-    recordreplay::Assert("IntersectionObservation::ProcessIntersectionGeometry #1");
     entries_.push_back(MakeGarbageCollected<IntersectionObserverEntry>(
         geometry, last_run_time_, Target()));
     Observer()->SetNeedsDelivery();

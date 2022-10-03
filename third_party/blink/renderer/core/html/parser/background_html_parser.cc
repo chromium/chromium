@@ -127,9 +127,6 @@ void BackgroundHTMLParser::Flush() {
 }
 
 void BackgroundHTMLParser::UpdateDocument(const String& decoded_data) {
-  recordreplay::Assert("BackgroundHTMLParser::UpdateDocument Start %u %u",
-                       decoded_data.length(), decoded_data[0]);
-
   DocumentEncodingData encoding_data(*decoder_.get());
   if (encoding_data != last_seen_encoding_data_) {
     last_seen_encoding_data_ = encoding_data;
@@ -137,12 +134,10 @@ void BackgroundHTMLParser::UpdateDocument(const String& decoded_data) {
       parser_->DidReceiveEncodingDataFromBackgroundParser(encoding_data);
   }
   if (decoded_data.IsEmpty()) {
-    recordreplay::Assert("BackgroundHTMLParser::UpdateDocument #1");
     return;
   }
 
   AppendDecodedBytes(decoded_data);
-  recordreplay::Assert("BackgroundHTMLParser::UpdateDocument Done");
 }
 
 void BackgroundHTMLParser::ResumeFrom(std::unique_ptr<Checkpoint> checkpoint) {
@@ -197,18 +192,12 @@ void BackgroundHTMLParser::PumpTokenizer() {
   HTMLTreeBuilderSimulator::SimulatedToken simulated_token =
       HTMLTreeBuilderSimulator::kOtherToken;
 
-  recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer Start %u",
-                       input_.Current().length());
-
   // No need to start speculating until the main thread has almost caught up.
   if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit) {
-    recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer #1");
     return;
   }
 
   while (tokenizer_->NextToken(input_.Current(), *token_)) {
-    recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer #2");
-
     {
       TextPosition position = TextPosition(input_.Current().CurrentLine(),
                                            input_.Current().CurrentColumn());
@@ -225,7 +214,6 @@ void BackgroundHTMLParser::PumpTokenizer() {
       // starting a script so the main parser can decide if it should yield
       // before processing the chunk.
       if (simulated_token == HTMLTreeBuilderSimulator::kValidScriptStart) {
-        recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer #3");
         EnqueueTokenizedChunk();
         starting_script_ = true;
       }
@@ -243,21 +231,17 @@ void BackgroundHTMLParser::PumpTokenizer() {
         simulated_token == HTMLTreeBuilderSimulator::kLink ||
         simulated_token == HTMLTreeBuilderSimulator::kCustomElementBegin ||
         pending_tokens_.size() >= kPendingTokenLimit) {
-      recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer #4");
       EnqueueTokenizedChunk();
 
       // If we're far ahead of the main thread, yield for a bit to avoid
       // consuming too much memory.
       if (input_.TotalCheckpointTokenCount() > kOutstandingTokenLimit) {
-        recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer #4.1");
         break;
       }
     }
   }
 
-  recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer #5");
   EnqueueTokenizedChunk();
-  recordreplay::Assert("BackgroundHTMLParser::PumpTokenizer Done");
 }
 
 void BackgroundHTMLParser::EnqueueTokenizedChunk() {

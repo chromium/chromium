@@ -350,11 +350,9 @@ class DidFinishRunningAllTilesTask : public TileTask {
   void RunOnWorkerThread() override {
     TRACE_EVENT0("cc", "TaskSetFinishedTaskImpl::RunOnWorkerThread");
     bool has_pending_queries = false;
-    recordreplay::Assert("DidFinishRunningAllTilesTask::RunOnWorkerThread Start %d", !!pending_raster_queries_);
     if (pending_raster_queries_) {
       has_pending_queries =
           pending_raster_queries_->CheckRasterFinishedQueries();
-      recordreplay::Assert("DidFinishRunningAllTilesTask::RunOnWorkerThread #1 %d", has_pending_queries);
     }
     task_runner_->PostTask(FROM_HERE, base::BindOnce(std::move(completion_cb_),
                                                      has_pending_queries));
@@ -522,8 +520,6 @@ void TileManager::DidFinishRunningAllTileTasks(bool has_pending_queries) {
   TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "ScheduledTasks", TRACE_ID_LOCAL(this));
   DCHECK(resource_pool_);
   DCHECK(tile_task_manager_);
-
-  recordreplay::Assert("TileManager::DidFinishRunningAllTileTasks %d", has_pending_queries);
 
   has_scheduled_tile_tasks_ = false;
   has_pending_queries_ = has_pending_queries;
@@ -695,8 +691,6 @@ bool TileManager::TilePriorityViolatesMemoryPolicy(
 }
 
 TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
-  recordreplay::Assert("TileManager::AssignGpuMemoryToTiles Start");
-
   TRACE_EVENT_BEGIN0("cc", "TileManager::AssignGpuMemoryToTiles");
 
   DCHECK(resource_pool_);
@@ -721,8 +715,6 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
   std::unique_ptr<EvictionTilePriorityQueue> eviction_priority_queue;
   PrioritizedWorkToSchedule work_to_schedule;
   for (; !raster_priority_queue->IsEmpty(); raster_priority_queue->Pop()) {
-    recordreplay::Assert("TileManager::AssignGpuMemoryToTiles #1");
-
     const PrioritizedTile& prioritized_tile = raster_priority_queue->Top();
     Tile* tile = prioritized_tile.tile();
     TilePriority priority = prioritized_tile.priority();
@@ -841,7 +833,6 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     } else {
       // Creating the raster task here will acquire resources, but
       // this resource usage has already been accounted for above.
-      recordreplay::Assert("TileManager::AssignGpuMemoryToTiles #10");
       auto raster_task = CreateRasterTask(prioritized_tile, raster_color_space,
                                           sdr_white_level, &work_to_schedule);
       if (!raster_task) {
@@ -855,8 +846,6 @@ TileManager::PrioritizedWorkToSchedule TileManager::AssignGpuMemoryToTiles() {
     memory_usage += memory_required_by_tile_to_be_scheduled;
     work_to_schedule.tiles_to_raster.push_back(prioritized_tile);
   }
-
-  recordreplay::Assert("TileManager::AssignGpuMemoryToTiles #11");
 
   // Note that we should try and further reduce memory in case the above loop
   // didn't reduce memory. This ensures that we always release as many resources
@@ -947,19 +936,10 @@ void TileManager::PartitionImagesForCheckering(
     std::vector<PaintImage>* checkered_images,
     const gfx::Rect* invalidated_rect,
     base::flat_map<PaintImage::Id, size_t>* image_to_frame_index) {
-  recordreplay::Assert("TileManager::PartitionImagesForCheckering Start");
-
   Tile* tile = prioritized_tile.tile();
   std::vector<const DrawImage*> images_in_tile;
   gfx::Rect enclosing_rect = tile->enclosing_layer_rect();
-  recordreplay::Assert("TileManager::PartitionImagesForCheckering #0.1 %d %d %d %d %d",
-                       recordreplay::PointerId(tile),
-                       enclosing_rect.x(), enclosing_rect.y(),
-                       enclosing_rect.width(), enclosing_rect.height());
   if (invalidated_rect) {
-    recordreplay::Assert("TileManager::PartitionImagesForCheckering #0.2 %d %d %d %d",
-                         invalidated_rect->x(), invalidated_rect->y(),
-                         invalidated_rect->width(), invalidated_rect->height());
     enclosing_rect = ToEnclosingRect(
         tile->raster_transform().InverseMapRect(gfx::RectF(*invalidated_rect)));
   }
@@ -968,8 +948,6 @@ void TileManager::PartitionImagesForCheckering(
   WhichTree tree = tile->tiling()->tree();
 
   for (const auto* original_draw_image : images_in_tile) {
-    recordreplay::Assert("TileManager::PartitionImagesForCheckering #1");
-
     const auto& image = original_draw_image->paint_image();
     size_t frame_index = client_->GetFrameIndexForImage(image, tree);
     if (image_to_frame_index)
@@ -978,15 +956,11 @@ void TileManager::PartitionImagesForCheckering(
     DrawImage draw_image(*original_draw_image, tile->raster_transform().scale(),
                          frame_index, raster_color_space, sdr_white_level);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree)) {
-      recordreplay::Assert("TileManager::PartitionImagesForCheckering #2");
       checkered_images->push_back(draw_image.paint_image());
     } else {
-      recordreplay::Assert("TileManager::PartitionImagesForCheckering #3");
       sync_decoded_images->push_back(std::move(draw_image));
     }
   }
-
-  recordreplay::Assert("TileManager::PartitionImagesForCheckering Done");
 }
 
 void TileManager::AddCheckeredImagesToDecodeQueue(
@@ -1200,7 +1174,6 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     const gfx::ColorSpace& raster_color_space,
     float sdr_white_level,
     PrioritizedWorkToSchedule* work_to_schedule) {
-  recordreplay::Assert("TileManager::CreateRasterTask Start");
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "TileManager::CreateRasterTask");
   Tile* tile = prioritized_tile.tile();
@@ -1281,12 +1254,10 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
   bool has_at_raster_images = false;
   bool has_hardware_accelerated_jpeg_candidates = false;
   bool has_hardware_accelerated_webp_candidates = false;
-  recordreplay::Assert("TileManager::CreateRasterTask #5 %u", sync_decoded_images.size());
   image_controller_.ConvertImagesToTasks(
       &sync_decoded_images, &decode_tasks, &has_at_raster_images,
       &has_hardware_accelerated_jpeg_candidates,
       &has_hardware_accelerated_webp_candidates, tracing_info);
-  recordreplay::Assert("TileManager::CreateRasterTask #6");
   // Notify |decoded_image_tracker_| after |image_controller_| to ensure we've
   // taken new refs on the images before releasing the predecode API refs.
   decoded_image_tracker_.OnImagesUsedInDraw(sync_decoded_images);
@@ -1325,13 +1296,11 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     }
   }
 
-  recordreplay::Assert("TileManager::CreateRasterTask #7");
   std::unique_ptr<RasterBuffer> raster_buffer =
       raster_buffer_provider_->AcquireBufferForRaster(
           resource, resource_content_id, tile->invalidated_id(),
           has_at_raster_images, has_hardware_accelerated_jpeg_candidates,
           has_hardware_accelerated_webp_candidates);
-  recordreplay::Assert("TileManager::CreateRasterTask #8");
 
   base::Optional<PlaybackImageProvider::Settings> settings;
   if (!skip_images) {
@@ -1502,10 +1471,7 @@ bool TileManager::IsReadyToDraw() const {
 void TileManager::ScheduleCheckRasterFinishedQueries() {
   DCHECK(has_pending_queries_);
 
-  recordreplay::Assert("TileManager::ScheduleCheckRasterFinishedQueries Start");
-
   if (!check_pending_tile_queries_callback_.IsCancelled()) {
-    recordreplay::Assert("TileManager::ScheduleCheckRasterFinishedQueries #1");
     return;
   }
 
@@ -1514,8 +1480,6 @@ void TileManager::ScheduleCheckRasterFinishedQueries() {
   task_runner_->PostDelayedTask(FROM_HERE,
                                 check_pending_tile_queries_callback_.callback(),
                                 base::TimeDelta::FromMilliseconds(100));
-
-  recordreplay::Assert("TileManager::ScheduleCheckRasterFinishedQueries Done");
 }
 
 void TileManager::CheckRasterFinishedQueries() {
@@ -1534,8 +1498,6 @@ void TileManager::CheckRasterFinishedQueries() {
         pending_raster_queries_->CheckRasterFinishedQueries();
   }
 
-  recordreplay::Assert("TileManager::CheckRasterFinishedQueries #1 %d", has_pending_queries_);
-
   if (has_pending_queries_)
     ScheduleCheckRasterFinishedQueries();
 }
@@ -1550,8 +1512,6 @@ void TileManager::FlushAndIssueSignals() {
 }
 
 void TileManager::IssueSignals() {
-  recordreplay::Assert("TileManager::IssueSignals Start");
-
   // Ready to activate.
   if (signals_.activate_tile_tasks_completed &&
       signals_.activate_gpu_work_completed &&
@@ -1575,19 +1535,13 @@ void TileManager::IssueSignals() {
     }
   }
 
-  recordreplay::Assert("TileManager::IssueSignals #1 %d %d",
-                       signals_.all_tile_tasks_completed,
-                       signals_.did_notify_all_tile_tasks_completed);
-
   // All tile tasks completed.
   if (signals_.all_tile_tasks_completed &&
       !signals_.did_notify_all_tile_tasks_completed) {
-    recordreplay::Assert("TileManager::IssueSignals #2 %d", has_scheduled_tile_tasks_);
     if (!has_scheduled_tile_tasks_) {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                    "TileManager::IssueSignals - all tile tasks completed");
 
-      recordreplay::Assert("TileManager::IssueSignals #3 %d", has_pending_queries_);
       if (has_pending_queries_)
         ScheduleCheckRasterFinishedQueries();
 
@@ -1608,8 +1562,6 @@ void TileManager::IssueSignals() {
     checker_image_tracker_.SetMaxDecodePriorityAllowed(
         CheckerImageTracker::DecodeType::kRaster);
   }
-
-  recordreplay::Assert("TileManager::IssueSignals Done");
 }
 
 void TileManager::CheckIfMoreTilesNeedToBePrepared() {

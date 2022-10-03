@@ -57,8 +57,6 @@ BlinkGCMemoryDumpProvider::~BlinkGCMemoryDumpProvider() {
 bool BlinkGCMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* process_memory_dump) {
-  recordreplay::Assert("BlinkGCMemoryDumpProvider::OnMemoryDump Start");
-
   ThreadState::Statistics::DetailLevel detail_level =
       args.level_of_detail ==
               base::trace_event::MemoryDumpLevelOfDetail::DETAILED
@@ -78,7 +76,6 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
                        stats.used_size_bytes);
 
   if (detail_level == ThreadState::Statistics::kBrief) {
-    recordreplay::Assert("BlinkGCMemoryDumpProvider::OnMemoryDump #1");
     return true;
   }
 
@@ -142,7 +139,6 @@ bool BlinkGCMemoryDumpProvider::OnMemoryDump(
     }
   }
 
-  recordreplay::Assert("BlinkGCMemoryDumpProvider::OnMemoryDump Done");
   return true;
 }
 

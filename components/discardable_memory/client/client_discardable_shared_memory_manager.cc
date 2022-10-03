@@ -250,7 +250,6 @@ void ClientDiscardableSharedMemoryManager::OnBackgrounded() {
 std::unique_ptr<base::DiscardableMemory>
 ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     size_t size) {
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory Start");
   base::AutoLock lock(lock_);
 
   if (may_schedule_periodic_purge_ && !is_purge_scheduled_) {
@@ -260,7 +259,6 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
                        this),
         kScheduledPurgeInterval);
     is_purge_scheduled_ = true;
-    recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #1");
   }
 
   DCHECK_NE(size, 0u);
@@ -296,19 +294,16 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     // Search free lists for suitable span.
     std::unique_ptr<DiscardableSharedMemoryHeap::Span> free_span =
         heap_->SearchFreeLists(pages, slack);
-    recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #2");
     if (!free_span)
       break;
 
     // Attempt to lock |free_span|. Delete span and search free lists again
     // if locking failed.
-    recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #3");
     if (free_span->shared_memory()->Lock(
             free_span->start() * base::GetPageSize() -
                 reinterpret_cast<size_t>(free_span->shared_memory()->memory()),
             free_span->length() * base::GetPageSize()) ==
         base::DiscardableSharedMemory::FAILED) {
-      recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #4");
       DCHECK(!free_span->shared_memory()->IsMemoryResident());
       // We have to release purged memory before |free_span| can be destroyed.
       heap_->ReleasePurgedMemory();
@@ -316,7 +311,6 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
       continue;
     }
 
-    recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #5");
     free_span->set_is_locked(true);
 
     if (pages >= allocation_pages) {
@@ -331,11 +325,8 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     auto discardable_memory =
         std::make_unique<DiscardableMemoryImpl>(this, std::move(free_span));
     allocated_memory_.insert(discardable_memory.get());
-    recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #6");
     return std::move(discardable_memory);
   }
-
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory #7");
 
   // Release purged memory to free up the address space before we attempt to
   // allocate more memory.
@@ -393,8 +384,6 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
   MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory Done");
-
   auto discardable_memory =
       std::make_unique<DiscardableMemoryImpl>(this, std::move(new_span));
   allocated_memory_.insert(discardable_memory.get());
@@ -405,10 +394,8 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump Start");
   base::AutoLock lock(lock_);
   if (foregrounded_) {
-    recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump #1");
     const size_t total_size = heap_->GetSize() / 1024;                // in KiB
     const size_t freelist_size = heap_->GetFreelistSize() / 1024;     // in KiB
 
@@ -419,10 +406,7 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     base::UmaHistogramCounts1M("Memory.Discardable.Size.Foreground",
                                total_size - freelist_size);
   }
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump #2");
-  bool rv = heap_->OnMemoryDump(args, pmd);
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::OnMemoryDump Done %d", rv);
-  return rv;
+  return heap_->OnMemoryDump(args, pmd);
 }
 
 size_t ClientDiscardableSharedMemoryManager::GetBytesAllocated() const {
@@ -648,7 +632,6 @@ void ClientDiscardableSharedMemoryManager::AllocateCompletedOnIO(
 
 void ClientDiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
     int32_t id) {
-  recordreplay::Assert("ClientDiscardableSharedMemoryManager::DeletedDiscardableSharedMemory %d", id);
   io_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(&DeletedDiscardableSharedMemoryOnIO,
                                            manager_mojo_.get(), id));

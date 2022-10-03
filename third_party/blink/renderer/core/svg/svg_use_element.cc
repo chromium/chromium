@@ -420,7 +420,6 @@ static void MoveChildrenToReplacementElement(ContainerNode& source_root,
 }
 
 SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
-  recordreplay::Assert("SVGUseElement::CreateInstanceTree %lu", recordreplay::PointerId(this));
   SVGElement* instance_root = &To<SVGElement>(target_root.CloneWithChildren());
   if (IsA<SVGSymbolElement>(target_root)) {
     // Spec: The referenced 'symbol' and its contents are deep-cloned into
@@ -596,10 +595,6 @@ void SVGUseElement::DispatchPendingEvent() {
 }
 
 void SVGUseElement::NotifyFinished(Resource* resource) {
-  // https://linear.app/replay/issue/RUN-466
-  recordreplay::Assert("SVGUseElement::NotifyFinished %d",
-                       recordreplay::PointerId(this));
-
   if (!isConnected())
     return;
 
@@ -613,9 +608,6 @@ void SVGUseElement::NotifyFinished(Resource* resource) {
       return;
     DCHECK(!have_fired_load_event_);
     have_fired_load_event_ = true;
-
-    // https://linear.app/replay/issue/RUN-466
-    recordreplay::Assert("SVGUseElement::NotifyFinished #2");
 
     GetDocument()
         .GetTaskRunner(TaskType::kDOMManipulation)

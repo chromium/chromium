@@ -124,8 +124,6 @@ void ChannelProxy::Context::FlushChannel() {
 // Called on the IPC::Channel thread
 bool ChannelProxy::Context::OnMessageReceived(const Message& message) {
   // First give a chance to the filters to process this message.
-  recordreplay::Assert("ChannelProxy::Context::OnMessageReceived %lu %d",
-                       recordreplay::PointerId(this), message.routing_id());
   if (!TryFilters(message))
     OnMessageReceivedNoFilter(message);
   return true;
@@ -133,8 +131,6 @@ bool ChannelProxy::Context::OnMessageReceived(const Message& message) {
 
 // Called on the IPC::Channel thread
 bool ChannelProxy::Context::OnMessageReceivedNoFilter(const Message& message) {
-  recordreplay::Assert("ChannelProxy::Context::OnMessageReceivedNoFilter %lu %d",
-                       recordreplay::PointerId(this), message.routing_id());
   GetTaskRunner(message.routing_id())
       ->PostTask(FROM_HERE,
                  base::BindOnce(&Context::OnDispatchMessage, this, message));
@@ -307,12 +303,10 @@ void ChannelProxy::Context::OnRemoveFilter(MessageFilter* filter) {
 
 // Called on the listener's thread
 void ChannelProxy::Context::AddFilter(MessageFilter* filter) {
-  recordreplay::Assert("ChannelProxy::Context::AddFilter Start");
   base::AutoLock auto_lock(pending_filters_lock_);
   pending_filters_.push_back(base::WrapRefCounted(filter));
   ipc_task_runner_->PostTask(FROM_HERE,
                              base::BindOnce(&Context::OnAddFilter, this));
-  recordreplay::Assert("ChannelProxy::Context::AddFilter Done");
 }
 
 // Called on the listener's thread
@@ -407,10 +401,8 @@ void ChannelProxy::Context::OnDispatchBadMessage(const Message& message) {
 void ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest(
     const std::string& interface_name,
     mojo::ScopedInterfaceEndpointHandle handle) {
-  recordreplay::Assert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Start");
   if (listener_)
     listener_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
-  recordreplay::Assert("ChannelProxy::Context::OnDispatchAssociatedInterfaceRequest Done");
 }
 
 void ChannelProxy::Context::ClearChannel() {

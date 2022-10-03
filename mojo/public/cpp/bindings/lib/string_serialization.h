@@ -27,14 +27,11 @@ struct Serializer<StringDataView, MaybeConstUserType> {
 
   static void Serialize(MaybeConstUserType& input,
                         MessageFragment<String_Data>& fragment) {
-    recordreplay::Assert("Serializer<StringDataView>::Serialize Start");
     if (CallIsNullIfExists<Traits>(input)) {
-      recordreplay::Assert("Serializer<StringDataView>::Serialize #1");
       return;
     }
 
     auto r = Traits::GetUTF8(input);
-    recordreplay::Assert("Serializer<StringDataView>::Serialize #2 %lu", r.size());
     fragment.AllocateArrayData(r.size());
     memcpy(fragment->storage(), r.data(), r.size());
   }

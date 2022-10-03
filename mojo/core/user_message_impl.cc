@@ -406,8 +406,6 @@ Channel::MessagePtr UserMessageImpl::FinalizeEventMessage(
   auto* message = message_event->GetMessage<UserMessageImpl>();
   DCHECK(message->IsSerialized());
 
-  recordreplay::Assert("UserMessageImpl::FinalizeEventMessage %lu", message->user_payload_size());
-
   if (!message->is_committed_)
     return nullptr;
 
@@ -695,7 +693,6 @@ UserMessageImpl::UserMessageImpl(ports::UserMessageEvent* message_event,
       header_size_(header_size),
       user_payload_(user_payload),
       user_payload_size_(user_payload_size) {
-  recordreplay::Assert("UserMessageImpl::UserMessageImpl %lu", user_payload_size_);
   EnsureMemoryDumpProviderExists();
   IncrementMessageCount();
 }

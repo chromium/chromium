@@ -24,8 +24,6 @@ SequenceLocalStorageMap::SequenceLocalStorageMap() {
 }
 
 SequenceLocalStorageMap::~SequenceLocalStorageMap() {
-  recordreplay::Assert("SequenceLocalStorageMap::~SequenceLocalStorageMap %lu",
-                       recordreplay::PointerId(this));
   recordreplay::UnregisterPointer(this);
 }
 

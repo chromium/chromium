@@ -233,8 +233,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 #endif
   DCHECK(active_loader_);
 
-  recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse Start");
-
   scoped_refptr<UrlData> destination_url_data(url_data_);
 
   if (!redirects_to_.is_empty()) {
@@ -273,8 +271,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   // successful (in particular range request). So we only verify the partial
   // response for HTTP and HTTPS protocol.
   if (destination_url_data->url().SchemeIsHTTPOrHTTPS()) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #1");
-
     bool partial_response = (response.HttpStatusCode() == kHttpPartialContent);
     bool ok_response = (response.HttpStatusCode() == kHttpOK);
 
@@ -284,20 +280,16 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     if (accept_ranges.find("bytes") != std::string::npos)
       destination_url_data->set_range_supported();
 
-    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #2 %d", partial_response);
-
     // If we have verified the partial response and it is correct.
     // It's also possible for a server to support range requests
     // without advertising "Accept-Ranges: bytes".
     if (partial_response &&
         VerifyPartialResponse(response, destination_url_data)) {
-      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #2");
       destination_url_data->set_range_supported();
     } else if (ok_response) {
       // We accept a 200 response for a Range:0- request, trusting the
       // Accept-Ranges header, because Apache thinks that's a reasonable thing
       // to return.
-      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #3");
       destination_url_data->set_length(content_length);
       bytes_to_discard_ = byte_pos();
     } else if (response.HttpStatusCode() == kHttpRangeNotSatisfiable) {
@@ -306,10 +298,8 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
       // if we do, let's handle it in a sane way.
       // Note, we can't just call OnDataProviderEvent() here, because
       // url_data_ hasn't been updated to the final destination yet.
-      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #4");
       end_of_file = true;
     } else {
-      recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #5");
       active_loader_.reset();
       // Can't call fail until readers have been migrated to the new
       // url data below.
@@ -365,7 +355,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   }
 
   if (do_fail) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #10");
     destination_url_data->Fail();
     return;  // "this" may be deleted now.
   }
@@ -383,7 +372,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 
   // This test is vital for security!
   if (!url_data_->ValidateDataOrigin(response_url.GetOrigin())) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse #11");
     active_loader_.reset();
     url_data_->Fail();
     return;  // "this" may be deleted now.
@@ -393,8 +381,6 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     fifo_.push_back(DataBuffer::CreateEOSBuffer());
     url_data_->multibuffer()->OnDataProviderEvent(this);
   }
-
-  recordreplay::Assert("ResourceMultiBufferDataProvider::DidReceiveResponse Done");
 }
 
 void ResourceMultiBufferDataProvider::DidReceiveData(const char* data,
@@ -507,12 +493,9 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
     int64_t* first_byte_position,
     int64_t* last_byte_position,
     int64_t* instance_size) {
-  recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange Start");
-
   const char kUpThroughBytesUnit[] = "bytes ";
   if (!base::StartsWith(content_range_str, kUpThroughBytesUnit,
                         base::CompareCase::SENSITIVE)) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange #1");
     return false;
   }
   std::string range_spec =
@@ -522,7 +505,6 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
 
   if (dash_offset == std::string::npos || slash_offset == std::string::npos ||
       slash_offset < dash_offset || slash_offset + 1 == range_spec.length()) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange #2");
     return false;
   }
   if (!base::StringToInt64(range_spec.substr(0, dash_offset),
@@ -530,7 +512,6 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
       !base::StringToInt64(
           range_spec.substr(dash_offset + 1, slash_offset - dash_offset - 1),
           last_byte_position)) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange #3");
     return false;
   }
   if (slash_offset == range_spec.length() - 2 &&
@@ -539,18 +520,15 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
   } else {
     if (!base::StringToInt64(range_spec.substr(slash_offset + 1),
                              instance_size)) {
-      recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange #4");
       return false;
     }
   }
   if (*last_byte_position < *first_byte_position ||
       (*instance_size != kPositionNotSpecified &&
        *last_byte_position >= *instance_size)) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange #5");
     return false;
   }
 
-  recordreplay::Assert("ResourceMultiBufferDataProvider::ParseContentRange Done");
   return true;
 }
 
@@ -577,14 +555,10 @@ int64_t ResourceMultiBufferDataProvider::block_size() const {
 bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
     const WebURLResponse& response,
     const scoped_refptr<UrlData>& url_data) {
-  recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse Start %s",
-                       response.HttpHeaderField("Content-Range").Utf8().c_str());
-
   int64_t first_byte_position, last_byte_position, instance_size;
   if (!ParseContentRange(response.HttpHeaderField("Content-Range").Utf8(),
                          &first_byte_position, &last_byte_position,
                          &instance_size)) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse #1");
     return false;
   }
 
@@ -593,16 +567,13 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
   }
 
   if (first_byte_position > byte_pos()) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse #2");
     return false;
   }
   if (last_byte_position + 1 < byte_pos()) {
-    recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse #3");
     return false;
   }
   bytes_to_discard_ = byte_pos() - first_byte_position;
 
-  recordreplay::Assert("ResourceMultiBufferDataProvider::VerifyPartialResponse Done");
   return true;
 }
 

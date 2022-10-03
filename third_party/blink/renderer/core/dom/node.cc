@@ -1341,10 +1341,6 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   DCHECK(change_type != kNoStyleChange);
   DCHECK(IsElementNode() || IsTextNode());
 
-  // https://linear.app/replay/issue/RUN-556
-  recordreplay::Assert("Node::SetNeedsStyleRecalc Start %d",
-                       recordreplay::PointerId(this));
-
   if (!InActiveDocument())
     return;
   if (ShouldSkipMarkingStyleDirty())
@@ -1358,9 +1354,6 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
 
   StyleChangeType existing_change_type = GetStyleChangeType();
   if (change_type > existing_change_type) {
-    // https://linear.app/replay/issue/RUN-556
-    recordreplay::Assert("Node::SetNeedsStyleRecalc #5 %d %d",
-                         recordreplay::PointerId(this), (int)change_type);
     SetStyleChange(change_type);
   }
 
@@ -2885,10 +2878,6 @@ void Node::DispatchScopedEvent(Event& event) {
 }
 
 DispatchEventResult Node::DispatchEventInternal(Event& event) {
-  // https://linear.app/replay/issue/RUN-466
-  recordreplay::Assert("Node::DispatchEventInternal %lu",
-                       recordreplay::PointerId(this));
-
   return EventDispatcher::DispatchEvent(*this, event);
 }
 
@@ -3276,10 +3265,6 @@ bool Node::HasMediaControlAncestor() const {
 }
 
 void Node::FlatTreeParentChanged() {
-  // https://linear.app/replay/issue/RUN-493
-  recordreplay::Assert("Node::FlatTreeParentChanged %d",
-                       recordreplay::PointerId(this));
-
   if (!isConnected())
     return;
   DCHECK(IsSlotable());

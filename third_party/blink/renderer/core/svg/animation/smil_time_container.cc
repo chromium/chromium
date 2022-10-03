@@ -593,8 +593,6 @@ void SMILTimeContainer::UpdateTimedElements(TimingUpdate& update) {
 }
 
 void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
-  recordreplay::Assert("SMILTimeContainer::ApplyTimedEffects Start");
-
   if (document_order_indexes_dirty_)
     UpdateDocumentOrderIndexes();
 
@@ -607,8 +605,6 @@ void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
 
   bool did_apply_effects = false;
   for (auto& entry : animated_targets_vector) {
-    recordreplay::Assert("SMILTimeContainer::ApplyTimedEffects #1 %d",
-                         recordreplay::PointerId(entry.Get()));
     ElementSMILAnimations* animations = entry->GetSMILAnimations();
     if (animations && animations->Apply(elapsed))
       did_apply_effects = true;
@@ -618,8 +614,6 @@ void SMILTimeContainer::ApplyTimedEffects(SMILTime elapsed) {
     UseCounter::Count(&GetDocument(),
                       WebFeature::kSVGSMILAnimationAppliedEffect);
   }
-
-  recordreplay::Assert("SMILTimeContainer::ApplyTimedEffects Done");
 }
 
 void SMILTimeContainer::AdvanceFrameForTesting() {

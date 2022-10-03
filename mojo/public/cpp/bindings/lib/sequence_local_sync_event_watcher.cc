@@ -204,7 +204,6 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
 };
 
 void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
-  recordreplay::Assert("SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled Start");
   for (;;) {
     base::flat_set<const SequenceLocalSyncEventWatcher*> ready_watchers;
     {
@@ -213,7 +212,6 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
     }
     if (ready_watchers.empty()) {
       event_.Reset();
-      recordreplay::Assert("SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled #1");
       return;
     }
 
@@ -224,7 +222,6 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
 
         // The callback may have deleted |this|.
         if (!weak_self) {
-          recordreplay::Assert("SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled #2");
           return;
         }
       }
