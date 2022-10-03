@@ -66,12 +66,20 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
 #define RTC_LOG_V(sev) DIAGNOSTIC_LOG(sev, NONE, 0)
 #undef RTC_LOG
 #define RTC_LOG(sev) DIAGNOSTIC_LOG(rtc::sev, NONE, 0)
+// Log if condition evaluates to true. DIAGNOSTIC_LOG comes second in the
+// expression so users can properly stream log message to the logger.
+#define RTC_LOG_IF(sev, condition) \
+  !(condition) ? (void)0 : DIAGNOSTIC_LOG(rtc::sev, NONE, 0)
 
 // The _F version prefixes the message with the current function name.
 #if defined(__GNUC__) && defined(_DEBUG)
 #define RTC_LOG_F(sev) RTC_LOG(sev) << __PRETTY_FUNCTION__ << ": "
+#define RTC_LOG_IF_F(sev, condition) \
+  RTC_LOG_IF(sev, condition) << __PRETTY_FUNCTION__ << ": "
 #else
 #define RTC_LOG_F(sev) RTC_LOG(sev) << __FUNCTION__ << ": "
+#define RTC_LOG_IF_F(sev, condition) \
+  RTC_LOG_IF(sev, condition) << __FUNCTION__ << ": "
 #endif
 
 #define RTC_LOG_E(sev, ctx, err, ...) \
@@ -108,8 +116,10 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
 
 #if RTC_DLOG_IS_ON
 #define RTC_DLOG(sev) RTC_LOG(sev)
+#define RTC_DLOG_IF(sev, condition) RTC_LOG_IF(sev, condition)
 #define RTC_DLOG_V(sev) RTC_LOG_V(sev)
 #define RTC_DLOG_F(sev) RTC_LOG_F(sev)
+#define RTC_DLOG_IF_F(sev, condition) RTC_LOG_IF_F(sev, condition)
 #else
 #define RTC_DLOG_EAT_STREAM_PARAMS(sev) \
   (true ? true : ((void)(rtc::sev), true)) \
@@ -118,8 +128,10 @@ bool CheckVlogIsOn(LoggingSeverity severity, const char (&file)[N]) {
         rtc::DiagnosticLogMessage(__FILE__, __LINE__, rtc::sev, \
                                   rtc::ERRCTX_NONE, 0).stream()
 #define RTC_DLOG(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
+#define RTC_DLOG_IF(sev, condition) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_V(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
 #define RTC_DLOG_F(sev) RTC_DLOG_EAT_STREAM_PARAMS(sev)
+#define RTC_DLOG_IF_F(sev, condition) RTC_DLOG_EAT_STREAM_PARAMS()
 #endif
 
 // Add operator<< for WebRTC types with the ToLogString method.
