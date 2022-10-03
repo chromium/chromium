@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_side_panel_navigation_helper.h"
 
+#include "base/strings/string_piece.h"
 #include "chrome/browser/ui/browser.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -14,11 +15,25 @@
 
 namespace {
 
+// List of domains that are safe to happen in the background. To be in the list,
+// the site must not be reachable by user navigation.
+static constexpr base::StringPiece BACKGROUND_THROTTLE_EXCEPTIONS[] = {
+    "https://feedback.googleusercontent.com"};
+
 bool IsSameSite(const GURL& url1, const GURL& url2) {
   return url1.SchemeIs(url2.scheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+// Helper that returns if the given URL is in the exception set
+bool HasThrottleException(const GURL& url) {
+  for (const base::StringPiece& safe_site : BACKGROUND_THROTTLE_EXCEPTIONS) {
+    if (IsSameSite(url, GURL(safe_site)))
+      return true;
+  }
+  return false;
 }
 
 class LensSidePanelNavigationThrottle : public content::NavigationThrottle {
@@ -51,23 +66,20 @@ class LensSidePanelNavigationThrottle : public content::NavigationThrottle {
     DCHECK(navigation_helper);
 
     // Allow navigations that belong to the same site as the image search
-    // engine.
-    if (IsSameSite(navigation_helper->GetOriginUrl(), url))
+    // engine or those that have an exception.
+    if (IsSameSite(navigation_helper->GetOriginUrl(), url) ||
+        HasThrottleException(url))
       return content::NavigationThrottle::PROCEED;
 
     auto params =
         content::OpenURLParams::FromNavigationHandle(navigation_handle());
 
-    // Only override navigation that comes from user clicks. Without this, calls
-    // that are not visible to the user would get redirected to a new tab. For
-    // example, when a site loads an ad, the call for the ad would open in a new
-    // tab.
-    if (!ui::PageTransitionCoreTypeIs(params.transition,
-                                      ui::PAGE_TRANSITION_LINK)) {
-      return content::NavigationThrottle::PROCEED;
+    // All user clicks to a destination otuside of the origin URL should open in
+    // a new tab
+    if (ui::PageTransitionCoreTypeIs(params.transition,
+                                     ui::PAGE_TRANSITION_LINK)) {
+      navigation_helper->OpenInNewTab(params);
     }
-
-    navigation_helper->OpenInNewTab(params);
     return content::NavigationThrottle::CANCEL;
   }
 };
