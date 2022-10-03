@@ -140,6 +140,13 @@ String BlinkWebTestsFontsTestDataPath(const String& relative_path) {
           .Append(WebStringToFilePath(relative_path)));
 }
 
+String StylePerfTestDataPath(const String& relative_path) {
+  return FilePathToWebString(
+      BlinkRootFilePath()
+          .Append(FILE_PATH_LITERAL("renderer/core/css/perftest_data"))
+          .Append(WebStringToFilePath(relative_path)));
+}
+
 LineReader::LineReader(const String& text) : text_(text), index_(0) {}
 
 bool LineReader::GetNextLine(String* line) {

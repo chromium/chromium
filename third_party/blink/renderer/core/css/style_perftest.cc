@@ -148,7 +148,8 @@ static void MeasureStyleForDumpedPage(const char* filename, const char* label) {
   std::unique_ptr<DummyPageHolder> page;
 
   {
-    scoped_refptr<SharedBuffer> serialized = test::ReadFromFile(filename);
+    scoped_refptr<SharedBuffer> serialized =
+        test::ReadFromFile(test::StylePerfTestDataPath(filename));
     absl::optional<base::Value> json = base::JSONReader::Read(
         base::StringPiece(serialized->Data(), serialized->size()));
     if (!json.has_value()) {

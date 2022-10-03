@@ -4879,6 +4879,17 @@ hooks = [
     'condition': 'host_os == "win"',
     'action': ['python3', 'src/build/del_ninja_deps_cache.py'],
   },
+  # Download test resources for the style perftest.
+  {
+    'name': 'style_perftest_files',
+    'pattern': '.',
+    'action': ['python3',
+               'src/third_party/depot_tools/download_from_google_storage.py',
+               '--no_auth',
+               '--quiet',
+               '--bucket', 'chromium-style-perftest',
+               '-d', 'src/third_party/blink/renderer/core/css/perftest_data'],
+  },
 ]
 
 # Add any corresponding DEPS files from this list to chromium.exclusions in
