@@ -14,14 +14,14 @@ class PrefRegistrySimple;
 namespace {
 
 // Variation IDs for Trending Queries experiment arms.
-const variations::VariationID kTrendingQueriesEnabledModuleEnabledID = 4857971;
+const variations::VariationID kTrendingQueriesEnabledModuleEnabledID = 4871319;
 const variations::VariationID
-    kTrendingQueriesEnabledMinimalSpacingModuleEnabledID = 4857972;
+    kTrendingQueriesEnabledMinimalSpacingModuleEnabledID = 4871320;
 const variations::VariationID
-    kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID = 4857973;
+    kTrendingQueriesEnabledMinimalSpacingRemoveHeaderModuleEnabledID = 4871321;
 const variations::VariationID
-    kTrendingQueriesKeepShortcutsEnabledModuleEnabledID = 4857974;
-const variations::VariationID kTrendingQueriesControlID = 4857975;
+    kTrendingQueriesKeepShortcutsEnabledModuleEnabledID = 4871322;
+const variations::VariationID kTrendingQueriesControlID = 4871323;
 
 }  // namespace
 
