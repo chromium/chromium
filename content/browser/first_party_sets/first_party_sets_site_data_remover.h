@@ -25,7 +25,7 @@ class CONTENT_EXPORT FirstPartySetsSiteDataRemover {
   // enum, 0 indicates success.
   //
   // Currently it only accounts for cookie and storage data types.
-  static void RemoveSiteData(BrowsingDataRemover* remover,
+  static void RemoveSiteData(BrowsingDataRemover& remover,
                              std::vector<net::SchemefulSite> sites,
                              base::OnceCallback<void(uint64_t)> callback);
 };
