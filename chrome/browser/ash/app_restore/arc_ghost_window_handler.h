@@ -16,10 +16,6 @@ namespace app_restore {
 struct AppRestoreData;
 }  // namespace app_restore
 
-namespace arc {
-enum class GhostWindowType;
-}  // namespace arc
-
 namespace ash::full_restore {
 
 // The ArcGhostWindowHandler class provides control for ARC ghost window.
@@ -80,9 +76,6 @@ class ArcGhostWindowHandler : public exo::WMHelper::LifetimeManager::Observer {
   bool LaunchArcGhostWindow(const std::string& app_id,
                             int32_t session_id,
                             ::app_restore::AppRestoreData* restore_data);
-
-  bool UpdateArcGhostWindowType(int32_t session_id,
-                                arc::GhostWindowType window_type);
 
   void CloseWindow(int session_id);
 
