@@ -69,7 +69,7 @@ source_set("overflow_menu") {
     "//components/prefs/ios",
     "//components/profile_metrics",
     "//components/translate/core/browser",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/follow:browser_agent",
@@ -132,7 +132,6 @@ swift_source_set("overflow_menu_swift") {
 
   deps = [
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/common/ui/colors:swift",
   ]

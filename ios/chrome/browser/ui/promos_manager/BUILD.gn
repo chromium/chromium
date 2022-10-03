@@ -58,7 +58,7 @@ source_set("promos_manager") {
   ]
   deps = [
     ":promos_manager_scene_agent",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/main:public",

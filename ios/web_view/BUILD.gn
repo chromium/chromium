@@ -341,7 +341,7 @@ source_set("web_view_sources") {
     "//components/signin/public/identity_manager/ios",
     "//components/signin/public/webdata",
     "//components/ssl_errors",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/sync",
     "//components/sync/invalidations",
     "//components/sync_device_info",

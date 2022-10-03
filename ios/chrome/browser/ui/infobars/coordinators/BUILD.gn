@@ -13,7 +13,6 @@ source_set("coordinators") {
   deps = [
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/main:public",

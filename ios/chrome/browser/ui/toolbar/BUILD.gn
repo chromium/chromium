@@ -230,8 +230,8 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":eg_test_support+eg2",
-    "//components/strings:components_strings_grit",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/start_surface:feature_flags",

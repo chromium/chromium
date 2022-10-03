@@ -33,7 +33,7 @@ source_set("modals") {
     "//components/autofill/core/common:features",
     "//components/strings",
     "//components/translate/core/browser",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/passwords:public",

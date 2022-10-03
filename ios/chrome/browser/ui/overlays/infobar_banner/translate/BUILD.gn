@@ -28,7 +28,7 @@ source_set("mediators") {
 
   deps = [
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/ui:feature_flags",
@@ -51,9 +51,9 @@ source_set("unit_tests") {
     ":mediators",
     "//base/test:test_support",
     "//components/infobars/core",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/translate/core/browser:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",

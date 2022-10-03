@@ -17,7 +17,7 @@ source_set("browser_container") {
   deps = [
     ":ui",
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/overlays",
@@ -54,7 +54,7 @@ source_set("ui") {
 
   deps = [
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/link_to_text",
     "//ios/chrome/browser/ui/util",
@@ -78,7 +78,7 @@ source_set("unit_tests") {
     ":browser_container",
     ":ui",
     "//base/test:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/link_to_text",
     "//ios/chrome/browser/main:test_support",

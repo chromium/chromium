@@ -33,7 +33,7 @@ source_set("unit_tests") {
     ":permissions",
     "//base",
     "//components/infobars/core",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:infobars",
     "//ios/chrome/browser/infobars/overlays:infobar_delegates",
     "//ios/chrome/browser/overlays/public/infobar_banner",

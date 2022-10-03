@@ -15,7 +15,7 @@ source_set("banners") {
   deps = [
     ":public",
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/icons:infobar_icons",

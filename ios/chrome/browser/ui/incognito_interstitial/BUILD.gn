@@ -20,7 +20,7 @@ source_set("incognito_interstitial_ui") {
   deps = [
     ":constants",
     "resources:incognito_interstitial_screen_banner",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/elements:elements",
     "//ios/chrome/browser/ui/ntp:ntp_internal",

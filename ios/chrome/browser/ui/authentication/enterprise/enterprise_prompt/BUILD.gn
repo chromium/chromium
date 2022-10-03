@@ -13,7 +13,6 @@ source_set("enterprise_prompt") {
   ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/app/strings:ios_google_chrome_strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy/resources:enterprise_grey_icon_large",
     "//ios/chrome/browser/ui/commands",

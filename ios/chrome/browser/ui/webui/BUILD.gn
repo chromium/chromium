@@ -63,7 +63,7 @@ source_set("webui") {
     "//components/prefs",
     "//components/resources",
     "//components/strings",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//components/ukm",
     "//components/ukm/debug:util",
     "//components/version_info",

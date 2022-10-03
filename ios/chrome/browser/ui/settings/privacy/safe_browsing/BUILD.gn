@@ -32,7 +32,7 @@ source_set("safe_browsing") {
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager/objc",
-    "//components/strings:components_strings_grit",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",

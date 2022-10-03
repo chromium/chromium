@@ -52,7 +52,6 @@ source_set("translate") {
     "//components/translate/core/language_detection",
     "//components/translate/ios/browser",
     "//components/web_resource",
-    "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",

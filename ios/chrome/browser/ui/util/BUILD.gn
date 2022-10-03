@@ -50,7 +50,7 @@ source_set("util") {
     "//base",
     "//base:i18n",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser:utils",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/ui:feature_flags",

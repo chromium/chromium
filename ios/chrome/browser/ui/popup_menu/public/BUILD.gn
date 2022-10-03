@@ -29,7 +29,6 @@ source_set("popup_menu_ui") {
   deps = [
     ":ui_constants",
     "//base",
-    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
     "//ios/chrome/browser/ui/popup_menu/cells",

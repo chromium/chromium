@@ -254,7 +254,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/password_manager/core/common",
     "//components/strings",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/test:eg_test_support+eg2",

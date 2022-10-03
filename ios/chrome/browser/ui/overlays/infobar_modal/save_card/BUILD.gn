@@ -16,7 +16,7 @@ source_set("save_card") {
   deps = [
     "//base",
     "//components/autofill/core/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/overlays/public/infobar_modal",
