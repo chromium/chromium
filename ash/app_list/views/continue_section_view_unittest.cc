@@ -1203,9 +1203,7 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
             AppListToastType::kReorderNudge);
 }
 
-// TODO(crbug.com/1317428): Switch to ContinueSectionViewWithReorderNudgeTest
-// when this feature works in tablet mode.
-TEST_F(ContinueSectionViewClamshellModeTest,
+TEST_P(ContinueSectionViewWithReorderNudgeTest,
        HidingContinueSectionHidesPrivacyNotice) {
   AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
   AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
