@@ -433,13 +433,8 @@ bool NeedsLegacyLayoutForEntireDocument(Document& document) {
   // layout (because of the above check), which would re-attach all layout
   // objects, which would cause the frameset to lose state of some sort, leaving
   // everything blank when printed.
-  if (document.IsFrameSet() &&
-      !RuntimeEnabledFeatures::LayoutNGFrameSetEnabled()) {
-    UseCounter::Count(document, WebFeature::kLegacyLayoutByFrameSet);
-    return true;
-  }
-
-  return false;
+  return document.IsFrameSet() &&
+         !RuntimeEnabledFeatures::LayoutNGFrameSetEnabled();
 }
 
 bool CalculateStyleShouldForceLegacyLayout(const Element& element,
@@ -452,27 +447,20 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
   if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
     // Disable NG for the entire subtree if we're establishing a multicol
     // container.
-    if (style.SpecifiesColumns()) {
-      UseCounter::Count(document, WebFeature::kLegacyLayoutByMultiCol);
+    if (style.SpecifiesColumns())
       return true;
-    }
   }
 
   if (document.Printing() && element == document.documentElement() &&
       !RuntimeEnabledFeatures::LayoutNGPrintingEnabled()) {
-    UseCounter::Count(document, WebFeature::kLegacyLayoutByPrinting);
     return true;
   }
 
   if (NeedsLegacyLayoutForEntireDocument(document))
     return true;
 
-  if (NeedsLegacyBlockFragmentation(element, style)) {
-    UseCounter::Count(
-        document,
-        WebFeature::kLegacyLayoutByTableFlexGridBlockInNGFragmentationContext);
+  if (NeedsLegacyBlockFragmentation(element, style))
     return true;
-  }
 
   return false;
 }

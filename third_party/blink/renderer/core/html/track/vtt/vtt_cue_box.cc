@@ -157,7 +157,6 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
   if (RuntimeEnabledFeatures::LayoutNGVTTCueEnabled())
     return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 
-  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByVTTCue);
   return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
 }
 
