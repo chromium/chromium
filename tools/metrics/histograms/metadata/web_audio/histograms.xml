@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintCategory" units="units"
-    expires_after="2022-11-13">
+    expires_after="2022-12-31">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintMilliSeconds" units="ms"
-    expires_after="2022-11-13">
+    expires_after="2022-12-31">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>
