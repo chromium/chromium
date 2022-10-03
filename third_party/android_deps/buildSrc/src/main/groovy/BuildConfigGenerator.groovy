@@ -489,6 +489,10 @@ class BuildConfigGenerator extends DefaultTask {
                 // guava is pulled in via doubledown, and should use the alias
                 // instead of the real target.
                 depsStr += "\"//third_party/android_deps:guava_android_java\","
+            } else if (dep.id == 'com_google_protobuf_protobuf_javalite') {
+                // protobuf_javalite is pulled in via doubledown, and should
+                // use this alias instead of the real target.
+                depsStr += "\":protobuf_lite_runtime_java\","
             } else if (excludeDependency(dep)) {
                 String thirdPartyDir = (dep.id.startsWith('androidx')) ? 'androidx' : 'android_deps'
                 depsStr += "\"//third_party/${thirdPartyDir}:${depTargetName}\","
