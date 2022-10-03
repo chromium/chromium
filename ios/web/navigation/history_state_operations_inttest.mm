@@ -137,13 +137,7 @@ class HistoryStateOperationsTest : public web::WebIntTest {
 
 // Tests that calling window.history.pushState() is a no-op for unresolvable
 // URLs.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoOpPushUnresolvable FLAKY_NoOpPushUnresolvable
-#else
-#define MAYBE_NoOpPushUnresolvable NoOpPushUnresolvable
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_NoOpPushUnresolvable) {
+TEST_F(HistoryStateOperationsTest, NoOpPushUnresolvable) {
   // Perform a window.history.pushState() with an unresolvable URL.  This will
   // clear the OnLoad and NoOp text, so checking below that the NoOp text is
   // displayed and the OnLoad text is empty ensures that no navigation occurred
@@ -158,13 +152,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_NoOpPushUnresolvable) {
 
 // Tests that calling window.history.replaceState() is a no-op for unresolvable
 // URLs.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoOpReplaceUnresolvable FLAKY_NoOpReplaceUnresolvable
-#else
-#define MAYBE_NoOpReplaceUnresolvable NoOpReplaceUnresolvable
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_NoOpReplaceUnresolvable) {
+TEST_F(HistoryStateOperationsTest, NoOpReplaceUnresolvable) {
   // Perform a window.history.replaceState() with an unresolvable URL.  This
   // will clear the OnLoad and NoOp text, so checking below that the NoOp text
   // is displayed and the OnLoad text is empty ensures that no navigation
@@ -179,13 +167,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_NoOpReplaceUnresolvable) {
 
 // Tests that calling window.history.pushState() is a no-op for URLs with a
 // different scheme.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoOpPushDifferentScheme FLAKY_NoOpPushDifferentScheme
-#else
-#define MAYBE_NoOpPushDifferentScheme NoOpPushDifferentScheme
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_NoOpPushDifferentScheme) {
+TEST_F(HistoryStateOperationsTest, NoOpPushDifferentScheme) {
   // Perform a window.history.pushState() with a URL with a different scheme.
   // This will clear the OnLoad and NoOp text, so checking below that the NoOp
   // text is displayed and the OnLoad text is empty ensures that no navigation
@@ -201,13 +183,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_NoOpPushDifferentScheme) {
 
 // Tests that calling window.history.replaceState() is a no-op for URLs with a
 // different scheme.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoOpRelaceDifferentScheme FLAKY_NoOpRelaceDifferentScheme
-#else
-#define MAYBE_NoOpRelaceDifferentScheme NoOpRelaceDifferentScheme
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_NoOpRelaceDifferentScheme) {
+TEST_F(HistoryStateOperationsTest, NoOpRelaceDifferentScheme) {
   // Perform a window.history.replaceState() with a URL with a different scheme.
   // This will clear the OnLoad and NoOp text, so checking below that the NoOp
   // text is displayed and the OnLoad text is empty ensures that no navigation
@@ -223,13 +199,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_NoOpRelaceDifferentScheme) {
 
 // Tests that calling window.history.pushState() is a no-op for URLs with a
 // origin differing from that of the current page.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoOpPushDifferentOrigin FLAKY_NoOpPushDifferentOrigin
-#else
-#define MAYBE_NoOpPushDifferentOrigin NoOpPushDifferentOrigin
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_NoOpPushDifferentOrigin) {
+TEST_F(HistoryStateOperationsTest, NoOpPushDifferentOrigin) {
   // Perform a window.history.pushState() with a URL with a different origin.
   // This will clear the OnLoad and NoOp text, so checking below that the NoOp
   // text is displayed and the OnLoad text is empty ensures that no navigation
@@ -249,13 +219,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_NoOpPushDifferentOrigin) {
 
 // Tests that calling window.history.replaceState() is a no-op for URLs with a
 // origin differing from that of the current page.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_NoOpReplaceDifferentOrigin FLAKY_NoOpReplaceDifferentOrigin
-#else
-#define MAYBE_NoOpReplaceDifferentOrigin NoOpReplaceDifferentOrigin
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_NoOpReplaceDifferentOrigin) {
+TEST_F(HistoryStateOperationsTest, NoOpReplaceDifferentOrigin) {
   // Perform a window.history.replaceState() with a URL with a different origin.
   // This will clear the OnLoad and NoOp text, so checking below that the NoOp
   // text is displayed and the OnLoad text is empty ensures that no navigation
@@ -307,13 +271,7 @@ TEST_F(HistoryStateOperationsTest, DISABLED_TitleReplacement) {
 
 // Tests that calling window.history.replaceState() with a new state object
 // replaces the state object for the current NavigationItem.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_StateReplacement FLAKY_StateReplacement
-#else
-#define MAYBE_StateReplacement StateReplacement
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_StateReplacement) {
+TEST_F(HistoryStateOperationsTest, StateReplacement) {
   // Navigate to about:blank then navigate back to the test page.  The created
   // NavigationItem can be used later to verify that the state is replaced
   // rather than pushed.
@@ -383,13 +341,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_StateReplacementReload) {
 
 // Tests that the state object is correctly set for a page after a back/forward
 // navigation.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_StateReplacementBackForward FLAKY_StateReplacementBackForward
-#else
-#define MAYBE_StateReplacementBackForward StateReplacementBackForward
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_StateReplacementBackForward) {
+TEST_F(HistoryStateOperationsTest, StateReplacementBackForward) {
   // Navigate to about:blank then navigate back to the test page.  The created
   // NavigationItem can be used later to verify that the state is replaced
   // rather than pushed.
@@ -426,13 +378,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_StateReplacementBackForward) {
 
 // Tests that calling window.history.pushState() creates a new NavigationItem
 // and prunes trailing items.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_PushState FLAKY_PushState
-#else
-#define MAYBE_PushState PushState
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_PushState) {
+TEST_F(HistoryStateOperationsTest, PushState) {
   // Navigate to about:blank then navigate back to the test page.  The created
   // NavigationItem can be used later to verify that the state is replaced
   // rather than pushed.
@@ -465,14 +411,7 @@ TEST_F(HistoryStateOperationsTest, MAYBE_PushState) {
 
 // Tests that performing a replaceState() on a page created with a POST request
 // resets the page to a GET request.
-//
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_ReplaceStatePostRequest FLAKY_ReplaceStatePostRequest
-#else
-#define MAYBE_ReplaceStatePostRequest ReplaceStatePostRequest
-#endif
-// TODO(crbug.com/1369969): Enable this test on simulator.
-TEST_F(HistoryStateOperationsTest, MAYBE_ReplaceStatePostRequest) {
+TEST_F(HistoryStateOperationsTest, ReplaceStatePostRequest) {
   // Add POST data to the current NavigationItem.
   NSData* post_data = [NSData data];
   static_cast<web::NavigationItemImpl*>(GetLastCommittedItem())
