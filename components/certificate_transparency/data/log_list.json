@@ -1,6 +1,6 @@
 {
-  "version": "12.8",
-  "log_list_timestamp": "2022-09-22T12:55:53Z",
+  "version": "13.4",
+  "log_list_timestamp": "2022-10-03T20:02:25Z",
   "operators": [
     {
       "name": "Google",
@@ -195,6 +195,22 @@
           "temporal_interval": {
             "start_inclusive": "2023-01-01T00:00:00Z",
             "end_exclusive": "2024-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Cloudflare 'Nimbus2024' Log",
+          "log_id": "2ra/az+1tiKfm8K7XGvocJFxbLtRhIU0vaQ9MEjX+6s=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEd7Gbe4/mizX+OpIpLayKjVGKJfyTttegiyk3cR0zyswz6ii5H+Ksw6ld3Ze+9p6UJd02gdHrXSnDK0TxW8oVSA==",
+          "url": "https://ct.cloudflare.com/logs/nimbus2024/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-09-21T17:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-01-01T00:00:00Z",
+            "end_exclusive": "2025-01-01T00:00:00Z"
           }
         }
       ]
@@ -443,6 +459,38 @@
           "temporal_interval": {
             "start_inclusive": "2023-01-01T00:00:00Z",
             "end_exclusive": "2024-01-07T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt 'Oak2024H1' log",
+          "log_id": "O1N3dT4tuYBOizBbBv5AO2fYT8P0x70ADS1yb+H61Bc=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEVkPXfnvUcre6qVG9NpO36bWSD+pet0Wjkv3JpTyArBog7yUvuOEg96g6LgeN5uuk4n0kY59Gv5RzUo2Wrqkm/Q==",
+          "url": "https://oak.ct.letsencrypt.org/2024h1/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-09-21T17:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2023-12-20T00:00:00Z",
+            "end_exclusive": "2024-07-20T00:00:00Z"
+          }
+        },
+        {
+          "description": "Let's Encrypt 'Oak2024H2' log",
+          "log_id": "PxdLT9ciR1iUHWUchL4NEu2QN38fhWrrwb8ohez4ZG4=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE13PWU0fp88nVfBbC1o9wZfryUTapE4Av7fmU01qL6E8zz8PTidRfWmaJuiAfccvKu5+f81wtHqOBWa+Ss20waA==",
+          "url": "https://oak.ct.letsencrypt.org/2024h2/",
+          "mmd": 86400,
+          "state": {
+            "qualified": {
+              "timestamp": "2022-09-21T17:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2024-06-20T00:00:00Z",
+            "end_exclusive": "2025-01-20T00:00:00Z"
           }
         }
       ]
