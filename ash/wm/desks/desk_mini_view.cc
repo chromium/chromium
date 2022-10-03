@@ -92,7 +92,15 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
   desk_name_view->AddObserver(this);
   desk_name_view->set_controller(this);
   desk_name_view->SetText(desk_->name());
-  desk_name_view->SetAccessibleName(desk_->name());
+
+  // Desks created by the new desk button are initialized with an empty name to
+  // encourage user to name the desk, but the `desk_name_view` needs a non-empty
+  // accessible name.
+  auto* desks_controller = DesksController::Get();
+  desk_name_view->SetAccessibleName(
+      desk_->name().empty() ? DesksController::GetDeskDefaultName(
+                                  desks_controller->GetDeskIndex(desk_))
+                            : desk_->name());
 
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -107,7 +115,7 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
 
   if (features::IsDesksCloseAllEnabled()) {
     const std::u16string initial_combine_desks_target_name =
-        DesksController::Get()->GetCombineDesksTargetName(desk_);
+        desks_controller->GetCombineDesksTargetName(desk_);
 
     desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
         initial_combine_desks_target_name,

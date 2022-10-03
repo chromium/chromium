@@ -16,6 +16,10 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace aura {
+class Window;
+}
+
 namespace gfx {
 class Rect;
 }
@@ -57,6 +61,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
                bool show_on_lock_screen,
                bool is_managed,
                bool persist_on_hover,
+               aura::Window* root_window,
                base::RepeatingClosure dismiss_callback,
                base::RepeatingClosure expired_callback);
 
@@ -123,6 +128,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   std::unique_ptr<views::Widget> overlay_widget_;
   std::unique_ptr<SystemToastStyle> overlay_view_;
   std::unique_ptr<ToastDisplayObserver> display_observer_;
+  aura::Window* root_window_;
   base::RepeatingClosure dismiss_callback_;
   base::RepeatingClosure expired_callback_;
 

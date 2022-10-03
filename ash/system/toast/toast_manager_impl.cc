@@ -35,9 +35,13 @@ std::string GetToastDismissedTimeRange(const base::TimeDelta& time) {
 }  // namespace
 
 ToastManagerImpl::ToastManagerImpl()
-    : locked_(Shell::Get()->session_controller()->IsScreenLocked()) {}
+    : locked_(Shell::Get()->session_controller()->IsScreenLocked()) {
+  Shell::Get()->AddShellObserver(this);
+}
 
-ToastManagerImpl::~ToastManagerImpl() = default;
+ToastManagerImpl::~ToastManagerImpl() {
+  Shell::Get()->RemoveShellObserver(this);
+}
 
 void ToastManagerImpl::Show(const ToastData& data) {
   const std::string& id = data.id;
@@ -57,20 +61,22 @@ void ToastManagerImpl::Show(const ToastData& data) {
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
       queue_.emplace_front(data);
-      overlay_->Show(false);
+
+      CloseAllToastsWithAnimation();
+
       return;
     }
 
     queue_.emplace_back(data);
   }
 
-  if (queue_.size() == 1 && overlay_ == nullptr)
+  if (queue_.size() == 1 && !HasActiveToasts())
     ShowLatest();
 }
 
 void ToastManagerImpl::Cancel(const std::string& id) {
   if (IsRunning(id)) {
-    overlay_->Show(false);
+    CloseAllToastsWithAnimation();
     return;
   }
 
@@ -82,17 +88,28 @@ void ToastManagerImpl::Cancel(const std::string& id) {
 bool ToastManagerImpl::MaybeToggleA11yHighlightOnActiveToastDismissButton(
     const std::string& id) {
   DCHECK(IsRunning(id));
-  return overlay_ && overlay_->MaybeToggleA11yHighlightOnDismissButton();
+  for (auto& iter : root_window_to_overlay_) {
+    if (iter.second && iter.second->MaybeToggleA11yHighlightOnDismissButton())
+      return true;
+  }
+
+  return false;
 }
 
 bool ToastManagerImpl::MaybeActivateHighlightedDismissButtonOnActiveToast(
     const std::string& id) {
   DCHECK(IsRunning(id));
-  return overlay_ && overlay_->MaybeActivateHighlightedDismissButton();
+  for (auto& iter : root_window_to_overlay_) {
+    if (iter.second && iter.second->MaybeActivateHighlightedDismissButton())
+      return true;
+  }
+
+  return false;
 }
 
 bool ToastManagerImpl::IsRunning(const std::string& id) const {
-  return overlay_ && current_toast_data_ && current_toast_data_->id == id;
+  return HasActiveToasts() && current_toast_data_ &&
+         current_toast_data_->id == id;
 }
 
 void ToastManagerImpl::OnClosed() {
@@ -104,7 +121,8 @@ void ToastManagerImpl::OnClosed() {
                          time_range.c_str()),
       current_toast_data_->catalog_name);
 
-  overlay_.reset();
+  CloseAllToastsWithoutAnimation();
+
   current_toast_data_.reset();
 
   // Show the next toast if available.
@@ -114,8 +132,27 @@ void ToastManagerImpl::OnClosed() {
     ShowLatest();
 }
 
+void ToastManagerImpl::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  const bool locked = state != session_manager::SessionState::ACTIVE;
+
+  if ((locked != locked_) && current_toast_data_) {
+    // Re-queue the currently visible toast which is not for lock screen.
+    queue_.push_front(*current_toast_data_);
+    current_toast_data_.reset();
+    // Hide the currently visible toast instances without any animation.
+    CloseAllToastsWithoutAnimation();
+  }
+
+  locked_ = locked;
+  if (!queue_.empty()) {
+    // Try to reshow a queued toast from a previous OnSessionStateChanged.
+    ShowLatest();
+  }
+}
+
 void ToastManagerImpl::ShowLatest() {
-  DCHECK(!overlay_);
+  DCHECK(!HasActiveToasts());
   DCHECK(!current_toast_data_);
 
   auto it = locked_ ? base::ranges::find(queue_, true,
@@ -129,16 +166,13 @@ void ToastManagerImpl::ShowLatest() {
 
   serial_++;
 
-  overlay_ = std::make_unique<ToastOverlay>(
-      this, current_toast_data_->text, current_toast_data_->dismiss_text,
-      current_toast_data_->duration,
-      current_toast_data_->visible_on_lock_screen && locked_,
-      current_toast_data_->is_managed, current_toast_data_->persist_on_hover,
-      current_toast_data_->dismiss_callback,
-      current_toast_data_->expired_callback);
-  overlay_->Show(true);
+  if (current_toast_data_->show_on_all_root_windows) {
+    for (auto* root_window : Shell::GetAllRootWindows())
+      CreateToastOverlayForRoot(root_window);
+  } else {
+    CreateToastOverlayForRoot(Shell::GetRootWindowForNewWindows());
+  }
 
-  current_toast_data_->time_shown = overlay_->time_shown();
   base::UmaHistogramEnumeration("Ash.NotifierFramework.Toast.ShownCount",
                                 current_toast_data_->catalog_name);
   base::UmaHistogramMediumTimes(
@@ -146,23 +180,60 @@ void ToastManagerImpl::ShowLatest() {
       base::TimeTicks::Now() - current_toast_data_->time_created);
 }
 
-void ToastManagerImpl::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  const bool locked = state != session_manager::SessionState::ACTIVE;
+void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
+  auto& new_overlay = root_window_to_overlay_[root_window];
+  DCHECK(!new_overlay);
+  DCHECK(current_toast_data_);
+  new_overlay = std::make_unique<ToastOverlay>(
+      this, current_toast_data_->text, current_toast_data_->dismiss_text,
+      current_toast_data_->duration,
+      current_toast_data_->visible_on_lock_screen && locked_,
+      current_toast_data_->is_managed, current_toast_data_->persist_on_hover,
+      root_window, current_toast_data_->dismiss_callback,
+      current_toast_data_->expired_callback);
+  new_overlay->Show(true);
 
-  if ((locked != locked_) && current_toast_data_) {
-    // Re-queue the currently visible toast which is not for lock screen.
-    queue_.push_front(*current_toast_data_);
-    current_toast_data_.reset();
-    // Hide the currently visible toast without any animation.
-    overlay_.reset();
+  // We only want to record this value when the first instance of the toast is
+  // initialized.
+  if (current_toast_data_->time_shown.is_null())
+    current_toast_data_->time_shown = new_overlay->time_shown();
+}
+
+void ToastManagerImpl::CloseAllToastsWithAnimation() {
+  for (auto& iter : root_window_to_overlay_) {
+    if (iter.second)
+      iter.second->Show(false);
+  }
+}
+
+void ToastManagerImpl::CloseAllToastsWithoutAnimation() {
+  for (auto& iter : root_window_to_overlay_)
+    iter.second.reset();
+}
+
+bool ToastManagerImpl::HasActiveToasts() const {
+  for (auto& iter : root_window_to_overlay_) {
+    if (iter.second)
+      return true;
   }
 
-  locked_ = locked;
-  if (!queue_.empty()) {
-    // Try to reshow a queued toast from a previous OnSessionStateChanged.
-    ShowLatest();
+  return false;
+}
+
+ToastOverlay* ToastManagerImpl::GetCurrentOverlayForTesting(
+    aura::Window* root_window) {
+  return root_window_to_overlay_[root_window].get();
+}
+
+void ToastManagerImpl::OnRootWindowAdded(aura::Window* root_window) {
+  if (HasActiveToasts() && current_toast_data_ &&
+      current_toast_data_->show_on_all_root_windows) {
+    CreateToastOverlayForRoot(root_window);
   }
+}
+
+void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
+  root_window_to_overlay_[root_window].reset();
 }
 
 }  // namespace ash

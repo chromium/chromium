@@ -12,9 +12,15 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "ash/system/toast/toast_overlay.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/weak_ptr.h"
+
+namespace aura {
+class Window;
+}
 
 namespace ash {
 
@@ -25,7 +31,8 @@ class LaunchAppHelperTest;
 // Class managing toast requests.
 class ASH_EXPORT ToastManagerImpl : public ToastManager,
                                     public ToastOverlay::Delegate,
-                                    public SessionObserver {
+                                    public SessionObserver,
+                                    public ShellObserver {
  public:
   ToastManagerImpl();
 
@@ -58,9 +65,29 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   void ShowLatest();
 
-  ToastOverlay* GetCurrentOverlayForTesting() { return overlay_.get(); }
+  // Creates a new toast overlay to be displayed on the designated
+  // `root_window`.
+  void CreateToastOverlayForRoot(aura::Window* root_window);
+
+  // Unshows all existing toast instances in `root_window_to_overlay_`.
+  void CloseAllToastsWithAnimation();
+
+  // Resets all existing toast instances in `root_window_to_overlay_`,
+  // effectively closing them without animation.
+  void CloseAllToastsWithoutAnimation();
+
+  // Checks whether any values in `root_window_to_overlay_` are not empty.
+  bool HasActiveToasts() const;
+
+  ToastOverlay* GetCurrentOverlayForTesting(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows());
+
   int serial_for_testing() const { return serial_; }
   void ResetSerialForTesting() { serial_ = 0; }
+
+  // ShellObserver:
+  void OnRootWindowAdded(aura::Window* root_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
 
   // Data of the toast which is currently shown. Empty if no toast is visible.
   absl::optional<ToastData> current_toast_data_;
@@ -68,7 +95,10 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   int serial_ = 0;
   bool locked_;
   base::circular_deque<ToastData> queue_;
-  std::unique_ptr<ToastOverlay> overlay_;
+
+  // Tracks active toast overlays and their corresponding root windows.
+  base::flat_map<aura::Window*, std::unique_ptr<ToastOverlay>>
+      root_window_to_overlay_;
 
   ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ToastManagerImpl> weak_ptr_factory_{this};

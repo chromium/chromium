@@ -106,33 +106,41 @@ class ToastManagerImplTest : public AshTestBase {
 
   int GetToastSerial() { return manager_->serial_for_testing(); }
 
-  ToastOverlay* GetCurrentOverlay() {
-    return manager_->GetCurrentOverlayForTesting();
+  // Some toasts can display on multiple root windows, so the caller can use
+  // `root_window` to target a toast on a specific root window.
+  ToastOverlay* GetCurrentOverlay(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    return manager_->GetCurrentOverlayForTesting(root_window);
   }
 
-  views::Widget* GetCurrentWidget() {
-    ToastOverlay* overlay = GetCurrentOverlay();
+  views::Widget* GetCurrentWidget(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    ToastOverlay* overlay = GetCurrentOverlay(root_window);
     return overlay ? overlay->widget_for_testing() : nullptr;
   }
 
-  views::LabelButton* GetDismissButton() {
-    ToastOverlay* overlay = GetCurrentOverlay();
+  views::LabelButton* GetDismissButton(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    ToastOverlay* overlay = GetCurrentOverlay(root_window);
     DCHECK(overlay);
     return overlay->dismiss_button_for_testing();
   }
 
-  std::u16string GetCurrentText() {
-    ToastOverlay* overlay = GetCurrentOverlay();
+  std::u16string GetCurrentText(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    ToastOverlay* overlay = GetCurrentOverlay(root_window);
     return overlay ? overlay->text_ : std::u16string();
   }
 
-  std::u16string GetCurrentDismissText() {
-    ToastOverlay* overlay = GetCurrentOverlay();
+  std::u16string GetCurrentDismissText(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    ToastOverlay* overlay = GetCurrentOverlay(root_window);
     return overlay ? overlay->dismiss_text_ : std::u16string();
   }
 
-  void ClickDismissButton() {
-    views::LabelButton* dismiss_button = GetDismissButton();
+  void ClickDismissButton(
+      aura::Window* root_window = Shell::GetRootWindowForNewWindows()) {
+    views::LabelButton* dismiss_button = GetDismissButton(root_window);
     const gfx::Point button_center =
         dismiss_button->GetBoundsInScreen().CenterPoint();
     auto* event_generator = GetEventGenerator();
@@ -909,6 +917,82 @@ TEST_F(ToastManagerImplTest, ToastsCanPersistOnHover) {
   // Wait for the toast to expire now that the toast is no longer hovered.
   WaitForTimeDelta(ToastData::kDefaultToastDuration / 2);
   EXPECT_FALSE(toast_manager->IsRunning(toast_id));
+}
+
+// Table-driven test that checks that toasts designated to show on all windows
+// correctly show and close on all root windows.
+TEST_F(ToastManagerImplTest, ShowAndCloseToastsOnAllRootWindows) {
+  UpdateDisplay("800x700,800x700");
+
+  // Covers possible ways that a toast can be cancelled.
+  enum class CancellationSource {
+    kToastManager,
+    kDismissButton,
+    kToastDuration,
+  };
+
+  struct {
+    const std::string scope_trace;
+    const CancellationSource source;
+  } kTestCases[] = {
+      {"Cancel toast through the toast manager",
+       CancellationSource::kToastManager},
+      {"Cancel toast by pressing the dismiss button",
+       CancellationSource::kDismissButton},
+      {"Cancel toast by letting duration elapse",
+       CancellationSource::kToastDuration},
+  };
+
+  auto* toast_manager = manager();
+  const aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_trace);
+    std::string toast_id = "TOAST_ID_" + base::NumberToString(GetToastSerial());
+
+    // Create data for a toast that matches the test case. If the test case is
+    // not `kToastDuration`, duration should be infinite, and if the test case
+    // is not `kDismissButton` then we do not need a dismiss button on the
+    // toast.
+    ToastData toast_data(
+        toast_id, ToastCatalogName::kToastManagerUnittest,
+        /*text=*/u"",
+        /*duration=*/test_case.source == CancellationSource::kToastDuration
+            ? ToastData::kDefaultToastDuration
+            : ToastData::kInfiniteDuration,
+        /*visible_on_lock_screen=*/false,
+        /*has_dismiss_button=*/test_case.source ==
+            CancellationSource::kDismissButton);
+
+    // Indicate that the toast will show on all root windows.
+    toast_data.show_on_all_root_windows = true;
+    toast_manager->Show(toast_data);
+
+    for (auto* root_window : root_windows)
+      EXPECT_TRUE(GetCurrentOverlay(root_window));
+
+    switch (test_case.source) {
+      case CancellationSource::kToastManager: {
+        toast_manager->Cancel(toast_id);
+        break;
+      }
+      case CancellationSource::kDismissButton: {
+        ClickDismissButton();
+        break;
+      }
+      case CancellationSource::kToastDuration: {
+        base::RunLoop run_loop;
+        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+            FROM_HERE, run_loop.QuitClosure(),
+            ToastData::kDefaultToastDuration);
+        run_loop.Run();
+        break;
+      }
+    }
+
+    for (auto* root_window : root_windows)
+      EXPECT_FALSE(GetCurrentOverlay(root_window));
+  }
 }
 
 }  // namespace ash

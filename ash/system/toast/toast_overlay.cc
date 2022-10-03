@@ -148,6 +148,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
                            bool show_on_lock_screen,
                            bool is_managed,
                            bool persist_on_hover,
+                           aura::Window* root_window,
                            base::RepeatingClosure dismiss_callback,
                            base::RepeatingClosure expired_callback)
     : delegate_(delegate),
@@ -161,6 +162,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
           dismiss_text,
           is_managed)),
       display_observer_(std::make_unique<ToastDisplayObserver>(this)),
+      root_window_(root_window),
       dismiss_callback_(std::move(dismiss_callback)),
       expired_callback_(std::move(expired_callback)),
       widget_size_(overlay_view_->GetPreferredSize()),
@@ -174,7 +176,7 @@ ToastOverlay::ToastOverlay(Delegate* delegate,
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.bounds = CalculateOverlayBounds();
   // Show toasts above the app list and below the lock screen.
-  params.parent = Shell::GetRootWindowForNewWindows()->GetChildById(
+  params.parent = root_window_->GetChildById(
       show_on_lock_screen ? kShellWindowId_LockSystemModalContainer
                           : kShellWindowId_SystemModalContainer);
   overlay_widget_->Init(std::move(params));
@@ -263,7 +265,7 @@ gfx::Rect ToastOverlay::CalculateOverlayBounds() {
   // to handle multiple monitors properly.
   auto* window = overlay_widget_->IsNativeWidgetInitialized()
                      ? overlay_widget_->GetNativeWindow()
-                     : Shell::GetRootWindowForNewWindows();
+                     : root_window_;
   auto* window_controller = RootWindowController::ForWindow(window);
   auto* hotseat_widget = window_controller->shelf()->hotseat_widget();
 
