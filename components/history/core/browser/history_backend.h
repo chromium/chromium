@@ -512,7 +512,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::vector<Cluster> GetMostRecentClusters(
       base::Time inclusive_min_time,
       base::Time exclusive_max_time,
-      int max_clusters,
+      size_t max_clusters,
+      size_t max_visits_soft_cap,
       bool include_keywords_and_duplicates = true);
 
   // Get a `Cluster`. Since `keyword_to_data_map` and `visits.duplicate_visits`

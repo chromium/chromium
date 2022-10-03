@@ -308,7 +308,8 @@ base::CancelableTaskTracker::TaskId HistoryService::ReplaceClusters(
 base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,
-    int max_clusters,
+    size_t max_clusters,
+    size_t max_visits_soft_cap,
     base::OnceCallback<void(std::vector<Cluster>)> callback,
     base::CancelableTaskTracker* tracker) {
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
@@ -317,6 +318,7 @@ base::CancelableTaskTracker::TaskId HistoryService::GetMostRecentClusters(
       backend_task_runner_.get(), FROM_HERE,
       base::BindOnce(&HistoryBackend::GetMostRecentClusters, history_backend_,
                      inclusive_min_time, exclusive_max_time, max_clusters,
+                     max_visits_soft_cap,
                      /*include_keywords_and_duplicates=*/true),
       std::move(callback));
 }

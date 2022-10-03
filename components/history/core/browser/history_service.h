@@ -578,12 +578,15 @@ class HistoryService : public KeyedService {
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
-  // Get the most recent `Cluster`s within the constraints.  The most recent
-  // visit of a cluster represents the cluster's time.
+  // Get the most recent `Cluster`s within the constraints. The most recent
+  // visit of a cluster represents the cluster's time. `max_clusters` is a hard
+  // cap. `max_visits_soft_cap` is a soft cap; `GetMostRecentClusters()` will
+  // never return a partial cluster.
   base::CancelableTaskTracker::TaskId GetMostRecentClusters(
       base::Time inclusive_min_time,
       base::Time exclusive_max_time,
-      int max_clusters,
+      size_t max_clusters,
+      size_t max_visits_soft_cap,
       base::OnceCallback<void(std::vector<Cluster>)> callback,
       base::CancelableTaskTracker* tracker);
 

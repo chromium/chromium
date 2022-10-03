@@ -166,7 +166,9 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
   if (GetConfig().persist_clusters_in_history_db && !recluster_) {
     history_service_->GetMostRecentClusters(
-        begin_time_, exclusive_max_time, 1,
+        begin_time_, exclusive_max_time,
+        GetConfig().max_persisted_clusters_to_fetch,
+        GetConfig().max_persisted_cluster_visits_to_fetch_soft_cap,
         base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
                            OnGotMostRecentPersistedClusters,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -195,7 +197,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
   auto continuation_params =
       clusters.empty() ? QueryClustersContinuationParams::DoneParams()
                        : QueryClustersContinuationParams{
-                             clusters[0]
+                             clusters.back()
                                  .GetMostRecentVisit()
                                  .annotated_visit.visit_row.visit_time,
                              true, false, true, false};

@@ -102,6 +102,16 @@ Config::Config() {
             internal::kPersistedClusters,
             "JourneysPersistClustersInHistoryDbPeriodMinutes",
             persist_clusters_in_history_db_period_minutes);
+
+    max_persisted_clusters_to_fetch = base::GetFieldTrialParamByFeatureAsInt(
+        internal::kPersistedClusters, "max_persisted_clusters_to_fetch",
+        max_persisted_clusters_to_fetch);
+
+    max_persisted_cluster_visits_to_fetch_soft_cap =
+        base::GetFieldTrialParamByFeatureAsInt(
+            internal::kPersistedClusters,
+            "max_persisted_cluster_visits_to_fetch_soft_cap",
+            max_persisted_cluster_visits_to_fetch_soft_cap);
   }
 
   // The `kOmniboxAction` feature and child params.

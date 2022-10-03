@@ -509,32 +509,16 @@ TEST_F(HistoryClustersServiceTest,
     EXPECT_FALSE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
   }
-  // Next 3 queries should return the persisted clusters. They should not make
-  // requests to the clustering backend. And they should set
+  // Next query should return all 3 persisted clusters. it should not make a
+  // request to the clustering backend. And it should set
   // `exhausted_unclustered_visits`.
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1));
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1, 2, 3));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(3));
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
-    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
-    EXPECT_FALSE(continuation_params.exhausted_all_visits);
-  }
-  {
-    const auto [clusters, visits] =
-        NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(2));
-    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(4));
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
-    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
-    EXPECT_FALSE(continuation_params.exhausted_all_visits);
-  }
-  {
-    const auto [clusters, visits] =
-        NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(3));
-    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(5));
+    EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(4));
+    EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(5));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);
@@ -684,21 +668,13 @@ TEST_F(HistoryClustersServiceTest, QueryClusters_PersistedClusters_MixedDay) {
   }
   // 3rd query should return the 1st cluster from 2 days ago; it shouldn't be
   // skipped even though the 2nd query already returned a visit from 2 days ago.
+  // It should also return the non-mixed cluster.
   {
     const auto [clusters, visits] =
         NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1));
+    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(1, 2));
     EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(3));
-    EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
-    EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
-    EXPECT_FALSE(continuation_params.exhausted_all_visits);
-  }
-  // 4th query should return the non-mixed cluster.
-  {
-    const auto [clusters, visits] =
-        NextQueryClusters(continuation_params, false);
-    ASSERT_THAT(GetClusterIds(clusters), testing::ElementsAre(2));
-    EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(4));
+    EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(4));
     EXPECT_THAT(GetVisitIds(visits), testing::ElementsAre());
     EXPECT_TRUE(continuation_params.exhausted_unclustered_visits);
     EXPECT_FALSE(continuation_params.exhausted_all_visits);

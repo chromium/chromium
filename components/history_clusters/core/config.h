@@ -101,6 +101,17 @@ struct Config {
   // every hour.
   int persist_clusters_in_history_db_period_minutes = 60;
 
+  // Hard cap on max clusters to fetch after exhausting unclustered visits and
+  // fetching persisted clusters for the get most recent flow. Doesn't affect
+  // the update flow, which uses day boundaries as well as
+  // `max_visits_to_cluster` to keep the number of clusters and visits
+  // reasonable.
+  size_t max_persisted_clusters_to_fetch = 100;
+
+  // Like `max_persisted_clusters_to_fetch`, but an additional soft cap on max
+  // visits in case there are a few very large clusters in the same batch.
+  size_t max_persisted_cluster_visits_to_fetch_soft_cap = 1000;
+
   // The `kOmniboxAction` feature and child params.
 
   // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled

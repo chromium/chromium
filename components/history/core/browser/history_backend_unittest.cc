@@ -3891,7 +3891,7 @@ TEST_F(HistoryBackendTest, ReplaceClusters) {
 
     backend_->ReplaceClusters({}, CreateClusters({{1, 2}, {1, 2}, {}, {1}}));
     VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
-                                                   base::Time::Max(), 10),
+                                                   base::Time::Max(), 10, 1000),
                    {
                        {1, {2, 1}},
                        // Shouldn't check duplicates clusters.
@@ -3909,7 +3909,7 @@ TEST_F(HistoryBackendTest, ReplaceClusters) {
 
     backend_->ReplaceClusters({2, 4}, CreateClusters({{1, 3}, {4}}));
     VerifyClusters(backend_->GetMostRecentClusters(base::Time::Min(),
-                                                   base::Time::Max(), 10),
+                                                   base::Time::Max(), 10, 1000),
                    {
                        {5, {4}},
                        {4, {3, 1}},
@@ -3938,39 +3938,50 @@ TEST_F(HistoryBackendTest, GetMostRecentClusters) {
   {
     // Verify returns clusters with a visit >= min_time. Verify returns complete
     // clusters, including visits < min_time.
-    SCOPED_TRACE("time: [9, 20), max_clusters: 10");
-    VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(9),
-                                                   GetRelativeTime(20), 10),
+    SCOPED_TRACE("time: [9, 20), max_clusters: 10, max_visits: 100");
+    VerifyClusters(backend_->GetMostRecentClusters(
+                       GetRelativeTime(9), GetRelativeTime(20), 10, 100),
                    {{3, {10}}, {2, {9, 6, 5}}});
   }
   {
     // Verify doesn't return clusters with a visit > max_time.
-    SCOPED_TRACE("time: [9, 20), max_clusters: 10");
+    SCOPED_TRACE("time: [9, 20), max_clusters: 10, max_visits: 100");
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(4),
-                                                   GetRelativeTime(8), 10),
+                                                   GetRelativeTime(8), 10, 100),
                    {{1, {4, 3}}});
   }
   {
     // Verify `max_clusters`.
-    SCOPED_TRACE("time: [0, 20), max_clusters: 1");
+    SCOPED_TRACE("time: [0, 20), max_clusters: 1, max_visits: 100");
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
-                                                   GetRelativeTime(20), 1),
+                                                   GetRelativeTime(20), 1, 100),
+                   {{3, {10}}});
+  }
+  {
+    // Verify `max_visits`.
+    SCOPED_TRACE("time: [0, 20), max_clusters: 10, max_visits: 1");
+    VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
+                                                   GetRelativeTime(20), 10, 1),
                    {{3, {10}}});
   }
   {
     // Verify doesn't return clusters with invalid visits.
-    SCOPED_TRACE("time: [0, 20), max_clusters: 1, after url 10 deleted.");
+    SCOPED_TRACE(
+        "time: [0, 20), max_clusters: 1, max_visits: 100, after url 10 "
+        "deleted.");
     backend_->db()->DeleteURLRow(10);
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
-                                                   GetRelativeTime(20), 1),
+                                                   GetRelativeTime(20), 1, 100),
                    {});
   }
   {
     // Verify doesn't deleted visits don't interfere.
-    SCOPED_TRACE("time: [0, 20), max_clusters: 1, after visit 10 deleted.");
+    SCOPED_TRACE(
+        "time: [0, 20), max_clusters: 1, max_visits: 100, after visit 10 "
+        "deleted.");
     backend_->db()->DeleteAnnotationsForVisit(10);
     VerifyClusters(backend_->GetMostRecentClusters(GetRelativeTime(0),
-                                                   GetRelativeTime(20), 1),
+                                                   GetRelativeTime(20), 1, 100),
                    {{2, {9, 6, 5}}});
   }
 }
