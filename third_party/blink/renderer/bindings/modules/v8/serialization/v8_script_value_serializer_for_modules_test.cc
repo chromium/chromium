@@ -24,9 +24,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_focusable_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -36,7 +38,9 @@
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
+#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
@@ -57,6 +61,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::ElementsAre;
@@ -1229,16 +1234,20 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
+  // This flag is default-off for Android, so we force it on to test this
+  // functionality.
+  ScopedRegionCaptureForTest region_capture(true);
   V8TestingScope scope;
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
   const auto session_id = base::UnguessableToken::Create();
   MediaStreamComponent* component =
       MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
-  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
-      scope.GetExecutionContext(), component,
-      MediaStreamSource::ReadyState::kReadyStateMuted,
-      /*callback=*/base::DoNothing());
+  MediaStreamTrack* blink_track =
+      MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
+          scope.GetExecutionContext(), component,
+          MediaStreamSource::ReadyState::kReadyStateMuted,
+          /*callback=*/base::DoNothing(), "descriptor");
   blink_track->setEnabled(false);
 
   ScopedMockMediaStreamTrackFromTransferredState mock_impl;
@@ -1261,6 +1270,8 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   // MediaStreamTrackTransferTest.TabCaptureVideoFromTransferredState. If you
   // change this test, please augment MediaStreamTrackTransferTest to test the
   // new scenario.
+  EXPECT_EQ(data.track_impl_subtype,
+            BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo());
   EXPECT_EQ(data.session_id, session_id);
   // TODO(crbug.com/1352414): assert correct data.transfer_id
   EXPECT_EQ(data.kind, "video");
@@ -1271,6 +1282,75 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   EXPECT_EQ(data.content_hint,
             WebMediaStreamTrack::ContentHintType::kVideoMotion);
   EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
+  EXPECT_EQ(data.crop_version, absl::optional<uint32_t>(0));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferMediaStreamTrackRegionCaptureDisabled) {
+  // Test with region capture disabled, since this is the default for Android.
+  ScopedRegionCaptureForTest region_capture(false);
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  const auto session_id = base::UnguessableToken::Create();
+  MediaStreamComponent* component =
+      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateLive,
+      /*callback=*/base::DoNothing());
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  EXPECT_EQ(data.track_impl_subtype,
+            MediaStreamTrack::GetStaticWrapperTypeInfo());
+  EXPECT_FALSE(data.crop_version.has_value());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferFocusableMediaStreamTrack) {
+  ScopedConditionalFocusForTest conditional_focus(true);
+  // RegionCapture overrides ConditionalFocus, so we turn it off here to test
+  // FocusableMediaStreamTrack.
+  ScopedRegionCaptureForTest region_capture(false);
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  const auto session_id = base::UnguessableToken::Create();
+  MediaStreamComponent* component =
+      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
+  MediaStreamTrack* blink_track =
+      MakeGarbageCollected<FocusableMediaStreamTrack>(
+          scope.GetExecutionContext(), component,
+          MediaStreamSource::ReadyState::kReadyStateLive,
+          /*callback=*/base::DoNothing(), "descriptor");
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  EXPECT_EQ(data.track_impl_subtype,
+            FocusableMediaStreamTrack::GetStaticWrapperTypeInfo());
+  EXPECT_FALSE(data.crop_version.has_value());
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
@@ -1304,6 +1384,8 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
   // MediaStreamTrackTransferTest.TabCaptureAudioFromTransferredState. If you
   // change this test, please augment MediaStreamTrackTransferTest to test the
   // new scenario.
+  EXPECT_EQ(data.track_impl_subtype,
+            MediaStreamTrack::GetStaticWrapperTypeInfo());
   EXPECT_EQ(data.session_id, session_id);
   // TODO(crbug.com/1352414): assert correct data.transfer_id
   EXPECT_EQ(data.kind, "audio");

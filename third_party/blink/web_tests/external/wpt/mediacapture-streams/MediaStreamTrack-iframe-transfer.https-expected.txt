@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL MediaStreamTrack transfer to iframe promise_test: Unhandled rejection with value: object "DataCloneError: Failed to execute 'postMessage' on 'Window': BrowserCaptureMediaStreamTrack object could not be cloned."
-Harness: the test ran to completion.
-

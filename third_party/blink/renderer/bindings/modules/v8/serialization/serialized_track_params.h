@@ -28,15 +28,31 @@ enum class SerializedReadyState : uint32_t {
   kLast = kReadyStateEnded
 };
 
+// Enum values must remain contiguous and starting at zero.
+enum class SerializedTrackImplSubtype : uint32_t {
+  kTrackImplSubtypeBase = 0,            // MediaStreamTrack
+  kTrackImplSubtypeCanvasCapture = 1,   // CanvasCaptureMediaStreamTrack
+  kTrackImplSubtypeGenerator = 2,       // MediaStreamTrackGenerator
+  kTrackImplSubtypeFocusable = 3,       // FocusableMediaStreamTrack
+  kTrackImplSubtypeBrowserCapture = 4,  // BrowserCaptureMediaStreamTrack
+  kLast = kTrackImplSubtypeBrowserCapture
+};
+
 SerializedContentHintType SerializeContentHint(
     WebMediaStreamTrack::ContentHintType type);
 
 SerializedReadyState SerializeReadyState(MediaStreamSource::ReadyState state);
 
+SerializedTrackImplSubtype SerializeTrackImplSubtype(
+    ScriptWrappable::TypeDispatcher& dispatcher);
+
 WebMediaStreamTrack::ContentHintType DeserializeContentHint(
     SerializedContentHintType type);
 
 MediaStreamSource::ReadyState DeserializeReadyState(SerializedReadyState state);
+
+const WrapperTypeInfo* DeserializeTrackImplSubtype(
+    SerializedTrackImplSubtype type);
 
 }  // namespace blink
 

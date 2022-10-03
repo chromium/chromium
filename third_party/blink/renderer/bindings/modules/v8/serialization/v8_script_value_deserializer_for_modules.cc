@@ -544,10 +544,12 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
   base::UnguessableToken session_id, transfer_id;
   String kind, id, label;
   uint8_t enabled, muted;
+  SerializedTrackImplSubtype track_impl_subtype;
   SerializedContentHintType contentHint;
   SerializedReadyState readyState;
 
-  if (!ReadUnguessableToken(&session_id) ||
+  if (!ReadUint32Enum(&track_impl_subtype) ||
+      !ReadUnguessableToken(&session_id) ||
       !ReadUnguessableToken(&transfer_id) || !ReadUTF8String(&kind) ||
       (kind != "audio" && kind != "video") || !ReadUTF8String(&id) ||
       !ReadUTF8String(&label) || !ReadOneByte(&enabled) || enabled > 1 ||
@@ -556,17 +558,40 @@ MediaStreamTrack* V8ScriptValueDeserializerForModules::ReadMediaStreamTrack() {
     return nullptr;
   }
 
+  absl::optional<uint32_t> crop_version;
+  // Using `switch` to ensure new enum values are handled.
+  switch (track_impl_subtype) {
+    case SerializedTrackImplSubtype::kTrackImplSubtypeBase:
+    case SerializedTrackImplSubtype::kTrackImplSubtypeFocusable:
+      // No additional data to be deserialized.
+      break;
+    case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
+    case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
+      NOTREACHED();
+      return nullptr;
+    case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
+      uint32_t read_crop_version;
+      if (!ReadUint32(&read_crop_version)) {
+        return nullptr;
+      }
+      crop_version = read_crop_version;
+      break;
+  }
+
   return MediaStreamTrack::FromTransferredState(
-      GetScriptState(), MediaStreamTrack::TransferredValues{
-                            .session_id = session_id,
-                            .transfer_id = transfer_id,
-                            .kind = kind,
-                            .id = id,
-                            .label = label,
-                            .enabled = static_cast<bool>(enabled),
-                            .muted = static_cast<bool>(muted),
-                            .content_hint = DeserializeContentHint(contentHint),
-                            .ready_state = DeserializeReadyState(readyState)});
+      GetScriptState(),
+      MediaStreamTrack::TransferredValues{
+          .track_impl_subtype = DeserializeTrackImplSubtype(track_impl_subtype),
+          .session_id = session_id,
+          .transfer_id = transfer_id,
+          .kind = kind,
+          .id = id,
+          .label = label,
+          .enabled = static_cast<bool>(enabled),
+          .muted = static_cast<bool>(muted),
+          .content_hint = DeserializeContentHint(contentHint),
+          .ready_state = DeserializeReadyState(readyState),
+          .crop_version = crop_version});
 }
 
 CropTarget* V8ScriptValueDeserializerForModules::ReadCropTarget() {

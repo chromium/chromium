@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
@@ -296,7 +297,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
     }
     return WriteDecoderBuffer(video_chunk->buffer(), /*for_audio=*/false);
   }
-  if (auto* track = dispatcher.ToMostDerived<MediaStreamTrack>()) {
+  if (auto* track = dispatcher.DowncastTo<MediaStreamTrack>()) {
     if (!RuntimeEnabledFeatures::MediaStreamTrackTransferEnabled(
             ExecutionContext::From(GetScriptState()))) {
       return false;
@@ -307,7 +308,7 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
           "A MediaStreamTrack cannot be serialized for storage.");
       return false;
     }
-    return WriteMediaStreamTrack(track, exception_state);
+    return WriteMediaStreamTrack(track, dispatcher, exception_state);
   }
   if (auto* crop_target = dispatcher.ToMostDerived<CropTarget>()) {
     if (!RuntimeEnabledFeatures::RegionCaptureEnabled(
@@ -619,6 +620,7 @@ bool V8ScriptValueSerializerForModules::WriteDecoderBuffer(
 
 bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
     MediaStreamTrack* track,
+    ScriptWrappable::TypeDispatcher& dispatcher,
     ExceptionState& exception_state) {
   if (track->Ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -638,6 +640,8 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   auto transfer_id = base::UnguessableToken::Create();
 
   WriteTag(kMediaStreamTrack);
+  auto track_impl_subtype = SerializeTrackImplSubtype(dispatcher);
+  WriteUint32Enum(track_impl_subtype);
   WriteUnguessableToken(*device->serializable_session_id());
   WriteUnguessableToken(transfer_id);
   WriteUTF8String(track->kind());
@@ -647,6 +651,34 @@ bool V8ScriptValueSerializerForModules::WriteMediaStreamTrack(
   WriteOneByte(track->muted());
   WriteUint32Enum(SerializeContentHint(track->Component()->ContentHint()));
   WriteUint32Enum(SerializeReadyState(track->Component()->GetReadyState()));
+  // Using `switch` to ensure new enum values are handled.
+  switch (track_impl_subtype) {
+    case SerializedTrackImplSubtype::kTrackImplSubtypeBase:
+    case SerializedTrackImplSubtype::kTrackImplSubtypeFocusable:
+      // No additional data needs to be serialized.
+      break;
+    case SerializedTrackImplSubtype::kTrackImplSubtypeCanvasCapture:
+    case SerializedTrackImplSubtype::kTrackImplSubtypeGenerator:
+      NOTREACHED() << "device type is " << device->type
+                   << " but track impl subtype is "
+                   << static_cast<uint32_t>(track_impl_subtype);
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "MediaStreamTrack could not be serialized.");
+      return false;
+    case SerializedTrackImplSubtype::kTrackImplSubtypeBrowserCapture:
+      // Parent class is FocusableMediaStreamTrack, which needs no additional
+      // data.
+      MediaStreamSource* const source = track->Component()->Source();
+      DCHECK(source);
+      DCHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
+      MediaStreamVideoSource* const native_source =
+          MediaStreamVideoSource::GetVideoSource(source);
+      DCHECK(native_source);
+      WriteUint32(native_source->GetCropVersion());
+      break;
+  }
+  // TODO(crbug.com/1288839): Needs to move to FinalizeTransfer?
   track->BeingTransferred(transfer_id);
   return true;
 }
