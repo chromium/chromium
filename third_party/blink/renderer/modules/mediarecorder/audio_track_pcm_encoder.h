@@ -25,6 +25,7 @@ class AudioTrackPcmEncoder : public AudioTrackEncoder {
   void OnSetFormat(const media::AudioParameters& params) override;
   void EncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
                    base::TimeTicks capture_time) override;
+  void Shutdown() override {}
 
  private:
   ~AudioTrackPcmEncoder() override {}

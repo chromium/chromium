@@ -39,6 +39,9 @@ class AudioTrackEncoder : public WTF::ThreadSafeRefCounted<AudioTrackEncoder> {
   virtual void EncodeAudio(std::unique_ptr<media::AudioBus> audio_bus,
                            base::TimeTicks capture_time) = 0;
 
+  // TODO(crbug.com/1363728): Remove this and use DeleteSoon instead.
+  virtual void Shutdown() = 0;
+
   void set_paused(bool paused) { paused_ = paused; }
 
  protected:

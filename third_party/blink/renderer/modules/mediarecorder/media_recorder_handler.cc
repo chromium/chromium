@@ -89,6 +89,8 @@ media::AudioCodec CodecIdToMediaAudioCodec(AudioTrackRecorder::CodecId id) {
       return media::AudioCodec::kPCM;
     case AudioTrackRecorder::CodecId::kOpus:
       return media::AudioCodec::kOpus;
+    case AudioTrackRecorder::CodecId::kAac:
+      return media::AudioCodec::kAAC;
     case AudioTrackRecorder::CodecId::kLast:
       return media::AudioCodec::kUnknown;
   }
@@ -512,6 +514,9 @@ String MediaRecorderHandler::ActualMimeType() {
         break;
       case AudioTrackRecorder::CodecId::kPcm:
         mime_type.Append("pcm");
+        break;
+      case AudioTrackRecorder::CodecId::kAac:
+        mime_type.Append("m4a.40.2");
         break;
       case AudioTrackRecorder::CodecId::kLast:
         DCHECK_NE(video_codec_profile_.codec_id,
