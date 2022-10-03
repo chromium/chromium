@@ -2047,12 +2047,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiIdentifiabilityTest,
 }
 
 class SubresourceWebBundlesContentScriptApiTest : public ExtensionApiTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
-    ExtensionApiTest::SetUp();
-  }
-
  protected:
   // Registers a request handler for static content.
   void RegisterRequestHandler(const std::string& relative_url,

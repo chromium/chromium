@@ -3865,11 +3865,6 @@ class SubresourceWebBundlesWebRequestApiTest
   SubresourceWebBundlesWebRequestApiTest& operator=(
       const SubresourceWebBundlesWebRequestApiTest&) = delete;
 
-  void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
-    ExtensionApiTest::SetUp();
-  }
-
  protected:
   // Whether 'extraHeaders' is set in opt_extraInfoSpec of addEventListener.
   enum class ExtraInfoSpec {

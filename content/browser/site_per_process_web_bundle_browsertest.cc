@@ -15,9 +15,7 @@ namespace content {
 class SitePerProcessWebBundleBrowserTest
     : public SitePerProcessIgnoreCertErrorsBrowserTest {
  public:
-  SitePerProcessWebBundleBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
-  }
+  SitePerProcessWebBundleBrowserTest() = default;
   void SetUpOnMainThread() override {
     SitePerProcessIgnoreCertErrorsBrowserTest::SetUpOnMainThread();
     https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());

@@ -1114,11 +1114,6 @@ BASE_FEATURE(kStrictOriginIsolation,
              "StrictOriginIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables subresource loading with Web Bundles.
-BASE_FEATURE(kSubresourceWebBundles,
-             "SubresourceWebBundles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs,

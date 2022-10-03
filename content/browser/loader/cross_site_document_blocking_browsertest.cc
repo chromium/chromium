@@ -1623,9 +1623,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
 // e.g. <script type=webbundle>...</script>
 class CrossSiteDocumentBlockingWebBundleTest : public ContentBrowserTest {
  public:
-  CrossSiteDocumentBlockingWebBundleTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kSubresourceWebBundles);
-  }
+  CrossSiteDocumentBlockingWebBundleTest() = default;
   ~CrossSiteDocumentBlockingWebBundleTest() override = default;
 
   CrossSiteDocumentBlockingWebBundleTest(

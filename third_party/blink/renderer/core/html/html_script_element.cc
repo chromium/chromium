@@ -380,10 +380,8 @@ bool HTMLScriptElement::supports(ScriptState* script_state,
       RuntimeEnabledFeatures::SpeculationRulesEnabled(execution_context)) {
     return true;
   }
-  if ((type == script_type_names::kWebbundle) &&
-      RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(execution_context)) {
+  if (type == script_type_names::kWebbundle)
     return true;
-  }
 
   return false;
 }

@@ -2486,11 +2486,6 @@
       name: "StylusHandwriting",
     },
     {
-      name: "SubresourceWebBundles",
-      public: true,
-      status: "experimental"
-    },
-    {
       name: "SupportsFontFormatTech",
       status: "experimental"
     },

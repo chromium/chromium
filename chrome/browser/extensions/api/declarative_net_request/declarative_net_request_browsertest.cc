@@ -5406,10 +5406,6 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
     : public DeclarativeNetRequestBrowserTest {
  public:
   DeclarativeNetRequestSubresourceWebBundlesBrowserTest() = default;
-  void SetUp() override {
-    feature_list_.InitWithFeatures({features::kSubresourceWebBundles}, {});
-    DeclarativeNetRequestBrowserTest::SetUp();
-  }
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
     CreateTempDir();

@@ -564,13 +564,6 @@ PendingScript* ScriptLoader::PrepareScript(
       break;
 
     case ScriptTypeAtPrepare::kWebBundle:
-      if (!RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
-              element_document.GetExecutionContext())) {
-        script_type_ = ScriptTypeAtPrepare::kInvalid;
-        return nullptr;
-      }
-      break;
-
     case ScriptTypeAtPrepare::kClassic:
     case ScriptTypeAtPrepare::kModule:
     case ScriptTypeAtPrepare::kImportMap:
@@ -975,8 +968,6 @@ PendingScript* ScriptLoader::PrepareScript(
         return nullptr;
       }
       case ScriptTypeAtPrepare::kWebBundle: {
-        DCHECK(RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
-            context_window));
         DCHECK(!script_web_bundle_);
 
         absl::variant<ScriptWebBundle*, ScriptWebBundleError>
