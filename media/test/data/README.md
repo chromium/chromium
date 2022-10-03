@@ -819,18 +819,6 @@ ffmpeg -i red-green.mp4 -vcodec copy -vbsf h264_mp4toannexb -an red-green.h264
 
 ## Misc Test Files
 
-### resolution_change_500frames
-
-#### resolution_change_500frames-vp8.ivf
-#### resolution_change_500frames-vp9.ivf
-Dumped compressed stream of videos on
-[http://crosvideo.appspot.com](http://crosvideo.appspot.com) manually
-changing resolutions at random. Those contain 144p, 240p, 360p, 480p, 720p, and
-1080p frames. Those frame sizes can be found by
-```
-ffprobe -show_frames resolution_change_500frames.vp8
-```
-
 #### switch_1080p_720p_240frames
 #### switch_1080p_720p_240frames.h264
 Extract 240 frames using ffmpeg from
