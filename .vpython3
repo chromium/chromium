@@ -29,9 +29,7 @@ python_version: "3.8"
 # allows us to ensure that vpython specs stay mac-arm64-friendly
 verify_pep425_tag: [
     {python: "cp38", abi: "cp38", platform: "manylinux1_x86_64"},
-# TODO(https://crbug.com/1363689): Re-enable once the linux_arm64 versions of
-# these wheels are available.
-#   {python: "cp38", abi: "cp38", platform: "linux_arm64"},
+    {python: "cp38", abi: "cp38", platform: "linux_arm64"},
 
     {python: "cp38", abi: "cp38", platform: "macosx_10_10_intel"},
     {python: "cp38", abi: "cp38", platform: "macosx_11_0_arm64"},
