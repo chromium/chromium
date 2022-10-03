@@ -74,10 +74,8 @@ class ASH_EXPORT AppsContainerView
   bool IsInFolderView() const;
 
   // Updates the visibility of the items in this view according to
-  // |app_list_state| and |is_in_drag|.
-  // TODO(crbug.com/1356674): Remove |is_in_drag| from parameters.
-  void UpdateControlVisibility(AppListViewState app_list_state,
-                               bool is_in_drag);
+  // |app_list_state|.
+  void UpdateControlVisibility(AppListViewState app_list_state);
 
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);

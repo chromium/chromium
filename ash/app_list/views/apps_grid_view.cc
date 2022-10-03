@@ -1001,12 +1001,9 @@ int AppsGridView::OnDragUpdated(const ui::DropTargetEvent& event) {
   return ui::DragDropTypes::DRAG_MOVE;
 }
 
-void AppsGridView::UpdateControlVisibility(AppListViewState app_list_state,
-                                           bool is_in_drag) {
-  const bool fullscreen_or_in_drag =
-      is_in_drag || app_list_state == AppListViewState::kFullscreenAllApps ||
-      app_list_state == AppListViewState::kFullscreenSearch;
-  SetVisible(fullscreen_or_in_drag);
+void AppsGridView::UpdateControlVisibility(AppListViewState app_list_state) {
+  SetVisible(app_list_state == AppListViewState::kFullscreenAllApps ||
+             app_list_state == AppListViewState::kFullscreenSearch);
 }
 
 bool AppsGridView::OnKeyPressed(const ui::KeyEvent& event) {

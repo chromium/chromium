@@ -38,7 +38,6 @@ class PageSwitcher : public views::View,
   const char* GetClassName() const override;
   void OnThemeChanged() override;
 
-  void set_ignore_button_press(bool ignore) { ignore_button_press_ = ignore; }
   void set_is_tablet_mode(bool started) { is_tablet_mode_ = started; }
 
  private:
@@ -54,9 +53,6 @@ class PageSwitcher : public views::View,
 
   // True if the page switcher's root view is the AppsGridView.
   const bool is_root_app_grid_page_switcher_;
-
-  // True if button press should be ignored.
-  bool ignore_button_press_ = false;
 
   // Whether tablet mode is enabled.
   bool is_tablet_mode_;

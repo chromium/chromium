@@ -202,7 +202,7 @@ void PageSwitcher::OnThemeChanged() {
 }
 
 void PageSwitcher::HandlePageSwitch(const ui::Event& event) {
-  if (!model_ || ignore_button_press_)
+  if (!model_)
     return;
 
   const auto& children = buttons_->children();

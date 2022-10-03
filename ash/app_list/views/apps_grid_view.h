@@ -186,10 +186,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool CanDrop(const OSExchangeData& data) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
 
-  // Updates the visibility of app list items according to |app_list_state| and
-  // |is_in_drag|.
-  void UpdateControlVisibility(AppListViewState app_list_state,
-                               bool is_in_drag);
+  // Updates the visibility of app list items according to |app_list_state|.
+  void UpdateControlVisibility(AppListViewState app_list_state);
 
   // Returns true if a touch or click lies between two occupied tiles.
   bool EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event);

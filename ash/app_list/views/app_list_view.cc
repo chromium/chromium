@@ -1151,7 +1151,7 @@ void AppListView::SetState(AppListViewState new_state) {
 
   // Updates the visibility of app list items according to the change of
   // |app_list_state_|.
-  GetAppsContainerView()->UpdateControlVisibility(app_list_state_, false);
+  GetAppsContainerView()->UpdateControlVisibility(app_list_state_);
 }
 
 void AppListView::UpdateWindowTitle() {
