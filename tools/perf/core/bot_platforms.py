@@ -229,6 +229,7 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'power.mobile',
     'blink_perf.sanitizer-api',
     'speedometer2-chrome-health',
+    'speedometer2-minormc',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
@@ -336,6 +337,10 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ]).Add([
     'blink_perf.sanitizer-api',
 ])
+_LINUX_BENCHMARK_CONFIGS_WITH_MINORMC = PerfSuite(_LINUX_BENCHMARK_CONFIGS).Add(
+    [
+        'speedometer2-minormc',
+    ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
     _base_perftests(200),
@@ -523,13 +528,12 @@ _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
 
 
 # Linux
-LINUX = PerfPlatform(
-    'linux-perf',
-    'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-    _LINUX_BENCHMARK_CONFIGS,
-    26,
-    'linux',
-    executables=_LINUX_EXECUTABLE_CONFIGS)
+LINUX = PerfPlatform('linux-perf',
+                     'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+                     _LINUX_BENCHMARK_CONFIGS_WITH_MINORMC,
+                     26,
+                     'linux',
+                     executables=_LINUX_EXECUTABLE_CONFIGS)
 LINUX_PGO = PerfPlatform('linux-perf-pgo',
                          'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
                          _LINUX_BENCHMARK_CONFIGS,

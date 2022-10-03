@@ -167,10 +167,10 @@ class Speedometer2MinorMC(Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer2-minormc'
+    return 'speedometer2-minormc'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags="--minor-mc"')
+    options.AppendExtraBrowserArgs('--js-flags=--minor-mc')
 
 
 @benchmark.Info(emails=['hablich@chromium.org'], component='Blink>JavaScript')

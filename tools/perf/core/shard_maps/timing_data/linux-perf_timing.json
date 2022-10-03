@@ -3724,6 +3724,10 @@
         "name": "speedometer2-future/Speedometer2"
     },
     {
+        "duration": "75.0",
+        "name": "speedometer2-minormc/Speedometer2"
+    },
+    {
         "duration": "57.0",
         "name": "speedometer2-pcscan/Speedometer2"
     },
