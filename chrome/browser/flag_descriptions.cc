@@ -6244,6 +6244,11 @@ const char kDesktopCaptureLacrosV2Description[] =
     "Enables the improved desktop/window capturer for doing screen/window "
     "sharing on Lacros";
 
+const char kLacrosAuraCaptureName[] = "Enable Lacros Aura Capture";
+const char kLacrosAuraCaptureDescription[] =
+    "Enables LaCrOS to perform an in-process capture of it's own windows "
+    "rather than needing to delegate the capture to Ash";
+
 const char kLacrosMergeIcuDataFileName[] =
     "Enable merging of icudtl.dat in Lacros";
 const char kLacrosMergeIcuDataFileDescription[] =

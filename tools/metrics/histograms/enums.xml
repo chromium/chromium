@@ -59560,6 +59560,7 @@ from previous Chrome versions.
   <int value="-273821346"
       label="MaintainShelfStateWhenEnteringOverview:disabled"/>
   <int value="-273570157" label="EnableBloom:enabled"/>
+  <int value="-273534119" label="LacrosAuraCapture:enabled"/>
   <int value="-272266925" label="ForceStartupSigninPromo:enabled"/>
   <int value="-271790049" label="ArcUsbHost:enabled"/>
   <int value="-271084069" label="ClickToCallUI:enabled"/>
@@ -62669,6 +62670,7 @@ from previous Chrome versions.
   <int value="1639728471" label="ThemeRefactorAndroid:disabled"/>
   <int value="1640386037" label="ContextualSuggestionsSlimPeekUI:disabled"/>
   <int value="1642478923" label="ContextualTriggersSelectionSize:enabled"/>
+  <int value="1643450395" label="LacrosAuraCapture:disabled"/>
   <int value="1643626730" label="PrinterStatus:disabled"/>
   <int value="1643700095" label="PermissionQuietChip:enabled"/>
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>

@@ -15,7 +15,9 @@
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
+#include "components/exo/shell_surface_util.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -195,6 +197,11 @@ class ScreenManagerAsh::WindowCapturerImpl : public SnapshotCapturerBase {
       mojom::SnapshotSourcePtr source = mojom::SnapshotSource::New();
       source->id = window_list_.LookupOrAddId(window);
       source->title = base::UTF16ToUTF8(window->GetTitle());
+      if (browser_util::IsLacrosWindow(window)) {
+        const std::string* app_id = exo::GetShellApplicationId(window);
+        DCHECK(app_id);
+        source->window_unique_id = *app_id;
+      }
 
       sources->push_back(std::move(source));
     }

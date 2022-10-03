@@ -354,8 +354,16 @@ NativeDesktopMediaList::Worker::FormatSources(
       default:
         NOTREACHED();
     }
-    source_descriptions.emplace_back(DesktopMediaID(source_type, sources[i].id),
-                                     title);
+    DesktopMediaID source_id(source_type, sources[i].id);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // We need to communicate this in_process_id to
+    // |RefreshForVizFrameSinkWindows|, so we'll use the window_id. If
+    // |in_process_id| is unset, then window_id will also remain unset and all
+    // will be fine. See |RefreshForVizFrameSinkWindows| for a more in-depth
+    // explanation.
+    source_id.window_id = sources[i].in_process_id;
+#endif
+    source_descriptions.emplace_back(std::move(source_id), title);
   }
 
   return source_descriptions;
@@ -708,28 +716,55 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
 
     // Assign |source_it->id.window_id| if |source_it->id.id| corresponds to a
     // viz::FrameSinkId.
-    //
-    // TODO(https://crbug.com/1270801): The capturer id to aura::Window mapping
-    // on lacros is currently broken because they both separately use
-    // monotonically increasing ints as ids. This causes collisions where we
-    // mistakenly try to capture non-aura windows as aura windows. While the
-    // preview matches what is ultimately captured, it does not match the title
-    // of the window in the preview and is both unexpected for the user and
-    // means that the collided non-aura window cannot be captured.
     // TODO(https://crbug.com/1366579): This lookup is fairly fragile and has
     // now resulted in at least two patches to avoid it (though both are Wayland
     // based problems). On top of that, the series of ifdefs is a bit confusing.
     // We should try to simplify/abstract/cleanup this logic.
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The root cause is that the Ozone Wayland Window Manager does *not* use a
+    // platform handle/unique ID to back the AcceleratedWidget, but rather a
+    // monotonically increasing int. Thus, capturers on that platform that
+    // also (by default) use monotonically increasing ints as IDs (e.g.
+    // delegated source lists, the lacros capturer) can have source IDs that
+    // collide with known aura IDs. This causes us to mistakenly try to capture
+    // the non-aura windows as an aura window. The preview ultimately matches
+    // what is captured, but this is likely unexpected for the user and can
+    // result in multiple instances of a window appearing in the source list and
+    // also means that the collided non-aura window cannot be captured.
+#if defined(USE_AURA)
     if (!is_source_list_delegated_) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // The lacros capturer is not delegated and can circumvent the collision
+      // described above because it receives additional information about each
+      // window from Ash-chrome; however, it is limited in how it can convey
+      // that information. |FormatSources|, above, will put the internal ID into
+      // the window_id slot; but this will not yet be a registered native
+      // window, as the capturer does not run on the UI thread. Thus, we still
+      // need to find and register this window here and then overwrite the
+      // window_id. If the window_id has not been set, we'll just fail to find a
+      // corresponding window and the state will remain unset.
+      DesktopMediaID::Id search_id = source_it->id.window_id;
+#else
+      DesktopMediaID::Id search_id = source_it->id.id;
+#endif
       aura::WindowTreeHost* const host =
           aura::WindowTreeHost::GetForAcceleratedWidget(
-              *reinterpret_cast<gfx::AcceleratedWidget*>(&source_it->id.id));
+              *reinterpret_cast<gfx::AcceleratedWidget*>(&search_id));
       aura::Window* const aura_window = host ? host->window() : nullptr;
       if (aura_window) {
         DesktopMediaID aura_id = DesktopMediaID::RegisterNativeWindow(
             DesktopMediaID::TYPE_WINDOW, aura_window);
         source_it->id.window_id = aura_id.window_id;
+      } else if (search_id != DesktopMediaID::kNullId) {
+        // This is expected for non-LaCrOS platforms, where we are searching all
+        // IDs (which include windows/screens that we don't own). However, on
+        // LaCrOS, if we set search_id, then that means we think we should know
+        // about the window. There are potential race conditions where this
+        // could happen, so don't throw an error, but do log it in case any
+        // issues pop up in the future so we can debug it.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        LOG(ERROR) << __func__ << ": Could not find window but had window id";
+        source_it->id.window_id = DesktopMediaID::kNullId;
+#endif
       }
     }
 #elif BUILDFLAG(IS_MAC)

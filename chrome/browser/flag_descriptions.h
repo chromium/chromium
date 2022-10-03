@@ -3578,6 +3578,9 @@ extern const char kOobeMaterialNextDescription[];
 extern const char kDesktopCaptureLacrosV2Name[];
 extern const char kDesktopCaptureLacrosV2Description[];
 
+extern const char kLacrosAuraCaptureName[];
+extern const char kLacrosAuraCaptureDescription[];
+
 extern const char kLacrosMergeIcuDataFileName[];
 extern const char kLacrosMergeIcuDataFileDescription[];
 

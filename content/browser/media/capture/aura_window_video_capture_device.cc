@@ -96,7 +96,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
 
     if (target_) {
       video_capture_lock_ = target_window_->GetHost()->CreateVideoCaptureLock();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       force_visible_.emplace(target_window_);
 #endif
       target_window_->AddObserver(this);
@@ -126,7 +126,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     target_window_->RemoveObserver(this);
     target_window_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     force_visible_.reset();
 #endif
 
@@ -137,7 +137,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
     cursor_controller_->SetTargetView(gfx::NativeView());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnWindowAddedToRootWindow(aura::Window* window) final {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK_EQ(window, target_window_);
@@ -171,7 +171,7 @@ class AuraWindowVideoCaptureDevice::WindowTracker final
   const DesktopMediaID::Type target_type_;
 
   raw_ptr<aura::Window> target_window_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   absl::optional<aura::WindowOcclusionTracker::ScopedForceVisible>
       force_visible_;
 #endif
