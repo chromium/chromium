@@ -323,6 +323,11 @@ extern const char kEnableUnicornAccountSupportDescription[];
 extern const char kFullscreenPromosManagerName[];
 extern const char kFullscreenPromosManagerDescription[];
 
+// Title and description for the flag to enable skipping the internal impression
+// limits of the Fullscreen Promos Manager.
+extern const char kFullscreenPromosManagerSkipInternalLimitsName[];
+extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
+
 // Title and description for the flag to enable web page detected intents
 // annotations.
 extern const char kEnableWebPageAnnotationsName[];

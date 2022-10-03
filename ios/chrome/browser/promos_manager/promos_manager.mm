@@ -237,6 +237,10 @@ NSArray<ImpressionLimit*>* PromosManager::GlobalImpressionLimits() const {
   static NSArray<ImpressionLimit*>* limits;
   static dispatch_once_t onceToken;
 
+  if (IsSkippingInternalImpressionLimitsEnabled()) {
+    return limits;
+  }
+
   dispatch_once(&onceToken, ^{
     ImpressionLimit* onceEveryTwoDays =
         [[ImpressionLimit alloc] initWithLimit:1 forNumDays:2];
@@ -252,6 +256,10 @@ NSArray<ImpressionLimit*>* PromosManager::GlobalPerPromoImpressionLimits()
     const {
   static NSArray<ImpressionLimit*>* limits;
   static dispatch_once_t onceToken;
+
+  if (IsSkippingInternalImpressionLimitsEnabled()) {
+    return limits;
+  }
 
   dispatch_once(&onceToken, ^{
     ImpressionLimit* oncePerMonth = [[ImpressionLimit alloc] initWithLimit:1

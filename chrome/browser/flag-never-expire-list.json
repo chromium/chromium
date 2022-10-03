@@ -78,6 +78,7 @@
   "force-text-direction",
   "force-ui-direction",
   "force-update-menu-type",
+  "fullscreen-promos-manager-skip-internal-limits",
   "fullscreen-viewport-adjustment-experiment",
   "gesture-properties-dbus-service",
   "ignore-gpu-blocklist",

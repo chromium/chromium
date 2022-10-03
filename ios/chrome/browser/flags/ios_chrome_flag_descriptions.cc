@@ -370,6 +370,12 @@ const char kFullscreenPromosManagerDescription[] =
     "When enabled, the display of fullscreen promos will be coordinated by a "
     "central manager living at the application level.";
 
+const char kFullscreenPromosManagerSkipInternalLimitsName[] =
+    "Fullscreen Promos Manager (Skip internal Impression Limits)";
+const char kFullscreenPromosManagerSkipInternalLimitsDescription[] =
+    "When enabled, the internal Impression Limits of the Promos Manager will "
+    "be ignored; this is useful for local development.";
+
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "

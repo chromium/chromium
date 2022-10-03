@@ -14,6 +14,15 @@ BASE_FEATURE(kFullscreenPromosManager,
              "FullscreenPromosManager",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFullscreenPromosManagerSkipInternalLimits,
+             "FullscreenPromosManagerSkipInternalLimits",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsFullscreenPromosManagerEnabled() {
   return base::FeatureList::IsEnabled(kFullscreenPromosManager);
+}
+
+bool IsSkippingInternalImpressionLimitsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kFullscreenPromosManagerSkipInternalLimits);
 }
