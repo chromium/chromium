@@ -227,7 +227,6 @@ cvox.Api.speak = function(textString, queueMode, properties) {
 
 /**
  * This method is kept to keep Docs from throwing an error.
- *
  */
 cvox.Api.stop = function() {};
 

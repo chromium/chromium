@@ -4,11 +4,4 @@
 
 goog.require('ApiImplementation');
 
-/**
- * Initializes minimal content script.
- */
-function initMin() {
-  ApiImplementation.init();
-}
-
-initMin();
+ApiImplementation.init();

@@ -19,30 +19,24 @@ ScriptInstaller.denylistPattern = /chrome:\/\/|chrome-extension:\/\//;
 
 /**
  * Installs a script in the web page.
- * @param {Array<string>} srcs An array of URLs of scripts.
+ * @param {string} src A URL for a script.
  * @param {string} uid A unique id.  This function won't install the same set of
  *      scripts twice.
- * @param {function()=} opt_onload A function called when the last script
- *     has loaded.
- * @param {string=} opt_chromevoxScriptBase An optional chromevoxScriptBase
- *     attribute to add.
  * @return {boolean} False if the script already existed and this function
  * didn't do anything.
  */
-ScriptInstaller.installScript = function(
-    srcs, uid, opt_onload, opt_chromevoxScriptBase) {
+ScriptInstaller.installScript = function(src, uid) {
   if (ScriptInstaller.denylistPattern.test(document.URL)) {
     return false;
   }
   if (document.querySelector('script[' + uid + ']')) {
     ScriptInstaller.uninstallScript(uid);
   }
-  if (!srcs || srcs.length === 0) {
+  if (!src) {
     return false;
   }
 
-  ScriptInstaller.installScriptHelper_(
-      srcs, uid, opt_onload, opt_chromevoxScriptBase);
+  ScriptInstaller.installScriptHelper_(src, uid);
   return true;
 };
 
@@ -60,34 +54,18 @@ ScriptInstaller.uninstallScript = function(uid) {
 /**
  * Helper that installs one script and calls itself recursively when each
  * script loads.
- * @param {Array<string>} srcs An array of URLs of scripts.
+ * @param {string} src A URL for a script.
  * @param {string} uid A unique id.  This function won't install the same set of
  *      scripts twice.
- * @param {function()=} opt_onload A function called when the
- *     last script has loaded.
- * @param {string=} opt_chromevoxScriptBase An optional chromevoxScriptBase
- *     attribute to add.
  * @private
  */
-ScriptInstaller.installScriptHelper_ = function(
-    srcs, uid, opt_onload, opt_chromevoxScriptBase) {
-  function next() {
-    if (srcs.length > 0) {
-      ScriptInstaller.installScriptHelper_(
-          srcs, uid, opt_onload, opt_chromevoxScriptBase);
-    } else if (opt_onload) {
-      opt_onload();
-    }
-  }
-
-  const scriptSrc = srcs.shift();
-  if (!scriptSrc) {
-    next();
+ScriptInstaller.installScriptHelper_ = function(src, uid) {
+  if (!src) {
     return;
   }
 
   const xhr = new XMLHttpRequest();
-  const url = scriptSrc + '?' + new Date().getTime();
+  const url = src + '?' + new Date().getTime();
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
       const scriptText = xhr.responseText;
@@ -95,12 +73,8 @@ ScriptInstaller.installScriptHelper_ = function(
       apiScript.type = 'text/javascript';
       apiScript.setAttribute(uid, '1');
       apiScript.textContent = scriptText;
-      if (opt_chromevoxScriptBase) {
-        apiScript.setAttribute('chromevoxScriptBase', opt_chromevoxScriptBase);
-      }
       const scriptOwner = document.head || document.body;
       scriptOwner.appendChild(apiScript);
-      next();
     }
   };
 
@@ -110,7 +84,6 @@ ScriptInstaller.installScriptHelper_ = function(
   } catch (exception) {
     console.log(
         'Warning: ChromeVox external script loading for ' + document.location +
-        ' stopped after failing to install ' + scriptSrc);
-    next();
+        ' stopped after failing to install ' + src);
   }
 };
