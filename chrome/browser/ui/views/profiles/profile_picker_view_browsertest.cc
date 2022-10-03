@@ -852,6 +852,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 }
 
 // Tests dice-specific logic for keeping track of the new profile color.
+// Flaky on Mac, crbug.com/1363811.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CreateSignedInProfileDiceReenter DISABLED_CreateSignedInProfileDiceReenter
+#else
+#define MAYBE_CreateSignedInProfileDiceReenter CreateSignedInProfileDiceReenter
+#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileDiceReenter) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
