@@ -152,11 +152,6 @@ const char kBubbleRichIPHDescription[] =
     "highlight IPH. When enabled with no option, uses the default bubble "
     "style.";
 
-const char kBookmarkStringName[] = "Bookmark action string";
-const char kBookmarkStringDescription[] =
-    "This flag is used to change the string of the action allowing the user to "
-    "bookmark a page from the overflow menu.";
-
 extern const char kCalendarExperienceKitName[] = "Experience Kit Calendar";
 extern const char kCalendarExperienceKitDescription[] =
     "When enabled, long pressing on dates will trigger Experience Kit Calendar "

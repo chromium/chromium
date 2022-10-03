@@ -77,7 +77,6 @@ source_set("flags") {
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/open_in:features",
     "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
-    "//ios/chrome/browser/ui/popup_menu/public:features",
     "//ios/chrome/browser/ui/post_restore_signin:features",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",

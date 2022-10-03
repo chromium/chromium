@@ -98,7 +98,7 @@ TEST_F(BookmarkActivityTest, ActivityTitle_AddBookmark) {
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   NSString* addBookmarkString =
-      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_BOOKMARK);
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS);
   EXPECT_TRUE([addBookmarkString isEqualToString:activity.activityTitle]);
 }
 

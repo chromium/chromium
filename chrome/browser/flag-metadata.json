@@ -749,11 +749,6 @@
     "expiry_milestone": 107
   },
   {
-    "name": "bookmark-string-menu",
-    "owners": ["gambard", "bling-flags@google.com"],
-    "expiry_milestone": 107
-  },
-  {
     "name": "bookmarks-improved-save-flow",
     "owners": ["wylieb", "fgorski", "mdjones"],
     "expiry_milestone": 107

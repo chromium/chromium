@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
-#import "ios/chrome/browser/ui/popup_menu/public/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -74,7 +73,7 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 - (NSString*)activityTitle {
   if (self.bookmarked)
     return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK);
-  return l10n_util::GetNSString(GetBookmarkStringID());
+  return l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS);
 }
 
 - (UIImage*)activityImage {

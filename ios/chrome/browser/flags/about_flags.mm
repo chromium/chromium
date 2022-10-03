@@ -88,7 +88,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/open_in/features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/ui/popup_menu/public/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
@@ -521,24 +520,6 @@ const FeatureEntry::FeatureVariation kOmniboxPasteButtonVariations[] = {
     {"Icon and text", kOmniboxPasteButtonBlueFullCapsule,
      std::size(kOmniboxPasteButtonBlueFullCapsule), nullptr},
 };
-
-const FeatureEntry::FeatureParam kPopupMenuBookmarkStringAddABookmark[] = {
-    {kPopupMenuBookmarkStringParamName,
-     kPopupMenuBookmarkStringParamAddABookmark}};
-const FeatureEntry::FeatureParam kPopupMenuBookmarkStringAddToBookmarks[] = {
-    {kPopupMenuBookmarkStringParamName,
-     kPopupMenuBookmarkStringParamAddToBookmarks}};
-const FeatureEntry::FeatureParam kPopupMenuBookmarkStringBookmarkThisPage[] = {
-    {kPopupMenuBookmarkStringParamName,
-     kPopupMenuBookmarkStringParamBookmarkThisPage}};
-
-const FeatureEntry::FeatureVariation kPopupMenuBookmarkStringVarations[] = {
-    {"(Add A Bookmark)", kPopupMenuBookmarkStringAddABookmark,
-     std::size(kPopupMenuBookmarkStringAddABookmark), nullptr},
-    {"(Add To Bookmarks)", kPopupMenuBookmarkStringAddToBookmarks,
-     std::size(kPopupMenuBookmarkStringAddToBookmarks), nullptr},
-    {"(Bookmark This Page)", kPopupMenuBookmarkStringBookmarkThisPage,
-     std::size(kPopupMenuBookmarkStringBookmarkThisPage), nullptr}};
 
 const FeatureEntry::FeatureParam kDmTokenDeletionParam[] = {{"forced", "true"}};
 const FeatureEntry::FeatureVariation kDmTokenDeletionVariation[] = {
@@ -1125,11 +1106,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDiscoverFeedGhostCardsName,
      flag_descriptions::kEnableDiscoverFeedGhostCardsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDiscoverFeedGhostCardsEnabled)},
-    {"bookmark-string-menu", flag_descriptions::kBookmarkStringName,
-     flag_descriptions::kBookmarkStringDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBookmarkString,
-                                    kPopupMenuBookmarkStringVarations,
-                                    "BookmarkString")},
     {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
      flag_descriptions::kDmTokenDeletionDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(policy::features::kDmTokenDeletion,

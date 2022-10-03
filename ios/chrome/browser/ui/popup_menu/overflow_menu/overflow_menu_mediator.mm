@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
-#import "ios/chrome/browser/ui/popup_menu/public/features.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -694,13 +693,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.followAction = action;
     }
 
-    NSInteger addBookmarkStringID = GetBookmarkStringID();
-
-    self.addBookmarkAction =
-        CreateOverflowMenuAction(addBookmarkStringID, kAddBookmarkActionSymbol,
-                                 YES, kToolsMenuAddToBookmarks, ^{
-                                   [weakSelf addOrEditBookmark];
-                                 });
+    self.addBookmarkAction = CreateOverflowMenuAction(
+        IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, kAddBookmarkActionSymbol, YES,
+        kToolsMenuAddToBookmarks, ^{
+          [weakSelf addOrEditBookmark];
+        });
 
     self.editBookmarkAction = CreateOverflowMenuAction(
         IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK, kEditActionSymbol, YES,
@@ -815,10 +812,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       self.followAction = action;
     }
 
-    NSInteger addBookmarkStringID = GetBookmarkStringID();
-
     self.addBookmarkAction = CreateOverflowMenuAction(
-        addBookmarkStringID, @"overflow_menu_action_bookmark",
+        IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, @"overflow_menu_action_bookmark",
         kToolsMenuAddToBookmarks, ^{
           [weakSelf addOrEditBookmark];
         });

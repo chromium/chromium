@@ -781,7 +781,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   } else {
     self.bookmarkItem.title =
-        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_BOOKMARK);
+        l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS);
     self.bookmarkItem.accessibilityIdentifier = kToolsMenuAddToBookmarks;
     self.bookmarkItem.image = [[UIImage imageNamed:@"popup_menu_add_bookmark"]
         imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -1124,7 +1124,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
   // Add to bookmark.
   self.bookmarkItem = CreateTableViewItem(
-      IDS_IOS_TOOLS_MENU_BOOKMARK, PopupMenuActionPageBookmark,
+      IDS_IOS_TOOLS_MENU_ADD_TO_BOOKMARKS, PopupMenuActionPageBookmark,
       @"popup_menu_add_bookmark", kToolsMenuAddToBookmarks);
   [actionsArray addObject:self.bookmarkItem];
 
