@@ -72,7 +72,7 @@ export class InputListElement extends InputListElementBase {
   private touchscreens_: TouchDeviceInfo[];
   private connectedDevicesObserverReceiver_: ConnectedDevicesObserverReceiver|
       null = null;
-  private keyboardTester_: KeyboardTesterElement|null = null;
+  private keyboardTester: KeyboardTesterElement|null = null;
   private browserProxy_: DiagnosticsBrowserProxy =
       DiagnosticsBrowserProxyImpl.getInstance();
   private inputDataProvider_: InputDataProviderInterface =
@@ -139,13 +139,13 @@ export class InputListElement extends InputListElementBase {
    */
   onKeyboardDisconnected(id: number): void {
     this.removeDeviceById_('keyboards_', id);
-    if (this.keyboards_.length === 0 && this.keyboardTester_) {
+    if (this.keyboards_.length === 0 && this.keyboardTester) {
       // When no keyboards are connected, the <diagnostics-app> component hides
       // the input page. If that happens while a <cr-dialog> is open, the rest
       // of the app remains unresponsive due to the dialog's native logic
       // blocking interaction with other elements. To prevent this we have to
       // explicitly close the dialog when this happens.
-      this.keyboardTester_.close();
+      this.keyboardTester.close();
     }
   }
 
@@ -169,17 +169,13 @@ export class InputListElement extends InputListElementBase {
   }
 
   private handleKeyboardTestButtonClick_(e: CustomEvent): void {
-    if (!this.keyboardTester_) {
-      this.keyboardTester_ = document.createElement('keyboard-tester');
-      assert(this.inputDataProvider_);
-      this.keyboardTester_.setInputDataProvider(this.inputDataProvider_);
-      this !.root!.appendChild(this.keyboardTester_);
-    }
+    this.keyboardTester = this.shadowRoot!.querySelector('keyboard-tester');
+    assert(this.keyboardTester);
     const keyboard: KeyboardInfo|undefined = this.keyboards_.find(
         (keyboard: KeyboardInfo) => keyboard.id === e.detail.evdevId);
     assert(keyboard);
-    this.keyboardTester_.keyboard = keyboard;
-    this.keyboardTester_.show();
+    this.keyboardTester.keyboard = keyboard;
+    this.keyboardTester.show();
   }
 
   /**

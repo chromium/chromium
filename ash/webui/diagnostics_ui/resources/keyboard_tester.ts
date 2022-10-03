@@ -16,6 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {InputDataProviderInterface, KeyboardInfo, KeyboardObserverReceiver, KeyEvent, KeyEventType, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey} from './input_data_provider.mojom-webui.js';
 import {getTemplate} from './keyboard_tester.html.js';
+import {getInputDataProvider} from './mojo_interface_provider.js';
 
 export interface KeyboardTesterElement {
   $: {
@@ -171,19 +172,13 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
   // Object.
   private topRowKeys_: Object[];
   private receiver_: KeyboardObserverReceiver|null = null;
-  private inputDataProvider_: InputDataProviderInterface|null = null;
+  private inputDataProvider: InputDataProviderInterface =
+      getInputDataProvider();
 
   constructor() {
     super();
     this.addEventListener('keydown', this.onKeyDown.bind(this));
     this.addEventListener('keyup', this.onKeyUp.bind(this));
-  }
-
-  /**
-   * Set the InputDataProvider to get events from.
-   */
-  setInputDataProvider(provider: InputDataProviderInterface): void {
-    this.inputDataProvider_ = provider;
   }
 
   private computeLayoutIsKnown_(keyboard?: KeyboardInfo): boolean {
@@ -257,9 +252,9 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
 
   /** Shows the tester's dialog. */
   show(): void {
-    assert(this.inputDataProvider_);
+    assert(this.inputDataProvider);
     this.receiver_ = new KeyboardObserverReceiver(this);
-    this.inputDataProvider_.observeKeyEvents(
+    this.inputDataProvider.observeKeyEvents(
         this.keyboard.id, this.receiver_.$.bindNewPipeAndPassRemote());
     this.$.dialog.showModal();
   }
