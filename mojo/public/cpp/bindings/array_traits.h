@@ -22,8 +22,8 @@ namespace mojo {
 //     // These two statements are optional. Use them if you'd like to serialize
 //     // a container that supports iterators but does not support O(1) random
 //     // access and so GetAt(...) would be expensive.
-//     // using Iterator = T::iterator;
-//     // using ConstIterator = T::const_iterator;
+//     // using Iterator = Container<T>::iterator;
+//     // using ConstIterator = Container<T>::const_iterator;
 //
 //     // These two methods are optional. Please see comments in struct_traits.h
 //     // Note that unlike with StructTraits, IsNull() is called *twice* during
