@@ -219,6 +219,27 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
         bool result = SetNativePixmapForCandidate(&(*ozone_surface_iterator),
                                                   primary_plane->mailbox,
                                                   /*is_primary=*/true);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        if (!result) {
+          // For ChromeOS HW protected content, there's a race condition that
+          // can occur here where the mailbox for the native pixmap isn't
+          // registered yet so we will fail to promote to overlay due to this
+          // check. Allow us to proceed even w/out the native pixmap in that
+          // case as it will still succeed and would otherwise cause black
+          // flashing between frames while the race condition is completing.
+          // We don't know if we have a required overlay yet, so we need to
+          // go through all the candidates to see if one is present.
+          for (auto surface_iterator = surfaces->cbegin();
+               surface_iterator < surfaces->cend(); surface_iterator++) {
+            if (surface_iterator->requires_overlay) {
+              DLOG(WARNING)
+                  << "Allowing required overlay with missing primary pixmap";
+              result = true;
+              break;
+            }
+          }
+        }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
         // We cannot validate an overlay configuration without the buffer for
         // primary plane present.
         if (!result) {
@@ -264,12 +285,8 @@ void OverlayProcessorOzone::CheckOverlaySupportImpl(
                                                   /*is_primary=*/false);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         if (!result && surface_iterator->requires_overlay) {
-          // For ChromeOS HW protected content, there's a race condition that
-          // can occur here where the mailbox for the native pixmap isn't
-          // registered yet so we will fail to promote to overlay due to this
-          // check. Allow us to proceed even w/out the native pixmap in that
-          // case as it will still succeed and would otherwise cause black
-          // flashing between frames while the race condition is completing.
+          // For ChromeOS HW protected content, same condition as above
+          // regarding missing pixmaps.
           result = true;
           DLOG(WARNING) << "Allowing required overlay with missing pixmap";
         }
