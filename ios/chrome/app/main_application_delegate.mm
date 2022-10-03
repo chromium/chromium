@@ -17,7 +17,6 @@
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
@@ -54,8 +53,6 @@ const int kMainIntentCheckDelay = 1;
   id<BrowserLauncher> _browserLauncher;
   // Container for startup information.
   id<StartupInformation> _startupInformation;
-  // Helper to open new tabs.
-  id<TabOpening> _tabOpener;
   // The set of "scene sessions" that needs to be discarded. See
   // -application:didDiscardSceneSessions: for details.
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
@@ -289,9 +286,6 @@ const int kMainIntentCheckDelay = 1;
   // scene doesn't have a valid delegate. (See crbug.com/1217461)
   if (!sceneDelegate)
     return;
-
-  SceneController* sceneController = sceneDelegate.sceneController;
-  _tabOpener = sceneController;
 
   // TODO(crbug.com/1060645): This should be called later, or this flow should
   // be changed completely.

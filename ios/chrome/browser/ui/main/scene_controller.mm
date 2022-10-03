@@ -32,7 +32,6 @@
 #import "components/web_resource/web_resource_pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"

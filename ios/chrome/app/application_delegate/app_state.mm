@@ -23,7 +23,6 @@
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/main_application_delegate.h"

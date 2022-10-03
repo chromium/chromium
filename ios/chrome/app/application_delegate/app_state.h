@@ -24,7 +24,6 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class MemoryWarningHelper;
 @class MetricsMediator;
 @protocol StartupInformation;
-@protocol TabOpening;
 
 namespace base {
 class TimeTicks;
