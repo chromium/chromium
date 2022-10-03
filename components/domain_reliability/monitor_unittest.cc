@@ -29,7 +29,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
@@ -288,11 +288,11 @@ TEST_F(DomainReliabilityMonitorTest, Upload) {
   EXPECT_EQ(1u, CountQueuedBeacons(context));
 }
 
-// Make sure NetworkIsolationKey is populated in the beacon, or not, depending
-// on features::kPartitionDomainReliabilityByNetworkIsolationKey.
-TEST_F(DomainReliabilityMonitorTest, NetworkIsolationKey) {
-  const net::NetworkIsolationKey kNetworkIsolationKey =
-      net::NetworkIsolationKey::CreateTransient();
+// Make sure NetworkAnonymizationKey is populated in the beacon, or not,
+// depending on features::kPartitionDomainReliabilityByNetworkIsolationKey.
+TEST_F(DomainReliabilityMonitorTest, NetworkAnonymizationKey) {
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateTransient();
 
   const DomainReliabilityContext* context = CreateAndAddContext();
 
@@ -311,17 +311,18 @@ TEST_F(DomainReliabilityMonitorTest, NetworkIsolationKey) {
     request.allow_credentials = false;
     request.net_error = net::ERR_CONNECTION_RESET;
     request.upload_depth = 1;
-    request.network_isolation_key = kNetworkIsolationKey;
+    request.network_anonymization_key = kNetworkAnonymizationKey;
     OnRequestLegComplete(request);
 
     BeaconVector beacons;
     context->GetQueuedBeaconsForTesting(&beacons);
     ASSERT_EQ(index + 1, beacons.size());
     if (partitioning_enabled) {
-      EXPECT_EQ(kNetworkIsolationKey, beacons[index]->network_isolation_key);
+      EXPECT_EQ(kNetworkAnonymizationKey,
+                beacons[index]->network_anonymization_key);
     } else {
-      EXPECT_EQ(net::NetworkIsolationKey(),
-                beacons[index]->network_isolation_key);
+      EXPECT_EQ(net::NetworkAnonymizationKey(),
+                beacons[index]->network_anonymization_key);
     }
 
     ++index;
@@ -625,8 +626,8 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   context->GetQueuedBeaconsForTesting(&beacons);
   ASSERT_EQ(1u, beacons.size());
   EXPECT_EQ(url_request->url(), beacons[0]->url);
-  EXPECT_EQ(kIsolationInfo.network_isolation_key(),
-            beacons[0]->network_isolation_key);
+  EXPECT_EQ(kIsolationInfo.network_anonymization_key(),
+            beacons[0]->network_anonymization_key);
   EXPECT_EQ("http.response.empty", beacons[0]->status);
   EXPECT_EQ("", beacons[0]->quic_error);
   EXPECT_EQ(net::ERR_EMPTY_RESPONSE, beacons[0]->chrome_error);

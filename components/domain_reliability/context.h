@@ -19,7 +19,7 @@
 #include "components/domain_reliability/domain_reliability_export.h"
 #include "components/domain_reliability/scheduler.h"
 #include "components/domain_reliability/uploader.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 
 class GURL;
 
@@ -89,7 +89,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   void OnUploadComplete(const DomainReliabilityUploader::UploadResult& result);
 
   // Creates a report from all beacons associated with
-  // `uploading_beacons_network_isolation_key_`. Updates
+  // `uploading_beacons_network_anonymization_key_`. Updates
   // `uploading_beacons_size_`.
   base::Value CreateReport(base::TimeTicks upload_time,
                            const GURL& collector_url,
@@ -120,12 +120,12 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContext {
   std::list<std::unique_ptr<DomainReliabilityBeacon>> beacons_;
 
   size_t uploading_beacons_size_;
-  // The NetworkIsolationKey associated with the beacons being uploaded. The
+  // The NetworkAnonymizationKey associated with the beacons being uploaded. The
   // first `uploading_beacons_size_` beacons that have NIK equal to
-  // `uploading_beacons_network_isolation_key_` are currently being uploaded.
-  // It's possible for this number to be 0 when there's still an active upload
-  // if all currently uploading beacons have been evicted.
-  net::NetworkIsolationKey uploading_beacons_network_isolation_key_;
+  // `uploading_beacons_network_anonymization_key_` are currently being
+  // uploaded. It's possible for this number to be 0 when there's still an
+  // active upload if all currently uploading beacons have been evicted.
+  net::NetworkAnonymizationKey uploading_beacons_network_anonymization_key_;
 
   base::TimeTicks upload_time_;
   base::TimeTicks last_upload_time_;
