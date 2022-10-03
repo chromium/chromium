@@ -25,9 +25,8 @@ ConditionValidator::Result OnceConditionValidator::MeetsConditions(
   ConditionValidator::Result result(true);
   result.event_model_ready_ok = event_model.IsReady();
 
-  if (!allows_multiple_features_) {
-    result.currently_showing_ok = currently_showing_feature_.empty();
-  }
+  result.currently_showing_ok =
+      allows_multiple_features_ || currently_showing_features_.empty();
 
   result.config_ok = config.valid;
 
@@ -57,16 +56,18 @@ void OnceConditionValidator::NotifyIsShowing(
     const base::Feature& feature,
     const FeatureConfig& config,
     const std::vector<std::string>& all_feature_names) {
-  DCHECK(allows_multiple_features_ || currently_showing_feature_.empty());
+  DCHECK(allows_multiple_features_ || currently_showing_features_.empty());
+  DCHECK(currently_showing_features_.find(feature.name) ==
+         currently_showing_features_.end());
   DCHECK(shown_features_.find(feature.name) == shown_features_.end());
   shown_features_.insert(feature.name);
-  currently_showing_feature_ = feature.name;
+  currently_showing_features_.insert(feature.name);
 }
 
 void OnceConditionValidator::NotifyDismissed(const base::Feature& feature) {
-  DCHECK(allows_multiple_features_ ||
-         feature.name == currently_showing_feature_);
-  currently_showing_feature_.clear();
+  DCHECK(currently_showing_features_.find(feature.name) !=
+         currently_showing_features_.end());
+  currently_showing_features_.erase(feature.name);
 }
 
 void OnceConditionValidator::SetPriorityNotification(

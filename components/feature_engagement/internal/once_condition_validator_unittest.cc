@@ -28,7 +28,7 @@ BASE_FEATURE(kOnceTestFeatureBar,
 FeatureConfig kValidFeatureConfig;
 FeatureConfig kInvalidFeatureConfig;
 
-// A EventModel that is easily configurable at runtime.
+// An EventModel that is easily configurable at runtime.
 class OnceTestEventModel : public EventModel {
  public:
   OnceTestEventModel() : ready_(false) { kValidFeatureConfig.valid = true; }
@@ -169,6 +169,23 @@ TEST_F(OnceConditionValidatorTest, OnlyTriggerIfNothingElseIsShowing) {
       availability_model_, display_lock_controller_, nullptr, 0u);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.currently_showing_ok);
+
+  validator_.NotifyDismissed(kOnceTestFeatureBar);
+  EXPECT_TRUE(validator_
+                  .MeetsConditions(kOnceTestFeatureFoo, kValidFeatureConfig,
+                                   event_model_, availability_model_,
+                                   display_lock_controller_, nullptr, 0u)
+                  .NoErrors());
+}
+
+TEST_F(OnceConditionValidatorTest,
+       AlsoTriggerWhenSomethingElseIsShowingForTesting) {
+  validator_.AllowMultipleFeaturesForTesting(true);
+  validator_.NotifyIsShowing(kOnceTestFeatureBar, FeatureConfig(), {""});
+  ConditionValidator::Result result = validator_.MeetsConditions(
+      kOnceTestFeatureFoo, kValidFeatureConfig, event_model_,
+      availability_model_, display_lock_controller_, nullptr, 0u);
+  EXPECT_TRUE(result.NoErrors());
 
   validator_.NotifyDismissed(kOnceTestFeatureBar);
   EXPECT_TRUE(validator_
