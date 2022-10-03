@@ -1,0 +1,51 @@
+This is a testharness.js-based test.
+FAIL e.style.cssText = grid: auto-flow auto / 100px 100px should set grid assert_in_array: grid serialization should be sound value "auto-flow auto / 100px 100px" not in array ["auto-flow / 100px 100px", "none / 100px 100px"]
+PASS e.style.cssText = grid: auto-flow auto / 100px 100px should set grid-template-areas
+PASS e.style.cssText = grid: auto-flow auto / 100px 100px; grid-template-areas: "one two" "three four" should set grid
+PASS e.style.cssText = grid: auto-flow auto / 100px 100px; grid-template-areas: "one two" "three four" should set grid-auto-flow
+PASS e.style.cssText = grid: auto-flow auto / 100px 100px; grid-template-areas: "one two" "three four" should set grid-auto-rows
+PASS e.style.cssText = grid: auto-flow auto / 100px 100px; grid-template-areas: "one two" "three four" should set grid-template-areas
+PASS e.style.cssText = grid: 30px 40px / 50px 60px; grid-auto-flow: column should set grid
+PASS e.style.cssText = grid: 30px 40px / 50px 60px; grid-auto-flow: column should set grid-auto-flow
+PASS e.style.cssText = grid: 30px 40px / 50px 60px; grid-auto-flow: column should set grid-template
+PASS cssText ('grid-auto-columns: auto; grid-auto-rows: auto; grid-auto-flow: column; grid-template: 30px 40px / 50px 60px;') must contain 'grid-template: 30px 40px / 50px 60px;'
+PASS cssText ('grid-auto-columns: auto; grid-auto-rows: auto; grid-auto-flow: column; grid-template: 30px 40px / 50px 60px;') must contain 'grid-auto-rows: auto;'
+PASS cssText ('grid-auto-columns: auto; grid-auto-rows: auto; grid-auto-flow: column; grid-template: 30px 40px / 50px 60px;') must contain 'grid-auto-columns: auto;'
+PASS cssText ('grid-auto-columns: auto; grid-auto-rows: auto; grid-auto-flow: column; grid-template: 30px 40px / 50px 60px;') must contain 'grid-auto-flow: column;'
+FAIL e.style.cssText = grid: auto-flow / 10px; grid-template-rows: 20px should set grid assert_equals: grid serialization should be canonical expected "20px / 10px" but got ""
+PASS e.style.cssText = grid: auto-flow / 10px; grid-template-rows: 20px should set grid-template
+FAIL cssText ('grid-auto-flow: row; grid-auto-columns: auto; grid-auto-rows: auto; grid-template: 20px / 10px;') must contain 'grid: 20px / 10px;' assert_true: cssText ('grid-auto-flow: row; grid-auto-columns: auto; grid-auto-rows: auto; grid-template: 20px / 10px;') must contain 'grid: 20px / 10px;' expected true got false
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-flow: inherit should set grid
+FAIL e.style.cssText = grid: 1px / 2px; grid-auto-flow: row should set grid assert_equals: grid serialization should be canonical expected "1px / 2px" but got ""
+FAIL e.style.cssText = grid: 1px / 2px; grid-auto-columns: auto should set grid assert_equals: grid serialization should be canonical expected "1px / 2px" but got ""
+FAIL e.style.cssText = grid: 1px / 2px; grid-auto-rows: auto should set grid assert_equals: grid serialization should be canonical expected "1px / 2px" but got ""
+PASS e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: auto should set grid
+FAIL e.style.cssText = grid: 1px / auto-flow; grid-auto-columns: auto should set grid assert_equals: grid serialization should be canonical expected "1px / auto-flow" but got "1px / auto-flow auto"
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: auto should set grid
+FAIL e.style.cssText = grid: auto-flow dense / 2px; grid-auto-rows: auto should set grid assert_equals: grid serialization should be canonical expected "auto-flow dense / 2px" but got "auto-flow dense auto / 2px"
+FAIL e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: 3px should set grid assert_equals: grid serialization should be canonical expected "" but got "auto-flow 1px / 2px"
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: 3px should set grid-auto-columns
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: 3px should set grid-auto-flow
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: 3px should set grid-auto-rows
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: 3px should set grid-template-columns
+PASS e.style.cssText = grid: auto-flow 1px / 2px; grid-auto-columns: 3px should set grid-template-rows
+FAIL e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: 3px should set grid assert_equals: grid serialization should be canonical expected "" but got "1px / auto-flow 2px"
+PASS e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: 3px should set grid-auto-columns
+PASS e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: 3px should set grid-auto-flow
+PASS e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: 3px should set grid-auto-rows
+PASS e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: 3px should set grid-template-columns
+PASS e.style.cssText = grid: 1px / auto-flow 2px; grid-auto-rows: 3px should set grid-template-rows
+FAIL e.style.cssText = grid: none / auto-flow 1px; grid-template-columns: 3px should set grid assert_equals: grid serialization should be canonical expected "" but got "none / auto-flow 1px"
+PASS e.style.cssText = grid: none / auto-flow 1px; grid-template-columns: 3px should set grid-auto-columns
+PASS e.style.cssText = grid: none / auto-flow 1px; grid-template-columns: 3px should set grid-auto-flow
+PASS e.style.cssText = grid: none / auto-flow 1px; grid-template-columns: 3px should set grid-auto-rows
+PASS e.style.cssText = grid: none / auto-flow 1px; grid-template-columns: 3px should set grid-template-columns
+PASS e.style.cssText = grid: none / auto-flow 1px; grid-template-columns: 3px should set grid-template-rows
+FAIL e.style.cssText = grid: auto-flow 1px / none; grid-template-rows: 3px should set grid assert_equals: grid serialization should be canonical expected "" but got "auto-flow 1px / none"
+PASS e.style.cssText = grid: auto-flow 1px / none; grid-template-rows: 3px should set grid-auto-columns
+PASS e.style.cssText = grid: auto-flow 1px / none; grid-template-rows: 3px should set grid-auto-flow
+PASS e.style.cssText = grid: auto-flow 1px / none; grid-template-rows: 3px should set grid-auto-rows
+PASS e.style.cssText = grid: auto-flow 1px / none; grid-template-rows: 3px should set grid-template-columns
+PASS e.style.cssText = grid: auto-flow 1px / none; grid-template-rows: 3px should set grid-template-rows
+Harness: the test ran to completion.
+
