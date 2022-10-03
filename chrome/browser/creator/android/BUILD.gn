@@ -25,10 +25,14 @@ android_library("java") {
 
 android_resources("creator_java_resources") {
   sources = [
+    "java/res/drawable/profile_background.xml",
     "java/res/layout/creator_activity.xml",
     "java/res/values/styles.xml",
   ]
-  deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//ui/android:ui_java_resources",
+  ]
 }
 
 robolectric_library("junit") {
