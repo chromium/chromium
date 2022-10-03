@@ -98,6 +98,10 @@ class MenuScrollButton : public View {
     host_->GetMenuItem()->GetMenuController()->OnDragExitedScrollButton(host_);
   }
 
+  void OnMouseExited(const ui::MouseEvent& event) override {
+    host_->GetMenuItem()->GetMenuController()->SetEnabledScrollButtons(true);
+  }
+
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
     return base::DoNothing();
   }
@@ -354,10 +358,12 @@ void MenuScrollViewContainer::OnBoundsChanged(
 
 void MenuScrollViewContainer::DidScrollToTop() {
   scroll_up_button_->SetVisible(false);
+  content_view_->GetMenuItem()->GetMenuController()->OnMenuEdgeReached();
 }
 
 void MenuScrollViewContainer::DidScrollToBottom() {
   scroll_down_button_->SetVisible(false);
+  content_view_->GetMenuItem()->GetMenuController()->OnMenuEdgeReached();
 }
 
 void MenuScrollViewContainer::DidScrollAwayFromTop() {

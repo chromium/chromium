@@ -246,6 +246,12 @@ class VIEWS_EXPORT MenuController
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
 
+  // Called from MenuScrollViewContainer when either end of the menu is reached
+  void OnMenuEdgeReached();
+
+  // Enables/disables scrolling via scroll buttons
+  void SetEnabledScrollButtons(bool enabled);
+
  private:
   friend class internal::MenuRunnerImpl;
   friend class test::MenuControllerTest;
@@ -803,6 +809,10 @@ class VIEWS_EXPORT MenuController
 
   // Currently showing alerted menu items. Updated when submenus open and close.
   base::flat_set<MenuItemView*> alerted_items_;
+
+  // Whether scroll buttons are currently enabled (as they are temporarily
+  // disabled when either end of the menu is reached)
+  bool scroll_buttons_enabled = true;
 };
 
 }  // namespace views
