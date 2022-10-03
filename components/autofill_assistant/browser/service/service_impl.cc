@@ -67,6 +67,7 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
       client, std::move(request_sender),
       url_fetcher.GetSupportsScriptEndpoint(),
       url_fetcher.GetNextActionsEndpoint(), url_fetcher.GetUserDataEndpoint(),
+      url_fetcher.GetReportProgressEndpoint(),
       std::make_unique<ClientContextImpl>(client));
 }
 
@@ -75,12 +76,14 @@ ServiceImpl::ServiceImpl(Client* client,
                          const GURL& script_server_url,
                          const GURL& action_server_url,
                          const GURL& user_data_url,
+                         const GURL& report_progress_url,
                          std::unique_ptr<ClientContext> client_context)
     : client_(client),
       request_sender_(std::move(request_sender)),
       script_server_url_(script_server_url),
       script_action_server_url_(action_server_url),
       user_data_url_(user_data_url),
+      report_progress_url_(report_progress_url),
       client_context_(std::move(client_context)) {
   DCHECK(script_server_url.is_valid());
   DCHECK(action_server_url.is_valid());
@@ -227,7 +230,7 @@ void ServiceImpl::ReportProgress(
     return;
   }
   request_sender_->SendRequest(
-      script_action_server_url_,
+      report_progress_url_,
       ProtocolUtils::CreateReportProgressRequest(token, payload),
       GetDefaultAuthMode(), std::move(callback), RpcType::REPORT_PROGRESS);
 }
