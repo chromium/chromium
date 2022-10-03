@@ -25,18 +25,16 @@ BatteryLevelProvider::BatteryState BatteryLevelProvider::MakeBatteryState(
       base::ranges::any_of(battery_details, [](const BatteryDetails& details) {
         return details.is_external_power_connected;
       });
-  state.current_capacity =
-      battery_details.size() == 1
-          ? absl::make_optional(battery_details.front().current_capacity)
-          : absl::nullopt;
-  state.full_charged_capacity =
-      battery_details.size() == 1
-          ? absl::make_optional(battery_details.front().full_charged_capacity)
-          : absl::nullopt;
-  state.charge_unit =
-      battery_details.size() == 1
-          ? absl::make_optional(battery_details.front().charge_unit)
-          : absl::nullopt;
+
+  // Only populate the following fields if there is one battery detail.
+  if (battery_details.size() == 1) {
+    state.current_capacity =
+        absl::make_optional(battery_details.front().current_capacity);
+    state.full_charged_capacity =
+        absl::make_optional(battery_details.front().full_charged_capacity);
+    state.charge_unit =
+        absl::make_optional(battery_details.front().charge_unit);
+  }
   state.capture_time = base::TimeTicks::Now();
 
   return state;

@@ -91,21 +91,21 @@ const absl::optional<BatteryLevelProvider::BatteryState> kTestBatteryState1 =
         .is_external_power_connected = false,
         .current_capacity = 10000,
         .full_charged_capacity = 10000,
-        .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMAh};
+        .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMWh};
 const absl::optional<BatteryLevelProvider::BatteryState> kTestBatteryState2 =
     BatteryLevelProvider::BatteryState{
         .battery_count = 1,
         .is_external_power_connected = false,
         .current_capacity = 5000,
         .full_charged_capacity = 10000,
-        .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMAh};
+        .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMWh};
 const absl::optional<BatteryLevelProvider::BatteryState> kTestBatteryState3 =
     BatteryLevelProvider::BatteryState{
         .battery_count = 1,
         .is_external_power_connected = true,
         .current_capacity = 2000,
         .full_charged_capacity = 10000,
-        .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMAh};
+        .charge_unit = BatteryLevelProvider::BatteryLevelUnit::kMWh};
 
 bool operator==(const BatteryLevelProvider::BatteryState& lhs,
                 const BatteryLevelProvider::BatteryState& rhs) {

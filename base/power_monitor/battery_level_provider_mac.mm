@@ -123,14 +123,26 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
     return absl::nullopt;
   }
 
+  absl::optional<SInt64> voltage_mv =
+      GetValueAsSInt64(dict, CFSTR(kIOPSVoltageKey));
+  if (!voltage_mv.has_value()) {
+    return absl::nullopt;
+  }
+
   DCHECK_GE(*current_capacity, 0);
   DCHECK_GE(*max_capacity, 0);
+  DCHECK_GE(*voltage_mv, 0);
 
-  return MakeBatteryState({BatteryDetails{
-      .is_external_power_connected = external_connected.value(),
-      .current_capacity = static_cast<uint64_t>(current_capacity.value()),
-      .full_charged_capacity = static_cast<uint64_t>(max_capacity.value()),
-      .charge_unit = BatteryLevelUnit::kMAh}});
+  uint64_t current_capacity_mwh = static_cast<uint64_t>(
+      current_capacity.value() * voltage_mv.value() / 1000);
+  uint64_t max_capacity_mwh =
+      static_cast<uint64_t>(max_capacity.value() * voltage_mv.value() / 1000);
+
+  return MakeBatteryState(
+      {BatteryDetails{.is_external_power_connected = external_connected.value(),
+                      .current_capacity = current_capacity_mwh,
+                      .full_charged_capacity = max_capacity_mwh,
+                      .charge_unit = BatteryLevelUnit::kMWh}});
 }
 
 }  // namespace base

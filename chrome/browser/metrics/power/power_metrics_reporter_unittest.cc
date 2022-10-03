@@ -44,7 +44,7 @@ base::BatteryLevelProvider::BatteryState MakeBatteryDischarginState(
       .is_external_power_connected = false,
       .current_capacity = battery_percent,
       .full_charged_capacity = 100,
-      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
       .capture_time = base::TimeTicks::Now()};
 }
 
@@ -547,7 +547,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsPluggedIn) {
       .is_external_power_connected = true,
       .current_capacity = 50,
       .full_charged_capacity = 100,
-      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
       .capture_time = base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;
@@ -581,7 +581,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateChanges) {
       .is_external_power_connected = true,
       .current_capacity = 100,
       .full_charged_capacity = 100,
-      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh,
       .capture_time = base::TimeTicks::Now()});
 
   UsageScenarioDataStore::IntervalData fake_interval_data;

@@ -34,7 +34,7 @@ absl::optional<base::BatteryLevelProvider::BatteryState> MakeBatteryState(
       .is_external_power_connected = false,
       .current_capacity = current_capacity,
       .full_charged_capacity = kFullBatteryChargeLevel,
-      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMAh};
+      .charge_unit = base::BatteryLevelProvider::BatteryLevelUnit::kMWh};
 }
 
 struct HistogramSampleExpectation {
