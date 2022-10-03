@@ -49,14 +49,10 @@ extern char __executable_start;
 }
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED
 
-#if ANDROID_ARM32_UNWINDING_SUPPORTED && defined(OFFICIAL_BUILD) && \
-    BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // See `RequestUnwindPrerequisitesInstallation` below.
 BASE_FEATURE(kInstallAndroidUnwindDfm,
              "InstallAndroidUnwindDfm",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif
 
 namespace {
 

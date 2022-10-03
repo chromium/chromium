@@ -16,9 +16,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-// Used to gate unwind prerequisites' installation for some unit tests.
-BASE_DECLARE_FEATURE(kInstallAndroidUnwindDfm);
-
 namespace {
 
 using ::testing::_;

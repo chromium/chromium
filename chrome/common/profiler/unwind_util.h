@@ -5,8 +5,12 @@
 #ifndef CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
 #define CHROME_COMMON_PROFILER_UNWIND_UTIL_H_
 
+#include "base/feature_list.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "components/version_info/channel.h"
+
+// Used to gate unwind prerequisites' installation for some unit tests.
+BASE_DECLARE_FEATURE(kInstallAndroidUnwindDfm);
 
 // See `RequestUnwindPrerequisitesInstallation` and
 // `AreUnwindPrerequisitesAvailable` below for more context. Intended for unit
