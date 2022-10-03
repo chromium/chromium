@@ -35,7 +35,7 @@ extern const base::FeatureParam<bool>
 // by the kDisablePrivacySandboxPrompts feature below, and will be removed when
 // the PrivacySandboxSettings3 feature is fully launched & solidified.
 extern const base::FeatureParam<bool>
-    kPrivacySandboxSettings3DisableDialogForTesting;
+    kPrivacySandboxSettings3DisablePromptForTesting;
 
 BASE_DECLARE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting);
 

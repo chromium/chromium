@@ -29,7 +29,7 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
       : browser_(browser) {
     if (auto* privacy_sandbox_serivce =
             PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-      privacy_sandbox_serivce->DialogOpenedForBrowser(browser_);
+      privacy_sandbox_serivce->PromptOpenedForBrowser(browser_);
     }
     NotifyServiceAboutPromptAction(PromptAction::kNoticeShown);
   }
@@ -40,7 +40,7 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
     }
     if (auto* privacy_sandbox_serivce =
             PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
-      privacy_sandbox_serivce->DialogClosedForBrowser(browser_);
+      privacy_sandbox_serivce->PromptClosedForBrowser(browser_);
     }
   }
 

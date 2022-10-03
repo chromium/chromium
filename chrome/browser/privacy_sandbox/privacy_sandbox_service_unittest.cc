@@ -92,7 +92,7 @@ class MockPrivacySandboxSettings
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
 };
 
-struct DialogTestState {
+struct PromptTestState {
   bool consent_required;
   bool old_api_pref;
   bool new_api_pref;
@@ -101,18 +101,18 @@ struct DialogTestState {
   bool confirmation_not_shown;
 };
 
-struct ExpectedDialogOutput {
+struct ExpectedPromptOutput {
   bool dcheck_failure;
   PrivacySandboxService::PromptType prompt_type;
   bool new_api_pref;
 };
 
-struct DialogTestCase {
-  DialogTestState test_setup;
-  ExpectedDialogOutput expected_output;
+struct PromptTestCase {
+  PromptTestState test_setup;
+  ExpectedPromptOutput expected_output;
 };
 
-std::vector<DialogTestCase> kDialogTestCases = {
+std::vector<PromptTestCase> kPromptTestCases = {
     {{/*consent_required=*/false, /*old_api_pref=*/false,
       /*new_api_pref=*/false,
       /*notice_displayed=*/false, /*consent_decision_made=*/false,
@@ -626,10 +626,10 @@ std::vector<DialogTestCase> kDialogTestCases = {
       /*new_api_pref=*/true}},
 };
 
-void SetupDialogTestState(
+void SetupPromptTestState(
     base::test::ScopedFeatureList* feature_list,
     sync_preferences::TestingPrefServiceSyncable* pref_service,
-    const DialogTestState& test_state) {
+    const PromptTestState& test_state) {
   feature_list->Reset();
   feature_list->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings3,
@@ -711,7 +711,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   void ConfirmRequiredPromptType(
       PrivacySandboxService::PromptType prompt_type) {
-    // The required dialog type should never change between successive calls to
+    // The required prompt type should never change between successive calls to
     // GetRequiredPromptType.
     EXPECT_EQ(prompt_type, privacy_sandbox_service()->GetRequiredPromptType());
   }
@@ -853,12 +853,12 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
   EXPECT_EQ(returned_sites[1], sites[2]);
 }
 
-TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredDialog) {
-  // Confirm that when the service is informed a dialog action occurred, it
+TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredPrompt) {
+  // Confirm that when the service is informed a prompt action occurred, it
   // correctly adjusts the required prompt type and Privacy Sandbox pref.
 
   // Consent accepted:
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -877,7 +877,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredDialog) {
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
 
   // Consent declined:
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -896,7 +896,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredDialog) {
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2));
 
   // Notice shown:
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -918,7 +918,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionUpdatesRequiredDialog) {
 TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   base::UserActionTester user_action_tester;
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -930,7 +930,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Shown"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -942,7 +942,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.OpenedSettings"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -954,7 +954,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Acknowledged"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -966,7 +966,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Dismissed"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -978,7 +978,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.ClosedNoInteraction"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -990,7 +990,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.LearnMore"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -1002,7 +1002,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Shown"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -1014,7 +1014,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Accepted"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -1026,7 +1026,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.Declined"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -1038,7 +1038,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Consent.LearnMoreExpanded"));
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -1057,7 +1057,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
     EXPECT_CALL(*mock_sentiment_service(),
                 InteractedWithPrivacySandbox3(testing::_))
         .Times(0);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/false,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1073,7 +1073,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
         InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
                                           kPrivacySandbox3NoticeSettings))
         .Times(1);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/false,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1089,7 +1089,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
         InteractedWithPrivacySandbox3(
             TrustSafetySentimentService::FeatureArea::kPrivacySandbox3NoticeOk))
         .Times(1);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/false,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1105,7 +1105,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
         InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
                                           kPrivacySandbox3NoticeDismiss))
         .Times(1);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/false,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1119,7 +1119,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
     EXPECT_CALL(*mock_sentiment_service(),
                 InteractedWithPrivacySandbox3(testing::_))
         .Times(0);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/false,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1135,7 +1135,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
         InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
                                           kPrivacySandbox3NoticeLearnMore))
         .Times(1);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/false,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1149,7 +1149,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
     EXPECT_CALL(*mock_sentiment_service(),
                 InteractedWithPrivacySandbox3(testing::_))
         .Times(0);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/true,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1165,7 +1165,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
         InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
                                           kPrivacySandbox3ConsentAccept))
         .Times(1);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/true,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1181,7 +1181,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
         InteractedWithPrivacySandbox3(TrustSafetySentimentService::FeatureArea::
                                           kPrivacySandbox3ConsentDecline))
         .Times(1);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/true,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1195,7 +1195,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
     EXPECT_CALL(*mock_sentiment_service(),
                 InteractedWithPrivacySandbox3(testing::_))
         .Times(0);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/true,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1209,7 +1209,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
     EXPECT_CALL(*mock_sentiment_service(),
                 InteractedWithPrivacySandbox3(testing::_))
         .Times(0);
-    SetupDialogTestState(feature_list(), prefs(),
+    SetupPromptTestState(feature_list(), prefs(),
                          {/*consent_required=*/true,
                           /*old_api_pref=*/true,
                           /*new_api_pref=*/false,
@@ -1222,7 +1222,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsSentimentService) {
 }
 #endif
 
-TEST_F(PrivacySandboxServiceTest, Block3PCookieNoDialog) {
+TEST_F(PrivacySandboxServiceTest, Block3PCookieNoPrompt) {
   // Confirm that when 3P cookies are blocked, that no prompt is shown.
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
@@ -1239,7 +1239,7 @@ TEST_F(PrivacySandboxServiceTest, Block3PCookieNoDialog) {
             privacy_sandbox_service()->GetRequiredPromptType());
 }
 
-TEST_F(PrivacySandboxServiceTest, BlockAllCookiesNoDialog) {
+TEST_F(PrivacySandboxServiceTest, BlockAllCookiesNoPrompt) {
   // Confirm that when all cookies are blocked, that no prompt is shown.
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
@@ -1362,7 +1362,7 @@ TEST_F(PrivacySandboxServiceTest, SetTopicAllowed) {
 TEST_F(PrivacySandboxServiceTest, DeviceLocalAccountUser) {
   // No prompt should be shown if the user is associated with a device local
   // account on CrOS.
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -1439,7 +1439,7 @@ TEST_F(PrivacySandboxServiceTest, TestFakeTopics) {
   EXPECT_THAT(service->GetBlockedTopics(), ElementsAre(topic1, topic3));
 }
 
-TEST_F(PrivacySandboxServiceTest, PrivacySandboxDialogNoticeWaiting) {
+TEST_F(PrivacySandboxServiceTest, PrivacySandboxPromptNoticeWaiting) {
   base::HistogramTester histogram_tester;
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
@@ -1461,10 +1461,10 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxDialogNoticeWaiting) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogWaiting, 1);
+      PrivacySandboxService::PSStartupStates::kPromptWaiting, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, PrivacySandboxDialogConsentWaiting) {
+TEST_F(PrivacySandboxServiceTest, PrivacySandboxPromptConsentWaiting) {
   base::HistogramTester histogram_tester;
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
@@ -1487,7 +1487,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxDialogConsentWaiting) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogWaiting, 1);
+      PrivacySandboxService::PSStartupStates::kPromptWaiting, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxV1OffDisabled) {
@@ -1513,7 +1513,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxV1OffDisabled) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOffV1OffDisabled, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOffV1OffDisabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxV1OffEnabled) {
@@ -1539,7 +1539,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxV1OffEnabled) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOffV1OffEnabled, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOffV1OffEnabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxRestricted) {
@@ -1563,7 +1563,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxRestricted) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOffRestricted, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOffRestricted, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxManagedEnabled) {
@@ -1589,7 +1589,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxManagedEnabled) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOffManagedEnabled, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOffManagedEnabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxManagedDisabled) {
@@ -1615,7 +1615,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxManagedDisabled) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOffManagedDisabled, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOffManagedDisabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandbox3PCOffEnabled) {
@@ -1642,7 +1642,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandbox3PCOffEnabled) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOff3PCOffEnabled, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOff3PCOffEnabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandbox3PCOffDisabled) {
@@ -1669,7 +1669,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandbox3PCOffDisabled) {
 
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kDialogOff3PCOffDisabled, 1);
+      PrivacySandboxService::PSStartupStates::kPromptOff3PCOffDisabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, PrivacySandboxConsentEnabled) {
@@ -1795,7 +1795,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxManuallyControlledEnabled) {
   CreateService();
   histogram_tester.ExpectUniqueSample(kPrivacySandboxStartupHistogram,
                                       PrivacySandboxService::PSStartupStates::
-                                          kDialogOffManuallyControlledEnabled,
+                                          kPromptOffManuallyControlledEnabled,
                                       1);
 }
 
@@ -1810,11 +1810,11 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxManuallyControlledDisabled) {
   CreateService();
   histogram_tester.ExpectUniqueSample(kPrivacySandboxStartupHistogram,
                                       PrivacySandboxService::PSStartupStates::
-                                          kDialogOffManuallyControlledDisabled,
+                                          kPromptOffManuallyControlledDisabled,
                                       1);
 }
 
-TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoDialogDisabled) {
+TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoPromptDisabled) {
   base::HistogramTester histogram_tester;
   feature_list()->InitAndEnableFeature(
       privacy_sandbox::kPrivacySandboxSettings3);
@@ -1823,10 +1823,10 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoDialogDisabled) {
   CreateService();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kNoDialogRequiredDisabled, 1);
+      PrivacySandboxService::PSStartupStates::kNoPromptRequiredDisabled, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoDialogEnabled) {
+TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoPromptEnabled) {
   base::HistogramTester histogram_tester;
   feature_list()->InitAndEnableFeature(
       privacy_sandbox::kPrivacySandboxSettings3);
@@ -1835,7 +1835,7 @@ TEST_F(PrivacySandboxServiceTest, PrivacySandboxNoDialogEnabled) {
   CreateService();
   histogram_tester.ExpectUniqueSample(
       kPrivacySandboxStartupHistogram,
-      PrivacySandboxService::PSStartupStates::kNoDialogRequiredEnabled, 1);
+      PrivacySandboxService::PSStartupStates::kNoPromptRequiredEnabled, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, MetricsLoggingOccursCorrectly) {
@@ -2132,10 +2132,10 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoMetricsRecorded) {
   histograms.ExpectTotalCount(histogram_name, 0);
 }
 
-TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoDialogRequired) {
+TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoPromptRequired) {
   CreateService();
   // Non-regular profiles should never have a prompt shown.
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -2145,7 +2145,7 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoDialogRequired) {
   EXPECT_EQ(PrivacySandboxService::PromptType::kNone,
             privacy_sandbox_service()->GetRequiredPromptType());
 
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/false,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -2156,9 +2156,9 @@ TEST_F(PrivacySandboxServiceTestNonRegularProfile, NoDialogRequired) {
             privacy_sandbox_service()->GetRequiredPromptType());
 }
 
-class PrivacySandboxServiceDialogTestBase {
+class PrivacySandboxServicePromptTestBase {
  public:
-  PrivacySandboxServiceDialogTestBase() {
+  PrivacySandboxServicePromptTestBase() {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!user_manager::UserManager::IsInitialized())
@@ -2184,14 +2184,14 @@ class PrivacySandboxServiceDialogTestBase {
   MockPrivacySandboxSettings privacy_sandbox_settings_;
 };
 
-class PrivacySandboxServiceDialogTest
-    : public PrivacySandboxServiceDialogTestBase,
+class PrivacySandboxServicePromptTest
+    : public PrivacySandboxServicePromptTestBase,
       public testing::Test {};
 
-TEST_F(PrivacySandboxServiceDialogTest, RestrictedDialog) {
-  // Confirm that when the Privacy Sandbox is restricted, that no dialog is
+TEST_F(PrivacySandboxServicePromptTest, RestrictedPrompt) {
+  // Confirm that when the Privacy Sandbox is restricted, that no prompt is
   // shown.
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -2220,10 +2220,10 @@ TEST_F(PrivacySandboxServiceDialogTest, RestrictedDialog) {
           privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 }
 
-TEST_F(PrivacySandboxServiceDialogTest, ManagedNoDialog) {
+TEST_F(PrivacySandboxServicePromptTest, ManagedNoPrompt) {
   // Confirm that when the Privacy Sandbox is managed, that no prompt is
   // shown.
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -2248,10 +2248,10 @@ TEST_F(PrivacySandboxServiceDialogTest, ManagedNoDialog) {
           privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 }
 
-TEST_F(PrivacySandboxServiceDialogTest, ManuallyControlledNoDialog) {
+TEST_F(PrivacySandboxServicePromptTest, ManuallyControlledNoPrompt) {
   // Confirm that if the Privacy Sandbox V2 is manually controlled by the user,
   // that no prompt is shown.
-  SetupDialogTestState(feature_list(), prefs(),
+  SetupPromptTestState(feature_list(), prefs(),
                        {/*consent_required=*/true,
                         /*old_api_pref=*/true,
                         /*new_api_pref=*/false,
@@ -2267,7 +2267,7 @@ TEST_F(PrivacySandboxServiceDialogTest, ManuallyControlledNoDialog) {
           privacy_sandbox_settings(), /*third_party_cookies_blocked=*/false));
 }
 
-TEST_F(PrivacySandboxServiceDialogTest, NoParamNoDialog) {
+TEST_F(PrivacySandboxServicePromptTest, NoParamNoPrompt) {
   // Confirm that if neither the consent or notice parameter is set, no prompt
   // is required.
   feature_list()->InitAndEnableFeature(
@@ -2280,11 +2280,11 @@ TEST_F(PrivacySandboxServiceDialogTest, NoParamNoDialog) {
 }
 
 class PrivacySandboxServiceDeathTest
-    : public PrivacySandboxServiceDialogTestBase,
+    : public PrivacySandboxServicePromptTestBase,
       public testing::TestWithParam<int> {};
 
 TEST_P(PrivacySandboxServiceDeathTest, GetRequiredPromptType) {
-  const auto& test_case = kDialogTestCases[GetParam()];
+  const auto& test_case = kPromptTestCases[GetParam()];
   privacy_sandbox_settings()->SetUpDefaultResponse();
 
   testing::Message scope_message;
@@ -2298,7 +2298,7 @@ TEST_P(PrivacySandboxServiceDeathTest, GetRequiredPromptType) {
                 << test_case.test_setup.confirmation_not_shown;
   SCOPED_TRACE(scope_message);
 
-  SetupDialogTestState(feature_list(), prefs(), test_case.test_setup);
+  SetupPromptTestState(feature_list(), prefs(), test_case.test_setup);
   if (test_case.expected_output.dcheck_failure) {
     EXPECT_DCHECK_DEATH(
         PrivacySandboxService::GetRequiredPromptTypeInternal(
@@ -2336,11 +2336,11 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxServiceDeathTestInstance,
 
 using PrivacySandboxServiceTestCoverageTest = testing::Test;
 
-TEST_F(PrivacySandboxServiceTestCoverageTest, DialogTestCoverage) {
+TEST_F(PrivacySandboxServiceTestCoverageTest, PromptTestCoverage) {
   // Confirm that the set of prompt test cases exhaustively covers all possible
   // combinations of input.
   std::set<int> test_case_properties;
-  for (const auto& test_case : kDialogTestCases) {
+  for (const auto& test_case : kPromptTestCases) {
     int test_case_property = 0;
     test_case_property |= test_case.test_setup.consent_required ? 1 << 0 : 0;
     test_case_property |= test_case.test_setup.old_api_pref ? 1 << 1 : 0;
@@ -2352,6 +2352,6 @@ TEST_F(PrivacySandboxServiceTestCoverageTest, DialogTestCoverage) {
         test_case.test_setup.confirmation_not_shown ? 1 << 5 : 0;
     test_case_properties.insert(test_case_property);
   }
-  EXPECT_EQ(test_case_properties.size(), kDialogTestCases.size());
+  EXPECT_EQ(test_case_properties.size(), kPromptTestCases.size());
   EXPECT_EQ(64u, test_case_properties.size());
 }

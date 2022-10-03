@@ -27,7 +27,7 @@ const base::FeatureParam<bool>
         &kPrivacySandboxSettings3, "force-show-notice-for-testing", false};
 const base::FeatureParam<bool> kPrivacySandboxSettings3ShowSampleDataForTesting{
     &kPrivacySandboxSettings3, "show-sample-data", false};
-const base::FeatureParam<bool> kPrivacySandboxSettings3DisableDialogForTesting{
+const base::FeatureParam<bool> kPrivacySandboxSettings3DisablePromptForTesting{
     &kPrivacySandboxSettings3, "disable-dialog-for-testing", false};
 
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,

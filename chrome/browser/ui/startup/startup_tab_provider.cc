@@ -433,7 +433,7 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
     extensions::ExtensionRegistry* extension_registry,
     const GURL& ntp_url,
     const StartupTabs& other_startup_tabs) {
-  // There may already be a tab appropriate for the Privacy Sandbox dialog
+  // There may already be a tab appropriate for the Privacy Sandbox prompt
   // available in |other_startup_tabs|.
   StartupTabs tabs;
   const bool suitable_tab_available =
@@ -444,7 +444,7 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
           return !HasExtensionNtpOverride(extension_registry) &&
                  IsChromeControlledNtpUrl(ntp_url);
         }
-        return PrivacySandboxService::IsUrlSuitableForDialog(tab.url);
+        return PrivacySandboxService::IsUrlSuitableForPrompt(tab.url);
       });
 
   if (suitable_tab_available)

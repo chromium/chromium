@@ -45,7 +45,7 @@ PrivacySandboxPromptHelper::PrivacySandboxPromptHelper(
 
 void PrivacySandboxPromptHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!ProfileRequiresDialog(profile()))
+  if (!ProfileRequiresPrompt(profile()))
     return;
 
   // Only valid top frame navigations are considered.
@@ -57,7 +57,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // Check whether the navigation target is a suitable prompt location. The
   // navigation URL, rather than the visible or committed URL, is required to
   // distinguish between different types of NTPs.
-  if (!PrivacySandboxService::IsUrlSuitableForDialog(
+  if (!PrivacySandboxService::IsUrlSuitableForPrompt(
           navigation_handle->GetURL())) {
     return;
   }
@@ -75,7 +75,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // to open another one.
   if (auto* privacy_sandbox_serivce =
           PrivacySandboxServiceFactory::GetForProfile(profile())) {
-    if (privacy_sandbox_serivce->IsDialogOpenForBrowser(browser))
+    if (privacy_sandbox_serivce->IsPromptOpenForBrowser(browser))
       return;
   }
 
@@ -94,7 +94,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
 }
 
 // static
-bool PrivacySandboxPromptHelper::ProfileRequiresDialog(Profile* profile) {
+bool PrivacySandboxPromptHelper::ProfileRequiresPrompt(Profile* profile) {
   return GetRequiredPromptType(profile) !=
          PrivacySandboxService::PromptType::kNone;
 }

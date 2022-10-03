@@ -89157,22 +89157,22 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SettingsPrivacySandboxStartupStates">
-  <int value="0" label="Dialog waiting to show"/>
-  <int value="1" label="Dialog Off, previously disabled, Enabled"/>
-  <int value="2" label="Dialog Off, previously disabled, Disalbed"/>
+  <int value="0" label="Prompt waiting to show"/>
+  <int value="1" label="Prompt Off, previously disabled, Enabled"/>
+  <int value="2" label="Prompt Off, previously disabled, Disalbed"/>
   <int value="3" label="Consent Shown, Enabled"/>
   <int value="4" label="Consent Shown, Disabled"/>
   <int value="5" label="Notice Shown, Enabled"/>
   <int value="6" label="Notice Shown, Disabled"/>
-  <int value="7" label="Dialog Off, 3PC Off, Enabled"/>
-  <int value="8" label="Dialog Off, 3PC Off, Disabled"/>
-  <int value="9" label="Dialog Off, Managed, Enabled"/>
-  <int value="10" label="Dialog Off, Managed, Disabled"/>
-  <int value="11" label="Dialog Off, User is restricted"/>
-  <int value="12" label="Dialog Off, Manually Controlled, Enabled"/>
-  <int value="13" label="Dialog Off, Manually Controlled, Disabled"/>
-  <int value="14" label="Dialog not required, Enabled"/>
-  <int value="15" label="Dialog not required, Disabled"/>
+  <int value="7" label="Prompt Off, 3PC Off, Enabled"/>
+  <int value="8" label="Prompt Off, 3PC Off, Disabled"/>
+  <int value="9" label="Prompt Off, Managed, Enabled"/>
+  <int value="10" label="Prompt Off, Managed, Disabled"/>
+  <int value="11" label="Prompt Off, User is restricted"/>
+  <int value="12" label="Prompt Off, Manually Controlled, Enabled"/>
+  <int value="13" label="Prompt Off, Manually Controlled, Disabled"/>
+  <int value="14" label="Prompt not required, Enabled"/>
+  <int value="15" label="Prompt not required, Disabled"/>
 </enum>
 
 <enum name="SettingsResetPromptConfigError">

@@ -41,13 +41,13 @@ std::unique_ptr<KeyedService> CreateMockPrivacySandboxService(
 
 }  // namespace
 
-class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
+class PrivacySandboxPromptHelperTest : public InProcessBrowserTest {
  public:
-  PrivacySandboxDialogHelperTest()
+  PrivacySandboxPromptHelperTest()
       : https_test_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    PrivacySandboxService::SetDialogDisabledForTests(false);
+    PrivacySandboxService::SetPromptDisabledForTests(false);
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server()->AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
@@ -55,7 +55,7 @@ class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &PrivacySandboxDialogHelperTest::SetupTestFactories,
+                &PrivacySandboxPromptHelperTest::SetupTestFactories,
                 base::Unretained(this)));
   }
 
@@ -71,7 +71,7 @@ class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
 
     ON_CALL(*mock_privacy_sandbox_service, GetRequiredPromptType())
         .WillByDefault(testing::Return(TestPromptType()));
-    ON_CALL(*mock_privacy_sandbox_service, IsDialogOpenForBrowser(testing::_))
+    ON_CALL(*mock_privacy_sandbox_service, IsPromptOpenForBrowser(testing::_))
         .WillByDefault(testing::Return(false));
   }
 
@@ -94,18 +94,18 @@ class PrivacySandboxDialogHelperTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_test_server_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogHelperTest, NoDialogRequired) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxPromptHelperTest, NoPromptRequired) {
   // Check when no prompt is required, it is not shown.
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabPageURL)));
   base::RunLoop().RunUntilIdle();
 }
 
-class PrivacySandboxDialogHelperTestWithParam
-    : public PrivacySandboxDialogHelperTest,
+class PrivacySandboxPromptHelperTestWithParam
+    : public PrivacySandboxPromptHelperTest,
       public testing::WithParamInterface<bool> {
   PrivacySandboxService::PromptType TestPromptType() override {
     // Setup consent / notice based on testing parameter. Helper behavior should
@@ -115,13 +115,13 @@ class PrivacySandboxDialogHelperTestWithParam
   }
 };
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
-                       DialogOpensOnNtp) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
+                       PromptOpensOnNtp) {
   // Check when a navigation to the Chrome controlled NTP occurs, which is a
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUINewTabPageURL)));
@@ -131,16 +131,16 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
-                       DialogOpensAboutBlank) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
+                       PromptOpensAboutBlank) {
   // Check when a navigation to about:blank occurs, which is a suitable
   // location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(1);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              IsDialogOpenForBrowser(browser()))
+              IsPromptOpenForBrowser(browser()))
       .Times(1)
       .WillOnce(testing::Return(false));
 
@@ -152,13 +152,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
-                       DialogOpensOnSettings) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
+                       PromptOpensOnSettings) {
   // Check when a navigation to the Chrome settings occurs, which is a
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUISettingsURL)));
@@ -168,13 +168,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("settings")), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
-                       DialogOpensOnHistory) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
+                       PromptOpensOnHistory) {
   // Check when a navigation to the Chrome history occurs, which is a
   // suitable location, a prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIHistoryURL)));
@@ -184,13 +184,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("history")), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
-                       NoDialogNonDefaultNtp) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
+                       NoPromptNonDefaultNtp) {
   // Check that navigations to the generic chrome://newtab, when a non default
   // NTP is used, do not show a prompt.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(0);
 
   GURL ntp_url = https_test_server()->GetURL("/title1.html");
@@ -205,11 +205,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
                                     0);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, NoDialogSync) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, NoPromptSync) {
   // Check when sync setup is in progress, that no prompt is shown.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(0);
   test_sync_service()->SetSetupInProgress(true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -219,11 +219,11 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, NoDialogSync) {
                                     0);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam, UnsuitableUrl) {
   // Check that no prompt is shown for navigations to unsuitable URLs.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(0);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
@@ -246,15 +246,15 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam, UnsuitableUrl) {
                                     0);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
-                       SingleDialogPerBrowser) {
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
+                       SinglePromptPerBrowser) {
   // Check that only a single prompt is opened per browser window at a time.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(browser()))
+              PromptOpenedForBrowser(browser()))
       .Times(1);
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              IsDialogOpenForBrowser(browser()))
+              IsPromptOpenForBrowser(browser()))
       .WillOnce(testing::Return(false))
       .WillRepeatedly(testing::Return(true));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -269,13 +269,13 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("new-tab-page")), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
+IN_PROC_BROWSER_TEST_P(PrivacySandboxPromptHelperTestWithParam,
                        MultipleBrowserWindows) {
   // Check that if multiple browser windows are opened, and navigated to
   // appropriate tabs, two prompts are opened.
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_privacy_sandbox_service(),
-              DialogOpenedForBrowser(testing::_))
+              PromptOpenedForBrowser(testing::_))
       .Times(2);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
@@ -292,6 +292,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogHelperTestWithParam,
       static_cast<base::HistogramBase::Sample>(base::Hash("about:blank")), 1);
 }
 
-INSTANTIATE_TEST_SUITE_P(PrivacySandboxDialogHelperTestWithParamInstance,
-                         PrivacySandboxDialogHelperTestWithParam,
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxPromptHelperTestWithParamInstance,
+                         PrivacySandboxPromptHelperTestWithParam,
                          testing::Bool());

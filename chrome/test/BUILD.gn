@@ -2179,7 +2179,7 @@ if (!is_android) {
       "../browser/ui/permission_bubble/permission_bubble_browser_test_util.h",
       "../browser/ui/popup_browsertest.cc",
       "../browser/ui/prefs/prefs_tab_helper_browsertest.cc",
-      "../browser/ui/privacy_sandbox/privacy_sandbox_dialog_helper_browsertest.cc",
+      "../browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper_browsertest.cc",
       "../browser/ui/profile_error_browsertest.cc",
       "../browser/ui/read_later/read_later_test_utils.cc",
       "../browser/ui/read_later/read_later_test_utils.h",

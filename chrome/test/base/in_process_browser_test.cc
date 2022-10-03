@@ -460,10 +460,10 @@ void InProcessBrowserTest::SetUp() {
   // What's New for tests that simulate first run, is unexpected by most tests.
   whats_new::DisableRemoteContentForTests();
 
-  // The Privacy Sandbox service may attempt to show a modal dialog to the
+  // The Privacy Sandbox service may attempt to show a modal prompt to the
   // profile on browser start, which is unexpected by mosts tests. Tests which
-  // expect this can allow the dialog as desired.
-  PrivacySandboxService::SetDialogDisabledForTests(true);
+  // expect this can allow the prompt as desired.
+  PrivacySandboxService::SetPromptDisabledForTests(true);
 
   BrowserTestBase::SetUp();
 }

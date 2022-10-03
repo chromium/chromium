@@ -45,7 +45,7 @@ namespace {
 
 constexpr char kBlockedTopicsTopicKey[] = "topic";
 
-bool g_dialog_diabled_for_tests = false;
+bool g_prompt_disabled_for_tests = false;
 
 // Returns whether 3P cookies are blocked by |cookie_settings|. This can be
 // either through blocking 3P cookies directly, or blocking all cookies.
@@ -221,17 +221,17 @@ void PrivacySandboxService::PromptActionOccurred(
 }
 
 // static
-bool PrivacySandboxService::IsUrlSuitableForDialog(const GURL& url) {
-  // The dialog should be shown on a limited list of pages:
+bool PrivacySandboxService::IsUrlSuitableForPrompt(const GURL& url) {
+  // The prompt should be shown on a limited list of pages:
 
   // about:blank is valid.
   if (url.IsAboutBlank())
     return true;
   // Chrome settings page is valid. The subpages aren't as most of them are not
-  // related to the dialog.
+  // related to the prompt.
   if (url == GURL(chrome::kChromeUISettingsURL))
     return true;
-  // Chrome history is valid as the dialog mentions history.
+  // Chrome history is valid as the prompt mentions history.
   if (url == GURL(chrome::kChromeUIHistoryURL))
     return true;
   // Only a Chrome controlled New Tab Page is valid. Third party NTP is still
@@ -244,22 +244,22 @@ bool PrivacySandboxService::IsUrlSuitableForDialog(const GURL& url) {
   return false;
 }
 
-void PrivacySandboxService::DialogOpenedForBrowser(Browser* browser) {
-  DCHECK(!browsers_with_open_dialogs_.count(browser));
-  browsers_with_open_dialogs_.insert(browser);
+void PrivacySandboxService::PromptOpenedForBrowser(Browser* browser) {
+  DCHECK(!browsers_with_open_prompts_.count(browser));
+  browsers_with_open_prompts_.insert(browser);
 }
 
-void PrivacySandboxService::DialogClosedForBrowser(Browser* browser) {
-  DCHECK(browsers_with_open_dialogs_.count(browser));
-  browsers_with_open_dialogs_.erase(browser);
+void PrivacySandboxService::PromptClosedForBrowser(Browser* browser) {
+  DCHECK(browsers_with_open_prompts_.count(browser));
+  browsers_with_open_prompts_.erase(browser);
 }
 
-bool PrivacySandboxService::IsDialogOpenForBrowser(Browser* browser) {
-  return browsers_with_open_dialogs_.count(browser);
+bool PrivacySandboxService::IsPromptOpenForBrowser(Browser* browser) {
+  return browsers_with_open_prompts_.count(browser);
 }
 
-void PrivacySandboxService::SetDialogDisabledForTests(bool disabled) {
-  g_dialog_diabled_for_tests = disabled;
+void PrivacySandboxService::SetPromptDisabledForTests(bool disabled) {
+  g_prompt_disabled_for_tests = disabled;
 }
 
 bool PrivacySandboxService::IsPrivacySandboxEnabled() {
@@ -385,8 +385,8 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
           prefs::kPrivacySandboxNoConfirmationSandboxDisabled)) {
     base::UmaHistogramEnumeration(
         privacy_sandbox_startup_histogram,
-        sandbox_v2_enabled ? PSStartupStates::kDialogOffV1OffEnabled
-                           : PSStartupStates::kDialogOffV1OffDisabled);
+        sandbox_v2_enabled ? PSStartupStates::kPromptOffV1OffEnabled
+                           : PSStartupStates::kPromptOffV1OffDisabled);
     return;
   }
   // Handle 3PC disabled.
@@ -394,8 +394,8 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
           prefs::kPrivacySandboxNoConfirmationThirdPartyCookiesBlocked)) {
     base::UmaHistogramEnumeration(
         privacy_sandbox_startup_histogram,
-        sandbox_v2_enabled ? PSStartupStates::kDialogOff3PCOffEnabled
-                           : PSStartupStates::kDialogOff3PCOffDisabled);
+        sandbox_v2_enabled ? PSStartupStates::kPromptOff3PCOffEnabled
+                           : PSStartupStates::kPromptOff3PCOffDisabled);
     return;
   }
   // Handle managed.
@@ -403,15 +403,15 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
           prefs::kPrivacySandboxNoConfirmationSandboxManaged)) {
     base::UmaHistogramEnumeration(
         privacy_sandbox_startup_histogram,
-        sandbox_v2_enabled ? PSStartupStates::kDialogOffManagedEnabled
-                           : PSStartupStates::kDialogOffManagedDisabled);
+        sandbox_v2_enabled ? PSStartupStates::kPromptOffManagedEnabled
+                           : PSStartupStates::kPromptOffManagedDisabled);
     return;
   }
   // Handle restricted.
   if (pref_service_->GetBoolean(
           prefs::kPrivacySandboxNoConfirmationSandboxRestricted)) {
     base::UmaHistogramEnumeration(privacy_sandbox_startup_histogram,
-                                  PSStartupStates::kDialogOffRestricted);
+                                  PSStartupStates::kPromptOffRestricted);
     return;
   }
   // Handle manually controlled
@@ -420,14 +420,14 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
     base::UmaHistogramEnumeration(
         privacy_sandbox_startup_histogram,
         sandbox_v2_enabled
-            ? PSStartupStates::kDialogOffManuallyControlledEnabled
-            : PSStartupStates::kDialogOffManuallyControlledDisabled);
+            ? PSStartupStates::kPromptOffManuallyControlledEnabled
+            : PSStartupStates::kPromptOffManuallyControlledDisabled);
     return;
   }
   if (privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.Get()) {
     if (!pref_service_->GetBoolean(prefs::kPrivacySandboxConsentDecisionMade)) {
       base::UmaHistogramEnumeration(privacy_sandbox_startup_histogram,
-                                    PSStartupStates::kDialogWaiting);
+                                    PSStartupStates::kPromptWaiting);
       return;
     }
     base::UmaHistogramEnumeration(privacy_sandbox_startup_histogram,
@@ -437,7 +437,7 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
   } else if (privacy_sandbox::kPrivacySandboxSettings3NoticeRequired.Get()) {
     if (!pref_service_->GetBoolean(prefs::kPrivacySandboxNoticeDisplayed)) {
       base::UmaHistogramEnumeration(privacy_sandbox_startup_histogram,
-                                    PSStartupStates::kDialogWaiting);
+                                    PSStartupStates::kPromptWaiting);
       return;
     }
     base::UmaHistogramEnumeration(privacy_sandbox_startup_histogram,
@@ -447,8 +447,8 @@ void PrivacySandboxService::RecordPrivacySandbox3StartupMetrics() {
   } else {  // No prompt currently required.
     base::UmaHistogramEnumeration(
         privacy_sandbox_startup_histogram,
-        sandbox_v2_enabled ? PSStartupStates::kNoDialogRequiredEnabled
-                           : PSStartupStates::kNoDialogRequiredDisabled);
+        sandbox_v2_enabled ? PSStartupStates::kNoPromptRequiredEnabled
+                           : PSStartupStates::kNoPromptRequiredDisabled);
   }
 }
 
@@ -690,7 +690,7 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     bool third_party_cookies_blocked) {
   // If the prompt is disabled for testing, never show it.
-  if (g_dialog_diabled_for_tests)
+  if (g_prompt_disabled_for_tests)
     return PromptType::kNone;
 
   // If the profile isn't a regular profile, no prompt should ever be shown.
@@ -702,7 +702,7 @@ PrivacySandboxService::GetRequiredPromptTypeInternal(
     return PromptType::kNone;
 
   // Forced testing feature parameters override everything.
-  if (privacy_sandbox::kPrivacySandboxSettings3DisableDialogForTesting.Get())
+  if (privacy_sandbox::kPrivacySandboxSettings3DisablePromptForTesting.Get())
     return PromptType::kNone;
 
   if (base::FeatureList::IsEnabled(

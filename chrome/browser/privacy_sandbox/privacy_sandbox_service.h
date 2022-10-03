@@ -119,30 +119,30 @@ class PrivacySandboxService : public KeyedService {
   // This method is virtual for mocking in tests.
   virtual void PromptActionOccurred(PromptAction action);
 
-  // Returns whether |url| is suitable to display the Privacy Sandbox dialog
+  // Returns whether |url| is suitable to display the Privacy Sandbox prompt
   // over. Only about:blank and certain chrome:// URLs are considered suitable.
-  static bool IsUrlSuitableForDialog(const GURL& url);
+  static bool IsUrlSuitableForPrompt(const GURL& url);
 
-  // Functions for coordinating the display of the Privacy Sandbox dialog
+  // Functions for coordinating the display of the Privacy Sandbox prompts
   // across multiple browser windows. Only relevant for Desktop.
 
-  // Informs the service that a Privacy Sandbox dialog |view| has been opened
+  // Informs the service that a Privacy Sandbox prompt has been opened
   // or closed for |browser|.
   // Virtual to allow mocking in tests.
-  virtual void DialogOpenedForBrowser(Browser* browser);
-  virtual void DialogClosedForBrowser(Browser* browser);
+  virtual void PromptOpenedForBrowser(Browser* browser);
+  virtual void PromptClosedForBrowser(Browser* browser);
 
-  // Returns whether a Privacy Sandbox dialog is currently open for |browser|.
+  // Returns whether a Privacy Sandbox prompt is currently open for |browser|.
   // Virtual to allow mocking in tests.
-  virtual bool IsDialogOpenForBrowser(Browser* browser);
+  virtual bool IsPromptOpenForBrowser(Browser* browser);
 
-  // Disables the display of the Privacy Sandbox dialog for testing. When
+  // Disables the display of the Privacy Sandbox prompt for testing. When
   // |disabled| is true, GetRequiredPromptType() will only ever return that no
-  // dialog is required.
+  // prompt is required.
   // NOTE: This is set to true in InProcessBrowserTest::SetUp, disabling the
-  // dialog for those tests. If you set this outside of that context, you should
+  // prompt for those tests. If you set this outside of that context, you should
   // ensure it is reset at the end of your test.
-  static void SetDialogDisabledForTests(bool disabled);
+  static void SetPromptDisabledForTests(bool disabled);
 
   // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
   // is true, context specific as well as restriction checks will still be
@@ -250,17 +250,17 @@ class PrivacySandboxService : public KeyedService {
                            MetricsLoggingOccursCorrectly);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
                            NoMetricsRecorded);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, RestrictedDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, ManagedNoDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest,
-                           ManuallyControlledNoDialog);
-  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDialogTest, NoParamNoDialog);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServicePromptTest, RestrictedPrompt);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServicePromptTest, ManagedNoPrompt);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServicePromptTest,
+                           ManuallyControlledNoPrompt);
+  FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServicePromptTest, NoParamNoPrompt);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceDeathTest,
                            GetRequiredPromptType);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           PrivacySandboxDialogNoticeWaiting);
+                           PrivacySandboxPromptNoticeWaiting);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           PrivacySandboxDialogConsentWaiting);
+                           PrivacySandboxPromptConsentWaiting);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            PrivacySandboxV1OffEnabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
@@ -286,9 +286,9 @@ class PrivacySandboxService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
                            PrivacySandboxManuallyControlledDisabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           PrivacySandboxNoDialogDisabled);
+                           PrivacySandboxNoPromptDisabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest,
-                           PrivacySandboxNoDialogEnabled);
+                           PrivacySandboxNoPromptEnabled);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTest, PrivacySandboxRestricted);
 
   // Should be used only for tests when mocking the service.
@@ -323,26 +323,26 @@ class PrivacySandboxService : public KeyedService {
   // Must be kept in sync with SettingsPrivacySandboxStartupStates in
   // histograms/enums.xml
   enum class PSStartupStates {
-    kDialogWaiting = 0,
-    kDialogOffV1OffEnabled = 1,
-    kDialogOffV1OffDisabled = 2,
+    kPromptWaiting = 0,
+    kPromptOffV1OffEnabled = 1,
+    kPromptOffV1OffDisabled = 2,
     kConsentShownEnabled = 3,
     kConsentShownDisabled = 4,
     kNoticeShownEnabled = 5,
     kNoticeShownDisabled = 6,
-    kDialogOff3PCOffEnabled = 7,
-    kDialogOff3PCOffDisabled = 8,
-    kDialogOffManagedEnabled = 9,
-    kDialogOffManagedDisabled = 10,
-    kDialogOffRestricted = 11,
-    kDialogOffManuallyControlledEnabled = 12,
-    kDialogOffManuallyControlledDisabled = 13,
-    kNoDialogRequiredEnabled = 14,
-    kNoDialogRequiredDisabled = 15,
+    kPromptOff3PCOffEnabled = 7,
+    kPromptOff3PCOffDisabled = 8,
+    kPromptOffManagedEnabled = 9,
+    kPromptOffManagedDisabled = 10,
+    kPromptOffRestricted = 11,
+    kPromptOffManuallyControlledEnabled = 12,
+    kPromptOffManuallyControlledDisabled = 13,
+    kNoPromptRequiredEnabled = 14,
+    kNoPromptRequiredDisabled = 15,
 
     // Add values above this line with a corresponding label in
     // tools/metrics/histograms/enums.xml
-    kMaxValue = kNoDialogRequiredDisabled,
+    kMaxValue = kNoPromptRequiredDisabled,
   };
 
   // Helper function to actually make the metrics call for
@@ -353,7 +353,7 @@ class PrivacySandboxService : public KeyedService {
   // profile startup.
   void LogPrivacySandboxState();
 
-  // Logs the state of privacy sandbox 3 in regards to dialogs. Called once per
+  // Logs the state of privacy sandbox 3 in regards to prompts. Called once per
   // profile startup.
   void RecordPrivacySandbox3StartupMetrics();
 
@@ -392,8 +392,8 @@ class PrivacySandboxService : public KeyedService {
 
   PrefChangeRegistrar user_prefs_registrar_;
 
-  // The set of Browser windows which have an open Privacy Sandbox dialog.
-  std::set<Browser*> browsers_with_open_dialogs_;
+  // The set of Browser windows which have an open Privacy Sandbox prompt.
+  std::set<Browser*> browsers_with_open_prompts_;
 
   // Fake implementation for current and blocked topics.
   std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_ = {

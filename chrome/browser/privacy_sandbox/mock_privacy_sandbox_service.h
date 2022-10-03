@@ -25,9 +25,9 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               PromptActionOccurred,
               (PrivacySandboxService::PromptAction),
               (override));
-  MOCK_METHOD(void, DialogOpenedForBrowser, (Browser*), (override));
-  MOCK_METHOD(void, DialogClosedForBrowser, (Browser*), (override));
-  MOCK_METHOD(bool, IsDialogOpenForBrowser, (Browser*), (override));
+  MOCK_METHOD(void, PromptOpenedForBrowser, (Browser*), (override));
+  MOCK_METHOD(void, PromptClosedForBrowser, (Browser*), (override));
+  MOCK_METHOD(bool, IsPromptOpenForBrowser, (Browser*), (override));
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
   MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),

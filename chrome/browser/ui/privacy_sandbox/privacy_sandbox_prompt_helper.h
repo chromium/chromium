@@ -30,7 +30,7 @@ class PrivacySandboxPromptHelper
 
   // Returns whether |profile| needs to be shown a Privacy Sandbox prompt. If
   // this returns false, there is no need to create this helper.
-  static bool ProfileRequiresDialog(Profile* profile);
+  static bool ProfileRequiresPrompt(Profile* profile);
 
  private:
   friend class content::WebContentsUserData<PrivacySandboxPromptHelper>;
