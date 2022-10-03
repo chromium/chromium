@@ -23957,6 +23957,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Display Sync Consent during sign-in',
+        },
+        {
+          'value': False,
+          'caption': 'Do not display Sync Consent during sign-in',
+        },
+      ],
       'example_value': False,
       'id': 451,
       'caption': '''Enable displaying Sync Consent during sign-in''',
@@ -24081,6 +24091,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable showing full-tab promotional content',
+        },
+        {
+          'value': False,
+          'caption': 'Disable showing full-tab promotional content',
+        },
+      ],
       'supported_on': ['chrome.*:69-', 'chrome_os:93-'],
       'future_on': ['fuchsia'],
       'type': 'main',
@@ -24234,7 +24254,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'URL-keyed anonymized data collection is always active',
+        },
+        {
+          'value': False,
+          'caption': 'URL-keyed anonymized data collection is never active',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 461,
       'caption': '''Enable URL-keyed anonymized data collection''',
       'tags': ['google-sharing'],
@@ -24255,6 +24290,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow network file shares',
+        },
+        {
+          'value': False,
+          'caption': 'Block network file shares',
+        },
+      ],
       'supported_on': ['chrome_os:70-'],
       'caption': '''Controls Network File Shares for ChromeOS availability''',
       'example_value': True,
@@ -24271,6 +24316,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow WebRTC event log collection from Google services',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow WebRTC event log collection from Google services',
+        },
+      ],
       'example_value': True,
       'id': 464,
       'caption': '''Allow collection of WebRTC event logs from Google services''',
@@ -24291,6 +24346,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the smart dim model to extend the time until the screen dims',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow the smart dim model to extend the time until the screen dims',
+        },
+      ],
       'example_value': False,
       'id': 465,
       'caption': '''Enable smart dim model to extend the time until the screen is dimmed''',
@@ -24335,6 +24400,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow NetBIOS share discovery',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow NetBIOS share discovery',
+        },
+      ],
       'supported_on': ['chrome_os:70-'],
       'caption': '''Controls Network File Share discovery via <ph name="NETBIOS_NAME">NetBIOS</ph>''',
       'example_value': True,
@@ -24542,6 +24617,16 @@
         'per_profile': True,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of version information',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of version information',
+        },
+      ],
       'future_on': ['chrome.*'],
       'caption': '''Report OS and <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Version Information''',
       'example_value': False,
@@ -24567,6 +24652,16 @@
         'per_profile': True,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of policy data',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of policy data',
+        },
+      ],
       'future_on': ['chrome.*'],
       'caption': '''Report <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Policy Information''',
       'example_value': False,
@@ -24592,6 +24687,16 @@
         'per_profile': True,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of machine identification information',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of machine identification information',
+        },
+      ],
       'future_on': ['chrome.*'],
       'caption': '''Report Machine Identification information''',
       'example_value': False,
@@ -24616,6 +24721,16 @@
         'per_profile': True,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of user identification information',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of user identification information',
+        },
+      ],
       'future_on': ['chrome.*'],
       'caption': '''Report User Identification information''',
       'example_value': False,
@@ -24641,6 +24756,16 @@
         'per_profile': True,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable reporting of extension and plugin information',
+        },
+        {
+          'value': False,
+          'caption': 'Disable reporting of extension and plugin information',
+        },
+      ],
       'future_on': ['chrome.*'],
       'caption': '''Report Extensions and Plugins information''',
       'example_value': False,
@@ -24692,6 +24817,16 @@
         'per_profile': True,
         'cloud_only': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Create and upload extension install requests to the Admin console',
+        },
+        {
+          'value': False,
+          'caption': 'Do not create or upload extension install requests to the Admin console',
+        },
+      ],
       'supported_on': ['chrome.*:85-', 'chrome_os:85-'],
       'future_on': ['fuchsia'],
       'caption': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extension installation requests''',
@@ -24822,6 +24957,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow managed extensions to use the Enterprise Hardware Platform API',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow managed extensions to use the Enterprise Hardware Platform API',
+        },
+      ],
       'example_value': True,
       'id': 483,
       'caption': '''Enables managed extensions to use the Enterprise Hardware Platform API''',
@@ -24842,6 +24987,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the user to manually disconnect or modify a VPN',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow the user to manually disconnect or modify a VPN',
+        },
+      ],
       'example_value': False,
       'id': 485,
       'caption': '''Allow the user to manage VPN connections''',
@@ -24861,6 +25016,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use NTLM authentication',
+        },
+        {
+          'value': False,
+          'caption': 'Do not use NTLM authentication',
+        },
+      ],
       'supported_on': ['chrome_os:71-'],
       'caption': '''Controls enabling NTLM as an authentication protocol for SMB mounts''',
       'example_value': True,
@@ -25115,6 +25280,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use the Internet Explorer SiteList policy as a source of rules',
+        },
+        {
+          'value': False,
+          'caption': 'Do not use the Internet Explorer SiteList policy as a source of rules',
+        },
+      ],
       'supported_on': ['chrome.win:71-'],
       'caption': '''Use Internet Explorer's SiteList policy for Legacy Browser Support.''',
       'tags': [],
@@ -25196,6 +25371,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Legacy Browser Support',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Legacy Browser Support',
+        },
+      ],
       'supported_on': ['chrome.*:73-'],
       'caption': '''Enable the Legacy Browser Support feature.''',
       'tags': [],
@@ -25257,6 +25442,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Keep at least one Chrome tab open',
+        },
+        {
+          'value': False,
+          'caption': 'Close Chrome completely',
+        },
+      ],
       'supported_on': ['chrome.*:74-'],
       'caption': '''Keep last tab open in Chrome.''',
       'tags': [],
@@ -25315,6 +25510,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow devices to use a PluginVm',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow devices to use a PluginVm',
+        },
+      ],
       'example_value': True,
       'id': 503,
       'caption': '''Allow devices to use a <ph name="PLUGIN_VM_NAME">PluginVm</ph> on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>''',
@@ -25333,6 +25538,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use a PluginVm',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to use a PluginVm',
+        },
+      ],
       'default': False,
       'example_value': True,
       'id': 705,
@@ -25425,6 +25640,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable sharing diagnostics data to PluginVm',
+        },
+        {
+          'value': False,
+          'caption': 'Disable sharing diagnostics data to PluginVm',
+        },
+      ],
       'example_value': False,
       'id': 712,
       'caption': '''Allow <ph name="PLUGIN_VM_NAME">PluginVm</ph> Product Analytics''',
