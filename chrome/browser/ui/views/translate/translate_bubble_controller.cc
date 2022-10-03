@@ -197,6 +197,7 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
       source_text,
       translate::kDesktopPartialTranslateTextSelectionMaxCharacters.Get(),
       gfx::WORD_BREAK);
+  bool is_truncated = (source_text.compare(truncated_source_text) != 0);
 
   if (partial_translate_bubble_view_) {
     PartialTranslateBubbleModel* model =
@@ -204,6 +205,7 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
     model->SetSourceLanguage(source_language);
     model->SetTargetLanguage(target_language);
     model->SetSourceText(truncated_source_text);
+    model->SetSourceTextTruncated(is_truncated);
     model->SetTargetText(target_text);
     // When the user reads the advanced setting panel, the bubble should not be
     // changed because they are focusing on the bubble.
@@ -240,6 +242,7 @@ void TranslateBubbleController::CreatePartialTranslateBubble(
         view_state, error_type, truncated_source_text, target_text,
         std::move(partial_translate_manager), std::move(ui_delegate));
   }
+  model->SetSourceTextTruncated(is_truncated);
 
   model->AddObserver(this);
 

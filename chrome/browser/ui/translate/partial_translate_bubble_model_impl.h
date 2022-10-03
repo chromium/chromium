@@ -60,6 +60,7 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
   std::string GetTargetLanguageCode() const override;
   void Translate(content::WebContents* web_contents) override;
   void TranslateFullPage(content::WebContents* web_contents) override;
+  void SetSourceTextTruncated(bool is_truncated) override;
 
  private:
   // Updates the partial translate model based on the given response.
@@ -80,6 +81,9 @@ class PartialTranslateBubbleModelImpl : public PartialTranslateBubbleModel {
 
   // The selected text, which may be truncated.
   std::u16string source_text_;
+
+  // Whether or not the current selected text is truncated.
+  bool source_text_truncated_;
 
   // The translated text, or empty if the translation has not yet been
   // performed.
