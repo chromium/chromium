@@ -247,17 +247,26 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     handleEventsForBackgroundURLSession:(NSString*)identifier
                       completionHandler:(void (^)())completionHandler {
-  if ([identifier
+  if (![identifier
           hasPrefix:base::SysUTF8ToNSString(
                         download::kBackgroundDownloadIdentifierPrefix)]) {
-    download::BackgroundDownloadService* download_service =
-        BackgroundDownloadServiceFactory::GetForBrowserState(
-            _mainController.interfaceProvider.mainInterface.browserState);
-    if (download_service) {
-      download_service->HandleEventsForBackgroundURLSession(
-          base::BindOnce(completionHandler));
-      return;
-    }
+    completionHandler();
+    return;
+  }
+  ChromeBrowserState* browserState =
+      _mainController.interfaceProvider.mainInterface.browserState;
+  if (!browserState) {
+    // TODO(crbug.com/1368617): We should store the completionHandler and wait
+    // for mainInterface creation.
+    completionHandler();
+    return;
+  }
+  download::BackgroundDownloadService* download_service =
+      BackgroundDownloadServiceFactory::GetForBrowserState(browserState);
+  if (download_service) {
+    download_service->HandleEventsForBackgroundURLSession(
+        base::BindOnce(completionHandler));
+    return;
   }
   completionHandler();
 }
