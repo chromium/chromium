@@ -94,6 +94,10 @@ class IsMetricsAndCrashReportingEnabled;
 }
 }  // namespace webauthn
 
+namespace autofill_assistant {
+class CommonDependenciesChrome;
+}  // namespace autofill_assistant
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -149,6 +153,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class WebUITabStripFieldTrial;
   friend class feed::FeedServiceDelegateImpl;
   friend class browser_sync::DeviceInfoSyncClientImpl;
+  friend class autofill_assistant::CommonDependenciesChrome;
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class webauthn::authenticator::IsMetricsAndCrashReportingEnabled;
