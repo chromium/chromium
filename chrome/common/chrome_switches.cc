@@ -477,6 +477,10 @@ const char kProxyPacUrl[] = "proxy-pac-url";
 // The format is <host>:<port>,...,<host>:port.
 const char kRemoteDebuggingTargets[] = "remote-debugging-targets";
 
+// Indicates that Chrome was restarted (e.g., after a flag change). This is used
+// to ignore the launch when recording the Launch.Mode2 metric.
+const char kRestart[] = "restart";
+
 // Indicates the last session should be restored on startup. This overrides the
 // preferences value. Note that this does not force automatic session restore
 // following a crash, so as to prevent a crash loop. This switch is used to

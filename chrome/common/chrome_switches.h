@@ -151,6 +151,7 @@ extern const char kProxyAutoDetect[];
 extern const char kProxyBypassList[];
 extern const char kProxyPacUrl[];
 extern const char kRemoteDebuggingTargets[];
+extern const char kRestart[];
 extern const char kRestoreLastSession[];
 extern const char kSavePageAsMHTML[];
 extern const char kSilentDebuggerExtensionAPI[];

@@ -325,6 +325,10 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
     for (const auto& it : switches)
       new_cl.AppendSwitchNative(it.first, it.second);
 
+    if (restart_mode == RestartMode::kRestartLastSession ||
+        restart_mode == RestartMode::kRestartThisSession) {
+      new_cl.AppendSwitch(switches::kRestart);
+    }
     upgrade_util::RelaunchChromeBrowser(new_cl);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
