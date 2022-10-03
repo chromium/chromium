@@ -348,6 +348,8 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "ios-simulator-compilator",
+    # Set builderless to False so that branch builders use builderful bots
+    builderless = False,
     check_for_flakiness = True,
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
