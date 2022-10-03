@@ -28,6 +28,8 @@ class BatterySaverBubbleView {
 
   // Hides the battery saver bubble dialog.
   static void CloseBubble(views::BubbleDialogModelHost*);
+
+  static const char kViewClassName[];
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_BATTERY_SAVER_BUBBLE_VIEW_H_

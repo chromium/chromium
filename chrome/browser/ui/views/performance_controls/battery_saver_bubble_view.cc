@@ -16,6 +16,9 @@
 #include "ui/views/view_class_properties.h"
 
 // static
+const char BatterySaverBubbleView::kViewClassName[] = "BatterySaverBubbleView";
+
+// static
 views::BubbleDialogModelHost* BatterySaverBubbleView::CreateBubble(
     Browser* browser,
     views::View* anchor_view,
@@ -27,6 +30,7 @@ views::BubbleDialogModelHost* BatterySaverBubbleView::CreateBubble(
 
   auto dialog_model =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique))
+          .SetInternalName(kViewClassName)
           .SetTitle(l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUBBLE_TITLE))
           .SetIsAlertDialog()
           .SetDialogDestroyingCallback(
