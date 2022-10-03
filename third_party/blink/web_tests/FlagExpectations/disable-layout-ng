@@ -116,6 +116,7 @@ crbug.com/591099 editing/selection/select-line-up-down.html [ Failure ]
 
 ### external/wpt/css/CSS2/floats/
 crbug.com/591099 external/wpt/css/CSS2/floats/float-nowrap-3.html [ Failure ]
+crbug.com/1323571 external/wpt/css/CSS2/floats/float-root.html [ Failure ]
 crbug.com/591099 external/wpt/css/CSS2/floats/floats-line-wrap-shifted-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-003.tentative.html [ Failure ]
 crbug.com/591099 external/wpt/css/CSS2/floats/floats-wrap-bfc-with-margin-004.html [ Failure ]
