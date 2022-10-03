@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_HANDLER_IMPL_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
@@ -14,6 +16,14 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+
+namespace base {
+class Time;
+}  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -71,6 +81,9 @@ class AttributionInternalsHandlerImpl
                     const SendResult& info) override;
   void OnTriggerHandled(const AttributionTrigger& trigger,
                         const CreateReportResult& result) override;
+  void OnFailedSourceRegistration(const std::string& header_value,
+                                  base::Time source_time,
+                                  const url::Origin& reporting_origin) override;
 
   raw_ptr<WebUI> web_ui_;
 

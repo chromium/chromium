@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
-import {Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, ReportType, SourceType, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
+import {FailedSourceRegistration, Handler as AttributionInternalsHandler, HandlerRemote as AttributionInternalsHandlerRemote, ObserverInterface, ObserverReceiver, ReportID, ReportType, SourceType, WebUIReport, WebUISource, WebUISource_Attributability, WebUITrigger, WebUITrigger_Status} from './attribution_internals.mojom-webui.js';
 import {AttributionInternalsTableElement} from './attribution_internals_table.js';
 import {Column, TableModel} from './table_model.js';
 
@@ -651,6 +651,60 @@ class AggregatableAttributionReportTableModel extends ReportTableModel {
   }
 }
 
+class Log {
+  json: string;
+  failureReason: string;
+  time: Date;
+  reportingOrigin: string;
+
+  constructor(mojo: FailedSourceRegistration) {
+    this.time = new Date(mojo.time);
+    this.json = mojo.headerValue;
+    this.failureReason = 'Bad JSON';
+    this.reportingOrigin = originToText(mojo.reportingOrigin);
+  }
+}
+
+class LogTableModel extends TableModel<Log> {
+  logs: Log[] = [];
+
+  constructor() {
+    super();
+
+    this.cols = [
+      new DateColumn<Log>('Time', (e) => e.time),
+      new CodeColumn<Log>('Failure Reason', (e) => e.failureReason),
+      new ValueColumn<Log, string>('Report To', (e) => e.reportingOrigin),
+      new CodeColumn<Log>(
+          'Attribution-Reporting-Register-Source Header', (e) => e.json),
+    ];
+
+    this.emptyRowText = 'No logs.';
+
+    // Sort by time by default.
+    this.sortIdx = 0;
+  }
+
+  override getRows() {
+    return this.logs;
+  }
+
+  addLog(log: Log) {
+    // Prevent the page from consuming ever more memory if the user leaves the
+    // page open for a long time.
+    if (this.logs.length >= 1000) {
+      this.logs = [];
+    }
+
+    this.logs.push(log);
+    this.notifyRowsChanged();
+  }
+
+  clear() {
+    this.logs = [];
+    this.notifyRowsChanged();
+  }
+}
 
 /**
  * Reference to the backend providing all the data.
@@ -662,6 +716,8 @@ let sourceTableModel: SourceTableModel|null = null;
 let triggerTableModel: TriggerTableModel|null = null;
 
 let eventLevelReportTableModel: EventLevelReportTableModel|null = null;
+
+let logTableModel: LogTableModel|null = null;
 
 let aggregatableAttributionReportTableModel:
     AggregatableAttributionReportTableModel|null = null;
@@ -843,6 +899,8 @@ function clearStorage() {
   eventLevelReportTableModel.clear();
   assert(aggregatableAttributionReportTableModel);
   aggregatableAttributionReportTableModel.clear();
+  assert(logTableModel);
+  logTableModel.clear();
   assert(pageHandler);
   pageHandler.clearStorage();
 }
@@ -885,6 +943,11 @@ class Observer implements ObserverInterface {
     assert(triggerTableModel);
     triggerTableModel.addTrigger(new Trigger(mojo));
   }
+
+  onFailedSourceRegistration(mojo: FailedSourceRegistration) {
+    assert(logTableModel);
+    logTableModel.addLog(new Log(mojo));
+  }
 }
 
 function installUnreadIndicator(model: TableModel<any>, tab: HTMLElement|null) {
@@ -920,6 +983,7 @@ document.addEventListener('DOMContentLoaded', function() {
   aggregatableAttributionReportTableModel =
       new AggregatableAttributionReportTableModel(
           showDebugAggregatableReports, sendAggregatableReports);
+  logTableModel = new LogTableModel();
 
   const tabBox = document.querySelector('cr-tab-box');
   assert(tabBox);
@@ -938,6 +1002,8 @@ document.addEventListener('DOMContentLoaded', function() {
   installUnreadIndicator(
       aggregatableAttributionReportTableModel,
       document.querySelector<HTMLElement>('#aggregatable-reports-tab'));
+  installUnreadIndicator(
+      logTableModel, document.querySelector<HTMLElement>('#logs-tab'));
 
   const refresh = document.querySelector('#refresh');
   assert(refresh);
@@ -966,6 +1032,11 @@ document.addEventListener('DOMContentLoaded', function() {
           '#aggregatableReportTable');
   assert(aggregatableReportTable);
   aggregatableReportTable.setModel(aggregatableAttributionReportTableModel!);
+  const logTable =
+      document.querySelector<AttributionInternalsTableElement<Log>>(
+          '#logTable');
+  assert(logTable);
+  logTable.setModel(logTableModel);
 
   tabBox.hidden = false;
 

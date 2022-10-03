@@ -1381,6 +1381,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = url::Origin::Create(GURL("https://report.test"));
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
+  EXPECT_CALL(mock_manager_,
+              NotifyFailedSourceRegistration("!!!invalid json", reporter));
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, "!!!invalid json", reporter, source_site);

@@ -886,4 +886,14 @@ void AttributionManagerImpl::NotifyReportsChanged(
     observer.OnReportsChanged(report_type);
 }
 
+void AttributionManagerImpl::NotifyFailedSourceRegistration(
+    const std::string& header_value,
+    const url::Origin& reporting_origin) {
+  base::Time source_time = base::Time::Now();
+  for (auto& observer : observers_) {
+    observer.OnFailedSourceRegistration(header_value, source_time,
+                                        reporting_origin);
+  }
+}
+
 }  // namespace content

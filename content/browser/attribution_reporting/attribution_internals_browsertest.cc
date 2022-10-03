@@ -341,13 +341,44 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
+                       FailedSourceRegistrationLogShown) {
+  ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
+
+  auto reporter1 = url::Origin::Create(GURL("https://a.test"));
+
+  static constexpr char wait_script[] = R"(
+    let table = document.querySelector('#logTable')
+        .shadowRoot.querySelector('tbody');
+
+    let obs = new MutationObserver((_, obs) => {
+      if (table.children.length === 1 &&
+          table.children[0].children.length >= 4 &&
+          table.children[0].children[1].innerText === 'Bad JSON' &&
+          table.children[0].children[2].innerText === 'https://a.test' &&
+          table.children[0].children[3].innerText === '!')  {
+        obs.disconnect();
+        document.title = $1;
+      }
+    });
+    obs.observe(table, {'childList': true});)";
+
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+
+  TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
+
+  manager()->NotifySourceRegistrationFailure(
+      "!", url::Origin::Create(GURL("https://a.test")));
+  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+}
+
+IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                        WebUIShownWithNoReports_NoReportsDisplayed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   SetTitleOnReportsTableEmpty(kCompleteTitle);
   ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,

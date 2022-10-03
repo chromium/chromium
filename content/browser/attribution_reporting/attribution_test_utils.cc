@@ -407,6 +407,16 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
     observer.OnReportSent(report, is_debug_report, info);
 }
 
+void MockAttributionManager::NotifySourceRegistrationFailure(
+    const std::string& header_value,
+    const url::Origin& reporting_origin) {
+  base::Time source_time = base::Time::Now();
+  for (auto& observer : observers_) {
+    observer.OnFailedSourceRegistration(header_value, source_time,
+                                        reporting_origin);
+  }
+}
+
 void MockAttributionManager::NotifyTriggerHandled(
     const AttributionTrigger& trigger,
     const CreateReportResult& result) {

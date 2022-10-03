@@ -56,7 +56,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
       const blink::AttributionSrcToken& attribution_src_token) override;
   void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
-      const std::string& header_value,
+      std::string header_value,
       url::Origin reporting_origin,
       const url::Origin& source_origin) override;
   void NotifyNavigationForDataHost(
@@ -89,6 +89,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl
   void OnRedirectSourceParsed(
       const blink::AttributionSrcToken& attribution_src_token,
       url::Origin reporting_origin,
+      std::string header_value,
       data_decoder::DataDecoder::ValueOrError result);
 
   void SetTriggerTimer(base::TimeDelta delay);

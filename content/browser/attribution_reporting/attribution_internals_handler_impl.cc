@@ -41,6 +41,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -347,6 +348,24 @@ void AttributionInternalsHandlerImpl::OnReportSent(
 
   for (auto& observer : observers_) {
     observer->OnReportSent(web_report.Clone());
+  }
+}
+
+// TODO(crbug/1351843): Consider surfacing this error in devtools instead of
+// internals, currently however this error is associated with a redirect
+// navigation, rather than a specific committed page.
+void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
+    const std::string& header_value,
+    base::Time source_time,
+    const url::Origin& reporting_origin) {
+  auto web_ui_log =
+      attribution_internals::mojom::FailedSourceRegistration::New();
+  web_ui_log->header_value = header_value;
+  web_ui_log->time = source_time.ToJsTime();
+  web_ui_log->reporting_origin = reporting_origin;
+
+  for (auto& observer : observers_) {
+    observer->OnFailedSourceRegistration(web_ui_log->Clone());
   }
 }
 

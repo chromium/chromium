@@ -253,7 +253,7 @@ bool AttributionDataHostManagerImpl::RegisterNavigationDataHost(
 
 void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
     const blink::AttributionSrcToken& attribution_src_token,
-    const std::string& header_value,
+    std::string header_value,
     url::Origin reporting_origin,
     const url::Origin& source_origin) {
   if (!network::IsOriginPotentiallyTrustworthy(source_origin) ||
@@ -263,8 +263,11 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
 
   // Avoid costly isolated JSON parsing below if the header is obviously
   // invalid.
-  if (header_value.empty())
+  if (header_value.empty()) {
+    attribution_manager_->NotifyFailedSourceRegistration(header_value,
+                                                         reporting_origin);
     return;
+  }
 
   auto [it, inserted] = redirect_registrations_.try_emplace(
       attribution_src_token, NavigationRedirectSourceRegistrations{
@@ -287,7 +290,7 @@ void AttributionDataHostManagerImpl::NotifyNavigationRedirectRegistration(
       header_value,
       base::BindOnce(&AttributionDataHostManagerImpl::OnRedirectSourceParsed,
                      weak_factory_.GetWeakPtr(), attribution_src_token,
-                     std::move(reporting_origin)));
+                     std::move(reporting_origin), header_value));
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
@@ -691,6 +694,7 @@ void AttributionDataHostManagerImpl::OnSourceEligibleDataHostFinished(
 void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     const blink::AttributionSrcToken& attribution_src_token,
     url::Origin reporting_origin,
+    std::string header_value,
     data_decoder::DataDecoder::ValueOrError result) {
   // TODO(johnidel): Add metrics regarding parsing failures / misconfigured
   // headers.
@@ -707,13 +711,16 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
 
   absl::optional<StorableSource> source;
   if (result.has_value() && result->is_dict()) {
-    // TODO(apaseltiner): Report a DevTools/internals issue if parsing fails.
     source = ParseSourceRegistration(
-        std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
-        std::move(reporting_origin), registrations.source_origin,
+        std::move(*result).TakeDict(), /*source_time*/ base::Time::Now(),
+        reporting_origin, registrations.source_origin,
         AttributionSourceType::kNavigation);
   }
-  // Do not access `reporting_origin` below this line, it is no longer valid.
+
+  if (!source) {
+    attribution_manager_->NotifyFailedSourceRegistration(header_value,
+                                                         reporting_origin);
+  }
 
   // An opaque destination means that navigation has not finished, delay
   // handling.

@@ -47,7 +47,7 @@ class AttributionDataHostManager {
   // Important: `header_value` is untrusted.
   virtual void NotifyNavigationRedirectRegistration(
       const blink::AttributionSrcToken& attribution_src_token,
-      const std::string& header_value,
+      std::string header_value,
       url::Origin reporting_origin,
       const url::Origin& source_origin) = 0;
 

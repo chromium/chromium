@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -14,6 +15,10 @@
 namespace base {
 class Time;
 }  // namespace base
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -65,6 +70,12 @@ class AttributionManager {
   virtual void SendReportsForWebUI(
       const std::vector<AttributionReport::Id>& ids,
       base::OnceClosure done) = 0;
+
+  // Notifies observers of a failed browser-side source-registration.
+  // Called by `AttributionDataHostManagerImpl`.
+  virtual void NotifyFailedSourceRegistration(
+      const std::string& header_value,
+      const url::Origin& reporting_origin) = 0;
 
   // Deletes all data in storage for storage keys matching `filter`, between
   // `delete_begin` and `delete_end` time.

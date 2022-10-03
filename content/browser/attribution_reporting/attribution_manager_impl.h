@@ -37,6 +37,10 @@ namespace storage {
 class SpecialStoragePolicy;
 }  // namespace storage
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class AggregatableReport;
@@ -123,6 +127,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                  BrowsingDataFilterBuilder* filter_builder,
                  bool delete_rate_limit_data,
                  base::OnceClosure done) override;
+  void NotifyFailedSourceRegistration(
+      const std::string& header_value,
+      const url::Origin& reporting_origin) override;
 
  private:
   friend class AttributionManagerImplTest;

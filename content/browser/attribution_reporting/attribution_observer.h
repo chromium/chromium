@@ -5,9 +5,16 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OBSERVER_H_
 
+#include <string>
+
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
@@ -41,6 +48,12 @@ class AttributionObserver : public base::CheckedObserver {
   // Called when a trigger is registered, regardless of success.
   virtual void OnTriggerHandled(const AttributionTrigger& trigger,
                                 const CreateReportResult& result) {}
+
+  // Called when the source header registration json parser fails.
+  virtual void OnFailedSourceRegistration(const std::string& header_value,
+                                          base::Time source_time,
+                                          const url::Origin& reporting_origin) {
+  }
 };
 
 }  // namespace content

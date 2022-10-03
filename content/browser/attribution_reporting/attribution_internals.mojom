@@ -184,6 +184,14 @@ enum ReportType {
   kAggregatableAttribution,
 };
 
+// Struct containing reason for a source registration failure to be displayed
+// as a log by WebUI
+struct FailedSourceRegistration {
+  double time;
+  string header_value;
+  url.mojom.Origin reporting_origin;
+};
+
 // Observer for events relevant to the attribution internals WebUI.
 interface Observer {
   // Called when the sources in storage changed, indicating that the observer
@@ -206,6 +214,9 @@ interface Observer {
 
   // Called when a trigger is registered, regardless of success or failure.
   OnTriggerHandled(WebUITrigger trigger);
+
+  // Called when the source header registration JSON parser fails.
+  OnFailedSourceRegistration(FailedSourceRegistration failure);
 };
 
 // Mojo interface for the attribution internals WebUI to communicate with the
