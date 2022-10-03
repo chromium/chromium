@@ -2995,6 +2995,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_BUTTON_FORGET" desc="Settings > Internet > Network details: The label for the button to forget a network (remove from the list of known networks).">
     Forget
   </message>
+  <message name="IDS_SETTINGS_INTERNET_BUTTON_SIGNIN" desc="Settings > Internet > Network details: The label for the button to signin to a network behind a captive portal.">
+    Sign in
+  </message>
   <message name="IDS_SETTINGS_INTERNET_BUTTON_VIEW_ACCOUNT" desc="Settings > Internet > Network details: The label for the button to view the account details for a Cellular network.">
     View Account
   </message>

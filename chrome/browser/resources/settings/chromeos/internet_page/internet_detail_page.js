@@ -45,7 +45,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigRemote, FilterType, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, NetworkStateProperties, NO_LIMIT, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
@@ -322,6 +322,18 @@ class SettingsInternetDetailPageElement extends
         type: Boolean,
         value: false,
         computed: 'computeDisabled_(deviceState_.*)',
+      },
+
+      /**
+       * Return true if captivePortalUI2022 feature flag is enabled.
+       * @private
+       */
+      isCaptivePortalUI2022Enabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('captivePortalUI2022') &&
+              loadTimeData.getBoolean('captivePortalUI2022');
+        },
       },
 
       /** @private */
@@ -1187,6 +1199,19 @@ class SettingsInternetDetailPageElement extends
           this.i18n('networkOutOfRange');
     }
 
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
+      if (this.isPortalState_(managedProperties.portalState)) {
+        return this.i18n('networkListItemSignIn');
+      }
+      if (managedProperties.portalState === PortalState.kPortalSuspected) {
+        return this.i18n('networkListItemConnectedLimited');
+      }
+      if (managedProperties.portalState === PortalState.kNoInternet) {
+        return this.i18n('networkListItemConnectedNoConnectivity');
+      }
+    }
+
     return this.i18n(
         OncMojo.getConnectionStateString(managedProperties.connectionState));
   }
@@ -1211,6 +1236,56 @@ class SettingsInternetDetailPageElement extends
   isConnectedState_(managedProperties) {
     return !!managedProperties &&
         OncMojo.connectionStateIsConnected(managedProperties.connectionState);
+  }
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean} True if the network is restricted.
+   * @private
+   */
+  isRestrictedConnectivity_(managedProperties) {
+    return !!managedProperties &&
+        OncMojo.isRestrictedConnectivity(managedProperties.portalState);
+  }
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean} True if the network is connected to have connected color
+   *     for state.
+   * @private
+   */
+  showConnectedState_(managedProperties) {
+    // Only check that state is connected if feature flag is disabled.
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return this.isConnectedState_(managedProperties);
+    }
+
+    return this.isConnectedState_(managedProperties) &&
+        !this.isRestrictedConnectivity_(managedProperties);
+  }
+
+  /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean} True if the network is restricted to have warning color
+   *     for state.
+   * @private
+   */
+  showRestrictedConnectivity_(managedProperties) {
+    // Do not show warning color if feature flag is disabled.
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return false;
+    }
+
+    if (!managedProperties) {
+      return false;
+    }
+
+    // State must be connected and restricted.
+    return this.isConnectedState_(managedProperties) &&
+        this.isRestrictedConnectivity_(managedProperties);
   }
 
   /**
@@ -1358,6 +1433,26 @@ class SettingsInternetDetailPageElement extends
   }
 
   /**
+   * @param {!ManagedProperties|undefined}
+   *     managedProperties
+   * @return {boolean}
+   * @private
+   */
+  showSignin_(managedProperties) {
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return false;
+    }
+    if (!managedProperties) {
+      return false;
+    }
+    if (OncMojo.connectionStateIsConnected(managedProperties.connectionState) &&
+        this.isPortalState_(managedProperties.portalState)) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * @param {!ManagedProperties} managedProperties
    * @return {boolean}
    * @private
@@ -1434,6 +1529,25 @@ class SettingsInternetDetailPageElement extends
       return false;
     }
     return true;
+  }
+
+  /**
+   * @param {!ManagedProperties} managedProperties
+   * @return {boolean}
+   * @private
+   */
+  disableSignin_(managedProperties) {
+    if (!this.isCaptivePortalUI2022Enabled_) {
+      return true;
+    }
+    if (this.disabled_ || !managedProperties) {
+      return true;
+    }
+    if (!OncMojo.connectionStateIsConnected(
+            managedProperties.connectionState)) {
+      return true;
+    }
+    return !this.isPortalState_(managedProperties.portalState);
   }
 
   /**
@@ -1746,6 +1860,11 @@ class SettingsInternetDetailPageElement extends
     } else {
       recordSettingChange();
     }
+  }
+
+  /** @private */
+  onSigninTap_() {
+    this.browserProxy_.showPortalSignin(this.guid);
   }
 
   /** @private */
@@ -2552,6 +2671,17 @@ class SettingsInternetDetailPageElement extends
   isManagedByPolicy_() {
     return this.managedProperties_.source === OncSource.kUserPolicy ||
         this.managedProperties_.source === OncSource.kDevicePolicy;
+  }
+
+  /**
+   * Return true if portalState is either kPortal or kProxyAuthRequired.
+   * @param {!PortalState} portalState
+   * @return {boolean}
+   * @private
+   */
+  isPortalState_(portalState) {
+    return portalState === PortalState.kPortal ||
+        portalState === PortalState.kProxyAuthRequired;
   }
 }
 

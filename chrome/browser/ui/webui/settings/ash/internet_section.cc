@@ -680,6 +680,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkButtonConnect", IDS_SETTINGS_INTERNET_BUTTON_CONNECT},
       {"networkButtonDisconnect", IDS_SETTINGS_INTERNET_BUTTON_DISCONNECT},
       {"networkButtonForget", IDS_SETTINGS_INTERNET_BUTTON_FORGET},
+      {"networkButtonSignin", IDS_SETTINGS_INTERNET_BUTTON_SIGNIN},
       {"networkButtonViewAccount", IDS_SETTINGS_INTERNET_BUTTON_VIEW_ACCOUNT},
       {"networkConnectNotAllowed", IDS_SETTINGS_INTERNET_CONNECT_NOT_ALLOWED},
       {"networkHidden", IDS_SETTINGS_INTERNET_NETWORK_HIDDEN},

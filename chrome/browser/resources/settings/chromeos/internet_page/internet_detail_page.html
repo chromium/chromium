@@ -19,6 +19,10 @@
     color: var(--cros-text-color-positive);
   }
 
+  #networkState[warning] {
+    color: var(--cros-text-color-warning);
+  }
+
   #networkState[error] {
     color: var(--cros-text-color-alert);
   }
@@ -41,6 +45,17 @@
     margin-inline-start: var(--settings-controlled-by-spacing);
   }
 
+  .signin-button {
+    margin-inline-end: 8px;
+    padding: 8px 16px 8px 8px;
+  }
+
+  .signin-icon {
+    background-color: var(--text-color);
+    margin-inline-end: 4px;
+    margin-inline-start: 0;
+  }
+
   #mac-address-container {
     border-top: none;
   }
@@ -53,7 +68,8 @@
         network-state="[[getNetworkState_(managedProperties_)]]">
     </network-icon>
     <div id="networkState" class="title settings-box-text"
-        connected$="[[isConnectedState_(managedProperties_)]]"
+        connected$="[[showConnectedState_(managedProperties_)]]"
+        warning$="[[showRestrictedConnectivity_(managedProperties_)]]"
         error$="[[isOutOfRangeOrNotEnabled_(outOfRange_, deviceState_)]]">
       [[getStateText_(managedProperties_, propertiesReceived_,
           outOfRange_, deviceState_)]]
@@ -66,6 +82,14 @@
       </cr-policy-indicator>
     </template>
   </div>
+  <template is="dom-if" if="[[isCaptivePortalUI2022Enabled_]]">
+    <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+      hidden$="[[!showSignin_(managedProperties_)]]"
+      disabled="[[disableSignin_(managedProperties_, disabled_)]]">
+      <div class="signin-icon cr-icon icon-external"></div>
+      $i18n{networkButtonSignin}
+    </cr-button>
+  </template>
   <cr-button id="forgetButton" on-click="onForgetTap_"
       hidden$="[[!showForget_(managedProperties_)]]"
       disabled="[[disableForget_(managedProperties_,

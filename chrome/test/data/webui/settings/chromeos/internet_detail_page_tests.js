@@ -7,7 +7,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {ActivationStateType, CrosNetworkConfigRemote, InhibitReason, ManagedProperties, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -219,6 +219,149 @@ suite('InternetDetailPage', function() {
         return mojoApi_.whenCalled('getManagedProperties');
       });
     });
+
+    test('WiFi in a portal portalState', function() {
+      init();
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kPortal;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailPage.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailPage.i18n('networkListItemSignIn'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertFalse(signinButton.hasAttribute('hidden'));
+        assertFalse(signinButton.disabled);
+      });
+    });
+
+    test('WiFi in a portal-suspected portalState', function() {
+      init();
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kPortalSuspected;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailPage.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailPage.i18n('networkListItemConnectedLimited'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertTrue(signinButton.hasAttribute('hidden'));
+        assertTrue(signinButton.disabled);
+      });
+    });
+
+    test('WiFi in a portal-suspected portalState', function() {
+      init();
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kNoInternet;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailPage.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailPage.i18n('networkListItemConnectedNoConnectivity'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertTrue(signinButton.hasAttribute('hidden'));
+        assertTrue(signinButton.disabled);
+      });
+    });
+
+    test('WiFi in a proxy-auth portalState', function() {
+      init();
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.connectionState = ConnectionStateType.kPortal;
+      wifiNetwork.portalState = PortalState.kProxyAuthRequired;
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      internetDetailPage.isCaptivePortalUI2022Enabled_ = true;
+      return flushAsync().then(() => {
+        const networkStateText =
+            internetDetailPage.shadowRoot.querySelector(`#networkState`);
+        assertTrue(networkStateText.hasAttribute('warning'));
+        assertEquals(
+            networkStateText.textContent.trim(),
+            internetDetailPage.i18n('networkListItemSignIn'));
+        const signinButton = getButton('signinButton');
+        assertTrue(!!signinButton);
+        assertFalse(signinButton.hasAttribute('hidden'));
+        assertFalse(signinButton.disabled);
+      });
+    });
+
+    test(
+        'WiFi in a portal portalState with the feature flag disabled',
+        function() {
+          init();
+          mojoApi_.resetForTest();
+          mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+          const wifiNetwork =
+              getManagedProperties(NetworkType.kWiFi, 'wifi_user');
+          wifiNetwork.source = OncSource.kUser;
+          wifiNetwork.connectable = true;
+          wifiNetwork.connectionState = ConnectionStateType.kPortal;
+          wifiNetwork.portalState = PortalState.kProxyAuthRequired;
+
+          mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+          internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+          internetDetailPage.isCaptivePortalUI2022Enabled_ = false;
+          return flushAsync().then(() => {
+            const networkStateText =
+                internetDetailPage.shadowRoot.querySelector(`#networkState`);
+            assertTrue(networkStateText.hasAttribute('connected'));
+            assertEquals(
+                networkStateText.textContent.trim(),
+                internetDetailPage.i18n('OncConnected'));
+            const signinButton =
+                internetDetailPage.shadowRoot.querySelector(`#signinButton`);
+            // Button does not exist because feature flag is disabled.
+            assertTrue(!signinButton);
+          });
+        });
 
     test('Hidden toggle enabled', function() {
       init();
