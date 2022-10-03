@@ -6910,6 +6910,13 @@
     "expiry_milestone": 110
   },
   {
+    "name": "webauthn-new-desktop-ui",
+    "owners": [
+      "chrome-webauthn@google.com"
+    ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "webnotes-dynamic-templates",
     "owners": ["chrome-creation@google.com"],
     "expiry_milestone": 103

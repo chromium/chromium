@@ -1787,6 +1787,9 @@ extern const char kAppStoreBillingDebugDescription[];
 extern const char kWebAuthnConditionalUIName[];
 extern const char kWebAuthnConditionalUIDescription[];
 
+extern const char kWebAuthnNewDesktopUIName[];
+extern const char kWebAuthnNewDesktopUIDescription[];
+
 extern const char kWebrtcCaptureMultiChannelApmName[];
 extern const char kWebrtcCaptureMultiChannelApmDescription[];
 

@@ -9579,6 +9579,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnConditionalUIDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebAuthConditionalUI)},
 
+    {"webauthn-new-desktop-ui", flag_descriptions::kWebAuthnNewDesktopUIName,
+     flag_descriptions::kWebAuthnNewDesktopUIDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(device::kWebAuthnNewDiscoverableCredentialsUi)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"arc-nearby-share-fuse-box", flag_descriptions::kArcNearbyShareFuseBoxName,
      flag_descriptions::kArcNearbyShareFuseBoxDescription, kOsCrOS,

@@ -60192,6 +60192,8 @@ from previous Chrome versions.
   <int value="115999065" label="ContextualSearchForceCaption:disabled"/>
   <int value="116287989"
       label="ignore-litepage-redirect-optimization-blacklist"/>
+  <int value="116643273"
+      label="WebAuthenticationNewDiscoverableCredentialsUi:enabled"/>
   <int value="116697601" label="OmniboxSuggestionButtonRow:disabled"/>
   <int value="117076190" label="DriveFsBidirectionalNativeMessaging:disabled"/>
   <int value="117497596" label="SidePanelDragAndDrop:disabled"/>
@@ -62523,6 +62525,8 @@ from previous Chrome versions.
   <int value="1546652609" label="SharingHubDesktopOmnibox:disabled"/>
   <int value="1548776701" label="AllBookmarks:disabled"/>
   <int value="1548942246" label="PassiveDocumentEventListeners:disabled"/>
+  <int value="1551743170"
+      label="WebAuthenticationNewDiscoverableCredentialsUi:disabled"/>
   <int value="1552753678" label="DnsHttpssvc:disabled"/>
   <int value="1553017633" label="OmniboxHeaderPaddingUpdate:disabled"/>
   <int value="1553310752" label="AccessibilityCursorColor:enabled"/>

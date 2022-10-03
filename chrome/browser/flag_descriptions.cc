@@ -3187,6 +3187,10 @@ const char kWebAuthnConditionalUIName[] = "Web Authentication Conditional UI";
 const char kWebAuthnConditionalUIDescription[] =
     "Enable support for Conditional UI WebAuthn requests.";
 
+const char kWebAuthnNewDesktopUIName[] = "Web Authentication new desktop UI";
+const char kWebAuthnNewDesktopUIDescription[] =
+    "Enable updated UI dialog for WebAuthn requests.";
+
 const char kWebrtcCaptureMultiChannelApmName[] =
     "WebRTC multi-channel capture audio processing.";
 const char kWebrtcCaptureMultiChannelApmDescription[] =
