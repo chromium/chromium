@@ -302,6 +302,10 @@ class AuthenticatorRequestDialogModel {
     return ephemeral_state_.selected_authenticator_id_;
   }
 
+  const absl::optional<std::string>& selected_phone_name() const {
+    return ephemeral_state_.selected_phone_name_;
+  }
+
   // Starts the UX flow, by either showing the transport selection screen or
   // the guided flow for them most likely transport.
   //
@@ -543,6 +547,10 @@ class AuthenticatorRequestDialogModel {
   // SetCurrentStepForTesting forces the model to the specified step.
   void SetCurrentStepForTesting(Step step);
 
+  TransportAvailabilityInfo& transport_availability_for_testing() {
+    return transport_availability_;
+  }
+
   void ReplaceCredListForTesting(
       std::vector<device::DiscoverableCredentialMetadata> creds);
 
@@ -638,6 +646,11 @@ class AuthenticatorRequestDialogModel {
     // Represents the id of the Bluetooth authenticator that the user is trying
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
     absl::optional<std::string> selected_authenticator_id_;
+
+    // The name of the paired phone that was passed to `ContactPhone()`. It is
+    // shown on the UI sheet that prompts the user to check their phone for
+    // a notification.
+    absl::optional<std::string> selected_phone_name_;
 
     // Stores a list of |AuthenticatorReference| values such that a request can
     // be dispatched dispatched after some UI interaction. This is useful for

@@ -15,6 +15,9 @@ class PasskeyDetailView : public views::View {
   METADATA_HEADER(PasskeyDetailView);
 
   explicit PasskeyDetailView(const device::PublicKeyCredentialUserEntity& user);
+
+  // views::View:
+  void OnThemeChanged() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PASSKEY_DETAIL_VIEW_H_

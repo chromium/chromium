@@ -171,11 +171,11 @@ std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
     switch (dialog_model()->transport_availability()->request_type) {
       case device::FidoRequestType::kMakeCredential:
-        // TODO(1358719): i18n
-        return u"Create a passkey";
+        return l10n_util::GetStringUTF16(
+            IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_TITLE);
       case device::FidoRequestType::kGetAssertion:
-        // TODO(1358719): i18n
-        return u"Sign-in with a passkey";
+        return l10n_util::GetStringUTF16(
+            IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_TITLE);
     }
   }
   return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_TRANSPORT_SELECTION_TITLE,
@@ -188,13 +188,13 @@ std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepDescription()
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
     switch (dialog_model()->transport_availability()->request_type) {
       case device::FidoRequestType::kMakeCredential:
-        // TODO(1358719): i18n
-        return u"Choose a device on which to create a passkey for " +
-               GetRelyingPartyIdString(dialog_model());
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_BODY,
+            GetRelyingPartyIdString(dialog_model()));
       case device::FidoRequestType::kGetAssertion:
-        // TODO(1358719): i18n
-        return u"Choose a device to sign into " +
-               GetRelyingPartyIdString(dialog_model());
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_BODY,
+            GetRelyingPartyIdString(dialog_model()));
     }
   }
   return l10n_util::GetStringUTF16(
@@ -795,6 +795,10 @@ const gfx::VectorIcon& AuthenticatorPaaskSheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE);
+  }
   switch (dialog_model()->experiment_server_link_title_) {
     case AuthenticatorRequestDialogModel::ExperimentServerLinkTitle::CONTROL:
       return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE);
@@ -805,6 +809,12 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
 }
 
 std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return l10n_util::GetStringFUTF16(
+        IDS_WEBAUTHN_CABLE_ACTIVATE_DEVICE_NAME_DESCRIPTION,
+        base::UTF8ToUTF16(dialog_model()->selected_phone_name().value_or("")));
+  }
   switch (dialog_model()->cable_ui_type()) {
     case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
       return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
@@ -832,6 +842,12 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
           GetRelyingPartyIdString(dialog_model()), notification_title);
     }
   }
+}
+
+bool AuthenticatorPaaskSheetModel::IsOtherMechanismButtonVisible() const {
+  DCHECK(base::FeatureList::IsEnabled(
+      device::kWebAuthnNewDiscoverableCredentialsUi));
+  return false;
 }
 
 ui::MenuModel* AuthenticatorPaaskSheetModel::GetOtherMechanismsMenuModel() {
@@ -907,6 +923,13 @@ std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
 ui::MenuModel*
 AuthenticatorAndroidAccessorySheetModel::GetOtherMechanismsMenuModel() {
   return other_mechanisms_menu_model_.get();
+}
+
+bool AuthenticatorAndroidAccessorySheetModel::IsOtherMechanismButtonVisible()
+    const {
+  DCHECK(base::FeatureList::IsEnabled(
+      device::kWebAuthnNewDiscoverableCredentialsUi));
+  return false;
 }
 
 // AuthenticatorClientPinEntrySheetModel
@@ -1407,11 +1430,11 @@ std::u16string AuthenticatorSelectAccountSheetModel::GetStepTitle() const {
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
     switch (selection_type_) {
       case kSingleAccount:
-        // TODO(1358719): i18n
-        return u"Use this passkey?";
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_USE_PASSKEY_TITLE,
+            GetRelyingPartyIdString(dialog_model()));
       case kMultipleAccounts:
-        // TODO(1358719): i18n
-        return u"Choose a passkey";
+        return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CHOOSE_PASSKEY_TITLE);
     }
   }
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_SELECT_ACCOUNT);
@@ -1423,13 +1446,11 @@ std::u16string AuthenticatorSelectAccountSheetModel::GetStepDescription()
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
     switch (selection_type_) {
       case kSingleAccount:
-        // TODO(1358719): i18n
-        return u"This passkey will be used for " +
-               GetRelyingPartyIdString(dialog_model());
+        return u"";
       case kMultipleAccounts:
-        // TODO(1358719): i18n
-        return u"Which passkey would you like to use for " +
-               GetRelyingPartyIdString(dialog_model()) + u"?";
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_CHOOSE_PASSKEY_BODY,
+            GetRelyingPartyIdString(dialog_model()));
     }
   }
   return std::u16string();
@@ -1569,11 +1590,9 @@ std::u16string AuthenticatorQRSheetModel::GetStepTitle() const {
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
     switch (dialog_model()->transport_availability()->request_type) {
       case device::FidoRequestType::kMakeCredential:
-        // TODO(1358719): i18n
-        return u"Create a passkey on another device";
+        return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CREATE_PASSKEY_QR_TITLE);
       case device::FidoRequestType::kGetAssertion:
-        // TODO(1358719): i18n
-        return u"Use a passkey from another device";
+        return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_PASSKEY_QR_TITLE);
     }
   }
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
@@ -1584,13 +1603,13 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
           device::kWebAuthnNewDiscoverableCredentialsUi)) {
     switch (dialog_model()->transport_availability()->request_type) {
       case device::FidoRequestType::kMakeCredential:
-        // TODO(1358719): i18n
-        return u"Scan this QR code with your phone to create a passkey for " +
-               GetRelyingPartyIdString(dialog_model());
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_CREATE_PASSKEY_QR_BODY,
+            GetRelyingPartyIdString(dialog_model()));
       case device::FidoRequestType::kGetAssertion:
-        // TODO(1358719): i18n
-        return u"Scan this QR code to use a passkey for " +
-               GetRelyingPartyIdString(dialog_model()) + u" from your phone";
+        return l10n_util::GetStringFUTF16(
+            IDS_WEBAUTHN_USE_PASSKEY_QR_BODY,
+            GetRelyingPartyIdString(dialog_model()));
     }
   }
   return l10n_util::GetStringUTF16(IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP);
@@ -1620,21 +1639,28 @@ AuthenticatorCreatePasskeySheetModel::GetStepIllustration(
 }
 
 std::u16string AuthenticatorCreatePasskeySheetModel::GetStepTitle() const {
-  // TODO(1358719): i18n
-  return u"Create a passkey";
+  return l10n_util::GetStringFUTF16(IDS_WEBAUTHN_CREATE_PASSKEY_TITLE,
+                                    GetRelyingPartyIdString(dialog_model()));
 }
 
 std::u16string AuthenticatorCreatePasskeySheetModel::GetStepDescription()
     const {
-  if (dialog_model()->transport_availability()->is_off_the_record_context) {
-    // TODO(1358719): i18n
-    return u"This passkey will be used for " +
-           GetRelyingPartyIdString(dialog_model()) +
-           u". It will be stored after you exit incognito mode.";
-  }
-  // TODO(1358719): i18n
-  return u"This passkey will be used for " +
-         GetRelyingPartyIdString(dialog_model());
+  return u"";
+}
+
+std::u16string
+AuthenticatorCreatePasskeySheetModel::passkey_storage_description() const {
+#if BUILDFLAG(IS_WIN)
+  return l10n_util::GetStringUTF16(
+      dialog_model()->transport_availability()->is_off_the_record_context
+          ? IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_WIN_INCOGNITO
+          : IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_WIN);
+#else
+  return l10n_util::GetStringUTF16(
+      dialog_model()->transport_availability()->is_off_the_record_context
+          ? IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_INCOGNITO
+          : IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA);
+#endif
 }
 
 bool AuthenticatorCreatePasskeySheetModel::IsAcceptButtonVisible() const {

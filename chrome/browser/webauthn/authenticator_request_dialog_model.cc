@@ -753,6 +753,9 @@ absl::optional<size_t> AuthenticatorRequestDialogModel::current_mechanism()
 
 void AuthenticatorRequestDialogModel::ContactPhoneForTesting(
     const std::string& name) {
+  // Ensure BLE is powered so that `ContactPhone()` shows the "Check your phone"
+  // screen right away.
+  transport_availability_.is_ble_powered = true;
   ContactPhone(name, /*mechanism_index=*/0);
 }
 
@@ -1055,10 +1058,12 @@ void AuthenticatorRequestDialogModel::DispatchRequestAsyncInternal(
 void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
     const std::string& name) {
   bool found_name = false;
+  ephemeral_state_.selected_phone_name_.reset();
   for (size_t i = 0; i != paired_phones_.size(); i++) {
     const PairedPhone& phone = paired_phones_[i];
     if (phone.name == name) {
       found_name = true;
+      ephemeral_state_.selected_phone_name_ = name;
       if (!paired_phones_contacted_[i]) {
         paired_phones_contacted_[i] = true;
         contact_phone_callback_.Run(phone.contact_id);
@@ -1153,6 +1158,40 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
              (!include_add_phone_option && paired_phone_names().empty())));
   }
 
+  if (base::Contains(transport_availability_.available_transports, kCable)) {
+    for (const auto& phone_name : paired_phone_names()) {
+      const std::u16string name16 = base::UTF8ToUTF16(phone_name);
+      static constexpr size_t kMaxLongNameChars = 50;
+      static constexpr size_t kMaxShortNameChars = 30;
+      std::u16string long_name, short_name;
+      gfx::ElideString(name16, kMaxLongNameChars, &long_name);
+      gfx::ElideString(name16, kMaxShortNameChars, &short_name);
+
+      mechanisms_.emplace_back(
+          Mechanism::Phone(phone_name), std::move(long_name),
+          std::move(short_name), kSmartphoneIcon,
+          base::BindRepeating(&AuthenticatorRequestDialogModel::ContactPhone,
+                              base::Unretained(this), phone_name,
+                              mechanisms_.size()),
+          /*priority=*/false);
+    }
+  }
+
+  for (const auto transport : transports_to_list_if_active) {
+    if (!base::Contains(transport_availability_.available_transports,
+                        transport)) {
+      continue;
+    }
+
+    mechanisms_.emplace_back(
+        Mechanism::Transport(transport), GetTransportDescription(transport),
+        GetTransportShortDescription(transport), GetTransportIcon(transport),
+        base::BindRepeating(
+            &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
+            base::Unretained(this), transport, mechanisms_.size()),
+        priority_transport.has_value() && *priority_transport == transport);
+  }
+
   if (include_add_phone_option) {
     // If there's no other priority mechanism, and no phones, jump directly to
     // showing a QR code.
@@ -1173,48 +1212,17 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
       }
     }
 
-    const std::u16string label =
-        l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
+    const std::u16string label = l10n_util::GetStringUTF16(
+        base::FeatureList::IsEnabled(
+            device::kWebAuthnNewDiscoverableCredentialsUi)
+            ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_DEVICE_LABEL
+            : IDS_WEBAUTHN_CABLEV2_ADD_PHONE);
     mechanisms_.emplace_back(
         Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartGuidedFlowForAddPhone,
             base::Unretained(this), mechanisms_.size()),
         is_priority);
-  }
-
-  for (const auto transport : transports_to_list_if_active) {
-    if (!base::Contains(transport_availability_.available_transports,
-                        transport)) {
-      continue;
-    }
-
-    mechanisms_.emplace_back(
-        Mechanism::Transport(transport), GetTransportDescription(transport),
-        GetTransportShortDescription(transport), GetTransportIcon(transport),
-        base::BindRepeating(
-            &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
-            base::Unretained(this), transport, mechanisms_.size()),
-        priority_transport.has_value() && *priority_transport == transport);
-  }
-
-  if (base::Contains(transport_availability_.available_transports, kCable)) {
-    for (const auto& phone_name : paired_phone_names()) {
-      const std::u16string name16 = base::UTF8ToUTF16(phone_name);
-      static constexpr size_t kMaxLongNameChars = 50;
-      static constexpr size_t kMaxShortNameChars = 30;
-      std::u16string long_name, short_name;
-      gfx::ElideString(name16, kMaxLongNameChars, &long_name);
-      gfx::ElideString(name16, kMaxShortNameChars, &short_name);
-
-      mechanisms_.emplace_back(
-          Mechanism::Phone(phone_name), std::move(long_name),
-          std::move(short_name), kSmartphoneIcon,
-          base::BindRepeating(&AuthenticatorRequestDialogModel::ContactPhone,
-                              base::Unretained(this), phone_name,
-                              mechanisms_.size()),
-          /*priority=*/false);
-    }
   }
 
   // At most one mechanism has priority.

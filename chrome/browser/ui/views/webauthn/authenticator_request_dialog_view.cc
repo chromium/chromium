@@ -276,8 +276,7 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
         base::BindRepeating(
             &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
             base::Unretained(this)),
-        // TODO(1358719): i18n
-        u"Choose another way");
+        l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRY_ANOTHER_WAY));
   } else {
     other_mechanisms_button_ = new views::MdTextButtonWithDownArrow(
         base::BindRepeating(

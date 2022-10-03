@@ -208,18 +208,18 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, aoa, cable},
        {},
        {"a", "b"},
-       {add, t(usb), p("a"), p("b")},
+       {p("a"), p("b"), t(usb), add},
        mss},
       {ga,
        {usb, aoa, cable},
        {},
        {"a", "b"},
-       {add, t(usb), p("a"), p("b")},
+       {p("a"), p("b"), t(usb), add},
        mss},
 
       // On Windows, if there are linked phones we'll show a selection sheet.
-      {mc, {cable}, {has_winapi}, {"a"}, {winapi, add, p("a")}, mss},
-      {ga, {cable}, {has_winapi}, {"a"}, {winapi, add, p("a")}, mss},
+      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a"), add}, mss},
+      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a"), add}, mss},
       // ... unless the `prefer_native_api` flag is set because Chrome
       // remembered that the last successful security key operation was via the
       // Windows API. In that case we'll still jump directly to the native UI.
@@ -227,13 +227,13 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {cable},
        {has_winapi, native},
        {"a"},
-       {winapi, add, p("a")},
+       {winapi, p("a"), add},
        plat_ui},
       {ga,
        {cable},
        {has_winapi, native},
        {"a"},
-       {winapi, add, p("a")},
+       {winapi, p("a"), add},
        plat_ui},
       // Even without `prefer_native_api`, if there aren't any linked phones
       // we'll still jump directly to the native UI, at least until we enable
