@@ -1910,6 +1910,12 @@ BASE_FEATURE(kUseAuthFactors,
              "UseAuthFactors",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, uses the new AuthSession-based API as backend of the
+// quickUnlockPrivate extension API.
+BASE_FEATURE(kUseAuthsessionQuickUnlock,
+             "UseAuthsessionQuickUnlock",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
 BASE_FEATURE(kUseBluetoothSystemInAsh,
              "UseBluetoothSystemInAsh",
@@ -2923,6 +2929,11 @@ bool IsUploadOfficeToCloudEnabled() {
 
 bool IsUseAuthFactorsEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthFactors);
+}
+
+bool IsUseAuthsessionQuickUnlockEnabled() {
+  return IsUseAuthFactorsEnabled() &&
+         base::FeatureList::IsEnabled(kUseAuthsessionQuickUnlock);
 }
 
 bool IsUseLoginShelfWidgetEnabled() {

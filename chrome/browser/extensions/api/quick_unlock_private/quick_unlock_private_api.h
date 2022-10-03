@@ -17,9 +17,12 @@
 namespace ash {
 class AuthStatusConsumer;
 class ExtendedAuthenticator;
+class AuthenticationError;
 }  // namespace ash
 
 namespace extensions {
+
+class QuickUnlockPrivateGetAuthTokenHelper;
 
 class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
  public:
@@ -47,9 +50,11 @@ class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
   // ExtensionFunction overrides.
   ResponseAction Run() override;
 
-  // Continuation of Run(). Params match
-  // QuickUnlockPrivateGetAuthTokenHelper::ResultCallback.
-  void OnResult(
+  void OnResult(absl::optional<api::quick_unlock_private::TokenInfo> token_info,
+                absl::optional<ash::AuthenticationError> error);
+
+  // Continuation of Run() when using the legacy cryptohome API.
+  void OnLegacyResult(
       bool success,
       std::unique_ptr<api::quick_unlock_private::TokenInfo> token_info,
       const std::string& error_message);
@@ -58,6 +63,7 @@ class QuickUnlockPrivateGetAuthTokenFunction : public ExtensionFunction {
   ChromeExtensionFunctionDetails chrome_details_;
   scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
   AuthenticatorAllocator authenticator_allocator_;
+  std::unique_ptr<QuickUnlockPrivateGetAuthTokenHelper> helper_;
 };
 
 class QuickUnlockPrivateSetLockScreenEnabledFunction

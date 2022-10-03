@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -230,32 +232,46 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
       quick_unlock_private::GetAuthToken::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  scoped_refptr<QuickUnlockPrivateGetAuthTokenHelper> helper =
-      base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenHelper>(
-          GetActiveProfile(browser_context()));
+  Profile* profile = GetActiveProfile(browser_context());
 
-  // Lazily allocate the authenticator. We do this here, instead of in the ctor,
-  // so that tests can install a fake.
-  DCHECK(!extended_authenticator_);
-  if (authenticator_allocator_) {
-    extended_authenticator_ = authenticator_allocator_.Run(helper.get());
-  } else {
-    extended_authenticator_ = ash::ExtendedAuthenticator::Create(helper.get());
+  if (!ash::features::IsUseAuthsessionQuickUnlockEnabled()) {
+    // Legacy flow, uses old cryptohome API methods.
+    scoped_refptr<LegacyQuickUnlockPrivateGetAuthTokenHelper> helper =
+        base::MakeRefCounted<LegacyQuickUnlockPrivateGetAuthTokenHelper>(
+            profile);
+
+    // Lazily allocate the authenticator. We do this here, instead of in the
+    // ctor, so that tests can install a fake.
+    DCHECK(!extended_authenticator_);
+    if (authenticator_allocator_) {
+      extended_authenticator_ = authenticator_allocator_.Run(helper.get());
+    } else {
+      extended_authenticator_ =
+          ash::ExtendedAuthenticator::Create(helper.get());
+    }
+
+    // The extension function needs to stay alive while the authenticator runs
+    // the password check via |helper|, so add ref before the authenticator
+    // starts, and remove the ref at the end of OnResult() call
+    AddRef();
+
+    helper->Run(
+        extended_authenticator_.get(), params->account_password,
+        base::BindOnce(&QuickUnlockPrivateGetAuthTokenFunction::OnLegacyResult,
+                       WrapRefCounted(this)));
+    return RespondLater();
   }
 
-  // The extension function needs to stay alive while the authenticator runs the
-  // password check via |helper|, so add ref before the authenticator starts,
-  // and remove the ref at the end of OnResult() call
-  AddRef();
-
-  helper->Run(extended_authenticator_.get(), params->account_password,
-              base::BindOnce(&QuickUnlockPrivateGetAuthTokenFunction::OnResult,
-                             base::Unretained(this)));
-
+  DCHECK(!helper_);
+  helper_ = std::make_unique<QuickUnlockPrivateGetAuthTokenHelper>(
+      profile, params->account_password);
+  auto callback = base::BindOnce(
+      &QuickUnlockPrivateGetAuthTokenFunction::OnResult, WrapRefCounted(this));
+  helper_->Run(std::move(callback));
   return RespondLater();
 }
 
-void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
+void QuickUnlockPrivateGetAuthTokenFunction::OnLegacyResult(
     bool success,
     std::unique_ptr<api::quick_unlock_private::TokenInfo> token_info,
     const std::string& error_message) {
@@ -269,6 +285,20 @@ void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
   }
 
   Release();  // Balanced in Run().
+}
+
+void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
+    absl::optional<api::quick_unlock_private::TokenInfo> token_info,
+    absl::optional<ash::AuthenticationError> error) {
+  if (!token_info.has_value()) {
+    DCHECK(error.has_value());
+    Respond(
+        Error(LegacyQuickUnlockPrivateGetAuthTokenHelper::kPasswordIncorrect));
+    return;
+  }
+
+  Respond(ArgumentList(quick_unlock_private::GetAuthToken::Results::Create(
+      std::move(*token_info))));
 }
 
 // quickUnlockPrivate.setLockScreenEnabled

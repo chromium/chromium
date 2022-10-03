@@ -170,10 +170,23 @@ class QuickUnlockPrivateUnitTest
 
  protected:
   void SetUp() override {
+    const auto param = GetParam();
+
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    // TODO(b/239681292): Add (integration) tests with AuthsessionQuickUnlock
+    // enabled.
+    disabled_features.push_back(ash::features::kUseAuthsessionQuickUnlock);
+
     // Enable/disable PIN auto submit
-    auto param = GetParam();
-    feature_list_.InitWithFeatureState(ash::features::kQuickUnlockPinAutosubmit,
-                                       std::get<1>(param));
+    if (std::get<1>(param)) {
+      enabled_features.push_back(ash::features::kQuickUnlockPinAutosubmit);
+    } else {
+      disabled_features.push_back(ash::features::kQuickUnlockPinAutosubmit);
+    }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
     ash::CryptohomeMiscClient::InitializeFake();
     ash::UserDataAuthClient::InitializeFake();

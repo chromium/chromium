@@ -6,6 +6,8 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
+#include "ash/constants/ash_features.h"
+
 #include "chrome/browser/ui/webui/settings/ash/os_settings_browser_test_mixin.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 
@@ -18,15 +20,33 @@ namespace {
 const char kCorrectPassword[] = "correct-password";
 const char kIncorrectPassword[] = "incorrect-password";
 
+struct Params {
+  const bool use_auth_session;
+};
+
 }  // namespace
 
 namespace chromeos::settings {
 
 // Test of the authentication dialog in the lock screen page in os-settings.
 class OSSettingsLockScreenAuthenticationTest
-    : public MixinBasedInProcessBrowserTest {
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<Params> {
  public:
-  OSSettingsLockScreenAuthenticationTest() = default;
+  OSSettingsLockScreenAuthenticationTest() {
+    if (GetParam().use_auth_session) {
+      feature_list_.InitWithFeatures(
+          {ash::features::kUseAuthFactors,
+           ash::features::kUseAuthsessionQuickUnlock},
+          {});
+      CHECK(ash::features::IsUseAuthsessionQuickUnlockEnabled());
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {ash::features::kUseAuthFactors,
+               ash::features::kUseAuthsessionQuickUnlock});
+      CHECK(!ash::features::IsUseAuthsessionQuickUnlockEnabled());
+    }
+  }
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -40,9 +60,12 @@ class OSSettingsLockScreenAuthenticationTest
  protected:
   ash::CryptohomeMixin cryptohome_{&mixin_host_};
   OSSettingsBrowserTestMixin os_settings_{&mixin_host_};
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
                        SuccessfulUnlock) {
   auto lock_screen_settings = os_settings_.GoToLockScreenSettings();
   lock_screen_settings.AssertAuthenticated(false);
@@ -50,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest,
   lock_screen_settings.AssertAuthenticated(true);
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
+IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
   auto lock_screen_settings = os_settings_.GoToLockScreenSettings();
   lock_screen_settings.AssertAuthenticated(false);
   lock_screen_settings.AuthenticateIncorrectly(kIncorrectPassword);
@@ -58,5 +81,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsLockScreenAuthenticationTest, FailedUnlock) {
   lock_screen_settings.Authenticate(kCorrectPassword);
   lock_screen_settings.AssertAuthenticated(true);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OSSettingsLockScreenAuthenticationTest,
+                         testing::Values(Params{.use_auth_session = false},
+                                         Params{.use_auth_session = true}));
 
 }  // namespace chromeos::settings
