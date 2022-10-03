@@ -1518,7 +1518,7 @@
       "enable_perfetto_zlib": true,
       "is_component_build": false,
       "is_debug": false,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-annotator-rel": {

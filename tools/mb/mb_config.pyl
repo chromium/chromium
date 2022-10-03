@@ -471,7 +471,7 @@
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-hermetic-upgrade-rel': 'release_bot_reclient',
       'mac-perfetto-rel': 'perfetto_release_bot_reclient',
-      'mac-upload-perfetto': 'release_bot_perfetto_zlib',
+      'mac-upload-perfetto': 'release_bot_perfetto_zlib_reclient',
       'win-annotator-rel': 'release_bot_reclient',
       'win-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64_reclient',
       'win-backuprefptr-x86-fyi-rel': 'release_trybot_backuprefptr_x86_reclient',
@@ -635,7 +635,7 @@
       'ios-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot',
+      'mac-arm64-on-arm64-rel': 'mac_arm64_release_bot_reclient',
       'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
     },
 
@@ -743,7 +743,7 @@
     'chromium.updater': {
       'mac-updater-builder-arm64-dbg': 'updater_debug_bot_arm64',
       'mac-updater-builder-arm64-rel': 'updater_release_bot_arm64',
-      'mac-updater-builder-dbg': 'updater_debug_bot',
+      'mac-updater-builder-dbg': 'updater_debug_bot_reclient',
       'mac-updater-builder-rel': 'updater_release_bot_reclient',
       'win-updater-builder-dbg': 'updater_debug_bot_reclient',
       'win-updater-builder-rel': 'updater_release_bot_reclient',
@@ -3233,10 +3233,6 @@
       'arm64', 'gpu_tests', 'release_trybot', 'no_symbols',
     ],
 
-    'mac_arm64_release_bot': [
-      'release_bot', 'arm64',
-    ],
-
     'mac_arm64_release_bot_reclient': [
       'release_bot_reclient', 'arm64',
     ],
@@ -3539,10 +3535,6 @@
 
     'release_bot_minimal_symbols_reclient': [
       'release_bot_reclient', 'minimal_symbols',
-    ],
-
-    'release_bot_perfetto_zlib': [
-      'release_bot', 'perfetto_zlib',
     ],
 
     'release_bot_perfetto_zlib_reclient' : [

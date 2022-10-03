@@ -97,7 +97,7 @@
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-arm64-rel": {
