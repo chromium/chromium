@@ -3256,6 +3256,12 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
   if (!service)
     return false;
 
+// Region selection is broken in PWAs on Mac
+#if BUILDFLAG(IS_MAC)
+  if (IsInProgressiveWebApp())
+    return false;
+#endif  // BUILDFLAG(IS_MAC)
+
   if (!base::FeatureList::IsEnabled(
           lens::features::kEnableRegionSearchOnPdfViewer) &&
       IsFrameInPdfViewer(GetRenderFrameHost())) {
