@@ -6,7 +6,6 @@ import 'chrome://diagnostics/routine_section.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {createRoutine} from 'chrome://diagnostics/diagnostics_utils.js';
-import {fakePowerRoutineResults, fakeRoutineResults} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
@@ -44,7 +43,7 @@ export function routineSectionTestSuite() {
 
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+        routineController.getAllRoutines());
 
     setSystemRoutineControllerForTesting(routineController);
   });

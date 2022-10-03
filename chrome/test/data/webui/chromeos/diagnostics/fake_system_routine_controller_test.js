@@ -45,8 +45,8 @@ export function fakeSystemRoutineContollerTestSuite() {
 
         if (resultInfo.result.hasOwnProperty('powerResult')) {
           assertEquals(expectedResult, resultInfo.result.powerResult.result);
-
           // Can't have both simpleResult and powerResult
+
           assertFalse(resultInfo.result.hasOwnProperty('simpleResult'));
         }
 

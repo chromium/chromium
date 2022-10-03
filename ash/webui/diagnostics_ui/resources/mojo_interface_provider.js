@@ -97,7 +97,7 @@ function setupFakeSystemRoutineController() {
 
   // Enable all routines by default.
   systemRoutineController.setFakeSupportedRoutines(
-      [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()]);
+      systemRoutineController.getAllRoutines());
 }
 
 /**

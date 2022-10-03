@@ -5,12 +5,10 @@
 import {NetworkGuidInfo} from './diagnostics_types.js';
 import {ConnectionType, KeyboardInfo, MechanicalLayout, NumberPadPresence, PhysicalLayout, TopRightKey, TopRowKey, TouchDeviceInfo, TouchDeviceType} from './input_data_provider.mojom-webui.js';
 import {stringToMojoString16} from './mojo_utils.js';
-import {AuthenticationType, LockType, Network, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
+import {AuthenticationType, CellularStateProperties, EthernetStateProperties, IPConfigProperties, LockType, Network, NetworkState, NetworkType, RoamingState, SecurityType, WiFiStateProperties} from './network_health_provider.mojom-webui.js';
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, CpuUsage, ExternalPowerSource, MemoryUsage, SystemInfo} from './system_data_provider.mojom-webui.js';
-import {PowerRoutineResult, RoutineType, StandardRoutineResult} from './system_routine_controller.mojom-webui.js';
 
-/** @type {!Array<!BatteryChargeStatus>} */
-export const fakeBatteryChargeStatus = [
+export const fakeBatteryChargeStatus: BatteryChargeStatus[] = [
   {
     chargeNowMilliampHours: 4200,
     currentNowMilliamps: 1123,
@@ -41,16 +39,15 @@ export const fakeBatteryChargeStatus = [
   },
 ];
 
-/** @type {!Array<!BatteryChargeStatus>} */
-export const fakeBatteryChargeStatus2 = [{
+export const fakeBatteryChargeStatus2: BatteryChargeStatus[] = [{
+  batteryState: BatteryState.kDischarging,
   chargeNowMilliampHours: 4200,
   currentNowMilliamps: 1123,
   powerAdapterStatus: ExternalPowerSource.kDisconnected,
   powerTime: stringToMojoString16('3h 15m'),
 }];
 
-/** @type {!Array<!BatteryHealth>} */
-export const fakeBatteryHealth2 = [
+export const fakeBatteryHealth2: BatteryHealth[] = [
   {
     batteryWearPercentage: 7,
     chargeFullDesignMilliampHours: 6000,
@@ -59,16 +56,15 @@ export const fakeBatteryHealth2 = [
   },
 ];
 
-/** @type {!Array<!BatteryChargeStatus>} */
-export const fakeBatteryChargeStatus3 = [{
+export const fakeBatteryChargeStatus3: BatteryChargeStatus[] = [{
+  batteryState: BatteryState.kDischarging,
   chargeNowMilliampHours: 0,
   currentNowMilliamps: 0,
   powerAdapterStatus: ExternalPowerSource.kDisconnected,
   powerTime: stringToMojoString16('0m'),
 }];
 
-/** @type {!Array<!BatteryHealth>} */
-export const fakeBatteryHealth3 = [
+export const fakeBatteryHealth3: BatteryHealth[] = [
   {
     batteryWearPercentage: 0,
     chargeFullDesignMilliampHours: 0,
@@ -77,8 +73,7 @@ export const fakeBatteryHealth3 = [
   },
 ];
 
-/** @type {!Array<!BatteryHealth>} */
-export const fakeBatteryHealth = [
+export const fakeBatteryHealth: BatteryHealth[] = [
   {
     batteryWearPercentage: 7,
     chargeFullDesignMilliampHours: 6000,
@@ -86,79 +81,83 @@ export const fakeBatteryHealth = [
     cycleCount: 73,
   },
   {
-    battery_weabatteryWearPercentager_percentage: 8,
+    batteryWearPercentage: 8,
     chargeFullDesignMilliampHours: 6000,
     chargeFullNowMilliampHours: 5699,
     cycleCount: 73,
   },
 ];
 
-/** @type {!BatteryInfo} */
-export const fakeBatteryInfo = {
+export const fakeBatteryInfo: BatteryInfo = {
   chargeFullDesignMilliampHours: 6000,
   manufacturer: 'BatterCorp USA',
 };
 
-/** @type {!BatteryInfo} */
-export const fakeBatteryInfo2 = {
+export const fakeBatteryInfo2: BatteryInfo = {
   chargeFullDesignMilliampHours: 9000,
   manufacturer: 'PowerPod 9000',
 };
 
-/** @type {!Array<!CpuUsage>} */
-export const fakeCpuUsage = [
+export const fakeCpuUsage: CpuUsage[] = [
   {
     averageCpuTempCelsius: 107,
     percentUsageSystem: 15,
     percentUsageUser: 20,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 65,
   },
   {
     averageCpuTempCelsius: 106,
     percentUsageSystem: 30,
     percentUsageUser: 40,
     scalingCurrentFrequencyKhz: 1000,
+    percentUsageFree: 0,
   },
   {
     averageCpuTempCelsius: 107,
     percentUsageSystem: 31,
     percentUsageUser: 45,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 24,
   },
   {
     averageCpuTempCelsius: 109,
     percentUsageSystem: 55,
     percentUsageUser: 24,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 21,
   },
   {
     averageCpuTempCelsius: 109,
     percentUsageSystem: 49,
     percentUsageUser: 10,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 41,
   },
   {
     averageCpuTempCelsius: 161,
     percentUsageSystem: 1,
     percentUsageUser: 99,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 0,
   },
   {
     averageCpuTempCelsius: 118,
     percentUsageSystem: 35,
     percentUsageUser: 37,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 28,
   },
   {
     averageCpuTempCelsius: 110,
     percentUsageSystem: 26,
     percentUsageUser: 30,
     scalingCurrentFrequencyKhz: 900,
+    percentUsageFree: 44,
   },
 ];
 
-/** @type {!Array<!MemoryUsage>} */
-export const fakeMemoryUsage = [
+export const fakeMemoryUsage: MemoryUsage[] = [
   {
     availableMemoryKib: 570000,
     freeMemoryKib: 150000,
@@ -181,8 +180,7 @@ export const fakeMemoryUsage = [
   },
 ];
 
-/** @type {!Array<!MemoryUsage>} */
-export const fakeMemoryUsageLowAvailableMemory = [
+export const fakeMemoryUsageLowAvailableMemory: MemoryUsage[] = [
   {
     availableMemoryKib: 57000,
     freeMemoryKib: 15000,
@@ -205,8 +203,7 @@ export const fakeMemoryUsageLowAvailableMemory = [
   },
 ];
 
-/** @type {!SystemInfo} */
-export const fakeSystemInfo = {
+export const fakeSystemInfo: SystemInfo = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
@@ -217,8 +214,7 @@ export const fakeSystemInfo = {
   versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 
-/** @type {!SystemInfo} */
-export const fakeSystemInfoWithoutBattery = {
+export const fakeSystemInfoWithoutBattery: SystemInfo = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
@@ -229,8 +225,7 @@ export const fakeSystemInfoWithoutBattery = {
   versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 
-/** @type {!SystemInfo} */
-export const fakeSystemInfoWithTBD = {
+export const fakeSystemInfoWithTBD: SystemInfo = {
   boardName: 'CrOS Board',
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
@@ -241,8 +236,7 @@ export const fakeSystemInfoWithTBD = {
   versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
 
-/** @type {!SystemInfo} */
-export const fakeSystemInfoWithoutBoardName = {
+export const fakeSystemInfoWithoutBoardName: SystemInfo = {
   boardName: '',
   cpuModelName: 'BestCpu SoFast 1000',
   cpuThreadsCount: 8,
@@ -252,71 +246,23 @@ export const fakeSystemInfoWithoutBoardName = {
   totalMemoryKib: 128000,
   versionInfo: {milestoneVersion: 'M99', fullVersionString: 'M99.1234.5.6'},
 };
-/** @type {!Map<!RoutineType, !StandardRoutineResult>} */
-export const fakeRoutineResults = new Map([
-  [RoutineType.kCpuStress, StandardRoutineResult.kTestPassed],
-  [RoutineType.kCpuCache, StandardRoutineResult.kTestPassed],
-  [RoutineType.kCpuFloatingPoint, StandardRoutineResult.kTestFailed],
-  [RoutineType.kCpuPrime, StandardRoutineResult.kExecutionError],
-  [RoutineType.kMemory, StandardRoutineResult.kTestPassed],
-  [RoutineType.kCaptivePortal, StandardRoutineResult.kTestPassed],
-  [RoutineType.kDnsLatency, StandardRoutineResult.kTestPassed],
-  [RoutineType.kDnsResolution, StandardRoutineResult.kTestPassed],
-  [RoutineType.kDnsResolverPresent, StandardRoutineResult.kTestPassed],
-  [RoutineType.kGatewayCanBePinged, StandardRoutineResult.kTestPassed],
-  [RoutineType.kHasSecureWiFiConnection, StandardRoutineResult.kTestPassed],
-  [RoutineType.kHttpFirewall, StandardRoutineResult.kTestPassed],
-  [RoutineType.kHttpsFirewall, StandardRoutineResult.kTestPassed],
-  [RoutineType.kHttpsLatency, StandardRoutineResult.kTestPassed],
-  [RoutineType.kLanConnectivity, StandardRoutineResult.kTestPassed],
-  [RoutineType.kSignalStrength, StandardRoutineResult.kTestPassed],
-  [RoutineType.kArcHttp, StandardRoutineResult.kTestPassed],
-  [RoutineType.kArcPing, StandardRoutineResult.kTestPassed],
-  [RoutineType.kArcDnsResolution, StandardRoutineResult.kTestPassed],
-]);
 
-/** @type {!Map<!RoutineType, !PowerRoutineResult>} */
-export const fakePowerRoutineResults = new Map([
-  [
-    RoutineType.kBatteryCharge,
-    {
-      result: StandardRoutineResult.kTestPassed,
-      is_charging: true,
-      percent_delta: 5,
-      time_delta_seconds: 10,
-    },
-  ],
-  [
-    RoutineType.kBatteryDischarge,
-    {
-      result: StandardRoutineResult.kUnableToRun,
-      is_charging: false,
-      percent_delta: 0,
-      time_delta_seconds: 0,
-    },
-  ],
-]);
-
-/** @type {!NetworkGuidInfo} */
-export const fakeAllNetworksAvailable = {
+export const fakeAllNetworksAvailable: NetworkGuidInfo = {
   networkGuids: ['wifiGuid', 'ethernetGuid', 'cellularGuid'],
   activeGuid: 'ethernetGuid',
 };
 
-/** @type {!NetworkGuidInfo} */
-export const fakeWifiAndCellularNetworksAvailable = {
+export const fakeWifiAndCellularNetworksAvailable: NetworkGuidInfo = {
   networkGuids: ['cellularGuid', 'wifiGuid'],
   activeGuid: 'wifiGuid',
 };
 
-/** @type {!Array<!NetworkGuidInfo>} */
-export const fakeNetworkGuidInfoList = [
+export const fakeNetworkGuidInfoList: NetworkGuidInfo[] = [
   fakeAllNetworksAvailable,
   fakeWifiAndCellularNetworksAvailable,
 ];
 
-/** @type {!WiFiStateProperties} */
-export const fakeWiFiStateProperties = {
+export const fakeWiFiStateProperties: WiFiStateProperties = {
   signalStrength: 65,
   frequency: 5745,
   bssid: '44:07:0b:06:2d:85',
@@ -324,8 +270,22 @@ export const fakeWiFiStateProperties = {
   security: SecurityType.kWepPsk,
 };
 
-/** @type {!Network} */
-export const fakeWifiNetwork = {
+// Union properties should be optional but TypeScript is not able to infer
+// that from the autogenerated closure annotations.
+type WiFiNetwork = Omit<Network, 'typeProperties'|'ipConfig'>&{
+  typeProperties?: {wifi?: WiFiStateProperties},
+  ipConfig?: IPConfigProperties,
+};
+type CellularNetwork = Omit<Network, 'typeProperties'|'ipConfig'>&{
+  typeProperties?: {cellular?: CellularStateProperties},
+  ipConfig?: IPConfigProperties,
+};
+type EthernetNetwork = Omit<Network, 'typeProperties'|'ipConfig'>&{
+  typeProperties?: {ethernet?: EthernetStateProperties},
+  ipConfig?: IPConfigProperties,
+};
+
+export const fakeWifiNetwork: WiFiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -348,8 +308,7 @@ export const fakeWifiNetwork = {
   },
 };
 
-/** @type {!Network} */
-export const fakeWifiNetworkDisabled = {
+export const fakeWifiNetworkDisabled: WiFiNetwork = {
   state: NetworkState.kDisabled,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -372,8 +331,7 @@ export const fakeWifiNetworkDisabled = {
   },
 };
 
-/** @type {!Network} */
-export const fakeWifiNetworkNoNameServers = {
+export const fakeWifiNetworkNoNameServers: WiFiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -391,13 +349,12 @@ export const fakeWifiNetworkNoNameServers = {
   ipConfig: {
     ipAddress: '192.168.86.197',
     gateway: '192.168.86.1',
-    nameServers: null,
     routingPrefix: 24,
+    nameServers: undefined,
   },
 };
 
-/** @type {!Network} */
-export const fakeWifiNetworkEmptyNameServers = {
+export const fakeWifiNetworkEmptyNameServers: WiFiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -420,8 +377,7 @@ export const fakeWifiNetworkEmptyNameServers = {
   },
 };
 
-/** @type {!Network} */
-export const fakeWifiNetworkMultipleNameServers = {
+export const fakeWifiNetworkMultipleNameServers: WiFiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -444,8 +400,7 @@ export const fakeWifiNetworkMultipleNameServers = {
   },
 };
 
-/** @type {!Network} */
-export const fakeWifiNetworkInvalidNameServers = {
+export const fakeWifiNetworkInvalidNameServers: WiFiNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -468,8 +423,7 @@ export const fakeWifiNetworkInvalidNameServers = {
   },
 };
 
-/** @type {!Network} */
-export const fakeWifiNetworkNoIpAddress = {
+export const fakeWifiNetworkNoIpAddress: WiFiNetwork = {
   state: NetworkState.kConnecting,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -492,18 +446,15 @@ export const fakeWifiNetworkNoIpAddress = {
   },
 };
 
-export const fakeDisconnectedWifiNetwork = {
+export const fakeDisconnectedWifiNetwork: WiFiNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kWiFi,
-  typeProperties: null,
   observerGuid: 'wifiDisconnectedGuid',
   name: '',
   macAddress: '84:C5:A6:30:3F:31',
-  ipConfig: null,
 };
 
-/** @type {!Network} */
-export const fakePortalWifiNetwork = {
+export const fakePortalWifiNetwork: WiFiNetwork = {
   state: NetworkState.kPortal,
   type: NetworkType.kWiFi,
   typeProperties: {
@@ -526,8 +477,7 @@ export const fakePortalWifiNetwork = {
   },
 };
 
-/** @type {!Network} */
-export const fakeEthernetNetwork = {
+export const fakeEthernetNetwork: EthernetNetwork = {
   state: NetworkState.kOnline,
   type: NetworkType.kEthernet,
   typeProperties: {
@@ -546,8 +496,7 @@ export const fakeEthernetNetwork = {
   },
 };
 
-/** @type {!Network} */
-export const fakeConnectingEthernetNetwork = {
+export const fakeConnectingEthernetNetwork: EthernetNetwork = {
   state: NetworkState.kConnecting,
   type: NetworkType.kEthernet,
   observerGuid: 'ethernetGuid',
@@ -555,8 +504,7 @@ export const fakeConnectingEthernetNetwork = {
   macAddress: '81:C5:A6:30:3F:33',
 };
 
-/** @type {!Network} */
-export const fakeDisconnectedEthernetNetwork = {
+export const fakeDisconnectedEthernetNetwork: EthernetNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kEthernet,
   typeProperties: {
@@ -567,11 +515,9 @@ export const fakeDisconnectedEthernetNetwork = {
   observerGuid: 'ethernetDisconnectedGuid',
   name: 'ethernetName',
   macAddress: '81:C5:A6:30:3F:32',
-  ipConfig: null,
 };
 
-/** @type {!Network} */
-export const fakeCellularNetwork = {
+export const fakeCellularNetwork: CellularNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kCellular,
   typeProperties: {
@@ -584,7 +530,6 @@ export const fakeCellularNetwork = {
       eid: '82099038007008862600508229159883',
       simLocked: true,
       lockType: LockType.kSimPin,
-      simAbsent: false,
     },
   },
   observerGuid: 'cellularGuid',
@@ -593,13 +538,12 @@ export const fakeCellularNetwork = {
   ipConfig: {
     ipAddress: '192.168.86.197',
     gateway: '',
-    nameServers: null,
+    nameServers: undefined,
     routingPrefix: 0,
   },
 };
 
-/** @type {!Network} */
-export const fakeCellularWithIpConfigNetwork = {
+export const fakeCellularWithIpConfigNetwork: CellularNetwork = {
   state: NetworkState.kConnected,
   type: NetworkType.kCellular,
   typeProperties: {
@@ -612,7 +556,6 @@ export const fakeCellularWithIpConfigNetwork = {
       eid: '82099038007008862600508229159883',
       simLocked: true,
       lockType: LockType.kSimPin,
-      simAbsent: false,
     },
   },
   observerGuid: 'cellularWithIpConfigGuid',
@@ -626,26 +569,26 @@ export const fakeCellularWithIpConfigNetwork = {
   },
 };
 
-/** @type {!Network} */
-export const fakeCellularDisabledNetwork = {
+export const fakeCellularDisabledNetwork: CellularNetwork = {
   state: NetworkState.kDisabled,
   type: NetworkType.kCellular,
   observerGuid: 'cellularDisabledGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
+  ipConfig: undefined,
 };
 
-/** @type {!Network} */
-export const fakeCellularDisconnectedNetwork = {
+export const fakeCellularDisconnectedNetwork: CellularNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kCellular,
+  typeProperties: undefined,
   observerGuid: 'cellularDisconnectedGuid',
   name: 'cellularName',
   macAddress: '85:C5:A6:30:3F:31',
+  ipConfig: undefined,
 };
 
-/** @type {!Array<!KeyboardInfo>} */
-export const fakeKeyboards = [
+export const fakeKeyboards: KeyboardInfo[] = [
   {
     id: 3,
     connectionType: ConnectionType.kInternal,
@@ -671,8 +614,7 @@ export const fakeKeyboards = [
   },
 ];
 
-/** @type {!Array<!TouchDeviceInfo>} */
-export const fakeTouchDevices = [
+export const fakeTouchDevices: TouchDeviceInfo[] = [
   {
     id: 6,
     connectionType: ConnectionType.kInternal,

@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/connectivity_card.js';
 
 import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
-import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePowerRoutineResults, fakeRoutineResults, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {IpConfigInfoDrawerElement} from 'chrome://diagnostics/ip_config_info_drawer.js';
@@ -47,8 +47,7 @@ export function connectivityCardTestSuite() {
     routineController.setDelayTimeInMillisecondsForTesting(-1);
 
     /** @type {!Array<!RoutineType>} */
-    const supportedRoutines =
-        [...fakeRoutineResults.keys(), ...fakePowerRoutineResults.keys()];
+    const supportedRoutines = routineController.getAllRoutines();
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(supportedRoutines);
     // Configure default routine results. Results can also be set in individual
