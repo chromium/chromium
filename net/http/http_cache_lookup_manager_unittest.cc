@@ -34,8 +34,10 @@ class MockServerPushHelper : public ServerPushDelegate::ServerPushHelper {
 
   const GURL& GetURL() const override { return request_url_; }
 
-  NetworkIsolationKey GetNetworkIsolationKey() const override {
-    return network_isolation_key_;
+  NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
+    return NetworkAnonymizationKey::
+        CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+            network_isolation_key_);
   }
 
   void set_network_isolation_key(
@@ -83,7 +85,6 @@ void PopulateCacheEntry(HttpCache* cache, const GURL& request_url) {
   AddMockTransaction(mock_trans.get());
 
   MockHttpRequest request(*(mock_trans.get()));
-
   std::unique_ptr<HttpTransaction> trans;
   int rv = cache->CreateTransaction(DEFAULT_PRIORITY, &trans);
   EXPECT_THAT(rv, IsOk());

@@ -1775,7 +1775,7 @@ EVENT_TYPE(HTTP2_PROXY_CLIENT_SESSION)
 //     "host": <The origin hostname that the Job serves>,
 //     "port": <The origin port>,
 //     "privacy_mode": <The privacy mode of the Job>,
-//     "network_isolation_key": <The NetworkIsolationKey of the Job>,
+//     "network_anonymization_key": <The NetworkAnonymizationKey of the Job>,
 //   }
 EVENT_TYPE(QUIC_STREAM_FACTORY_JOB)
 
@@ -1822,9 +1822,11 @@ EVENT_TYPE(QUIC_STREAM_FACTORY_JOB_STALE_HOST_RESOLUTION_MATCHED)
 //     "host": <The origin hostname string>,
 //     "port": <The origin port>,
 //     "privacy_mode": <The privacy mode of the session>,
-//     "network_isolation_key": <The NetworkIsolationKey of the session>,
-//     "require_confirmation": <True if the session will wait for a successful
-//                              QUIC handshake before vending streams>,
+//     "network_anonymization_key": <The NetworkAnonymizationKey of the
+//                                   session>,
+//     "require_confirmation": <True if the session will wait for a
+//                              successful QUIC handshake before vending
+//                              streams>,
 //     "cert_verify_flags": <The certificate verification flags for the
 //                           session>,
 //   }

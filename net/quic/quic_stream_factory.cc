@@ -125,8 +125,8 @@ base::Value NetLogQuicStreamFactoryJobParams(
   dict.Set("port", key->server_id().port());
   dict.Set("privacy_mode",
            PrivacyModeToDebugString(key->session_key().privacy_mode()));
-  dict.Set("network_isolation_key",
-           key->session_key().network_isolation_key().ToDebugString());
+  dict.Set("network_anonymization_key",
+           key->session_key().network_anonymization_key().ToDebugString());
   return base::Value(std::move(dict));
 }
 
@@ -755,8 +755,8 @@ int QuicStreamFactory::Job::DoResolveHost() {
   }
   parameters.secure_dns_policy = key_.session_key().secure_dns_policy();
   resolve_host_request_ = host_resolver_->CreateRequest(
-      key_.destination(), key_.session_key().network_isolation_key(), net_log_,
-      parameters);
+      key_.destination(), key_.session_key().network_anonymization_key(),
+      net_log_, parameters);
   // Unretained is safe because |this| owns the request, ensuring cancellation
   // on destruction.
   // When race_stale_dns_on_connection_ is on, this request will query for stale
@@ -782,8 +782,8 @@ int QuicStreamFactory::Job::DoResolveHost() {
   parameters.cache_usage =
       HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
   fresh_resolve_host_request_ = host_resolver_->CreateRequest(
-      key_.destination(), key_.session_key().network_isolation_key(), net_log_,
-      parameters);
+      key_.destination(), key_.session_key().network_anonymization_key(),
+      net_log_, parameters);
   // Unretained is safe because |this| owns the request, ensuring cancellation
   // on destruction.
   // This request will only query fresh host resolution.
@@ -1070,9 +1070,12 @@ int QuicStreamRequest::Request(
   failed_on_default_network_callback_ =
       std::move(failed_on_default_network_callback);
 
-  session_key_ = QuicSessionKey(HostPortPair::FromURL(url), privacy_mode,
-                                socket_tag, network_isolation_key,
-                                secure_dns_policy, require_dns_https_alpn);
+  session_key_ =
+      QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
+                     NetworkAnonymizationKey::
+                         CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                             network_isolation_key),
+                     secure_dns_policy, require_dns_https_alpn);
 
   int rv = factory_->Create(session_key_, std::move(destination), quic_version,
                             priority, use_dns_aliases, cert_verify_flags, url,
@@ -1154,8 +1157,10 @@ bool QuicStreamRequest::CanUseExistingSession(
     const url::SchemeHostPort& destination) const {
   return factory_->CanUseExistingSession(
       QuicSessionKey(HostPortPair::FromURL(url), privacy_mode, socket_tag,
-                     network_isolation_key, secure_dns_policy,
-                     require_dns_https_alpn),
+                     NetworkAnonymizationKey::
+                         CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                             network_isolation_key),
+                     secure_dns_policy, require_dns_https_alpn),
       destination);
 }
 
@@ -1348,7 +1353,7 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
   QuicSessionAliasKey key(destination, session_key);
   std::unique_ptr<Job> job = std::make_unique<Job>(
       this, quic_version, host_resolver_, key,
-      CreateCryptoConfigHandle(session_key.network_isolation_key()),
+      CreateCryptoConfigHandle(session_key.network_anonymization_key()),
       WasQuicRecentlyBroken(session_key),
       params_.retry_on_alternate_network_before_handshake,
       params_.race_stale_dns_on_connection, priority, use_dns_aliases,
@@ -1721,9 +1726,9 @@ base::TimeDelta QuicStreamFactory::GetTimeDelayForWaitingJob(
     return base::TimeDelta();
   }
 
-  int64_t srtt =
-      1.5 * GetServerNetworkStatsSmoothedRttInMicroseconds(
-                session_key.server_id(), session_key.network_isolation_key());
+  int64_t srtt = 1.5 * GetServerNetworkStatsSmoothedRttInMicroseconds(
+                           session_key.server_id(),
+                           session_key.network_anonymization_key());
   // Picked 300ms based on mean time from
   // Net.QuicSession.HostResolution.HandshakeConfirmedTime histogram.
   const int kDefaultRTT = 300 * quic::kNumMicrosPerMilli;
@@ -1862,11 +1867,11 @@ int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
   std::unique_ptr<QuicServerInfo> server_info;
   if (params_.max_server_configs_stored_in_properties > 0) {
     server_info = std::make_unique<PropertiesBasedQuicServerInfo>(
-        server_id, key.session_key().network_isolation_key(),
+        server_id, key.session_key().network_anonymization_key(),
         http_server_properties_);
   }
   std::unique_ptr<CryptoClientConfigHandle> crypto_config_handle =
-      CreateCryptoConfigHandle(key.session_key().network_isolation_key());
+      CreateCryptoConfigHandle(key.session_key().network_anonymization_key());
   InitializeCachedStateInCryptoConfig(*crypto_config_handle, server_id,
                                       server_info);
 
@@ -1881,7 +1886,7 @@ int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
 
   quic::QuicConfig config = config_;
   ConfigureInitialRttEstimate(
-      server_id, key.session_key().network_isolation_key(), &config);
+      server_id, key.session_key().network_anonymization_key(), &config);
   // QUIC versions that use the IETF invariant header all have NSTP
   // enabled by default, so we only need to add it for those that don't.
   if (!quic_version.HasIetfInvariantHeader() &&
@@ -2033,7 +2038,7 @@ bool QuicStreamFactory::WasQuicRecentlyBroken(
       kProtoQUIC, HostPortPair(session_key.server_id().host(),
                                session_key.server_id().port()));
   return http_server_properties_->WasAlternativeServiceRecentlyBroken(
-      alternative_service, session_key.network_isolation_key());
+      alternative_service, session_key.network_anonymization_key());
 }
 
 void QuicStreamFactory::InitializeMigrationOptions() {
@@ -2150,25 +2155,25 @@ void QuicStreamFactory::ProcessGoingAwaySession(
   // Do nothing if QUIC is currently marked as broken.
   if (http_server_properties_->IsAlternativeServiceBroken(
           alternative_service,
-          session->quic_session_key().network_isolation_key())) {
+          session->quic_session_key().network_anonymization_key())) {
     return;
   }
 
   if (session->OneRttKeysAvailable()) {
     http_server_properties_->ConfirmAlternativeService(
         alternative_service,
-        session->quic_session_key().network_isolation_key());
+        session->quic_session_key().network_anonymization_key());
     ServerNetworkStats network_stats;
     network_stats.srtt = base::Microseconds(stats.srtt_us);
     network_stats.bandwidth_estimate = stats.estimated_bandwidth;
     http_server_properties_->SetServerNetworkStats(
-        server, session->quic_session_key().network_isolation_key(),
+        server, session->quic_session_key().network_anonymization_key(),
         network_stats);
     return;
   }
 
   http_server_properties_->ClearServerNetworkStats(
-      server, session->quic_session_key().network_isolation_key());
+      server, session->quic_session_key().network_anonymization_key());
 
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicHandshakeNotConfirmedNumPacketsReceived",
                           stats.packets_received);
@@ -2188,7 +2193,8 @@ void QuicStreamFactory::ProcessGoingAwaySession(
   // avoid not using QUIC when we otherwise could, we mark it as recently
   // broken, which means that 0-RTT will be disabled but we'll still race.
   http_server_properties_->MarkAlternativeServiceRecentlyBroken(
-      alternative_service, session->quic_session_key().network_isolation_key());
+      alternative_service,
+      session->quic_session_key().network_anonymization_key());
 }
 
 void QuicStreamFactory::MapSessionToAliasKey(

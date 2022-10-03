@@ -593,7 +593,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
     SpdySessionKey key(host_port_pair, ProxyServer::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
     std::ignore = CreateFakeSpdySession(session->spdy_session_pool(), key);
 
     CommonConnectJobParams common_connect_job_params =
@@ -642,7 +642,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectUnsafePort) {
   peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
 
   PreconnectHelperForURL(1, GURL("http://www.google.com:7"),
-                         NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                          session.get());
   EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
 }
@@ -1682,8 +1682,10 @@ TEST_F(HttpStreamFactoryTest,
        RequestSpdyHttpStreamHttpURLWithNetworkIsolationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1722,6 +1724,7 @@ TEST_F(HttpStreamFactoryTest,
   request_info.url = GURL("http://www.google.com");
   request_info.load_flags = 0;
   request_info.network_isolation_key = kNetworkIsolationKey1;
+  request_info.network_anonymization_key = kNetworkAnonymizationKey1;
   request_info.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
 

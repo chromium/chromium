@@ -28,8 +28,8 @@ class NET_EXPORT_PRIVATE ServerPushDelegate {
     // Gets the URL of the pushed request.
     virtual const GURL& GetURL() const = 0;
 
-    // Gets the network isolation key for the pushed request.
-    virtual NetworkIsolationKey GetNetworkIsolationKey() const = 0;
+    // Gets the network anonymization key for the pushed request.
+    virtual NetworkAnonymizationKey GetNetworkAnonymizationKey() const = 0;
   };
 
   virtual ~ServerPushDelegate() = default;

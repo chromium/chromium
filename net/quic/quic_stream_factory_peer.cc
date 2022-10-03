@@ -31,24 +31,26 @@ const quic::QuicConfig* QuicStreamFactoryPeer::GetConfig(
 std::unique_ptr<QuicCryptoClientConfigHandle>
 QuicStreamFactoryPeer::GetCryptoConfig(
     QuicStreamFactory* factory,
-    const NetworkIsolationKey& network_isolation_key) {
-  return factory->GetCryptoConfigForTesting(network_isolation_key);
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return factory->GetCryptoConfigForTesting(network_anonymization_key);
 }
 
 bool QuicStreamFactoryPeer::HasActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) {
-  return factory->HasActiveSession(QuicSessionKey(
-      server_id, SocketTag(), network_isolation_key, SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false));
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return factory->HasActiveSession(
+      QuicSessionKey(server_id, SocketTag(), network_anonymization_key,
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false));
 }
 
 bool QuicStreamFactoryPeer::HasActiveJob(QuicStreamFactory* factory,
                                          const quic::QuicServerId& server_id) {
-  return factory->HasActiveJob(QuicSessionKey(
-      server_id, SocketTag(), NetworkIsolationKey(), SecureDnsPolicy::kAllow,
-      /*require_dns_https_alpn=*/false));
+  return factory->HasActiveJob(
+      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
+                     SecureDnsPolicy::kAllow,
+                     /*require_dns_https_alpn=*/false));
 }
 
 // static
@@ -56,7 +58,7 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
     url::SchemeHostPort destination) {
-  QuicSessionKey session_key(server_id, SocketTag(), NetworkIsolationKey(),
+  QuicSessionKey session_key(server_id, SocketTag(), NetworkAnonymizationKey(),
                              SecureDnsPolicy::kAllow,
                              /*require_dns_https_alpn=*/false);
   QuicStreamFactory::QuicSessionAliasKey key(std::move(destination),
@@ -70,8 +72,8 @@ QuicChromiumClientSession* QuicStreamFactoryPeer::GetPendingSession(
 QuicChromiumClientSession* QuicStreamFactoryPeer::GetActiveSession(
     QuicStreamFactory* factory,
     const quic::QuicServerId& server_id,
-    const NetworkIsolationKey& network_isolation_key) {
-  QuicSessionKey session_key(server_id, SocketTag(), network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  QuicSessionKey session_key(server_id, SocketTag(), network_anonymization_key,
                              SecureDnsPolicy::kAllow,
                              /*require_dns_https_alpn=*/false);
   DCHECK(factory->HasActiveSession(session_key));
@@ -83,7 +85,7 @@ bool QuicStreamFactoryPeer::HasLiveSession(
     url::SchemeHostPort destination,
     const quic::QuicServerId& server_id) {
   QuicSessionKey session_key =
-      QuicSessionKey(server_id, SocketTag(), NetworkIsolationKey(),
+      QuicSessionKey(server_id, SocketTag(), NetworkAnonymizationKey(),
                      SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false);
   QuicStreamFactory::QuicSessionAliasKey alias_key(std::move(destination),
                                                    session_key);
@@ -133,15 +135,15 @@ void QuicStreamFactoryPeer::SetYieldAfterDuration(
 bool QuicStreamFactoryPeer::CryptoConfigCacheIsEmpty(
     QuicStreamFactory* factory,
     const quic::QuicServerId& quic_server_id,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return factory->CryptoConfigCacheIsEmptyForTesting(quic_server_id,
-                                                     network_isolation_key);
+                                                     network_anonymization_key);
 }
 
 void QuicStreamFactoryPeer::CacheDummyServerConfig(
     QuicStreamFactory* factory,
     const quic::QuicServerId& quic_server_id,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   // Minimum SCFG that passes config validation checks.
   const char scfg[] = {// SCFG
                        0x53, 0x43, 0x46, 0x47,
@@ -168,7 +170,7 @@ void QuicStreamFactoryPeer::CacheDummyServerConfig(
   certs.emplace_back(x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
 
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_config_handle =
-      GetCryptoConfig(factory, network_isolation_key);
+      GetCryptoConfig(factory, network_anonymization_key);
   quic::QuicCryptoClientConfig::CachedState* cached =
       crypto_config_handle->GetConfig()->LookupOrCreate(quic_server_id);
   quic::QuicChromiumClock clock;

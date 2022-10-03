@@ -506,11 +506,11 @@ class SpdyServerPushHelper : public ServerPushDelegate::ServerPushHelper {
 
   const GURL& GetURL() const override { return request_url_; }
 
-  NetworkIsolationKey GetNetworkIsolationKey() const override {
+  NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
     if (session_) {
-      return session_->spdy_session_key().network_isolation_key();
+      return session_->spdy_session_key().network_anonymization_key();
     }
-    return NetworkIsolationKey();
+    return NetworkAnonymizationKey();
   }
 
  private:
@@ -865,7 +865,7 @@ bool SpdySession::CanPool(
     const SSLConfigService& ssl_config_service,
     const std::string& old_hostname,
     const std::string& new_hostname,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   // Pooling is prohibited if the server cert is not valid for the new domain,
   // and for connections on which client certs were sent. It is also prohibited
   // when channel ID was sent if the hosts are from different eTLDs+1.
@@ -889,7 +889,7 @@ bool SpdySession::CanPool(
           HostPortPair(new_hostname, 0), ssl_info.is_issued_by_known_root,
           ssl_info.public_key_hashes, ssl_info.unverified_cert.get(),
           ssl_info.cert.get(), TransportSecurityState::DISABLE_PIN_REPORTS,
-          network_isolation_key, &pinning_failure_log) ==
+          network_anonymization_key, &pinning_failure_log) ==
       TransportSecurityState::PKPStatus::VIOLATED) {
     return false;
   }
@@ -900,7 +900,7 @@ bool SpdySession::CanPool(
       ssl_info.public_key_hashes, ssl_info.cert.get(),
       ssl_info.unverified_cert.get(), ssl_info.signed_certificate_timestamps,
       TransportSecurityState::DISABLE_EXPECT_CT_REPORTS,
-      ssl_info.ct_policy_compliance, network_isolation_key)) {
+      ssl_info.ct_policy_compliance, network_anonymization_key)) {
     case TransportSecurityState::CT_REQUIREMENTS_NOT_MET:
       return false;
     case TransportSecurityState::CT_REQUIREMENTS_MET:
@@ -1171,7 +1171,7 @@ bool SpdySession::VerifyDomainAuthentication(const std::string& domain) const {
 
   return CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
                  host_port_pair().host(), domain,
-                 spdy_session_key_.network_isolation_key());
+                 spdy_session_key_.network_anonymization_key());
 }
 
 void SpdySession::EnqueueStreamWrite(
@@ -1589,8 +1589,8 @@ base::Value SpdySession::GetInfoAsValue() const {
     dict.Set("aliases", std::move(alias_list));
   }
   dict.Set("proxy", ProxyServerToProxyUri(host_port_proxy_pair().second));
-  dict.Set("network_isolation_key",
-           spdy_session_key_.network_isolation_key().ToDebugString());
+  dict.Set("network_anonymization_key",
+           spdy_session_key_.network_anonymization_key().ToDebugString());
 
   dict.Set("active_streams", static_cast<int>(active_streams_.size()));
 
@@ -1767,7 +1767,7 @@ bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {
   SpdySessionKey new_key(
       spdy_session_key_.host_port_pair(), spdy_session_key_.proxy_server(),
       spdy_session_key_.privacy_mode(), spdy_session_key_.is_proxy_session(),
-      new_tag, spdy_session_key_.network_isolation_key(),
+      new_tag, spdy_session_key_.network_anonymization_key(),
       spdy_session_key_.secure_dns_policy());
   spdy_session_key_ = new_key;
 
@@ -2102,7 +2102,7 @@ void SpdySession::TryCreatePushStream(spdy::SpdyStreamId stream_id,
     CHECK(GetSSLInfo(&ssl_info));
     if (!CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
                  associated_url.host(), gurl.host(),
-                 spdy_session_key_.network_isolation_key())) {
+                 spdy_session_key_.network_anonymization_key())) {
       RecordSpdyPushedStreamFateHistogram(
           SpdyPushedStreamFate::kCertificateMismatch);
       EnqueueResetStreamFrame(stream_id, request_priority,
@@ -3065,7 +3065,7 @@ void SpdySession::DoDrainSession(Error err, const std::string& description) {
     http_server_properties_->SetHTTP11Required(
         url::SchemeHostPort(url::kHttpsScheme, host_port_pair().host(),
                             host_port_pair().port()),
-        spdy_session_key_.network_isolation_key());
+        spdy_session_key_.network_anonymization_key());
   }
 
   // If |err| indicates an error occurred, inform the peer that we're closing
@@ -3550,7 +3550,7 @@ void SpdySession::OnAltSvc(
       return;
     if (!CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
                  host_port_pair().host(), gurl.host(),
-                 spdy_session_key_.network_isolation_key())) {
+                 spdy_session_key_.network_anonymization_key())) {
       return;
     }
     scheme_host_port = url::SchemeHostPort(gurl);
@@ -3567,7 +3567,7 @@ void SpdySession::OnAltSvc(
   }
 
   http_server_properties_->SetAlternativeServices(
-      scheme_host_port, spdy_session_key_.network_isolation_key(),
+      scheme_host_port, spdy_session_key_.network_anonymization_key(),
       ProcessAlternativeServices(altsvc_vector, is_http2_enabled_,
                                  is_quic_enabled_, quic_supported_versions_));
 }

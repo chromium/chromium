@@ -2694,8 +2694,10 @@ TEST_P(HttpStreamFactoryJobControllerTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   tcp_data_ = std::make_unique<SequencedSocketData>();
   tcp_data_->set_connect_data(MockConnect(ASYNC, OK));
@@ -2705,6 +2707,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   request_info.method = "GET";
   request_info.url = GURL("http://www.example.com");
   request_info.network_isolation_key = kNetworkIsolationKey1;
+  request_info.network_anonymization_key = kNetworkAnonymizationKey1;
   Initialize(request_info);
 
   // Sets server support HTTP/2, using kNetworkIsolationKey.
@@ -2739,6 +2742,9 @@ TEST_P(HttpStreamFactoryJobControllerTest,
     }
 
     request_info.network_isolation_key = other_network_isolation_key;
+    request_info.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            other_network_isolation_key);
     MockHttpStreamRequestDelegate request_delegate;
     auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
         factory_, &request_delegate, session_.get(), &job_factory_,
@@ -2775,7 +2781,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   SpdySessionKey key(host_port_pair, ProxyServer::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 
   // Handshake will fail asynchronously after mock data is unpaused.
@@ -2873,7 +2879,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
           SpdySessionKey(
               HostPortPair::FromURL(request_info.url), ProxyServer::Direct(),
               request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-              request_info.socket_tag, request_info.network_isolation_key,
+              request_info.socket_tag, request_info.network_anonymization_key,
               request_info.secure_dns_policy),
           false /* enable_ip_based_pooling */, false /* is_websocket */,
           NetLogWithSource());
@@ -2953,7 +2959,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
                            ProxyServer::Direct(), request_info.privacy_mode,
                            SpdySessionKey::IsProxySession::kFalse,
                            request_info.socket_tag,
-                           request_info.network_isolation_key,
+                           request_info.network_anonymization_key,
                            request_info.secure_dns_policy),
             /*enable_ip_based_pooling=*/false, /*is_websocket=*/false,
             NetLogWithSource());
@@ -2986,7 +2992,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
     const SpdySessionKey spdy_session_key = SpdySessionKey(
         HostPortPair::FromURL(other_request_info.url), ProxyServer::Direct(),
         other_request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
-        other_request_info.socket_tag, other_request_info.network_isolation_key,
+        other_request_info.socket_tag,
+        other_request_info.network_anonymization_key,
         other_request_info.secure_dns_policy);
     EXPECT_FALSE(session_->spdy_session_pool()->FindAvailableSession(
         spdy_session_key, /*enable_ip_based_pooling=*/false,
@@ -3142,6 +3149,9 @@ TEST_F(JobControllerLimitMultipleH2Requests,
          {NetworkIsolationKey(), kNetworkIsolationKey1,
           kNetworkIsolationKey2}) {
       request_info.network_isolation_key = network_isolation_key;
+      request_info.network_anonymization_key =
+          net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+              network_isolation_key);
       // For kNetworkIsolationKey1, all requests but the first will be
       // throttled.
       if (i == 0 || network_isolation_key != kNetworkIsolationKey1) {
@@ -3175,7 +3185,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
           HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct()));
   ClientSocketPool::GroupId group_id0(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
-      NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   ClientSocketPool::GroupId group_id1(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       kNetworkIsolationKey1, SecureDnsPolicy::kAllow);
@@ -3739,7 +3749,12 @@ void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
   NetworkIsolationKey network_isolation_key(
       SchemefulSite(GURL("https://example.com")),
       SchemefulSite(GURL("https://example.com")));
+  NetworkAnonymizationKey network_anonymization_key(
+      SchemefulSite(GURL("https://example.com")),
+      SchemefulSite(GURL("https://example.com")));
   request_info.network_isolation_key = network_isolation_key;
+  request_info.network_anonymization_key = network_anonymization_key;
+
   Initialize(request_info);
   url::SchemeHostPort origin(request_info.url);
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
@@ -3985,7 +4000,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
                                         : version_,
                  PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
-                 NetworkIsolationKey(), SecureDnsPolicy::kAllow,
+                 NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                  /*use_dns_aliases=*/true, require_dns_https_alpn,
                  /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
                  net_log_with_source_, &net_error_details,
@@ -4412,7 +4427,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 
   request_ = CreateJobControllerAndStart(request_info);
@@ -4655,7 +4670,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                     NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+                     NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
 
   auto stream = ConnectQuicHttpStream(/*alt_destination=*/false,

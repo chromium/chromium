@@ -6,7 +6,7 @@
 #define NET_QUIC_QUIC_SESSION_KEY_H_
 
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
@@ -22,19 +22,19 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
   QuicSessionKey(const HostPortPair& host_port_pair,
                  PrivacyMode privacy_mode,
                  const SocketTag& socket_tag,
-                 const NetworkIsolationKey& network_isolation_key,
+                 const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn);
   QuicSessionKey(const std::string& host,
                  uint16_t port,
                  PrivacyMode privacy_mode,
                  const SocketTag& socket_tag,
-                 const NetworkIsolationKey& network_isolation_key,
+                 const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn);
   QuicSessionKey(const quic::QuicServerId& server_id,
                  const SocketTag& socket_tag,
-                 const NetworkIsolationKey& network_isolation_key,
+                 const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn);
   QuicSessionKey(const QuicSessionKey& other);
@@ -65,8 +65,8 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
 
   SocketTag socket_tag() const { return socket_tag_; }
 
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
@@ -77,7 +77,7 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
   quic::QuicServerId server_id_;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts.
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anonymization_key_;
   SecureDnsPolicy secure_dns_policy_;
   bool require_dns_https_alpn_ = false;
 };

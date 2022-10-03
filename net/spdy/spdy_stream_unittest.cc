@@ -93,7 +93,7 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
     SpdySessionKey key(HostPortPair::FromURL(url_), ProxyServer::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                       NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
     return CreateSpdySession(session_.get(), key, NetLogWithSource());
   }
 
@@ -431,7 +431,7 @@ TEST_F(SpdyStreamPushTest, PushedStream) {
   const SpdySessionKey key(HostPortPair::FromURL(url_), ProxyServer::Direct(),
                            PRIVACY_MODE_DISABLED,
                            SpdySessionKey::IsProxySession::kFalse, SocketTag(),
-                           NetworkIsolationKey(), SecureDnsPolicy::kAllow);
+                           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   const GURL pushed_url(kPushUrl);
   HttpRequestInfo push_request;
   push_request.url = pushed_url;

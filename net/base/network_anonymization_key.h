@@ -5,11 +5,13 @@
 #ifndef NET_BASE_NETWORK_ANONYMIZATION_KEY_H_
 #define NET_BASE_NETWORK_ANONYMIZATION_KEY_H_
 
+#include <cstddef>
 #include <string>
 #include <tuple>
 
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -92,6 +94,48 @@ class NET_EXPORT NetworkAnonymizationKey {
            std::tie(other.top_frame_site_, other.frame_site_,
                     other.is_cross_site_, other.nonce_);
   }
+
+  // This is a temporary method to allow for an iterative transition from using
+  // the NetworkIsolationKey to using the NetworkAnonymizationKey to partition
+  // the network state. When the two keys are not configured to use the same
+  // scheme the results of this conversion are inaccurate.
+
+  // TODO(@brgoldstein): Remove this method once key conversion is complete and
+  // before partitioning experiments are enabled.
+  operator NetworkIsolationKey() const {
+    if (!top_frame_site_) {
+      return NetworkIsolationKey();
+    }
+    if (!frame_site_) {
+      return NetworkIsolationKey(
+          top_frame_site_.value(), top_frame_site_.value(),
+          nonce_.has_value() ? &nonce_.value() : nullptr);
+    }
+    return NetworkIsolationKey(top_frame_site_.value(), frame_site_.value(),
+                               nonce_.has_value() ? &nonce_.value() : nullptr);
+  }
+
+  // Creates a NetworkAnonymizationKey from a NetworkIsolationKey. This is
+  // possible because a NetworkIsolationKey must always be more granular than a
+  // NetworkAnonymizationKey.
+  static NetworkAnonymizationKey CreateFromNetworkIsolationKey(
+      const net::NetworkIsolationKey& network_isolation_key);
+
+  // TODO(https://crbug.com/1343856): Remove once migration to
+  // NetworkAnonymizationKey is complete.
+
+  // This is a temporary converter to create NetworkAnonymizationKeys from
+  // NetworkIsolationKeys while we switch the two classes. All call sites of
+  // this method are temporary and will be removed before network state
+  // partitioning experiments are enabled.
+  static NetworkAnonymizationKey
+  CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+      const net::NetworkIsolationKey& network_isolation_key);
+
+  // Creates a transient non-empty NetworkIsolationKey by creating an opaque
+  // origin. This prevents the NetworkIsolationKey from sharing data with other
+  // NetworkIsolationKeys.
+  static NetworkAnonymizationKey CreateTransient();
 
   // Returns the string representation of the key.
   std::string ToDebugString() const;

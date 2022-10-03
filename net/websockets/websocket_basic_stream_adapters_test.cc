@@ -289,7 +289,7 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
              PRIVACY_MODE_DISABLED,
              SpdySessionKey::IsProxySession::kFalse,
              SocketTag(),
-             NetworkIsolationKey(),
+             NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         ssl_(SYNCHRONOUS, OK) {}

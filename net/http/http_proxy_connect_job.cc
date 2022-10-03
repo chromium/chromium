@@ -814,7 +814,8 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   return SpdySessionKey(
       GetDestination(), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kTrue, socket_tag(),
-      params_->network_isolation_key(),
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          params_->network_isolation_key()),
       params_->ssl_params()->GetDirectConnectionParams()->secure_dns_policy());
 }
 

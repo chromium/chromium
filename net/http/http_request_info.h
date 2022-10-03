@@ -30,6 +30,8 @@ struct NET_EXPORT HttpRequestInfo {
   HttpRequestInfo(const HttpRequestInfo& other);
   ~HttpRequestInfo();
 
+  bool IsConsistent() const;
+
   // The requested URL.
   GURL url;
 

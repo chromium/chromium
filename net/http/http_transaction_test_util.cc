@@ -201,6 +201,7 @@ MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
   load_flags = t.load_flags;
   SchemefulSite site(url);
   network_isolation_key = NetworkIsolationKey(site, site);
+  network_anonymization_key = NetworkAnonymizationKey(site, site);
 }
 
 std::string MockHttpRequest::CacheKey() {

@@ -2177,8 +2177,11 @@ TEST_P(QuicNetworkTransactionTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   MockRead http_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"), MockRead(alt_svc_header_.data()),
@@ -2238,15 +2241,19 @@ TEST_P(QuicNetworkTransactionTest,
   // written with the right NetworkIsolationKey, but always queried with an
   // empty one.
   request_.network_isolation_key = NetworkIsolationKey();
+  request_.network_anonymization_key = NetworkAnonymizationKey();
   SendRequestAndExpectHttpResponse("hello world");
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   SendRequestAndExpectHttpResponse("hello world");
   request_.network_isolation_key = kNetworkIsolationKey2;
+  request_.network_anonymization_key = kNetworkAnonymizationKey2;
   SendRequestAndExpectHttpResponse("hello world");
 
   // Only use QUIC when using a NetworkIsolationKey which has been used when
   // alternative service information was received.
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   SendRequestAndExpectQuicResponse("hello!");
 }
 
@@ -2971,8 +2978,10 @@ TEST_P(
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -3061,6 +3070,7 @@ TEST_P(
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT, kNetworkIsolationKey2);
 
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
   TestCompletionCallback callback;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
@@ -3695,8 +3705,10 @@ TEST_P(QuicNetworkTransactionTest,
   }
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -3779,6 +3791,7 @@ TEST_P(QuicNetworkTransactionTest,
   HttpNetworkTransaction trans(DEFAULT_PRIORITY, session_.get());
   TestCompletionCallback callback;
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   int rv = trans.Start(&request_, callback.callback(), net_log_with_source_);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
@@ -3813,6 +3826,8 @@ TEST_P(QuicNetworkTransactionTest,
   AddHttpDataAndRunRequest();
   // Requests using other NetworkIsolationKeys can still use QUIC.
   request_.network_isolation_key = kNetworkIsolationKey2;
+  request_.network_anonymization_key = kNetworkAnonymizationKey2;
+
   AddQuicDataAndRunRequest();
 
   // The last two requests should not have changed the alternative service
@@ -4740,8 +4755,10 @@ TEST_P(QuicNetworkTransactionTest,
   }
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -4805,6 +4822,7 @@ TEST_P(QuicNetworkTransactionTest,
       alternative_service, kNetworkIsolationKey2));
 
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   SendRequestAndExpectHttpResponse("hello world");
   SendRequestAndExpectQuicResponse("hello!");
 
@@ -5647,8 +5665,10 @@ TEST_P(QuicNetworkTransactionTest,
        BrokenAlternateProtocolWithNetworkIsolationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -5688,6 +5708,7 @@ TEST_P(QuicNetworkTransactionTest,
   AddQuicAlternateProtocolMapping(
       MockCryptoClientStream::COLD_START_WITH_CHLO_SENT, kNetworkIsolationKey2);
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   SendRequestAndExpectHttpResponse("hello from http");
 
   ExpectBrokenAlternateProtocolMapping(kNetworkIsolationKey1);
@@ -5983,8 +6004,10 @@ TEST_P(QuicNetworkTransactionTest,
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   // Alternate-protocol job
   MockRead quic_reads[] = {
@@ -6015,6 +6038,7 @@ TEST_P(QuicNetworkTransactionTest,
                                   kNetworkIsolationKey2);
 
   request_.network_isolation_key = kNetworkIsolationKey1;
+  request_.network_anonymization_key = kNetworkAnonymizationKey1;
   SendRequestAndExpectHttpResponse("hello from http");
   EXPECT_TRUE(quic_data.AllReadDataConsumed());
   EXPECT_TRUE(quic_data.AllWriteDataConsumed());
@@ -6026,6 +6050,8 @@ TEST_P(QuicNetworkTransactionTest,
   AddHttpDataAndRunRequest();
   // Requests using other NetworkIsolationKeys can still use QUIC.
   request_.network_isolation_key = kNetworkIsolationKey2;
+  request_.network_anonymization_key = kNetworkAnonymizationKey2;
+
   AddQuicDataAndRunRequest();
 
   // The last two requests should not have changed the alternative service
@@ -6766,14 +6792,23 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushRespectsNetworkIsolationKey) {
       NetworkIsolationKey::CreateTransient();
   NetworkIsolationKey network_isolation_key2 =
       NetworkIsolationKey::CreateTransient();
+  NetworkAnonymizationKey network_anonymization_key1 =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          network_isolation_key1);
+  NetworkAnonymizationKey network_anonymization_key2 =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          network_isolation_key2);
 
   // Creates the first QUIC session, and triggers the first push.
   request_.network_isolation_key = network_isolation_key1;
+  request_.network_anonymization_key = network_anonymization_key1;
+
   SendRequestAndExpectQuicResponse("hello1");
 
   // Use a different NIK, which creates another QUIC session, triggering a
   // second push,
   request_.network_isolation_key = network_isolation_key2;
+  request_.network_anonymization_key = network_anonymization_key2;
   SendRequestAndExpectQuicResponse("hello2");
 
   // Use the second NIK again, should receive the push body from the second
@@ -6784,6 +6819,7 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushRespectsNetworkIsolationKey) {
   // Use the first NIK again, should receive the push body from the first
   // session.
   request_.network_isolation_key = network_isolation_key1;
+  request_.network_anonymization_key = network_anonymization_key1;
   SendRequestAndExpectQuicResponse("and hello1");
 }
 
@@ -8952,6 +8988,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite2(GURL("http://origin2/"));
   NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
   NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
+  NetworkAnonymizationKey network_anonymization_key1(kSite1, kSite1);
+  NetworkAnonymizationKey network_anonymization_key2(kSite2, kSite2);
 
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
@@ -9199,6 +9237,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
       request1.traffic_annotation =
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request1.network_isolation_key = network_isolation_key1;
+      request1.network_anonymization_key = network_anonymization_key1;
       HttpNetworkTransaction trans1(LOWEST, session_.get());
       int rv = trans1.Start(&request1, callback.callback(), NetLogWithSource());
       EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -9212,6 +9251,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
       request2.traffic_annotation =
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request2.network_isolation_key = network_isolation_key2;
+      request2.network_anonymization_key = network_anonymization_key2;
       HttpNetworkTransaction trans2(LOWEST, session_.get());
       rv = trans2.Start(&request2, callback.callback(), NetLogWithSource());
       EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -9225,6 +9265,8 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
       request3.traffic_annotation =
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
       request3.network_isolation_key = network_isolation_key1;
+      request3.network_anonymization_key = network_anonymization_key1;
+
       HttpNetworkTransaction trans3(LOWEST, session_.get());
       rv = trans3.Start(&request3, callback.callback(), NetLogWithSource());
       EXPECT_THAT(callback.GetResult(rv), IsOk());
@@ -9341,6 +9383,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
   HttpRequestInfo request2;
   const SchemefulSite kSite1(GURL("http://origin1/"));
   request_.network_isolation_key = NetworkIsolationKey(kSite1, kSite1);
+  request_.network_anonymization_key = NetworkAnonymizationKey(kSite1, kSite1);
   HttpNetworkTransaction trans2(DEFAULT_PRIORITY, session_.get());
   RunTransaction(&trans2);
   CheckResponseData(&trans2, "0123456789");

@@ -824,6 +824,8 @@ class HttpSplitCacheKeyTest : public HttpCacheTest {
     request_info.url = url;
     request_info.method = "GET";
     request_info.network_isolation_key = net::NetworkIsolationKey(site, site);
+    request_info.network_anonymization_key =
+        net::NetworkAnonymizationKey(site, site);
     MockHttpCache cache;
     return *cache.http_cache()->GenerateCacheKeyForRequest(&request_info);
   }
@@ -1217,6 +1219,7 @@ TEST_P(HttpCacheTest_SplitCacheFeature, SimpleGETVerifyGoogleFontMetrics) {
   AddMockTransaction(&transaction);
   MockHttpRequest request(transaction);
   request.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  request.network_anonymization_key = NetworkAnonymizationKey(site_a, site_a);
 
   // Attempt to populate the cache.
   RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
@@ -6976,6 +6979,7 @@ TEST_F(HttpCacheTest, SimplePOST_Invalidate_205_SplitCache) {
   AddMockTransaction(&transaction);
   MockHttpRequest req1(transaction);
   req1.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  req1.network_anonymization_key = NetworkAnonymizationKey(site_a, site_a);
 
   // Attempt to populate the cache.
   RunTransactionTestWithRequest(cache.http_cache(), transaction, req1, nullptr);
@@ -6983,6 +6987,7 @@ TEST_F(HttpCacheTest, SimplePOST_Invalidate_205_SplitCache) {
   // Same for a different origin.
   MockHttpRequest req1b(transaction);
   req1b.network_isolation_key = NetworkIsolationKey(site_b, site_b);
+  req1b.network_anonymization_key = NetworkAnonymizationKey(site_b, site_b);
   RunTransactionTestWithRequest(cache.http_cache(), transaction, req1b,
                                 nullptr);
 
@@ -7000,6 +7005,7 @@ TEST_F(HttpCacheTest, SimplePOST_Invalidate_205_SplitCache) {
   MockHttpRequest req2(transaction);
   req2.upload_data_stream = &upload_data_stream;
   req2.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  req2.network_anonymization_key = NetworkAnonymizationKey(site_a, site_a);
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, req2, nullptr);
 
@@ -10953,6 +10959,8 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
   // Request with a.com as the top frame and subframe origins. It shouldn't be
   // cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_a);
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -10968,6 +10976,8 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
 
   // Now request with b.com as the subframe origin. It shouldn't be cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_b);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_b);
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -10979,6 +10989,8 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
 
   // a.com should still be cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_a);
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
@@ -10986,6 +10998,8 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
   // Now make a request with an opaque subframe site.  It shouldn't be
   // cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_data);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_data);
   EXPECT_EQ(absl::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
@@ -11007,6 +11021,7 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
 
   MockHttpRequest post_info = MockHttpRequest(kSimplePOST_Transaction);
   post_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  post_info.network_anonymization_key = NetworkAnonymizationKey(site_a, site_a);
   post_info.upload_data_stream = &upload_data_stream;
 
   RunTransactionTestWithRequest(cache.http_cache(), kSimplePOST_Transaction,
@@ -11032,6 +11047,8 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyCSS) {
   // Requesting with the same top-frame site should not count as third-party
   // but should still be recorded as CSS
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_a);
   trans_info.possibly_top_frame_origin = origin_a;
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, trans_info,
@@ -11044,6 +11061,8 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyCSS) {
   // Requesting with a different top-frame site should count as third-party
   // and recorded as CSS
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_b);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_b, site_b);
   trans_info.possibly_top_frame_origin = origin_b;
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, trans_info,
@@ -11071,6 +11090,8 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyJavaScript) {
   // Requesting with the same top-frame site should not count as third-party
   // but should still be recorded as JavaScript
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_a);
   trans_info.possibly_top_frame_origin = origin_a;
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, trans_info,
@@ -11083,6 +11104,8 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyJavaScript) {
   // Requesting with a different top-frame site should count as third-party
   // and recorded as JavaScript
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_b);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_b, site_b);
   trans_info.possibly_top_frame_origin = origin_b;
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, trans_info,
@@ -11110,6 +11133,8 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyFont) {
   // Requesting with the same top-frame site should not count as third-party
   // but should still be recorded as a font
   trans_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_a, site_a);
   trans_info.possibly_top_frame_origin = origin_a;
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, trans_info,
@@ -11122,6 +11147,8 @@ TEST_F(HttpCacheTest, HttpCacheProfileThirdPartyFont) {
   // Requesting with a different top-frame site should count as third-party
   // and recorded as a font
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_b);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_b, site_b);
   trans_info.possibly_top_frame_origin = origin_b;
 
   RunTransactionTestWithRequest(cache.http_cache(), transaction, trans_info,
@@ -11147,6 +11174,7 @@ TEST_F(HttpCacheTest, SplitCache) {
   // A request without a top frame origin is not cached at all.
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
   trans_info.network_isolation_key = net::NetworkIsolationKey();
+  trans_info.network_anonymization_key = net::NetworkAnonymizationKey();
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11163,7 +11191,9 @@ TEST_F(HttpCacheTest, SplitCache) {
   // Now request with a.com as the top frame origin. It shouldn't be cached
   // since the cached resource has a different top frame origin.
   net::NetworkIsolationKey key_a(site_a, site_a);
+  net::NetworkAnonymizationKey nak_a(site_a, site_a);
   trans_info.network_isolation_key = key_a;
+  trans_info.network_anonymization_key = nak_a;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11192,6 +11222,8 @@ TEST_F(HttpCacheTest, SplitCache) {
 
   // Now request with b.com as the top frame origin. It shouldn't be cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_b, site_b);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_b, site_b);
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11203,6 +11235,7 @@ TEST_F(HttpCacheTest, SplitCache) {
 
   // a.com should still be cached.
   trans_info.network_isolation_key = key_a;
+  trans_info.network_anonymization_key = nak_a;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
@@ -11210,6 +11243,8 @@ TEST_F(HttpCacheTest, SplitCache) {
   // Now make a request with an opaque top frame origin.  It shouldn't be
   // cached.
   trans_info.network_isolation_key = NetworkIsolationKey(site_data, site_data);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(site_data, site_data);
   EXPECT_EQ(absl::nullopt, trans_info.network_isolation_key.ToCacheKeyString());
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
@@ -11231,6 +11266,7 @@ TEST_F(HttpCacheTest, SplitCache) {
 
   MockHttpRequest post_info = MockHttpRequest(kSimplePOST_Transaction);
   post_info.network_isolation_key = NetworkIsolationKey(site_a, site_a);
+  post_info.network_anonymization_key = NetworkAnonymizationKey(site_a, site_a);
   post_info.upload_data_stream = &upload_data_stream;
 
   RunTransactionTestWithRequest(cache.http_cache(), kSimplePOST_Transaction,
@@ -11250,7 +11286,9 @@ TEST_F(HttpCacheTest, SplitCacheEnabledByDefault) {
   SchemefulSite site_b(GURL("http://b.com"));
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
   net::NetworkIsolationKey key_a(site_a, site_a);
+  net::NetworkAnonymizationKey nak_a(site_a, site_a);
   trans_info.network_isolation_key = key_a;
+  trans_info.network_anonymization_key = nak_a;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11262,7 +11300,9 @@ TEST_F(HttpCacheTest, SplitCacheEnabledByDefault) {
   EXPECT_TRUE(response.was_cached);
 
   net::NetworkIsolationKey key_b(site_b, site_b);
+  net::NetworkAnonymizationKey nak_b(site_b, site_b);
   trans_info.network_isolation_key = key_b;
+  trans_info.network_anonymization_key = nak_b;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11293,7 +11333,9 @@ TEST_F(HttpCacheTest, SplitCacheUsesRegistrableDomain) {
   SchemefulSite site_b(GURL("http://b.foo.com"));
 
   net::NetworkIsolationKey key_a(site_a, site_a);
+  net::NetworkAnonymizationKey nak_a(site_a, site_a);
   trans_info.network_isolation_key = key_a;
+  trans_info.network_anonymization_key = nak_a;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11304,7 +11346,9 @@ TEST_F(HttpCacheTest, SplitCacheUsesRegistrableDomain) {
   // The second request with a different origin but the same registrable domain
   // should be a cache hit.
   net::NetworkIsolationKey key_b(site_b, site_b);
+  net::NetworkAnonymizationKey nak_b(site_b, site_b);
   trans_info.network_isolation_key = key_b;
+  trans_info.network_anonymization_key = nak_b;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
@@ -11312,7 +11356,9 @@ TEST_F(HttpCacheTest, SplitCacheUsesRegistrableDomain) {
   // Request with a different registrable domain. It should be a cache miss.
   SchemefulSite new_site_a(GURL("http://a.bar.com"));
   net::NetworkIsolationKey new_key_a(new_site_a, new_site_a);
+  net::NetworkAnonymizationKey new_nak_a(new_site_a, new_site_a);
   trans_info.network_isolation_key = new_key_a;
+  trans_info.network_anonymization_key = new_nak_a;
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11330,6 +11376,7 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   // A request without a top frame is cached normally.
   MockHttpRequest trans_info = MockHttpRequest(kSimpleGET_Transaction);
   trans_info.network_isolation_key = NetworkIsolationKey();
+  trans_info.network_anonymization_key = NetworkAnonymizationKey();
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
@@ -11343,6 +11390,8 @@ TEST_F(HttpCacheTest, NonSplitCache) {
   // cached object.
   const SchemefulSite kSiteA(GURL("http://a.com/"));
   trans_info.network_isolation_key = NetworkIsolationKey(kSiteA, kSiteA);
+  trans_info.network_anonymization_key =
+      NetworkAnonymizationKey(kSiteA, kSiteA);
   RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
                                 trans_info, &response);
   EXPECT_TRUE(response.was_cached);
@@ -13590,6 +13639,9 @@ class HttpCacheSingleKeyedCacheTest : public HttpCacheTest {
 
     MockHttpRequest request(transaction);
     request.network_isolation_key = network_isolation_key;
+    request.network_anonymization_key =
+        net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+            network_isolation_key);
     request.checksum = checksum;
 
     HttpResponseInfo response_info;
