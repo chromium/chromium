@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 
@@ -23,7 +24,14 @@ class WmDesksPrivateApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList scoped_feature_list;
 };
 
-IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, WmDesksPrivateApiTest) {
+// TODO(crbug.com/1370233): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_WmDesksPrivateApiTest DISABLED_WmDesksPrivateApiTest
+#else
+#define MAYBE_WmDesksPrivateApiTest WmDesksPrivateApiTest
+#endif
+IN_PROC_BROWSER_TEST_F(MAYBE_WmDesksPrivateApiTest,
+                       MAYBE_WmDesksPrivateApiTest) {
   // This loads and runs an extension from
   // chrome/test/data/extensions/api_test/wm_desks_private.
   ASSERT_TRUE(RunExtensionTest("wm_desks_private"));
