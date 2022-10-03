@@ -512,8 +512,7 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
       browser_interceptors =
           GetContentClient()->browser()->WillCreateURLLoaderRequestInterceptors(
-              navigation_ui_data_.get(), frame_tree_node_id_,
-              network_loader_factory_);
+              navigation_ui_data_.get(), frame_tree_node_id_);
   if (!browser_interceptors.empty()) {
     for (auto& browser_interceptor : browser_interceptors) {
       interceptors_.push_back(

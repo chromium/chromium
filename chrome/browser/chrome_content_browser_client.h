@@ -556,9 +556,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
   WillCreateURLLoaderRequestInterceptors(
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
-      const scoped_refptr<network::SharedURLLoaderFactory>&
-          network_loader_factory) override;
+      int frame_tree_node_id) override;
   content::ContentBrowserClient::URLLoaderRequestHandler
   CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
       int frame_tree_node_id,

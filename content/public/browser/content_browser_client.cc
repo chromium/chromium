@@ -941,9 +941,7 @@ bool ContentBrowserClient::WillCreateRestrictedCookieManager(
 std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>
 ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id,
-    const scoped_refptr<network::SharedURLLoaderFactory>&
-        network_loader_factory) {
+    int frame_tree_node_id) {
   return std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>();
 }
 
