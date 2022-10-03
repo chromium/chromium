@@ -14,7 +14,105 @@
     min-height: var(--view-min-size);
     min-width: var(--view-min-size);
   }
+
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 3em;
+    line-height: 44px;
+    margin: 24px 0 16px;
+  }
+
+  h3 {
+    color: var(--cr-secondary-text-color);
+    font-size: 1.67em;
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0 0 24px;
+  }
+
+  h6 {
+    font-size: 1.25em;
+    line-height: 22px;
+    margin: 0 0 4px;
+  }
+
+  #central-view-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    text-align: center ;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #chrome-logo-placeholder {
+    height: 90px;
+    width: 90px;
+  }
+
+  .placeholder-color {
+    background-color: blue;
+  }
+
+  #cards {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .card {
+    align-items: center;
+    background: var(--google-grey-50);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 172px;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    width: 236px;
+  }
+
+  .card-icon-placeholder {
+    height: 30px;
+    margin-bottom: 16px;
+    width: 24px;
+  }
+
+  #card-description {
+    color: var(--cr-secondary-text-color);
+    font-size: 1.08em;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #button-container {
+    bottom: 24px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    position: fixed;
+    right: 24px;
+  }
+
+  #button-container > cr-button {
+    font-size: 1.08em;
+    min-width: 133px;
+  }
+
+  #sign-in {
+    background-color: var(--cr-checked-color);
+    color: white;
+  }
+
 </style>
+
 <cr-view-manager id="viewManager">
   <!-- TODO(crbug.com/1347507): On load, transition to "splash" and trigger the
        animation -->
@@ -24,14 +122,35 @@
   </div>
 
   <!-- TODO(crbug.com/1347507): Implement this as an element?-->
-  <div id="signInPromo" slot="view" >
-    <p>🚧 $i18n{message}  🚧</p>
+  <div id="signInPromo" slot="view">
 
     <!-- TODO(crbug.com/1347507): Don't hardcode strings-->
-    <button on-click="onContinueWithAccountClick_">sign in</button>
-    |
-    <button on-click="onContinueWithoutAccountClick_">
-      continue without an account
-    </button>
+    <div id="central-view-container">
+      <div class="placeholder-color" id="chrome-logo-placeholder"></div>
+      <h1>Sign in for more benefits</h1>
+      <h3>You can enjoy the most out of Chrome</h3>
+      <div id="cards">
+        <div class="card">
+          <div class="placeholder-color card-icon-placeholder"></div>
+          <h6>Across devices</h6>
+          <p id="card-description">Pick up what you left off on any device</p>
+        </div>
+        <div class="card">
+          <div class="placeholder-color card-icon-placeholder"></div>
+          <h6>Stronger security</h6>
+          <p id="card-description">Extra protection to your passwords and more</p>
+        </div>
+        <div class="card">
+          <div class="placeholder-color card-icon-placeholder"></div>
+          <h6>Back up your stuff</h6>
+          <p id="card-description">Store your bookmarks and more with sync</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="button-container">
+      <cr-button on-click="onContinueWithoutAccountClick_">Don't sign in</cr-button>
+      <cr-button id="sign-in" on-click="onContinueWithAccountClick_">Sign in</cr-button>
+    </div>
   </div>
 </cr-view-manager>
