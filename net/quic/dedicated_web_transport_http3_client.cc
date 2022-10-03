@@ -294,6 +294,9 @@ DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() {
   net_log_.EndEventWithNetErrorCode(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE,
       error_ ? error_->net_error : OK);
+  // |session_| owns this, so we need to make sure we release it before
+  // it gets dangling.
+  connection_ = nullptr;
 }
 
 void DedicatedWebTransportHttp3Client::Connect() {
