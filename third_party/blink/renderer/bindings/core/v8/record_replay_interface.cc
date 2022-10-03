@@ -649,7 +649,10 @@ function previewRegExp() {
 }
 
 function previewDate() {
-  this.extra.dateTime = Date.parse(this.obj.description);
+  const dateTime = Date.parse(this.obj.description);
+  if (!Number.isNaN(dateTime)) {
+    this.extra.dateTime = dateTime;
+  }
 }
 
 function previewError() {
