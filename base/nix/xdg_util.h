@@ -7,16 +7,8 @@
 
 // XDG refers to http://en.wikipedia.org/wiki/Freedesktop.org .
 // This file contains utilities found across free desktop environments.
-//
-// TODO(brettw) this file should be in app/x11, but is currently used by
-// net. We should have a net API to allow the embedder to specify the behavior
-// that it uses XDG for, and then move this file.
 
 #include "base/base_export.h"
-
-#ifdef nix
-#error asdf
-#endif
 
 namespace base {
 
