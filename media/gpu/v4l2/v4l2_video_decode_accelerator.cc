@@ -2500,7 +2500,10 @@ void V4L2VideoDecodeAccelerator::DestroyInputBuffers() {
   if (!input_queue_)
     return;
 
-  input_queue_->DeallocateBuffers();
+  if (!input_queue_->DeallocateBuffers()) {
+    VLOGF(1) << "Failed deallocating V4L2 input buffers";
+    NOTIFY_ERROR(PLATFORM_FAILURE);
+  }
 }
 
 bool V4L2VideoDecodeAccelerator::DestroyOutputBuffers() {

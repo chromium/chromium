@@ -790,7 +790,8 @@ void V4L2SliceVideoDecodeAccelerator::DestroyInputBuffers() {
 
   DCHECK(!input_queue_->IsStreaming());
 
-  input_queue_->DeallocateBuffers();
+  if (!input_queue_->DeallocateBuffers())
+    VLOGF(1) << "Failed to deallocate V4L2 input buffers";
 }
 
 void V4L2SliceVideoDecodeAccelerator::DismissPictures(
@@ -1289,7 +1290,8 @@ bool V4L2SliceVideoDecodeAccelerator::DestroyOutputBuffers() {
 
   output_buffer_map_.clear();
 
-  output_queue_->DeallocateBuffers();
+  if (!output_queue_->DeallocateBuffers())
+    VLOGF(1) << "Failed to deallocate V4L2 output buffers";
 
   return true;
 }
