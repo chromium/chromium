@@ -48,7 +48,7 @@ class MockAppActivity : public AppActivity {
                void(const std::string& client_id,
                     blink::mojom::PresentationConnectionMessagePtr message));
   MOCK_METHOD2(SendMediaStatusToClients,
-               void(const base::Value& media_status,
+               void(const base::Value::Dict& media_status,
                     absl::optional<int> request_id));
   MOCK_METHOD1(
       ClosePresentationConnections,

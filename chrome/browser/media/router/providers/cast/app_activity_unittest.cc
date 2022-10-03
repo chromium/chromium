@@ -314,8 +314,8 @@ TEST_F(AppActivityTest, OnAppMessage) {
 
   auto* client = AddMockClient("theClientId");
   auto message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", base::Value(base::Value::Type::DICTIONARY),
-      "sourceId", "theClientId");
+      "urn:x-cast:com.google.foo", base::Value(base::Value::Dict()), "sourceId",
+      "theClientId");
   EXPECT_CALL(*client,
               SendMessageToClient(IsPresentationConnectionMessage(
                   CreateAppMessage("theSessionId", "theClientId", message)
@@ -329,8 +329,8 @@ TEST_F(AppActivityTest, OnAppMessageAllClients) {
   auto* client1 = AddMockClient("theClientId1");
   auto* client2 = AddMockClient("theClientId2");
   auto message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", base::Value(base::Value::Type::DICTIONARY),
-      "sourceId", "*");
+      "urn:x-cast:com.google.foo", base::Value(base::Value::Dict()), "sourceId",
+      "*");
   EXPECT_CALL(*client1,
               SendMessageToClient(IsPresentationConnectionMessage(
                   CreateAppMessage("theSessionId", "theClientId1", message)

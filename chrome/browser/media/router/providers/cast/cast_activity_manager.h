@@ -117,7 +117,7 @@ class CastActivityManager : public CastActivityManagerBase,
                                const CastSession& session) override;
   void OnSessionRemoved(const MediaSinkInternal& sink) override;
   void OnMediaStatusUpdated(const MediaSinkInternal& sink,
-                            const base::Value& media_status,
+                            const base::Value::Dict& media_status,
                             absl::optional<int> request_id) override;
 
   static void SetActitityFactoryForTest(CastActivityFactoryForTest* factory) {

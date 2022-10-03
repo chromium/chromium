@@ -31,7 +31,7 @@ class CastSessionClientImpl : public CastSessionClient,
   // and other methods.
   void SendMessageToClient(
       blink::mojom::PresentationConnectionMessagePtr message) override;
-  void SendMediaStatusToClient(const base::Value& media_status,
+  void SendMediaStatusToClient(const base::Value::Dict& media_status,
                                absl::optional<int> request_id) override;
   void CloseConnection(
       blink::mojom::PresentationConnectionCloseReason close_reason) override;
@@ -41,7 +41,7 @@ class CastSessionClientImpl : public CastSessionClient,
   void SendErrorCodeToClient(int sequence_number,
                              CastInternalMessage::ErrorCode error_code,
                              absl::optional<std::string> description) override;
-  void SendErrorToClient(int sequence_number, base::Value error) override;
+  void SendErrorToClient(int sequence_number, base::Value::Dict error) override;
 
   // blink::mojom::PresentationConnection implementation
   void OnMessage(

@@ -192,9 +192,9 @@ class CastMediaControllerTest : public testing::Test {
   }
 
   void SetMediaStatus(Value status_value) {
-    Value status_list(Value::Type::DICTIONARY);
-    status_list.SetKey("status", Value(Value::Type::LIST));
-    status_list.FindKey("status")->Append(std::move(status_value));
+    Value::Dict status_list;
+    status_list.Set("status", Value(Value::List()));
+    status_list.FindList("status")->Append(std::move(status_value));
 
     controller_->SetMediaStatus(status_list);
   }

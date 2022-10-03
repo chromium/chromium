@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::IsJson;
-using base::test::ParseJson;
+using base::test::ParseJsonDict;
 using blink::mojom::PresentationConnectionCloseReason;
 using testing::_;
 using testing::AllOf;
@@ -244,7 +244,7 @@ TEST_F(CastSessionClientImplTest, OnMediaStatusUpdatedWithPendingRequest) {
     "timeoutMillis": 0,
     "type": "v2_message"
   })")));
-  client_->SendMediaStatusToClient(ParseJson(R"({"foo": "bar"})"), 123);
+  client_->SendMediaStatusToClient(ParseJsonDict(R"({"foo": "bar"})"), 123);
 }
 
 TEST_F(CastSessionClientImplTest, SendSetVolumeCommandToReceiver) {

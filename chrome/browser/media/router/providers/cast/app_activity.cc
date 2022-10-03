@@ -94,8 +94,9 @@ void AppActivity::SendSetVolumeRequestToReceiver(
       cast_message.client_id(), std::move(callback));
 }
 
-void AppActivity::SendMediaStatusToClients(const base::Value& media_status,
-                                           absl::optional<int> request_id) {
+void AppActivity::SendMediaStatusToClients(
+    const base::Value::Dict& media_status,
+    absl::optional<int> request_id) {
   CastActivity::SendMediaStatusToClients(media_status, request_id);
   if (media_controller_)
     media_controller_->SetMediaStatus(media_status);

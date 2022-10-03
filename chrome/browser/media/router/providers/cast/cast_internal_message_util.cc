@@ -163,17 +163,25 @@ base::Value::Dict CreateReceiver(const MediaSinkInternal& sink,
 
 blink::mojom::PresentationConnectionMessagePtr CreateMessageCommon(
     CastInternalMessage::Type type,
-    base::Value payload,
+    base::Value::Dict payload,
     const std::string& client_id,
     absl::optional<int> sequence_number = absl::nullopt) {
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetKey("type", base::Value(CastInternalMessageTypeToString(type)));
-  message.SetKey("message", std::move(payload));
+  base::Value::Dict message;
+
+  message.Set("type", base::Value(CastInternalMessageTypeToString(type)));
+
+  // When `payload` is empty, we want to set `message` to null instead of {} in
+  // the JSON that is generated.
+  if (payload.empty())
+    message.Set("message", base::Value());
+  else
+    message.Set("message", std::move(payload));
+
   if (sequence_number) {
-    message.SetKey("sequenceNumber", base::Value(*sequence_number));
+    message.Set("sequenceNumber", base::Value(*sequence_number));
   }
-  message.SetKey("timeoutMillis", base::Value(0));
-  message.SetKey("clientId", base::Value(client_id));
+  message.Set("timeoutMillis", base::Value(0));
+  message.Set("clientId", base::Value(client_id));
 
   std::string str;
   CHECK(base::JSONWriter::Write(message, &str));
@@ -190,28 +198,28 @@ blink::mojom::PresentationConnectionMessagePtr CreateReceiverActionMessage(
   message.Set("action", action_type);
 
   return CreateMessageCommon(CastInternalMessage::Type::kReceiverAction,
-                             base::Value(std::move(message)), client_id);
+                             std::move(message), client_id);
 }
 
-base::Value CreateAppMessageBody(
+base::Value::Dict CreateAppMessageBody(
     const std::string& session_id,
     const cast::channel::CastMessage& cast_message) {
   // TODO(https://crbug.com/862532): Investigate whether it is possible to move
   // instead of copying the contents of |cast_message|. Right now copying is
   // done because the message is passed as a const ref at the
   // CastSocket::Observer level.
-  base::Value message(base::Value::Type::DICTIONARY);
-  message.SetKey("sessionId", base::Value(session_id));
-  message.SetKey("namespaceName", base::Value(cast_message.namespace_()));
+  base::Value::Dict message;
+  message.Set("sessionId", base::Value(session_id));
+  message.Set("namespaceName", base::Value(cast_message.namespace_()));
   switch (cast_message.payload_type()) {
     case cast::channel::CastMessage_PayloadType_STRING:
-      message.SetKey("message", base::Value(cast_message.payload_utf8()));
+      message.Set("message", base::Value(cast_message.payload_utf8()));
       break;
     case cast::channel::CastMessage_PayloadType_BINARY: {
       const auto& payload = cast_message.payload_binary();
-      message.SetKey("message",
-                     base::Value(base::Value::BlobStorage(
-                         payload.front(), payload.front() + payload.size())));
+      message.Set("message",
+                  base::Value(base::Value::BlobStorage(
+                      payload.front(), payload.front() + payload.size())));
       break;
     }
     default:
@@ -235,8 +243,8 @@ blink::mojom::PresentationConnectionMessagePtr CreateSessionMessage(
   DCHECK(!session_with_receiver_label.FindByDottedPath("receiver.label"));
   session_with_receiver_label.SetByDottedPath(
       "receiver.label", base::Value(GetReceiverLabel(sink, hash_token)));
-  return CreateMessageCommon(
-      type, base::Value(std::move(session_with_receiver_label)), client_id);
+  return CreateMessageCommon(type, std::move(session_with_receiver_label),
+                             client_id);
 }
 
 }  // namespace
@@ -481,7 +489,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessageAck(
     const std::string& client_id,
     int sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kAppMessage,
-                             base::Value(), client_id, sequence_number);
+                             base::Value::Dict(), client_id, sequence_number);
 }
 
 blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
@@ -495,7 +503,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
 
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
-    const base::Value& payload,
+    const base::Value::Dict& payload,
     absl::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kV2Message,
                              payload.Clone(), client_id, sequence_number);
@@ -505,12 +513,12 @@ blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
     absl::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kLeaveSession,
-                             base::Value(), client_id, sequence_number);
+                             base::Value::Dict(), client_id, sequence_number);
 }
 
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
-    base::Value error,
+    base::Value::Dict error,
     absl::optional<int> sequence_number) {
   return CreateMessageCommon(CastInternalMessage::Type::kError,
                              std::move(error), client_id, sequence_number);

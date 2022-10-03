@@ -623,9 +623,10 @@ void CastActivityManager::OnSessionRemoved(const MediaSinkInternal& sink) {
   }
 }
 
-void CastActivityManager::OnMediaStatusUpdated(const MediaSinkInternal& sink,
-                                               const base::Value& media_status,
-                                               absl::optional<int> request_id) {
+void CastActivityManager::OnMediaStatusUpdated(
+    const MediaSinkInternal& sink,
+    const base::Value::Dict& media_status,
+    absl::optional<int> request_id) {
   auto it = FindActivityBySink(sink);
   if (it != activities_.end()) {
     it->second->SendMediaStatusToClients(media_status, request_id);

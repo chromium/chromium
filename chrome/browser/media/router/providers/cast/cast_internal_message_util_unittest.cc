@@ -518,8 +518,8 @@ TEST(CastInternalMessageUtilTest, CreateAppMessage) {
 }
 
 TEST(CastInternalMessageUtilTest, CreateV2Message) {
-  base::Value message_body(base::Value::Type::DICTIONARY);
-  message_body.SetKey("foo", base::Value("bar"));
+  base::Value::Dict message_body;
+  message_body.Set("foo", base::Value("bar"));
 
   auto message = CreateV2Message("client_id", message_body, 12345);
   EXPECT_THAT(message, IsPresentationConnectionMessage(R"({

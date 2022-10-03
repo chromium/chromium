@@ -166,7 +166,8 @@ void CastMediaController::SetSession(const CastSession& session) {
   observer_->OnMediaStatusUpdated(media_status_.Clone());
 }
 
-void CastMediaController::SetMediaStatus(const base::Value& status_value) {
+void CastMediaController::SetMediaStatus(
+    const base::Value::Dict& status_value) {
   UpdateMediaStatus(status_value);
   observer_->OnMediaStatusUpdated(media_status_.Clone());
 }
@@ -196,34 +197,36 @@ base::Value::Dict CastMediaController::CreateVolumeRequest() {
   return request;
 }
 
-void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
-  const base::Value* status_list_value = message_value.FindKey("status");
-  if (!status_list_value || !status_list_value->is_list())
+void CastMediaController::UpdateMediaStatus(
+    const base::Value::Dict& message_value) {
+  const base::Value::List* status_list = message_value.FindList("status");
+  if (!status_list)
     return;
-  base::Value::ConstListView status_list =
-      status_list_value->GetListDeprecated();
-  if (status_list.empty())
+  if (status_list->empty())
     return;
-  const base::Value& status_value = status_list[0];
+  const base::Value& status_value = (*status_list)[0];
   if (!status_value.is_dict())
     return;
-  SetIfNonNegative(&media_session_id_, status_value.FindKey("mediaSessionId"));
+  SetIfNonNegative(&media_session_id_,
+                   status_value.GetDict().Find("mediaSessionId"));
   SetIfValid(&media_status_.title,
-             status_value.FindPath("media.metadata.title"));
-  SetIfValid(&media_status_.secondary_title,
-             status_value.FindPath("media.metadata.subtitle"));
+             status_value.GetDict().FindByDottedPath("media.metadata.title"));
+  SetIfValid(
+      &media_status_.secondary_title,
+      status_value.GetDict().FindByDottedPath("media.metadata.subtitle"));
   SetIfNonNegative(&media_status_.current_time,
-                   status_value.FindKey("currentTime"));
+                   status_value.GetDict().Find("currentTime"));
   SetIfNonNegative(&media_status_.duration,
-                   status_value.FindPath("media.duration"));
+                   status_value.GetDict().FindByDottedPath("media.duration"));
 
-  const base::Value* images = status_value.FindPath("media.metadata.images");
-  if (images && images->is_list()) {
+  const base::Value::List* images =
+      status_value.GetDict().FindListByDottedPath("media.metadata.images");
+  if (images) {
     media_status_.images.clear();
-    for (const base::Value& image_value : images->GetListDeprecated()) {
+    for (const base::Value& image_value : *images) {
       if (!image_value.is_dict())
         continue;
-      const std::string* url_string = image_value.FindStringKey("url");
+      const std::string* url_string = image_value.GetDict().FindString("url");
       if (!url_string)
         continue;
       media_status_.images.emplace_back(absl::in_place, GURL(*url_string),
@@ -231,31 +234,29 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
     }
   }
 
-  const base::Value* commands_value =
-      status_value.FindListKey("supportedMediaCommands");
-  if (commands_value) {
-    const base::ListValue& commands_list =
-        base::Value::AsListValue(*commands_value);
+  const base::Value::List* commands_list =
+      status_value.GetDict().FindList("supportedMediaCommands");
+  if (commands_list) {
     // |can_set_volume| and |can_mute| are not used, because the receiver volume
     // info obtained in SetSession() is used instead.
-    media_status_.can_play_pause = base::Contains(
-        commands_list.GetListDeprecated(), base::Value(kMediaCommandPause));
-    media_status_.can_seek = base::Contains(commands_list.GetListDeprecated(),
-                                            base::Value(kMediaCommandSeek));
-    media_status_.can_skip_to_next_track = base::Contains(
-        commands_list.GetListDeprecated(), base::Value(kMediaCommandQueueNext));
-    media_status_.can_skip_to_previous_track = base::Contains(
-        commands_list.GetListDeprecated(), base::Value(kMediaCommandQueuePrev));
+    media_status_.can_play_pause =
+        base::Contains(*commands_list, base::Value(kMediaCommandPause));
+    media_status_.can_seek =
+        base::Contains(*commands_list, base::Value(kMediaCommandSeek));
+    media_status_.can_skip_to_next_track =
+        base::Contains(*commands_list, base::Value(kMediaCommandQueueNext));
+    media_status_.can_skip_to_previous_track =
+        base::Contains(*commands_list, base::Value(kMediaCommandQueuePrev));
   }
 
-  const base::Value* player_state = status_value.FindKey("playerState");
-  if (player_state && player_state->is_string()) {
-    const std::string& state = player_state->GetString();
-    if (state == "PLAYING") {
+  const std::string* player_state =
+      status_value.GetDict().FindString("playerState");
+  if (player_state) {
+    if (*player_state == "PLAYING") {
       media_status_.play_state = mojom::MediaStatus::PlayState::PLAYING;
-    } else if (state == "PAUSED") {
+    } else if (*player_state == "PAUSED") {
       media_status_.play_state = mojom::MediaStatus::PlayState::PAUSED;
-    } else if (state == "BUFFERING") {
+    } else if (*player_state == "BUFFERING") {
       media_status_.play_state = mojom::MediaStatus::PlayState::BUFFERING;
     }
   }

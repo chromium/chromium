@@ -74,7 +74,7 @@ class MockCastSessionObserver : public CastSessionTracker::Observer {
   MOCK_METHOD1(OnSessionRemoved, void(const MediaSinkInternal& sink));
   MOCK_METHOD3(OnMediaStatusUpdated,
                void(const MediaSinkInternal& sink,
-                    const base::Value& media_status,
+                    const base::Value::Dict& media_status,
                     absl::optional<int> request_id));
 };
 

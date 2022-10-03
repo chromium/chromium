@@ -36,7 +36,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
                                          const CastSession& session) = 0;
     virtual void OnSessionRemoved(const MediaSinkInternal& sink) = 0;
     virtual void OnMediaStatusUpdated(const MediaSinkInternal& sink,
-                                      const base::Value& media_status,
+                                      const base::Value::Dict& media_status,
                                       absl::optional<int> request_id) = 0;
   };
 

@@ -38,7 +38,7 @@ class AppActivity : public CastActivity {
               CastSessionTracker* session_tracker);
   ~AppActivity() override;
 
-  void SendMediaStatusToClients(const base::Value& media_status,
+  void SendMediaStatusToClients(const base::Value::Dict& media_status,
                                 absl::optional<int> request_id) override;
   void OnAppMessage(const cast::channel::CastMessage& message) override;
   void OnInternalMessage(const cast_channel::InternalMessage& message) override;

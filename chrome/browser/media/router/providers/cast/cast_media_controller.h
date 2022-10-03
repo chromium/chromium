@@ -70,7 +70,7 @@ class CastMediaController : public mojom::MediaController {
   // These methods may notify the MediaStatusObserver that the status has been
   // updated.
   void SetSession(const CastSession& session);
-  void SetMediaStatus(const base::Value& media_status);
+  void SetMediaStatus(const base::Value::Dict& media_status);
 
   const std::string& sender_id() const { return sender_id_; }
 
@@ -78,7 +78,7 @@ class CastMediaController : public mojom::MediaController {
   base::Value::Dict CreateMediaRequest(cast_channel::V2MessageType type);
   base::Value::Dict CreateVolumeRequest();
 
-  void UpdateMediaStatus(const base::Value& message_value);
+  void UpdateMediaStatus(const base::Value::Dict& message_value);
 
   const std::string sender_id_;
   const raw_ptr<AppActivity> activity_;

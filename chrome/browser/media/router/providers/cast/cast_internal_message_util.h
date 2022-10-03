@@ -230,11 +230,11 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
     const CastMessage& cast_message);
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
-    const base::Value& payload,
+    const base::Value::Dict& payload,
     absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
-    base::Value error,
+    base::Value::Dict error,
     absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
