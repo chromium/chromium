@@ -265,7 +265,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
+    # tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
@@ -299,7 +299,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
+    # tryjob = try_.job(),
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
@@ -372,12 +372,9 @@ try_.orchestrator_builder(
     ),
     check_for_flakiness = True,
     compilator = "android-nougat-x86-rel-compilator",
-    # TODO(crbug.com/1367389): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    tryjob = try_.job(),
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
@@ -389,8 +386,7 @@ try_.orchestrator_builder(
 
 try_.compilator_builder(
     name = "android-nougat-x86-rel-compilator",
-    # TODO(crbug.com/1367389): Enable it on branch after running on CQ
-    # branch_selector = branches.STANDARD_MILESTONE,
+    branch_selector = branches.STANDARD_MILESTONE,
     check_for_flakiness = True,
     main_list_view = "try",
 )

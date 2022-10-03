@@ -19,9 +19,7 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android-binary-size](https://ci.chromium.org/p/chromium/builders/try/android-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-binary-size""))
 
-* [android-marshmallow-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-arm64-rel""))
-
-* [android-marshmallow-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel""))
+* [android-nougat-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel""))
 
 * [android-pie-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-rel""))
 
@@ -492,9 +490,6 @@ as required builders.
 
 * [android-marshmallow-x86-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-marshmallow-x86-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-marshmallow-x86-rel-reclient""))
   * Experiment percentage: 5.0
-
-* [android-nougat-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-nougat-x86-rel""))
-  * Experiment percentage: 100.0
 
 * [android-pie-arm64-coverage-experimental-rel](https://ci.chromium.org/p/chromium/builders/try/android-pie-arm64-coverage-experimental-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-pie-arm64-coverage-experimental-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""android-pie-arm64-coverage-experimental-rel""))
   * Experiment percentage: 3.0

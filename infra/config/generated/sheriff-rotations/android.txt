@@ -20,9 +20,8 @@ ci/android-androidx-packager
 ci/android-arm64-proguard-rel
 ci/android-bfcache-rel
 ci/android-binary-size-generator
-ci/android-marshmallow-arm64-rel
-ci/android-marshmallow-x86-rel
 ci/android-marshmallow-x86-rel-non-cq
+ci/android-nougat-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
 ci/android-pie-x86-rel
