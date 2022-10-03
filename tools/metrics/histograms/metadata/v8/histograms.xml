@@ -1278,50 +1278,6 @@ chromium-metrics-reviews@google.com.
   <summary>Results from opening V8 snapshot files.</summary>
 </histogram>
 
-<histogram name="V8.InlineCodeCache.MainFrame.CacheTimesMatch"
-    units="BooleanTimesMatch" expires_after="2023-02-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    Whether the times of the inline code cache data and url load time match. If
-    the times do not match, the code cache is not used. This is recorded when
-    the renderer receives the code cache from the browser (which is early in
-    navigation).
-  </summary>
-</histogram>
-
-<histogram name="V8.InlineCodeCache.Subframe.CacheTimesMatch"
-    units="BooleanTimesMatch" expires_after="2023-02-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    Whether the times of the inline code cache data and url load time match. If
-    the times do not match, the code cache is not used. This is recorded when
-    the renderer receives the code cache from the browser (which is early in
-    navigation).
-  </summary>
-</histogram>
-
-<histogram name="V8.InlineCodeCache.UsedPreviouslyGeneratedCache"
-    units="BooleanUsed" expires_after="2023-02-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    Indicates whether a previously compiled inline script was used. This is
-    logged for every frame after all inline scripts have loaded.
-  </summary>
-</histogram>
-
-<histogram name="V8.InlineCodeCache.WillGenerateCache" units="BooleanUsed"
-    expires_after="2023-02-12">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <summary>
-    Indicates whether inline script will be compiled and cached for future use.
-    This is logged for every frame after all inline scripts have loaded.
-  </summary>
-</histogram>
-
 <histogram name="V8.LiftoffBailoutReasons" enum="LiftoffBailoutReason"
     expires_after="2023-02-19">
   <owner>ecmziegler@chromium.org</owner>

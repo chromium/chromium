@@ -80,7 +80,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
-#include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
@@ -486,7 +485,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void StartLoadingInternal();
   void StartLoadingResponse();
-  void StartLoadingBodyWithCodeCache();
   void FinishedLoading(base::TimeTicks finish_time);
   void CancelLoadAfterCSPDenied(const ResourceResponse&);
 
@@ -505,7 +503,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void ProcessDataBuffer(const char* bytes = nullptr, size_t length = 0);
 
   // WebNavigationBodyLoader::Client
-  void BodyCodeCacheReceived(mojo_base::BigBuffer data) override;
   void BodyDataReceived(base::span<const char> data) override;
   void BodyLoadingFinished(base::TimeTicks completion_time,
                            int64_t total_encoded_data_length,
@@ -536,9 +533,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Computes and creates CSP for this document.
   ContentSecurityPolicy* CreateCSP();
-
-  // Whether the isolated code cache should be used for this document.
-  bool UseIsolatedCodeCache();
 
   // Params are saved in constructor and are cleared after StartLoading().
   // TODO(dgozman): remove once StartLoading is merged with constructor.
@@ -675,7 +669,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   scoped_refptr<ResourceTimingInfo> navigation_timing_info_;
   bool report_timing_info_to_parent_ = false;
   WebScopedVirtualTimePauser virtual_time_pauser_;
-  Member<SourceKeyedCachedMetadataHandler> cached_metadata_handler_;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager_;
   const KURL web_bundle_physical_url_;
   const KURL web_bundle_claimed_url_;
@@ -726,11 +719,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // reporting url. `nullptr` otherwise.
   // https://github.com/WICG/turtledove/blob/main/Fenced_Frames_Ads_Reporting.md
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting_;
-
-  // Both of these bits must be true to commit preloaded data to the parser when
-  // features::kEarlyBodyLoad is enabled.
-  bool waiting_for_document_loader_ = false;
-  bool waiting_for_code_cache_ = false;
 
   std::unique_ptr<ExtraData> extra_data_;
 

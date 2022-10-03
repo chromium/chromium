@@ -33,8 +33,6 @@ struct URLLoaderCompletionStatus;
 
 namespace blink {
 
-class WebCodeCacheLoader;
-
 // Navigation request is started in the browser process, and all redirects
 // and final response are received there. Then we pass URLLoader and
 // URLLoaderClient bindings to the renderer process, and create an instance
@@ -52,8 +50,7 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-          resource_load_info_notifier_wrapper,
-      bool is_main_frame);
+          resource_load_info_notifier_wrapper);
   ~NavigationBodyLoader() override;
 
  private:
@@ -84,9 +81,7 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
 
   // WebNavigationBodyLoader implementation.
   void SetDefersLoading(WebLoaderFreezeMode mode) override;
-  void StartLoadingBody(WebNavigationBodyLoader::Client* client,
-                        CodeCacheHost* code_cache_host) override;
-  void StartLoadingCodeCache(CodeCacheHost* code_cache_host) override;
+  void StartLoadingBody(WebNavigationBodyLoader::Client* client) override;
 
   // network::mojom::URLLoaderClient implementation.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -103,9 +98,6 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  void CodeCacheReceived(base::Time response_time, mojo_base::BigBuffer data);
-  void ContinueWithCodeCache(base::TimeTicks start_time,
-                             base::Time response_head_response_time);
   void BindURLLoaderAndContinue();
   void OnConnectionClosed();
   void OnReadable(MojoResult unused);
@@ -134,9 +126,6 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   mojo::ScopedDataPipeConsumerHandle handle_;
   mojo::SimpleWatcher handle_watcher_;
 
-  // This loader is live while retrieving the code cache.
-  std::unique_ptr<WebCodeCacheLoader> code_cache_loader_;
-
   // Used to notify the navigation loading stats.
   std::unique_ptr<ResourceLoadInfoNotifierWrapper>
       resource_load_info_notifier_wrapper_;
@@ -162,20 +151,6 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
 
   // The original navigation url to start with.
   const KURL original_url_;
-
-  const bool is_main_frame_;
-
-  // The time the loader started waiting for the code cache. If this is
-  // non-null, |ContinueWithCodeCache()| should be called when the cache is
-  // available.
-  base::TimeTicks code_cache_wait_start_time_;
-  // The response time from the response head.
-  base::Time response_head_response_time_;
-
-  // These fields will be filled with the code cache response to be used when
-  // needed.
-  base::Time code_cache_response_time_;
-  absl::optional<mojo_base::BigBuffer> code_cache_data_;
 
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
 };

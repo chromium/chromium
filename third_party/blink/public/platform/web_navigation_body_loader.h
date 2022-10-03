@@ -7,7 +7,6 @@
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -18,7 +17,6 @@
 
 namespace blink {
 
-class CodeCacheHost;
 class ResourceLoadInfoNotifierWrapper;
 struct WebNavigationParams;
 
@@ -30,10 +28,6 @@ class BLINK_EXPORT WebNavigationBodyLoader {
   class Client {
    public:
     virtual ~Client() {}
-
-    // Notifies about code cache if available. This method will
-    // be called zero or one time.
-    virtual void BodyCodeCacheReceived(mojo_base::BigBuffer data) = 0;
 
     // Notifies about more data available. Called multiple times.
     // If main resource is empty, can be not called at all.
@@ -74,12 +68,9 @@ class BLINK_EXPORT WebNavigationBodyLoader {
   // redirects. This method can be called multiple times at any moment.
   virtual void SetDefersLoading(WebLoaderFreezeMode mode) = 0;
 
-  // Starts loading the body. Client must be non-null, and will receive
-  // the body, code cache and final result.
-  virtual void StartLoadingBody(Client*, CodeCacheHost* code_cache_host) = 0;
-
-  // Starts loading the code cache.
-  virtual void StartLoadingCodeCache(CodeCacheHost* code_cache_host) = 0;
+  // Starts loading the body. Client must be non-null, and will receive the
+  // body, and final result.
+  virtual void StartLoadingBody(Client*) = 0;
 };
 
 }  // namespace blink

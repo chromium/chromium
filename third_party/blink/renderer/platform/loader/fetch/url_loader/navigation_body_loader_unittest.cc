@@ -114,8 +114,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     loader_ = std::move(navigation_params.body_loader);
   }
 
-  void StartLoading(CodeCacheHost* code_cache_host = nullptr) {
-    loader_->StartLoadingBody(this, code_cache_host);
+  void StartLoading() {
+    loader_->StartLoadingBody(this);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -129,13 +129,6 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   void Complete(int net_error) {
     client_remote_->OnComplete(network::URLLoaderCompletionStatus(net_error));
     base::RunLoop().RunUntilIdle();
-  }
-
-  void BodyCodeCacheReceived(mojo_base::BigBuffer data) override {
-    ASSERT_TRUE(expecting_code_cache_received_);
-    did_receive_code_cache_ = true;
-    if (run_loop_)
-      run_loop_->Quit();
   }
 
   void BodyDataReceived(base::span<const char> data) override {
@@ -179,11 +172,6 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     }
   }
 
-  void ExpectCodeCacheReceived() {
-    expecting_code_cache_received_ = true;
-    did_receive_code_cache_ = false;
-  }
-
   void ExpectDataReceived() {
     expecting_data_received_ = true;
     did_receive_data_ = false;
@@ -201,12 +189,6 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void Wait() {
-    if (expecting_code_cache_received_) {
-      if (!did_receive_code_cache_)
-        WaitForRunLoop();
-      ASSERT_TRUE(did_receive_code_cache_);
-      expecting_code_cache_received_ = false;
-    }
     if (expecting_data_received_) {
       if (!did_receive_data_)
         WaitForRunLoop();
@@ -238,9 +220,6 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   bool did_receive_data_ = false;
   bool expecting_finished_ = false;
   bool did_finish_ = false;
-  // Code cache is always called by default.
-  bool expecting_code_cache_received_ = true;
-  bool did_receive_code_cache_ = false;
   std::string buffer_to_write_;
   bool toggle_defers_loading_ = false;
   bool destroy_loader_ = false;
@@ -474,39 +453,6 @@ TEST_F(NavigationBodyLoaderTest, FillResponseReferrerRedirects) {
             WebString(Referrer::NoReferrer()));
   ASSERT_EQ(navigation_params.redirects[1].new_referrer,
             WebString::FromUTF8(second_redirect_url.spec()));
-}
-
-TEST_F(NavigationBodyLoaderTest, CodeCache) {
-  FakeCodeCacheHost code_cache_host;
-  CreateBodyLoader();
-  StartLoading(code_cache_host.GetCodeCacheHost());
-  code_cache_host.FinishFetch();
-  ExpectDataReceived();
-  Write("hello");
-  Wait();
-  EXPECT_EQ("hello", TakeDataReceived());
-}
-
-TEST_F(NavigationBodyLoaderTest, CodeCacheInParallelWithEarlyBodyLoad) {
-  base::test::ScopedFeatureList feature_list(features::kEarlyBodyLoad);
-  FakeCodeCacheHost code_cache_host;
-  CreateBodyLoader();
-  StartLoading(code_cache_host.GetCodeCacheHost());
-
-  // We should be able to receive data without receiving the code cache.
-  expecting_code_cache_received_ = false;
-  ExpectDataReceived();
-  Write("hello");
-  Complete(net::OK);
-  writer_.reset();
-  Wait();
-  EXPECT_EQ("hello", TakeDataReceived());
-
-  // Now wait for the code cache, and loading should finish.
-  ExpectCodeCacheReceived();
-  ExpectFinished();
-  code_cache_host.FinishFetch();
-  Wait();
 }
 
 }  // namespace

@@ -27,9 +27,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
   void Finish();
 
   void SetDefersLoading(LoaderFreezeMode) override;
-  void StartLoadingBody(WebNavigationBodyLoader::Client*,
-                        CodeCacheHost* host) override;
-  void StartLoadingCodeCache(CodeCacheHost* code_cache_host) override;
+  void StartLoadingBody(WebNavigationBodyLoader::Client*) override;
 
  private:
   void Continue();

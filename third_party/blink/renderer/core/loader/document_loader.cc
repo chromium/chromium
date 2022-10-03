@@ -127,7 +127,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
-#include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
@@ -151,16 +150,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-BASE_FEATURE(kCacheInlineScriptCode,
-             "CacheInlineScriptCode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
-
-// Controls whether caching of inline script is wired up correctly.
-constexpr base::FeatureParam<bool> kCacheInlineScriptCodeFixConfiguring{
-    &kCacheInlineScriptCode, "fix_configuring", false};
 
 Vector<OriginTrialFeature> CopyInitiatorOriginTrials(
     const WebVector<int>& initiator_origin_trial_features) {
@@ -282,7 +272,6 @@ struct SameSizeAsDocumentLoader
   scoped_refptr<ResourceTimingInfo> navigation_timing_info;
   bool report_timing_info_to_parent;
   WebScopedVirtualTimePauser virtual_time_pauser;
-  Member<SourceKeyedCachedMetadataHandler> cached_metadata_handler;
   Member<PrefetchedSignedExchangeManager> prefetched_signed_exchange_manager;
   const KURL web_bundle_physical_url;
   const KURL web_bundle_claimed_url;
@@ -302,8 +291,6 @@ struct SameSizeAsDocumentLoader
   HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
   mojom::blink::FencedFrameReportingPtr fenced_frame_reporting;
-  bool waiting_for_document_loader;
-  bool waiting_for_code_cache;
   std::unique_ptr<ExtraData> extra_data;
   AtomicString reduced_accept_language;
 };
@@ -607,7 +594,6 @@ void DocumentLoader::Trace(Visitor* visitor) const {
   visitor->Trace(parser_);
   visitor->Trace(subresource_filter_);
   visitor->Trace(document_load_timing_);
-  visitor->Trace(cached_metadata_handler_);
   visitor->Trace(prefetched_signed_exchange_manager_);
   visitor->Trace(use_counter_);
 }
@@ -942,18 +928,6 @@ void DocumentLoader::SetHistoryItemStateForCommit(
        old_item->Url() == history_item_->Url())) {
     history_item_->SetStateObject(old_item->StateObject());
     history_item_->SetItemSequenceNumber(old_item->ItemSequenceNumber());
-  }
-}
-
-void DocumentLoader::BodyCodeCacheReceived(mojo_base::BigBuffer data) {
-  if (cached_metadata_handler_) {
-    cached_metadata_handler_->SetSerializedCachedMetadata(std::move(data));
-  }
-
-  if (base::FeatureList::IsEnabled(features::kEarlyBodyLoad)) {
-    waiting_for_code_cache_ = false;
-    if (!waiting_for_document_loader_ && parser_)
-      parser_->CommitPreloadedData();
   }
 }
 
@@ -1658,7 +1632,7 @@ void DocumentLoader::StartLoadingInternal() {
     // synchronously and parse it, and it's already loaded in a buffer usually.
     // This means we should not defer, and we'll finish loading synchronously
     // from StartLoadingBody().
-    body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
+    body_loader_->StartLoadingBody(this);
     return;
   }
 
@@ -1729,48 +1703,17 @@ void DocumentLoader::StartLoadingResponse() {
     return;
 
   if (!url_.ProtocolIsInHTTPFamily()) {
-    // We only support code cache for http family, and browser insists on not
-    // event asking for code cache with other schemes.
-    body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
+    body_loader_->StartLoadingBody(this);
     return;
   }
 
-  ScriptableDocumentParser* scriptable_parser =
-      parser_->AsScriptableDocumentParser();
-  if (scriptable_parser) {
-    auto cached_metadata_sender = CachedMetadataSender::Create(
-        response_, blink::mojom::CodeCacheType::kJavascript,
-        frame_->DomWindow()->GetSecurityOrigin());
-    cached_metadata_handler_ =
-        MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
-            WTF::TextEncoding(), std::move(cached_metadata_sender));
-    if (kCacheInlineScriptCodeFixConfiguring.Get())
-      scriptable_parser->SetInlineScriptCacheHandler(cached_metadata_handler_);
-  }
-
-  if (waiting_for_document_loader_) {
-    // If we were just waiting for the document loader, the body has already
-    // started loading and it is safe to continue parsing if the code cache is
-    // already available.
-    waiting_for_document_loader_ = false;
-    if (!waiting_for_code_cache_)
-      parser_->CommitPreloadedData();
+  if (parser_->IsPreloading()) {
+    // If we were waiting for the document loader, the body has already
+    // started loading and it is safe to continue parsing.
+    parser_->CommitPreloadedData();
   } else {
-    StartLoadingBodyWithCodeCache();
+    body_loader_->StartLoadingBody(this);
   }
-}
-
-void DocumentLoader::StartLoadingBodyWithCodeCache() {
-  CodeCacheHost* code_cache_host =
-      UseIsolatedCodeCache() ? GetCodeCacheHost() : nullptr;
-  if (base::FeatureList::IsEnabled(features::kEarlyBodyLoad)) {
-    waiting_for_code_cache_ = true;
-    // If the body can load in parallel with the code cache, we need to enter
-    // preload mode until the code cache is received. The data will be committed
-    // once the code cache is available.
-    parser_->SetIsPreloading(true);
-  }
-  body_loader_->StartLoadingBody(this, code_cache_host);
 }
 
 void DocumentLoader::DidInstallNewDocument(Document* document) {
@@ -2296,13 +2239,6 @@ void DocumentLoader::CommitNavigation() {
          frame_->GetDocument()->ConnectedSubframeCount() == 0);
   state_ = kCommitted;
 
-  if (body_loader_ && !loading_main_document_from_mhtml_archive_ &&
-      !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
-      UseIsolatedCodeCache() &&
-      base::FeatureList::IsEnabled(features::kEarlyCodeCache)) {
-    body_loader_->StartLoadingCodeCache(GetCodeCacheHost());
-  }
-
   // Prepare a DocumentInit before clearing the frame, because it may need to
   // inherit an aliased security context.
   Document* owner_document = nullptr;
@@ -2628,23 +2564,14 @@ void DocumentLoader::CreateParserPostCommit() {
         !loading_url_as_empty_document_ && url_.ProtocolIsInHTTPFamily() &&
         !is_static_data_ && frame_->IsMainFrame() &&
         !document->IsPrefetchOnly() && MimeType() == "text/html") {
-      waiting_for_document_loader_ = true;
-      StartLoadingBodyWithCodeCache();
+      parser_->SetIsPreloading(true);
+      body_loader_->StartLoadingBody(this);
 
       if (!frame_ || !body_loader_)
         return;
     }
 
     frame_->DomWindow()->GetScriptController().UpdateDocument();
-  }
-
-  if (!kCacheInlineScriptCodeFixConfiguring.Get()) {
-    // If this is a scriptable parser and there is a resource, register the
-    // resource's cache handler with the parser.
-    ScriptableDocumentParser* scriptable_parser =
-        parser_->AsScriptableDocumentParser();
-    if (scriptable_parser && cached_metadata_handler_)
-      scriptable_parser->SetInlineScriptCacheHandler(cached_metadata_handler_);
   }
 
   GetFrameLoader().DispatchDidClearDocumentOfWindowObject();
@@ -2968,12 +2895,6 @@ ContentSecurityPolicy* DocumentLoader::CreateCSP() {
   }
 
   return csp;
-}
-
-bool DocumentLoader::UseIsolatedCodeCache() {
-  return base::FeatureList::IsEnabled(kCacheInlineScriptCode) &&
-         ShouldUseIsolatedCodeCache(mojom::blink::RequestContextType::HYPERLINK,
-                                    response_);
 }
 
 bool& GetDisableCodeCacheForTesting() {

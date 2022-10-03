@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
-#include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -402,25 +401,6 @@ void ClassicPendingScript::Trace(Visitor* visitor) const {
   PendingScript::Trace(visitor);
 }
 
-static SingleCachedMetadataHandler* GetInlineCacheHandler(const String& source,
-                                                          Document& document) {
-  if (!base::FeatureList::IsEnabled(kCacheInlineScriptCode))
-    return nullptr;
-
-  ScriptableDocumentParser* scriptable_parser =
-      document.GetScriptableDocumentParser();
-  if (!scriptable_parser)
-    return nullptr;
-
-  SourceKeyedCachedMetadataHandler* document_cache_handler =
-      scriptable_parser->GetInlineScriptCacheHandler();
-
-  if (!document_cache_handler)
-    return nullptr;
-
-  return document_cache_handler->HandlerForSource(source);
-}
-
 ClassicScript* ClassicPendingScript::GetSource() const {
   CheckState();
   DCHECK(IsReady());
@@ -431,7 +411,6 @@ ClassicScript* ClassicPendingScript::GetSource() const {
   TRACE_EVENT0("blink", "ClassicPendingScript::GetSource");
   if (!is_external_) {
     InlineScriptStreamer* streamer = nullptr;
-    SingleCachedMetadataHandler* cache_handler = nullptr;
     // We only create an inline cache handler for html-embedded scripts, not
     // for scripts produced by document.write, or not parser-inserted. This is
     // because we expect those to be too dynamic to benefit from caching.
@@ -443,8 +422,6 @@ ClassicScript* ClassicPendingScript::GetSource() const {
     Document* element_document = OriginalElementDocument();
     if (source_location_type_ == ScriptSourceLocationType::kInline &&
         element_document && element_document->IsActive()) {
-      cache_handler = GetInlineCacheHandler(source_text_for_inline_script_,
-                                            *element_document);
       streamer = GetInlineScriptStreamer(source_text_for_inline_script_,
                                          *element_document);
     }
@@ -458,7 +435,7 @@ ClassicScript* ClassicPendingScript::GetSource() const {
         source_text_for_inline_script_,
         ClassicScript::StripFragmentIdentifier(source_url_for_inline_script_),
         base_url_for_inline_script_, options_, source_location_type_,
-        SanitizeScriptErrors::kDoNotSanitize, cache_handler, StartingPosition(),
+        SanitizeScriptErrors::kDoNotSanitize, nullptr, StartingPosition(),
         streamer ? ScriptStreamer::NotStreamingReason::kInvalid
                  : ScriptStreamer::NotStreamingReason::kInlineScript,
         streamer);

@@ -1212,7 +1212,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
         navigation_params_(std::move(navigation_params)),
         body_loader_(std::move(navigation_params_->body_loader)),
         done_callback_(std::move(done_callback)) {
-    body_loader_->StartLoadingBody(this, nullptr /*code_cache_host*/);
+    body_loader_->StartLoadingBody(this);
   }
 
   MHTMLBodyLoaderClient(const MHTMLBodyLoaderClient&) = delete;
@@ -1248,8 +1248,6 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
   }
 
   // blink::WebNavigationBodyLoader::Client overrides:
-  void BodyCodeCacheReceived(mojo_base::BigBuffer data) override {}
-
   void BodyDataReceived(base::span<const char> data) override {
     data_.Append(data.data(), data.size());
   }

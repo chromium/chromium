@@ -40,23 +40,11 @@ void StaticDataNavigationBodyLoader::SetDefersLoading(LoaderFreezeMode mode) {
 }
 
 void StaticDataNavigationBodyLoader::StartLoadingBody(
-    WebNavigationBodyLoader::Client* client,
-    CodeCacheHost* code_cache_host) {
+    WebNavigationBodyLoader::Client* client) {
   DCHECK(!is_in_continue_);
   client_ = client;
-
-  if (client_) {
-    auto weak_self = weak_factory_.GetWeakPtr();
-    client_->BodyCodeCacheReceived(mojo_base::BigBuffer());
-    if (!weak_self)
-      return;
-  }
-
   Continue();
 }
-
-void StaticDataNavigationBodyLoader::StartLoadingCodeCache(
-    CodeCacheHost* code_cache_host) {}
 
 void StaticDataNavigationBodyLoader::Continue() {
   if (freeze_mode_ != LoaderFreezeMode::kNone || !client_ || is_in_continue_)

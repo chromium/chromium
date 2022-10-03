@@ -32,8 +32,7 @@ NavigationBodyLoader::NavigationBodyLoader(
     network::mojom::URLLoaderClientEndpointsPtr endpoints,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     std::unique_ptr<ResourceLoadInfoNotifierWrapper>
-        resource_load_info_notifier_wrapper,
-    bool is_main_frame)
+        resource_load_info_notifier_wrapper)
     : response_head_(std::move(response_head)),
       response_body_(std::move(response_body)),
       endpoints_(std::move(endpoints)),
@@ -43,8 +42,7 @@ NavigationBodyLoader::NavigationBodyLoader(
                       task_runner_),
       resource_load_info_notifier_wrapper_(
           std::move(resource_load_info_notifier_wrapper)),
-      original_url_(original_url),
-      is_main_frame_(is_main_frame) {}
+      original_url_(original_url) {}
 
 NavigationBodyLoader::~NavigationBodyLoader() {
   if (!has_received_completion_ || !has_seen_end_of_data_) {
@@ -104,93 +102,14 @@ void NavigationBodyLoader::SetDefersLoading(WebLoaderFreezeMode mode) {
 }
 
 void NavigationBodyLoader::StartLoadingBody(
-    WebNavigationBodyLoader::Client* client,
-    CodeCacheHost* code_cache_host) {
+    WebNavigationBodyLoader::Client* client) {
   TRACE_EVENT1("loading", "NavigationBodyLoader::StartLoadingBody", "url",
                original_url_.GetString().Utf8());
   client_ = client;
 
-  base::Time response_head_response_time = response_head_->response_time;
   resource_load_info_notifier_wrapper_->NotifyResourceResponseReceived(
       std::move(response_head_));
-
-  if (code_cache_host) {
-    if (code_cache_data_) {
-      ContinueWithCodeCache(base::TimeTicks::Now(),
-                            response_head_response_time);
-      return;
-    }
-
-    // Save these for when the code cache is ready.
-    code_cache_wait_start_time_ = base::TimeTicks::Now();
-    response_head_response_time_ = response_head_response_time;
-
-    // If the code cache loader hasn't been created yet the request hasn't
-    // started, so start it now.
-    if (!code_cache_loader_)
-      StartLoadingCodeCache(code_cache_host);
-
-    // TODO(crbug.com/1274867): See if this can be enabled for subframes too.
-    if (base::FeatureList::IsEnabled(features::kEarlyBodyLoad) &&
-        is_main_frame_) {
-      // Start loading the body in parallel with the code cache.
-      BindURLLoaderAndStartLoadingResponseBodyIfPossible();
-    }
-    return;
-  }
-
-  code_cache_data_ = mojo_base::BigBuffer();
-  ContinueWithCodeCache(base::TimeTicks::Now(), response_head_response_time);
-}
-
-void NavigationBodyLoader::StartLoadingCodeCache(
-    CodeCacheHost* code_cache_host) {
-  code_cache_loader_ = WebCodeCacheLoader::Create(code_cache_host);
-  code_cache_loader_->FetchFromCodeCache(
-      mojom::CodeCacheType::kJavascript, original_url_,
-      base::BindOnce(&NavigationBodyLoader::CodeCacheReceived,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void NavigationBodyLoader::CodeCacheReceived(base::Time response_time,
-                                             mojo_base::BigBuffer data) {
-  code_cache_data_ = std::move(data);
-  code_cache_response_time_ = response_time;
-  if (!code_cache_wait_start_time_.is_null()) {
-    ContinueWithCodeCache(code_cache_wait_start_time_,
-                          response_head_response_time_);
-  }
-}
-
-void NavigationBodyLoader::ContinueWithCodeCache(
-    base::TimeTicks start_time,
-    base::Time response_head_response_time) {
-  if (code_cache_loader_) {
-    base::UmaHistogramTimes(
-        base::StrCat({"Navigation.CodeCacheTime.",
-                      is_main_frame_ ? "MainFrame" : "Subframe"}),
-        base::TimeTicks::Now() - start_time);
-  }
-
-  // Check that the times match to ensure that the code cache data is for this
-  // response. See https://crbug.com/1099587.
-  const bool is_cache_usable =
-      (response_head_response_time == code_cache_response_time_);
-  base::UmaHistogramBoolean(
-      base::StrCat({"V8.InlineCodeCache.",
-                    is_main_frame_ ? "MainFrame" : "Subframe",
-                    ".CacheTimesMatch"}),
-      is_cache_usable);
-  if (!is_cache_usable)
-    code_cache_data_ = mojo_base::BigBuffer();
-
-  auto weak_self = weak_factory_.GetWeakPtr();
-  if (client_) {
-    client_->BodyCodeCacheReceived(std::move(*code_cache_data_));
-    if (!weak_self)
-      return;
-  }
-  code_cache_loader_.reset();
+  base::WeakPtr<NavigationBodyLoader> weak_self = weak_factory_.GetWeakPtr();
   NotifyCompletionIfAppropriate();
   if (!weak_self)
     return;
@@ -282,7 +201,7 @@ void NavigationBodyLoader::ReadFromDataPipe() {
 }
 
 void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
-  if (!has_received_completion_ || !has_seen_end_of_data_ || code_cache_loader_)
+  if (!has_received_completion_ || !has_seen_end_of_data_)
     return;
 
   handle_watcher_.Cancel();
@@ -407,7 +326,7 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     navigation_params->body_loader.reset(new NavigationBodyLoader(
         original_url, std::move(response_head), std::move(response_body),
         std::move(url_loader_client_endpoints), task_runner,
-        std::move(resource_load_info_notifier_wrapper), is_main_frame));
+        std::move(resource_load_info_notifier_wrapper)));
   }
 }
 }  // namespace blink
