@@ -2749,7 +2749,7 @@ enum WebFeature {
   kPluginName = 3443,
   kPluginFilename = 3444,
   kPluginDescription = 3445,
-  kSubresourceWebBundles = 3446,
+  kOBSOLETE_SubresourceWebBundles = 3446,
   kRTCPeerConnectionSetRemoteDescriptionPromise = 3447,
   kRTCPeerConnectionSetLocalDescriptionPromise = 3448,
   kRTCPeerConnectionCreateOfferPromise = 3449,

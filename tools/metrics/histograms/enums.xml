@@ -40515,7 +40515,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3443" label="PluginName"/>
   <int value="3444" label="PluginFilename"/>
   <int value="3445" label="PluginDescription"/>
-  <int value="3446" label="SubresourceWebBundles"/>
+  <int value="3446" label="OBSOLETE_SubresourceWebBundles"/>
   <int value="3447" label="RTCPeerConnectionSetRemoteDescriptionPromise"/>
   <int value="3448" label="RTCPeerConnectionSetLocalDescriptionPromise"/>
   <int value="3449" label="RTCPeerConnectionCreateOfferPromise"/>
