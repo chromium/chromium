@@ -25,8 +25,9 @@ class PrefRegistrySimple;
 // Performs ChromeOS specific metrics logging.
 class ChromeOSMetricsProvider : public metrics::MetricsProvider {
  public:
-  explicit ChromeOSMetricsProvider(
-      metrics::MetricsLogUploader::MetricServiceType service_type);
+  ChromeOSMetricsProvider(
+      metrics::MetricsLogUploader::MetricServiceType service_type,
+      ChromeOSSystemProfileProvider* system_profile_provider);
 
   ChromeOSMetricsProvider(const ChromeOSMetricsProvider&) = delete;
   ChromeOSMetricsProvider& operator=(const ChromeOSMetricsProvider&) = delete;
@@ -43,7 +44,6 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
 
   // metrics::MetricsProvider:
   void Init() override;
-  void AsyncInit(base::OnceClosure done_callback) override;
   void OnDidCreateMetricsLog() override;
   void OnRecordingEnabled() override;
   void OnRecordingDisabled() override;
@@ -67,7 +67,7 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;
 
   // Interface for providing the SystemProfile to metrics.
-  std::unique_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_;
+  base::raw_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_;
 
   base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
 };

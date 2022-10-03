@@ -1922,7 +1922,6 @@ source_set("unit_tests") {
     "../extensions/updater/local_extension_cache_unittest.cc",
     "../memory/memory_kills_monitor_unittest.cc",
     "../memory/oom_kills_monitor_unittest.cc",
-    "../metrics/chromeos_metrics_provider_unittest.cc",
     "../metrics/chromeos_system_profile_provider_unittest.cc",
     "../metrics/cros_healthd_metrics_provider_unittest.cc",
     "../metrics/perf/cpu_identity_unittest.cc",

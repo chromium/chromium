@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -22,6 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // "nogncheck" because of crbug.com/1125897.
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"  // nogncheck
 #include "chromeos/login/login_state/login_state.h"
@@ -70,12 +72,12 @@ class ChromeBackgroundTracingMetricsProviderTest : public testing::Test {
 };
 
 TEST_F(ChromeBackgroundTracingMetricsProviderTest, NoTraceData) {
-  ChromeBackgroundTracingMetricsProvider provider;
+  ChromeBackgroundTracingMetricsProvider provider(nullptr);
   ASSERT_FALSE(provider.HasIndependentMetrics());
 }
 
 TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
-  ChromeBackgroundTracingMetricsProvider provider;
+  ChromeBackgroundTracingMetricsProvider provider(nullptr);
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SetTraceToUploadForTesting(
@@ -98,7 +100,7 @@ TEST_F(ChromeBackgroundTracingMetricsProviderTest, UploadsTraceLog) {
 }
 
 TEST_F(ChromeBackgroundTracingMetricsProviderTest, HandleMissingTrace) {
-  ChromeBackgroundTracingMetricsProvider provider;
+  ChromeBackgroundTracingMetricsProvider provider(nullptr);
   EXPECT_FALSE(provider.HasIndependentMetrics());
 
   content::BackgroundTracingManager::GetInstance().SetTraceToUploadForTesting(
@@ -128,8 +130,8 @@ class ChromeBackgroundTracingMetricsProviderChromeOSTest
   void SetUp() override {
     ChromeBackgroundTracingMetricsProviderTest::SetUp();
 
-    // ChromeOSMetricsProvider needs the following to provide system profile
-    // meta.
+    // ChromeOSSystemProfileProvider needs the following to provide system
+    // profile meta.
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     ash::DemoSession::SetDemoConfigForTesting(
@@ -154,13 +156,19 @@ TEST_F(ChromeBackgroundTracingMetricsProviderChromeOSTest, HardwareClass) {
   fake_statistics_provider.SetMachineStatistic("hardware_class",
                                                kFakeHardwareClass);
 
-  ChromeBackgroundTracingMetricsProvider provider;
+  auto system_profile_provider =
+      std::make_unique<ChromeOSSystemProfileProvider>();
+  ChromeBackgroundTracingMetricsProvider provider(
+      system_profile_provider.get());
   provider.Init();
 
   // AsyncInit needs to happen to collect `hardware_class` etc.
   {
     base::RunLoop run_loop;
-    provider.AsyncInit(base::BindLambdaForTesting([&] { run_loop.Quit(); }));
+    base::RepeatingClosure barrier =
+        base::BarrierClosure(2, run_loop.QuitWhenIdleClosure());
+    provider.AsyncInit(barrier);
+    system_profile_provider->AsyncInit(barrier);
     run_loop.Run();
   }
 

@@ -72,9 +72,10 @@ void IncrementPrefValue(const char* path) {
 }  // namespace
 
 ChromeOSMetricsProvider::ChromeOSMetricsProvider(
-    metrics::MetricsLogUploader::MetricServiceType service_type)
-    : cros_system_profile_provider_(
-          std::make_unique<ChromeOSSystemProfileProvider>()) {
+    metrics::MetricsLogUploader::MetricServiceType service_type,
+    ChromeOSSystemProfileProvider* cros_system_profile_provider)
+    : cros_system_profile_provider_(cros_system_profile_provider) {
+  DCHECK(cros_system_profile_provider_);
   if (service_type == metrics::MetricsLogUploader::UMA)
     profile_provider_ = std::make_unique<metrics::ProfileProvider>();
 }
@@ -117,10 +118,6 @@ EnrollmentStatus ChromeOSMetricsProvider::GetEnrollmentStatus() {
 void ChromeOSMetricsProvider::Init() {
   if (profile_provider_)
     profile_provider_->Init();
-}
-
-void ChromeOSMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
-  cros_system_profile_provider_->AsyncInit(std::move(done_callback));
 }
 
 void ChromeOSMetricsProvider::OnDidCreateMetricsLog() {

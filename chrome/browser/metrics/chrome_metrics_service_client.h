@@ -152,14 +152,16 @@ class ChromeMetricsServiceClient
       const base::FilePath& path);
   static void SetIsProcessRunningForTesting(IsProcessRunningFunction func);
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceClientTest, IsWebstoreExtension);
-
+ protected:
   explicit ChromeMetricsServiceClient(
       metrics::MetricsStateManager* state_manager);
 
   // Completes the two-phase initialization of ChromeMetricsServiceClient.
   void Initialize();
+
+ private:
+  friend class ChromeMetricsServiceClientTest;
+  FRIEND_TEST_ALL_PREFIXES(ChromeMetricsServiceClientTest, IsWebstoreExtension);
 
   // Registers providers to the MetricsService. These provide data from
   // alternate sources.
@@ -203,6 +205,11 @@ class ChromeMetricsServiceClient
   void CountBrowserCrashDumpAttempts();
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Helper function for initialization of system profile provider.
+  virtual void AsyncInitSystemProfileProvider();
+#endif
+
   // Check if an extension is installed via the Web Store.
   static bool IsWebstoreExtension(base::StringPiece id);
 
@@ -216,6 +223,12 @@ class ChromeMetricsServiceClient
 
   // The synthetic trial registry shared by metrics_service_ and ukm_service_.
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
+
+  // |cros_system_profile_provider_| must be declared before |ukm_service_| due
+  // to some metrics providers have a dependency on |system_profile_provider_|
+  // and it must be destroyed after they are. Manages SystemProfile information
+  // needed by other metrics providers.
+  std::unique_ptr<metrics::MetricsProvider> cros_system_profile_provider_;
 
   // The MetricsService that |this| is a client of.
   std::unique_ptr<metrics::MetricsService> metrics_service_;

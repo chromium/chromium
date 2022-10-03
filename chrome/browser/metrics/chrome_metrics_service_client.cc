@@ -158,6 +158,7 @@
 #include "chrome/browser/metrics/assistant_service_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
+#include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #include "chrome/browser/metrics/cros_healthd_metrics_provider.h"
 #include "chrome/browser/metrics/family_user_metrics_provider.h"
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
@@ -656,6 +657,12 @@ void ChromeMetricsServiceClient::Initialize() {
       metrics_state_manager_, this, local_state);
 
   observers_active_ = RegisterObservers();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  cros_system_profile_provider_ =
+      std::make_unique<ChromeOSSystemProfileProvider>();
+#endif
+
   RegisterMetricsServiceProviders();
 
   if (IsMetricsReportingForceEnabled() ||
@@ -686,6 +693,8 @@ void ChromeMetricsServiceClient::Initialize() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics::structured::Recorder::GetInstance()->SetUiTaskRunner(
       base::SequencedTaskRunnerHandle::Get());
+
+  AsyncInitSystemProfileProvider();
 #endif
 }
 
@@ -763,7 +772,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
               g_browser_process->component_updater())));
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<tracing::ChromeBackgroundTracingMetricsProvider>());
+      std::make_unique<tracing::ChromeBackgroundTracingMetricsProvider>(
+          reinterpret_cast<ChromeOSSystemProfileProvider*>(
+              cros_system_profile_provider_.get())));
 
   metrics_service_->RegisterMetricsProvider(MakeDemographicMetricsProvider(
       metrics::MetricsLogUploader::MetricServiceType::UMA));
@@ -816,7 +827,9 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ChromeOSMetricsProvider>(
-          metrics::MetricsLogUploader::UMA));
+          metrics::MetricsLogUploader::UMA,
+          reinterpret_cast<ChromeOSSystemProfileProvider*>(
+              cros_system_profile_provider_.get())));
 
   if (base::FeatureList::IsEnabled(::features::kUmaStorageDimensions)) {
     metrics_service_->RegisterMetricsProvider(
@@ -911,7 +924,9 @@ void ChromeMetricsServiceClient::RegisterUKMProviders() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ukm_service_->RegisterMetricsProvider(
       std::make_unique<ChromeOSMetricsProvider>(
-          metrics::MetricsLogUploader::UKM));
+          metrics::MetricsLogUploader::UKM,
+          reinterpret_cast<ChromeOSSystemProfileProvider*>(
+              cros_system_profile_provider_.get())));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   ukm_service_->RegisterMetricsProvider(
@@ -1171,6 +1186,16 @@ void ChromeMetricsServiceClient::RenderProcessHostDestroyed(
     content::RenderProcessHost* host) {
   scoped_observations_.RemoveObservation(host);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeMetricsServiceClient::AsyncInitSystemProfileProvider() {
+  DCHECK(cros_system_profile_provider_);
+  cros_system_profile_provider_->AsyncInit(base::BindOnce([]() {
+    // todo: callback to Structured Metrics when system profiles
+    //       load is complete.
+  }));
+}
+#endif
 
 // static
 bool ChromeMetricsServiceClient::IsWebstoreExtension(base::StringPiece id) {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 
+#include <stdint.h>
+
 #include <string>
 
 #include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -37,7 +39,7 @@ using Hardware = metrics::SystemProfileProto::Hardware;
 
 namespace {
 
-constexpr int kTpmFirmwareVersion = 100;
+constexpr uint64_t kTpmFirmwareVersion = 100;
 
 class FakeMultiDeviceSetupClientImplFactory
     : public ash::multidevice_setup::MultiDeviceSetupClientImpl::Factory {

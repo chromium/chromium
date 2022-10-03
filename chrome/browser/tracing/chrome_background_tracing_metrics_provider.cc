@@ -18,13 +18,17 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/barrier_closure.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
+#include "chrome/browser/metrics/chromeos_system_profile_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace tracing {
 
-ChromeBackgroundTracingMetricsProvider::
-    ChromeBackgroundTracingMetricsProvider() = default;
+ChromeBackgroundTracingMetricsProvider::ChromeBackgroundTracingMetricsProvider(
+    ChromeOSSystemProfileProvider* cros_system_profile_provider)
+    : cros_system_profile_provider_(cros_system_profile_provider) {}
+
 ChromeBackgroundTracingMetricsProvider::
     ~ChromeBackgroundTracingMetricsProvider() = default;
 
@@ -46,7 +50,7 @@ void ChromeBackgroundTracingMetricsProvider::Init() {
   // ChromeOS system metrics to the proto (i.e. no hardware class etc).
   system_profile_providers_.emplace_back(
       std::make_unique<ChromeOSMetricsProvider>(
-          metrics::MetricsLogUploader::UMA));
+          metrics::MetricsLogUploader::UMA, cros_system_profile_provider_));
   chromeos_metrics_provider_ = system_profile_providers_.back().get();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -64,8 +68,6 @@ void ChromeBackgroundTracingMetricsProvider::AsyncInit(
     base::OnceClosure done_callback) {
 #if BUILDFLAG(IS_WIN)
   av_metrics_provider_->AsyncInit(std::move(done_callback));
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos_metrics_provider_->AsyncInit(std::move(done_callback));
 #else
   std::move(done_callback).Run();
 #endif

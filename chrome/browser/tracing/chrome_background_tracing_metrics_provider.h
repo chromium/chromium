@@ -8,6 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/tracing/common/background_tracing_metrics_provider.h"
 
+class ChromeOSSystemProfileProvider;
+
 namespace tracing {
 
 // The background tracing manager will make sure traces are only uploaded on
@@ -16,7 +18,8 @@ namespace tracing {
 class ChromeBackgroundTracingMetricsProvider
     : public BackgroundTracingMetricsProvider {
  public:
-  ChromeBackgroundTracingMetricsProvider();
+  explicit ChromeBackgroundTracingMetricsProvider(
+      ChromeOSSystemProfileProvider* cros_system_profile_provider);
 
   ChromeBackgroundTracingMetricsProvider(
       const ChromeBackgroundTracingMetricsProvider&) = delete;
@@ -33,6 +36,8 @@ class ChromeBackgroundTracingMetricsProvider
   // owned by BackgroundTracingMetricsProvider::system_profile_providers_.
   raw_ptr<MetricsProvider> av_metrics_provider_ = nullptr;
   raw_ptr<MetricsProvider> chromeos_metrics_provider_ = nullptr;
+  raw_ptr<ChromeOSSystemProfileProvider> cros_system_profile_provider_ =
+      nullptr;
 };
 
 }  // namespace tracing
