@@ -415,15 +415,15 @@ views::FocusTraversable* QuickAnswersView::GetPaneFocusTraversable() {
 }
 
 void QuickAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kDialog;
+
   // The view itself is not focused for retry-mode, so should not be announced
   // by the screen reader.
   if (retry_label_) {
-    node_data->AddState(ax::mojom::State::kIgnored);
     node_data->SetNameExplicitlyEmpty();
     return;
   }
 
-  node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(
       l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
