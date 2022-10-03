@@ -2458,8 +2458,8 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
             # Review is still required for these changes.
             return []
     except Exception as e:
-      return [output_api.PresubmitPromptWarning(
-              'Failed to retrieve owner override status - %s' % str(e))]
+        return [output_api.PresubmitPromptWarning(
+                'Failed to retrieve owner override status - %s' % str(e))]
 
     virtual_depended_on_files = set()
 
@@ -6281,11 +6281,11 @@ def CheckBatchAnnotation(input_api, output_api):
         if (is_instrumentation_test and
             not batch_matched and
             not do_not_batch_matched):
-          missing_annotation_errors.append(str(f.LocalPath()))
+            missing_annotation_errors.append(str(f.LocalPath()))
         if (not is_instrumentation_test and
             (batch_matched or
              do_not_batch_matched)):
-          extra_annotation_errors.append(str(f.LocalPath()))
+            extra_annotation_errors.append(str(f.LocalPath()))
 
     results = []
 
@@ -6302,5 +6302,116 @@ safe to run in batch, please use @DoNotBatch with reasons.
                 """
 Robolectric tests do not need a @Batch or @DoNotBatch annotations.
 """, extra_annotation_errors))
+
+    return results
+
+
+def CheckMockAnnotation(input_api, output_api):
+    """Checks that we have annotated all Mockito.mock()-ed or Mockito.spy()-ed
+    classes with @Mock or @Spy. If this is not an instrumentation test,
+    disregard."""
+
+    # This is just trying to be approximately correct. We are not writing a
+    # Java parser, so special cases like statically importing mock() then
+    # calling an unrelated non-mockito spy() function will cause a false
+    # positive.
+    package_name = input_api.re.compile(r'^package\s+(\w+(?:\.\w+)+);')
+    mock_static_import = input_api.re.compile(
+        r'^import\s+static\s+org.mockito.Mockito.(?:mock|spy);')
+    import_class = input_api.re.compile(r'import\s+((?:\w+\.)+)(\w+);')
+    mock_annotation = input_api.re.compile(r'^\s*@(?:Mock|Spy)')
+    field_type = input_api.re.compile(r'(\w+)(?:<\w+>)?\s+\w+\s*(?:;|=)')
+    mock_or_spy_function_call = r'(?:mock|spy)\(\s*(?:new\s*)?(\w+)(?:\.class|\()'
+    fully_qualified_mock_function = input_api.re.compile(
+        r'Mockito\.' + mock_or_spy_function_call)
+    statically_imported_mock_function = input_api.re.compile(
+        r'\W' + mock_or_spy_function_call)
+    robolectric_test = input_api.re.compile(r'[rR]obolectric')
+    uiautomator_test = input_api.re.compile(r'[uU]i[aA]utomator')
+
+    def _DoClassLookup(class_name, class_name_map, package):
+        found = class_name_map.get(class_name)
+        if found is not None:
+            return found
+        else:
+            return package + '.' + class_name
+
+    def _FilterFile(affected_file):
+        return input_api.FilterSourceFile(
+            affected_file,
+            files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+            files_to_check=[r'.*Test\.java$'])
+
+    mocked_by_function_classes = set()
+    mocked_by_annotation_classes = set()
+    class_to_filename = {}
+    for f in input_api.AffectedSourceFiles(_FilterFile):
+        mock_function_regex = fully_qualified_mock_function
+        next_line_is_annotated = False
+        fully_qualified_class_map = {}
+        package = None
+
+        for line in f.NewContents():
+            if robolectric_test.search(line) or uiautomator_test.search(line):
+                # Skip Robolectric and UiAutomator tests.
+                break
+
+            m = package_name.search(line)
+            if m:
+                package = m.group(1)
+                continue
+
+            if mock_static_import.search(line):
+                mock_function_regex = statically_imported_mock_function
+                continue
+
+            m = import_class.search(line)
+            if m:
+                fully_qualified_class_map[m.group(2)] = m.group(1) + m.group(2)
+                continue
+
+            if next_line_is_annotated:
+                next_line_is_annotated = False
+                fully_qualified_class = _DoClassLookup(
+                    field_type.search(line).group(1), fully_qualified_class_map,
+                    package)
+                mocked_by_annotation_classes.add(fully_qualified_class)
+                continue
+
+            if mock_annotation.search(line):
+                next_line_is_annotated = True
+                continue
+
+            m = mock_function_regex.search(line)
+            if m:
+                fully_qualified_class = _DoClassLookup(m.group(1),
+                    fully_qualified_class_map, package)
+                # Skipping builtin classes, since they don't get optimized.
+                if fully_qualified_class.startswith(
+                        'android.') or fully_qualified_class.startswith(
+                            'java.'):
+                    continue
+                class_to_filename[fully_qualified_class] = str(f.LocalPath())
+                mocked_by_function_classes.add(fully_qualified_class)
+
+    results = []
+    missed_classes = mocked_by_function_classes - mocked_by_annotation_classes
+    if missed_classes:
+        error_locations = []
+        for c in missed_classes:
+            error_locations.append(c + ' in ' + class_to_filename[c])
+        results.append(
+            output_api.PresubmitPromptWarning(
+                """
+Mockito.mock()/spy() cause issues with our Java optimizer. You have 3 options:
+1) If the mocked variable can be a class member, annotate the member with
+   @Mock/@Spy.
+2) If the mocked variable cannot be a class member, create a dummy member
+   variable of that type, annotated with @Mock/@Spy. This dummy does not need
+   to be used or initialized in any way.
+3) If the mocked type is definitely not going to be optimized, whether it's a
+   builtin type which we don't ship, or a class you know R8 will treat
+   specially, you can ignore this warning.
+""", error_locations))
 
     return results

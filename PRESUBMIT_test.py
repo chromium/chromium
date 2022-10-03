@@ -4564,6 +4564,7 @@ class VerifyDcheckParentheses(unittest.TestCase):
     for error in errors:
       self.assertRegex(error.message, r'DCHECK_IS_ON().+parentheses')
 
+
 class CheckBatchAnnotation(unittest.TestCase):
   """Test the CheckBatchAnnotation presubmit check."""
 
@@ -4637,6 +4638,80 @@ class CheckBatchAnnotation(unittest.TestCase):
     ]
     errors = PRESUBMIT.CheckBatchAnnotation(mock_input, MockOutputApi())
     self.assertEqual(0, len(errors))
+
+
+class CheckMockAnnotation(unittest.TestCase):
+    """Test the CheckMockAnnotation presubmit check."""
+
+    def testTruePositives(self):
+        """Examples of @Mock or @Spy being used and nothing should be flagged."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneTest.java', [
+                'import a.b.c.Bar;',
+                'import a.b.c.Foo;',
+                '@Mock',
+                'public static Foo f = new Foo();',
+                'Mockito.mock(new Bar(a, b, c))'
+            ]),
+            MockFile('path/TwoTest.java', [
+                'package x.y.z;',
+                'import static org.mockito.Mockito.spy;',
+                '@Spy',
+                'public static FooBar<Baz> f;',
+                'a = spy(Baz.class)'
+            ]),
+        ]
+        errors = PRESUBMIT.CheckMockAnnotation(mock_input, MockOutputApi())
+        self.assertEqual(1, len(errors))
+        self.assertEqual(2, len(errors[0].items))
+        self.assertIn('a.b.c.Bar in path/OneTest.java', errors[0].items)
+        self.assertIn('x.y.z.Baz in path/TwoTest.java', errors[0].items)
+
+    def testTrueNegatives(self):
+        """Examples of when we should not be flagging mock() or spy() calls."""
+        mock_input = MockInputApi()
+        mock_input.files = [
+            MockFile('path/OneTest.java', [
+                'package a.b.c;',
+                'import org.chromium.base.test.BaseRobolectricTestRunner;',
+                'Mockito.mock(Abc.class)'
+            ]),
+            MockFile('path/TwoTest.java', [
+                'package a.b.c;',
+                'import androidx.test.uiautomator.UiDevice;',
+                'Mockito.spy(new Def())'
+            ]),
+            MockFile('path/ThreeTest.java', [
+                'package a.b.c;',
+                'import static org.mockito.Mockito.spy;',
+                '@Spy',
+                'public static Foo f = new Abc();',
+                'a = spy(Foo.class)'
+            ]),
+            MockFile('path/FourTest.java', [
+                'package a.b.c;',
+                'import static org.mockito.Mockito.mock;',
+                '@Spy',
+                'public static Bar b = new Abc(a, b, c, d);',
+                ' mock(new Bar(a,b,c))'
+            ]),
+            MockFile('path/FiveTest.java', [
+                'package a.b.c;',
+                '@Mock',
+                'public static Baz<abc> b;',
+                'Mockito.mock(Baz.class)']),
+            MockFile('path/SixTest.java', [
+                'package a.b.c;',
+                'import android.view.View;',
+                'import java.ArrayList;',
+                'Mockito.spy(new View())',
+                'Mockito.mock(ArrayList.class)'
+            ]),
+        ]
+        errors = PRESUBMIT.CheckMockAnnotation(mock_input, MockOutputApi())
+        self.assertEqual(0, len(errors))
+
 
 class LayoutInTestsTest(unittest.TestCase):
   def testLayoutInTest(self):
