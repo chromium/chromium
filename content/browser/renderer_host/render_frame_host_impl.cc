@@ -4615,9 +4615,10 @@ void RenderFrameHostImpl::DidCommitPageActivation(
 void RenderFrameHostImpl::DidCommitSameDocumentNavigation(
     mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params) {
-  TRACE_EVENT2(
-      "navigation", "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
-      "render_frame_host", this, "url", params->url.possibly_invalid_spec());
+  TRACE_EVENT("navigation",
+              "RenderFrameHostImpl::DidCommitSameDocumentNavigation",
+              ChromeTrackEvent::kRenderFrameHost, this, "url",
+              params->url.possibly_invalid_spec());
 
   ScopedActiveURL scoped_active_url(params->url,
                                     GetMainFrame()->GetLastCommittedOrigin());
@@ -5566,6 +5567,7 @@ void RenderFrameHostImpl::WriteIntoTrace(
   proto.Set(TraceProto::kRenderFrameHostId, GetGlobalId());
   proto->set_frame_tree_node_id(frame_tree_node_->frame_tree_node_id());
   proto->set_lifecycle_state(LifecycleStateToProto());
+  proto->set_frame_type(FrameTypeToProto(frame_tree_node_->GetFrameType()));
   proto->set_origin(GetLastCommittedOrigin().GetDebugString());
   proto->set_url(GetLastCommittedURL().possibly_invalid_spec());
   proto.Set(TraceProto::kProcess, GetProcess());
@@ -7208,8 +7210,8 @@ void RenderFrameHostImpl::GetAssociatedInterface(
 }
 
 void RenderFrameHostImpl::DidStopLoading() {
-  TRACE_EVENT1("navigation", "RenderFrameHostImpl::DidStopLoading",
-               "render_frame_host", this);
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::DidStopLoading",
+              ChromeTrackEvent::kRenderFrameHost, this);
   if (did_stop_loading_callback_)
     std::move(did_stop_loading_callback_).Run();
 
@@ -7818,9 +7820,9 @@ void RenderFrameHostImpl::BeginNavigation(
       return;
   }
 
-  TRACE_EVENT2("navigation", "RenderFrameHostImpl::BeginNavigation",
-               "render_frame_host", this, "url",
-               common_params->url.possibly_invalid_spec());
+  TRACE_EVENT("navigation", "RenderFrameHostImpl::BeginNavigation",
+              ChromeTrackEvent::kRenderFrameHost, this, "url",
+              common_params->url.possibly_invalid_spec());
 
   DCHECK(navigation_client.is_valid());
 
@@ -11830,8 +11832,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       created_new_document && navigation_request->IsWaitingToCommit();
 
   if (navigated_to_new_document) {
-    TRACE_EVENT1("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
-                 "render_frame_host", this);
+    TRACE_EVENT("content", "DidCommitProvisionalLoad_StateResetForNewDocument",
+                ChromeTrackEvent::kRenderFrameHost, this);
 
     last_committed_cross_document_navigation_id_ =
         navigation_request->GetNavigationId();

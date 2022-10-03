@@ -171,6 +171,18 @@ message FrameTreeNodeInfo {
   optional RenderFrameHost current_frame_host = 4;
   optional RenderFrameHost speculative_frame_host = 5;
 
+  // NOTE: this proto must be kept consistent with
+  // content::FrameType.
+  enum FrameType {
+    UNSPECIFIED_FRAME_TYPE = 0;
+    SUBFRAME = 1;
+    PRIMARY_MAIN_FRAME = 2;
+    PRERENDER_MAIN_FRAME = 3;
+    FENCED_FRAME_ROOT = 4;
+  }
+
+  optional FrameType frame_type = 6;
+
   // Additional untyped debug information associated with this
   // FrameTreeNode, populated via TracedProto::AddDebugAnnotations API.
   repeated DebugAnnotation debug_annotations = 99;
@@ -525,6 +537,7 @@ message RenderFrameHost {
   optional RenderFrameHost outer_document = 9;
   optional RenderFrameHost embedder = 10;
   optional BrowsingContextState browsing_context_state = 11;
+  optional FrameTreeNodeInfo.FrameType frame_type = 12;
 
   // Additional untyped debug information associated with this
   // RenderViewHost, populated via TracedProto::AddDebugAnnotations API.
