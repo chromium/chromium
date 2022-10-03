@@ -21,8 +21,7 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 class DeviceActivityClient;
 
@@ -88,7 +87,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   base::WeakPtrFactory<DeviceActivityController> weak_factory_{this};
 };
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVITY_CONTROLLER_H_

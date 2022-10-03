@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/fresnel_pref_names.h"
 
-namespace ash {
-namespace prefs {
+namespace ash::prefs {
 
 // Timestamp of last known daily ping to Fresnel.
 const char kDeviceActiveLastKnownDailyPingTimestamp[] =
@@ -19,5 +18,4 @@ const char kDeviceActiveLastKnownMonthlyPingTimestamp[] =
 const char kDeviceActiveLastKnownFirstActivePingTimestamp[] =
     "device_active.last_known_first_active_ping_timestamp";
 
-}  // namespace prefs
-}  // namespace ash
+}  // namespace ash::prefs

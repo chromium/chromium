@@ -16,8 +16,7 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 // Forward declaration from fresnel_service.proto.
 class ImportDataRequest;
@@ -72,7 +71,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
   std::string ts_ciphertext_;
 };
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_FIRST_ACTIVE_USE_CASE_IMPL_H_

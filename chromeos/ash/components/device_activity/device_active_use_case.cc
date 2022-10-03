@@ -12,8 +12,7 @@
 #include "crypto/hmac.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 namespace psm_rlwe = private_membership::rlwe;
 
@@ -233,5 +232,4 @@ void DeviceActiveUseCase::SetPsmRlweClient(
   psm_rlwe_client_ = std::move(psm_rlwe_client);
 }
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity

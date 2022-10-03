@@ -9,8 +9,7 @@
 #include "chromeos/ash/components/device_activity/device_active_use_case.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) FakePsmDelegate
     : public PsmDelegateInterface {
@@ -37,7 +36,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY) FakePsmDelegate
   std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids_;
 };
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_FAKE_PSM_DELEGATE_H_

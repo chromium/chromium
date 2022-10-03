@@ -12,18 +12,15 @@
 
 class PrefService;
 
-namespace chromeos {
-namespace system {
+namespace chromeos::system {
 class StatisticsProvider;
-}  // namespace system
-}  // namespace chromeos
+}  // namespace chromeos::system
 
 namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 // Fields used in setting device active metadata, that are explicitly
 // required from outside of ASH_CHROME due to the dependency limitations
@@ -216,7 +213,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY)
       psm_rlwe_client_;
 };
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_DEVICE_ACTIVE_USE_CASE_H_

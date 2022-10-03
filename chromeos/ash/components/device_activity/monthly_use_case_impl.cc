@@ -12,8 +12,7 @@
 #include "components/version_info/channel.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 namespace psm_rlwe = private_membership::rlwe;
 
@@ -62,5 +61,4 @@ ImportDataRequest MonthlyUseCaseImpl::GenerateImportRequestBody() {
   return import_request;
 }
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity

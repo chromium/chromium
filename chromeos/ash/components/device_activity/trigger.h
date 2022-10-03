@@ -5,8 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
 #define CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 // Device actives are measured according to trigger enums.
 // TODO(https://crbug.com/1262178): Add another trigger for when sign-in occurs.
@@ -14,7 +13,6 @@ enum class Trigger {
   kNetwork  // Network state becomes connected.
 };
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DEVICE_ACTIVITY_TRIGGER_H_

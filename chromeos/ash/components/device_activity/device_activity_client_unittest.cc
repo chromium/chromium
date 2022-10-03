@@ -37,8 +37,7 @@
 #include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 #include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 namespace psm_rlwe = private_membership::rlwe;
 
@@ -1418,5 +1417,4 @@ TEST_F(DeviceActivityClientTest, UmaHistogramStateCountAfterFirstCheckIn) {
                                       use_cases.size());
 }
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity

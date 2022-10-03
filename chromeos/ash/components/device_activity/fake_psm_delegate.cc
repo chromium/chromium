@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/device_activity/fake_psm_delegate.h"
 
-namespace ash {
-namespace device_activity {
+namespace ash::device_activity {
 
 namespace psm_rlwe = private_membership::rlwe;
 
@@ -27,5 +26,4 @@ FakePsmDelegate::CreatePsmClient(
       use_case, plaintext_ids_, ec_cipher_key_, seed_);
 }
 
-}  // namespace device_activity
-}  // namespace ash
+}  // namespace ash::device_activity
