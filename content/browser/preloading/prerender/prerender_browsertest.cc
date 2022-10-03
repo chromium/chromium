@@ -33,6 +33,7 @@
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/portal/portal.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
@@ -4031,6 +4032,37 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kActivatedBeforeStarted, 1);
+
+  {
+    ukm::SourceId ukm_source_id = PrimaryPageSourceId();
+
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 2u);
+
+    std::vector<UkmEntry> expected_entries = {
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kRunning,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kFailure,
+            ToPreloadingFailureReason(
+                PrerenderHost::FinalStatus::kActivatedBeforeStarted),
+            /*accurate=*/true),
+    };
+
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 }
 
 // Test that if the 4 URLs are specified in the speculation rule while only 3
@@ -4251,6 +4283,105 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
       PrerenderHost::FinalStatus::kActivated, 1);
+}
+
+// Test that a pending prerender should have the
+// `PreloadingTriggeringOutcome::kUnspecified`.
+// TODO(crbug.com/1355151): Add another outcome for the pending prerender like
+// PreloadingTriggeringOutcome::kTriggeredButPending if necessary.
+IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
+                       PreloadingTriggeringOutcomeForPendingPrerender) {
+  net::test_server::ControllableHttpResponse response1(
+      embedded_test_server(), "/empty.html?prerender1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kPrerender1 =
+      embedded_test_server()->GetURL("/empty.html?prerender1");
+  const GURL kPrerender2 =
+      embedded_test_server()->GetURL("/empty.html?prerender2");
+
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
+
+  // Insert 2 URLs into the speculation rules at the same time.
+  AddMultiplePrerenderAsync({kPrerender1, kPrerender2});
+  registry_observer.WaitForTrigger(kPrerender2);
+
+  // Stop the first prerendering initial navigation.
+  response1.WaitForRequest();
+
+  // The pending host should have `PreloadingTriggeringOutcome::kUnspecified`.
+  PrerenderHost* prerender2_host =
+      web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
+          kPrerender2);
+  auto* preloading_attempt_impl = static_cast<PreloadingAttemptImpl*>(
+      prerender2_host->preloading_attempt().get());
+  EXPECT_EQ(preloading_attempt_impl->get_triggering_outcome_for_testing(),
+            PreloadingTriggeringOutcome::kUnspecified);
+
+  NavigationHandleObserver activation_observer(web_contents(), kPrerender1);
+  test::PrerenderHostObserver prerender1_observer(*web_contents(),
+                                                  GetHostForUrl(kPrerender1));
+
+  // Defer the activation until the ongoing initial navigation in preerender
+  // frame tree commits.
+  TestActivationManager primary_page_manager(shell()->web_contents(),
+                                             kPrerender1);
+  ASSERT_TRUE(ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                     JsReplace("location = $1", kPrerender1)));
+
+  NavigationRequest* request =
+      web_contents_impl()->GetPrimaryFrameTree().root()->navigation_request();
+
+  // Wait until the activation navigation is deferred by
+  // CommitDeferringCondition.
+  ASSERT_TRUE(primary_page_manager.WaitForBeforeChecks());
+  primary_page_manager.ResumeActivation();
+
+  // Confirm that the activation navigation is deferred.
+  EXPECT_TRUE(request->IsCommitDeferringConditionDeferredForTesting());
+
+  // Complete the first prerender response and finish its initial navigation.
+  response1.Send(net::HTTP_OK, "");
+  response1.Done();
+
+  primary_page_manager.WaitForNavigationFinished();
+  prerender1_observer.WaitForActivation();
+
+  // The prerender1 should succeed in activation and have kSuccess outcome.
+  // The prerender2 should start right after the activation but get destroyed by
+  // the change of the primary page soon, so it should result in the kRunning
+  // outcome.
+  {
+    ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
+
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 2u);
+
+    std::vector<UkmEntry> expected_entries = {
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kSuccess,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_ukm_entry_builder().BuildEntry(
+            ukm_source_id, PreloadingType::kPrerender,
+            PreloadingEligibility::kEligible,
+            PreloadingHoldbackStatus::kAllowed,
+            PreloadingTriggeringOutcome::kRunning,
+            PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,

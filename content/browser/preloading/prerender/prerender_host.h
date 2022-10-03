@@ -17,6 +17,7 @@
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -272,6 +273,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   const std::string& embedder_histogram_suffix() const {
     return attributes_.embedder_histogram_suffix;
   }
+
+  base::WeakPtr<PreloadingAttempt> preloading_attempt() { return attempt_; }
 
  private:
   // Records the status to UMA and UKM. `initiator_ukm_id` represents the page
