@@ -12,24 +12,25 @@ class TestUnexpireGenerator(unittest.TestCase):
   TEST_MSTONE = 123
 
   def read_golden_file(self, extension):
-    return open(
+    with open(
         os.path.join(os.path.dirname(__file__),
-                     'unexpire_test.' + extension + '.expected')).read()
+                     'unexpire_test.' + extension + '.expected')) as f:
+      return f.read()
 
   def testCcFile(self):
     cc = generate_unexpire_flags.gen_features_impl('foobar', 123)
     golden_cc = self.read_golden_file('cc')
-    self.assertEquals(golden_cc, cc)
+    self.assertEqual(golden_cc, cc)
 
   def testHFile(self):
     h = generate_unexpire_flags.gen_features_header('foobar', 123)
     golden_h = self.read_golden_file('h')
-    self.assertEquals(golden_h, h)
+    self.assertEqual(golden_h, h)
 
   def testIncFile(self):
     inc = generate_unexpire_flags.gen_flags_fragment('foobar', 123)
     golden_inc = self.read_golden_file('inc')
-    self.assertEquals(golden_inc, inc)
+    self.assertEqual(golden_inc, inc)
 
 
 if __name__ == '__main__':

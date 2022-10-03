@@ -10,8 +10,8 @@
 
 namespace flags {
 
-extern const base::Feature kUnexpireFlagsM122;
-extern const base::Feature kUnexpireFlagsM123;
+BASE_DECLARE_FEATURE(kUnexpireFlagsM122);
+BASE_DECLARE_FEATURE(kUnexpireFlagsM123);
 
 // Returns the base::Feature used to decide whether flag expiration is enabled
 // for a given milestone, if there is such a feature. If not, returns nullptr.
