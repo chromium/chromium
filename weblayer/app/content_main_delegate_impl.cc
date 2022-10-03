@@ -92,8 +92,8 @@ void InitLogging(MainParams* params) {
 // command line, and similarly disables each feature in |features_to_disable|
 // unless it is already set in the command line.
 void ConfigureFeaturesIfNotSet(
-    const std::vector<base::Feature>& features_to_enable,
-    const std::vector<base::Feature>& features_to_disable) {
+    const std::vector<const base::Feature*>& features_to_enable,
+    const std::vector<const base::Feature*>& features_to_disable) {
   auto* cl = base::CommandLine::ForCurrentProcess();
   std::vector<std::string> enabled_features;
   base::flat_set<std::string> feature_names_enabled_via_command_line;
@@ -120,19 +120,21 @@ void ConfigureFeaturesIfNotSet(
     disabled_features.emplace_back(f);
   }
 
-  for (const auto& feature : features_to_enable) {
-    if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
-      enabled_features.push_back(feature.name);
+  for (const auto* feature : features_to_enable) {
+    if (!base::Contains(disabled_features, feature->name) &&
+        !base::Contains(feature_names_enabled_via_command_line,
+                        feature->name)) {
+      enabled_features.push_back(feature->name);
     }
   }
   cl->AppendSwitchASCII(::switches::kEnableFeatures,
                         base::JoinString(enabled_features, ","));
 
-  for (const auto& feature : features_to_disable) {
-    if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
-      disabled_features.push_back(feature.name);
+  for (const auto* feature : features_to_disable) {
+    if (!base::Contains(disabled_features, feature->name) &&
+        !base::Contains(feature_names_enabled_via_command_line,
+                        feature->name)) {
+      disabled_features.push_back(feature->name);
     }
   }
   cl->AppendSwitchASCII(::switches::kDisableFeatures,
@@ -164,43 +166,43 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
   // This also turns off Push messaging.
   cl->AppendSwitch(::switches::kDisableNotifications);
 
-  std::vector<base::Feature> enabled_features = {
+  std::vector<const base::Feature*> enabled_features = {
 #if BUILDFLAG(IS_ANDROID)
     // Overlay promotion requires some guarantees we don't have on WebLayer
     // (e.g. ensuring fullscreen, no movement of the parent view). Given that
     // we're unsure about the benefits when used embedded in a parent app, we
     // will only promote to overlays if needed for secure videos.
-    media::kUseAndroidOverlayForSecureOnly,
+    &media::kUseAndroidOverlayForSecureOnly,
 #endif
   };
 
-  std::vector<base::Feature> disabled_features = {
+  std::vector<const base::Feature*> disabled_features = {
     // TODO(crbug.com/1313771): Support Digital Goods API.
-    ::features::kDigitalGoodsApi,
+    &::features::kDigitalGoodsApi,
     // TODO(crbug.com/1091212): make Notification triggers work with
     // WebLayer.
-    ::features::kNotificationTriggers,
+    &::features::kNotificationTriggers,
     // TODO(crbug.com/1091211): Support PeriodicBackgroundSync on WebLayer.
-    ::features::kPeriodicBackgroundSync,
+    &::features::kPeriodicBackgroundSync,
     // TODO(crbug.com/1174856): Support Portals.
-    blink::features::kPortals,
+    &blink::features::kPortals,
     // TODO(crbug.com/1144912): Support BackForwardCache on WebLayer.
-    ::features::kBackForwardCache,
+    &::features::kBackForwardCache,
     // TODO(crbug.com/1247836): Enable TFLite/Optimization Guide on WebLayer.
-    translate::kTFLiteLanguageDetectionEnabled,
+    &translate::kTFLiteLanguageDetectionEnabled,
     // TODO(crbug.com/1338402): Add support for WebLayer. Disabling autofill is
     // not yet supported.
-    blink::features::kAnonymousIframeOriginTrial,
+    &blink::features::kAnonymousIframeOriginTrial,
 
 #if BUILDFLAG(IS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
-    media::kPictureInPictureAPI,
+    &media::kPictureInPictureAPI,
 
-    ::features::kDisableDeJelly,
-    ::features::kDynamicColorGamut,
+    &::features::kDisableDeJelly,
+    &::features::kDynamicColorGamut,
 #else
     // WebOTP is supported only on Android in WebLayer.
-    ::features::kWebOTP,
+    &::features::kWebOTP,
 #endif
   };
 
@@ -208,15 +210,15 @@ absl::optional<int> ContentMainDelegateImpl::BasicStartupComplete() {
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_OREO) {
     enabled_features.push_back(
-        autofill::features::kAutofillExtractAllDatalists);
+        &autofill::features::kAutofillExtractAllDatalists);
     enabled_features.push_back(
-        autofill::features::kAutofillSkipComparingInferredLabels);
+        &autofill::features::kAutofillSkipComparingInferredLabels);
   }
 
   if (GetApplicationMetadataAsBoolean(
           "org.chromium.weblayer.ENABLE_LOGGING_OF_JS_CONSOLE_MESSAGES",
           /*default_value=*/false)) {
-    enabled_features.push_back(features::kLogJsConsoleMessages);
+    enabled_features.push_back(&features::kLogJsConsoleMessages);
   }
 #endif
 
