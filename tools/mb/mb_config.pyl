@@ -812,9 +812,9 @@
     },
 
     'client.v8.chromium': {
-      'Linux - Future': 'v8_future_release_bot',
-      'Linux - Future (dbg)': 'v8_future_debug_bot',
-      'Linux V8 API Stability': 'release_bot',
+      'Linux - Future': 'v8_future_release_bot_reclient',
+      'Linux - Future (dbg)': 'v8_future_debug_bot_reclient',
+      'Linux V8 API Stability': 'release_bot_reclient',
     },
 
     'client.v8.fyi': {
@@ -3750,12 +3750,12 @@
       'updater_on_win_mac', 'release_trybot',
     ],
 
-    'v8_future_debug_bot': [
-      'v8_future', 'debug_bot',
+    'v8_future_debug_bot_reclient': [
+      'v8_future', 'debug_bot_reclient',
     ],
 
-    'v8_future_release_bot': [
-      'v8_future', 'release_bot',
+    'v8_future_release_bot_reclient': [
+      'v8_future', 'release_bot_reclient',
     ],
 
     'vr_release_bot_reclient': [
