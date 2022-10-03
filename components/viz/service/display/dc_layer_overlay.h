@@ -112,6 +112,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // DirectCompositionOverlayCapsObserver implementation.
   void OnOverlayCapsChanged() override;
   void UpdateHasHwOverlaySupport();
+  void UpdateSystemHDRStatus();
 
   void set_frames_since_last_qualified_multi_overlays_for_testing(int value) {
     frames_since_last_qualified_multi_overlays_ = value;
@@ -191,6 +192,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       std::vector<size_t>* candidate_index_list);
 
   bool has_overlay_support_;
+  bool system_hdr_enabled_ = false;
   const int allowed_yuv_overlay_count_;
   int processed_yuv_overlay_count_ = 0;
   uint64_t frames_since_last_qualified_multi_overlays_ = 0;

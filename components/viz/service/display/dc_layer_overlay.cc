@@ -61,7 +61,8 @@ enum DCLayerResult {
   DC_LAYER_FAILED_OUTPUT_HDR = 14,
   DC_LAYER_FAILED_NOT_DAMAGED = 15,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED = 16,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_MOVED,
+  DC_LAYER_FAILED_HDR_TONE_MAPPING = 17,
+  kMaxValue = DC_LAYER_FAILED_HDR_TONE_MAPPING,
 };
 
 enum : size_t {
@@ -478,6 +479,7 @@ DCLayerOverlayProcessor::DCLayerOverlayProcessor(
       debug_settings_(debug_settings) {
   if (!skip_initialization_for_testing) {
     UpdateHasHwOverlaySupport();
+    UpdateSystemHDRStatus();
     gl::DirectCompositionOverlayCapsMonitor::GetInstance()->AddObserver(this);
   }
   allow_promotion_hinting_ = media::SupportMediaFoundationClearPlayback();
@@ -491,10 +493,19 @@ void DCLayerOverlayProcessor::UpdateHasHwOverlaySupport() {
   has_overlay_support_ = gl::DirectCompositionOverlaysSupported();
 }
 
+void DCLayerOverlayProcessor::UpdateSystemHDRStatus() {
+  bool hdr_enabled = false;
+  auto dxgi_info = gl::GetDirectCompositionHDRMonitorDXGIInfo();
+  for (const auto& output_desc : dxgi_info->output_descs)
+    hdr_enabled |= output_desc->hdr_enabled;
+  system_hdr_enabled_ = hdr_enabled;
+}
+
 // Called on the Viz Compositor thread.
 void DCLayerOverlayProcessor::OnOverlayCapsChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   UpdateHasHwOverlaySupport();
+  UpdateSystemHDRStatus();
 }
 
 void DCLayerOverlayProcessor::ClearOverlayState() {
@@ -981,22 +992,32 @@ bool DCLayerOverlayProcessor::ShouldSkipOverlay(
     return true;
   }
 
-  // Skip overlay processing if output colorspace is HDR.
-  // Since most of overlay only supports NV12 and YUY2 now, HDR content (usually
-  // P010 format) cannot output through overlay without format degrading. In
-  // some Intel's platforms (Icelake or above), Overlay can play HDR content by
-  // supporting RGB10 format. Let overlay deal with HDR content in this
-  // situation.
-  bool supports_rgb10a2_overlay = gl::GetDirectCompositionOverlaySupportFlags(
-                                      DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
-  if (render_pass->content_color_usage == gfx::ContentColorUsage::kHDR &&
-      !supports_rgb10a2_overlay) {
+  if (render_pass->content_color_usage == gfx::ContentColorUsage::kHDR) {
     // Media Foundation always uses overlays to render video, so do not skip.
     QuadList::Iterator it =
         FindAnOverlayCandidateExcludingMediaFoundationVideoContent(*quad_list);
     if (it != quad_list->end()) {
-      RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, it);
-      return true;
+      // Skip overlay processing if output colorspace is HDR and rgb10a2 overlay
+      // is not supported. Since most of overlay only supports NV12 and YUY2
+      // now, HDR content (usually P010 format) cannot output through overlay
+      // without format degrading. In some Intel's platforms (Icelake or above),
+      // Overlay can play HDR content by supporting RGB10 format. Let overlay
+      // deal with HDR content in this situation.
+      bool supports_rgb10a2_overlay =
+          gl::GetDirectCompositionOverlaySupportFlags(
+              DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
+      if (!supports_rgb10a2_overlay) {
+        RecordDCLayerResult(DC_LAYER_FAILED_OUTPUT_HDR, it);
+        return true;
+      }
+      // Skip overlay processing if output colorspace is HDR and system HDR is
+      // not enabled. Since we always want to use Viz do HDR tone mapping, to
+      // avoid a visual difference between Viz and video processor, do not allow
+      // overlay.
+      if (!system_hdr_enabled_) {
+        RecordDCLayerResult(DC_LAYER_FAILED_HDR_TONE_MAPPING, it);
+        return true;
+      }
     }
   }
 

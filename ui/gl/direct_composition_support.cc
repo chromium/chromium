@@ -791,6 +791,8 @@ void DirectCompositionOverlayCapsMonitor::OnDisplayRemoved() {
 // Called from GpuSwitchingObserver on the GPU main thread.
 void DirectCompositionOverlayCapsMonitor::OnDisplayMetricsChanged() {
   UpdateMonitorInfo();
+
+  NotifyOverlayCapsChanged();
 }
 
 }  // namespace gl
