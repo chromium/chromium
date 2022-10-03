@@ -183,6 +183,7 @@ SharedProtoDatabaseClient::SharedProtoDatabaseClient(
     : UniqueProtoDatabase(std::move(db_wrapper)),
       prefix_(PrefixForDatabase(db_type)),
       parent_db_(parent_db) {
+  SetMetricsId(SharedProtoDatabaseClientList::ProtoDbTypeToString(db_type));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -192,7 +193,8 @@ SharedProtoDatabaseClient::~SharedProtoDatabaseClient() {
 
 void SharedProtoDatabaseClient::Init(const std::string& client_uma_name,
                                      Callbacks::InitStatusCallback callback) {
-  SetMetricsId(client_uma_name);
+  // Should never be called from from the selector, and init is not necessary.
+  NOTREACHED();
   GetSharedDatabaseInitStatusAsync(client_db_id(), parent_db_,
                                    std::move(callback));
 }

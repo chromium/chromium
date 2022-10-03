@@ -322,10 +322,6 @@ TEST_F(SharedProtoDatabaseClientTest, InitSuccess) {
   auto client = GetClientAndWait(ProtoDbType::TEST_DATABASE0,
                                  true /* create_if_missing */, &status);
   ASSERT_EQ(status, Enums::InitStatus::kOK);
-
-  client->Init("client", base::BindOnce([](Enums::InitStatus status) {
-                 ASSERT_EQ(status, Enums::InitStatus::kOK);
-               }));
 }
 
 TEST_F(SharedProtoDatabaseClientTest, InitFail) {
@@ -333,10 +329,6 @@ TEST_F(SharedProtoDatabaseClientTest, InitFail) {
   auto client = GetClientAndWait(ProtoDbType::TEST_DATABASE0,
                                  false /* create_if_missing */, &status);
   ASSERT_EQ(status, Enums::InitStatus::kInvalidOperation);
-
-  client->Init("client", base::BindOnce([](Enums::InitStatus status) {
-                 ASSERT_EQ(status, Enums::InitStatus::kError);
-               }));
 }
 
 // Ensure that our LevelDB contains the properly prefixed entries and also
