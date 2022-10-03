@@ -352,9 +352,6 @@ bool PrerenderHostRegistry::CancelHost(
                "frame_tree_node_id", frame_tree_node_id);
 
   // Cancel must not be requested during activation.
-  // TODO(https://crbug.com/1195751): This is the key assumption of the
-  // synchronous prerender activation, so now this is CHECK. Change this to
-  // DCHECK once the assumption is ensured in the real world.
   CHECK(!base::Contains(reserved_prerender_host_by_frame_tree_node_id_,
                         frame_tree_node_id));
 
