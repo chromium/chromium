@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -69,7 +69,7 @@ public class TabSwitcherThumbnailTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         TabGridViewBinder.setThumbnailFeatureForTesting(mNullThumbnailProvider);
     }
 
@@ -81,7 +81,6 @@ public class TabSwitcherThumbnailTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
-    @FlakyTest(message = "https://crbug.com/1208059")
     public void testThumbnailAspectRatio_one() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -97,7 +96,6 @@ public class TabSwitcherThumbnailTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
-    @FlakyTest(message = "https://crbug.com/1208059")
     public void testThumbnailAspectRatio_point85() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
@@ -108,7 +106,6 @@ public class TabSwitcherThumbnailTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
-    @FlakyTest(message = "https://crbug.com/1208059")
     public void testThumbnail_withSoftCleanup() {
         int tabCounts = 11;
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, tabCounts, 0, "about:blank");
