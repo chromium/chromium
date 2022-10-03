@@ -134,10 +134,9 @@ void SharingSyncPreference::SetVapidKey(
   base::Base64Encode(std::string(vapid_key.begin(), vapid_key.end()),
                      &base64_vapid_key);
 
-  DictionaryPrefUpdate update(prefs_, prefs::kSharingVapidKey);
-  update->SetStringKey(kVapidECPrivateKey, base64_vapid_key);
-  update->SetKey(kVapidCreationTimestamp,
-                 base::TimeToValue(creation_timestamp));
+  ScopedDictPrefUpdate update(prefs_, prefs::kSharingVapidKey);
+  update->Set(kVapidECPrivateKey, base64_vapid_key);
+  update->Set(kVapidCreationTimestamp, base::TimeToValue(creation_timestamp));
 }
 
 void SharingSyncPreference::SetVapidKeyChangeObserver(
@@ -174,15 +173,15 @@ SharingSyncPreference::GetFCMRegistration() const {
 }
 
 void SharingSyncPreference::SetFCMRegistration(FCMRegistration registration) {
-  DictionaryPrefUpdate update(prefs_, prefs::kSharingFCMRegistration);
+  ScopedDictPrefUpdate update(prefs_, prefs::kSharingFCMRegistration);
   if (registration.authorized_entity) {
-    update->SetStringKey(kRegistrationAuthorizedEntity,
-                         std::move(*registration.authorized_entity));
+    update->Set(kRegistrationAuthorizedEntity,
+                std::move(*registration.authorized_entity));
   } else {
-    update->RemoveKey(kRegistrationAuthorizedEntity);
+    update->Remove(kRegistrationAuthorizedEntity);
   }
-  update->SetKey(kRegistrationTimestamp,
-                 base::TimeToValue(registration.timestamp));
+  update->Set(kRegistrationTimestamp,
+              base::TimeToValue(registration.timestamp));
 }
 
 void SharingSyncPreference::ClearFCMRegistration() {
@@ -210,14 +209,14 @@ void SharingSyncPreference::SetLocalSharingInfo(
     list_value.Append(feature);
   }
 
-  DictionaryPrefUpdate local_sharing_info_update(
+  ScopedDictPrefUpdate local_sharing_info_update(
       prefs_, prefs::kSharingLocalSharingInfo);
-  local_sharing_info_update->SetKey(kSharingInfoVapidTargetInfo,
-                                    std::move(vapid_target_info));
-  local_sharing_info_update->SetKey(kSharingInfoSenderIdTargetInfo,
-                                    std::move(sender_id_target_info));
-  local_sharing_info_update->SetKey(kSharingInfoEnabledFeatures,
-                                    std::move(list_value));
+  local_sharing_info_update->Set(kSharingInfoVapidTargetInfo,
+                                 std::move(vapid_target_info));
+  local_sharing_info_update->Set(kSharingInfoSenderIdTargetInfo,
+                                 std::move(sender_id_target_info));
+  local_sharing_info_update->Set(kSharingInfoEnabledFeatures,
+                                 std::move(list_value));
 
   device_info_sync_service_->RefreshLocalDeviceInfo();
 }

@@ -64,10 +64,10 @@ class SharingSyncPreferenceTest : public testing::Test {
 
     enabled_features.Append(feature);
 
-    DictionaryPrefUpdate local_sharing_info_update(
+    ScopedDictPrefUpdate local_sharing_info_update(
         &prefs_, prefs::kSharingLocalSharingInfo);
-    local_sharing_info_update->GetDict().Set(kSharingInfoEnabledFeatures,
-                                             std::move(enabled_features));
+    local_sharing_info_update->Set(kSharingInfoEnabledFeatures,
+                                   std::move(enabled_features));
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
