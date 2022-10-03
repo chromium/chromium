@@ -10,7 +10,7 @@ given output file.
 The output file is a binary file containing CFI rows ordered based on function
 address. The output file only contains rows that match the most popular rule
 type in CFI table, to reduce the output size and specify data in compact format.
-See doc https://github.com/google/breakpad/blob/master/docs/symbol_files.md.
+See doc https://github.com/google/breakpad/blob/main/docs/symbol_files.md.
 1. The CFA rules should be of postfix form "SP <val> +".
 2. The RA rules should be of postfix form "CFA <val> + ^".
 Note: breakpad represents dereferencing address with '^' operator.

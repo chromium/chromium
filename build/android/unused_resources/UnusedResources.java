@@ -70,7 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 /**
   Copied with modifications from gradle core source
-  https://android.googlesource.com/platform/tools/base/+/master/build-system/gradle-core/src/main/groovy/com/android/build/gradle/tasks/ResourceUsageAnalyzer.java
+  https://cs.android.com/search?q=f:build-system.*ResourceUsageAnalyzer.java
 
   Modifications are mostly to:
     - Remove unused code paths to reduce complexity.

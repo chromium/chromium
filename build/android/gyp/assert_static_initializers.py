@@ -61,7 +61,6 @@ def _PrintDumpSIsCount(apk_so_name, unzipped_so, out_dir, tool_prefix):
     print(si)
 
 
-# Mostly copied from //infra/scripts/legacy/scripts/slave/chromium/sizes.py.
 def _ReadInitArray(so_path, tool_prefix, expect_no_initializers):
   stdout = _RunReadelf(so_path, ['-SW'], tool_prefix)
   # Matches: .init_array INIT_ARRAY 000000000516add0 5169dd0 000010 00 WA 0 0 8
@@ -99,8 +98,6 @@ def _CountStaticInitializers(so_path, tool_prefix, expect_no_initializers):
 
 def _AnalyzeStaticInitializers(apk_or_aab, tool_prefix, dump_sis, out_dir,
                                ignored_libs, no_initializers_libs):
-  # Static initializer counting mostly copies logic in
-  # infra/scripts/legacy/scripts/slave/chromium/sizes.py.
   with zipfile.ZipFile(apk_or_aab) as z:
     so_files = [
         f for f in z.infolist() if f.filename.endswith('.so')
