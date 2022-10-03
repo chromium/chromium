@@ -82,7 +82,7 @@ void ConvertToElementVector(
   if (!list_value || !list_value->is_list())
     return;
 
-  for (const base::Value& value : list_value->GetListDeprecated()) {
+  for (const base::Value& value : list_value->GetList()) {
     mojom::FileSelectorElementPtr element = mojom::FileSelectorElement::New();
     element->name = value.GetString();
     elements->push_back(std::move(element));
