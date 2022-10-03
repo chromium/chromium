@@ -12,7 +12,7 @@
 @interface PushNotificationDelegate
     : NSObject <UNUserNotificationCenterDelegate>
 
-// Passes the content's of an incoming push notification to the appropriate
+// Passes the contents of an incoming push notification to the appropriate
 // `PushNotificationClient` for processing and logs the time it takes for the
 // client to process the notification.
 - (UIBackgroundFetchResult)applicationWillProcessIncomingRemoteNotification:

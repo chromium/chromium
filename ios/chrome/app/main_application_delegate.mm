@@ -47,8 +47,8 @@ const int kMainIntentCheckDelay = 1;
   MainController* _mainController;
   // Memory helper used to log the number of memory warnings received.
   MemoryWarningHelper* _memoryHelper;
-  // Metrics mediator used to check and update the metrics accordingly to
-  // to the user preferences.
+  // Metrics mediator used to check and update the metrics accordingly to the
+  // user preferences.
   MetricsMediator* _metricsMediator;
   // Browser launcher to have a global launcher.
   id<BrowserLauncher> _browserLauncher;
@@ -57,10 +57,9 @@ const int kMainIntentCheckDelay = 1;
   // Helper to open new tabs.
   id<TabOpening> _tabOpener;
   // The set of "scene sessions" that needs to be discarded. See
-  // -applicatiopn:didDiscardSceneSessions: for details.
+  // -application:didDiscardSceneSessions: for details.
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
-  // Delegate that handles delivered push notification
-  // workflows.
+  // Delegate that handles delivered push notification workflow.
   PushNotificationDelegate* _pushNotificationDelegate;
 }
 
@@ -112,8 +111,8 @@ const int kMainIntentCheckDelay = 1;
   BOOL inBackground =
       [application applicationState] == UIApplicationStateBackground;
   // `inBackground` is wrongly always YES, even in regular foreground launches.
-  // TODO(crbug.com/1346512): Remove this code path after some time in
-  // canary. This is meant to be easy to revert.
+  // TODO(crbug.com/1346512): Remove this code path after some time in canary.
+  // This is meant to be easy to revert.
   DCHECK(inBackground);
   BOOL requiresHandling =
       [_appState requiresHandlingAfterLaunchWithOptions:launchOptions
@@ -184,8 +183,8 @@ const int kMainIntentCheckDelay = 1;
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
   // This method is invoked by iOS to inform the application that the sessions
-  // for "closed windows" is garbage collected and that any data associated with
-  // them by the application needs to be deleted.
+  // for "closed windows" are garbage collected and that any data associated
+  // with them by the application needs to be deleted.
   //
   // The documentation says that if the application is not running when the OS
   // decides to discard the sessions, then it will call this method the next
@@ -258,11 +257,8 @@ const int kMainIntentCheckDelay = 1;
         BackgroundDownloadServiceFactory::GetForBrowserState(
             _mainController.interfaceProvider.mainInterface.browserState);
     if (download_service) {
-      base::OnceClosure callback = base::BindOnce(^() {
-        completionHandler();
-      });
       download_service->HandleEventsForBackgroundURLSession(
-          std::move(callback));
+          base::BindOnce(completionHandler));
       return;
     }
   }
@@ -314,7 +310,7 @@ const int kMainIntentCheckDelay = 1;
 }
 
 - (void)lastSceneDidEnterBackground:(NSNotification*)notification {
-  // Reset `startupHadExternalIntent` for all Scenes in case external intents
+  // Reset `startupHadExternalIntent` for all scenes in case external intents
   // were triggered while the application was in the foreground.
   for (SceneState* scene in self.appState.connectedScenes) {
     if (scene.startupHadExternalIntent) {
@@ -375,14 +371,6 @@ const int kMainIntentCheckDelay = 1;
 
 #pragma mark - Testing methods
 
-- (MainController*)mainController {
-  return _mainController;
-}
-
-- (AppState*)appState {
-  return _appState;
-}
-
 + (AppState*)sharedAppState {
   return base::mac::ObjCCast<MainApplicationDelegate>(
              [[UIApplication sharedApplication] delegate])
@@ -393,6 +381,10 @@ const int kMainIntentCheckDelay = 1;
   return base::mac::ObjCCast<MainApplicationDelegate>(
              [[UIApplication sharedApplication] delegate])
       .mainController;
+}
+
+- (MainController*)mainController {
+  return _mainController;
 }
 
 @end

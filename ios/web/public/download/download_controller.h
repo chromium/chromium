@@ -58,7 +58,7 @@ class WebState;
 // Resuming unfinished downloads after application relaunch example:
 // @interface MyAppDelegate : UIResponder <UIApplicationDelegate>
 // @end
-// @implementation AppDelegate
+// @implementation MyAppDelegate
 // - (void)application:(UIApplication *)application
 //     handleEventsForBackgroundURLSession:(NSString *)identifier
 //                       completionHandler:(void (^)())completionHandler {

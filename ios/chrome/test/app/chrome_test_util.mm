@@ -98,7 +98,7 @@ ChromeBrowserState* GetBrowserState(bool incognito) {
 namespace chrome_test_util {
 
 MainController* GetMainController() {
-  return [MainApplicationDelegate sharedMainController];
+  return MainApplicationDelegate.sharedMainController;
 }
 
 SceneState* GetForegroundActiveScene() {

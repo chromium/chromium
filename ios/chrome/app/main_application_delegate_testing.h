@@ -7,14 +7,13 @@
 
 #import "ios/chrome/app/main_application_delegate.h"
 
-@class MainController;
 @class AppState;
+@class MainController;
 
 @interface MainApplicationDelegate ()
+@property(nonatomic, class, readonly) MainController* sharedMainController;
+@property(nonatomic, class, readonly) AppState* sharedAppState;
 @property(nonatomic, readonly) MainController* mainController;
-
-+ (MainController*)sharedMainController;
-+ (AppState*)sharedAppState;
-
 @end
+
 #endif  // IOS_CHROME_APP_MAIN_APPLICATION_DELEGATE_TESTING_H_

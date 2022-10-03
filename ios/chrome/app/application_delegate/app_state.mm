@@ -410,7 +410,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   // Halt the tabs, so any outstanding requests get cleaned up, without actually
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
-  // provider (and no tabs)
+  // provider (and no tabs).
   if (self.initStage >= InitStageBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
       sceneState.interfaceProvider.currentInterface.userInteractionEnabled = NO;
