@@ -124,11 +124,13 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
   // Stop and Destroy device.
   StopStreamV4L2Queue(true);
   if (input_queue_) {
-    input_queue_->DeallocateBuffers();
+    if (!input_queue_->DeallocateBuffers())
+      VLOGF(1) << "Failed to deallocate V4L2 input buffers";
     input_queue_ = nullptr;
   }
   if (output_queue_) {
-    output_queue_->DeallocateBuffers();
+    if (!output_queue_->DeallocateBuffers())
+      VLOGF(1) << "Failed to deallocate V4L2 output buffers";
     output_queue_ = nullptr;
   }
 
@@ -183,8 +185,16 @@ void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
       return;
     }
 
-    input_queue_->DeallocateBuffers();
-    output_queue_->DeallocateBuffers();
+    if (!input_queue_->DeallocateBuffers() ||
+        !output_queue_->DeallocateBuffers()) {
+      VLOGF(1) << "Failed to deallocate V4L2 buffers";
+      std::move(init_cb).Run(
+          DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+              .AddCause(
+                  V4L2Status(V4L2Status::Codes::kFailedToDestroyQueueBuffers)));
+      return;
+    }
+
     input_queue_ = nullptr;
     output_queue_ = nullptr;
 
@@ -622,10 +632,15 @@ bool V4L2VideoDecoder::StopStreamV4L2Queue(bool stop_input_queue) {
   weak_this_for_polling_ = weak_this_for_polling_factory_.GetWeakPtr();
 
   // Streamoff input and output queue.
-  if (input_queue_ && stop_input_queue)
-    input_queue_->Streamoff();
-  if (output_queue_)
-    output_queue_->Streamoff();
+  if (input_queue_ && stop_input_queue && !input_queue_->Streamoff()) {
+    SetState(State::kError);
+    return false;
+  }
+
+  if (output_queue_ && !output_queue_->Streamoff()) {
+    SetState(State::kError);
+    return false;
+  }
 
   if (backend_)
     backend_->OnStreamStopped(stop_input_queue);

@@ -20,6 +20,7 @@ enum class V4L2StatusCodes : StatusCodeType {
   kFailedResourceAllocation = 7,
   kBadFormat = 8,
   kFailedToStartStreamQueue = 9,
+  kFailedToDestroyQueueBuffers = 10,
 };
 
 struct V4L2StatusTraits {
