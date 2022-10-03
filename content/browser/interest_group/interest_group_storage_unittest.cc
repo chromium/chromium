@@ -22,6 +22,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "sql/database.h"
@@ -889,10 +890,19 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   joining_origins = storage->GetAllInterestGroupJoiningOrigins();
   EXPECT_THAT(joining_origins, UnorderedElementsAre(joining_originB));
 
-  storage->DeleteInterestGroupData({});
+  storage->DeleteInterestGroupData(base::NullCallback());
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(0u, origins.size());
+
+  // DeleteInterestGroupData shouldn't have deleted kanon data.
+  EXPECT_TRUE(storage->GetLastKAnonymityReported(
+      KAnonKeyFor(owner_originA, "example")));
+
+  storage->DeleteAllInterestGroupData();
+  // DeleteAllInterestGroupData should have deleted *everything*.
+  EXPECT_FALSE(storage->GetLastKAnonymityReported(
+      KAnonKeyFor(owner_originA, "example")));
 }
 
 // Maintenance should prune the number of interest groups and interest group

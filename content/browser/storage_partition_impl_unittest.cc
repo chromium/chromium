@@ -245,6 +245,20 @@ class RemoveInterestGroupTester {
     return get_interest_group_success_;
   }
 
+  bool ContainsInterestGroupKAnon(const url::Origin& origin) {
+    contains_kanon_ = false;
+    EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
+    static_cast<InterestGroupManagerImpl*>(
+        storage_partition_->GetInterestGroupManager())
+        ->GetLastKAnonymityReported(
+            KAnonKeyFor(origin, "Name"),
+            base::BindOnce(
+                &RemoveInterestGroupTester::GetLastKAnonymityReportedCallback,
+                base::Unretained(this)));
+    await_completion_.BlockUntilNotified();
+    return contains_kanon_;
+  }
+
   void AddInterestGroup(const url::Origin& origin) {
     EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
     blink::InterestGroup group;
@@ -262,7 +276,14 @@ class RemoveInterestGroupTester {
     await_completion_.Notify();
   }
 
+  void GetLastKAnonymityReportedCallback(
+      absl::optional<base::Time> last_reported) {
+    contains_kanon_ = last_reported.has_value();
+    await_completion_.Notify();
+  }
+
   bool get_interest_group_success_ = false;
+  bool contains_kanon_ = false;
   AwaitCompletionHelper await_completion_;
   raw_ptr<StoragePartitionImpl> storage_partition_;
 };
@@ -677,6 +698,17 @@ void ClearInterestGroups(content::StoragePartition* partition,
                        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
                        blink::StorageKey(), delete_begin, delete_end,
                        run_loop->QuitClosure());
+}
+
+void ClearInterestGroupsAndKAnon(content::StoragePartition* partition,
+                                 const base::Time delete_begin,
+                                 const base::Time delete_end,
+                                 base::RunLoop* run_loop) {
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
+          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL,
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, blink::StorageKey(),
+      delete_begin, delete_end, run_loop->QuitClosure());
 }
 
 void ClearInterestGroupPermissionsCache(content::StoragePartition* partition,
@@ -1262,13 +1294,25 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
   tester.AddInterestGroup(kOrigin);
   ASSERT_TRUE(tester.ContainsInterestGroupOwner(kOrigin));
 
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearInterestGroups, partition, base::Time(),
-                                base::Time::Max(), &run_loop));
-  run_loop.Run();
-
+  {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ClearInterestGroups, partition, base::Time(),
+                                  base::Time::Max(), &run_loop));
+    run_loop.Run();
+  }
   EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
+  EXPECT_TRUE(tester.ContainsInterestGroupKAnon(kOrigin));
+
+  {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&ClearInterestGroupsAndKAnon, partition,
+                                  base::Time(), base::Time::Max(), &run_loop));
+    run_loop.Run();
+  }
+  EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
+  EXPECT_FALSE(tester.ContainsInterestGroupKAnon(kOrigin));
 }
 
 TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {

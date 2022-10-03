@@ -117,10 +117,11 @@ class CONTENT_EXPORT InterestGroupStorage {
   // will only appear once.
   std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
 
-  // Clear out storage for the matching owning storage key. If the callback is
-  // empty then apply to all storage keys.
+  // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
       StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
+  // Clear out all interest group storage including k-anonymity store.
+  void DeleteAllInterestGroupData();
   // Update the interest group priority.
   void SetInterestGroupPriority(const blink::InterestGroupKey& group_key,
                                 double priority);

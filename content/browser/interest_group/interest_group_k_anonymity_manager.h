@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
@@ -14,7 +15,8 @@ namespace content {
 class InterestGroupManagerImpl;
 
 // Calculates the k-anonymity key for an interest group from the owner and name
-std::string KAnonKeyFor(const url::Origin& owner, const std::string& name);
+std::string CONTENT_EXPORT KAnonKeyFor(const url::Origin& owner,
+                                       const std::string& name);
 
 // Manages k-anonymity updates. Checks last updated times in the database
 // to limit updates (joins and queries) to once per day. Called by the

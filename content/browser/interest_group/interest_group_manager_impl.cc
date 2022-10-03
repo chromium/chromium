@@ -273,9 +273,17 @@ void InterestGroupManagerImpl::GetInterestGroupsForOwner(
 }
 
 void InterestGroupManagerImpl::DeleteInterestGroupData(
-    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    base::OnceClosure completion_callback) {
   impl_.AsyncCall(&InterestGroupStorage::DeleteInterestGroupData)
-      .WithArgs(std::move(storage_key_matcher));
+      .WithArgs(std::move(storage_key_matcher))
+      .Then(std::move(completion_callback));
+}
+
+void InterestGroupManagerImpl::DeleteAllInterestGroupData(
+    base::OnceClosure completion_callback) {
+  impl_.AsyncCall(&InterestGroupStorage::DeleteAllInterestGroupData)
+      .Then(std::move(completion_callback));
 }
 
 void InterestGroupManagerImpl::GetLastMaintenanceTimeForTesting(

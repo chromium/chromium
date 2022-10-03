@@ -428,6 +428,10 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   }
+  if (remove_mask & DATA_TYPE_INTEREST_GROUPS_INTERNAL) {
+    storage_partition_remove_mask |=
+        StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL;
+  }
   if (remove_mask & DATA_TYPE_SHARED_STORAGE) {
     storage_partition_remove_mask |=
         StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;

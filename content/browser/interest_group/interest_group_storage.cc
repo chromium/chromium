@@ -2359,6 +2359,15 @@ void InterestGroupStorage::DeleteInterestGroupData(
   }
 }
 
+void InterestGroupStorage::DeleteAllInterestGroupData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return;
+
+  db_->RazeAndClose();
+  db_.reset();
+}
+
 void InterestGroupStorage::SetInterestGroupPriority(
     const blink::InterestGroupKey& group_key,
     double priority) {

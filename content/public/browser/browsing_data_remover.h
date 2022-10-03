@@ -138,9 +138,14 @@ class BrowsingDataRemover {
   // any other data. Should only be cleared by user-initiated deletions.
   static constexpr DataType DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL = 1 << 22;
 
+  // Similar to DATA_TYPE_INTEREST_GROUPS, but only refers to data stored
+  // internally by the API, such as k-Anonymity cache and rate limiting
+  // information.
+  static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
+
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
@@ -151,13 +156,15 @@ class BrowsingDataRemover {
   static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX =
       DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
       DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
-      DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL;
+      DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.
   static constexpr DataType DATA_TYPE_PRIVACY_SANDBOX_INTERNAL =
       DATA_TYPE_ATTRIBUTION_REPORTING_INTERNAL |
-      DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL;
+      DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
 
   using OriginType = uint64_t;
   // Web storage origins that StoragePartition recognizes as NOT protected
