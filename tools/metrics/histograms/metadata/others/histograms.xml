@@ -13873,7 +13873,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Touchpad.HapticClickSensitivity.Changed"
-    enum="HapticClickSensitivity" expires_after="2023-02-19">
+    enum="HapticClickSensitivity" expires_after="2023-04-03">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
@@ -13883,7 +13883,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Touchpad.HapticClickSensitivity.Started"
-    enum="HapticClickSensitivity" expires_after="2022-10-07">
+    enum="HapticClickSensitivity" expires_after="2023-04-03">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
@@ -13893,7 +13893,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Touchpad.HapticFeedback.Changed" enum="BooleanEnabled"
-    expires_after="2023-02-19">
+    expires_after="2023-04-03">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
@@ -13903,7 +13903,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Touchpad.HapticFeedback.Started" enum="BooleanEnabled"
-    expires_after="2022-10-07">
+    expires_after="2023-04-03">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@chromium.org</owner>
   <summary>
