@@ -147,6 +147,7 @@ component("accessibility") {
     "ax_offscreen_result.h",
     "ax_position.h",
     "ax_range.h",
+    "ax_selection.cc",
     "ax_selection.h",
     "ax_serializable_tree.cc",
     "ax_serializable_tree.h",

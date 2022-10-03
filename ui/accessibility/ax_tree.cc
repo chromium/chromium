@@ -2631,118 +2631,15 @@ absl::optional<int> AXTree::GetSetSize(const AXNode& node) {
   return set_size;
 }
 
-namespace {
-
-// Helper for GetUnignoredSelection. Creates a position using |node_id|,
-// |offset| and |affinity|, and if it's ignored, updates these arguments so
-// that they represent a non-null non-ignored position, according to
-// |adjustment_behavior|. Returns true on success, false on failure. Note that
-// if the position is initially null, it's not ignored and it's a success.
-bool ComputeUnignoredSelectionEndpoint(
-    const AXTree& tree,
-    AXPositionAdjustmentBehavior adjustment_behavior,
-    AXNodeID& node_id,
-    int32_t& offset,
-    ax::mojom::TextAffinity& affinity) {
-  AXNode* node = nullptr;
-  if (node_id != kInvalidAXNodeID)
-    node = tree.GetFromId(node_id);
-  if (!node) {
-    node_id = kInvalidAXNodeID;
-    offset = AXNodePosition::INVALID_OFFSET;
-    affinity = ax::mojom::TextAffinity::kDownstream;
-    return false;
-  }
-
-  AXNodePosition::AXPositionInstance position =
-      AXNodePosition::CreatePosition(*node, offset, affinity);
-
-  // Null positions are never ignored, but must be considered successful, or
-  // these Android tests would fail:
-  // org.chromium.content.browser.accessibility.AssistViewStructureTest#*
-  // The reason is that |position| becomes null because no AXTreeManager is
-  // registered for that |tree|'s AXTreeID.
-  // TODO(accessibility): investigate and fix this if needed.
-  if (!position->IsIgnored())
-    return true;  // We assume that unignored positions are already valid.
-
-  position =
-      position->AsValidPosition()->AsUnignoredPosition(adjustment_behavior);
-
-  // Moving to an unignored position might have placed the position on a leaf
-  // node. Any selection endpoint that is inside a leaf node is expressed as a
-  // text position in AXTreeData. (Note that in this context "leaf node" means
-  // a node with no children or with only ignored children. This does not
-  // refer to a platform leaf.)
-  if (position->IsLeafTreePosition())
-    position = position->AsTextPosition();
-
-  // We do not expect the selection to have an endpoint on an inline text
-  // box as this will create issues with parts of the code that don't use
-  // inline text boxes.
-  if (position->IsTextPosition() &&
-      position->GetRole() == ax::mojom::Role::kInlineTextBox) {
-    position = position->CreateParentPosition();
-  }
-
-  switch (position->kind()) {
-    case AXPositionKind::NULL_POSITION:
-      node_id = kInvalidAXNodeID;
-      offset = -1;
-      affinity = ax::mojom::TextAffinity::kDownstream;
-      return false;
-    case AXPositionKind::TREE_POSITION:
-      node_id = position->anchor_id();
-      offset = position->child_index();
-      affinity = ax::mojom::TextAffinity::kDownstream;
-      return true;
-    case AXPositionKind::TEXT_POSITION:
-      node_id = position->anchor_id();
-      offset = position->text_offset();
-      affinity = position->affinity();
-      return true;
-  }
-}
-
-}  // namespace
-
 AXSelection AXTree::GetSelection() const {
-  return {data().sel_is_backward,     data().sel_anchor_object_id,
-          data().sel_anchor_offset,   data().sel_anchor_affinity,
-          data().sel_focus_object_id, data().sel_focus_offset,
-          data().sel_focus_affinity};
+  // TODO(accessibility): do not create a selection object every time it's
+  // requested. Either switch AXSelection to getters that computes selection
+  // data upon request or provide an invalidation mechanism.
+  return AXSelection(*this);
 }
 
 AXSelection AXTree::GetUnignoredSelection() const {
-  AXSelection unignored_selection = GetSelection();
-
-  // If one of the selection endpoints is invalid, then the other endpoint
-  // should also be unset.
-  if (!ComputeUnignoredSelectionEndpoint(
-          *this,
-          unignored_selection.is_backward
-              ? AXPositionAdjustmentBehavior::kMoveForward
-              : AXPositionAdjustmentBehavior::kMoveBackward,
-          unignored_selection.anchor_object_id,
-          unignored_selection.anchor_offset,
-          unignored_selection.anchor_affinity)) {
-    unignored_selection.focus_object_id = kInvalidAXNodeID;
-    unignored_selection.focus_offset = -1;
-    unignored_selection.focus_affinity = ax::mojom::TextAffinity::kDownstream;
-  } else if (!ComputeUnignoredSelectionEndpoint(
-                 *this,
-                 unignored_selection.is_backward
-                     ? AXPositionAdjustmentBehavior::kMoveBackward
-                     : AXPositionAdjustmentBehavior::kMoveForward,
-                 unignored_selection.focus_object_id,
-                 unignored_selection.focus_offset,
-                 unignored_selection.focus_affinity)) {
-    unignored_selection.anchor_object_id = kInvalidAXNodeID;
-    unignored_selection.anchor_offset = -1;
-    unignored_selection.anchor_affinity = ax::mojom::TextAffinity::kDownstream;
-  }
-
-  return unignored_selection;
+  return GetSelection().ToUnignoredSelection();
 }
 
 bool AXTree::GetTreeUpdateInProgressState() const {

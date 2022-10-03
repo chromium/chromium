@@ -46,7 +46,7 @@ class TestAXTreeManager : public AXTreeManager {
   void SetTree(std::unique_ptr<AXTree> tree);
 
   // Creates and set the tree by a given AXTreeUpdate instance.
-  AXTree* Init(const AXTreeUpdate& tree_update);
+  AXTree* Init(AXTreeUpdate tree_update);
 
   // Set the tree by a given TestAXTreeUpdateNode instance.
   AXTree* Init(const TestAXTreeUpdateNode& tree_update_root);

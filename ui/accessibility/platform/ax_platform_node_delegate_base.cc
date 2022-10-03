@@ -268,7 +268,7 @@ std::u16string AXPlatformNodeDelegateBase::GetValueForControl() const {
 
 const AXSelection AXPlatformNodeDelegateBase::GetUnignoredSelection() const {
   NOTIMPLEMENTED();
-  return AXSelection{false, -1, -1, ax::mojom::TextAffinity::kDownstream};
+  return AXSelection();
 }
 
 AXNodePosition::AXPositionInstance AXPlatformNodeDelegateBase::CreatePositionAt(

@@ -60,7 +60,10 @@ void TestAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
     GetMap().AddTreeManager(GetTreeID(), this);
 }
 
-AXTree* TestAXTreeManager::Init(const AXTreeUpdate& tree_update) {
+AXTree* TestAXTreeManager::Init(AXTreeUpdate tree_update) {
+  tree_update.has_tree_data = true;
+  if (tree_update.tree_data.tree_id == AXTreeIDUnknown())
+    tree_update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   SetTree(std::make_unique<AXTree>(tree_update));
   return ax_tree_.get();
 }
@@ -84,8 +87,6 @@ AXTree* TestAXTreeManager::Init(
     const ui::AXNodeData& node12 /* = AXNodeData() */) {
   AXTreeUpdate update;
   update.root_id = node1.id;
-  update.has_tree_data = true;
-  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   update.tree_data.title = "Dialog title";
   update.nodes.push_back(node1);
   if (node2.id != kInvalidAXNodeID)
