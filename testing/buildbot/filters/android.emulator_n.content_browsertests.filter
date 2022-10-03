@@ -37,3 +37,6 @@
 
 # TODO(crbug.com/1368929)
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginDocumentHasNoSameSiteCookies/*
+
+# TODO(crbug.com/1370573)
+-SignedExchangeSubresourcePrefetchBrowserTest.MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument
