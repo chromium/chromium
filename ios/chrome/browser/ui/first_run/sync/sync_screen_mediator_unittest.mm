@@ -148,7 +148,7 @@ TEST_F(SyncScreenMediatorTest, TestStartSyncService) {
   EXPECT_CALL(
       *sync_setup_service_mock_,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
-  [mediator_ startSyncWithConfirmationID:0
+  [mediator_ startSyncWithConfirmationID:1
                               consentIDs:consentStringIDs
                       authenticationFlow:mock_flow
        advancedSyncSettingsLinkWasTapped:NO];
@@ -178,7 +178,7 @@ TEST_F(SyncScreenMediatorTest, TestAuthenticationFlow) {
   EXPECT_TRUE(consumer_.UIEnabled);
 
   [mediator_ startSyncWithConfirmationID:1
-                              consentIDs:nil
+                              consentIDs:@[ @(1) ]
                       authenticationFlow:mock_flow
        advancedSyncSettingsLinkWasTapped:NO];
 

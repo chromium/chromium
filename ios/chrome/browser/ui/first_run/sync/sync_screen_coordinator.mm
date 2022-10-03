@@ -60,7 +60,7 @@
     EnterprisePromptCoordinator* enterprisePromptCoordinator;
 
 // The consent string ids of texts on the sync screen.
-@property(nonatomic, assign, readonly) NSMutableArray* consentStringIDs;
+@property(nonatomic, strong, readonly) NSMutableArray* consentStringIDs;
 
 // Whether the user requested the advanced settings when starting the sync.
 @property(nonatomic, assign) BOOL advancedSettingsRequested;
@@ -91,6 +91,7 @@
     _delegate = delegate;
     _policyWatcherObserverBridge =
         std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
+    _consentStringIDs = [NSMutableArray array];
   }
   return self;
 }

@@ -84,7 +84,7 @@
 @property(nonatomic, readonly) BOOL firstRun;
 // The consent string ids that were pushed that are related to the text for
 // sync.
-@property(nonatomic, assign, readonly) NSMutableArray* consentStringIDs;
+@property(nonatomic, strong, readonly) NSMutableArray* consentStringIDs;
 // Coordinator for showing advanced settings on top of the screen.
 @property(nonatomic, strong)
     SigninCoordinator* advancedSettingsSigninCoordinator;
@@ -119,6 +119,7 @@
         SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
     AppState* appState = sceneState.appState;
     _firstRun = appState.initStage == InitStageFirstRun;
+    _consentStringIDs = [NSMutableArray array];
     // Make sure that the coordinator is only used for the FRE which is the
     // only context that is supported at the moment. The coordinator may be
     // used outside of the FRE but this case isn't supported yet.

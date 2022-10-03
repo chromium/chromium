@@ -228,10 +228,12 @@
 
   int consentConfirmationId =
       [self.delegate userSigninMediatorGetConsentConfirmationId];
+  DCHECK_NE(consentConfirmationId, 0);
   syncConsent.set_confirmation_grd_id(consentConfirmationId);
 
   std::vector<int> consentTextIds =
       [self.delegate userSigninMediatorGetConsentStringIds];
+  DCHECK_NE(consentTextIds.size(), 0ul);
   for (int id : consentTextIds) {
     syncConsent.add_description_grd_ids(id);
   }

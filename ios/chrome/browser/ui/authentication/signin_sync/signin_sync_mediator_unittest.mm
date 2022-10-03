@@ -331,7 +331,7 @@ TEST_F(SigninSyncMediatorTest, TestStartSyncService) {
   EXPECT_CALL(
       *sync_setup_service_mock_,
       SetFirstSetupComplete(syncer::SyncFirstSetupCompleteSource::BASIC_FLOW));
-  [mediator_ startSyncWithConfirmationID:0
+  [mediator_ startSyncWithConfirmationID:1
                               consentIDs:consentStringIDs
                       authenticationFlow:mock_flow];
 }
@@ -361,7 +361,7 @@ TEST_F(SigninSyncMediatorTest, TestAuthenticationFlow) {
   EXPECT_TRUE(consumer_.UIWasEnabled);
 
   [mediator_ startSyncWithConfirmationID:1
-                              consentIDs:nil
+                              consentIDs:@[ @(1) ]
                       authenticationFlow:mock_flow];
 
   EXPECT_FALSE(consumer_.UIWasEnabled);
