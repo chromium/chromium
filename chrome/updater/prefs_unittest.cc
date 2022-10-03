@@ -34,8 +34,6 @@ TEST(PrefsTest, PrefsCommitPendingWrites) {
   PrefsCommitPendingWrites(pref.get());
 }
 
-// TODO(crbug.com/1367437): Enable tests once updater is implemented for Linux
-#if !BUILDFLAG(IS_LINUX)
 TEST(PrefsTest, AcquireGlobalPrefsLock_LockThenTryLockInThreadFail) {
   base::test::TaskEnvironment task_environment;
 
@@ -78,6 +76,5 @@ TEST(PrefsTest, AcquireGlobalPrefsLock_TryLockInThreadSuccess) {
   auto lock = AcquireGlobalPrefsLock(GetUpdaterScope(), base::Seconds(0));
   EXPECT_TRUE(lock);
 }
-#endif  // !BUILDFLAG(IS_LINUX)
 
 }  // namespace updater
