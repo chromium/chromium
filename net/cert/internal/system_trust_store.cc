@@ -253,6 +253,10 @@ TrustStoreMac::TrustImplType GetTrustStoreImplParam(
     return ParamToTrustImplType(features::kCertVerifierBuiltinImpl.Get(),
                                 default_impl);
   }
+  if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
+    return ParamToTrustImplType(features::kChromeRootStoreSysImpl.Get(),
+                                default_impl);
+  }
   if (base::FeatureList::IsEnabled(
           features::kCertDualVerificationTrialFeature)) {
     return ParamToTrustImplType(features::kCertDualVerificationTrialImpl.Get(),
@@ -265,6 +269,10 @@ size_t GetTrustStoreCacheSize() {
   if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature) &&
       features::kCertVerifierBuiltinCacheSize.Get() > 0) {
     return features::kCertVerifierBuiltinCacheSize.Get();
+  }
+  if (base::FeatureList::IsEnabled(features::kChromeRootStoreUsed) &&
+      features::kChromeRootStoreSysCacheSize.Get() > 0) {
+    return features::kChromeRootStoreSysCacheSize.Get();
   }
   if (base::FeatureList::IsEnabled(
           features::kCertDualVerificationTrialFeature) &&

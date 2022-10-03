@@ -325,6 +325,10 @@ NET_EXPORT extern const base::FeatureParam<bool>
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 // When enabled, use the Chrome Root Store instead of the system root store
 NET_EXPORT BASE_DECLARE_FEATURE(kChromeRootStoreUsed);
+#if BUILDFLAG(IS_MAC)
+NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysImpl;
+NET_EXPORT extern const base::FeatureParam<int> kChromeRootStoreSysCacheSize;
+#endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
 
 // Turns off streaming media caching to disk when on battery power.

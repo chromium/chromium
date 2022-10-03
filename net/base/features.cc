@@ -243,6 +243,12 @@ const base::FeatureParam<bool> kCertDualVerificationTrialUseCrs{
 BASE_FEATURE(kChromeRootStoreUsed,
              "ChromeRootStoreUsed",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC)
+const base::FeatureParam<int> kChromeRootStoreSysImpl{&kChromeRootStoreUsed,
+                                                      "sysimpl", 0};
+const base::FeatureParam<int> kChromeRootStoreSysCacheSize{
+    &kChromeRootStoreUsed, "syscachesize", 0};
+#endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
 
 BASE_FEATURE(kTurnOffStreamingMediaCachingOnBattery,
