@@ -163,11 +163,12 @@ std::unique_ptr<ParsedDialAppInfo> CreateParsedDialAppInfoPtr(
 
 std::unique_ptr<DialInternalMessage> ParseDialInternalMessage(
     const std::string& message) {
-  auto message_value = base::JSONReader::ReadDeprecated(message);
+  auto message_value = base::JSONReader::Read(message);
   std::string error_unused;
-  return message_value ? DialInternalMessage::From(std::move(*message_value),
-                                                   &error_unused)
-                       : nullptr;
+  return message_value && message_value->is_dict()
+             ? DialInternalMessage::From(std::move(message_value->GetDict()),
+                                         &error_unused)
+             : nullptr;
 }
 
 }  // namespace media_router

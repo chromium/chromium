@@ -213,7 +213,7 @@ void DialMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
 void DialMediaRouteProvider::HandleParsedRouteMessage(
     const MediaRoute::Id& route_id,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
+  if (!result.has_value() || !result.value().is_dict()) {
     logger_->LogError(
         mojom::LogCategory::kRoute, kLoggerComponent,
         base::StrCat({"Failed to parse the route message. ", result.error()}),
@@ -225,7 +225,7 @@ void DialMediaRouteProvider::HandleParsedRouteMessage(
 
   std::string error;
   std::unique_ptr<DialInternalMessage> internal_message =
-      DialInternalMessage::From(std::move(*result), &error);
+      DialInternalMessage::From(std::move(result.value().GetDict()), &error);
   if (!internal_message) {
     logger_->LogError(mojom::LogCategory::kRoute, kLoggerComponent,
                       base::StrCat({"Invalid route message. ", error}), "",

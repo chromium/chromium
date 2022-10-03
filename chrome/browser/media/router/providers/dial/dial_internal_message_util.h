@@ -50,7 +50,7 @@ struct DialInternalMessage {
   // Returns a DialInternalMessage for |message|. If |message| is not a valid
   // custom DIAL launch internal message, returns nullptr and sets |error| with
   // an error reason.
-  static std::unique_ptr<DialInternalMessage> From(base::Value message,
+  static std::unique_ptr<DialInternalMessage> From(base::Value::Dict message,
                                                    std::string* error);
 
   DialInternalMessage(DialInternalMessageType type,
@@ -149,20 +149,21 @@ class DialInternalMessageUtil final {
       absl::optional<int> http_error_code = absl::nullopt) const;
 
  private:
-  base::Value CreateReceiver(const MediaSinkInternal& sink) const;
-  base::Value CreateReceiverActionBody(const MediaSinkInternal& sink,
-                                       DialReceiverAction action) const;
-  base::Value CreateNewSessionBody(const std::string& app_name,
-                                   const MediaSinkInternal& sink) const;
-  base::Value CreateDialAppInfoBody(const MediaSinkInternal& sink,
-                                    const ParsedDialAppInfo& app_info) const;
+  base::Value::Dict CreateReceiver(const MediaSinkInternal& sink) const;
+  base::Value::Dict CreateReceiverActionBody(const MediaSinkInternal& sink,
+                                             DialReceiverAction action) const;
+  base::Value::Dict CreateNewSessionBody(const std::string& app_name,
+                                         const MediaSinkInternal& sink) const;
+  base::Value::Dict CreateDialAppInfoBody(
+      const MediaSinkInternal& sink,
+      const ParsedDialAppInfo& app_info) const;
 
   // |sequence_number| is used by the Cast SDK to match up requests from the SDK
   // to Chrome with responses from Chrome. If a message from Chrome has no
   // corresponding request, then its |sequence_number| is an invalid value of
   // -1.
   base::Value CreateDialMessageCommon(DialInternalMessageType type,
-                                      base::Value body,
+                                      base::Value::Dict body,
                                       const std::string& client_id,
                                       int sequence_number = -1) const;
 
