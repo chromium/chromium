@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -217,6 +218,11 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
     should_show_iph = result.NoErrors();
   }
 
+  if (should_show_iph) {
+    DCHECK(start_times_.find(feature.name) == start_times_.end());
+    start_times_[feature.name] = time_provider_->Now();
+  }
+
   return TriggerDetails(should_show_iph, result.should_show_snooze);
 }
 
@@ -276,6 +282,7 @@ void TrackerImpl::Dismissed(const base::Feature& feature) {
   DVLOG(2) << "Dismissing " << feature.name;
   condition_validator_->NotifyDismissed(feature);
   stats::RecordUserDismiss();
+  RecordShownTime(feature);
 }
 
 void TrackerImpl::DismissedWithSnooze(
@@ -291,6 +298,7 @@ void TrackerImpl::DismissedWithSnooze(
   }
   if (snooze_action.has_value())
     stats::RecordUserSnoozeAction(snooze_action.value());
+  RecordShownTime(feature);
 }
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {
@@ -386,6 +394,17 @@ void TrackerImpl::MaybePostInitializedCallbacks() {
   }
 
   on_initialized_callbacks_.clear();
+}
+
+void TrackerImpl::RecordShownTime(const base::Feature& feature) {
+  std::string feature_name = feature.name;
+  auto iter = start_times_.find(feature_name);
+  if (iter == start_times_.end())
+    return;
+
+  UmaHistogramTimes("InProductHelp.ShownTime." + feature_name,
+                    time_provider_->Now() - iter->second);
+  start_times_.erase(feature_name);
 }
 
 }  // namespace feature_engagement

@@ -11,6 +11,7 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -76,6 +77,14 @@ class TrackerImpl : public Tracker {
   // Posts the results to the OnInitializedCallbacks if
   // IsInitializationFinished() returns true.
   void MaybePostInitializedCallbacks();
+
+  // Computes and records the duration since one of the `ShouldTriggerHelpUI`
+  // methods were called and returned true. This logs a time histogram based on
+  // the feature name.
+  void RecordShownTime(const base::Feature& feature);
+
+  // The currently recorded start times (one per feature currently presented).
+  std::map<std::string, base::Time> start_times_;
 
   // The current model for all events.
   std::unique_ptr<EventModel> event_model_;

@@ -56,6 +56,7 @@ class OnceConditionValidator : public ConditionValidator {
   void SetPriorityNotification(
       const absl::optional<std::string>& feature) override;
   absl::optional<std::string> GetPendingPriorityNotification() override;
+  void AllowMultipleFeaturesForTesting(bool allow_multiple_features);
 
  private:
   // Contains all features that have met conditions within the current session.
@@ -63,10 +64,16 @@ class OnceConditionValidator : public ConditionValidator {
 
   // Which feature that is currently being shown, or nullptr if nothing is
   // currently showing.
+  // TODO(crbug.com/1370778): Keep currently showing features in a set.
   std::string currently_showing_feature_;
 
   // Pending priority notification to be shown if any.
   absl::optional<std::string> pending_priority_notification_;
+
+  // Whether to allow multiple features shown at the same time. When true,
+  // `currently_showing_feature_` can then become irrelevant.
+  // TODO(crbug.com/1370778): Keep currently showing features in a set.
+  bool allows_multiple_features_ = false;
 };
 
 }  // namespace feature_engagement
