@@ -17,7 +17,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/completion_repeating_callback.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -49,7 +49,7 @@ class NET_EXPORT_PRIVATE SSLSocketParams
                   const HostPortPair& host_and_port,
                   const SSLConfig& ssl_config,
                   PrivacyMode privacy_mode,
-                  NetworkIsolationKey network_isolation_key);
+                  NetworkAnonymizationKey network_anonymization_key);
 
   SSLSocketParams(const SSLSocketParams&) = delete;
   SSLSocketParams& operator=(const SSLSocketParams&) = delete;
@@ -70,8 +70,8 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const HostPortPair& host_and_port() const { return host_and_port_; }
   const SSLConfig& ssl_config() const { return ssl_config_; }
   PrivacyMode privacy_mode() const { return privacy_mode_; }
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
@@ -84,7 +84,7 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const HostPortPair host_and_port_;
   const SSLConfig ssl_config_;
   const PrivacyMode privacy_mode_;
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
 };
 
 // SSLConnectJob establishes a connection, through a proxy if needed, and then

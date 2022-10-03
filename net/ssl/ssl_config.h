@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -133,7 +133,7 @@ struct NET_EXPORT SSLConfig {
 
   // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the
   // session cache is partitioned by this value.
-  NetworkIsolationKey network_isolation_key;
+  NetworkAnonymizationKey network_anonymization_key;
 
   // If non-empty, a serialized ECHConfigList to use to encrypt the ClientHello.
   // If this field is non-empty, callers should handle |ERR_ECH_NOT_NEGOTIATED|

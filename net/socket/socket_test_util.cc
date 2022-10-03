@@ -836,7 +836,7 @@ std::unique_ptr<SSLClientSocket> MockClientSocketFactory::CreateSSLClientSocket(
   }
   if (next_ssl_data->expected_network_isolation_key) {
     EXPECT_EQ(*next_ssl_data->expected_network_isolation_key,
-              ssl_config.network_isolation_key);
+              ssl_config.network_anonymization_key);
   }
   if (next_ssl_data->expected_disable_legacy_crypto) {
     EXPECT_EQ(*next_ssl_data->expected_disable_legacy_crypto,

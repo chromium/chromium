@@ -18,7 +18,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -51,7 +51,7 @@ class NET_EXPORT SSLClientSessionCache {
 
     HostPortPair server;
     absl::optional<IPAddress> dest_ip_addr;
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
     bool disable_legacy_crypto = false;
   };

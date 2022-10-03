@@ -53,14 +53,14 @@ SSLSocketParams::SSLSocketParams(
     const HostPortPair& host_and_port,
     const SSLConfig& ssl_config,
     PrivacyMode privacy_mode,
-    NetworkIsolationKey network_isolation_key)
+    NetworkAnonymizationKey network_anonymization_key)
     : direct_params_(std::move(direct_params)),
       socks_proxy_params_(std::move(socks_proxy_params)),
       http_proxy_params_(std::move(http_proxy_params)),
       host_and_port_(host_and_port),
       ssl_config_(ssl_config),
       privacy_mode_(privacy_mode),
-      network_isolation_key_(network_isolation_key) {
+      network_anonymization_key_(network_anonymization_key) {
   // Only one set of lower level ConnectJob params should be non-NULL.
   DCHECK((direct_params_ && !socks_proxy_params_ && !http_proxy_params_) ||
          (!direct_params_ && socks_proxy_params_ && !http_proxy_params_) ||
@@ -388,7 +388,7 @@ int SSLConnectJob::DoSSLConnect() {
   endpoint_result_ = nested_connect_job_->GetHostResolverEndpointResult();
 
   SSLConfig ssl_config = params_->ssl_config();
-  ssl_config.network_isolation_key = params_->network_isolation_key();
+  ssl_config.network_anonymization_key = params_->network_anonymization_key();
   ssl_config.privacy_mode = params_->privacy_mode();
   ssl_config.disable_legacy_crypto = disable_legacy_crypto_with_fallback_;
 
