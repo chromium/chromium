@@ -80677,6 +80677,12 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="The user chose to reload the full page."/>
 </enum>
 
+<enum name="PriceNotificationEmailState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Not responded"/>
+</enum>
+
 <enum name="PriceTrackingState">
   <int value="0" label="Price tracking shown"/>
   <int value="1" label="Price tracking enabled"/>

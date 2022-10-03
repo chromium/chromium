@@ -387,6 +387,34 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <token key="TabUsageStatus" variants="TabUsageStatuses"/>
 </histogram>
 
+<histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
+    enum="PriceNotificationEmailState" expires_after="2023-10-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.org</owner>
+  <summary>
+    Records whether the user has price notification emails enabled. This count
+    is recorded daily (once every 24 hours) or the next time the browser starts
+    if more than 24 hours have passed since last recorded. If a user has not
+    tracked a product &quot;not responded&quot; will be recorded instead to help
+    differentiate users interacting with the feature. This metric is implemented
+    for all platforms.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.PriceTracking.PriceTrackedProductCount"
+    units="subscriptions" expires_after="2023-10-01">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.org</owner>
+  <summary>
+    Records the number of price tracked products for the user. This count is
+    recorded daily (once every 24 hours) or the next time the browser starts if
+    more than 24 hours have passed since last recorded. This metric is
+    implemented for all platforms.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.ShoppingService.ProductInfo.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2023-06-01">
   <owner>ayman@chromium.org</owner>

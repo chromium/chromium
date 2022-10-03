@@ -21,6 +21,7 @@
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "components/commerce/core/metrics/scheduled_metrics_manager.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
@@ -120,6 +121,13 @@ ShoppingService::ShoppingService(
 
   bookmark_update_manager_ = std::make_unique<BookmarkUpdateManager>(
       this, bookmark_model_, pref_service_);
+
+  // In testing, the objects required for metrics may be null.
+  if (pref_service_ && bookmark_model_) {
+    scheduled_metrics_manager_ =
+        std::make_unique<metrics::ScheduledMetricsManager>(pref_service_,
+                                                           bookmark_model_);
+  }
 }
 
 void ShoppingService::WebWrapperCreated(WebWrapper* web) {}

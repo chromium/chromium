@@ -12,6 +12,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -208,6 +209,7 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()) {
+  RegisterPrefs(pref_service_->registry());
   shopping_service_ = std::make_unique<ShoppingService>(
       bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
       identity_test_env_->identity_manager(),

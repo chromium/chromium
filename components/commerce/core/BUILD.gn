@@ -151,6 +151,8 @@ static_library("shopping_service") {
   sources = [
     "bookmark_update_manager.cc",
     "bookmark_update_manager.h",
+    "metrics/scheduled_metrics_manager.cc",
+    "metrics/scheduled_metrics_manager.h",
     "price_tracking_utils.cc",
     "price_tracking_utils.h",
     "shopping_bookmark_model_observer.cc",
@@ -222,6 +224,7 @@ source_set("shopping_service_test_support") {
   # Expose all deps for test support.
   public_deps = [
     ":feature_list",
+    ":pref_names",
     ":shopping_service",
     "//base/test:test_support",
     "//components/bookmarks/browser",
@@ -247,6 +250,7 @@ source_set("shopping_service_unit_tests") {
 
   sources = [
     "bookmark_update_manager_unittest.cc",
+    "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",
     "price_tracking_utils_unittest.cc",
     "shopping_service_metrics_unittest.cc",
