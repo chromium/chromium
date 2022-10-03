@@ -381,6 +381,8 @@ class ArcAppListPrefs : public KeyedService,
   bool IsShortcut(const std::string& app_id) const;
   // Returns true if package is controlled by policy.
   bool IsControlledByPolicy(const std::string& package_name) const;
+  // Returns true if app is able to be launched.
+  bool IsAbleToBeLaunched(const std::string& app_id) const;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

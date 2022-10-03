@@ -967,6 +967,12 @@ bool ArcAppListPrefs::IsControlledByPolicy(
   return packages_by_policy_.count(package_name);
 }
 
+bool ArcAppListPrefs::IsAbleToBeLaunched(const std::string& app_id) const {
+  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = GetApp(app_id);
+  return app_info && !app_info->suspended && app_info->ready &&
+         !app_info->need_fixup;
+}
+
 base::Time ArcAppListPrefs::PollLaunchRequestTime(const std::string& app_id) {
   if (!launch_request_times_.count(app_id))
     return base::Time();

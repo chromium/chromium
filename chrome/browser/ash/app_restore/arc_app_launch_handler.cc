@@ -546,11 +546,7 @@ bool ArcAppLaunchHandler::IsAppReady(const std::string& app_id) {
   if (!prefs)
     return false;
 
-  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-  if (!app_info || app_info->suspended || !app_info->ready)
-    return false;
-
-  return true;
+  return prefs->IsAbleToBeLaunched(app_id);
 }
 
 void ArcAppLaunchHandler::MaybeLaunchApp() {
