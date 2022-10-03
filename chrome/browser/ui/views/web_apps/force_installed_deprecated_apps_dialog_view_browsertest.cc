@@ -56,7 +56,9 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
   ForceInstalledDeprecatedAppsDialogViewBrowserTest() {
     bool disable_preinstalled_apps = GetParam();
     if (disable_preinstalled_apps) {
-      feature_list_.InitWithFeatures({features::kChromeAppsDeprecation}, {});
+      feature_list_.InitWithFeatures(
+          {features::kChromeAppsDeprecation},
+          {features::kKeepForceInstalledPreinstalledApps});
     } else {
       feature_list_.InitWithFeatures(
           {features::kKeepForceInstalledPreinstalledApps,

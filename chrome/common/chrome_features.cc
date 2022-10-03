@@ -338,12 +338,12 @@ BASE_FEATURE(kDesktopPWAsWebBundles,
 // Apps will not launch and will be marked in the UI as deprecated.
 BASE_FEATURE(kChromeAppsDeprecation,
              "ChromeAppsDeprecation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 //  Controls whether force installed and preinstalled apps should be exempt from
 //  deprecation.
 BASE_FEATURE(kKeepForceInstalledPreinstalledApps,
              "KeepForceInstalledPreinstalledApps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables notification permission revocation for origins that may send
