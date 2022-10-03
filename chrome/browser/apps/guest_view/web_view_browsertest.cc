@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
@@ -5087,45 +5088,64 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
 // page with both an attached and an unattached <webview> and verifies that,
 // unlike the attached guest, no find requests are sent for the unattached
 // guest. For more context see https://crbug.com/897465.
-// TODO(crbug.com/914098): Address flakiness and reenable.
+// TODO(mcnee): chrome://chrome-signin is not currently supported on Lacros.
+// Instead of repurposing existing webui pages to be able to create webviews
+// within a tabbed browser, create a dedicated test webui with the necessary
+// guest view permissions.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NoFindInPageForUnattachedGuest \
+  DISABLED_NoFindInPageForUnattachedGuest
+#else
+#define MAYBE_NoFindInPageForUnattachedGuest NoFindInPageForUnattachedGuest
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
-                       DISABLED_NoFindInPageForUnattachedGuest) {
-  GURL signin_url{"chrome://chrome-signin"};
+                       MAYBE_NoFindInPageForUnattachedGuest) {
+  GURL signin_url{"chrome://chrome-signin/?reason=5"};
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
+
+  // Navigate a tab to a page with a <webview>.
   auto* embedder_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
   auto* attached_guest_view =
-      GetGuestViewManager()->WaitForNextGuestViewCreated();
-  GetGuestViewManager()->WaitUntilAttached(attached_guest_view);
-  auto* attached_guest =
+      GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(attached_guest_view);
+
+  auto* attached_guest_rfh =
       GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
-  // Now add a new <webview> and wait until its guest WebContents is created.
-  ASSERT_TRUE(ExecuteScript(embedder_web_contents,
-                            "var webview = document.createElement('webview');"
-                            "webview.src = 'data:text/html,foo';"
-                            "document.body.appendChild(webview);"));
-  // Right after this line, the guest is created but *not* attached (the
-  // callback for 'GuestViewInternal.createGuest' is invoked after this line;
-  // which is before attaching begins).
-  auto* unattached_guest =
-      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
-  EXPECT_NE(unattached_guest, attached_guest);
   auto* find_helper =
       find_in_page::FindTabHelper::FromWebContents(embedder_web_contents);
-  find_helper->StartFinding(u"doesn't matter", true, true, false);
-  auto pending =
-      content::GetRenderFrameHostsWithPendingFindResults(embedder_web_contents);
-  // Request for main frame of the tab.
-  EXPECT_EQ(1U, pending.count(embedder_web_contents->GetPrimaryMainFrame()));
-  // Request for main frame of the attached guest.
-  EXPECT_EQ(1U, pending.count(attached_guest));
-  // No request for the unattached guest.
-  EXPECT_EQ(0U, pending.count(unattached_guest));
-  // Sanity-check: try the set returned for guest.
-  // TODO(crbug.com/1261928): Remove the following for MPArch guest view.
-  pending = content::GetRenderFrameHostsWithPendingFindResults(
-      content::WebContents::FromRenderFrameHost(unattached_guest));
-  EXPECT_TRUE(pending.empty());
+
+  // Wait until a first GuestView is attached.
+  GetGuestViewManager()->WaitUntilAttached(attached_guest_view);
+
+  base::RunLoop run_loop;
+  // This callback is called before attaching a second GuestView.
+  GetGuestViewManager()->SetWillAttachCallback(
+      base::BindLambdaForTesting([&](guest_view::GuestViewBase* guest_view) {
+        ASSERT_TRUE(guest_view);
+        ASSERT_FALSE(guest_view->attached());
+
+        auto* unattached_guest_rfh = guest_view->GetGuestMainFrame();
+        EXPECT_NE(unattached_guest_rfh, attached_guest_rfh);
+        find_helper->StartFinding(u"doesn't matter", true, true, false);
+        auto pending = content::GetRenderFrameHostsWithPendingFindResults(
+            embedder_web_contents);
+        // Request for main frame of the tab.
+        EXPECT_EQ(1U,
+                  pending.count(embedder_web_contents->GetPrimaryMainFrame()));
+        // Request for main frame of the attached guest.
+        EXPECT_EQ(1U, pending.count(attached_guest_rfh));
+        // No request for the unattached guest.
+        EXPECT_EQ(0U, pending.count(unattached_guest_rfh));
+        run_loop.Quit();
+      }));
+  // Now add a new <webview> and wait until its guest WebContents is created.
+  ExecuteScriptAsync(embedder_web_contents,
+                     "var webview = document.createElement('webview');"
+                     "webview.src = 'data:text/html,foo';"
+                     "document.body.appendChild(webview);");
+  run_loop.Run();
 }
 
 // This test class makes "isolated.com" an isolated origin, to be used in

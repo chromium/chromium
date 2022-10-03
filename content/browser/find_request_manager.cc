@@ -176,6 +176,15 @@ bool IsFindInPageDisabled(RenderFrameHost* rfh) {
                     rfh->GetLastCommittedOrigin());
 }
 
+bool IsUnattachedGuestView(RenderFrameHost* rfh) {
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+  if (!web_contents->IsGuest())
+    return false;
+
+  return !web_contents->GetOuterWebContents();
+}
+
 // kMinKeystrokesWithoutDelay should be high enough that script in the page
 // can't provide every possible search result at the same time.
 constexpr int kMinKeystrokesWithoutDelay = 4;
@@ -816,8 +825,10 @@ RenderFrameHost* FindRequestManager::Traverse(RenderFrameHost* from_rfh,
 }
 
 void FindRequestManager::AddFrame(RenderFrameHost* rfh, bool force) {
-  if (!rfh || !rfh->IsRenderFrameLive() || !rfh->IsActive())
+  if (!rfh || !rfh->IsRenderFrameLive() || !rfh->IsActive() ||
+      IsUnattachedGuestView(rfh)) {
     return;
+  }
 
   // A frame that is already being searched should not normally be added again.
   DCHECK(force || !CheckFrame(rfh));

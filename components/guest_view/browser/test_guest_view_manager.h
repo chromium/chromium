@@ -91,6 +91,13 @@ class TestGuestViewManager : public GuestViewManager {
   void GetGuestRenderFrameHostList(
       std::vector<content::RenderFrameHost*>* guest_render_frame_host_list);
 
+  void SetWillAttachCallback(
+      base::OnceCallback<void(GuestViewBase*)> callback) {
+    // The callback will be called when the guest view has been created but is
+    // not yet attached to the outer.
+    will_attach_callback_ = std::move(callback);
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(GuestViewManagerTest, AddRemove);
 
@@ -125,6 +132,7 @@ class TestGuestViewManager : public GuestViewManager {
   raw_ptr<GuestViewBase> waiting_for_attach_;
   std::unique_ptr<base::RunLoop> attached_run_loop_;
   std::unique_ptr<base::RunLoop> gc_run_loop_;
+  base::OnceCallback<void(GuestViewBase*)> will_attach_callback_;
 };
 
 // Test factory for creating test instances of GuestViewManager.
