@@ -3038,7 +3038,7 @@ test("content_unittests") {
     deps += [ "//ui/events:test_support" ]
   }
 
-  if (enable_plugins && (is_win || is_mac)) {
+  if (enable_plugins) {
     sources += [ "../browser/plugin_list_unittest.cc" ]
   }
 
