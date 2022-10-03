@@ -1748,13 +1748,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   // Legacy layout can (incorrectly) shift baseline position(s) during
   // "simplified" layout.
   DCHECK(IsLegacyLayoutRoot() || FirstBaseline() == other.FirstBaseline());
-  if (check_same_block_size) {
-    DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
-  } else {
-    DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline() ||
-           NGBlockNode(To<LayoutBox>(GetMutableLayoutObject()))
-               .UseBlockEndMarginEdgeForInlineBlockBaseline());
-  }
+  DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
 
   if (IsTableNG()) {
     DCHECK_EQ(TableGridRect(), other.TableGridRect());

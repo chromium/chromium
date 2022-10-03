@@ -1029,8 +1029,6 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
-  // Adjust the position of the final baseline if needed.
-  container_builder_.SetLastBaselineToBlockEndMarginEdgeIfNeeded();
   if (ConstraintSpace().BaselineAlgorithmType() ==
       NGBaselineAlgorithmType::kInlineBlock) {
     container_builder_.SetUseLastBaselineForInlineBaseline();
@@ -1111,7 +1109,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
   // from them.
   for (const auto& child : base::make_span(children).subspan(children_before)) {
     DCHECK(child.fragment->IsLineBox());
-    PropagateBaselineFromChild(*child.fragment, child.offset.block_offset);
+    PropagateBaselineFromLineBox(*child.fragment, child.offset.block_offset);
   }
 
   previous_inflow_position->logical_block_offset += result.used_block_size;
@@ -1479,7 +1477,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     container_builder_.SetDisableSimplifiedLayout();
   }
 
-  PropagateBaselineFromChild(physical_fragment, logical_offset.block_offset);
+  PropagateBaselineFromBlockChild(physical_fragment, child_data.margins,
+                                  logical_offset.block_offset);
   container_builder_.AddResult(*layout_result, logical_offset);
 
   // The margins we store will be used by e.g. getComputedStyle().
@@ -2055,7 +2054,13 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   // formatting context.
   DCHECK(child.IsInline() || !child.Style().AlignSelfBlockCenter());
 
-  PropagateBaselineFromChild(physical_fragment, logical_offset.block_offset);
+  if (physical_fragment.IsLineBox()) {
+    PropagateBaselineFromLineBox(physical_fragment,
+                                 logical_offset.block_offset);
+  } else {
+    PropagateBaselineFromBlockChild(physical_fragment, child_data->margins,
+                                    logical_offset.block_offset);
+  }
   container_builder_.AddResult(*layout_result, logical_offset);
 
   if (auto* block_child = DynamicTo<NGBlockNode>(child)) {
@@ -2772,52 +2777,50 @@ NGBlockLayoutAlgorithm::CreateMinimumTopScopeForChild(
   return DeferredShapingMinimumTopScope(child, minimum_top);
 }
 
-void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
+void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
-  if (child.IsLineBox()) {
-    const auto& line_box = To<NGPhysicalLineBoxFragment>(child);
+  const auto& line_box = To<NGPhysicalLineBoxFragment>(child);
 
-    // Skip over a line-box which is empty. These don't have any baselines
-    // which should be added.
-    if (line_box.IsEmptyLineBox())
-      return;
+  // Skip over a line-box which is empty. These don't have any baselines
+  // which should be added.
+  if (line_box.IsEmptyLineBox())
+    return;
 
-    if (UNLIKELY(line_box.IsBlockInInline())) {
-      // Block-in-inline may have different first/last baselines.
-      DCHECK(container_builder_.ItemsBuilder());
-      const NGLogicalLineItems& items =
-          container_builder_.ItemsBuilder()->LogicalLineItems(line_box);
-      const NGLayoutResult* result = items.BlockInInlineLayoutResult();
-      DCHECK(result);
-      PropagateBaselineFromBlockChild(result->PhysicalFragment(), block_offset);
-      return;
-    }
-
-    FontHeight metrics = line_box.BaselineMetrics();
-    DCHECK(!metrics.IsEmpty());
-    LayoutUnit baseline =
-        block_offset + (Style().IsFlippedLinesWritingMode() ? metrics.descent
-                                                            : metrics.ascent);
-
-    if (!container_builder_.FirstBaseline())
-      container_builder_.SetFirstBaseline(baseline);
-    container_builder_.SetLastBaseline(baseline);
+  if (UNLIKELY(line_box.IsBlockInInline())) {
+    // Block-in-inline may have different first/last baselines.
+    DCHECK(container_builder_.ItemsBuilder());
+    const NGLogicalLineItems& items =
+        container_builder_.ItemsBuilder()->LogicalLineItems(line_box);
+    const NGLayoutResult* result = items.BlockInInlineLayoutResult();
+    DCHECK(result);
+    PropagateBaselineFromBlockChild(result->PhysicalFragment(),
+                                    /* margins */ NGBoxStrut(), block_offset);
     return;
   }
 
-  PropagateBaselineFromBlockChild(child, block_offset);
+  FontHeight metrics = line_box.BaselineMetrics();
+  DCHECK(!metrics.IsEmpty());
+  LayoutUnit baseline =
+      block_offset +
+      (Style().IsFlippedLinesWritingMode() ? metrics.descent : metrics.ascent);
+
+  if (!container_builder_.FirstBaseline())
+    container_builder_.SetFirstBaseline(baseline);
+  container_builder_.SetLastBaseline(baseline);
 }
 
 void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
     const NGPhysicalFragment& child,
+    const NGBoxStrut& margins,
     LayoutUnit block_offset) {
   DCHECK(child.IsBox());
+  const auto baseline_algorithm = ConstraintSpace().BaselineAlgorithmType();
 
   // When computing baselines for an inline-block, table's don't contribute any
   // baselines.
-  if (child.IsTableNG() && ConstraintSpace().BaselineAlgorithmType() ==
-                               NGBaselineAlgorithmType::kInlineBlock) {
+  if (child.IsTableNG() &&
+      baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock) {
     return;
   }
 
@@ -2832,12 +2835,21 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
 
   // Counter-intuitively, when computing baselines for an inline-block, some
   // fragments use their first-baseline for the container's last-baseline.
-  bool use_last_baseline = ConstraintSpace().BaselineAlgorithmType() ==
-                               NGBaselineAlgorithmType::kDefault ||
-                           physical_fragment.UseLastBaselineForInlineBaseline();
+  bool use_last_baseline =
+      baseline_algorithm == NGBaselineAlgorithmType::kDefault ||
+      physical_fragment.UseLastBaselineForInlineBaseline();
 
-  const auto last_baseline =
+  auto last_baseline =
       use_last_baseline ? fragment.LastBaseline() : fragment.FirstBaseline();
+
+  // When computing baselines for an inline-block, some block-boxes (e.g. with
+  // "overflow: hidden") will force the baseline to the block-end margin edge.
+  if (baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock &&
+      physical_fragment.UseBlockEndMarginEdgeForInlineBaseline() &&
+      !child.ShouldApplyLayoutContainment() && fragment.IsWritingModeEqual()) {
+    last_baseline = fragment.BlockSize() + margins.block_end;
+  }
+
   if (last_baseline)
     container_builder_.SetLastBaseline(block_offset + *last_baseline);
 }
@@ -3118,11 +3130,6 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   }
   container_builder_.AddResult(*result,
                                LogicalOffset(LayoutUnit(), ruby_text_box_top));
-  // RubyText provides baseline if RubyBase didn't.
-  // This behavior doesn't make much sense, but it's compatible with the legacy
-  // layout.
-  if (!container_builder_.FirstBaseline())
-    PropagateBaselineFromChild(ruby_text_fragment, ruby_text_box_top);
 }
 
 void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(

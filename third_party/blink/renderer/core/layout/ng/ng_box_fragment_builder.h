@@ -592,10 +592,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     use_last_baseline_for_inline_baseline_ = true;
   }
 
-  // The inline block baseline is at the block end margin edge under some
-  // circumstances. This function updates |LastBaseline| in such cases.
-  void SetLastBaselineToBlockEndMarginEdgeIfNeeded();
-
   void SetTableGridRect(const LogicalRect& table_grid_rect) {
     table_grid_rect_ = table_grid_rect;
   }

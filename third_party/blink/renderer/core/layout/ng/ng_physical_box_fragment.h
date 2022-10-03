@@ -155,6 +155,14 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return use_last_baseline_for_inline_baseline_;
   }
 
+  bool UseBlockEndMarginEdgeForInlineBaseline() const {
+    if (!use_last_baseline_for_inline_baseline_)
+      return false;
+    if (const auto* layout_block = DynamicTo<LayoutBlock>(GetLayoutObject()))
+      return layout_block->UseLogicalBottomMarginEdgeForInlineBlockBaseline();
+    return false;
+  }
+
   LogicalRect TableGridRect() const {
     return ComputeRareDataAddress()->table_grid_rect;
   }

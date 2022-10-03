@@ -312,13 +312,6 @@ const NGLayoutResult* NGSimplifiedLayoutAlgorithm::Layout() {
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
-  // The block size may have been changed. This may affect the inline block
-  // baseline if it is from the logical bottom margin edge.
-  DCHECK_EQ(previous_fragment.LastBaseline().has_value(),
-            container_builder_.LastBaseline().has_value());
-  if (Node().IsBlockFlow() && container_builder_.LastBaseline())
-    container_builder_.SetLastBaselineToBlockEndMarginEdgeIfNeeded();
-
   return container_builder_.ToBoxFragment();
 }
 

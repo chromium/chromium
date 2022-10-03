@@ -262,14 +262,6 @@ class CORE_EXPORT NGLayoutInputNode {
     return axes;
   }
 
-  // CSS defines certain cases to synthesize inline block baselines from box.
-  // See comments in UseLogicalBottomMarginEdgeForInlineBlockBaseline().
-  bool UseBlockEndMarginEdgeForInlineBlockBaseline() const {
-    if (auto* layout_box = DynamicTo<LayoutBlock>(GetLayoutBox()))
-      return layout_box->UseLogicalBottomMarginEdgeForInlineBlockBaseline();
-    return false;
-  }
-
   // CSS intrinsic sizing getters.
   // https://drafts.csswg.org/css-sizing-4/#intrinsic-size-override
   // Note that this returns kIndefiniteSize if the override was not specified.

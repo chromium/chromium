@@ -607,20 +607,6 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
   return LogicalOffset();
 }
 
-void NGBoxFragmentBuilder::SetLastBaselineToBlockEndMarginEdgeIfNeeded() {
-  if (ConstraintSpace().BaselineAlgorithmType() !=
-      NGBaselineAlgorithmType::kInlineBlock)
-    return;
-
-  if (!node_.UseBlockEndMarginEdgeForInlineBlockBaseline())
-    return;
-
-  // When overflow is present (within an atomic-inline baseline context) we
-  // should always use the block-end margin edge as the baseline.
-  NGBoxStrut margins = ComputeMarginsForSelf(ConstraintSpace(), Style());
-  SetLastBaseline(FragmentBlockSize() + margins.block_end);
-}
-
 void NGBoxFragmentBuilder::AdjustFragmentainerDescendant(
     NGLogicalOOFNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {

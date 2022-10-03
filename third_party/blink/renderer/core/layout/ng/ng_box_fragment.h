@@ -24,12 +24,14 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
     return To<NGPhysicalBoxFragment>(physical_fragment_);
   }
 
-  absl::optional<LayoutUnit> FirstBaseline() const {
-    if (writing_direction_.GetWritingMode() !=
-        physical_fragment_.Style().GetWritingMode())
-      return absl::nullopt;
+  bool IsWritingModeEqual() const {
+    return writing_direction_.GetWritingMode() ==
+           physical_fragment_.Style().GetWritingMode();
+  }
 
-    return PhysicalBoxFragment().FirstBaseline();
+  absl::optional<LayoutUnit> FirstBaseline() const {
+    return IsWritingModeEqual() ? PhysicalBoxFragment().FirstBaseline()
+                                : absl::nullopt;
   }
 
   LayoutUnit FirstBaselineOrSynthesize(FontBaseline baseline_type) const {
@@ -43,11 +45,8 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   }
 
   absl::optional<LayoutUnit> LastBaseline() const {
-    if (writing_direction_.GetWritingMode() !=
-        physical_fragment_.Style().GetWritingMode())
-      return absl::nullopt;
-
-    return PhysicalBoxFragment().LastBaseline();
+    return IsWritingModeEqual() ? PhysicalBoxFragment().LastBaseline()
+                                : absl::nullopt;
   }
 
   LayoutUnit LastBaselineOrSynthesize(FontBaseline baseline_type) const {
