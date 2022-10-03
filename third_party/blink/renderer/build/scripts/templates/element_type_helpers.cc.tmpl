@@ -42,14 +42,6 @@ HTMLElementType htmlElementTypeForTag(const AtomicString& tagName, const Documen
   if (it == html_type_map.end())
     return HTMLElementType::kHTMLUnknownElement;
 
-  // The <main> element has an HTMLMainElement implementation, but not an
-  // HTMLMainElement IDL interface. To avoid "Illegal constructor" exceptions,
-  // this makes sure that we return the expected "HTMLElement" interface when
-  // <main> is encountered.
-  if (tagName == "main") {
-      return HTMLElementType::kHTMLElement;
-  }
-
   {% for tag in tags|sort(attribute='name') %}
   {% if tag.runtimeEnabled %}
   if (tagName == "{{tag.name}}") {
