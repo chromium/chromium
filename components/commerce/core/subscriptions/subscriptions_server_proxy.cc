@@ -29,13 +29,17 @@ const char kGetHttpMethod[] = "GET";
 const char kPostHttpMethod[] = "POST";
 const char kContentType[] = "application/json; charset=UTF-8";
 const char kEmptyPostData[] = "";
-const int64_t kTimeoutMs = 1000;
+
+const int kDefaultTimeoutMs = 5000;
+const char kTimeoutParam[] = "subscriptions_server_request_timeout";
+constexpr base::FeatureParam<int> kTimeoutMs{&commerce::kShoppingList,
+                                             kTimeoutParam, kDefaultTimeoutMs};
 
 const char kDefaultServiceBaseUrl[] =
     "https://memex-pa.googleapis.com/v1/shopping/subscriptions";
 const char kBaseUrlParam[] = "subscriptions_service_base_url";
 constexpr base::FeatureParam<std::string> kServiceBaseUrl{
-    &commerce::kCommercePriceTracking, kBaseUrlParam, kDefaultServiceBaseUrl};
+    &commerce::kShoppingList, kBaseUrlParam, kDefaultServiceBaseUrl};
 
 const char kGetQueryParams[] = "?requestParams.subscriptionType=";
 const char kPriceTrackGetParam[] = "PRICE_TRACK";
@@ -266,7 +270,7 @@ SubscriptionsServerProxy::CreateEndpointFetcher(
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
   return std::make_unique<EndpointFetcher>(
       url_loader_factory_, kOAuthName, url, http_method, kContentType,
-      std::vector<std::string>{kOAuthScope}, kTimeoutMs, post_data,
+      std::vector<std::string>{kOAuthScope}, kTimeoutMs.Get(), post_data,
       annotation_tag, identity_manager_);
 }
 

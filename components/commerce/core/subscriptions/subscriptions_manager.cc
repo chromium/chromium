@@ -16,6 +16,17 @@
 
 namespace commerce {
 
+namespace {
+const int kDefaultTimeoutMs = 10000;
+const char kTimeoutParam[] = "subscriptions_request_timeout";
+constexpr base::FeatureParam<int> kTimeoutMs{&commerce::kShoppingList,
+                                             kTimeoutParam, kDefaultTimeoutMs};
+
+const char kTrackResultHistogramName[] = "Commerce.Subscriptions.TrackResult";
+const char kUntrackResultHistogramName[] =
+    "Commerce.Subscriptions.UntrackResult";
+}  // namespace
+
 SubscriptionsManager::SubscriptionsManager(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -74,6 +85,11 @@ SubscriptionsManager::Request::~Request() = default;
 void SubscriptionsManager::Subscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  // If there is a coming subscribe request but the last sync with the server
+  // failed, we should re-try the sync, or this request will fail directly.
+  if (!init_succeeded_ && !HasRequestRunning()) {
+    InitSubscriptions();
+  }
   SubscriptionType type = (*subscriptions)[0].type;
   pending_requests_.emplace(
       type, AsyncOperation::kSubscribe, std::move(subscriptions),
@@ -81,8 +97,7 @@ void SubscriptionsManager::Subscribe(
           [](base::WeakPtr<SubscriptionsManager> manager,
              base::OnceCallback<void(bool)> callback,
              SubscriptionsRequestStatus result) {
-            base::UmaHistogramEnumeration("Commerce.Subscriptions.TrackResult",
-                                          result);
+            base::UmaHistogramEnumeration(kTrackResultHistogramName, result);
             std::move(callback).Run(result ==
                                     SubscriptionsRequestStatus::kSuccess);
             manager->OnRequestCompletion();
@@ -94,6 +109,11 @@ void SubscriptionsManager::Subscribe(
 void SubscriptionsManager::Unsubscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  // If there is a coming unsubscribe request but the last sync with the server
+  // failed, we should re-try the sync, or this request will fail directly.
+  if (!init_succeeded_ && !HasRequestRunning()) {
+    InitSubscriptions();
+  }
   SubscriptionType type = (*subscriptions)[0].type;
   pending_requests_.emplace(
       type, AsyncOperation::kUnsubscribe, std::move(subscriptions),
@@ -101,8 +121,7 @@ void SubscriptionsManager::Unsubscribe(
           [](base::WeakPtr<SubscriptionsManager> manager,
              base::OnceCallback<void(bool)> callback,
              SubscriptionsRequestStatus result) {
-            base::UmaHistogramEnumeration(
-                "Commerce.Subscriptions.UntrackResult", result);
+            base::UmaHistogramEnumeration(kUntrackResultHistogramName, result);
             std::move(callback).Run(result ==
                                     SubscriptionsRequestStatus::kSuccess);
             manager->OnRequestCompletion();
@@ -132,15 +151,17 @@ void SubscriptionsManager::InitSubscriptions() {
 }
 
 void SubscriptionsManager::CheckAndProcessRequest() {
-  if (has_request_running_ || pending_requests_.empty())
+  if (HasRequestRunning() || pending_requests_.empty())
     return;
 
   // If there is no request running, we can start processing next request in the
   // queue.
   has_request_running_ = true;
+  last_request_started_time_ = base::Time::Now();
   Request request = std::move(pending_requests_.front());
   pending_requests_.pop();
   CHECK(request.type != SubscriptionType::kTypeUnspecified);
+  last_request_operation_ = request.operation;
 
   switch (request.operation) {
     case AsyncOperation::kInit:
@@ -260,7 +281,7 @@ void SubscriptionsManager::HandleCheckLocalSubscriptionResponse(
     bool is_subscribed) {
   // Don't init if there is already a request running to avoid redundant server
   // calls.
-  if (should_exist != is_subscribed && !has_request_running_) {
+  if (should_exist != is_subscribed && !HasRequestRunning()) {
     InitSubscriptions();
   }
 }
@@ -268,6 +289,26 @@ void SubscriptionsManager::HandleCheckLocalSubscriptionResponse(
 void SubscriptionsManager::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   InitSubscriptions();
+}
+
+bool SubscriptionsManager::HasRequestRunning() {
+  // Reset has_request_running_ to false if the last request is stuck somewhere.
+  // TODO(crbug.com/1370703): We should still be able to get the callback when
+  // the request times out. Also we should make the callback cancelable itself
+  // rather than having to wait for the next request coming.
+  if (has_request_running_ &&
+      (base::Time::Now() - last_request_started_time_).InMilliseconds() >
+          kTimeoutMs.Get()) {
+    has_request_running_ = false;
+    if (last_request_operation_ == AsyncOperation::kSubscribe) {
+      base::UmaHistogramEnumeration(kTrackResultHistogramName,
+                                    SubscriptionsRequestStatus::kLost);
+    } else if (last_request_operation_ == AsyncOperation::kUnsubscribe) {
+      base::UmaHistogramEnumeration(kUntrackResultHistogramName,
+                                    SubscriptionsRequestStatus::kLost);
+    }
+  }
+  return has_request_running_;
 }
 
 bool SubscriptionsManager::GetInitSucceededForTesting() {
@@ -281,6 +322,11 @@ void SubscriptionsManager::SetHasRequestRunningForTesting(
 
 bool SubscriptionsManager::HasPendingRequestsForTesting() {
   return !pending_requests_.empty();
+}
+
+void SubscriptionsManager::SetLastRequestStartedTimeForTesting(
+    base::Time time) {
+  last_request_started_time_ = time;
 }
 
 }  // namespace commerce

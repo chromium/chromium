@@ -89956,6 +89956,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Local storage failed to load, create, or delete subscriptions"/>
   <int value="4" label="Dropped since last sync with server failed"/>
   <int value="5" label="Invalid argument"/>
+  <int value="6"
+      label="The request was lost somewhere unknown and never came back. This
+             is used for monitoring purpose only and should never happen if
+             the subscriptions work correctly."/>
 </enum>
 
 <enum name="ShortcutsCreationResult">

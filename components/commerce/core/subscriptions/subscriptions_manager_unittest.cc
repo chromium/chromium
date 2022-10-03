@@ -360,6 +360,12 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_InitFailed) {
 
   {
     InSequence s;
+    // First sync.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Re-try the sync when a subscribe request comes.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
@@ -390,10 +396,11 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasRequestRunning) {
 
   {
     InSequence s;
-    EXPECT_CALL(*mock_storage_, DeleteAll);
-    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
+    EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
     EXPECT_CALL(*mock_storage_,
-                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")))
+        .Times(1);
     EXPECT_CALL(*mock_storage_, GetUniqueNonExistingSubscriptions).Times(0);
   }
 
@@ -408,6 +415,45 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_HasRequestRunning) {
   // Use a RunLoop in case the callback is posted on a different thread.
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(false, callback_executed);
+}
+
+TEST_F(SubscriptionsManagerTest, TestSubscribe_HasStuckRequestRunning) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_server_proxy_->MockManageResponses(true);
+  mock_storage_->MockGetResponses("222");
+  mock_storage_->MockUpdateResponses(true);
+
+  {
+    InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    EXPECT_CALL(*mock_storage_, GetUniqueNonExistingSubscriptions(
+                                    AreExpectedSubscriptions("333"), _));
+    EXPECT_CALL(*mock_server_proxy_,
+                Create(AreExpectedSubscriptions("222"), _));
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+  }
+
+  CreateManagerAndVerify(true);
+  MockHasRequestRunning(true);
+  subscriptions_manager_->SetLastRequestStartedTimeForTesting(
+      base::Time::Now() - base::Hours(1));
+  base::RunLoop run_loop;
+  subscriptions_manager_->Subscribe(
+      BuildSubscriptions("333"),
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool succeeded) {
+            ASSERT_EQ(true, succeeded);
+            run_loop->Quit();
+          },
+          &run_loop));
+  // The callback should eventually quit the run loop.
+  run_loop.Run();
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscribe_HasPendingUnsubscribeRequest) {
@@ -526,6 +572,12 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
 
   {
     InSequence s;
+    // First sync.
+    EXPECT_CALL(*mock_storage_, DeleteAll);
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Re-try the sync when an unsubscribe request comes.
     EXPECT_CALL(*mock_storage_, DeleteAll);
     EXPECT_CALL(*mock_server_proxy_, Get);
     EXPECT_CALL(*mock_storage_,
@@ -544,6 +596,37 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailed) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(SubscriptionsManagerTest, TestUnsubscribe_InitFailedWithRequestRunning) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_server_proxy_->MockManageResponses(true);
+  mock_storage_->MockGetResponses("222");
+  mock_storage_->MockUpdateResponses(false);
+
+  // Don't retry the sync if there is any request running.
+  {
+    InSequence s;
+    EXPECT_CALL(*mock_storage_, DeleteAll).Times(1);
+    EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")))
+        .Times(1);
+    EXPECT_CALL(*mock_storage_, GetUniqueNonExistingSubscriptions).Times(0);
+  }
+
+  CreateManagerAndVerify(false);
+  MockHasRequestRunning(true);
+  bool callback_executed = false;
+  subscriptions_manager_->Unsubscribe(
+      BuildSubscriptions("333"),
+      base::BindOnce([](bool* callback_executed,
+                        bool succeeded) { *callback_executed = true; },
+                     &callback_executed));
+  // Use a RunLoop in case the callback is posted on a different thread.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(false, callback_executed);
 }
 
 TEST_F(SubscriptionsManagerTest, TestIdentityChange) {

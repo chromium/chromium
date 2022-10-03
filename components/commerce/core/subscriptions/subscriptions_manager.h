@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/commerce/core/account_checker.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/session_proto_db/session_proto_storage.h"
@@ -44,9 +45,13 @@ enum class SubscriptionsRequestStatus {
   kLastSyncFailed = 4,
   // The passed in argument is invalid.
   kInvalidArgument = 5,
+  // The request was lost somewhere unknown and never came back. This is used
+  // for monitoring purpose only and should never happen if the subscriptions
+  // work correctly.
+  kLost = 6,
 
   // This enum must be last and is only used for histograms.
-  kMaxValue = kInvalidArgument
+  kMaxValue = kLost
 };
 
 using SubscriptionsRequestCallback =
@@ -94,6 +99,8 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
   // For tests only, return whether there are any pending requests.
   bool HasPendingRequestsForTesting();
+
+  void SetLastRequestStartedTimeForTesting(base::Time time);
 
  private:
   enum class AsyncOperation {
@@ -161,6 +168,8 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
+  bool HasRequestRunning();
+
   // Hold coming requests until previous ones have finished to avoid race
   // conditions.
   std::queue<Request> pending_requests_;
@@ -171,6 +180,10 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
 
   // Whether there is any request running.
   bool has_request_running_ = false;
+
+  base::Time last_request_started_time_ = base::Time();
+
+  AsyncOperation last_request_operation_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
