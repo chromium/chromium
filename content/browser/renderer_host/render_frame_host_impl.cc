@@ -14259,9 +14259,17 @@ void RenderFrameHostImpl::SetEmbeddingToken(
 
   // The accessibility tree for the outermost root frame contains references
   // to the focused frame via its AXTreeID, so ensure that we update that.
+  // For frames in a prerendering frame tree, they should never have focus, so
+  // the outermost frame does not need to update the references.
   RenderFrameHostImpl* outermost = GetOutermostMainFrameOrEmbedder();
-  if (outermost != this)
+  DCHECK(outermost);
+  DCHECK(lifecycle_state_ != LifecycleStateImpl::kPrerendering ||
+         outermost->GetFocusedAXTreeID() != GetAXTreeID());
+
+  if (outermost != this &&
+      lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
     outermost->UpdateAXTreeData();
+  }
 }
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {

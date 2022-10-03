@@ -8581,4 +8581,32 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       /*domain_change=*/absl::nullopt);
 }
 
+// Tests that prerender works with accessibility.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       PrerenderWithAccessibilityEnabled) {
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetLastCommittedURL(), kInitialUrl);
+
+  // Enable accessibility.
+  EnableAccessibilityForWebContents(shell()->web_contents());
+
+  // Start prerendering `kPrerenderingUrl`, which has an iframe attached.
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 0);
+  int host_id = AddPrerender(kPrerenderingUrl);
+  ASSERT_NE(host_id, RenderFrameHost::kNoFrameTreeNodeId);
+  ASSERT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+
+  test::PrerenderHostObserver prerender_observer(*web_contents_impl(),
+                                                 kPrerenderingUrl);
+
+  NavigatePrimaryPage(kPrerenderingUrl);
+
+  prerender_observer.WaitForActivation();
+  ExpectFinalStatusForSpeculationRule(PrerenderHost::FinalStatus::kActivated);
+}
+
 }  // namespace content
