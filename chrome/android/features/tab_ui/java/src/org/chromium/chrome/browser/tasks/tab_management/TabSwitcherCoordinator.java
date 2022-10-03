@@ -195,6 +195,7 @@ public class TabSwitcherCoordinator
     private TabGridIphDialogCoordinator mTabGridIphDialogCoordinator;
     private PriceTrackingDialogCoordinator mPriceTrackingDialogCoordinator;
     private TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
+    private Supplier<ShareDelegate> mShareDelegateSupplier;
 
     /** {@see TabManagementDelegate#createCarouselTabSwitcher} */
     public TabSwitcherCoordinator(@NonNull Activity activity,
@@ -224,6 +225,7 @@ public class TabSwitcherCoordinator
             mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
             mSnackbarManager = snackbarManager;
             mModalDialogManager = modalDialogManager;
+            mShareDelegateSupplier = shareDelegateSupplier;
 
             PropertyModel containerViewModel =
                     new PropertyModel(TabListContainerProperties.ALL_KEYS);
@@ -527,6 +529,9 @@ public class TabSwitcherCoordinator
                     ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(
                     ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            mTabSelectionEditorActions.add(
+                    TabSelectionEditorShareAction.createAction(mActivity, ShowMode.MENU_ONLY,
+                            ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));
         }
 
         mTabSelectionEditorCoordinator.getController().configureToolbarWithMenuItems(

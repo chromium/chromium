@@ -18,4 +18,5 @@ found in the LICENSE file.
     <item type="id" name="tab_selection_editor_group_menu_item" />
     <item type="id" name="tab_selection_editor_ungroup_menu_item" />
     <item type="id" name="tab_selection_editor_selection_menu_item" />
+    <item type="id" name="tab_selection_editor_share_menu_item" />
 </resources>

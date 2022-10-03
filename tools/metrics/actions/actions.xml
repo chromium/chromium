@@ -32598,6 +32598,12 @@ should be able to be added at any place in this file.
   <description>User took an action on the TabSelectionEditor.</description>
 </action>
 
+<action name="TabMultiSelectV2">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <description>User took an action on the TabSelectionEditorV2.</description>
+</action>
+
 <action name="TabOverview_DetachCell">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
@@ -34824,6 +34830,16 @@ should be able to be added at any place in this file.
   <suffix name="TabUnselected"
       label="Users un-selected a tab in TabSelectionEditor."/>
   <affected-action name="TabMultiSelect"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="SharedTabAsTextList"
+      label="Users tapped on the share button for a single tab in
+             TabSelectionEditorV2."/>
+  <suffix name="SharedTabsListAsTextList"
+      label="Users tapped on the share button for multiple tabs in
+             TabSelectionEditorV2."/>
+  <affected-action name="TabMultiSelectV2"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

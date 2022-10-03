@@ -498,6 +498,8 @@ public class TabGridDialogMediator
                     ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             actions.add(TabSelectionEditorUngroupAction.createAction(
                     ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            actions.add(TabSelectionEditorShareAction.createAction(mContext, ShowMode.MENU_ONLY,
+                    ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));
             mTabSelectionEditorControllerSupplier.get().configureToolbarWithMenuItems(
                     actions, null);
             return;
