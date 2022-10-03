@@ -20,6 +20,7 @@
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/continue_task_view.h"
@@ -1306,6 +1307,35 @@ TEST_F(AppListBubbleViewTest, PressingTabMovesFocusInsideFolder) {
       << GetFocusedViewName();
 
   // Repeatedly pressing tab keeps focus inside the folder view.
+  for (int i = 0; i < 10; i++) {
+    PressAndReleaseKey(ui::VKEY_TAB);
+    EXPECT_TRUE(folder_view->Contains(GetFocusedView()))
+        << GetFocusedViewName();
+  }
+}
+
+// Verifies that focus does not move from a folder to the privacy notice. This
+// is a separate test from PressingTabMovesFocusInsideFolder because that test
+// verifies the sorting nudge, and the launcher only shows one nudge at a time.
+TEST_F(AppListBubbleViewTest, PressingTabInFolderDoesNotFocusPrivacyNotice) {
+  // Force the continue section privacy toast to show.
+  AppListNudgeController::SetPrivacyNoticeAcceptedForTest(false);
+  AddContinueSuggestionResult(4);
+  AddFolderWithApps(3);
+  ShowAppList();
+
+  // Privacy notice is visible.
+  auto* privacy_notice = GetContinueSectionView()->GetPrivacyNoticeForTest();
+  ASSERT_TRUE(privacy_notice);
+  ASSERT_TRUE(privacy_notice->GetVisible());
+
+  // Open the folder.
+  AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  // Repeatedly pressing tab keeps focus inside the folder view. In particular,
+  // it does not focus the privacy toast.
+  auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
   for (int i = 0; i < 10; i++) {
     PressAndReleaseKey(ui::VKEY_TAB);
     EXPECT_TRUE(folder_view->Contains(GetFocusedView()))

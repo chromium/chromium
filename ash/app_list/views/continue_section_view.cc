@@ -110,6 +110,9 @@ size_t ContinueSectionView::GetTasksSuggestionsCount() const {
 }
 
 void ContinueSectionView::DisableFocusForShowingActiveFolder(bool disabled) {
+  if (privacy_toast_)
+    privacy_toast_->toast_button()->SetEnabled(!disabled);
+
   suggestions_container_->DisableFocusForShowingActiveFolder(disabled);
 
   // Prevent items from being accessed by ChromeVox.
