@@ -1327,13 +1327,15 @@ bool CanPaintMultipleFragments(const LayoutObject& layout_object) {
     return true;
 
   // There seems to be many issues preventing us from allowing repeated
-  // scrollable containers, so we need to disallow them. Should we be able to
-  // fix all the issues some day (after removing the legacy layout code), we
-  // could change this policy. But for now we need to forbid this, which also
-  // means that we cannot paint repeated text input form elements (because they
-  // use scrollable containers internally) (if it makes sense at all to repeat
-  // form elements...).
-  if (layout_box->IsScrollContainer())
+  // scrollable containers, so we need to disallow them (unless we're printing,
+  // in which case they're not really scrollable). Should we be able to fix all
+  // the issues some day (after removing the legacy layout code), we could
+  // change this policy. But for now we need to forbid this, which also means
+  // that we cannot paint repeated text input form elements (because they use
+  // scrollable containers internally) (if it makes sense at all to repeat form
+  // elements...).
+  if (layout_box->IsScrollContainer() &&
+      !layout_object.GetDocument().Printing())
     return false;
 
   // It's somewhat problematic and strange to repeat most kinds of
