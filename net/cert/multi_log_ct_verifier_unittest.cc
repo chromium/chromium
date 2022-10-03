@@ -85,11 +85,11 @@ class MultiLogCTVerifierTest : public ::testing::Test {
     if (!parsed.params.is_dict())
       return false;
 
-    const base::Value* scts = parsed.params.FindListPath("scts");
-    if (!scts || scts->GetListDeprecated().size() != 1)
+    const base::Value::List* scts = parsed.params.GetDict().FindList("scts");
+    if (!scts || scts->size() != 1)
       return false;
 
-    const base::Value& the_sct = scts->GetListDeprecated()[0];
+    const base::Value& the_sct = (*scts)[0];
     if (!the_sct.is_dict())
       return false;
 

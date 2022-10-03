@@ -340,15 +340,15 @@ bool ParseJSON(base::StringPiece json,
     return false;
   }
 
-  const base::Value* preload_entries = value->FindListKey("entries");
-  if (!preload_entries) {
+  const base::Value::List* preload_entries_list =
+      value->GetDict().FindList("entries");
+  if (!preload_entries_list) {
     LOG(ERROR) << "Could not parse the entries in the input JSON";
     return false;
   }
 
-  const auto preload_entries_list = preload_entries->GetListDeprecated();
-  for (size_t i = 0; i < preload_entries_list.size(); ++i) {
-    const base::Value& parsed = preload_entries_list[i];
+  for (size_t i = 0; i < preload_entries_list->size(); ++i) {
+    const base::Value& parsed = (*preload_entries_list)[i];
     if (!parsed.is_dict()) {
       LOG(ERROR) << "Could not parse entry " << base::NumberToString(i)
                  << " in the input JSON";
@@ -411,15 +411,14 @@ bool ParseJSON(base::StringPiece json,
     entries->push_back(std::move(entry));
   }
 
-  base::Value* pinsets_value = value->FindListKey("pinsets");
-  if (!pinsets_value) {
+  base::Value::List* pinsets_list = value->GetDict().FindList("pinsets");
+  if (!pinsets_list) {
     LOG(ERROR) << "Could not parse the pinsets in the input JSON";
     return false;
   }
 
-  const auto pinsets_list = pinsets_value->GetListDeprecated();
-  for (size_t i = 0; i < pinsets_list.size(); ++i) {
-    const base::Value& parsed = pinsets_list[i];
+  for (size_t i = 0; i < pinsets_list->size(); ++i) {
+    const base::Value& parsed = (*pinsets_list)[i];
     if (!parsed.is_dict()) {
       LOG(ERROR) << "Could not parse pinset " << base::NumberToString(i)
                  << " in the input JSON";
@@ -440,10 +439,10 @@ bool ParseJSON(base::StringPiece json,
 
     auto pinset = std::make_unique<Pinset>(name, report_uri);
 
-    const base::Value* pinset_static_hashes_list =
-        parsed.FindListKey("static_spki_hashes");
+    const base::Value::List* pinset_static_hashes_list =
+        parsed.GetDict().FindList("static_spki_hashes");
     if (pinset_static_hashes_list) {
-      for (const auto& hash : pinset_static_hashes_list->GetListDeprecated()) {
+      for (const auto& hash : *pinset_static_hashes_list) {
         if (!hash.is_string()) {
           LOG(ERROR) << "Could not parse static spki hash "
                      << hash.DebugString() << " in the input JSON";
@@ -453,11 +452,10 @@ bool ParseJSON(base::StringPiece json,
       }
     }
 
-    const base::Value* pinset_bad_static_hashes_list =
-        parsed.FindListKey("bad_static_spki_hashes");
+    const base::Value::List* pinset_bad_static_hashes_list =
+        parsed.GetDict().FindList("bad_static_spki_hashes");
     if (pinset_bad_static_hashes_list) {
-      for (const auto& hash :
-           pinset_bad_static_hashes_list->GetListDeprecated()) {
+      for (const auto& hash : *pinset_bad_static_hashes_list) {
         if (!hash.is_string()) {
           LOG(ERROR) << "Could not parse bad static spki hash "
                      << hash.DebugString() << " in the input JSON";
