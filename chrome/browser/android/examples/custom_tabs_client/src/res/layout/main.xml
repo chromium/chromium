@@ -26,15 +26,11 @@
         android:padding="5dp"
         android:orientation="vertical" >
 
-        <EditText
-            android:id="@+id/edit"
-            android:padding="5dp"
-            android:layout_margin="5dp"
-            android:layout_width="match_parent"
+        <AutoCompleteTextView
+            android:id="@+id/autocomplete_url"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/url_hint"
-            android:inputType="textNoSuggestions"
-            android:text="@string/default_url" />
+            android:hint="URL here"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -46,6 +42,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
+                android:layout_gravity="center_vertical|start"
                 android:text="@string/package_label"/>
 
             <Spinner
@@ -56,14 +53,105 @@
                 android:layout_gravity="center_horizontal" />
         </LinearLayout>
 
-        <TextView
+        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:text="@string/cct_type"/>
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/cct_spinner"
+                android:layout_margin="3dp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/connect_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/connect_button_text"
+                android:enabled="true" />
+
+            <Button
+                android:id="@+id/disconnect_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/disconnect_button_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/may_launch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/may_launch_button_text"
+                android:enabled="false" />
+
+            <Button
+                android:id="@+id/warmup_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:textAllCaps="false"
+                android:text="@string/warmup_button_text"
+                android:enabled="false" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/launch_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:textAllCaps="false"
+            android:text="@string/launch_button_text"
+            android:enabled="true" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_margin="5dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/customizations_textview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
             android:text="@string/toolbar_customizations_text"
             android:layout_gravity="center"
-            android:layout_marginBottom="8dp"
+            android:layout_margin="8dp"
             style="?attr/textAppearanceTitleMedium" />
 
+        <!-- TODO(crbug/1369793) TextView and Spinner are not aligned -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -271,98 +359,49 @@
                 android:layout_weight="1"/>
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/pcct_resizable_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked = "true"
-            android:text="@string/pcct_resizable_text" />
-
-        <CheckBox
-            android:id="@+id/show_title_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked = "true"
-            android:text="@string/show_title_text" />
-
-        <CheckBox
-            android:id="@+id/url_hiding_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked = "true"
-            android:text="@string/url_hiding_text" />
-
-        <CheckBox
-            android:id="@+id/bottom_toolbar_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked = "false"
-            android:text="@string/bottom_toolbar_toggle" />
-
-        <Space
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="5dp" />
-
-        <Button
-            android:id="@+id/connect_button"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/connect_button_text"
-            android:enabled="true" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
 
-        <Button
-            android:id="@+id/warmup_button"
-            android:layout_width="wrap_content"
+            <CheckBox
+                android:id="@+id/pcct_resizable_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "true"
+                android:text="@string/pcct_resizable_text" />
+
+            <CheckBox
+                android:id="@+id/bottom_toolbar_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "false"
+                android:text="@string/bottom_toolbar_toggle" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/warmup_button_text"
-            android:enabled="false" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="16dp">
+            <CheckBox
+                android:id="@+id/show_title_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "true"
+                android:text="@string/show_title_text" />
 
-        <Button
-            android:id="@+id/launch_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_button_text"
-            android:enabled="true" />
-
-        <Button
-            android:id="@+id/launch_pcct_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_pcct_text" />
-
-        <Button
-            android:id="@+id/launch_incognito_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_incognito_button_text"
-            android:enabled="true" />
-
-        <Button
-            android:id="@+id/launch_browser_actions_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/launch_browser_actions_button_text" />
-
-        <Button
-            android:id="@+id/register_twa_service"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="3dp"
-            android:textAllCaps="false"
-            android:text="@string/register_twa_service" />
-
+            <CheckBox
+                android:id="@+id/url_hiding_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked = "true"
+                android:text="@string/url_hiding_text" />
+        </LinearLayout>
     </LinearLayout>
-
 </ScrollView>

@@ -31,12 +31,9 @@
     <string name="dp_template">%ddp</string>
     <string name="warmup_button_text">Warmup Chrome</string>
     <string name="may_launch_button_text">May Launch URL</string>
-    <string name="launch_button_text">Launch CCT</string>
-    <string name="launch_incognito_button_text">Launch Incognito CCT</string>
+    <string name="launch_button_text">Launch in CCT</string>
     <string name="connect_button_text">Connect to service</string>
-    <string name="launch_browser_actions_button_text">Launch Browser Actions Context Menu</string>
-    <string name="register_twa_service">Register TrustedWebActivityService</string>
-    <string name="launch_pcct_text">Launch Partial CCT</string>
+    <string name="disconnect_button_text">Disconnect</string>
     <string name="default_url">https://www.google.com</string>
     <string name="package_label">Package:</string>
     <string name="amazing_grace">Amazing Grace 2011</string>
@@ -51,5 +48,6 @@
     <string name="theme_button_system">System</string>
     <string name="theme_button_light">Light</string>
     <string name="theme_button_dark">Dark</string>
+    <string name="cct_type">CCT Type:</string>
 
 </resources>

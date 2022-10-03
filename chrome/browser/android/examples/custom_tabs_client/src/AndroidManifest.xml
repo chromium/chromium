@@ -14,9 +14,12 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
     package="org.chromium.customtabsclient"
     android:versionCode="1"
     android:versionName="1.0" >
+
+   <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -39,8 +42,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"
-                      android:host="www.example.com"
-                      android:pathPrefix="/notifications"/>
+                    android:host="www.example.com"
+                    android:pathPrefix="/notifications"/>
             </intent-filter>
 
         </activity>
@@ -56,7 +59,7 @@
             android:exported="true">
 
             <meta-data android:name="android.support.customtabs.trusted.SMALL_ICON"
-                       android:resource="@drawable/ic_notification_icon" />
+                android:resource="@drawable/ic_notification_icon" />
 
             <intent-filter>
                 <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE"/>
@@ -64,4 +67,12 @@
             </intent-filter>
         </service>
     </application>
+    <queries>
+        <package android:name="org.chromium.chrome" />
+        <package android:name="com.google.android.apps.chrome" />
+        <package android:name="com.chrome.canary" />
+        <package android:name="com.chrome.dev" />
+        <package android:name="com.chrome.beta" />
+        <package android:name="com.android.chrome" />
+    </queries>
 </manifest>
