@@ -8345,6 +8345,8 @@ static_library("test_support") {
       "ash/login/users/mock_user_manager.h",
       "ash/net/network_portal_detector_test_utils.cc",
       "ash/net/network_portal_detector_test_utils.h",
+      "ash/policy/arc/fake_android_management_client.cc",
+      "ash/policy/arc/fake_android_management_client.h",
       "ash/policy/core/device_policy_builder.cc",
       "ash/policy/core/device_policy_builder.h",
       "ash/policy/core/fake_device_cloud_policy_manager.cc",

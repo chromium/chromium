@@ -55,7 +55,7 @@ class AndroidManagementClientTest : public testing::Test {
         identity_test_environment_.identity_manager();
     CoreAccountId account_id = identity_manager->PickAccountIdForAccount(
         signin::GetTestGaiaIdForEmail(kAccountEmail), kAccountEmail);
-    client_ = std::make_unique<AndroidManagementClient>(
+    client_ = std::make_unique<AndroidManagementClientImpl>(
         &service_, shared_url_loader_factory_, account_id, identity_manager);
 
     base::RunLoop().RunUntilIdle();
@@ -69,7 +69,7 @@ class AndroidManagementClientTest : public testing::Test {
   FakeDeviceManagementService service_{&job_creation_handler_};
   StrictMock<base::MockCallback<AndroidManagementClient::StatusCallback>>
       callback_observer_;
-  std::unique_ptr<AndroidManagementClient> client_;
+  std::unique_ptr<AndroidManagementClientImpl> client_;
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_environment_;

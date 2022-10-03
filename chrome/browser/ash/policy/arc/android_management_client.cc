@@ -26,7 +26,7 @@ namespace em = enterprise_management;
 
 namespace policy {
 
-AndroidManagementClient::AndroidManagementClient(
+AndroidManagementClientImpl::AndroidManagementClientImpl(
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const CoreAccountId& account_id,
@@ -38,9 +38,9 @@ AndroidManagementClient::AndroidManagementClient(
   device_management_service_->ScheduleInitialization(0);
 }
 
-AndroidManagementClient::~AndroidManagementClient() {}
+AndroidManagementClientImpl::~AndroidManagementClientImpl() = default;
 
-void AndroidManagementClient::StartCheckAndroidManagement(
+void AndroidManagementClientImpl::StartCheckAndroidManagement(
     StatusCallback callback) {
   DCHECK(device_management_service_);
   DCHECK(callback_.is_null());
@@ -49,7 +49,7 @@ void AndroidManagementClient::StartCheckAndroidManagement(
   RequestAccessToken();
 }
 
-void AndroidManagementClient::OnAccessTokenFetchComplete(
+void AndroidManagementClientImpl::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
   access_token_fetcher_.reset();
@@ -64,7 +64,7 @@ void AndroidManagementClient::OnAccessTokenFetchComplete(
   CheckAndroidManagement(token_info.token);
 }
 
-void AndroidManagementClient::RequestAccessToken() {
+void AndroidManagementClientImpl::RequestAccessToken() {
   DCHECK(!access_token_fetcher_);
   // The user must be signed in already.
   DCHECK(identity_manager_->HasAccountWithRefreshToken(account_id_));
@@ -75,12 +75,12 @@ void AndroidManagementClient::RequestAccessToken() {
 
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_id_, "android_management_client", scopes,
-      base::BindOnce(&AndroidManagementClient::OnAccessTokenFetchComplete,
+      base::BindOnce(&AndroidManagementClientImpl::OnAccessTokenFetchComplete,
                      base::Unretained(this)),
       signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
-void AndroidManagementClient::CheckAndroidManagement(
+void AndroidManagementClientImpl::CheckAndroidManagement(
     const std::string& access_token) {
   std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
       DMServerJobConfiguration>(
@@ -88,7 +88,7 @@ void AndroidManagementClient::CheckAndroidManagement(
       DeviceManagementService::JobConfiguration::TYPE_ANDROID_MANAGEMENT_CHECK,
       /*client_id=*/base::GenerateGUID(),
       /*critical=*/false, DMAuth::NoAuth(), access_token, url_loader_factory_,
-      base::BindOnce(&AndroidManagementClient::OnAndroidManagementChecked,
+      base::BindOnce(&AndroidManagementClientImpl::OnAndroidManagementChecked,
                      weak_ptr_factory_.GetWeakPtr()));
 
   config->request()->mutable_check_android_management_request();
@@ -96,7 +96,7 @@ void AndroidManagementClient::CheckAndroidManagement(
   request_job_ = device_management_service_->CreateJob(std::move(config));
 }
 
-void AndroidManagementClient::OnAndroidManagementChecked(
+void AndroidManagementClientImpl::OnAndroidManagementChecked(
     DMServerJobResult result) {
   DCHECK(!callback_.is_null());
   if (result.dm_status == DM_STATUS_SUCCESS &&

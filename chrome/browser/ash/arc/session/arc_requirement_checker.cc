@@ -12,10 +12,16 @@
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_default_negotiator.h"
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace arc {
 
@@ -34,6 +40,37 @@ bool g_ui_enabled = true;
 bool g_enable_arc_terms_of_service_oobe_negotiator_in_tests = false;
 
 absl::optional<bool> g_enable_check_android_management_in_tests;
+
+policy::DeviceManagementService* GetDeviceManagementService() {
+  policy::BrowserPolicyConnectorAsh* const connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  return connector->device_management_service();
+}
+
+// Returns the Device Account Id. Assumes that |profile| is the only Profile
+// on Chrome OS.
+CoreAccountId GetDeviceAccountId(Profile* profile) {
+  const auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  // The account is the same whether or not the user consented to browser sync.
+  return identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+}
+
+std::unique_ptr<ArcAndroidManagementChecker> CreateAndroidManagementChecker(
+    Profile* profile,
+    bool retry_on_error) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  const CoreAccountId device_account_id = GetDeviceAccountId(profile);
+  return std::make_unique<ArcAndroidManagementChecker>(
+      profile, identity_manager, device_account_id, retry_on_error,
+      std::make_unique<policy::AndroidManagementClientImpl>(
+          GetDeviceManagementService(),
+          g_browser_process->system_network_context_manager()
+              ->GetSharedURLLoaderFactory(),
+          device_account_id, identity_manager));
+}
 
 }  // namespace
 
@@ -142,8 +179,8 @@ void ArcRequirementChecker::StartBackgroundChecks(
   if (!g_enable_check_android_management_in_tests.value_or(g_ui_enabled))
     return;
 
-  android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
-      profile_, true /* retry_on_error */);
+  android_management_checker_ =
+      CreateAndroidManagementChecker(profile_, true /* retry_on_error */);
   android_management_checker_->StartCheck(base::BindOnce(
       &ArcRequirementChecker::OnBackgroundAndroidManagementChecked,
       weak_ptr_factory_.GetWeakPtr()));
@@ -201,8 +238,8 @@ void ArcRequirementChecker::StartAndroidManagementCheck() {
   if (!g_ui_enabled)
     return;
 
-  android_management_checker_ = std::make_unique<ArcAndroidManagementChecker>(
-      profile_, false /* retry_on_error */);
+  android_management_checker_ =
+      CreateAndroidManagementChecker(profile_, false /* retry_on_error */);
   android_management_checker_->StartCheck(
       base::BindOnce(&ArcRequirementChecker::OnAndroidManagementChecked,
                      weak_ptr_factory_.GetWeakPtr()));

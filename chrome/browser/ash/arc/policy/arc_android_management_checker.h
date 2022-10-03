@@ -26,7 +26,12 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
     ERROR,       // There was an error.
   };
 
-  ArcAndroidManagementChecker(Profile* profile, bool retry_on_error);
+  ArcAndroidManagementChecker(Profile* profile,
+                              signin::IdentityManager* identity_manager,
+                              const CoreAccountId& device_account_id,
+                              bool retry_on_error,
+                              std::unique_ptr<policy::AndroidManagementClient>
+                                  android_management_client);
 
   ArcAndroidManagementChecker(const ArcAndroidManagementChecker&) = delete;
   ArcAndroidManagementChecker& operator=(const ArcAndroidManagementChecker&) =
@@ -68,7 +73,7 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
   // Keeps current retry delay.
   base::TimeDelta retry_delay_;
 
-  policy::AndroidManagementClient android_management_client_;
+  std::unique_ptr<policy::AndroidManagementClient> android_management_client_;
 
   // The callback for the inflight operation.
   CheckCallback callback_;
