@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/ref_counted.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "media/base/video_frame.h"
@@ -141,8 +142,7 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
   base::RunLoop wait_for_on_stopped_loop;
   EXPECT_CALL(video_frame_handler, DoOnBufferRetired(_))
       .WillRepeatedly(Invoke([&known_buffer_ids](int32_t buffer_id) {
-        auto iter = std::find(known_buffer_ids.begin(), known_buffer_ids.end(),
-                              buffer_id);
+        auto iter = base::ranges::find(known_buffer_ids, buffer_id);
         ASSERT_TRUE(iter != known_buffer_ids.end());
         known_buffer_ids.erase(iter);
       }));

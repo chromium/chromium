@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
@@ -63,8 +64,7 @@ void SharedMemoryVirtualDeviceMojoAdapter::RequestFrameBuffer(
 
   // Remove dropped buffer if there is one.
   if (buffer_id_to_drop != media::VideoCaptureBufferPool::kInvalidId) {
-    auto entry_iter = std::find(known_buffer_ids_.begin(),
-                                known_buffer_ids_.end(), buffer_id_to_drop);
+    auto entry_iter = base::ranges::find(known_buffer_ids_, buffer_id_to_drop);
     if (entry_iter != known_buffer_ids_.end()) {
       known_buffer_ids_.erase(entry_iter);
       if (producer_.is_bound())

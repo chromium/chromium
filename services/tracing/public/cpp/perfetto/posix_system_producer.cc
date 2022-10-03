@@ -4,6 +4,7 @@
 
 #include "services/tracing/public/cpp/perfetto/posix_system_producer.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <utility>

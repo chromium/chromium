@@ -5,10 +5,12 @@
 #include "services/resource_coordinator/memory_instrumentation/queued_request_dispatcher.h"
 
 #include <inttypes.h>
+
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -343,8 +345,7 @@ void QueuedRequestDispatcher::SetUpAndDispatchVmRegionRequest(
                                       desired_pids, std::move(callback));
 #else
   for (const auto& client_info : clients) {
-    if (std::find(desired_pids.begin(), desired_pids.end(), client_info.pid) !=
-        desired_pids.end()) {
+    if (base::Contains(desired_pids, client_info.pid)) {
       mojom::ClientProcess* client = client_info.client;
       request->pending_responses.insert(client_info.pid);
       request->responses[client_info.pid].process_id = client_info.pid;

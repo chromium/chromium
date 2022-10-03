@@ -7,7 +7,6 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
@@ -18,6 +17,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
@@ -527,7 +527,7 @@ void OutputController::StopSnooping(Snooper* snooper) {
 
   // The list will only update on this thread, and only be read on the realtime
   // audio thread.
-  const auto it = std::find(snoopers_.begin(), snoopers_.end(), snooper);
+  const auto it = base::ranges::find(snoopers_, snooper);
   DCHECK(it != snoopers_.end());
   // We also don't care about ordering, so swap and pop rather than erase.
   base::AutoLock lock(snooper_lock_);
