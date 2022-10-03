@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <memory>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -304,8 +304,7 @@ bool DatabaseCheckHelper::ScanDirectory() {
       if (!path_.AppendRelativePath(absolute_file_path, &relative_file_path))
         return false;
 
-      if (std::find(kExcludes, kExcludes + std::size(kExcludes),
-                    relative_file_path) != kExcludes + std::size(kExcludes))
+      if (base::Contains(kExcludes, relative_file_path))
         continue;
 
       if (find_info.IsDirectory()) {
