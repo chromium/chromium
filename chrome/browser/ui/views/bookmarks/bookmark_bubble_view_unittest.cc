@@ -49,7 +49,9 @@ class BookmarkBubbleViewTest : public BrowserWithTestWindowTest {
   BookmarkBubbleViewTest()
       : BrowserWithTestWindowTest(
             content::BrowserTaskEnvironment::REAL_IO_THREAD) {
+#if !BUILDFLAG(IS_FUCHSIA)
     test_features_.InitAndEnableFeature(commerce::kShoppingList);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   }
 
   BookmarkBubbleViewTest(const BookmarkBubbleViewTest&) = delete;
@@ -172,6 +174,7 @@ TEST_F(BookmarkBubbleViewTest, SyncPromoNotSignedIn) {
 #endif
 }
 
+#if !BUILDFLAG(IS_FUCHSIA)
 // Verifies that the price tracking view is displayed for trackable product.
 TEST_F(BookmarkBubbleViewTest, PriceTrackingViewIsVisible) {
   commerce::MockShoppingService* mock_shopping_service =
@@ -232,3 +235,4 @@ TEST_F(BookmarkBubbleViewTest, PriceTrackingViewWithToggleOn) {
   EXPECT_TRUE(price_tracking_view);
   EXPECT_TRUE(price_tracking_view->IsToggleOn());
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
