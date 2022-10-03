@@ -36,7 +36,6 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
 
 // Other interfaces
 extern DEVICE_BLUETOOTH_EXPORT const char kSocketManagerInterface[];
-extern DEVICE_BLUETOOTH_EXPORT const char kGattClientInterface[];
 
 namespace adapter {
 extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
@@ -161,6 +160,33 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnConfigureMtu[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnConnectionUpdated[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnServiceChanged[];
 }  // namespace gatt
+   //
+namespace advertiser {
+extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStartAdvertisingSet[];
+extern DEVICE_BLUETOOTH_EXPORT const char kStopAdvertisingSet[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetOwnAddress[];
+extern DEVICE_BLUETOOTH_EXPORT const char kEnableAdvertisingSet[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetAdvertisingData[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetScanResponseData[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetAdvertisingParameters[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPeriodicAdvertisingParameters[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPeriodicAdvertisingData[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPeriodicAdvertisingEnable[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
+
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingSetStarted[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnOwnAddressRead[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingSetStopped[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingEnabled[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingDataSet[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnScanResponseDataSet[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnAdvertisingParametersUpdated[];
+extern DEVICE_BLUETOOTH_EXPORT const char
+    kOnPeriodicAdvertisingParametersUpdated[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingDataSet[];
+extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingEnabled[];
+}  // namespace advertiser
 
 // BluetoothDevice structure for DBus apis.
 struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {

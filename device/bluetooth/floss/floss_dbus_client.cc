@@ -159,6 +159,35 @@ const char kOnConnectionUpdated[] = "OnConnectionUpdated";
 const char kOnServiceChanged[] = "OnServiceChanged";
 }  // namespace gatt
 
+namespace advertiser {
+const char kRegisterCallback[] = "RegisterAdvertiserCallback";
+const char kStartAdvertisingSet[] = "StartAdvertisingSet";
+const char kStopAdvertisingSet[] = "StopAdvertisingSet";
+const char kGetOwnAddress[] = "GetOwnAddress";
+const char kEnableAdvertisingSet[] = "EnableAdvertisingSet";
+const char kSetAdvertisingData[] = "SetAdvertisingData";
+const char kSetScanResponseData[] = "SetScanResponseData";
+const char kSetAdvertisingParameters[] = "SetAdvertisingParameters";
+const char kSetPeriodicAdvertisingParameters[] =
+    "SetPeriodicAdvertisingParameters";
+const char kSetPeriodicAdvertisingData[] = "SetPeriodicAdvertisingData";
+const char kSetPeriodicAdvertisingEnable[] = "SetPeriodicAdvertisingEnable";
+
+const char kCallbackInterface[] =
+    "org.chromium.bluetooth.AdvertisingSetCallback";
+const char kOnAdvertisingSetStarted[] = "OnAdvertisingSetStarted";
+const char kOnOwnAddressRead[] = "OnOwnAddressRead";
+const char kOnAdvertisingSetStopped[] = "OnAdvertisingSetStopped";
+const char kOnAdvertisingEnabled[] = "OnAdvertisingEnabled";
+const char kOnAdvertisingDataSet[] = "OnAdvertisingDataSet";
+const char kOnScanResponseDataSet[] = "OnScanResponseDataSet";
+const char kOnAdvertisingParametersUpdated[] = "OnAdvertisingParametersUpdated";
+const char kOnPeriodicAdvertisingParametersUpdated[] =
+    "OnPeriodicAdvertisingParametersUpdated";
+const char kOnPeriodicAdvertisingDataSet[] = "OnPeriodicAdvertisingDataSet";
+const char kOnPeriodicAdvertisingEnabled[] = "OnPeriodicAdvertisingEnabled";
+}  // namespace advertiser
+
 namespace {
 constexpr char kDeviceIdNameKey[] = "name";
 constexpr char kDeviceIdAddressKey[] = "address";
