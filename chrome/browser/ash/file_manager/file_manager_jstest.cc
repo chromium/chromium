@@ -330,3 +330,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAllEntries) {
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfDlpRestrictionDetailsDialog) {
   RunTestURL("widgets/xf_dlp_restriction_details_dialog_unittest.js");
 }
+
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, XfNudge) {
+  RunTestURL("widgets/xf_nudge_unittest.js");
+}
