@@ -31,8 +31,9 @@ bool IsPromptEnabled() {
 
 }  // namespace.
 
-const base::Feature kSettingsResetPrompt{kSettingsResetPromptFeatureName,
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSettingsResetPrompt,
+             kSettingsResetPromptFeatureName,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 std::unique_ptr<SettingsResetPromptConfig> SettingsResetPromptConfig::Create() {

@@ -18,18 +18,10 @@
 
 namespace reporting {
 
-namespace {
-
 // Temporary: enable/disable encryption.
-const base::Feature kEncryptedReportingFeature{
-    EncryptionModuleInterface::kEncryptedReporting,
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
-}  // namespace
-
-// static
-const char EncryptionModuleInterface::kEncryptedReporting[] =
-    "EncryptedReporting";
+BASE_FEATURE(kEncryptedReportingFeature,
+             "EncryptedReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 bool EncryptionModuleInterface::is_enabled() {

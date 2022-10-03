@@ -17,12 +17,12 @@
 
 namespace reporting {
 
+// Feature to enable/disable compression.
+// By default compression is disabled, until server can support compression.
+BASE_DECLARE_FEATURE(kCompressReportingPipeline);
+
 class CompressionModule : public base::RefCountedThreadSafe<CompressionModule> {
  public:
-  // Feature to enable/disable compression.
-  // By default compression is disabled, until server can support compression.
-  static const char kCompressReportingFeature[];
-
   // Not copyable or movable
   CompressionModule(const CompressionModule& other) = delete;
   CompressionModule& operator=(const CompressionModule& other) = delete;
