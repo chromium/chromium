@@ -183,6 +183,16 @@ export class InputListElement extends InputListElementBase {
   }
 
   /**
+   * Handles when the touchscreen Test button is clicked.
+   */
+  private handleTouchscreenTestButtonClick_(): void {
+    const touchscreenTester =
+        this.shadowRoot!.querySelector('touchscreen-tester');
+    assert(touchscreenTester);
+    touchscreenTester.showTester();
+  }
+
+  /**
    * 'navigation-view-panel' is responsible for calling this function when
    * the active page changes.
    */

@@ -178,6 +178,19 @@ export function inputListTestSuite() {
     assertEquals(fakeTouchDevices[1].name, touchscreenCard.devices[0].name);
   });
 
+  test('TouchscreenTesterShow', async () => {
+    await initializeInputList([], [fakeTouchDevices[1]]);
+    const testButton = getCardByDeviceType('touchscreen')
+                           .shadowRoot.querySelector('cr-button');
+    assertTrue(!!testButton);
+    testButton.click();
+    await flushTasks();
+
+    const touchscreenTester =
+        inputListElement.shadowRoot.querySelector('touchscreen-tester');
+    assertTrue(touchscreenTester.getDialog('intro-dialog').open);
+  });
+
   test('EmptySectionsHidden', async () => {
     await initializeInputList([], []);
     assertFalse(isVisible(getCardByDeviceType('keyboard')));

@@ -21,10 +21,12 @@
         </input-card>
       </template>
       <template is="dom-if" if="[[showTouchscreens_]]">
-        <input-card device-type="touchscreen" devices="[[touchscreens_]]">
+        <input-card device-type="touchscreen" devices="[[touchscreens_]]"
+            on-test-button-click="handleTouchscreenTestButtonClick_">
           <div slot="title">[[i18n('inputCategoryTouchscreen')]]</div>
         </input-card>
       </template>
     </div>
   </div>
 </div>
+<touchscreen-tester></touchscreen-tester>
