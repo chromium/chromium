@@ -5,12 +5,19 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_POSIX_POSIX_PLATFORM_DELEGATE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_SYSTEM_SIGNALS_POSIX_POSIX_PLATFORM_DELEGATE_H_
 
+#include <memory>
+
 #include "components/device_signals/core/system_signals/base_platform_delegate.h"
+
+namespace base {
+class Environment;
+}
 
 namespace device_signals {
 
 class PosixPlatformDelegate : public BasePlatformDelegate {
  public:
+  PosixPlatformDelegate();
   ~PosixPlatformDelegate() override;
 
   // PlatformDelegate:
@@ -18,7 +25,7 @@ class PosixPlatformDelegate : public BasePlatformDelegate {
                        base::FilePath* resolved_file_path) override;
 
  protected:
-  PosixPlatformDelegate();
+  std::unique_ptr<base::Environment> environment_;
 };
 
 }  // namespace device_signals

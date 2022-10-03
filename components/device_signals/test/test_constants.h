@@ -35,6 +35,18 @@ std::string GetMetadataProductName();
 // Returns the expected product version of the metadata.exe test file.
 std::string GetMetadataProductVersion();
 
+// Returns an absolute path to the TestApp.app test bundle.
+base::FilePath GetTestBundlePath();
+
+// Returns an absolute path to the TestApp.app's binary path.
+base::FilePath GetTestBundleBinaryPath();
+
+// Returns the expected product name of the test bundle.
+std::string GetTestBundleProductName();
+
+// Returns the expected product version of the test bundle.
+std::string GetTestBundleProductVersion();
+
 }  // namespace device_signals::test
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_TEST_TEST_CONSTANTS_H_

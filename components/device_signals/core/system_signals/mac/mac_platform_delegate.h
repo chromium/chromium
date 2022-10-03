@@ -17,14 +17,11 @@ class MacPlatformDelegate : public PosixPlatformDelegate {
   // PlatformDelegate:
   bool ResolveFilePath(const base::FilePath& file_path,
                        base::FilePath* resolved_file_path) override;
+  absl::optional<ProductMetadata> GetProductMetadata(
+      const base::FilePath& file_path) override;
   absl::optional<std::vector<std::string>>
   GetSigningCertificatesPublicKeyHashes(
       const base::FilePath& file_path) override;
-
-  // Verifies if `file_path` points to an app bundle and then returns the
-  // executable path for the file inside the bundle. If `file_path` does not
-  // point to a bundle, it is returned as-is.
-  base::FilePath GetBinaryFilePath(const base::FilePath& file_path);
 };
 
 }  // namespace device_signals

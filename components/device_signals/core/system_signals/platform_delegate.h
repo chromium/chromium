@@ -60,6 +60,8 @@ class PlatformDelegate {
 
     absl::optional<std::string> name = absl::nullopt;
     absl::optional<std::string> version = absl::nullopt;
+
+    bool operator==(const ProductMetadata& other) const;
   };
 
   // Returns product metadata for a given `file_path`.
