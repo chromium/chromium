@@ -119,8 +119,8 @@ std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
 constexpr char kReceiverActionTypeCast[] = "cast";
 constexpr char kReceiverActionTypeStop[] = "stop";
 
-base::ListValue CapabilitiesToListValue(uint8_t capabilities) {
-  base::ListValue value;
+base::Value::List CapabilitiesToListValue(uint8_t capabilities) {
+  base::Value::List value;
   if (capabilities & cast_channel::VIDEO_OUT)
     value.Append("video_out");
   if (capabilities & cast_channel::VIDEO_IN)
@@ -390,10 +390,10 @@ std::unique_ptr<CastSession> CastSession::From(
 
   CopyValueWithDefault(*app_dict, "displayName", base::Value(""), session_dict);
   CopyValueWithDefault(*app_dict, "senderApps",
-                       base::Value(base::Value::Type::LIST), session_dict);
+                       base::Value(base::Value::List()), session_dict);
   CopyValueWithDefault(*app_dict, "statusText", base::Value(), session_dict);
-  CopyValueWithDefault(*app_dict, "appImages",
-                       base::Value(base::Value::Type::LIST), session_dict);
+  CopyValueWithDefault(*app_dict, "appImages", base::Value(base::Value::List()),
+                       session_dict);
   // Optional fields
   CopyValue(*app_dict, "appType", session_dict);
   CopyValue(*app_dict, "universalAppId", session_dict);
@@ -524,8 +524,8 @@ blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
                              std::move(error), client_id, sequence_number);
 }
 
-base::Value SupportedMediaCommandsToListValue(int media_commands) {
-  base::Value value(base::Value::Type::LIST);
+base::Value::List SupportedMediaCommandsToListValue(int media_commands) {
+  base::Value::List value;
   if (media_commands & static_cast<int>(MediaCommand::kPause))
     value.Append(kMediaCommandPause);
   if (media_commands & static_cast<int>(MediaCommand::kSeek))

@@ -103,8 +103,8 @@ TEST_F(CastInternalMessageUtilDeathTest,
   EXPECT_EQ(999, message->sequence_number());
   EXPECT_EQ("urn:x-cast:com.google.foo", message->app_message_namespace());
   EXPECT_EQ("sessionId", message->session_id());
-  base::Value message_body(base::Value::Type::DICTIONARY);
-  message_body.SetKey("foo", base::Value("bar"));
+  base::Value::Dict message_body;
+  message_body.Set("foo", base::Value("bar"));
   EXPECT_EQ(message_body, message->app_message_body());
 
   EXPECT_DCHECK_DEATH(message->v2_message_type());
@@ -499,10 +499,11 @@ TEST(CastInternalMessageUtilTest, CreateAppMessageAck) {
 TEST(CastInternalMessageUtilTest, CreateAppMessage) {
   std::string session_id = "sessionId";
   std::string client_id = "clientId";
-  base::Value message_body(base::Value::Type::DICTIONARY);
-  message_body.SetKey("foo", base::Value("bar"));
+  base::Value::Dict message_body;
+  message_body.Set("foo", base::Value("bar"));
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
-      "urn:x-cast:com.google.foo", message_body, "sourceId", "transportId");
+      "urn:x-cast:com.google.foo", base::Value(std::move(message_body)),
+      "sourceId", "transportId");
 
   auto message = CreateAppMessage(session_id, client_id, cast_message);
   EXPECT_THAT(message, IsPresentationConnectionMessage(R"({

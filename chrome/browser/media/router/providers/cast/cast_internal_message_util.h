@@ -243,7 +243,7 @@ blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
     absl::optional<int> sequence_number);
 
-base::Value SupportedMediaCommandsToListValue(int media_commands);
+base::Value::List SupportedMediaCommandsToListValue(int media_commands);
 
 }  // namespace media_router
 

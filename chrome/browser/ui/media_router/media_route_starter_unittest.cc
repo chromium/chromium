@@ -297,7 +297,7 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
   std::string GetLogEntry(const std::string& logs_json,
                           const std::string& attribute) {
     base::Value logs = base::JSONReader::Read(logs_json).value();
-    return *logs.GetListDeprecated()[0].FindStringKey(attribute);
+    return *logs.GetList()[0].GetDict().FindString(attribute);
   }
 
   void DestroyMediaRouteStarter() { starter_.reset(); }

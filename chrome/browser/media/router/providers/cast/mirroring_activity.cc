@@ -79,14 +79,11 @@ constexpr char kLoggerComponent[] = "MirroringService";
 
 using MirroringType = MirroringActivity::MirroringType;
 
-const std::string GetMirroringNamespace(const base::Value& message) {
-  const base::Value* const type_value =
-      message.FindKeyOfType("type", base::Value::Type::STRING);
-
-  if (type_value &&
-      type_value->GetString() ==
-          cast_util::EnumToString<cast_channel::CastMessageType,
-                                  cast_channel::CastMessageType::kRpc>()) {
+const std::string GetMirroringNamespace(const base::Value::Dict& message) {
+  const std::string* type = message.FindString("type");
+  if (type &&
+      *type == cast_util::EnumToString<cast_channel::CastMessageType,
+                                       cast_channel::CastMessageType::kRpc>()) {
     return mirroring::mojom::kRemotingNamespace;
   } else {
     return mirroring::mojom::kWebRtcNamespace;
@@ -386,7 +383,7 @@ void MirroringActivity::HandleParseJsonResult(
   CastSession* session = GetSession();
   DCHECK(session);
 
-  if (!result.has_value()) {
+  if (!result.has_value() || !result.value().is_dict()) {
     // TODO(crbug.com/905002): Record UMA metric for parse result.
     logger_->LogError(
         media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
@@ -396,14 +393,15 @@ void MirroringActivity::HandleParseJsonResult(
     return;
   }
 
-  const std::string message_namespace = GetMirroringNamespace(*result);
+  const std::string message_namespace =
+      GetMirroringNamespace(result.value().GetDict());
   if (message_namespace == mirroring::mojom::kWebRtcNamespace) {
-    logger_->LogInfo(media_router::mojom::LogCategory::kMirroring,
-                     kLoggerComponent,
-                     base::StrCat({"WebRTC message received: ",
-                                   GetScrubbedLogMessage(*result)}),
-                     route().media_sink_id(), route().media_source().id(),
-                     route().presentation_id());
+    logger_->LogInfo(
+        media_router::mojom::LogCategory::kMirroring, kLoggerComponent,
+        base::StrCat({"WebRTC message received: ",
+                      GetScrubbedLogMessage(result.value().GetDict())}),
+        route().media_sink_id(), route().media_source().id(),
+        route().presentation_id());
   }
 
   cast::channel::CastMessage cast_message = cast_channel::CreateCastMessage(
@@ -471,21 +469,25 @@ void MirroringActivity::StopMirroring() {
 }
 
 std::string MirroringActivity::GetScrubbedLogMessage(
-    const base::Value& message) {
+    const base::Value::Dict& message) {
   std::string message_str;
   auto scrubbed_message = message.Clone();
-  auto* streams = scrubbed_message.FindPath("offer.supportedStreams");
-  if (!streams || !streams->is_list()) {
+  base::Value::List* streams =
+      scrubbed_message.FindListByDottedPath("offer.supportedStreams");
+  if (!streams) {
     base::JSONWriter::Write(scrubbed_message, &message_str);
     return message_str;
   }
 
-  for (base::Value& item : streams->GetListDeprecated()) {
-    if (item.FindStringKey("aesKey")) {
-      item.SetStringKey("aesKey", "AES_KEY");
+  for (base::Value& item : *streams) {
+    if (!item.is_dict()) {
+      continue;
     }
-    if (item.FindStringKey("aesIvMask")) {
-      item.SetStringKey("aesIvMask", "AES_IV_MASK");
+    if (item.GetDict().FindString("aesKey")) {
+      item.GetDict().Set("aesKey", "AES_KEY");
+    }
+    if (item.GetDict().FindString("aesIvMask")) {
+      item.GetDict().Set("aesIvMask", "AES_IV_MASK");
     }
   }
   base::JSONWriter::Write(scrubbed_message, &message_str);

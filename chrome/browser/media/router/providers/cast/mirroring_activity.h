@@ -85,7 +85,7 @@ class MirroringActivity : public CastActivity,
   void StopMirroring();
 
   // Scrubs AES related data in messages with type "OFFER".
-  static std::string GetScrubbedLogMessage(const base::Value& message);
+  static std::string GetScrubbedLogMessage(const base::Value::Dict& message);
 
   mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;
 

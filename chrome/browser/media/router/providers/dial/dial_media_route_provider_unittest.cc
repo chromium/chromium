@@ -717,19 +717,23 @@ TEST_F(DialMediaRouteProviderTest, GetDialAppinfoExtraData) {
   EXPECT_CALL(mock_router_, OnRouteMessagesReceived(route_id, _))
       .WillOnce([&](const auto& route_id, auto messages) {
         EXPECT_EQ(1UL, messages.size());
-        auto message = base::test::ParseJson(*messages[0]->message);
+        auto message = base::test::ParseJsonDict(*messages[0]->message);
 
-        EXPECT_TRUE(message.FindStringKey("type"));
-        EXPECT_TRUE(message.FindIntKey("sequenceNumber"));
-        EXPECT_TRUE(message.FindStringPath("message.extraData.additionalKey1"));
-        EXPECT_TRUE(message.FindStringPath("message.extraData.additionalKey2"));
+        EXPECT_TRUE(message.FindString("type"));
+        EXPECT_TRUE(message.FindInt("sequenceNumber"));
+        EXPECT_TRUE(
+            message.FindStringByDottedPath("message.extraData.additionalKey1"));
+        EXPECT_TRUE(
+            message.FindStringByDottedPath("message.extraData.additionalKey2"));
 
-        EXPECT_EQ("dial_app_info", *message.FindStringKey("type"));
-        EXPECT_EQ(seq_number, *message.FindIntKey("sequenceNumber"));
+        EXPECT_EQ("dial_app_info", *message.FindString("type"));
+        EXPECT_EQ(seq_number, *message.FindInt("sequenceNumber"));
         EXPECT_EQ("additional value 1",
-                  *message.FindStringPath("message.extraData.additionalKey1"));
+                  *message.FindStringByDottedPath(
+                      "message.extraData.additionalKey1"));
         EXPECT_EQ("additional value 2",
-                  *message.FindStringPath("message.extraData.additionalKey2"));
+                  *message.FindStringByDottedPath(
+                      "message.extraData.additionalKey2"));
       });
   base::RunLoop().RunUntilIdle();
 }

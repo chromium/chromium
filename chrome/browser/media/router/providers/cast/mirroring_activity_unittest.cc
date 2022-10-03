@@ -414,9 +414,10 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
 
   absl::optional<base::Value> message_json = base::JSONReader::Read(message);
   EXPECT_TRUE(message_json);
+  EXPECT_TRUE(message_json.value().is_dict());
   EXPECT_THAT(scrubbed_message,
               base::test::IsJson(MirroringActivity::GetScrubbedLogMessage(
-                  message_json.value())));
+                  message_json.value().GetDict())));
 }
 
 // Site-initiated mirroring activities must be able to send messages to the
