@@ -5745,23 +5745,24 @@ def make_install_interface_template(cg_context, function_name, class_name,
         assert False
 
     for entry in constructor_entries:
-        set_callback = _format(
-            "${interface_function_template}->SetCallHandler({});",
-            entry.ctor_callback_name)
-        set_length = _format("${interface_function_template}->SetLength({});",
-                             entry.ctor_func_length)
+        nodes = [
+            FormatNode("${interface_function_template}->SetCallHandler({});",
+                       entry.ctor_callback_name),
+            FormatNode("${interface_function_template}->SetLength({});",
+                       entry.ctor_func_length),
+        ]
+        if not entry.exposure_conditional.is_always_true:
+            nodes = [
+                CxxUnlikelyIfNode(cond=entry.exposure_conditional, body=nodes),
+            ]
         if entry.world == CodeGenContext.MAIN_WORLD:
             body.append(
-                CxxLikelyIfNode(
-                    cond="${world}.IsMainWorld()",
-                    body=[T(set_callback), T(set_length)]))
+                CxxLikelyIfNode(cond="${world}.IsMainWorld()", body=nodes))
         elif entry.world == CodeGenContext.NON_MAIN_WORLDS:
             body.append(
-                CxxLikelyIfNode(
-                    cond="!${world}.IsMainWorld()",
-                    body=[T(set_callback), T(set_length)]))
+                CxxUnlikelyIfNode(cond="!${world}.IsMainWorld()", body=nodes))
         elif entry.world == CodeGenContext.ALL_WORLDS:
-            body.extend([T(set_callback), T(set_length)])
+            body.extend(nodes)
         else:
             assert False
         body.append(EmptyNode())
