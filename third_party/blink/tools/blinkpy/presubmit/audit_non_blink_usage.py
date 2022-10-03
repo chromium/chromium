@@ -794,7 +794,7 @@ _CONFIG = [
         'paths': ['third_party/blink/renderer/core/offscreencanvas'],
         'allowed': [
             # Flags to be used to set up sharedImage
-            'gpu::SHARED_IMAGE_USAGE_DISPLAY',
+            'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
         ],
     },
@@ -803,7 +803,7 @@ _CONFIG = [
             'third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.cc'
         ],
         'allowed': [
-            'gpu::SHARED_IMAGE_USAGE_DISPLAY',
+            'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
             'gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE',
         ],

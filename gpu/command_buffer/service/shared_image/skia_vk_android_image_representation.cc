@@ -274,7 +274,7 @@ SkiaVkAndroidImageRepresentation::GetEndAccessState() {
   if (!vulkan_image_)
     return nullptr;
 
-  const uint32_t kSingleDeviceUsage = SHARED_IMAGE_USAGE_DISPLAY |
+  const uint32_t kSingleDeviceUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
                                       SHARED_IMAGE_USAGE_RASTER |
                                       SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
 

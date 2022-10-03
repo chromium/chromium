@@ -158,7 +158,8 @@ TEST_F(ExternalVkImageBackingFactoryTest, DawnWrite_SkiaVulkanRead) {
   const auto format = viz::ResourceFormat::RGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_WEBGPU;
+  const uint32_t usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,
@@ -281,7 +282,8 @@ TEST_F(ExternalVkImageBackingFactoryTest, SkiaVulkanWrite_DawnRead) {
   const auto format = viz::ResourceFormat::RGBA_8888;
   const gfx::Size size(4, 4);
   const auto color_space = gfx::ColorSpace::CreateSRGB();
-  const uint32_t usage = SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_WEBGPU;
+  const uint32_t usage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_WEBGPU;
   const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = shared_image_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space,

@@ -3175,7 +3175,7 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
     return;
   }
 
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (requirements.generate_mipmap)
     usage |= gpu::SHARED_IMAGE_USAGE_MIPMAP;
   auto mailbox = skia_output_surface_->CreateSharedImage(
@@ -3298,7 +3298,7 @@ SkiaRenderer::GetOrCreateRenderPassOverlayBacking(
     // Allocate the image for render pass overlay if there is no existing
     // available one.
     constexpr auto kOverlayUsage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER;
     auto mailbox = skia_output_surface_->CreateSharedImage(
         buffer_format, buffer_size, color_space, kOverlayUsage,

@@ -4578,7 +4578,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   // For gpu compositing, a SharedImage mailbox will be allocated and the
   // UIResource will be uploaded into it.
   gpu::Mailbox mailbox;
-  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY;
+  uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
   // For gpu compositing, we also calculate the GL texture target.
   // TODO(ericrk): Remove references to GL from this code.
   GLenum texture_target = GL_TEXTURE_2D;

@@ -684,7 +684,7 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
     }
     if (gpu_mailbox.IsZero()) {
       uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       if (overlays_supported)
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       gpu_mailbox = sii->CreateSharedImage(

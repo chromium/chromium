@@ -508,7 +508,7 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 
   uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #if BUILDFLAG(IS_MAC)
   usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif

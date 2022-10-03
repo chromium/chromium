@@ -498,7 +498,7 @@ bool WrappedSkImageBackingFactory::CanUseWrappedSkImage(
   // Ignore for mipmap usage.
   usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
   auto kWrappedSkImageUsage =
-      SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_RASTER |
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD;
   return (usage & kWrappedSkImageUsage) && !(usage & ~kWrappedSkImageUsage);
 }

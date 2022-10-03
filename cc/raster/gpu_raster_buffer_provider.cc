@@ -353,7 +353,7 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   if (backing_->mailbox.IsZero()) {
     DCHECK(!backing_->returned_sync_token.HasData());
     auto* sii = client_->worker_context_provider_->SharedImageInterface();
-    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+    uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                      gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     if (backing_->overlay_candidate) {

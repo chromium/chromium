@@ -444,7 +444,7 @@ class VideoResourceUpdater::HardwarePlaneResource
                          caps.texture_storage_image &&
                          IsGpuMemoryBufferFormatSupported(format);
     uint32_t shared_image_usage =
-        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY;
+        gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     if (overlay_candidate_) {
       shared_image_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       texture_target_ = gpu::GetBufferTextureTarget(gfx::BufferUsage::SCANOUT,

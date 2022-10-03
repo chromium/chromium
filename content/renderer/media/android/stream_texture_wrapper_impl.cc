@@ -72,7 +72,7 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
       gpu::MailboxHolder(mailbox, gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES)};
 
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-  sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY |
+  sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                        gpu::SHARED_IMAGE_USAGE_GLES2 |
                                        gpu::SHARED_IMAGE_USAGE_RASTER);
 

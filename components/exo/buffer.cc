@@ -142,7 +142,7 @@ Buffer::Texture::Texture(
 
   // Add GLES2 usage as it is used by RasterImplementationGLES.
   const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2;
 
   mailbox_ = sii->CreateSharedImage(
@@ -175,7 +175,7 @@ Buffer::Texture::Texture(
 
   // Add GLES2 usage as it is used by RasterImplementationGLES.
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                   gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2;
   if (is_overlay_candidate) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;

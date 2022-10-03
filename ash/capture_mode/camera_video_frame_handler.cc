@@ -45,7 +45,7 @@ bool g_force_use_gpu_memory_buffer_for_test = false;
 // for the video frame will be used with.
 constexpr uint32_t kSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-    gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
 // The usage of the GpuMemoryBuffer that backs the video frames on an actual
 // device (of type `NATIVE_PIXMAP`). The buffer is going to be presented on the

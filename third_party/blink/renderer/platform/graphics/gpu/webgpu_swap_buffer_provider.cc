@@ -188,7 +188,7 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
         alpha_mode,
         gpu::SHARED_IMAGE_USAGE_WEBGPU |
             gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-            gpu::SHARED_IMAGE_USAGE_DISPLAY,
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         gpu::kNullSurfaceHandle);
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
 

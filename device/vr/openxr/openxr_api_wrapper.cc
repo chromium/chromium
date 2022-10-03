@@ -717,7 +717,7 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
             base::DoNothing(), nullptr, nullptr);
 
     const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                        gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                         gpu::SHARED_IMAGE_USAGE_GLES2;
 
     gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;

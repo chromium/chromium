@@ -221,7 +221,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryForSharedImage(
       return false;
     }
 
-    if (!(representation->usage() & gpu::SHARED_IMAGE_USAGE_DISPLAY)) {
+    if (!(representation->usage() & gpu::SHARED_IMAGE_USAGE_DISPLAY_READ)) {
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "was not created with display usage.";
       return false;

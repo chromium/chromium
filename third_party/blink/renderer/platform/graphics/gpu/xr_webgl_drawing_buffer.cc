@@ -454,7 +454,7 @@ void XRWebGLDrawingBuffer::Resize(const gfx::Size& new_size) {
 scoped_refptr<XRWebGLDrawingBuffer::ColorBuffer>
 XRWebGLDrawingBuffer::CreateColorBuffer() {
   auto* sii = drawing_buffer_->ContextProvider()->SharedImageInterface();
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
   gpu::Mailbox mailbox = sii->CreateSharedImage(

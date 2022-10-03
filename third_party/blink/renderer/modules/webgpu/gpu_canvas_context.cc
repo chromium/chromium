@@ -822,7 +822,7 @@ scoped_refptr<StaticBitmapImage> GPUCanvasContext::SnapshotInternal(
   // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
       info,
-      /*is_origin_top_left=*/true, gpu::SHARED_IMAGE_USAGE_DISPLAY);
+      /*is_origin_top_left=*/true, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider)
     return nullptr;
 

@@ -96,8 +96,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // we need to do things in IsResourceReadyToDraw() and OrderingBarrier then?
     gpu::SharedImageInterface* sii = backing_->shared_image_interface;
     if (backing_->mailbox.IsZero()) {
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                       gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
       backing_->mailbox = sii->CreateSharedImage(

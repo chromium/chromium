@@ -97,7 +97,7 @@ bool EGLImageBackingFactory::IsSupported(uint32_t usage,
 
   // Doesn't support contexts other than GL for OOPR Canvas
   if (gr_context_type != GrContextType::kGL &&
-      ((usage & SHARED_IMAGE_USAGE_DISPLAY) ||
+      ((usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
        (usage & SHARED_IMAGE_USAGE_RASTER))) {
     return false;
   }

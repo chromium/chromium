@@ -2213,8 +2213,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     if (picture_info->uses_shared_images) {
       gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
       DCHECK(shared_image_stub);
-      const uint32_t shared_image_usage =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      const uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                          gpu::SHARED_IMAGE_USAGE_SCANOUT;
       gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
 
       gpu::GLTextureImageBackingHelper::InitializeGLTextureParams gl_params;

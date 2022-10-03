@@ -362,8 +362,8 @@ void FastInkHost::SubmitCompositorFrame() {
         resource->context_provider->SharedImageInterface();
     if (resource->mailbox.IsZero()) {
       DCHECK(!resource->sync_token.HasData());
-      const uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      const uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                             gpu::SHARED_IMAGE_USAGE_SCANOUT;
       gpu::GpuMemoryBufferManager* gmb_manager =
           aura::Env::GetInstance()
               ->context_factory()

@@ -739,7 +739,7 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                               gpu::SHARED_IMAGE_USAGE_RASTER |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY;
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   SharedImageFormat si_format = SharedImageFormat::SinglePlane(resource_format);
@@ -2295,7 +2295,7 @@ void SkiaOutputSurfaceImplOnGpu::CreateSolidColorSharedImage(
   shared_image_factory_->CreateSharedImage(
       mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY,
+      gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
       pixel_span);
   solid_color_images_.insert(mailbox);
 }

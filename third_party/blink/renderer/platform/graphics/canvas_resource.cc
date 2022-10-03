@@ -386,7 +386,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
                             gpu::SHARED_IMAGE_USAGE_SCANOUT),
 #endif
       supports_display_compositing_(shared_image_usage_flags &
-                                    gpu::SHARED_IMAGE_USAGE_DISPLAY),
+                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ),
       texture_target_(is_overlay_candidate_
                           ? gpu::GetBufferTextureTarget(
                                 gfx::BufferUsage::SCANOUT,
@@ -402,7 +402,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
       Platform::Current()->GetGpuMemoryBufferManager();
   if (!is_accelerated_) {
     DCHECK(gpu_memory_buffer_manager);
-    DCHECK(shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_DISPLAY);
+    DCHECK(shared_image_usage_flags & gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 
     gpu_memory_buffer_ = gpu_memory_buffer_manager->CreateGpuMemoryBuffer(
         Size(), GetBufferFormat(), gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
@@ -1064,7 +1064,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   if (!context_provider_wrapper_)
     return;
 
-  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                    gpu::SHARED_IMAGE_USAGE_GLES2 |
                    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                    gpu::SHARED_IMAGE_USAGE_SCANOUT;

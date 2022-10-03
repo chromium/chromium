@@ -168,7 +168,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, GLSkiaGL) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY;
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY_READ;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
@@ -235,7 +235,7 @@ TEST_F(AHardwareBufferImageBackingFactoryTest, InitialData) {
   auto color_space = gfx::ColorSpace::CreateSRGB();
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
-  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY;
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_DISPLAY_READ;
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       initial_data);
@@ -501,11 +501,11 @@ GlLegacySharedImage::GlLegacySharedImage(
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
   GLenum expected_target = GL_TEXTURE_2D;
 
-  // SHARED_IMAGE_USAGE_DISPLAY for skia read and SHARED_IMAGE_USAGE_RASTER for
-  // skia write.
+  // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and SHARED_IMAGE_USAGE_RASTER
+  // for skia write.
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER;
   if (!is_thread_safe)
-    usage |= SHARED_IMAGE_USAGE_DISPLAY;
+    usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   backing_ = backing_factory->CreateSharedImage(
       mailbox_, format, surface_handle, size_, color_space, surface_origin,
       alpha_type, usage, is_thread_safe);

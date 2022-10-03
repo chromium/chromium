@@ -38,8 +38,8 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     std::unique_ptr<CanvasResourceProvider> provider;
     if (hint == RasterModeHint::kPreferGPU ||
         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
-      uint32_t shared_image_usage_flags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      uint32_t shared_image_usage_flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                          gpu::SHARED_IMAGE_USAGE_SCANOUT;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
           resource_info, cc::PaintFlags::FilterQuality::kMedium,
           CanvasResourceProvider::ShouldInitialize::kCallClear,

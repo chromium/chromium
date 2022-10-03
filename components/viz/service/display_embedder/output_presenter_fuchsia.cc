@@ -221,7 +221,7 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
   CHECK_NE(num_images, 1u);
 
   // Create PresenterImageFuchsia for each buffer in the collection.
-  constexpr uint32_t image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY |
+  constexpr uint32_t image_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER |
                                    gpu::SHARED_IMAGE_USAGE_SCANOUT;
 

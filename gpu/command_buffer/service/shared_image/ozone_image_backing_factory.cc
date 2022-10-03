@@ -191,7 +191,7 @@ bool OzoneImageBackingFactory::IsSupported(
   }
 
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);
   bool used_by_vulkan =
       used_by_skia && gr_context_type == GrContextType::kVulkan;
   bool used_by_webgpu = usage & SHARED_IMAGE_USAGE_WEBGPU;
@@ -220,7 +220,7 @@ bool OzoneImageBackingFactory::IsSupported(
   // For now just use OzoneImageBacking for primary plane buffers.
   // TODO(crbug.com/1310026): When Vulkan/GL interop is supported on Fuchsia
   // OzoneImageBacking should be used for all scanout buffers.
-  constexpr uint32_t kPrimaryPlaneUsageFlags = SHARED_IMAGE_USAGE_DISPLAY |
+  constexpr uint32_t kPrimaryPlaneUsageFlags = SHARED_IMAGE_USAGE_DISPLAY_READ |
                                                SHARED_IMAGE_USAGE_SCANOUT |
                                                SHARED_IMAGE_USAGE_RASTER;
   if (usage != kPrimaryPlaneUsageFlags || gmb_type != gfx::EMPTY_BUFFER) {

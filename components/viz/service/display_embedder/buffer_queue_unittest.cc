@@ -158,7 +158,7 @@ TEST(BufferQueueStandaloneTest, BufferCreationAndDestruction) {
     EXPECT_CALL(*mock_skia_output_surface,
                 CreateSharedImage(_, _, _,
                                   gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                      gpu::SHARED_IMAGE_USAGE_DISPLAY,
+                                      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
                                   _))
         .WillOnce(Return(expected_mailbox));
     EXPECT_CALL(*mock_skia_output_surface,

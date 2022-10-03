@@ -677,7 +677,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
           image_info, GetDrawingBuffer()->FilterQuality(),
           CanvasResourceProvider::ShouldInitialize::kNo,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          is_origin_top_left_, gpu::SHARED_IMAGE_USAGE_DISPLAY);
+          is_origin_top_left_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
   if (!resource_provider || !resource_provider->IsValid()) {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         image_info, GetDrawingBuffer()->FilterQuality(),

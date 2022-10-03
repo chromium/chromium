@@ -345,7 +345,7 @@ std::unique_ptr<CanvasResourceProvider> CreateResourceProviderForVideoFrame(
       CanvasResourceProvider::ShouldInitialize::kNo,
       SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
       false,  // Origin of GL texture is bottom left on screen
-      gpu::SHARED_IMAGE_USAGE_DISPLAY);
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
 }
 
 }  // namespace blink

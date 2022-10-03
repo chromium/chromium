@@ -268,7 +268,7 @@ OzoneImageBacking::OzoneImageBacking(
       workarounds_(workarounds),
       use_passthrough_(use_passthrough) {
   bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
-                      (usage & SHARED_IMAGE_USAGE_DISPLAY);
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ);
   bool used_by_gl =
       (usage & SHARED_IMAGE_USAGE_GLES2) ||
       (used_by_skia && context_state_->gr_context_type() == GrContextType::kGL);

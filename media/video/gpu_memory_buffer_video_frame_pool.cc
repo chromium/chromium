@@ -1171,9 +1171,10 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     unsigned texture_target = gpu_factories_->ImageTextureTarget(buffer_format);
     // Bind the texture and create or rebind the image.
     if (gpu_memory_buffer && plane_resource.mailbox.IsZero()) {
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER |
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2 |
+                       gpu::SHARED_IMAGE_USAGE_RASTER |
+                       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                       gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
       // TODO(crbug.com/1241537): Always add the flag once the

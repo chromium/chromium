@@ -278,11 +278,11 @@ CreateAndValidateSharedImageRepresentations::
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
 
-  // SHARED_IMAGE_USAGE_DISPLAY for skia read and SHARED_IMAGE_USAGE_RASTER for
-  // skia write.
+  // SHARED_IMAGE_USAGE_DISPLAY_READ for skia read and SHARED_IMAGE_USAGE_RASTER
+  // for skia write.
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER;
   if (!is_thread_safe)
-    usage |= SHARED_IMAGE_USAGE_DISPLAY;
+    usage |= SHARED_IMAGE_USAGE_DISPLAY_READ;
   if (upload_initial_data) {
     std::vector<uint8_t> initial_data(
         viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));

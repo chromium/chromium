@@ -3235,7 +3235,7 @@ DXVAVideoDecodeAccelerator::GetSharedImagesFromPictureBuffer(
     // to decode, and allow webgl/canvas access.
     constexpr uint32_t shared_image_usage =
         gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
-        gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY |
+        gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
         gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
     // Create a shared image

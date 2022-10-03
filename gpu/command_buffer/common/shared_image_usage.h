@@ -21,8 +21,8 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT = 1 << 1,
   // Image will be used in RasterInterface
   SHARED_IMAGE_USAGE_RASTER = 1 << 2,
-  // Image will be used in Display
-  SHARED_IMAGE_USAGE_DISPLAY = 1 << 3,
+  // Image will be read inside Display Compositor
+  SHARED_IMAGE_USAGE_DISPLAY_READ = 1 << 3,
   // Image will be used as a scanout buffer (overlay)
   SHARED_IMAGE_USAGE_SCANOUT = 1 << 4,
   // Image will be used in OOP rasterization. This flag is used on top of

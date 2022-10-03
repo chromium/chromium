@@ -453,7 +453,7 @@ bool MailboxVideoFrameConverter::GenerateSharedImageOnGPUThread(
   // The allocated SharedImages should be usable for the (Display) compositor
   // and, potentially, for overlays (Scanout).
   uint32_t shared_image_usage =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   if (enable_unsafe_webgpu_ && video_frame->metadata().is_webgpu_compatible)
     shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
 

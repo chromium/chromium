@@ -69,7 +69,7 @@ bool RawDrawImageBackingFactory::CanUseRawDrawImageBacking(
   usage &= ~SHARED_IMAGE_USAGE_MIPMAP;
 
   auto kRawDrawImageBackingUsage =
-      SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_RASTER |
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER |
       SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_RAW_DRAW;
   return usage == kRawDrawImageBackingUsage;
 }

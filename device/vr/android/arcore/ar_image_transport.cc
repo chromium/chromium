@@ -170,7 +170,7 @@ bool ArImageTransport::ResizeSharedBuffer(WebXrPresentationState* webxr,
       gpu::GpuMemoryBufferImpl::DestructionCallback());
 
   uint32_t shared_image_usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY |
+                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                 gpu::SHARED_IMAGE_USAGE_GLES2;
   buffer->mailbox_holder = mailbox_bridge_->CreateSharedImage(
       buffer->gmb.get(), gfx::ColorSpace(), shared_image_usage);

@@ -552,7 +552,7 @@ bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
 
   // DISPLAY is for gpu composition and SCANOUT for overlays.
   constexpr int kDisplayCompositorUsage =
-      SHARED_IMAGE_USAGE_DISPLAY | SHARED_IMAGE_USAGE_SCANOUT;
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_SCANOUT;
 
   // Image is used on display compositor gpu thread if it's used by display
   // compositor and if display compositor runs on a separate thread. Image is

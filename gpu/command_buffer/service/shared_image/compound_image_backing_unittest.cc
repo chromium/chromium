@@ -138,7 +138,7 @@ class CompoundImageBackingTest : public testing::Test {
         std::move(handle), buffer_format, gfx::BufferPlane::DEFAULT,
         kNullSurfaceHandle, size, gfx::ColorSpace(),
         kBottomLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-        SHARED_IMAGE_USAGE_DISPLAY);
+        SHARED_IMAGE_USAGE_DISPLAY_READ);
   }
 
  protected:

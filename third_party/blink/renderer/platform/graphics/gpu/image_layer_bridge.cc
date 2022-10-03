@@ -55,7 +55,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, source->IsOriginTopLeft(),
-      gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT);
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
