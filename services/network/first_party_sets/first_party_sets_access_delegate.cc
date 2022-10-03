@@ -153,19 +153,23 @@ void FirstPartySetsAccessDelegate::FindEntriesAndInvoke(
 void FirstPartySetsAccessDelegate::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UmaHistogramTimes(
-      "Cookie.FirstPartySets.InitializationDuration."
-      "ContextReadyToServeQueries2",
-      construction_timer_.Elapsed());
+  if (!has_collected_async_metrics_) {
+    UmaHistogramTimes(
+        "Cookie.FirstPartySets.InitializationDuration."
+        "ContextReadyToServeQueries2",
+        construction_timer_.Elapsed());
 
-  base::UmaHistogramCounts10000(
-      "Cookie.FirstPartySets.ContextDelayedQueriesCount",
-      pending_queries_ ? pending_queries_->size() : 0);
+    base::UmaHistogramCounts10000(
+        "Cookie.FirstPartySets.ContextDelayedQueriesCount",
+        pending_queries_ ? pending_queries_->size() : 0);
 
-  base::UmaHistogramTimes("Cookie.FirstPartySets.ContextMostDelayedQueryDelta",
-                          first_async_query_timer_.has_value()
-                              ? first_async_query_timer_->Elapsed()
-                              : base::TimeDelta());
+    base::UmaHistogramTimes(
+        "Cookie.FirstPartySets.ContextMostDelayedQueryDelta",
+        first_async_query_timer_.has_value()
+            ? first_async_query_timer_->Elapsed()
+            : base::TimeDelta());
+    has_collected_async_metrics_ = true;
+  }
   if (!pending_queries_)
     return;
 

@@ -38,13 +38,18 @@ class FirstPartySetsPolicyServiceFactory
 
   static FirstPartySetsPolicyServiceFactory* GetInstance();
 
-  // Checks the criteria for applying the First-Party Sets Overrides policy
-  // and returns a pointer to a representation of the policy if all criteria are
-  // met. If not, this method returns a nullptr.
+  // Checks that `profile` isn't a system profile or a guest profile and that
+  // the First-Party Sets base::Feature is enabled before returning a pointer to
+  // the value of the First-Party Sets Overrides policy. If one of the above
+  // criteria isn't met this method returns a nullptr.
+  //
+  // Note: this method doesn't check if the kFirstPartySetsEnabled pref is
+  // enabled since that may dynamically change.
   //
   // The returned pointer has the same lifetime as anything returned by the
   // PrefService.
-  static const base::Value::Dict* GetPolicyIfEnabled(const Profile& profile);
+  static const base::Value::Dict* GetOverridesPolicyForProfile(
+      const Profile& profile);
 
   // Stores `test_factory` to inject test logic into BuildServiceInstanceFor.
   void SetTestingFactoryForTesting(TestingFactory test_factory);

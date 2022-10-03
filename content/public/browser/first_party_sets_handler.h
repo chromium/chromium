@@ -155,8 +155,8 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   virtual void ClearSiteDataOnChangedSetsForContext(
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
-      const net::FirstPartySetsContextConfig* context_config,
-      base::OnceClosure callback) = 0;
+      net::FirstPartySetsContextConfig context_config,
+      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) = 0;
 };
 
 }  // namespace content

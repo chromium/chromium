@@ -240,44 +240,29 @@ net::GlobalFirstPartySets FirstPartySetsHandlerImpl::GetPublicSetsSync() const {
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     base::RepeatingCallback<BrowserContext*()> browser_context_getter,
     const std::string& browser_context_id,
-    const net::FirstPartySetsContextConfig* context_config,
-    base::OnceClosure callback) {
+    net::FirstPartySetsContextConfig context_config,
+    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (global_sets_.has_value()) {
     ClearSiteDataOnChangedSetsForContextInternal(
-        browser_context_getter, browser_context_id, context_config,
+        browser_context_getter, browser_context_id, std::move(context_config),
         std::move(callback));
     return;
   }
 
   // base::Unretained(this) is safe because this is a static singleton.
   on_sets_ready_callbacks_.push_back(base::BindOnce(
-      &FirstPartySetsHandlerImpl::
-          ClearSiteDataOnChangedSetsForContextAsyncInternal,
+      &FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal,
       base::Unretained(this), browser_context_getter, browser_context_id,
-      context_config == nullptr ? absl::nullopt
-                                : absl::make_optional(context_config->Clone()),
-      std::move(callback)));
-}
-
-void FirstPartySetsHandlerImpl::
-    ClearSiteDataOnChangedSetsForContextAsyncInternal(
-        base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-        const std::string& browser_context_id,
-        const absl::optional<net::FirstPartySetsContextConfig>& context_config,
-        base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ClearSiteDataOnChangedSetsForContextInternal(
-      browser_context_getter, browser_context_id,
-      base::OptionalToPtr(context_config), std::move(callback));
+      std::move(context_config), std::move(callback)));
 }
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     base::RepeatingCallback<BrowserContext*()> browser_context_getter,
     const std::string& browser_context_id,
-    const net::FirstPartySetsContextConfig* context_config,
-    base::OnceClosure callback) {
+    net::FirstPartySetsContextConfig context_config,
+    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(global_sets_.has_value());
   DCHECK(!browser_context_id.empty());
@@ -288,10 +273,9 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     // clearing is complete.
     db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
         .WithArgs(browser_context_id, version_, global_sets_->Clone(),
-                  context_config == nullptr ? net::FirstPartySetsContextConfig()
-                                            : context_config->Clone());
+                  context_config.Clone());
   }
-  std::move(callback).Run();
+  std::move(callback).Run(std::move(context_config));
 }
 
 net::FirstPartySetsContextConfig

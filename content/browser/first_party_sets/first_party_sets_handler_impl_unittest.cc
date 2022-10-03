@@ -244,7 +244,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
           base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
-          /*context_config=*/nullptr, run_loop.QuitClosure());
+          net::FirstPartySetsContextConfig(),
+          base::BindLambdaForTesting(
+              [&](net::FirstPartySetsContextConfig) { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_THAT(GetPersistedGlobalSetsAndWait(browser_context_id)
@@ -286,7 +288,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
           base::BindRepeating(&FakeBrowserContextGetter), browser_context_id,
-          /*context_config=*/nullptr, run_loop.QuitClosure());
+          net::FirstPartySetsContextConfig(),
+          base::BindLambdaForTesting(
+              [&](net::FirstPartySetsContextConfig) { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_EQ(GetPersistedGlobalSetsAndWait(browser_context_id), absl::nullopt);

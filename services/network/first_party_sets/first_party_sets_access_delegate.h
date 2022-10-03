@@ -131,6 +131,11 @@ class FirstPartySetsAccessDelegate
   // Timer starting when the instance is constructed. Used for metrics.
   base::ElapsedTimer construction_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Tracks whether InvokedPendingQueries has already logged metrics about the
+  // asynchronous behavior.
+  bool has_collected_async_metrics_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

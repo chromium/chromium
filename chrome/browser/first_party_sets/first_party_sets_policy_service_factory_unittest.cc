@@ -30,7 +30,8 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest, DisabledForGuestProfiles) {
   builder.SetGuestSession();
   std::unique_ptr<TestingProfile> profile = builder.Build();
 
-  EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(*profile),
+  EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
+                *profile),
             nullptr);
 }
 
@@ -39,25 +40,16 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest, DisabledByFeature) {
   features.InitAndDisableFeature(features::kFirstPartySets);
   TestingProfile profile;
 
-  EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(profile),
-            nullptr);
+  EXPECT_EQ(
+      FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(profile),
+      nullptr);
 }
 
-TEST_F(FirstPartySetsPolicyServiceFactoryTest, DisabledByPolicy) {
+TEST_F(FirstPartySetsPolicyServiceFactoryTest,
+       ServiceCreatedRegardlessIfPolicyEnabled) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kFirstPartySets);
-  TestingProfile profile;
-
-  profile.GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                 false);
-  EXPECT_EQ(FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(profile),
-            nullptr);
-}
-
-TEST_F(FirstPartySetsPolicyServiceFactoryTest, EnabledWithPolicy) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kFirstPartySets);
-  TestingProfile profile;
+  TestingProfile disabled_profile, enabled_profile;
 
   base::Value empty_lists = base::JSONReader::Read(R"(
              {
@@ -67,15 +59,33 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest, EnabledWithPolicy) {
             )")
                                 .value();
   base::Value expected_policy = empty_lists.Clone();
-  profile.GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
-                                 true);
-  profile.GetPrefs()->SetDict(first_party_sets::kFirstPartySetsOverrides,
-                              std::move(empty_lists).TakeDict());
+  disabled_profile.GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+  disabled_profile.GetPrefs()->SetDict(
+      first_party_sets::kFirstPartySetsOverrides,
+      std::move(empty_lists.Clone().GetDict()));
+  enabled_profile.GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxFirstPartySetsEnabled, true);
+  enabled_profile.GetPrefs()->SetDict(
+      first_party_sets::kFirstPartySetsOverrides,
+      std::move(empty_lists.GetDict()));
 
-  const base::Value::Dict* policy =
-      FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(profile);
-  ASSERT_NE(policy, nullptr);
-  EXPECT_TRUE(*policy == expected_policy.GetDict());
+  // Ensure `GetOverridesPolicyForProfile` isn't reliant on the enabled pref.
+  EXPECT_NE(FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
+                disabled_profile),
+            nullptr);
+  EXPECT_EQ(*FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
+                disabled_profile),
+            *FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
+                enabled_profile));
+
+  // Ensure that the Service creation isn't reliant on the enabled pref.
+  EXPECT_NE(FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+                disabled_profile.GetOriginalProfile()),
+            nullptr);
+  EXPECT_NE(FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+                enabled_profile.GetOriginalProfile()),
+            nullptr);
 }
 
 TEST_F(FirstPartySetsPolicyServiceFactoryTest,
@@ -85,7 +95,8 @@ TEST_F(FirstPartySetsPolicyServiceFactoryTest,
   TestingProfile profile;
 
   FirstPartySetsPolicyService* service =
-      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+          profile.GetOriginalProfile());
 
   auto otr_profile_id = Profile::OTRProfileID::CreateUniqueForTesting();
   ASSERT_NE(service, nullptr);

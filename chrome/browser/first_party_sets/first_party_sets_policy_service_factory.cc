@@ -13,7 +13,6 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 
@@ -45,14 +44,13 @@ FirstPartySetsPolicyServiceFactory::GetInstance() {
 }
 
 // static
-const base::Value::Dict* FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(
+const base::Value::Dict*
+FirstPartySetsPolicyServiceFactory::GetOverridesPolicyForProfile(
     const Profile& profile) {
   if (profile.IsSystemProfile() || profile.IsGuestSession())
     return nullptr;
 
-  if (!profile.GetPrefs()->GetBoolean(
-          prefs::kPrivacySandboxFirstPartySetsEnabled) ||
-      !base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     return nullptr;
   }
 
@@ -85,7 +83,11 @@ KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
     return GetTestingFactory()->Run(context).release();
   }
   Profile* profile = Profile::FromBrowserContext(context);
-  if (const base::Value::Dict* policy = GetPolicyIfEnabled(*profile); policy) {
+  // profile is guaranteed to be non-null since we create this factory with a
+  // non-null `context` from the ProfileNetworkContextService.
+  DCHECK(profile);
+  if (const base::Value::Dict* policy = GetOverridesPolicyForProfile(*profile);
+      policy) {
     return new FirstPartySetsPolicyService(context, *policy);
   } else {
     return nullptr;

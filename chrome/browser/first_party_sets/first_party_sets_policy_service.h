@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "content/public/browser/first_party_sets_handler.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
@@ -25,9 +26,10 @@ namespace first_party_sets {
 // which must await the initialization of the browsers list of First-Party Sets.
 //
 // This service only exists for a BrowserContext if First-Party Sets is enabled
-// globally by the base::Feature and for that BrowserContext by enterprise
-// policy.
-class FirstPartySetsPolicyService : public KeyedService {
+// globally by the base::Feature.
+class FirstPartySetsPolicyService
+    : public KeyedService,
+      public privacy_sandbox::PrivacySandboxSettings::Observer {
  public:
   FirstPartySetsPolicyService(content::BrowserContext* context,
                               const base::Value::Dict& policy);
@@ -36,26 +38,52 @@ class FirstPartySetsPolicyService : public KeyedService {
       delete;
   ~FirstPartySetsPolicyService() override;
 
+  // Stores `access_delegate` in a RemoteSet for later IPC calls on it when this
+  // service is ready to do so.
+  //
+  // NotifyReady will be called on `access_delegate` in the following cases:
+  // - when site-data is cleared
+  // - upon OnFirstPartySetsEnabledChanged observations (if site-data has
+  //   already been, or didn't need to be, cleared) and if `config` is ready
+  // - by this method if `config_` has already been computed
+  //
+  // SetEnabled will be called on `access_delegate` when the First-Party Sets
+  // enabled pref changes, as observed by OnFirstPartySetsEnabledChanged.
   void AddRemoteAccessDelegate(
       mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
           access_delegate);
 
+  // PrivacySandboxSettings::Observer:
+  void OnFirstPartySetsEnabledChanged(bool enabled) override;
+
   // KeyedService:
   void Shutdown() override;
+
+  // Triggers changes that occur once the FirstPartySetsContextConfig for the
+  // profile that created this service is retrieved.
+  //
+  // Only clears site data if First-Party Sets is enabled when this service
+  // is created.
+  //
+  // This method is exposed publicly for testing.
+  void OnProfileConfigReady(bool initially_enabled,
+                            net::FirstPartySetsContextConfig config);
+
+  void ResetForTesting();
 
   content::BrowserContext* browser_context() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return browser_context_;
   }
 
- private:
-  // Triggers changes that occur once the customizations are ready for the
-  // profile that created this service.
-  void OnCustomizationsReady(net::FirstPartySetsContextConfig config);
+  void SetConfigForTesting(net::FirstPartySetsContextConfig config) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    config_ = std::move(config);
+  }
 
-  // Triggers changes that occur once the sets transition clearing is done for
-  // the profile that created this service.
-  void OnSiteDataCleared();
+ private:
+  // Sets the `config_` member and provides it to all delegates via NotifyReady.
+  void OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig config);
 
   // The remote delegates associated with the profile that created this
   // service.
@@ -76,6 +104,10 @@ class FirstPartySetsPolicyService : public KeyedService {
   // profile that created this service.
   absl::optional<net::FirstPartySetsContextConfig> config_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
+                          privacy_sandbox::PrivacySandboxSettings::Observer>
+      privacy_sandbox_settings_observer_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 
