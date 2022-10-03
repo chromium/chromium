@@ -145,21 +145,21 @@ you would have to add it to the following places:
     For features configured only on the client side:
 
     ```c++
-    const base::Feature kIPHGoatTeleportationFeature{"IPH_GoatTeleportation",
-                                                     base::FEATURE_ENABLED_BY_DEFAULT};
+    BASE_FEATURE(kIPHGoatTeleportationFeature, "IPH_GoatTeleportation",
+                 base::FEATURE_ENABLED_BY_DEFAULT);
     ```
 
     For features configured only on the server side:
 
     ```c++
-    const base::Feature kIPHGoatTeleportationFeature{"IPH_GoatTeleportation",
-                                                     base::FEATURE_DISABLED_BY_DEFAULT};
+    BASE_FEATURE(kIPHGoatTeleportationFeature, "IPH_GoatTeleportation",
+                 base::FEATURE_DISABLED_BY_DEFAULT);
     ```
 
 1.  `//components/feature_engagement/public/feature_constants.h`:
 
     ```c++
-    extern const base::Feature kIPHGoatTeleportationFeature;
+    BASE_DECLARE_FEATURE(kIPHGoatTeleportationFeature);
     ```
 
 1.  `//components/feature_engagement/public/feature_list.cc`:
@@ -879,7 +879,7 @@ The configuration will look like this:
 In `//components/feature_engagement/public/feature_constants.h`:
 
 ```c++
-extern const base::Feature kIPHPasswordInfobarFeature;
+BASE_DECLARE_FEATURE(kIPHPasswordInfobarFeature);
 extern const char kPasswordInfobarIgnored[];  // "password_infobar_ignored"
 extern const char kPasswordInfobarAccepted[];  // "password_infobar_accepted"
 ```
