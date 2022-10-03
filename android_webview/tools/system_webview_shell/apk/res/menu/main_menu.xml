@@ -21,6 +21,12 @@
         <item android:id="@+id/menu_force_dark_on"
               android:title="@string/menu_force_dark_on"/>
     </group>
+        <item android:id="@+id/menu_night_mode_on"
+        android:checkable="true"
+              android:title="@string/menu_night_mode_on"/>
+        <item android:id="@+id/menu_algorithmic_darkening_on"
+              android:checkable="true"
+              android:title="@string/menu_algorithmic_darkening_on"/>
     <item android:id="@+id/menu_print"
           android:title="@string/menu_print"/>
     <item android:id="@+id/start_animation_activity"

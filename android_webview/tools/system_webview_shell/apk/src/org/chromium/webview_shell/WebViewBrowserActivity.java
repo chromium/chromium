@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +52,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.webkit.TracingConfig;
 import androidx.webkit.TracingController;
@@ -319,13 +321,18 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         // * detectCleartextNetwork() to permit testing http:// URLs
         // * detectFileUriExposure() to permit testing file:// URLs
         // * detectLeakedClosableObjects() because of drag and drop (https://crbug.com/1090841#c40)
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectActivityLeaks()
-                .detectLeakedRegistrationObjects()
-                .detectLeakedSqlLiteObjects()
-                .penaltyLog()
-                .penaltyDeath()
-                .build());
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // WebViewBrowserActivity will have two instances when switching night mode back and
+            // forth for the 3rd times. Don't know the reason, this probably needs the investigation
+            // to rule out WebView holding the instance. (crbug.com/1348615)
+            builder = builder.detectActivityLeaks();
+        }
+        StrictMode.setVmPolicy(builder.detectLeakedRegistrationObjects()
+                                       .detectLeakedSqlLiteObjects()
+                                       .penaltyLog()
+                                       .penaltyDeath()
+                                       .build());
     }
 
     @Override
@@ -384,6 +391,15 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                         mFilePathCallback.onReceiveValue(result);
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ViewGroup viewGroup = (ViewGroup) (mWebView.getParent());
+        viewGroup.removeView(mWebView);
+        mWebView.destroy();
+        mWebView = null;
     }
 
     @Override
@@ -619,10 +635,18 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)) {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
+                || BuildInfo.targetsAtLeastT()) {
             menu.findItem(R.id.menu_force_dark_off).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            menu.findItem(R.id.menu_night_mode_on).setEnabled(false);
+        }
+        if (!BuildInfo.targetsAtLeastT()
+                || !WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+            menu.findItem(R.id.menu_algorithmic_darkening_on).setEnabled(false);
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -636,7 +660,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
+                && !BuildInfo.targetsAtLeastT()) {
             int forceDarkState = WebSettingsCompat.getForceDark(mWebView.getSettings());
             switch (forceDarkState) {
                 case WebSettingsCompat.FORCE_DARK_OFF:
@@ -649,6 +674,25 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     menu.findItem(R.id.menu_force_dark_on).setChecked(true);
                     break;
             }
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            boolean checked =
+                    AppCompatDelegate.MODE_NIGHT_YES == AppCompatDelegate.getDefaultNightMode();
+            int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
+            if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    || defaultNightMode == AppCompatDelegate.MODE_NIGHT_UNSPECIFIED) {
+                UiModeManager uiModeManager =
+                        (UiModeManager) this.getApplicationContext().getSystemService(
+                                UI_MODE_SERVICE);
+                checked = UiModeManager.MODE_NIGHT_YES == uiModeManager.getNightMode();
+            }
+            menu.findItem(R.id.menu_night_mode_on).setChecked(checked);
+        }
+        if (BuildInfo.targetsAtLeastT()
+                && WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+            menu.findItem(R.id.menu_algorithmic_darkening_on)
+                    .setChecked(WebSettingsCompat.isAlgorithmicDarkeningAllowed(
+                            mWebView.getSettings()));
         }
         return true;
     }
@@ -709,6 +753,17 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (itemId == R.id.menu_force_dark_on) {
             WebSettingsCompat.setForceDark(mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);
             item.setChecked(true);
+            return true;
+        } else if (itemId == R.id.menu_night_mode_on) {
+            AppCompatDelegate.setDefaultNightMode(item.isChecked()
+                            ? AppCompatDelegate.MODE_NIGHT_NO
+                            : AppCompatDelegate.MODE_NIGHT_YES);
+            return true;
+        } else if (itemId == R.id.menu_algorithmic_darkening_on) {
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(mWebView.getSettings(),
+                        !WebSettingsCompat.isAlgorithmicDarkeningAllowed(mWebView.getSettings()));
+            }
             return true;
         } else if (itemId == R.id.start_animation_activity) {
             startActivity(new Intent(this, WebViewAnimationTestActivity.class));
