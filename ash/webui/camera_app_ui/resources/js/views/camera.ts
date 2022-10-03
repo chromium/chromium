@@ -648,7 +648,13 @@ export class Camera extends View implements CameraViewUI {
         blob,
         corners,
         rotation: Rotation.ANGLE_0,
+      });
+      metrics.sendCaptureEvent({
+        facing: this.getFacing(),
         resolution,
+        shutterType: this.shutterType,
+        resolutionLevel: this.cameraManager.getPhotoResolutionLevel(resolution),
+        aspectRatioSet: this.cameraManager.getAspectRatioSet(resolution),
       });
     } finally {
       nav.close(ViewName.FLASH);

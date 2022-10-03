@@ -169,12 +169,19 @@ export class DocumentFixMode {
    */
   private readonly resizeObserver: ResizeObserver;
 
-  constructor({target, onExit, onUpdatePage}: {
+  /**
+   * The listener called when fix mode shows.
+   */
+  private readonly onShow: () => void;
+
+  constructor({target, onDone, onShow, onUpdatePage}: {
     target: HTMLElement,
-    onExit: () => void,
+    onDone: () => void,
+    onShow: () => void,
     onUpdatePage:
         ({corners, rotation}: {corners: Point[], rotation: Rotation}) => void,
   }) {
+    this.onShow = onShow;
     const fragment = util.instantiateTemplate(this.templateSelector);
     this.root = dom.getFrom(fragment, '.document-fix-mode', HTMLElement);
     target.append(this.root);
@@ -394,7 +401,7 @@ export class DocumentFixMode {
     });
     dom.getFrom(
            this.root, 'button[i18n-text=label_crop_done]', HTMLButtonElement)
-        .addEventListener('click', onExit);
+        .addEventListener('click', onDone);
   }
 
   private setDragging(corner: Corner, pointerId: number) {
@@ -640,6 +647,7 @@ export class DocumentFixMode {
   show(): void {
     this.root.classList.add('show');
     this.resizeObserver.observe(this.previewArea);
+    this.onShow();
   }
 
   hide(): void {
