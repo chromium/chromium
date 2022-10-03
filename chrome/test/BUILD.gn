@@ -5136,6 +5136,11 @@ if (is_android) {
     ]
   }
 
+  group("performance_weblayer_test_suite") {
+    testonly = true
+    data_deps = [ "//chrome/test:performance_test_suite_android_weblayer" ]
+  }
+
   # Difference between this and telemetry_perf_tests is that this runs a devil
   # script before the build, to remove the system webview. See
   # //testing/buildbot/gn_isolate_map.pyl
