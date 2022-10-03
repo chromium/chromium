@@ -31,109 +31,74 @@ namespace blink {
 using RelationType = CSSSelector::RelationType;
 using PseudoType = CSSSelector::PseudoType;
 
-template <bool UseArena>
-CSSParserSelector<UseArena>::CSSParserSelector(MaybeArena arena) {
-  if constexpr (UseArena) {
-    selector_.reset(arena.template New<CSSSelector>());
-  } else {
-    selector_ = std::make_unique<CSSSelector>();
-  }
-}
+CSSParserSelector::CSSParserSelector(Arena& arena)
+    : selector_(arena.New<CSSSelector>()) {}
 
-template <bool UseArena>
-CSSParserSelector<UseArena>::CSSParserSelector(MaybeArena arena,
-                                               const QualifiedName& tag_q_name,
-                                               bool is_implicit) {
-  if constexpr (UseArena) {
-    selector_.reset(arena.template New<CSSSelector>(tag_q_name, is_implicit));
-  } else {
-    selector_ = std::make_unique<CSSSelector>(tag_q_name, is_implicit);
-  }
-}
+CSSParserSelector::CSSParserSelector(Arena& arena,
+                                     const QualifiedName& tag_q_name,
+                                     bool is_implicit)
+    : selector_(arena.New<CSSSelector>(tag_q_name, is_implicit)) {}
 
-template <bool UseArena>
-CSSParserSelector<UseArena>::~CSSParserSelector() {
+CSSParserSelector::~CSSParserSelector() {
   while (tag_history_) {
-    MaybeArenaUniquePtr<CSSParserSelector, UseArena> next =
+    ArenaUniquePtr<CSSParserSelector> next =
         std::move(tag_history_->tag_history_);
     tag_history_ = std::move(next);
   }
 }
 
-template <bool UseArena>
-void CSSParserSelector<UseArena>::AdoptSelectorVector(
-    CSSSelectorVector<UseArena>& selector_vector) {
+void CSSParserSelector::AdoptSelectorVector(
+    CSSSelectorVector& selector_vector) {
   CSSSelectorList* selector_list = new CSSSelectorList(
-      CSSSelectorList::AdoptSelectorVector<UseArena>(selector_vector));
+      CSSSelectorList::AdoptSelectorVector(selector_vector));
   selector_->SetSelectorList(base::WrapUnique(selector_list));
 }
 
-template <bool UseArena>
-void CSSParserSelector<UseArena>::SetSelectorList(
+void CSSParserSelector::SetSelectorList(
     std::unique_ptr<CSSSelectorList> selector_list) {
   selector_->SetSelectorList(std::move(selector_list));
 }
 
-template <bool UseArena>
-void CSSParserSelector<UseArena>::SetContainsPseudoInsideHasPseudoClass() {
+void CSSParserSelector::SetContainsPseudoInsideHasPseudoClass() {
   selector_->SetContainsPseudoInsideHasPseudoClass();
 }
 
-template <bool UseArena>
-void CSSParserSelector<
-    UseArena>::SetContainsComplexLogicalCombinationsInsideHasPseudoClass() {
+void CSSParserSelector::
+    SetContainsComplexLogicalCombinationsInsideHasPseudoClass() {
   selector_->SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
 }
 
-template <bool UseArena>
-void CSSParserSelector<UseArena>::AppendTagHistory(
+void CSSParserSelector::AppendTagHistory(
     CSSSelector::RelationType relation,
-    MaybeArenaUniquePtr<CSSParserSelector, UseArena> selector) {
-  CSSParserSelector<UseArena>* end = this;
+    ArenaUniquePtr<CSSParserSelector> selector) {
+  CSSParserSelector* end = this;
   while (end->TagHistory())
     end = end->TagHistory();
   end->SetRelation(relation);
   end->SetTagHistory(std::move(selector));
 }
 
-template <bool UseArena>
-MaybeArenaUniquePtr<CSSParserSelector<UseArena>, UseArena>
-CSSParserSelector<UseArena>::ReleaseTagHistory() {
+ArenaUniquePtr<CSSParserSelector> CSSParserSelector::ReleaseTagHistory() {
   SetRelation(CSSSelector::kSubSelector);
   return std::move(tag_history_);
 }
 
-template <bool UseArena>
-void CSSParserSelector<UseArena>::PrependTagSelector(
-    Arena& arena,
-    const QualifiedName& tag_q_name,
-    bool is_implicit) {
-  MaybeArenaUniquePtr<CSSParserSelector, UseArena> second;
-  if constexpr (UseArena) {
-    second.reset(arena.New<CSSParserSelector<true>>(arena));
-  } else {
-    constexpr int kDummyInt = 0;
-    second = std::make_unique<CSSParserSelector<false>>(kDummyInt);
-  }
+void CSSParserSelector::PrependTagSelector(Arena& arena,
+                                           const QualifiedName& tag_q_name,
+                                           bool is_implicit) {
+  ArenaUniquePtr<CSSParserSelector> second(arena.New<CSSParserSelector>(arena));
   second->selector_ = std::move(selector_);
   second->tag_history_ = std::move(tag_history_);
   tag_history_ = std::move(second);
-  if constexpr (UseArena) {
-    selector_.reset(arena.New<CSSSelector>(tag_q_name, is_implicit));
-  } else {
-    selector_ = std::make_unique<CSSSelector>(tag_q_name, is_implicit);
-  }
+  selector_.reset(arena.New<CSSSelector>(tag_q_name, is_implicit));
 }
 
-template <bool UseArena>
-bool CSSParserSelector<UseArena>::IsHostPseudoSelector() const {
+bool CSSParserSelector::IsHostPseudoSelector() const {
   return GetPseudoType() == CSSSelector::kPseudoHost ||
          GetPseudoType() == CSSSelector::kPseudoHostContext;
 }
 
-template <bool UseArena>
-RelationType
-CSSParserSelector<UseArena>::GetImplicitShadowCombinatorForMatching() const {
+RelationType CSSParserSelector::GetImplicitShadowCombinatorForMatching() const {
   switch (GetPseudoType()) {
     case PseudoType::kPseudoSlotted:
       return RelationType::kShadowSlot;
@@ -150,14 +115,8 @@ CSSParserSelector<UseArena>::GetImplicitShadowCombinatorForMatching() const {
   }
 }
 
-template <bool UseArena>
-bool CSSParserSelector<UseArena>::NeedsImplicitShadowCombinatorForMatching()
-    const {
+bool CSSParserSelector::NeedsImplicitShadowCombinatorForMatching() const {
   return GetImplicitShadowCombinatorForMatching() != RelationType::kSubSelector;
 }
-
-// Explicit instantiations.
-template class CSSParserSelector<false>;
-template class CSSParserSelector<true>;
 
 }  // namespace blink

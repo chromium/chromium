@@ -730,10 +730,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcExposeNonStandardStats);
 // will be attempted accelerated with a substring set tree.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSubstringSetTreeForAttributeBuckets);
 
-// If enabled, CSS parsing will attempt to use an arena for temporary
-// allocations of certain structures when parsing selectors.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCSSParserSelectorArena);
-
 // If enabled, style invalidation will use a Bloom filter for storing
 // CSS classes that need (only) self-invalidation, instead of having them
 // in the main hash map.

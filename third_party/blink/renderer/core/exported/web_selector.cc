@@ -44,17 +44,16 @@ WebString CanonicalizeSelector(WebString web_selector,
   // have selectors which are only parsed in secure contexts, this will need to
   // accept a SecureContextMode as an argument.
   Arena arena;
-  CSSSelectorVector</*UseArena=*/true> selector_vector =
-      CSSParser::ParseSelector</*UseArena=*/true>(
-          StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
-          web_selector, arena);
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+      StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
+      web_selector, arena);
   if (selector_vector.empty()) {
     // Parse error.
     return {};
   }
 
   CSSSelectorList selector_list =
-      CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(selector_vector);
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   if (restriction == kWebSelectorTypeCompound) {
     for (const CSSSelector* selector = selector_list.First(); selector;

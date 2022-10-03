@@ -477,12 +477,11 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
     return it->value.get();
 
   Arena arena;
-  CSSSelectorVector</*UseArena=*/true> selector_vector =
-      CSSParser::ParseSelector</*UseArena=*/true>(
-          MakeGarbageCollected<CSSParserContext>(
-              document, document.BaseURL(), true /* origin_clean */, Referrer(),
-              WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
-          nullptr, selectors, arena);
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+      MakeGarbageCollected<CSSParserContext>(
+          document, document.BaseURL(), true /* origin_clean */, Referrer(),
+          WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),
+      nullptr, selectors, arena);
 
   if (selector_vector.empty()) {
     exception_state.ThrowDOMException(
@@ -492,7 +491,7 @@ SelectorQuery* SelectorQueryCache::Add(const AtomicString& selectors,
   }
 
   CSSSelectorList selector_list =
-      CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(selector_vector);
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   const unsigned kMaximumSelectorQueryCacheSize = 256;
   if (entries_.size() == kMaximumSelectorQueryCacheSize)

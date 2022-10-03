@@ -157,14 +157,13 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
       kUASheetMode, SecureContextMode::kInsecureContext);
   Arena arena;
   for (const auto& selector : selectors) {
-    CSSSelectorVector</*UseArena=*/true> selector_vector =
-        CSSParser::ParseSelector</*UseArena=*/true>(context, nullptr, selector,
-                                                    arena);
+    CSSSelectorVector selector_vector =
+        CSSParser::ParseSelector(context, nullptr, selector, arena);
     if (selector_vector.empty())
       continue;
 
-    StyleRule* style_rule = StyleRule::Create</*UseArena=*/true>(
-        selector_vector, callback_property_set);
+    StyleRule* style_rule =
+        StyleRule::Create(selector_vector, callback_property_set);
 
     // Only accept Compound Selectors, since they're cheaper to match.
     if (!AllCompound(style_rule))

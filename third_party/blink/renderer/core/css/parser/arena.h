@@ -71,10 +71,6 @@ struct ArenaDestroy {
 template <class T>
 using ArenaUniquePtr = std::unique_ptr<T, ArenaDestroy<T>>;
 
-template <class T, bool UseArena>
-using MaybeArenaUniquePtr =
-    std::conditional_t<UseArena, ArenaUniquePtr<T>, std::unique_ptr<T>>;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_ARENA_H_

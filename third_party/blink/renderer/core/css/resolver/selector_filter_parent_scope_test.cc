@@ -47,14 +47,12 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
       SelectorFilterParentScope div_scope(*div);
       SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-      CSSSelectorVector</*UseArena=*/true> selector_vector =
-          CSSParser::ParseSelector</*UseArena=*/true>(
-              MakeGarbageCollected<CSSParserContext>(
-                  kHTMLStandardMode, SecureContextMode::kInsecureContext),
-              nullptr, "html *, body *, .match *, #myId *", arena);
+      CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+          MakeGarbageCollected<CSSParserContext>(
+              kHTMLStandardMode, SecureContextMode::kInsecureContext),
+          nullptr, "html *, body *, .match *, #myId *", arena);
       CSSSelectorList selectors =
-          CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(
-              selector_vector);
+          CSSSelectorList::AdoptSelectorVector(selector_vector);
 
       for (const CSSSelector* selector = selectors.First(); selector;
            selector = CSSSelectorList::Next(*selector)) {
@@ -82,13 +80,12 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
   Arena arena;
-  CSSSelectorVector</*UseArena=*/true> selector_vector =
-      CSSParser::ParseSelector</*UseArena=*/true>(
-          MakeGarbageCollected<CSSParserContext>(
-              kHTMLStandardMode, SecureContextMode::kInsecureContext),
-          nullptr, "html *, body *, div *, span *, .x *, #y *", arena);
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, SecureContextMode::kInsecureContext),
+      nullptr, "html *, body *, div *, span *, .x *, #y *", arena);
   CSSSelectorList selectors =
-      CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(selector_vector);
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
@@ -139,13 +136,12 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
   Arena arena;
-  CSSSelectorVector</*UseArena=*/true> selector_vector =
-      CSSParser::ParseSelector</*UseArena=*/true>(
-          MakeGarbageCollected<CSSParserContext>(
-              kHTMLStandardMode, SecureContextMode::kInsecureContext),
-          nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, SecureContextMode::kInsecureContext),
+      nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);
   CSSSelectorList selectors =
-      CSSSelectorList::AdoptSelectorVector</*UseArena=*/true>(selector_vector);
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {

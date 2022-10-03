@@ -333,41 +333,35 @@ unsigned StyleRule::AverageSizeInBytes() {
          CSSPropertyValueSet::AverageSizeInBytes();
 }
 
-template <bool UseArena>
 StyleRule::StyleRule(base::PassKey<StyleRule>,
-                     Tag<UseArena>,
-                     CSSSelectorVector<UseArena>& selector_vector,
+                     CSSSelectorVector& selector_vector,
                      size_t flattened_size,
                      CSSPropertyValueSet* properties)
     : StyleRuleBase(kStyle), properties_(properties) {
-  CSSSelectorList::AdoptSelectorVector<UseArena>(
-      selector_vector, SelectorArray(), flattened_size);
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
+                                       flattened_size);
 }
 
-template <bool UseArena>
 StyleRule::StyleRule(base::PassKey<StyleRule>,
-                     Tag<UseArena>,
-                     CSSSelectorVector<UseArena>& selector_vector,
+                     CSSSelectorVector& selector_vector,
                      size_t flattened_size,
                      CSSLazyPropertyParser* lazy_property_parser)
     : StyleRuleBase(kStyle), lazy_property_parser_(lazy_property_parser) {
-  CSSSelectorList::AdoptSelectorVector<UseArena>(
-      selector_vector, SelectorArray(), flattened_size);
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
+                                       flattened_size);
 }
 
 // NOTE: Currently, this move constructor leaves the other object fully intact,
 // since there's no benefit in not doing so.
-template <bool UseArena>
 StyleRule::StyleRule(base::PassKey<StyleRule>,
-                     Tag<UseArena>,
-                     CSSSelectorVector<UseArena>& selector_vector,
+                     CSSSelectorVector& selector_vector,
                      size_t flattened_size,
                      StyleRule&& other)
     : StyleRuleBase(kStyle),
       properties_(other.properties_),
       lazy_property_parser_(other.lazy_property_parser_) {
-  CSSSelectorList::AdoptSelectorVector<UseArena>(
-      selector_vector, SelectorArray(), flattened_size);
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
+                                       flattened_size);
 }
 
 const CSSPropertyValueSet& StyleRule::Properties() const {
@@ -670,49 +664,5 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(container_query_);
   StyleRuleCondition::TraceAfterDispatch(visitor);
 }
-
-// Explicit instantiation of member functions visible from other compilation
-// units.
-template CORE_EXPORT StyleRule::StyleRule(
-    base::PassKey<StyleRule>,
-    Tag<false>,
-    CSSSelectorVector<false>& selector_vector,
-    size_t flattened_size,
-    CSSPropertyValueSet*);
-
-template CORE_EXPORT StyleRule::StyleRule(
-    base::PassKey<StyleRule>,
-    Tag<false>,
-    CSSSelectorVector<false>& selector_vector,
-    size_t flattened_size,
-    CSSLazyPropertyParser*);
-
-template CORE_EXPORT StyleRule::StyleRule(
-    base::PassKey<StyleRule>,
-    Tag<false>,
-    CSSSelectorVector<false>& selector_vector,
-    size_t flattened_size,
-    StyleRule&&);
-
-template CORE_EXPORT StyleRule::StyleRule(
-    base::PassKey<StyleRule>,
-    Tag<true>,
-    CSSSelectorVector<true>& selector_vector,
-    size_t flattened_size,
-    CSSPropertyValueSet*);
-
-template CORE_EXPORT StyleRule::StyleRule(
-    base::PassKey<StyleRule>,
-    Tag<true>,
-    CSSSelectorVector<true>& selector_vector,
-    size_t flattened_size,
-    CSSLazyPropertyParser*);
-
-template CORE_EXPORT StyleRule::StyleRule(
-    base::PassKey<StyleRule>,
-    Tag<true>,
-    CSSSelectorVector<true>& selector_vector,
-    size_t flattened_size,
-    StyleRule&&);
 
 }  // namespace blink

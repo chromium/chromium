@@ -96,11 +96,11 @@ CSSComputedStyleDeclaration::CSSComputedStyleDeclaration(
     : CSSStyleDeclaration(n ? n->GetExecutionContext() : nullptr),
       node_(n),
       pseudo_element_specifier_(
-          CSSSelectorParser<>::ParsePseudoElement(pseudo_element_name, n)),
+          CSSSelectorParser::ParsePseudoElement(pseudo_element_name, n)),
       allow_visited_style_(allow_visited_style) {
   pseudo_argument_ =
       PseudoElementHasArguments(pseudo_element_specifier_)
-          ? CSSSelectorParser<>::ParsePseudoElementArgument(pseudo_element_name)
+          ? CSSSelectorParser::ParsePseudoElementArgument(pseudo_element_name)
           : g_null_atom;
 }
 

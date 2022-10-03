@@ -1513,10 +1513,6 @@ BASE_FEATURE(kSubstringSetTreeForAttributeBuckets,
              "SubstringSetTreeForAttributeBuckets",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCSSParserSelectorArena,
-             "CSSParserSelectorArena",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kInvalidationSetClassBloomFilter,
              "InvalidationSetClassBloomFilter",
              base::FEATURE_DISABLED_BY_DEFAULT);
