@@ -1395,7 +1395,18 @@ chromium-metrics-reviews@google.com.
   <component>Services&gt;Sync</component>
   <summary>
     Records the result of an attempt to download trusted vault keys from the
-    server.
+    server (includes all registration versions).
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultDownloadKeysStatusV1"
+    enum="TrustedVaultDownloadKeysStatus" expires_after="2023-03-19">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records the result of an attempt to download trusted vault keys from the
+    server, specifically if the local device is known to have a V1 registration.
   </summary>
 </histogram>
 

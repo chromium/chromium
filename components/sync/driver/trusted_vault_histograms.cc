@@ -61,8 +61,13 @@ void RecordTrustedVaultURLFetchResponse(
 }
 
 void RecordTrustedVaultDownloadKeysStatus(
-    TrustedVaultDownloadKeysStatusForUMA status) {
+    TrustedVaultDownloadKeysStatusForUMA status,
+    bool also_log_with_v1_suffx) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
+  if (also_log_with_v1_suffx) {
+    base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatusV1",
+                                  status);
+  }
 }
 
 void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(

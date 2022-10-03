@@ -232,6 +232,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     // Setting the primary account will trigger device registration.
     backend()->SetPrimaryAccount(account_info,
                                  /*has_persistent_auth_error=*/false);
+    Mock::VerifyAndClearExpectations(connection_);
     EXPECT_FALSE(device_registration_callback.is_null());
 
     // Pretend that the registration completed successfully.
@@ -987,7 +988,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadNewKeysWithV1Registration) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
   const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
   const int kInitialLastKeyVersion = 1;
@@ -998,6 +1000,11 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
   EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
+
+  ASSERT_THAT(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered_version(),
+              Eq(1));
 
   const std::vector<uint8_t> kNewVaultKey = {1, 3, 2};
   const int kNewLastKeyVersion = 2;
@@ -1041,6 +1048,84 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDownloadNewKeys) {
       "Sync.TrustedVaultDownloadKeysStatus",
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatusV1",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadNewKeysWithV0Registration) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kSyncTrustedVaultRedoDeviceRegistration);
+
+  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kInitialVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  std::vector<uint8_t> private_device_key_material =
+      StoreKeysAndMimicDeviceRegistration({kInitialVaultKey},
+                                          kInitialLastKeyVersion, account_info);
+
+  // Mimic that device was registered before "redo registration" logic was
+  // introduced.
+  backend()->SetDeviceRegisteredVersionForTesting(account_info.gaia,
+                                                  /*version=*/0);
+
+  EXPECT_TRUE(backend()->MarkLocalKeysAsStale(account_info));
+  backend()->SetPrimaryAccount(account_info,
+                               /*has_persistent_auth_error=*/false);
+
+  ASSERT_THAT(backend()
+                  ->GetDeviceRegistrationInfoForTesting(account_info.gaia)
+                  .device_registered_version(),
+              Eq(0));
+
+  const std::vector<uint8_t> kNewVaultKey = {1, 3, 2};
+  const int kNewLastKeyVersion = 2;
+
+  std::unique_ptr<SecureBoxKeyPair> device_key_pair;
+  TrustedVaultConnection::DownloadNewKeysCallback download_keys_callback;
+  EXPECT_CALL(*connection(),
+              DownloadNewKeys(Eq(account_info),
+                              TrustedVaultKeyAndVersionEq(
+                                  kInitialVaultKey, kInitialLastKeyVersion),
+                              _, _))
+      .WillOnce([&](const CoreAccountInfo&, const TrustedVaultKeyAndVersion&,
+                    std::unique_ptr<SecureBoxKeyPair> key_pair,
+                    TrustedVaultConnection::DownloadNewKeysCallback callback) {
+        device_key_pair = std::move(key_pair);
+        download_keys_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
+  ASSERT_FALSE(download_keys_callback.is_null());
+
+  // Ensure that the right device key was passed into DownloadNewKeys().
+  ASSERT_THAT(device_key_pair, NotNull());
+  EXPECT_THAT(device_key_pair->private_key().ExportToBytes(),
+              Eq(private_device_key_material));
+
+  // Mimic successful key downloading, it should make fetch keys attempt
+  // completed. Note that the client should keep old key as well.
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(kInitialVaultKey, kNewVaultKey)));
+  std::move(download_keys_callback)
+      .Run(TrustedVaultDownloadKeysStatus::kSuccess, {kNewVaultKey},
+           kNewLastKeyVersion);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultDownloadKeysStatus",
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.TrustedVaultDownloadKeysStatusV1",
+                                    /*count=*/0);
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,

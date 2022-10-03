@@ -67,8 +67,13 @@ void RecordTrustedVaultURLFetchResponse(
     TrustedVaultURLFetchReasonForUMA reason =
         TrustedVaultURLFetchReasonForUMA::kUnspecified);
 
+// Records the outcome of trying to download keys from the server.
+// |also_log_with_v1_suffx| allows the caller to determine whether the local
+// device's registration is a V1 registration (that is, more reliable), which
+// causes a second histogram to be logged as well.
 void RecordTrustedVaultDownloadKeysStatus(
-    TrustedVaultDownloadKeysStatusForUMA status);
+    TrustedVaultDownloadKeysStatusForUMA status,
+    bool also_log_with_v1_suffx = false);
 
 void RecordTrustedVaultHistogramBooleanWithMigrationSuffix(
     const std::string& histogram_name,

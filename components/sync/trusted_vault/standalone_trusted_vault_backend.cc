@@ -959,12 +959,19 @@ void StandaloneTrustedVaultBackend::FulfillOngoingFetchKeys(
   }
   DCHECK(!ongoing_fetch_keys_callback_.is_null());
 
-  if (status_for_uma.has_value()) {
-    RecordTrustedVaultDownloadKeysStatus(*status_for_uma);
-  }
-
   const sync_pb::LocalTrustedVaultPerUser* per_user_vault =
       FindUserVault(*ongoing_fetch_keys_gaia_id_);
+
+  if (status_for_uma.has_value()) {
+    const bool also_log_with_v1_suffx =
+        per_user_vault &&
+        per_user_vault->local_device_registration_info().device_registered() &&
+        per_user_vault->local_device_registration_info()
+                .device_registered_version() == 1;
+    RecordTrustedVaultDownloadKeysStatus(*status_for_uma,
+                                         also_log_with_v1_suffx);
+  }
+
   std::vector<std::vector<uint8_t>> vault_keys;
   if (per_user_vault) {
     vault_keys = GetAllVaultKeys(*per_user_vault);
