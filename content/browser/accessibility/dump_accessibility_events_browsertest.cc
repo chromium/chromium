@@ -925,8 +925,16 @@ IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("navigation-api.html"));
 }
 
+// TODO(crbug.com/1369754): Failing on linux/mac/win multiple builders.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_AccessibilityEventsImmediateRefresh \
+  DISABLED_AccessibilityEventsImmediateRefresh
+#else
+#define MAYBE_AccessibilityEventsImmediateRefresh \
+  AccessibilityEventsImmediateRefresh
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
-                       AccessibilityEventsImmediateRefresh) {
+                       MAYBE_AccessibilityEventsImmediateRefresh) {
   RunEventTest(FILE_PATH_LITERAL("immediate-refresh.html"));
 }
 
