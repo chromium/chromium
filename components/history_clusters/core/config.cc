@@ -158,6 +158,19 @@ Config::Config() {
             internal::kOmniboxHistoryClusterProvider,
             "omnibox_history_cluster_provider_shortcuts",
             omnibox_history_cluster_provider_shortcuts);
+
+    omnibox_history_cluster_provider_navigation_intent_score_threshold =
+        base::GetFieldTrialParamByFeatureAsInt(
+            internal::kOmniboxHistoryClusterProvider,
+            "omnibox_history_cluster_provider_navigation_intent_score_"
+            "threshold",
+            omnibox_history_cluster_provider_navigation_intent_score_threshold);
+
+    omnibox_history_cluster_provider_on_navigation_intents =
+        base::GetFieldTrialParamByFeatureAsBool(
+            internal::kOmniboxHistoryClusterProvider,
+            "omnibox_history_cluster_provider_on_navigation_intents",
+            omnibox_history_cluster_provider_on_navigation_intents);
   }
 
   // The `kOnDeviceClusteringKeywordFiltering` feature and child params.

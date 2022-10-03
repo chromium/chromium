@@ -169,6 +169,18 @@ struct Config {
   // `omnibox_history_cluster_provider` is disabled.
   bool omnibox_history_cluster_provider_shortcuts = false;
 
+  // If `omnibox_history_cluster_provider_on_navigation_intents` is false, this
+  // threshold helps determine when the user is intending to perform a
+  // navigation. Meaningless if either `omnibox_history_cluster_provider` is
+  // disabled or `omnibox_history_cluster_provider_on_navigation_intents` is
+  // true
+  int omnibox_history_cluster_provider_navigation_intent_score_threshold = 1300;
+
+  // If enabled, allows the suggestion row to appear when it's likely the user
+  // is intending to perform a navigation. Meaningless if
+  // `omnibox_history_cluster_provider` is disabled.
+  bool omnibox_history_cluster_provider_on_navigation_intents = false;
+
   // The `kOnDeviceClusteringKeywordFiltering` feature and child params.
 
   // If enabled, adds the keywords of aliases for detected entity names to a

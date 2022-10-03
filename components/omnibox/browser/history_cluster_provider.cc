@@ -78,7 +78,8 @@ bool HistoryClusterProvider::CreateMatches() {
 
   // If there's a reasonably clear navigation intent, don't distract the user
   // with a history cluster suggestion.
-  if (!history_clusters::GetConfig().omnibox_action_on_navigation_intents) {
+  if (!history_clusters::GetConfig()
+           .omnibox_history_cluster_provider_on_navigation_intents) {
     // Helper to get the top relevance score looking at both providers.
     const auto top_relevance =
         [&](history_clusters::TopRelevanceFilter filter) {
@@ -97,7 +98,9 @@ bool HistoryClusterProvider::CreateMatches() {
             top_relevance(history_clusters::TopRelevanceFilter::
                               FILTER_FOR_SEARCH_MATCHES),
             top_relevance(history_clusters::TopRelevanceFilter::
-                              FILTER_FOR_NON_SEARCH_MATCHES))) {
+                              FILTER_FOR_NON_SEARCH_MATCHES),
+            history_clusters::GetConfig()
+                .omnibox_history_cluster_provider_navigation_intent_score_threshold)) {
       return false;
     }
   }

@@ -83,11 +83,10 @@ int TopRelevance(std::vector<AutocompleteMatch>::const_iterator matches_begin,
 }
 
 bool IsNavigationIntent(int top_search_relevance,
-                        int top_navigation_relevance) {
-  DCHECK(!GetConfig().omnibox_action_on_navigation_intents);
+                        int top_navigation_relevance,
+                        int navigation_intent_score_threshold) {
   return top_navigation_relevance > top_search_relevance &&
-         top_navigation_relevance >
-             GetConfig().omnibox_action_navigation_intent_score_threshold;
+         top_navigation_relevance > navigation_intent_score_threshold;
 }
 
 HistoryClustersAction::HistoryClustersAction(
@@ -222,7 +221,8 @@ void AttachHistoryClustersActions(
           TopRelevance(result.begin(), result.end(),
                        TopRelevanceFilter::FILTER_FOR_SEARCH_MATCHES),
           TopRelevance(result.begin(), result.end(),
-                       TopRelevanceFilter::FILTER_FOR_NON_SEARCH_MATCHES))) {
+                       TopRelevanceFilter::FILTER_FOR_NON_SEARCH_MATCHES),
+          GetConfig().omnibox_action_navigation_intent_score_threshold)) {
     return;
   }
 

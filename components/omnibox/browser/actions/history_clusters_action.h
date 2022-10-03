@@ -34,9 +34,11 @@ int TopRelevance(std::vector<AutocompleteMatch>::const_iterator matches_begin,
                  TopRelevanceFilter filter);
 
 // Return if the history cluster action or suggestion should be excluded due to
-// matches indicating a nav-intent input. Should only be called if
-// `omnibox_action_on_navigation_intents` is false to avoid extra computations.
-bool IsNavigationIntent(int top_search_relevance, int top_navigation_relevance);
+// matches indicating a nav-intent input. Should only be called if nav-intent
+// filtering is enabled to avoid extra computations.
+bool IsNavigationIntent(int top_search_relevance,
+                        int top_navigation_relevance,
+                        int navigation_intent_score_threshold);
 
 // Made public for testing.
 class HistoryClustersAction : public OmniboxAction {
