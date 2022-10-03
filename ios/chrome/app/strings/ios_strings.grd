@@ -1152,6 +1152,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
         Search
       </message>
+      <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_LEARN_MORE_HINT" desc="Accessibility hint for the 'Learn more' button in the incognito NTP [iOS only]">
+        Learn more about Incognito mode
+      </message>
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_TITLE" desc="Title of interstitial which lets the user choose, when they open a link from an external app, whether to open it in Incognito mode or in a regular tab. [iOS only]">
         Open in Incognito?
       </message>
