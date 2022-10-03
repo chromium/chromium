@@ -90,7 +90,7 @@ builder(
                 name = "fuchsia-fyi-x64-rel",
             ),
             target_builder(
-                name = "fuchsia-x64-dbg",
+                name = "fuchsia-fyi-arm64-dbg",
             ),
             target_builder(
                 name = "fuchsia-fyi-x64-asan",
