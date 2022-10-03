@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CREATION_SIGNED_IN_FLOW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CREATION_SIGNED_IN_FLOW_CONTROLLER_H_
 
+#include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
+struct AccountInfo;
+struct CoreAccountInfo;
 class Profile;
 
 // Class responsible for the part of the profile creation flow where the user is
 // signed in (most importantly offering sync).
 class ProfileCreationSignedInFlowController
-    : public ProfilePickerSignedInFlowController {
+    : public ProfilePickerSignedInFlowController,
+      public signin::IdentityManager::Observer {
  public:
   ProfileCreationSignedInFlowController(
       ProfilePickerWebContentsHost* host,
@@ -35,18 +40,19 @@ class ProfileCreationSignedInFlowController
       ProfilePicker::BrowserOpenedCallback callback) override;
 
  private:
-  // Finishes the non-SAML flow, registering customisation-related callbacks if
-  // no `callback` is povided.
+  // IdentityManager::Observer:
+  void OnExtendedAccountInfoUpdated(const AccountInfo& account_info) override;
+
+  // Helper functions to deal with the lack of extended account info.
+  void OnExtendedAccountInfoTimeout(const CoreAccountInfo& account);
+  void OnProfileNameAvailable();
+
   void FinishAndOpenBrowserImpl(ProfilePicker::BrowserOpenedCallback callback);
 
-  // Finishes the SAML flow by continuing the sign-in in a browser window.
+  // Finishes the flow by finalizing the profile and continuing the SAML
+  // sign-in in a browser window.
   void FinishAndOpenBrowserForSAML();
   void OnSignInContentsFreedUp();
-
-  // Shared helper. Opens a new browser window, closes the picker and runs
-  // `callback` in the opened window.
-  void ExitPickerAndRunInNewBrowser(
-      ProfilePicker::BrowserOpenedCallback callback);
 
   // Internal callback to finish the last steps of the signed-in creation
   // flow.
@@ -62,10 +68,33 @@ class ProfileCreationSignedInFlowController
   // `profile` browser window at the end of the sign-in flow).
   bool is_finished_ = false;
 
-  std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
+  std::u16string name_for_signed_in_profile_;
+  base::OnceClosure on_profile_name_available_;
+
+  base::CancelableOnceClosure extended_account_info_timeout_closure_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<ProfileCreationSignedInFlowController> weak_ptr_factory_{
       this};
 };
+
+namespace testing {
+
+// Overrides the timeout we give to the extended account info fetch after a
+// profile creation, before we use fallback values instead.
+class ScopedCreatedProfileInfoFetchTimeoutOverride {
+ public:
+  explicit ScopedCreatedProfileInfoFetchTimeoutOverride(
+      base::TimeDelta timeout);
+  ~ScopedCreatedProfileInfoFetchTimeoutOverride();
+
+ private:
+  absl::optional<base::TimeDelta> overriden_timeout_;
+};
+
+}  // namespace testing
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CREATION_SIGNED_IN_FLOW_CONTROLLER_H_
