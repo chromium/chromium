@@ -150,6 +150,10 @@ class NET_EXPORT SchemefulSite {
   // use opaque origins.
   friend class NetworkIsolationKey;
 
+  // Needed to serialize opaque and non-transient NetworkAnonymizationKeys,
+  // which use opaque origins.
+  friend class NetworkAnonymizationKey;
+
   // Needed to create a bogus origin from a site.
   // TODO(https://crbug.com/1148927): Give IsolationInfos empty origins instead,
   // in this case, and unfriend IsolationInfo.

@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "network_anonymization_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -496,6 +497,186 @@ TEST_P(NetworkAnonymizationKeyTest, Equality) {
   EXPECT_FALSE(empty_key == key);
   EXPECT_TRUE(empty_key != key);
   EXPECT_TRUE(empty_key < key);
+}
+
+TEST_P(NetworkAnonymizationKeyTest, ValueRoundTripCrossSite) {
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  NetworkAnonymizationKey original_key(/*top_frame_site=*/kTestSiteA,
+                                       /*frame_site=*/kTestSiteB,
+                                       /*is_cross_site=*/true);
+  base::Value value;
+  ASSERT_TRUE(original_key.ToValue(&value));
+
+  // Fill initial value with opaque data, to make sure it's overwritten.
+  NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
+  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(value, &from_value_key));
+  EXPECT_EQ(original_key, from_value_key);
+}
+
+TEST_P(NetworkAnonymizationKeyTest, ValueRoundTripSameSite) {
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  NetworkAnonymizationKey original_key(/*top_frame_site=*/kTestSiteA,
+                                       /*frame_site=*/kTestSiteA,
+                                       /*is_cross_site=*/false);
+  base::Value value;
+  ASSERT_TRUE(original_key.ToValue(&value));
+
+  // Fill initial value with opaque data, to make sure it's overwritten.
+  NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
+  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(value, &from_value_key));
+  EXPECT_EQ(original_key, from_value_key);
+}
+
+TEST_P(NetworkAnonymizationKeyTest, ValueRoundTripOpaqueFrameSite) {
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  NetworkAnonymizationKey original_key(/*top_frame_site=*/kTestSiteA,
+                                       /*frame_site=*/kOpaqueSite,
+                                       /*is_cross_site=*/false);
+  base::Value value;
+  if (!NetworkAnonymizationKey::IsFrameSiteEnabled()) {
+    ASSERT_TRUE(original_key.ToValue(&value));
+    NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
+    EXPECT_TRUE(NetworkAnonymizationKey::FromValue(value, &from_value_key));
+    EXPECT_EQ(original_key, from_value_key);
+  } else {
+    // If we expect a valid frame site we should fail to serialize the garbage
+    // value.
+    ASSERT_FALSE(original_key.ToValue(&value));
+  }
+}
+
+TEST_P(NetworkAnonymizationKeyTest, DeserializeValueWIthGarbageFrameSite) {
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  base::Value::List invalid_value;
+  invalid_value.Append("http://a.test/");
+  invalid_value.Append("data:text/html,junk");
+
+  // If we expect a valid frame site we should fail to deserialize the garbage
+  // value.
+  if (NetworkAnonymizationKey::IsFrameSiteEnabled()) {
+    NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
+    EXPECT_FALSE(NetworkAnonymizationKey::FromValue(
+        base::Value(std::move(invalid_value)), &from_value_key));
+  }
+}
+
+TEST_P(NetworkAnonymizationKeyTest, TransientValueRoundTrip) {
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  NetworkAnonymizationKey original_key =
+      NetworkAnonymizationKey::CreateTransient();
+  base::Value value;
+  ASSERT_FALSE(original_key.ToValue(&value));
+}
+
+TEST_P(NetworkAnonymizationKeyTest, EmptyValueRoundTrip) {
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  NetworkAnonymizationKey original_key;
+  base::Value value;
+  ASSERT_TRUE(original_key.ToValue(&value));
+
+  // Fill initial value with opaque data, to make sure it's overwritten.
+  NetworkAnonymizationKey from_value_key = NetworkAnonymizationKey();
+  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(value, &from_value_key));
+  EXPECT_EQ(original_key, from_value_key);
+}
+
+TEST(NetworkAnonymizationKeyFeatureShiftTest,
+     ValueRoundTripKeySchemeMissmatch) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  const SchemefulSite kOpaqueSite = SchemefulSite(GURL("data:text/html,junk"));
+  const SchemefulSite kTestSiteA = SchemefulSite(GURL("http://a.test/"));
+  const SchemefulSite kTestSiteB = SchemefulSite(GURL("http://b.test/"));
+  NetworkAnonymizationKey expected_failure_nak = NetworkAnonymizationKey();
+
+  // Turn double keying off.
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kForceIsolationInfoFrameOriginToTopLevelFrame);
+
+  // Create a triple key.
+  NetworkAnonymizationKey original_triple_key(/*top_frame_site=*/kTestSiteA,
+                                              /*frame_site=*/kTestSiteB);
+
+  // Serialize key to value while triple keying is enabled.
+  base::Value triple_key_value;
+  ASSERT_TRUE(original_triple_key.ToValue(&triple_key_value));
+
+  // Convert it back to a triple keyed NetworkAnonymizationKey.
+  NetworkAnonymizationKey from_value_triple_key = NetworkAnonymizationKey();
+  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(triple_key_value,
+                                                 &from_value_triple_key));
+  EXPECT_EQ(original_triple_key, from_value_triple_key);
+
+  // Turn double keying on.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
+
+  // Check that deserializing the triple keyed value fails.
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(triple_key_value,
+                                                  &expected_failure_nak));
+
+  // Create a double keyed NetworkAnonymizationKey.
+  NetworkAnonymizationKey original_double_key(/*top_frame_site=*/kTestSiteA);
+  // Serialize key to value while double keying is enabled.
+  base::Value double_key_value;
+  ASSERT_TRUE(original_double_key.ToValue(&double_key_value));
+
+  // Convert it back to a double keyed NetworkAnonymizationKey.
+  NetworkAnonymizationKey from_value_double_key = NetworkAnonymizationKey();
+  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(double_key_value,
+                                                 &from_value_double_key));
+  EXPECT_EQ(original_double_key, from_value_double_key);
+
+  // Turn double keying + cross site flag on.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableCrossSiteFlagNetworkAnonymizationKey);
+
+  // Check that deserializing the triple keyed value fails.
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(triple_key_value,
+                                                  &expected_failure_nak));
+
+  // Check that deserializing the double keyed value fails.
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(double_key_value,
+                                                  &expected_failure_nak));
+
+  // Create a cross site double key + cross site flag NetworkAnonymizationKey.
+  NetworkAnonymizationKey original_cross_site_double_key(
+      /*top_frame_site=*/kTestSiteA,
+      /*frame_site=*/kTestSiteB, false);
+  // Serialize key to value while double key + cross site flag is enabled.
+  base::Value cross_site_double_key_value;
+  ASSERT_TRUE(
+      original_cross_site_double_key.ToValue(&cross_site_double_key_value));
+
+  // Convert it back to a double keyed NetworkAnonymizationKey.
+  NetworkAnonymizationKey from_value_cross_site_double_key =
+      NetworkAnonymizationKey();
+  EXPECT_TRUE(NetworkAnonymizationKey::FromValue(
+      cross_site_double_key_value, &from_value_cross_site_double_key));
+  EXPECT_EQ(original_cross_site_double_key, from_value_cross_site_double_key);
+
+  // Turn double keying on.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
+
+  // Check that deserializing the cross site double keyed value fails.
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(cross_site_double_key_value,
+                                                  &expected_failure_nak));
+
+  // Turn triple keying back on.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      net::features::kEnableDoubleKeyNetworkAnonymizationKey);
+
+  // Check that deserializing the double keyed value fails.
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(double_key_value,
+                                                  &expected_failure_nak));
+
+  // Check that deserializing the cross site double keyed value fails.
+  EXPECT_FALSE(NetworkAnonymizationKey::FromValue(cross_site_double_key_value,
+                                                  &expected_failure_nak));
 }
 
 }  // namespace net
