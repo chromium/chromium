@@ -57,10 +57,6 @@
 // Whether or not the fake omnibox is pineed to the top of the NTP.
 @property(nonatomic, assign) BOOL fakeOmniboxPinnedToTop;
 
-// Constraint to determine the height of the contained ContentSuggestions view.
-@property(nonatomic, strong)
-    NSLayoutConstraint* contentSuggestionsHeightConstraint;
-
 // Array of constraints used to pin the fake Omnibox header into the top of the
 // view.
 @property(nonatomic, strong)
@@ -86,6 +82,10 @@
 // Whether the omnibox should be focused once the collection view appears.
 @property(nonatomic, assign) BOOL shouldFocusFakebox;
 
+// Array of all view controllers above the feed.
+@property(nonatomic, strong)
+    NSMutableArray<UIViewController*>* viewControllersAboveFeed;
+
 @end
 
 @implementation NewTabPageViewController
@@ -95,10 +95,15 @@
 @synthesize scrolledToMinimumHeight = _scrolledToMinimumHeight;
 
 - (instancetype)init {
-  return [super initWithNibName:nil bundle:nil];
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _viewControllersAboveFeed = [[NSMutableArray alloc] init];
+  }
+  return self;
 }
 
 - (void)dealloc {
+  _viewControllersAboveFeed = nil;
   [self.overscrollActionsController invalidate];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -156,15 +161,7 @@
 
   self.headerSynchronizer.showing = YES;
 
-  // Set these constraints in viewWillAppear so ContentSuggestions View uses its
-  // intrinsic height in the initial layout instead of
-  // contentSuggestionsHeightConstraint. If this is not done the
-  // ContentSuggestions View will look broken for a second before its properly
-  // laid out.
-  if (!self.contentSuggestionsHeightConstraint) {
-    [self applyCollectionViewConstraints];
-  }
-
+  [self applyCollectionViewConstraints];
   [self updateNTPLayout];
 }
 
@@ -195,6 +192,11 @@
   }
 
   [self updateFeedTopSectionIsVisible];
+
+  // Since this VC is shared across web states, the stickiness might have
+  // changed in another tab. This ensures that the sticky elements are correct
+  // whenever an NTP reappears.
+  [self handleStickyElementsForScrollPosition:[self scrollPosition] force:YES];
 
   self.viewDidAppear = YES;
 }
@@ -328,30 +330,24 @@
         recordBrokenNTPHierarchy:BrokenNTPHierarchyRelationship::
                                      kContentSuggestionsReset];
   }
-  UIViewController* parentViewController =
-      self.isFeedVisible ? self.feedWrapperViewController.feedViewController
-                         : self.feedWrapperViewController;
+
   // Configures the feed header in the view hierarchy if it is visible.
   if (self.feedHeaderViewController) {
     // Ensure that sticky header is not covered by omnibox.
     if ([self.ntpContentDelegate isContentHeaderSticky]) {
       self.feedHeaderViewController.view.layer.zPosition = FLT_MAX;
     }
-    [self addViewController:self.feedHeaderViewController
-        toParentViewController:parentViewController];
+    [self addViewControllerAboveFeed:self.feedHeaderViewController];
   }
-  [self addViewController:self.contentSuggestionsViewController
-      toParentViewController:parentViewController];
+  [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
 
   // Adds the feed top section to the view hierarchy if it exists.
   if (IsDiscoverFeedTopSyncPromoEnabled() &&
       self.feedTopSectionViewController) {
-    [self addViewController:self.feedTopSectionViewController
-        toParentViewController:parentViewController];
+    [self addViewControllerAboveFeed:self.feedTopSectionViewController];
   }
 
-  [self addViewController:self.headerController
-      toParentViewController:parentViewController];
+  [self addViewControllerAboveFeed:self.headerController];
 
   DCHECK([self.headerController.view isDescendantOfView:self.containerView]);
   self.headerController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -435,22 +431,21 @@
 }
 
 - (CGFloat)heightAboveFeed {
-  return [self heightAboveFeedTopSection] + [self feedTopSectionHeight];
+  CGFloat heightAboveFeed = self.view.safeAreaInsets.top;
+  for (UIViewController* viewController in self.viewControllersAboveFeed) {
+    heightAboveFeed += viewController.view.frame.size.height;
+  }
+  return heightAboveFeed;
 }
 
 - (void)resetViewHierarchy {
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.contentSuggestionsViewController];
-  if (self.feedHeaderViewController) {
-    [self removeFromViewHierarchy:self.feedHeaderViewController];
+
+  for (UIViewController* viewController in self.viewControllersAboveFeed) {
+    [self removeFromViewHierarchy:viewController];
   }
-  if (self.headerController) {
-    [self removeFromViewHierarchy:self.headerController];
-  }
-  if (self.feedTopSectionViewController) {
-    [self removeFromViewHierarchy:self.feedTopSectionViewController];
-  }
-  self.contentSuggestionsHeightConstraint.active = NO;
+  [self.viewControllersAboveFeed removeAllObjects];
 }
 
 - (CGFloat)scrollPosition {
@@ -759,37 +754,10 @@
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
 }
 
-// Sets an inset to the feed equal to the height of the content above the feed,
-// then place the content above the feed in this space.
+// Sets an top inset to the feed collection view to fit the content above it.
 - (void)updateFeedInsetsForContentAbove {
-  // Adds inset to feed to create space for content above feed.
   self.collectionView.contentInset = UIEdgeInsetsMake(
       [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
-
-  // Sets the frame for feed header, top section and content suggestions within
-  // the space from the inset.
-  if (IsDiscoverFeedTopSyncPromoEnabled() &&
-      self.feedTopSectionViewController) {
-    self.feedTopSectionViewController.view.frame =
-        CGRectMake(self.feedTopSectionViewController.view.frame.origin.x,
-                   -[self feedTopSectionHeight], self.view.frame.size.width,
-                   [self feedTopSectionHeight]);
-  }
-
-  if (self.feedHeaderViewController) {
-    self.feedHeaderViewController.view.frame =
-        CGRectMake(self.feedHeaderViewController.view.frame.origin.x,
-                   -[self feedHeaderHeight] - [self feedTopSectionHeight],
-                   self.view.frame.size.width, [self feedHeaderHeight]);
-  }
-  self.contentSuggestionsViewController.view.frame = CGRectMake(
-      self.contentSuggestionsViewController.view.frame.origin.x,
-      -[self contentSuggestionsContentHeight] - [self feedHeaderHeight] -
-          [self feedTopSectionHeight],
-      self.view.frame.size.width, [self contentSuggestionsContentHeight]);
-
-  self.contentSuggestionsHeightConstraint.constant =
-      [self contentSuggestionsContentHeight];
   [self updateHeaderSynchronizerOffset];
 }
 
@@ -840,10 +808,10 @@
   // Handles the sticky omnibox. Does not stick for iPads.
   if ([self shouldPinFakeOmnibox]) {
     if (scrollPosition > [self offsetToStickOmnibox] &&
-        !self.fakeOmniboxPinnedToTop) {
+        (!self.fakeOmniboxPinnedToTop || force)) {
       [self pinFakeOmniboxToTop];
     } else if (scrollPosition <= [self offsetToStickOmnibox] &&
-               self.fakeOmniboxPinnedToTop) {
+               (self.fakeOmniboxPinnedToTop || force)) {
       [self resetFakeOmniboxConstraints];
     }
   } else if (self.fakeOmniboxPinnedToTop) {
@@ -898,9 +866,6 @@
   UIView* contentSuggestionsView = self.contentSuggestionsViewController.view;
   contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  self.contentSuggestionsHeightConstraint = [contentSuggestionsView.heightAnchor
-      constraintEqualToConstant:[self contentSuggestionsContentHeight]];
-
   if (self.feedHeaderViewController) {
     [NSLayoutConstraint activateConstraints:@[
       [self.feedHeaderViewController.view.leadingAnchor
@@ -944,7 +909,6 @@
           constraintEqualToAnchor:contentSuggestionsView.leadingAnchor],
       [[self containerView].safeAreaLayoutGuide.trailingAnchor
           constraintEqualToAnchor:contentSuggestionsView.trailingAnchor],
-      self.contentSuggestionsHeightConstraint,
     ]];
 }
 
@@ -959,12 +923,6 @@
 // Sets the content offset to the top of the feed.
 - (void)scrollIntoFeed {
   [self setContentOffset:[self offsetWhenScrolledIntoFeed]];
-}
-
-// The height of the content above the feed top section.
-- (CGFloat)heightAboveFeedTopSection {
-  return [self.headerController headerHeight] +
-         [self adjustedContentSuggestionsHeight] + [self feedHeaderHeight];
 }
 
 // The total height of all sticky content.
@@ -1155,12 +1113,21 @@
 
 // Adds `viewController` as a child of `parentViewController` and adds
 // `viewController`'s view as a subview of `self.collectionView`.
-- (void)addViewController:(UIViewController*)viewController
-    toParentViewController:(UIViewController*)parentViewController {
+- (void)addViewControllerAboveFeed:(UIViewController*)viewController {
+  // Gets the current parent view controller based on feed visibility.
+  UIViewController* parentViewController =
+      self.isFeedVisible ? self.feedWrapperViewController.feedViewController
+                         : self.feedWrapperViewController;
+
+  // Adds view controller and its view as children of the parent view
+  // controller.
   [viewController willMoveToParentViewController:parentViewController];
   [parentViewController addChildViewController:viewController];
   [self.collectionView addSubview:viewController.view];
   [viewController didMoveToParentViewController:parentViewController];
+
+  // Adds view controller to array of view controllers above feed.
+  [self.viewControllersAboveFeed addObject:viewController];
 }
 
 // Removes `viewController` and its corresponding view from the view hierarchy.
