@@ -1,10 +1,15 @@
 const load = {
-  _cache_bust_value: Math.random().toString().substr(2),
 
   cache_bust: path => {
     let url = new URL(path, location.origin);
     url.href += (url.href.includes("?")) ? '&' : '?';
-    url.href += "unique=" + load._cache_bust_value++
+    // The `Number` type in Javascript, when interpreted as an integer, can only
+    // safely represent [-2^53 + 1, 2^53 - 1] without the loss of precision [1].
+    // We do not generate a global value and increment from it, as the increment
+    // might not have enough precision to be reflected.
+    //
+    // [1]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number
+    url.href += "unique=" + Math.random().toString().substring(2);
     return url.href;
   },
 
