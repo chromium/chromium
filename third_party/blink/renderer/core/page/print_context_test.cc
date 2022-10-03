@@ -733,9 +733,9 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushingSuppressed) {
   // Verify that the auto-flush was suppressed by checking that the first
   // fillRect call flowed through to 'canvas'.
   testing::Sequence s;
-  // The initial clear and the first fillRect call
+  // The first fillRect call
   EXPECT_CALL(canvas, onDrawRect(_, _))
-      .Times(testing::Exactly(2))
+      .Times(testing::Exactly(1))
       .InSequence(s);
   // The drawImage call
   EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _)).InSequence(s);
@@ -790,8 +790,8 @@ TEST_P(PrintContextAcceleratedCanvasTest, Canvas2DBeforePrint) {
       "});");
   GetDocument().body()->AppendChild(script_element);
 
-  // Initial clear + 2 fillRects.
-  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::Exactly(3));
+  // 2 fillRects.
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::Exactly(2));
 
   PrintSinglePage(canvas);
 }
@@ -853,8 +853,8 @@ TEST_P(PrintContextOOPRCanvasTest, Canvas2DBeforePrint) {
       "});");
   GetDocument().body()->AppendChild(script_element);
 
-  // Initial clear + 2 fillRects.
-  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::Exactly(3));
+  // 2 fillRects.
+  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::Exactly(2));
 
   PrintSinglePage(canvas);
 }
@@ -892,8 +892,6 @@ TEST_P(PrintContextOOPRCanvasTest, Canvas2DFlushForImageListener) {
   // Verify that the auto-flush caused the canvas printing to fall out of
   // vector mode.
   testing::Sequence s;
-  // The initial clear
-  EXPECT_CALL(canvas, onDrawRect(_, _)).InSequence(s);
   // The bitmap blit
   EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _)).InSequence(s);
   // The fill rect in the event listener should leave no trace here because
@@ -932,9 +930,9 @@ TEST_P(PrintContextOOPRCanvasTest, Canvas2DNoFlushForImageListener) {
   // Verify that the auto-flush caused the canvas printing to fall out of
   // vector mode.
   testing::Sequence s;
-  // The initial clear and the fillRect call
+  // The fillRect call
   EXPECT_CALL(canvas, onDrawRect(_, _))
-      .Times(testing::Exactly(2))
+      .Times(testing::Exactly(1))
       .InSequence(s);
   // The drawImage
   EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _)).InSequence(s);
@@ -976,8 +974,6 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushBeforePrinting) {
   // Verify that the auto-flush caused the canvas printing to fall out of
   // vector mode.
   testing::Sequence s;
-  // The initial clear
-  EXPECT_CALL(canvas, onDrawRect(_, _)).InSequence(s);
   // The bitmap blit
   EXPECT_CALL(canvas, onDrawImageRect2(_, _, _, _, _, _)).InSequence(s);
   // The fill rect in the event listener should leave no trace here because
