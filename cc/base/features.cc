@@ -36,6 +36,10 @@ BASE_FEATURE(kSynchronizedScrolling,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kAvoidRasterDuringElasticOverscroll,
+             "AvoidRasterDuringElasticOverscroll",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kRemoveMobileViewportDoubleTap,
              "RemoveMobileViewportDoubleTap",
              base::FEATURE_ENABLED_BY_DEFAULT);

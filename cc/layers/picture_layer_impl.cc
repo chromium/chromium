@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 #include "cc/debug/debug_colors.h"
@@ -1375,12 +1376,27 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
 
   if (was_screen_space_transform_animating_ !=
       draw_properties().screen_space_transform_is_animating) {
-    // Skip adjusting raster scale when animations finish if we have a
-    // will-change: transform hint to preserve maximum resolution tiles
-    // needed.
-    if (draw_properties().screen_space_transform_is_animating ||
-        !AffectedByWillChangeTransformHint())
-      return true;
+    if (draw_properties().screen_space_transform_is_animating) {
+      // Entering animation.
+      // Skip adjusting raster scale if max animation scale already matches
+      // raster scale.
+      float maximum_animation_scale =
+          layer_tree_impl()->property_trees()->MaximumAnimationToScreenScale(
+              transform_tree_index());
+      if (!base::FeatureList::IsEnabled(
+              features::kAvoidRasterDuringElasticOverscroll) ||
+          (maximum_animation_scale != raster_contents_scale_.x() ||
+           maximum_animation_scale != raster_contents_scale_.y())) {
+        return true;
+      }
+    } else {
+      // Exiting animation.
+      // Skip adjusting raster scale when animations finish if we have a
+      // will-change: transform hint to preserve maximum resolution tiles
+      // needed.
+      if (!AffectedByWillChangeTransformHint())
+        return true;
+    }
   }
 
   bool is_pinching = layer_tree_impl()->PinchGestureActive();

@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
+#include "cc/base/features.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/layers/content_layer_client.h"
@@ -5892,18 +5893,20 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
   }
 
   void SetupTree() override {
+    SetInitialRootBounds(gfx::Size(100, 100));
     LayerTreeHostTest::SetupTree();
     root_layer_ = layer_tree_host()->root_layer();
     SetupViewport(root_layer_, root_layer_->bounds(), root_layer_->bounds());
 
     scoped_refptr<Layer> content_layer = FakePictureLayer::Create(&client_);
     content_layer_id_ = content_layer->id();
-    content_layer->SetBounds(gfx::Size(10, 10));
+    content_layer->SetBounds(gfx::Size(100, 100));
     CopyProperties(layer_tree_host()->OuterViewportScrollLayerForTesting(),
                    content_layer.get());
     root_layer_->AddChild(content_layer);
 
     client_.set_bounds(content_layer->bounds());
+    client_.set_fill_with_nonsolid_color(true);
   }
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
@@ -5939,8 +5942,18 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
     num_draws_++;
-    LayerImpl* content_layer_impl =
-        host_impl->active_tree()->LayerById(content_layer_id_);
+    FakePictureLayerImpl* content_layer_impl =
+        static_cast<FakePictureLayerImpl*>(
+            host_impl->active_tree()->LayerById(content_layer_id_));
+
+#if BUILDFLAG(IS_ANDROID)
+    // Elastic overscroll should not cause tilings with new scale to be created.
+    EXPECT_EQ(1u, content_layer_impl->tilings()->num_tilings())
+        << "num_draws:" << num_draws_;
+    EXPECT_EQ(1.f, content_layer_impl->tilings()->GetMaximumContentsScale())
+        << "num_draws_:" << num_draws_;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     switch (num_draws_) {
       case 1:
         // Initially, there's no overscroll.
@@ -5974,6 +5987,8 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAvoidRasterDuringElasticOverscroll};
   FakeContentLayerClient client_;
   raw_ptr<Layer> root_layer_;
   raw_ptr<ScrollElasticityHelper> scroll_elasticity_helper_;

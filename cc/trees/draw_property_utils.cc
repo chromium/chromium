@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
+#include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "cc/layers/draw_properties.h"
 #include "cc/layers/layer.h"
@@ -1195,8 +1196,14 @@ void UpdateElasticOverscroll(
   // transform.
   overscroll_elasticity_transform_node->local.MakeIdentity();
   overscroll_elasticity_transform_node->origin.SetPoint(0.f, 0.f, 0.f);
-  overscroll_elasticity_transform_node->to_screen_is_potentially_animated =
-      !elastic_overscroll.IsZero();
+  if (base::FeatureList::IsEnabled(
+          features::kAvoidRasterDuringElasticOverscroll)) {
+    overscroll_elasticity_transform_node->has_potential_animation =
+        !elastic_overscroll.IsZero();
+  } else {
+    overscroll_elasticity_transform_node->to_screen_is_potentially_animated =
+        !elastic_overscroll.IsZero();
+  }
 
   if (!elastic_overscroll.IsZero() && inner_viewport) {
     // The inner viewport container size takes into account the size change as a
