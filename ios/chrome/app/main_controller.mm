@@ -809,8 +809,14 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   // _chromeMain.reset() is a blocking call that regularly causes
   // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
   // this shutdown call. See: crbug.com/1328891
-  if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate))
+  if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate)) {
+    metrics::MetricsService* metrics =
+        GetApplicationContext()->GetMetricsService();
+    if (metrics) {
+      metrics->Stop();
+    }
     return;
+  }
 #endif  // BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
 
   _chromeMain.reset();
