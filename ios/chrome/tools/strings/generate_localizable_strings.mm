@@ -33,6 +33,7 @@
 #import "base/files/file_util.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/tools/strings/grit_header_parsing.h"
 #import "ui/base/resource/data_pack.h"
 #import "ui/base/resource/resource_handle.h"
 
@@ -140,56 +141,26 @@ NSDictionary* LoadResourcesListFromHeaders(NSArray* header_list,
     fprintf(stderr, "ERROR: No header file in the config.\n");
     return nil;
   }
-  NSMutableDictionary* resources_ids = [[NSMutableDictionary alloc] init];
-  for (NSString* header : header_list) {
-    NSString* header_file =
-        [root_header_dir stringByAppendingPathComponent:header];
-    if (![[NSFileManager defaultManager] isReadableFileAtPath:header_file]) {
-      fprintf(stderr, "ERROR: header file %s not readable.\n",
-              base::SysNSStringToUTF8(header_file).c_str());
-      return nil;
-    }
-    NSString* header_content =
-        [NSString stringWithContentsOfFile:header_file
-                                  encoding:NSASCIIStringEncoding
-                                     error:nil];
-    if (!header_content) {
-      fprintf(stderr, "ERROR: header file %s contains non-ASCII chars.\n",
-              base::SysNSStringToUTF8(header_file).c_str());
-      return nil;
-    }
-    NSCharacterSet* separator = [NSCharacterSet newlineCharacterSet];
-    NSArray* defines =
-        [header_content componentsSeparatedByCharactersInSet:separator];
-    for (NSString* define : defines) {
-      if (![define hasPrefix:@"#define "]) {
-        continue;
-      }
-      NSArray* define_string_id = [define componentsSeparatedByString:@" "];
-      if ([define_string_id count] != 3) {
-        fprintf(stderr, "ERROR: header %s contains invalid entry: %s.\n",
-                base::SysNSStringToUTF8(header_file).c_str(),
-                base::SysNSStringToUTF8(define).c_str());
-        return nil;
-      }
-      NSString* string_name = [define_string_id objectAtIndex:1];
-      NSInteger string_id = [[define_string_id objectAtIndex:2] integerValue];
-      if (!string_id) {
-        fprintf(stderr, "ERROR: header %s contains invalid entry: %s.\n",
-                base::SysNSStringToUTF8(header_file).c_str(),
-                base::SysNSStringToUTF8(define).c_str());
-        return nil;
-      }
-      if ([resources_ids valueForKey:string_name]) {
-        fprintf(stderr, "ERROR: duplicate entry for key %s.\n",
-                base::SysNSStringToUTF8(string_name).c_str());
-        return nil;
-      }
-      [resources_ids setValue:[NSNumber numberWithInteger:string_id]
-                       forKey:string_name];
-    }
+
+  std::vector<base::FilePath> headers;
+  for (NSString* header in header_list) {
+    headers.push_back(base::FilePath(base::SysNSStringToUTF8(
+        [root_header_dir stringByAppendingPathComponent:header])));
   }
-  return resources_ids;
+
+  absl::optional<ResourceMap> resource_map =
+      LoadResourcesFromGritHeaders(headers);
+  if (!resource_map) {
+    return nil;
+  }
+
+  NSMutableDictionary* resource_ids = [[NSMutableDictionary alloc] init];
+  for (const auto& pair : *resource_map) {
+    resource_ids[base::SysUTF8ToNSString(pair.first)] =
+        [NSNumber numberWithInt:pair.second];
+  }
+
+  return [resource_ids copy];
 }
 
 // Save |dictionary| as a Property List file (in binary1 encoding)

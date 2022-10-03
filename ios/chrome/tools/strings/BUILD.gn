@@ -6,8 +6,31 @@ executable("generate_localizable_strings") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "generate_localizable_strings.mm" ]
   deps = [
+    ":grit_header_parsing",
     "//base",
     "//ui/base:ui_data_pack",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+executable("substitute_strings_identifier") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "substitute_strings_identifier.mm" ]
+  deps = [
+    ":grit_header_parsing",
+    "//base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("grit_header_parsing") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "grit_header_parsing.cc",
+    "grit_header_parsing.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
 }
