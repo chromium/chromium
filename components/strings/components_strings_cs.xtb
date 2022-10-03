@@ -244,7 +244,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1527263332363067270">Čeká se na připojení…</translation>
 <translation id="1529789484829130889">Přihrádka 8</translation>
 <translation id="1530707389502320859">Web, který se pokoušíte navštívit, vypadá falešný. Útočníci někdy weby napodobují tak, že v adrese URL provádějí drobné, obtížně odhalitelné změny.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Tato stránka říká</translation>
 <translation id="153384715582417236">To je prozatím vše</translation>
 <translation id="1536390784834419204">Přeložit stránku</translation>
@@ -668,7 +667,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2673968385134502798">Hry</translation>
 <translation id="2674170444375937751">Jste si jisti, že chcete tyto stránky odstranit ze své historie?</translation>
 <translation id="2674804415323431591">Skrýt návrhy</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Svátky a narozeniny</translation>
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2679714844901977852">Uložte si kartu a fakturační údaje do účtu Google <ph name="USER_EMAIL" />, abyste mohli platit bezpečněji a rychleji</translation>
@@ -843,6 +841,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3216313131063488104">Modrá</translation>
 <translation id="3218181027817787318">Relativní</translation>
 <translation id="3223287115535306850">Animovaný indikátor spouštění aplikace</translation>
+<translation id="3223425961342298674">Poloha není povolena</translation>
 <translation id="3225347164936328585">Potlesk</translation>
 <translation id="3225919329040284222">Server se prokázal certifikátem, který neodpovídá integrovaným očekáváním. Tato očekávaní jsou zahrnuta u určitých webových stránek s vysokou úrovní zabezpečení kvůli vaší ochraně.</translation>
 <translation id="3226128629678568754">Klikněte na tlačítko Načíst znovu. Tím znovu odešlete údaje potřebné k načtení stránky.</translation>
@@ -871,7 +870,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3270156322180235608">Letecká doprava</translation>
 <translation id="3270847123878663523">&amp;Vrátit změnu uspořádání zpět</translation>
 <translation id="3271648667212143903">Web <ph name="ORIGIN" /> žádá o připojení</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Vaše organizace, <ph name="ENROLLMENT_DOMAIN" />, odeslala určité informace (například nastavení nebo zásady) následujícím webům.</translation>
 <translation id="3282497668470633863">Přidání jména na kartě</translation>
 <translation id="3286372614333682499">na výšku</translation>
@@ -937,7 +935,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3438829137925142401">Použít hesla uložená v účtu Google</translation>
 <translation id="3440783957068352691">čtverec</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Vlastník tohoto zařízení hru s dinosaurem vypnul.</translation>
 <translation id="3447884698081792621">Zobrazit certifikát (vydavatel: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval načtení:</translation>
@@ -1108,7 +1105,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chce přehrávat chráněný obsah. Google ověří identitu vašeho zařízení a tento web k ní může získat přístup.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (pohled)</translation>
 <translation id="3927932062596804919">Odmítnout</translation>
 <translation id="393316646445601645">Internet a telekomunikace</translation>
 <translation id="3939773374150895049">Použít WebAuthn namísto CVC?</translation>
@@ -1181,6 +1177,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4127575959421463246">Hledáte příznaky Chrome OS? Navštívit</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 další}few{# další}many{# další}other{# dalších}}</translation>
 <translation id="4130226655945681476">Zkontrolovat síťové kabely, modem a směrovač</translation>
+<translation id="4132448310531350254">Aplikace <ph name="POLICY_IDS_LIST" /> odkazují na duplicitní obslužné nástroje pro příponu souboru <ph name="FILE_EXTENSION" />.</translation>
 <translation id="4134123981501319574">Vytvořit dokument</translation>
 <translation id="413544239732274901">Další informace</translation>
 <translation id="4142935452406587478">Přihrádka 10</translation>
@@ -1203,6 +1200,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4194250254487269611">Kartu v tuto chvíli nelze uložit</translation>
 <translation id="4196861286325780578">&amp;Opakovat přesunutí</translation>
 <translation id="4202554117186904723">Pátá role</translation>
+<translation id="4203769790323223880">Fotoaparát není povolen</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Zkontrolovat konfiguraci firewallu a antivirového softwaru<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Velké</translation>
 <translation id="4210602799576081649">Platnost ověřovacího kódu vypršela, požádejte o nový</translation>
@@ -1229,6 +1227,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
     &lt;p&gt;Až budete hotovi, nezapomeňte antivirový program zase zapnout.&lt;/p&gt;
     &lt;h4&gt;Krok 5: Požádejte o další pomoc&lt;/h4&gt;
     &lt;p&gt;Pokud se chyba zobrazuje i nadále, kontaktujte vlastníka webu.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofon není povolen</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Zkuste spustit Diagnostiku sítě<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Může žádat o použití a pohybování kamerou</translation>
 <translation id="4235360514405112390">Platný</translation>
@@ -1276,7 +1275,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4340575312453649552">Tato reklama v zařízení používala příliš mnoho zdrojů, proto ji Chrome odstranil.</translation>
 <translation id="4340982228985273705">Tento počítač nebyl rozpoznán jako spravovaný organizací, proto lze pomocí zásad automaticky instalovat pouze rozšíření hostovaná v Internetovém obchodě Chrome. Adresa URL Internetového obchodu Chrome pro aktualizace je <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Přijímané kreditní karty</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Připojení k webu <ph name="SITE" /> není zabezpečené</translation>
 <translation id="4349365535725594680">Důvěrný obsah nelze sdílet</translation>
 <translation id="4349810866125026513">Přesto nahrát</translation>
@@ -1600,6 +1598,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5177076414499237632">Informace o zdroji a tématu této stránky</translation>
 <translation id="5179510805599951267">Nejedná se o jazyk <ph name="ORIGINAL_LANGUAGE" />? Nahlaste tuto chybu.</translation>
 <translation id="518639307526414276">Krmení a potřeby pro péči o domácí zvířata</translation>
+<translation id="5190072300954988691">Kamera a mikrofon nejsou povoleny</translation>
 <translation id="5190835502935405962">Lišta záložek</translation>
 <translation id="5191315092027169558">Váš profil spravuje doména <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> se pokouší stáhnout několik souborů</translation>
@@ -1620,6 +1619,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Zavřít</translation>
+<translation id="5239623327352565343">Poloha je povolena</translation>
 <translation id="5242889659037569123">Zavazadla a cestovní příslušenství</translation>
 <translation id="5250209940322997802">Připojit k síti</translation>
 <translation id="52517543715119994">Informace o funkcích Chromu</translation>
@@ -2163,7 +2163,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Zařízení přešlo do režimu spánku.</translation>
 <translation id="6767985426384634228">Aktualizovat adresu?</translation>
-<translation id="6768213884286397650">Hagaki (pohlednice)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Komerční pronájem</translation>
 <translation id="6786145470008421571">Obálka 6 × 9 palců</translation>
@@ -2494,6 +2493,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7581199239021537589">Posun obrázku strany 2 na ose Y</translation>
 <translation id="7582602800368606489">Rychle vytvořit novou událost v Kalendáři Google</translation>
 <translation id="7583969447617676942">Právní služby</translation>
+<translation id="7586676035079382730">Oznámení nejsou povolena</translation>
 <translation id="7591288787774558753">Sdílet důvěrný obsah?</translation>
 <translation id="7591636454931265313">Web <ph name="EMBEDDED_URL" /> chce používat soubory cookie a data webů v doméně <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Certifikát serveru porušuje omezení názvů domén.</translation>
@@ -2564,7 +2564,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7751971323486164747">Upravit v Chromu velikosti a typy písem</translation>
 <translation id="7752995774971033316">Nespravováno</translation>
 <translation id="7755624218968747854">Hlavní role</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Připojení mohlo být zablokováno firewallem nebo antivirovým softwarem.</translation>
 <translation id="7760497246331667482">Reggae a karibská hudba</translation>
 <translation id="776110834126722255">Zastaralé</translation>
@@ -2872,7 +2871,6 @@ Další podrobnosti:
 <translation id="8676424191133491403">Bez prodlevy</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odpověď, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Webovou stránku <ph name="PAGE" /> nelze načíst, protože:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Vaše zařízení a účet spravuje doména <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostupné</translation>
 <translation id="868922510921656628">Počet stránek na sadu</translation>
@@ -3047,6 +3045,7 @@ Další podrobnosti:
 <translation id="9131119348384879525">Pořídit záznam s důvěryhodným obsahem?</translation>
 <translation id="9136861683332321024">Luxusní vozy</translation>
 <translation id="9137013805542155359">Zobrazit originál</translation>
+<translation id="9138037198177304356">Oznámení jsou povolena</translation>
 <translation id="9139318394846604261">Nákupy</translation>
 <translation id="9141013498910525015">Spravovat adresy</translation>
 <translation id="9144951720726881238">Datum vypršení platnosti:</translation>
@@ -3107,7 +3106,6 @@ Další podrobnosti:
 <translation id="984275831282074731">Platební metody</translation>
 <translation id="985199708454569384">&lt;p&gt;Tato chyba se zobrazuje, pokud máte v počítači nebo mobilním zařízení nastaveno nepřesné datum a čas.&lt;/p&gt;
     &lt;p&gt;Chcete-li tuto chybu odstranit, otevřete v zařízení hodiny. Zkontrolujte, zda jsou datum a čas nastaveny správně.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="988159990683914416">Vývojářské sestavení</translation>
 <translation id="989988560359834682">Upravit adresu</translation>

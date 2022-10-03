@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Zur Listenansicht wechseln</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> Ordner für Linux freigegeben</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> Dateien ausgewählt</translation>
+<translation id="2383454254762599978">In Papierkorb verschieben</translation>
 <translation id="2387458720915042159">Proxy-Verbindungstyp</translation>
 <translation id="2389832672041313158">Burmesisch (Myanmar)</translation>
 <translation id="2392369802118427583">Aktivieren</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Zu drive.google.com wechseln...</translation>
 <translation id="3553048479571901246">Wenn du Dateien mit der App „<ph name="APP_NAME" />“ öffnen möchtest, kopiere sie zuerst in den Ordner mit Windows-Dateien.</translation>
 <translation id="3556731189587832921">Englisch (USA) mit internationaler PC-Tastatur</translation>
+<translation id="3557414470514932909">„<ph name="FILE_NAME" />“ wird in den Papierkorb verschoben</translation>
 <translation id="3567221313191587603">Wähle eine Datei aus und aktiviere <ph name="OFFLINE_CHECKBOX_NAME" />, um deine Dateien offline verfügbar zu machen.</translation>
 <translation id="357479282490346887">Litauisch</translation>
 <translation id="3587482841069643663">Alle</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bengalisch (phonetisch)</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Englisch (USA) mit Workman-Tastatur</translation>
+<translation id="4019998208269143058">An Schnellzugriff anpinnen</translation>
 <translation id="4040753847560036377">Falscher PUK</translation>
 <translation id="4057991113334098539">Wird aktiviert...</translation>
 <translation id="4092890906744441904">Irisch</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Gemäß der Administratorrichtlinie wird Folgendes nicht empfohlen:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> verschoben.</translation>
 <translation id="4176286497474237543">Papierkorb jetzt leeren</translation>
+<translation id="4179621117429069925">Element im Papierkorb</translation>
 <translation id="4186579485882418952">Offline-Modus aktivieren</translation>
 <translation id="4193154014135846272">Google-Dokument</translation>
 <translation id="4197674956721858839">Auswahl zippen</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Remote-Ablehnung des Authentifizierungszertifikats</translation>
 <translation id="4394214039309501350">Externer Link</translation>
 <translation id="4394980935660306080">Früher in dieser Woche</translation>
+<translation id="4398096759193130964">Stelle die Elemente wieder her oder ziehe sie in einen neuen Ordner außerhalb des Papierkorbs</translation>
 <translation id="4401287888955153199">Alles extrahieren</translation>
 <translation id="4410695710508688828">Fehler beim Extrahieren. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Verknüpfung zu Dateien erstellen</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi mit InScript-Tastatur</translation>
 <translation id="4801956050125744859">Beide behalten</translation>
 <translation id="4804827417948292437">Avocado</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> Elemente werden wiederhergestellt…</translation>
 <translation id="4823651846660089135">Gerät ist schreibgeschützt</translation>
 <translation id="4826849268470072925">Tamil (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> Elemente ausgewählt</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Mittagsgoldblume</translation>
 <translation id="4943368462779413526">American Football</translation>
 <translation id="4961158930123534723">1 Ordner für Parallels Desktop freigegeben</translation>
+<translation id="496656650103537022">„<ph name="FILE_NAME" />“ wiederhergestellt</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Der Name darf höchstens <ph name="MAX_LENGTH" /> Zeichen lang sein</translation>
 <translation id="4973970068702235170">Fehler beim Zippen, unerwarteter Fehler: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Hoppla, <ph name="FILE_NAME" /> existiert nicht mehr.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Entsperren</translation>
 <translation id="5700087501958648444">Audioinformationen</translation>
+<translation id="5720028165859493293">„<ph name="FILE_NAME" />“ in Papierkorb verschoben</translation>
 <translation id="5724172041621205163">Thai mit Pattachote-Tastatur</translation>
 <translation id="5756666464756035725">Ungarisch – QWERTY</translation>
 <translation id="5763377084591234761">Deutsch (Schweiz)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-Archiv</translation>
 <translation id="6321303798550928047">Winken</translation>
 <translation id="6327785803543103246">Web-Proxy Autodiscovery</translation>
+<translation id="6337014272874260727">Von Schnellzugriff loslösen</translation>
 <translation id="6339145975392024142">US-amerikanisch (PC)</translation>
 <translation id="6346310558342052870">Zugriff eingeschränkt</translation>
 <translation id="6356685157277930264">Feedbackfenster für "Meine Dateien"</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 Ordner ausgewählt</translation>
 <translation id="6755827872271341378">Chrome OS Flex-Gerät</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
+<translation id="6794539005637808366">Stelle das Element wieder her oder ziehe es in einen neuen Ordner außerhalb des Papierkorbs</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linux-Freigabe verwalten</translation>
 <translation id="6806796368146926706">Alphanumerisch mit japanischer Tastatur</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Schwedisch</translation>
 <translation id="6990081529015358884">Du hast keinen freien Speicherplatz mehr.</translation>
+<translation id="6993826899923627728">Diese Elemente befinden sich im Papierkorb</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> Ordner ausgewählt</translation>
 <translation id="7008426324576352165">Deine Organisation benötigt mehr Speicherplatz, um den Upload abzuschließen.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Tschechisch</translation>
 <translation id="7417453074306512035">Äthiopische Tastatur</translation>
 <translation id="7417705661718309329">Google-Karte</translation>
+<translation id="7419668828140929293">„<ph name="FILENAME" />“ wird wiederhergestellt</translation>
 <translation id="7458955835361612701">Keine zuletzt angesehenen Bilder</translation>
 <translation id="7460898608667578234">Ukrainisch</translation>
 <translation id="7469894403370665791">Verbindung zu diesem Netzwerk automatisch herstellen</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Einfacher Zugriff auf Google Fotos</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> Elemente in Papierkorb verschoben</translation>
 <translation id="7693909743393669729">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht und alle vorhandenen Partitionen entfernt. Dies schließt ggf. auch Partitionen ein, die nicht sichtbar sind. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="7695430100978772476">"<ph name="DRIVE_NAME" />" konnte nicht formatiert werden</translation>
 <translation id="76959938259365003">Der Papierkorb konnte nicht geleert werden.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Chinesisch (Wubi)</translation>
 <translation id="7765158879357617694">Verschieben</translation>
 <translation id="7774365994322694683">Vogel</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> Elemente wiederhergestellt</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7788080748068240085">Wenn du „<ph name="FILE_NAME" />“ offline speichern möchtest, musst du <ph name="TOTAL_FILE_SIZE" /> zusätzlichen Speicherplatz freigeben:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Entferne Dateien, auf die du nicht mehr offline zugreifen musst.<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Du hast <ph name="ENTRY_COUNT" /> Einträge von <ph name="FROM_ENTRY_NAME" /> bis <ph name="TO_ENTRY_NAME" /> ausgewählt.</translation>
 <translation id="954194396377670556">Gemäß der Administratorrichtlinie wird Folgendes blockiert:</translation>
 <translation id="965477715979482472">Englisch (Südafrika)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> Elemente werden in den Papierkorb verschoben</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Eine Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Möchtest du sie ersetzen?</translation>
 <translation id="992401651319295351">Du hast noch <ph name="RETRIES" /> Versuche. Du kannst dieses Mobilfunknetz erst verwenden, wenn du eine neue PIN festlegst.</translation>

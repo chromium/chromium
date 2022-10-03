@@ -244,7 +244,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1527263332363067270">Czekam na połączenie…</translation>
 <translation id="1529789484829130889">Taca 8</translation>
 <translation id="1530707389502320859">Próbujesz otworzyć stronę, która wygląda na fałszywą. Złośliwe strony czasami podszywają się pod inne, wprowadzając małe i trudne do zauważenia zmiany w adresie URL.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Komunikat z bieżącej strony</translation>
 <translation id="153384715582417236">Na razie to wszystko</translation>
 <translation id="1536390784834419204">Przetłumacz stronę</translation>
@@ -668,7 +667,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2673968385134502798">Gry</translation>
 <translation id="2674170444375937751">Czy na pewno chcesz usunąć te strony z historii?</translation>
 <translation id="2674804415323431591">Ukryj sugestie</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Urodziny i imieniny</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2679714844901977852">Aby szybciej dokonywać bezpiecznych płatności, zapisz dane karty i informacje rozliczeniowe na koncie Google <ph name="USER_EMAIL" /></translation>
@@ -875,7 +873,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3270156322180235608">Podróże lotnicze</translation>
 <translation id="3270847123878663523">&amp;Cofnij zmianę kolejności</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> chce się połączyć</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
 <translation id="3282497668470633863">Dodaj imię i nazwisko na karcie</translation>
 <translation id="3286372614333682499">orientacja pionowa</translation>
@@ -941,7 +938,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3435738964857648380">Bezpieczeństwo</translation>
 <translation id="3438829137925142401">Użyj haseł zapisanych na koncie Google</translation>
 <translation id="3440783957068352691">kwadrat</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Właściciel tego urządzenia wyłączył grę z dinozaurem.</translation>
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Okres pobierania:</translation>
@@ -1113,7 +1109,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chce odtworzyć treść chronioną. Tożsamość Twojego urządzenia zostanie sprawdzona przez Google i może być dostępna dla tej strony.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (pocztówka)</translation>
 <translation id="3927932062596804919">Odmawiaj</translation>
 <translation id="393316646445601645">Internet i telekomunikacja</translation>
 <translation id="3939773374150895049">Używać WebAuthn zamiast kodu CVC?</translation>
@@ -1284,7 +1279,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4340575312453649552">Ta reklama zużywała zbyt wiele zasobów Twojego urządzenia, dlatego została usunięta przez Chrome.</translation>
 <translation id="4340982228985273705">Ten komputer nie został wykryty jako zarządzany przez firmę, przez co zasada może instalować automatycznie tylko rozszerzenia hostowane w Chrome Web Store. URL sklepu Chrome Web Store służący do aktualizacji to „<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4346197816712207223">Akceptowane karty kredytowe</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Połączenie z <ph name="SITE" /> nie jest bezpieczne</translation>
 <translation id="4349365535725594680">Nie można udostępniać treści poufnych</translation>
 <translation id="4349810866125026513">Prześlij mimo to</translation>
@@ -2174,7 +2168,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Twoje urządzenie przeszło w tryb uśpienia.</translation>
 <translation id="6767985426384634228">Zmienić adres?</translation>
-<translation id="6768213884286397650">Hagaki (pocztówka)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Pożyczki komercyjne</translation>
 <translation id="6786145470008421571">Koperta 6 x 9 cali</translation>
@@ -2577,7 +2570,6 @@ Dodatkowe informacje:
 <translation id="7751971323486164747">Dostosuj rozmiary i kroje czcionek w Chrome</translation>
 <translation id="7752995774971033316">Niezarządzany</translation>
 <translation id="7755624218968747854">Rolka główna</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Połączenie mogło zostać zablokowane przez zaporę sieciową lub program antywirusowy.</translation>
 <translation id="7760497246331667482">Muzyka karaibska i reggae</translation>
 <translation id="776110834126722255">Wycofane</translation>
@@ -2884,7 +2876,6 @@ Dodatkowe informacje:
 <translation id="8676424191133491403">Bez opóźnienia</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odpowiedź, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Nie można załadować strony <ph name="PAGE" />, ponieważ:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Twoim urządzeniem i kontem zarządza <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Dostępne</translation>
 <translation id="868922510921656628">Strony na zestaw</translation>
@@ -3120,7 +3111,6 @@ Dodatkowe informacje:
 <translation id="984275831282074731">Formy płatności</translation>
 <translation id="985199708454569384">&lt;p&gt;Ten błąd występuje, jeśli data i godzina na komputerze lub urządzeniu mobilnym są niedokładne.&lt;/p&gt;
     &lt;p&gt;Aby naprawić błąd, otwórz ustawienia zegara na urządzeniu i zmień datę oraz godzinę na prawidłowe.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Ogólne</translation>
 <translation id="988159990683914416">Build</translation>
 <translation id="989988560359834682">Edytuj adres</translation>

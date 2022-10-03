@@ -392,6 +392,7 @@
 <translation id="8986207147630327271">このブラウザに仕事用プロファイルを追加し、管理者がこの仕事用プロファイルのみを管理できるようにします。</translation>
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
+<translation id="9003498785844995646">オンにすると、バックグラウンド アクティビティと視覚効果（滑らかなスクロールや動画のフレームレートなど）を制限することで、バッテリーを節約します。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" />または<ph name="BEGIN_LINK_2" />フィードバックを送信<ph name="END_LINK_2" /></translation>
 <translation id="9053892488859122171">ChromeOS Flex システム</translation>
 <translation id="9067395829937117663">Google Chrome のご利用には Windows 7 以上が必要です。</translation>
 <translation id="911206726377975832">閲覧データも削除しますか？</translation>

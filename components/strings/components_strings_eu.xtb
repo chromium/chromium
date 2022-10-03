@@ -244,7 +244,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1527263332363067270">Konektatzeko zain…</translation>
 <translation id="1529789484829130889">8. erretilua</translation>
 <translation id="1530707389502320859">Bisitatzen saiatu zaren webguneak faltsua dirudi. Batzuetan, erasotzaileek webgune ofizialen plantak egiten dituzte URLari aldaketa oso txikiak eginda.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Orriak hau dio:</translation>
 <translation id="153384715582417236">Hori da dena, oraingoz!</translation>
 <translation id="1536390784834419204">Itzuli orria</translation>
@@ -668,7 +667,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2673968385134502798">Jokoak</translation>
 <translation id="2674170444375937751">Ziur historiako orri hauek ezabatu nahi dituzula?</translation>
 <translation id="2674804415323431591">Ezkutatu iradokizunak</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Urtebetetzeak eta santu-egunak</translation>
 <translation id="2677748264148917807">Irten</translation>
 <translation id="2679714844901977852">Ordainketa-prozesuak seguruak eta bizkorragoak izan daitezen, gorde txartela eta fakturazio-datuak Google-ko kontuan (<ph name="USER_EMAIL" />)</translation>
@@ -871,7 +869,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3270156322180235608">Aire-bidaiak</translation>
 <translation id="3270847123878663523">&amp;Desegin berrantolatzea</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> webguneak konektatu egin nahi du</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Zure erakundeak (<ph name="ENROLLMENT_DOMAIN" />) ezarpenei eta gidalerroei buruzko informazioa bidali du, besteak beste, jarraian ageri diren webguneetara.</translation>
 <translation id="3282497668470633863">Gehitu titularra</translation>
 <translation id="3286372614333682499">bertikala</translation>
@@ -937,7 +934,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3435738964857648380">Segurtasuna</translation>
 <translation id="3438829137925142401">Erabili Google-ko kontuan gordetako pasahitzak</translation>
 <translation id="3440783957068352691">karratua</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Gailuaren jabeak Dinosaur jokoa desaktibatu du.</translation>
 <translation id="3447884698081792621">Erakutsi ziurtagiria (jaulkitzailea: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Eskuratzeko denbora tartea:</translation>
@@ -1108,7 +1104,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3906954721959377182">Tableta</translation>
 <translation id="3909477809443608991"><ph name="URL" /> webguneak eduki babestua erreproduzitu nahi du. Gailuaren identitatea egiaztatuko du Google-k eta baliteke webgune honek atzitzea.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (postala)</translation>
 <translation id="3927932062596804919">Ukatu</translation>
 <translation id="393316646445601645">Internet eta telekomunikazioak</translation>
 <translation id="3939773374150895049">WebAuthn erabili nahi duzu CVC kodearen ordez?</translation>
@@ -1276,7 +1271,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4340575312453649552">Iragarki honek gailuko baliabide gehiegi erabili ditu; ondorioz, Chrome-k kendu egin du.</translation>
 <translation id="4340982228985273705">Ordenagailu hau ez da enpresak kudeatzen duen gailu gisa hauteman; beraz, Chrome Webstore dendan ostatatutako luzapenak soilik instala daitezke automatikoki gidalerroaren bidez. Honako hau da Chrome Webstore denda eguneratzeko URLa: "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Onartzen diren kreditu-txartelak</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> webgunerako konexioa ez da segurua</translation>
 <translation id="4349365535725594680">Ezin da partekatu isilpeko edukia</translation>
 <translation id="4349810866125026513">Kargatu, halere</translation>
@@ -2163,7 +2157,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Inaktibo geratu da gailua.</translation>
 <translation id="6767985426384634228">Helbidea eguneratu nahi duzu?</translation>
-<translation id="6768213884286397650">Hagaki (postala)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Alokairu komertzialak</translation>
 <translation id="6786145470008421571">15 cm × 23 cm-ko gutun-azala</translation>
@@ -2565,7 +2558,6 @@ Xehetasun gehiago:
 <translation id="7751971323486164747">Kudeatu letra-tamaina eta -tipoa Chrome-n</translation>
 <translation id="7752995774971033316">Kudeatu gabe</translation>
 <translation id="7755624218968747854">Arrabola nagusia</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Baliteke suebakiak edo birusen aurkako softwareak konexioa eten izatea.</translation>
 <translation id="7760497246331667482">Reggaea eta Karibeko musika</translation>
 <translation id="776110834126722255">Zaharkitua</translation>
@@ -2872,7 +2864,6 @@ Xehetasun gehiago:
 <translation id="8676424191133491403">Atzerapenik gabe</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, erantzuna, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ezin izan da kargatu <ph name="PAGE" /> helbideko web-orria, arrazoi honengatik:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> domeinuak kudeatzen ditu gailua eta kontua.</translation>
 <translation id="8688672835843460752">Erabilgarri</translation>
 <translation id="868922510921656628">Multzo bakoitzeko orri kopurua</translation>
@@ -3107,7 +3098,6 @@ Xehetasun gehiago:
 <translation id="984275831282074731">Ordainketa-metodoak</translation>
 <translation id="985199708454569384">&lt;p&gt;Ordenagailuko edo gailu mugikorreko data eta ordua okerrak badira ikusiko duzu errore hori.&lt;/p&gt;
     &lt;p&gt;Errorea konpontzeko, ireki gailuaren erlojua. Ziurtatu ordua eta data zuzenak direla.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Orokorra</translation>
 <translation id="988159990683914416">Garatzailearen konpilazioa</translation>
 <translation id="989988560359834682">Editatu helbidea</translation>

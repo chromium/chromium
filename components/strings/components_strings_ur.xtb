@@ -245,7 +245,6 @@
 <translation id="1527263332363067270">کنکشن کا انتظار ہو رہا ہے…</translation>
 <translation id="1529789484829130889">ٹرے 8</translation>
 <translation id="1530707389502320859">‏آپ نے ابھی جو سائٹ ملاحظہ کرنے کی کوشش کی ہے وہ جعلی معلوم ہوتی ہے۔ بعض اوقات حملہ آور URL میں چھوٹی، مشکل سے نظر آنے والی تبدیلیاں کر کے سائٹس کی نقل کرتے ہیں۔</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">اس صفحے کے مطابق</translation>
 <translation id="153384715582417236">ابھی کیلئے بس اتنا ہی</translation>
 <translation id="1536390784834419204">صفحہ کا ترجمہ کریں</translation>
@@ -669,7 +668,6 @@
 <translation id="2673968385134502798">گیمز</translation>
 <translation id="2674170444375937751">کیا آپ واقعی ان صفحات کو اپنی سرگزشت سے حذف کرنا چاہتے ہیں؟</translation>
 <translation id="2674804415323431591">تجاویز چھپائیں</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">سالگرہیں اور ناموں سے منسوب دن</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2679714844901977852">‏محفوظ اور تیز چیک آؤٹس کے لیے اپنے کارڈ اور بلنگ کی معلومات کو اپنے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں محفوظ کریں</translation>
@@ -876,7 +874,6 @@
 <translation id="3270156322180235608">ہوائی سفر</translation>
 <translation id="3270847123878663523">دوبارہ ترتیب &amp;کالعدم کریں</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> منسلک ہونا چاہتی ہے</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">آپ کی تنظیم، <ph name="ENROLLMENT_DOMAIN" />، نے کچھ معلومات، جیسے ترتیبات یا پالیسیاں درج ذیل ویب سائٹس پر بھیجی ہیں۔</translation>
 <translation id="3282497668470633863">کارڈ پر نام شامل کریں</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
@@ -942,7 +939,6 @@
 <translation id="3435738964857648380">سیکیورٹی</translation>
 <translation id="3438829137925142401">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈ کا استعمال کریں</translation>
 <translation id="3440783957068352691">مربع</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">اس آلہ کے مالک نے ڈائناسور گیم کو آف کر دیا ہے۔</translation>
 <translation id="3447884698081792621">سرٹیفیکیٹ دکھائیں (<ph name="ISSUER" /> کی جانب سے جاری کردہ)</translation>
 <translation id="3452404311384756672">وقفہ بازیافت کریں:</translation>
@@ -1114,7 +1110,6 @@
 <translation id="3906954721959377182">ٹیبلیٹ</translation>
 <translation id="3909477809443608991">‏<ph name="URL" /> ایک تحفظ یافتہ مواد چلانا چاہتا ہے۔ Google آپ کے آلے کی شناخت کرے گا اور عین ممکن ہے کہ یہ سائٹ اس تک رسائی حاصل کرے۔</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Postcard)</translation>
 <translation id="3927932062596804919">مسترد کریں</translation>
 <translation id="393316646445601645">انٹرنیٹ اور ٹیلی کام</translation>
 <translation id="3939773374150895049">‏CVC کے بجائے WebAuthn کا استعمال کریں؟</translation>
@@ -1282,7 +1277,6 @@
 <translation id="4340575312453649552">‏اس اشتہار نے آپ کے آلہ کے لیے بہت سے وسائل کا استعمال کیا، لہذا Chrome نے اسے ہٹا دیا ہے۔</translation>
 <translation id="4340982228985273705">‏اس کمپیوٹر کا انٹرپرائز کے زیر انتظام کے طور پر پتہ نہیں چلا ہے، اسلئے پالیسی خودکار طور پر صرف Chrome ویب اسٹور پر میزبانی کردہ ایکسٹینشنز انسٹال کر سکتی ہے۔ Chrome ویب اسٹور اپ ڈیٹ URL "<ph name="CWS_UPDATE_URL" />" ہے۔</translation>
 <translation id="4346197816712207223">قبول کردہ کریڈٹ کارڈز</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> سے کنکشن محفوظ نہیں ہے</translation>
 <translation id="4349365535725594680">رازدارانہ مواد کا اشتراک نہیں کیا جا سکتا</translation>
 <translation id="4349810866125026513">بہر حال اپ لوڈ کریں</translation>
@@ -2171,7 +2165,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">آپ کا آلہ سیلپ وضع میں چلا گیا۔</translation>
 <translation id="6767985426384634228">پتہ اپ ڈیٹ کریں؟</translation>
-<translation id="6768213884286397650">Hagaki ‎(Postcard)‎</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">تجارتی قرض دہندگی</translation>
 <translation id="6786145470008421571">‏‎6 x 9 انچ لفافہ</translation>
@@ -2573,7 +2566,6 @@
 <translation id="7751971323486164747">‏Chrome میں فونٹ کے سائز اور ٹائپ فیسز کو حسب ضرورت بنائیں</translation>
 <translation id="7752995774971033316">غیر نظم کردہ</translation>
 <translation id="7755624218968747854">بنیادی رول</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">ممکن ہے فائروال یا اینٹی وائرس سافٹ ویئر نے کنکشن کو مسدود کر دیا ہو۔</translation>
 <translation id="7760497246331667482">ریگے اور کریبیائی موسیقی</translation>
 <translation id="776110834126722255">فرسودہ</translation>
@@ -2880,7 +2872,6 @@
 <translation id="8676424191133491403">کوئی تاخیر نہیں</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، جواب، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> پر موجود ویب صفحہ لوڈ نہیں ہو سکا کیوںکہ:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">آپ کا آلہ اور اکاؤنٹ <ph name="MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="8688672835843460752">دستیاب</translation>
 <translation id="868922510921656628">صفحات فی سیٹ</translation>
@@ -3116,7 +3107,6 @@
 <translation id="984275831282074731">ادائیگی کے طریقے</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر آپ کے کمپیوٹر یا موبائل آلے کی تاریخ اور وقت غلط ہے، تو آپ کو یہ خرابی دکھائی دے گی۔&lt;/p&gt;
     &lt;p&gt;خرابی ٹھیک کرنے کیلئے، اپنے آلے کا کلاک کھولیں۔ یقینی بنائیں کہ وقت اور تاریخ درست ہے۔&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">عمومی</translation>
 <translation id="988159990683914416">ڈویلپر بلڈ</translation>
 <translation id="989988560359834682">پتہ میں ترمیم کریں</translation>

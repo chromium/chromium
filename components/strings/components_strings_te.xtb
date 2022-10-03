@@ -246,7 +246,6 @@
 <translation id="1527263332363067270">కనెక్షన్ కోసం వేచి ఉన్నాము...</translation>
 <translation id="1529789484829130889">ట్రే 8</translation>
 <translation id="1530707389502320859">ఇప్పుడు మీరు సందర్శించాలని ప్రయత్నించిన సైట్ నకిలీదిగా అనిపిస్తుంది. URLకు చిన్న, అంత తేలికగా కనపడని మార్పులను చేయడం ద్వారా దాడి చేసేవారు కొన్నిసార్లు సైట్‌లను అనుకరిస్తారు.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">ఈ పేజీ ఇలా చెబుతోంది</translation>
 <translation id="153384715582417236">ఇప్పటికి ఇంతే</translation>
 <translation id="1536390784834419204">పేజీని అనువాదం చేయి</translation>
@@ -670,7 +669,6 @@
 <translation id="2673968385134502798">గేమ్‌లు</translation>
 <translation id="2674170444375937751">మీ హిస్టరీ నుండి ఈ పేజీలను తొలగించదలిచారా?</translation>
 <translation id="2674804415323431591">సూచనలను దాచు</translation>
-<translation id="2676271551327853224">ROC 8K</translation>
 <translation id="2677696497921480781">పుట్టినరోజులు &amp; నామకరణం చేసిన రోజులు</translation>
 <translation id="2677748264148917807">నిష్క్రమించండి</translation>
 <translation id="2679714844901977852">సురక్షితమైన, వేగవంతమైన చెక్ అవుట్‌ల కోసం మీ కార్డ్, అలాగే బిల్లింగ్ సమాచారాన్ని మీ Google ఖాతా <ph name="USER_EMAIL" />‌లో సేవ్ చేయండి</translation>
@@ -876,7 +874,6 @@
 <translation id="3270156322180235608">విమాన ప్రయాణం</translation>
 <translation id="3270847123878663523">&amp;మళ్లీ క్రమం చేయడాన్ని రద్దు చేయి</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> దీనికి కనెక్ట్ చేయాలనుకుంటోంది</translation>
-<translation id="3274521967729236597">పా-కాయ్</translation>
 <translation id="3282085321714087552">సెట్టింగ్‌లు లేదా పాలసీల వంటి కొంత సమాచారాన్ని మీ సంస్థ <ph name="ENROLLMENT_DOMAIN" />, దిగువున పేర్కొన్న వెబ్‌సైట్‌లకు పంపింది.</translation>
 <translation id="3282497668470633863">కార్డ్‌లో పేరుని జోడించండి</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
@@ -942,7 +939,6 @@
 <translation id="3435738964857648380">భద్రత</translation>
 <translation id="3438829137925142401">మీ Google ఖాతాలో సేవ్ చేయబడిన పాస్‌వర్డ్‌‌లను ఉపయోగించండి</translation>
 <translation id="3440783957068352691">చతురస్రం</translation>
-<translation id="3443726618221119081">జుర్రో-కు-కాయ్</translation>
 <translation id="3447661539832366887">ఈ పరికర యజమాని డైనోసార్ గేమ్‌ను ఆఫ్ చేశారు.</translation>
 <translation id="3447884698081792621">సర్టిఫికేట్‌ను చూపు (<ph name="ISSUER" /> ద్వారా జారీ చేయబడింది)</translation>
 <translation id="3452404311384756672">విరామాన్ని పొందండి:</translation>
@@ -1114,7 +1110,6 @@
 <translation id="3906954721959377182">టాబ్లెట్</translation>
 <translation id="3909477809443608991">రక్షిత కంటెంట్‌ను ప్లే చేయడానికి <ph name="URL" /> అనుమతి కోరుతుంది. మీ పరికరం గుర్తింపు Google ద్వారా ధృవీకరించబడుతుంది, దీనిని ఈ సైట్ ద్వారా యాక్సెస్ చేయవచ్చు</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (పోస్ట్‌కార్డ్)</translation>
 <translation id="3927932062596804919">తిరస్కరించు</translation>
 <translation id="393316646445601645">ఇంటర్నెట్ &amp; టెలికామ్</translation>
 <translation id="3939773374150895049">CVCకి బదులుగా WebAuthnను ఉపయోగించాలా?</translation>
@@ -1282,7 +1277,6 @@
 <translation id="4340575312453649552">ఈ యాడ్, మీ పరికరంలోని చాలా రిసోర్స్‌లను వినియోగించింది. కనుక, Chrome దీనిని తీసివేసింది.</translation>
 <translation id="4340982228985273705">ఈ కంప్యూటర్‌ను ఎంటర్‌ప్రైజ్ నిర్వహిస్తున్నట్లు గుర్తించబడలేదు, కనుక Chrome వెబ్‌స్టోర్‌లో హోస్ట్ చేసిన ఎక్స్‌టెన్షన్‌లను మాత్రమే విధానం ఆటోమేటిక్‌గా ఇన్‌స్టాల్ చేస్తుంది. Chrome వెబ్‌స్టోర్ అప్‌డేట్ URL "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">ఆమోదించే క్రెడిట్ కార్డ్‌లు</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />కు కనెక్షన్ సురక్షితం కాదు</translation>
 <translation id="4349365535725594680">గోప్యమైన కంటెంట్‌ను షేర్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4349810866125026513">ఏదేమైనా అప్‌లోడ్ చేయండి</translation>
@@ -2170,7 +2164,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">మీ పరికరం నిద్రావస్థకు వెళ్లింది.</translation>
 <translation id="6767985426384634228">అడ్రస్‌ను అప్‌డేట్ చేయాలా?</translation>
-<translation id="6768213884286397650">హగకి (పోస్ట్‌కార్డ్)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">వాణిజ్యపరమైన లెండింగ్</translation>
 <translation id="6786145470008421571">6 x 9 అంగుళాల ఎన్వలప్</translation>
@@ -2572,7 +2565,6 @@
 <translation id="7751971323486164747">Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చండి</translation>
 <translation id="7752995774971033316">నిర్వహించడం లేదు</translation>
 <translation id="7755624218968747854">ప్రైమరీ రోల్</translation>
-<translation id="7757555340166475417">డాయ్-పా-కాయ్</translation>
 <translation id="7758069387465995638">ఫైర్‌వాల్ లేదా యాంటీవైరస్ సాఫ్ట్‌వేర్ కనెక్షన్‌ను బ్లాక్ చేసి ఉండవచ్చు.</translation>
 <translation id="7760497246331667482">రెగ్గే &amp; కరీబియన్ మ్యూజిక్</translation>
 <translation id="776110834126722255">విస్మరించబడింది</translation>
@@ -2879,7 +2871,6 @@
 <translation id="8676424191133491403">ఆలస్యం లేదు</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, సమాధానం, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />లోని వెబ్‌పేజీ ఈ కారణంగా లోడ్ కాలేదు:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> మీ పరికరాన్ని, ఖాతాను మేనేజ్ చేస్తోంది.</translation>
 <translation id="8688672835843460752">అందుబాటులో ఉంది</translation>
 <translation id="868922510921656628">ఒక సెట్‌లో ఉన్న పేజీలు</translation>
@@ -3114,7 +3105,6 @@
 <translation id="984275831282074731">పేమెంట్ ఆప్షన్‌లు</translation>
 <translation id="985199708454569384">&lt;p&gt;మీ కంప్యూటర్ లేదా మొబైల్ పరికరంలో తేదీ మరియు సమయం తప్పుగా ఉన్నట్లయితే మీకు ఈ ఎర్రర్ కనిపిస్తుంది.&lt;/p&gt;
     &lt;p&gt;ఎర్రర్‌ను పరిష్కరించడానికి, మీ పరికర గడియారాన్ని తెరవండి. సమయం మరియు తేదీ సరిగ్గా ఉన్నాయని నిర్ధారించుకోండి.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">సాధారణం</translation>
 <translation id="988159990683914416">డెవలపర్ బిల్డ్</translation>
 <translation id="989988560359834682">అడ్రస్‌ను ఎడిట్ చేయండి</translation>

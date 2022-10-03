@@ -244,7 +244,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1527263332363067270">Bağlantı bekleniyor…</translation>
 <translation id="1529789484829130889">Tepsi 8</translation>
 <translation id="1530707389502320859">Az önce girmeye çalıştığınız site sahte görünüyor. Saldırganlar bazen URL'de görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Bu sayfanın mesajı</translation>
 <translation id="153384715582417236">Şimdilik hepsi bu</translation>
 <translation id="1536390784834419204">Sayfayı çevir</translation>
@@ -668,7 +667,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2673968385134502798">Oyunlar</translation>
 <translation id="2674170444375937751">Bu sayfaları geçmişinizden silmek istediğinizden emin misiniz?</translation>
 <translation id="2674804415323431591">Önerileri gizle</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Doğum günleri ve isim günleri</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2679714844901977852">Daha güvenli ve hızlı ödemeler için kartınızı ve fatura bilgilerinizi Google Hesabınıza (<ph name="USER_EMAIL" />) kaydedin</translation>
@@ -874,7 +872,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3270156322180235608">Havayoluyla seyahat</translation>
 <translation id="3270847123878663523">Sıralama Değişikliğini &amp;Geri Al</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> bağlanmak istiyor</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Kuruluşunuz (<ph name="ENROLLMENT_DOMAIN" />), aşağıdaki web sitelerine ayarlar ve politikalar gibi bazı bilgiler gönderdi.</translation>
 <translation id="3282497668470633863">Kart üzerindeki ismi ekle</translation>
 <translation id="3286372614333682499">dikey</translation>
@@ -940,7 +937,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3438829137925142401">Google Hesabınızdaki kayıtlı şifreleri kullanın</translation>
 <translation id="3440783957068352691">kare</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Bu cihazın sahibi dinozor oyununu kapattı.</translation>
 <translation id="3447884698081792621">Sertifikayı göster (yayınlayan: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Getirme aralığı:</translation>
@@ -1112,7 +1108,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" />, korunan içeriği oynatmak istiyor. Cihazınızın kimliği Google tarafından doğrulanır ve bu site tarafından erişilebilir.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Kartpostal)</translation>
 <translation id="3927932062596804919">Reddet</translation>
 <translation id="393316646445601645">İnternet ve telekom</translation>
 <translation id="3939773374150895049">CVC yerine WebAuthn kullanılsın mı?</translation>
@@ -1280,7 +1275,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4340575312453649552">Bu reklam, cihazınız için çok fazla kaynak kullandığından Chrome tarafından kaldırıldı.</translation>
 <translation id="4340982228985273705">Bu bilgisayarın kurumsal olarak yönetilmediği algılandığı için politika yalnızca Chrome Web Mağazası'nda barındırılan uzantıları otomatik olarak yükleyebilir. Chrome Web Mağazası'nın güncelleme URL'si "<ph name="CWS_UPDATE_URL" />" şeklindedir.</translation>
 <translation id="4346197816712207223">Kabul Edilen Kredi Kartları</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> bağlantısı güvenli değil</translation>
 <translation id="4349365535725594680">Gizli içerik paylaşılamıyor</translation>
 <translation id="4349810866125026513">Yine de yükle</translation>
@@ -2168,7 +2162,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Cihazınız uyku moduna geçti.</translation>
 <translation id="6767985426384634228">Adres Güncellensin mi?</translation>
-<translation id="6768213884286397650">Hagaki (Kartpostal)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Ticari kredi</translation>
 <translation id="6786145470008421571">Zarf 6 x 9 inç</translation>
@@ -2570,7 +2563,6 @@ Ek ayrıntılar:
 <translation id="7751971323486164747">Chrome'daki yazı tipi boyutlarını ve yazı tiplerini özelleştirin</translation>
 <translation id="7752995774971033316">Yönetimden kaldırıldı</translation>
 <translation id="7755624218968747854">Birincil Rulo</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Bağlantıyı güvenlik duvarı veya virüsten korunma yazılımı engellemiş olabilir.</translation>
 <translation id="7760497246331667482">Reggae ve karayip müzikleri</translation>
 <translation id="776110834126722255">Kullanımdan kaldırıldı</translation>
@@ -2878,7 +2870,6 @@ Ek ayrıntılar:
 <translation id="8676424191133491403">Gecikme yok</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, yanıt, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> adresindeki web sayfası şu nedenle yüklenemedi:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Cihazınız ve hesabınız <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="8688672835843460752">Kullanılabilir</translation>
 <translation id="868922510921656628">Grup başına sayfa</translation>
@@ -3113,7 +3104,6 @@ Ek ayrıntılar:
 <translation id="984275831282074731">Ödeme yöntemleri</translation>
 <translation id="985199708454569384">&lt;p&gt;Bilgisayarınızın veya mobil cihazınızın tarihi ve saati doğru değilse bu hatayı görürsünüz.&lt;/p&gt;
     &lt;p&gt;Hatayı gidermek için cihazınızın saatini açın. Saat ve tarih ayarının doğru olduğundan emin olun.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Genel</translation>
 <translation id="988159990683914416">Geliştirici Derlemesi</translation>
 <translation id="989988560359834682">Adresi Düzenle</translation>

@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">जडानको लागि प्रतिक्षा गर्दै...</translation>
 <translation id="1529789484829130889">ट्रे ८</translation>
 <translation id="1530707389502320859">तपाईंले भर्खरै भ्रमण गर्न खोज्नुभएको साइट नक्कली हो जस्तो छ। आक्रमणकारीहरूले कहिलेकाहीँ URL मा ससाना, स्पष्ट नदेखिने परिवर्तनहरू गरी नक्कली साइट सिर्जना गर्न सक्छन्।</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">यो पृष्ठले यसो भन्छ</translation>
 <translation id="153384715582417236">अहिलेलाई यति मात्र!</translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">गेमहरू</translation>
 <translation id="2674170444375937751">तपाईं आफ्नो इतिहासबाट यी पृष्ठहरू मेटाउन चाहनुहुन्छ भन्ने कुरामा सुनिश्चित हुनुहुन्छ?</translation>
 <translation id="2674804415323431591">सुझावहरू लुकाउनुहोस्</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">जन्मदिन तथा न्वारान</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2679714844901977852">तपाईं सुरक्षित रूपमा अझ छिटो चेक आउट गर्न चाहनुहुन्छ भने Google खाता <ph name="USER_EMAIL" /> मा आफ्नो कार्ड तथा बिलिङसम्बन्धी जानकारी सेभ गर्नुहोस्</translation>
@@ -843,6 +841,7 @@
 <translation id="3216313131063488104">ब्लुज</translation>
 <translation id="3218181027817787318">सापेक्ष</translation>
 <translation id="3223287115535306850">एप लोड गरिँदै छ</translation>
+<translation id="3223425961342298674">लोकेसन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="3225347164936328585">ताली बजाइरहेको</translation>
 <translation id="3225919329040284222">सर्भरले अन्तर्निर्मित अपेक्षाहरूसँग नमिल्ने प्रमाणपत्र प्रस्तुत गर्‍यो। यी अपेक्षाहरू विशेष, उच्च-सुरक्षा वेबसाटइहरूको लागि तपाइँलाई सुरक्षा गर्न समावेश गरिएका छन्।</translation>
 <translation id="3226128629678568754">पृष्ठ लोड गर्न आवश्यक लगत पुन: पेश गर्नक लागि पुन: लोड बटन थिच्नुहोस्।</translation>
@@ -871,7 +870,6 @@
 <translation id="3270156322180235608">हवाई यात्रा</translation>
 <translation id="3270847123878663523">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> जडान गर्न चाहन्छ</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">तपाईंको सङ्गठन <ph name="ENROLLMENT_DOMAIN" /> ले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाएको छ।</translation>
 <translation id="3282497668470633863">कार्डमा रहेको नाम थप्नुहोस्</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -937,7 +935,6 @@
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3438829137925142401">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="3440783957068352691">वर्गाकार पेज</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">यस यन्त्रको मालिकले डायनासोर खेल बन्द गर्‍यो।</translation>
 <translation id="3447884698081792621">प्रमाणपत्र देखाउनुहोस् (<ph name="ISSUER" /> द्वारा जारी गरिएको)</translation>
 <translation id="3452404311384756672">अन्तराल तान्नुहोस्:</translation>
@@ -1109,7 +1106,6 @@
 <translation id="3906954721959377182">ट्याब्लेट</translation>
 <translation id="3909477809443608991"><ph name="URL" /> संरक्षित सामग्री प्ले गर्न चाहन्छ। Google ले तपाईंको डिभाइसको पहिचान पुष्टि गर्ने छ र यो साइटले उक्त जानकारीमाथि पहुँच राख्न सक्ने छ।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (पोस्टकार्ड)</translation>
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
 <translation id="393316646445601645">इन्टरनेट तथा टेलिकम</translation>
 <translation id="3939773374150895049">CVC को सट्टामा WebAuthn प्रयोग गर्ने हो?</translation>
@@ -1182,6 +1178,7 @@
 <translation id="4127575959421463246">ChromeOS का फ्ल्यागहरू खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{अन्य १ वस्तु}other{अन्य # वस्तुहरू}}</translation>
 <translation id="4130226655945681476">नेटवर्कका केबलहरू, मोडेम र राउटरको जाँँच गर्नुहोस्</translation>
+<translation id="4132448310531350254">एपहरू "<ph name="POLICY_IDS_LIST" />" सँग सम्बन्धित file_extension "<ph name="FILE_EXTENSION" />" का नक्कली ह्यान्ड्लरहरू।</translation>
 <translation id="4134123981501319574">डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="413544239732274901">थप जान्नुहोस्</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
@@ -1204,6 +1201,7 @@
 <translation id="4194250254487269611">तपाईंको कार्ड अहिले नै सुरक्षित गर्न मिल्दैन</translation>
 <translation id="4196861286325780578">सार्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="4202554117186904723">पाचौँ रोल</translation>
+<translation id="4203769790323223880">क्यामेरा प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />फायरवाल र एन्टिभाइरसका कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">विशाल</translation>
 <translation id="4210602799576081649">पुष्टि कोडको म्याद सकिएको छ, नयाँ कोड पठाइदिन अनुरोध गर्नुहोस्</translation>
@@ -1230,6 +1228,7 @@
     &lt;p&gt;तपाईंको काम सकिएपछि आफ्नो एन्टिभाइरस प्रोग्रामलाई पुनः सक्रिय गर्न नबिर्सनुहोस्‌।&lt;/p&gt;
     &lt;h4&gt;चरण ५: अतिरिक्त मद्दत प्राप्त गर्नुहोस्‌&lt;/h4&gt;
     &lt;p&gt;तपाईंले अझै पनि यो त्रुटि देख्नुभएको खण्डमा वेबसाइटको मालिकलाई सम्पर्क गर्नुहोस्‌।&lt;/p&gt;</translation>
+<translation id="4223404254440398437">माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />नेटवर्क सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="4230204356098880324">तपाईंको क्यामेरा चलाउने तथा यताउता सार्ने अनुमति माग्न सक्छ</translation>
 <translation id="4235360514405112390">मान्य</translation>
@@ -1277,7 +1276,6 @@
 <translation id="4340575312453649552">यो विज्ञापनले तपाईंको डिभाइसका अत्यधिक धेरै स्रोतहरू प्रयोग गरेको हुनाले Chrome ले यसलाई हटायो।</translation>
 <translation id="4340982228985273705">यो कम्प्युटरलाई इन्टरप्राइजद्वारा व्यवस्थापन नगरिएको हुनाले नीति अनुसार Chrome को वेबस्टोरले होस्ट गरेका विस्तारहरू स्वतः स्थापना गर्न सकिन्छ। Chrome को वेबस्टोरको अद्यावधिक URL "<ph name="CWS_UPDATE_URL" />" हो।</translation>
 <translation id="4346197816712207223">स्वीकार गरिने क्रेडिट कार्डहरू</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> सँगको कनेक्सन सुरक्षित छैन</translation>
 <translation id="4349365535725594680">गोप्य सामग्री सेयर गर्न सकिँदैन</translation>
 <translation id="4349810866125026513">जे भए पनि अपलोड गर्नुहोस्</translation>
@@ -1601,6 +1599,7 @@
 <translation id="5177076414499237632">यो पेजका स्रोत र विषयका बारेमा जान्नुहोस्</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> मा छैन? यो त्रुटि रिपोर्ट गर्नुहोस्</translation>
 <translation id="518639307526414276">पाल्तु जनावरको खाना तथा हेरचाहका सामग्री</translation>
+<translation id="5190072300954988691">क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="5190835502935405962">पृष्ठमञ्जूषा पट्टी</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> ले तपाईंको प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> एकभन्दा बढी फाइलहरू डाउनलोड गर्न चाहन्छ</translation>
@@ -1621,6 +1620,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">खारेज गर्नुहोस्</translation>
+<translation id="5239623327352565343">लोकेसन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="5242889659037569123">झोला तथा यात्रासम्बन्धी सामग्रीहरू</translation>
 <translation id="5250209940322997802">"नेटवर्कमा कनेक्ट गर्नुहोस्‌"</translation>
 <translation id="52517543715119994">Chrome का सुविधाहरूका बारेमा जान्नुहोस्</translation>
@@ -2165,7 +2165,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">तपाईंको यन्त्र शयन अवस्थामा गयो।</translation>
 <translation id="6767985426384634228">ठेगाना बदल्ने हो?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">व्यापारिक कर्जा</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
@@ -2497,6 +2496,7 @@
 <translation id="7581199239021537589">सतह २ मा रहेको छविको Y सिफ्ट</translation>
 <translation id="7582602800368606489">Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउनुहोस्</translation>
 <translation id="7583969447617676942">कानुनी सेवाहरू</translation>
+<translation id="7586676035079382730">सूचना पठाउने अनुमति दिइएको छैन</translation>
 <translation id="7591288787774558753">गोप्य सामग्री सेयर गर्ने हो?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> मा कुकी र साइटको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="7592362899630581445">सर्भरको प्रमाणपत्रले नाम प्रतिबन्धहरूलाई उल्लङ्घन गर्छ।</translation>
@@ -2567,7 +2567,6 @@
 <translation id="7751971323486164747">Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्नुहोस्</translation>
 <translation id="7752995774971033316">अव्यवस्थित</translation>
 <translation id="7755624218968747854">मुख्य रोल</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">फायरवाल वा एन्टिभाइरस सफ्टवेयरले जडानमाथि रोक लगाएको हुनसक्छ।</translation>
 <translation id="7760497246331667482">रेगे तथा क्यारेबियाली सङ्गीत</translation>
 <translation id="776110834126722255">चल्तीबाट हटाइएको</translation>
@@ -2874,7 +2873,6 @@
 <translation id="8676424191133491403">विलम्बरहित</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> , उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> मा भएको वेबपृष्ठ लोड गर्न सकिएन किनभने:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> ले तपाईंको यन्त्र र खाता व्यवस्थापन गर्छ।</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति समूह पृष्ठको सङ्ख्या</translation>
@@ -3049,6 +3047,7 @@
 <translation id="9131119348384879525">गोप्य सामग्री समावेश गर्ने हो?</translation>
 <translation id="9136861683332321024">विलासी सवारी साधनहरू</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
+<translation id="9138037198177304356">सूचना पठाउने अनुमति दिइएको छ</translation>
 <translation id="9139318394846604261">किनमेल</translation>
 <translation id="9141013498910525015">ठेगानाहरू व्यवस्थित गर्नुहोस्</translation>
 <translation id="9144951720726881238">म्याद सकिने मिति:</translation>
@@ -3109,7 +3108,6 @@
 <translation id="984275831282074731">भुक्तानी विधिहरू</translation>
 <translation id="985199708454569384">&lt;p&gt;तपाईंको कम्प्युटर वा मोबाइल यन्त्रको मिति र समय नमिलेको बेला तपाईंले यो त्रुटि देख्नुहुन्छ।&lt;/p&gt;
     &lt;p&gt;यो त्रुटिको समाधान गर्न आफ्नो यन्त्रको घडी खोल्नुहोस्‌। समय र मिति सही छ भनेर सुनिश्चित गर्नुहोस्।&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988159990683914416">विकासकर्ताद्वारा निर्मित</translation>
 <translation id="989988560359834682">इमेल ठेगाना</translation>

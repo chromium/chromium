@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Přepnout na zobrazení seznamu</translation>
 <translation id="2377590462528165447">Počet složek sdílených s Linuxem: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Vybrané soubory: <ph name="SELCTED_FILE_COUNT" /></translation>
+<translation id="2383454254762599978">Přesunout do koše</translation>
 <translation id="2387458720915042159">Typ připojení k proxy serveru</translation>
 <translation id="2389832672041313158">barmština/myanmarština</translation>
 <translation id="2392369802118427583">Aktivovat</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Přejít na stránky drive.google.com...</translation>
 <translation id="3553048479571901246">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je zkopírujte do složky souborů Windows.</translation>
 <translation id="3556731189587832921">angličtina (USA) s mezinárodní (PC) klávesnicí</translation>
+<translation id="3557414470514932909">Přesouvání souboru <ph name="FILE_NAME" /> do koše</translation>
 <translation id="3567221313191587603">Pokud k souborům chcete mít přístup v režimu offline, vyberte soubor a přepněte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="357479282490346887">litevština</translation>
 <translation id="3587482841069643663">Vše</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">bengálština (fonetická)</translation>
 <translation id="4002066346123236978">Název</translation>
 <translation id="4017788180641807848">angličtina (USA) s klávesnicí Workman</translation>
+<translation id="4019998208269143058">Připnout do rychlých souborů</translation>
 <translation id="4040753847560036377">Nesprávný kód PUK</translation>
 <translation id="4057991113334098539">Aktivace...</translation>
 <translation id="4092890906744441904">irština</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Zásady administrátora nedoporučují:</translation>
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Vysypat koš</translation>
+<translation id="4179621117429069925">Tato položka je ve vašem koši</translation>
 <translation id="4186579485882418952">Povolit režim offline</translation>
 <translation id="4193154014135846272">Dokument Google</translation>
 <translation id="4197674956721858839">Výběr souborů pro komprimaci</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Ověřovací certifikát byl vzdáleně odmítnut</translation>
 <translation id="4394214039309501350">Externí odkaz</translation>
 <translation id="4394980935660306080">Dříve tento týden</translation>
+<translation id="4398096759193130964">Obnovte položky nebo je přetáhněte do nové složky mimo koš</translation>
 <translation id="4401287888955153199">Extrahovat vše</translation>
 <translation id="4410695710508688828">Extrakce se nezdařila. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Vytvořte zástupce svých souborů</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">hindština s klávesnicí InScript</translation>
 <translation id="4801956050125744859">Ponechat obojí</translation>
 <translation id="4804827417948292437">Avokádo</translation>
+<translation id="4805966553127040832">Obnovování <ph name="COUNT" /> položek…</translation>
 <translation id="4823651846660089135">Zařízení je pouze pro čtení</translation>
 <translation id="4826849268470072925">tamilština ITRANS</translation>
 <translation id="4839847978919684242">Vybrané položky: <ph name="SELCTED_FILES_COUNT" /></translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Květina gazánie</translation>
 <translation id="4943368462779413526">Americký fotbal</translation>
 <translation id="4961158930123534723">1 soubor sdílen s nástrojem Parallels Desktop</translation>
+<translation id="496656650103537022">Soubor <ph name="FILE_NAME" /> byl obnoven</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Název nesmí být delší než <ph name="MAX_LENGTH" /> znaků</translation>
 <translation id="4973970068702235170">Komprimace se nezdařila, neočekávaná chyba: <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +558,7 @@
 <translation id="5691596662111998220">Jejda, soubor <ph name="FILE_NAME" /> již neexistuje.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Odemknout</translation>
 <translation id="5700087501958648444">Informace o zvuku</translation>
+<translation id="5720028165859493293">Soubor <ph name="FILE_NAME" /> byl přesunut do koše</translation>
 <translation id="5724172041621205163">thajština s klávesnicí Pattachote</translation>
 <translation id="5756666464756035725">Maďarská klávesnice QWERTY</translation>
 <translation id="5763377084591234761">němčina (Švýcarsko)</translation>
@@ -621,6 +629,7 @@
 <translation id="6320212353742551423">Archiv <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Mávání</translation>
 <translation id="6327785803543103246">Automatické zjišťování webového proxy serveru</translation>
+<translation id="6337014272874260727">Odepnout z rychlých souborů</translation>
 <translation id="6339145975392024142">USA – mezinárodní (PC)</translation>
 <translation id="6346310558342052870">Přístup je omezen</translation>
 <translation id="6356685157277930264">Okno zpětné vazby k souborům</translation>
@@ -661,6 +670,7 @@
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
 <translation id="6755827872271341378">Zařízení se systémem ChromeOS Flex</translation>
 <translation id="6790428901817661496">Přehrát</translation>
+<translation id="6794539005637808366">Obnovte položku nebo ji přetáhněte do nové složky mimo koš</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Spravovat sdílení v systému Linux</translation>
 <translation id="6806796368146926706">alfanumerické znaky s japonskou klávesnicí</translation>
@@ -697,6 +707,7 @@
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6989942356279143254">švédština</translation>
 <translation id="6990081529015358884">Došlo vám místo</translation>
+<translation id="6993826899923627728">Tyto položky jsou v koši</translation>
 <translation id="6998711733709403587">Vybrané soubory: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
 <translation id="7008426324576352165">K dokončení nahrávání vaše organizace potřebuje víc úložného prostoru.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +753,7 @@
 <translation id="7408870451288633753">čeština</translation>
 <translation id="7417453074306512035">Etiopská klávesnice</translation>
 <translation id="7417705661718309329">Mapa Google</translation>
+<translation id="7419668828140929293">Obnovování souboru <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">Žádné nedávné obrázky</translation>
 <translation id="7460898608667578234">ukrajinština</translation>
 <translation id="7469894403370665791">Automaticky připojit k této síti</translation>
@@ -770,6 +782,7 @@
 <translation id="7655441028674523381">Snadný přístup k Fotkám Google</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7663224033570512922">hindština</translation>
+<translation id="7689532716264131859">Položky (<ph name="NUMBER_OF_ITEMS" />) byly přesunuty do koše</translation>
 <translation id="7693909743393669729">Naformátováním jednotky smažete všechna na ní uložená data a odstraníte všechny stávající oddíly (včetně neviditelných). Tuto akci nelze vrátit zpět.</translation>
 <translation id="7695430100978772476">Disk <ph name="DRIVE_NAME" /> se nepodařilo naformátovat</translation>
 <translation id="76959938259365003">Koš se nepodařilo vysypat.</translation>
@@ -784,6 +797,7 @@
 <translation id="7760449188139285140">čínština (Wubi)</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7774365994322694683">Pták</translation>
+<translation id="7780322752056734036">Položky (<ph name="NUMBER_OF_ITEMS" />) byly obnoveny</translation>
 <translation id="7781829728241885113">Včera</translation>
 <translation id="7788080748068240085">Chcete-li soubor <ph name="FILE_NAME" /> uložit offline, je třeba uvolnit <ph name="TOTAL_FILE_SIZE" /> dalšího místa:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Zrušte připnutí souborů, ke kterým již nepotřebujete přístup v režimu offline.<ph name="MARKUP_3" />
@@ -964,6 +978,7 @@
 <translation id="947144732524271678">Vybrali jste položky <ph name="FROM_ENTRY_NAME" /> až <ph name="TO_ENTRY_NAME" /> (celkem <ph name="ENTRY_COUNT" />).</translation>
 <translation id="954194396377670556">Zásady administrátora brání:</translation>
 <translation id="965477715979482472">angličtina (Jižní Afrika)</translation>
+<translation id="976666271385981812">Přesouvání <ph name="NUMBER_OF_ITEMS" /> položek do koše</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Chcete jej nahradit?</translation>
 <translation id="992401651319295351">Počet zbývajících pokusů: <ph name="RETRIES" />. Tuto síť budete moci používat až poté, co nastavíte nový PIN.</translation>

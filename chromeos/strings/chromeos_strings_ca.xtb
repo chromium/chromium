@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
+<translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>

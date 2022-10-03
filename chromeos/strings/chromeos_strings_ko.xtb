@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="3486220673238053218">정의</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
+<translation id="3510890413042482857"><ph name="BEGIN_LINK1" />성능 추적 데이터<ph name="END_LINK1" /> 전송</translation>
 <translation id="3517001332549868749">Chrome OS 업데이트</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="3532980081107202182">약 <ph name="MIN_REMAINING" />분 남음</translation>

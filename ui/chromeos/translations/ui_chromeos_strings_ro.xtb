@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fișiere selectate</translation>
+<translation id="2383454254762599978">Mută în coșul de gunoi</translation>
 <translation id="2387458720915042159">Tip de conexiune prin proxy</translation>
 <translation id="2389832672041313158">Birmană/Myanmar</translation>
 <translation id="2392369802118427583">Activează</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Accesați drive.google.com...</translation>
 <translation id="3553048479571901246">Pentru a deschide fișiere cu <ph name="APP_NAME" />, mai întâi copiază-le în dosarul cu fișiere Windows.</translation>
 <translation id="3556731189587832921">Engleză (S.U.A.) cu tastatură internațională pentru PC</translation>
+<translation id="3557414470514932909">Se mută <ph name="FILE_NAME" /> în coșul de gunoi</translation>
 <translation id="3567221313191587603">Selectează un fișier și activează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" /> pentru acces offline la fișiere.</translation>
 <translation id="357479282490346887">Lituaniană</translation>
 <translation id="3587482841069643663">Toate</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bengaleză fonetică</translation>
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4017788180641807848">Engleză (S.U.A.) cu tastatură Workman</translation>
+<translation id="4019998208269143058">Fixează în Fișiere rapide</translation>
 <translation id="4040753847560036377">Cod PUK incorect</translation>
 <translation id="4057991113334098539">Activare...</translation>
 <translation id="4092890906744441904">Irlandeză</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Politica implementată de administrator nu recomandă:</translation>
 <translation id="4159731583141908892">Mutate: <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">Golește coșul de gunoi acum</translation>
+<translation id="4179621117429069925">Acest articol este în coșul de gunoi</translation>
 <translation id="4186579485882418952">Activează funcția offline</translation>
 <translation id="4193154014135846272">Document Google</translation>
 <translation id="4197674956721858839">Arhivați fișierele selectate</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Certificatul de autentificare a fost respins de la distanță</translation>
 <translation id="4394214039309501350">Link extern</translation>
 <translation id="4394980935660306080">Mai devreme în decursul acestei săptămâni</translation>
+<translation id="4398096759193130964">Restabilește articolele sau trage-le într-un dosar nou în afara coșului de gunoi</translation>
 <translation id="4401287888955153199">Extrage tot</translation>
 <translation id="4410695710508688828">Operațiunea de extragere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Tastatură hindi InScript</translation>
 <translation id="4801956050125744859">Păstrați-le pe amândouă</translation>
 <translation id="4804827417948292437">Avocado</translation>
+<translation id="4805966553127040832">Se restabilesc <ph name="COUNT" /> articole</translation>
 <translation id="4823651846660089135">Dispozitivul este numai în citire</translation>
 <translation id="4826849268470072925">Tamilă ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elemente selectate</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Floare</translation>
 <translation id="4943368462779413526">Minge de fotbal</translation>
 <translation id="4961158930123534723">Un dosar cu acces permis pentru Parallels Desktop</translation>
+<translation id="496656650103537022">S-a restabilit <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Folosește un nume de maximum <ph name="MAX_LENGTH" /> caractere</translation>
 <translation id="4973970068702235170">Arhivarea nu a reușit, eroare neașteptată: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Hopa, <ph name="FILE_NAME" /> nu mai există.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Deblochează</translation>
 <translation id="5700087501958648444">Informații despre fișierul audio</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> a fost mutat în coșul de gunoi</translation>
 <translation id="5724172041621205163">Tastatură thailandeză Pattachote</translation>
 <translation id="5756666464756035725">Maghiară QWERTY</translation>
 <translation id="5763377084591234761">Germană (Elveția)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Arhivă <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Semn cu mâna</translation>
 <translation id="6327785803543103246">Web Proxy Auto-Discovery</translation>
+<translation id="6337014272874260727">Anulează fixarea în Fișiere rapide</translation>
 <translation id="6339145975392024142">S.U.A. internațională (PC)</translation>
 <translation id="6346310558342052870">Acces restricționat</translation>
 <translation id="6356685157277930264">Fereastra cu feedback pentru fișiere</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">Un dosar selectat</translation>
 <translation id="6755827872271341378">Dispozitiv cu sistemul de operare Chrome Flex</translation>
 <translation id="6790428901817661496">Redă</translation>
+<translation id="6794539005637808366">Restabilește articolul sau trage-l într-un dosar nou în afara coșului de gunoi</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Gestionează accesul comun cu Linux</translation>
 <translation id="6806796368146926706">Alfanumerică, tastatură japoneză</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Suedeză</translation>
 <translation id="6990081529015358884">Nu aveți spațiu suficient</translation>
+<translation id="6993826899923627728">Articolele sunt în coșul de gunoi</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> (de) dosare selectate</translation>
 <translation id="7008426324576352165">Organizația ta are nevoie de mai mult spațiu de stocare pentru a finaliza încărcarea.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Cehă</translation>
 <translation id="7417453074306512035">Tastatură etiopiană</translation>
 <translation id="7417705661718309329">Hartă Google</translation>
+<translation id="7419668828140929293">Se restabilește <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">Nicio imagine recentă</translation>
 <translation id="7460898608667578234">Ucraineană</translation>
 <translation id="7469894403370665791">Conectează-te automat la această rețea</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Accesează simplu Google Foto</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> articole au fost mutate în coșul de gunoi</translation>
 <translation id="7693909743393669729">Formatarea unității va șterge toate datele stocate pe unitate și va elimina toate partițiile existente, inclusiv partițiile care nu sunt vizibile. Această acțiune nu poate fi anulată.</translation>
 <translation id="7695430100978772476">Nu s-a putut formata <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Nu s-a golit coșul de gunoi.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Chineză Wubi</translation>
 <translation id="7765158879357617694">Mută</translation>
 <translation id="7774365994322694683">Pasăre</translation>
+<translation id="7780322752056734036">Au fost restabilite <ph name="NUMBER_OF_ITEMS" /> articole</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7788080748068240085">Pentru a salva fișierul „<ph name="FILE_NAME" />” offline, trebuie să eliberați un spațiu suplimentar de <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />anulați fixarea fișierelor de care nu mai aveți nevoie offline;<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">S-au selectat o serie de <ph name="ENTRY_COUNT" /> intrări, de la <ph name="FROM_ENTRY_NAME" /> la <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Politica implementată de administrator împiedică:</translation>
 <translation id="965477715979482472">Engleză (Africa de Sud)</translation>
+<translation id="976666271385981812">Se mută <ph name="NUMBER_OF_ITEMS" /> articole în coșul de gunoi</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Vrei să îl înlocuiești?</translation>
 <translation id="992401651319295351">Mai ai <ph name="RETRIES" /> încercări. Nu vei putea să folosești rețeaua dacă nu configurezi un PIN nou.</translation>

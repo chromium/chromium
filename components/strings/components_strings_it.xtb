@@ -244,7 +244,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1527263332363067270">In attesa di connessione…</translation>
 <translation id="1529789484829130889">Vassoio 8</translation>
 <translation id="1530707389502320859">Il sito che stai provando a visitare risulta contraffatto. A volte i malintenzionati imitano i siti modificando leggermente e in modo poco evidente l'URL.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Questa pagina dice</translation>
 <translation id="153384715582417236">Per il momento è tutto</translation>
 <translation id="1536390784834419204">Traduci pagina</translation>
@@ -668,7 +667,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2673968385134502798">Giochi</translation>
 <translation id="2674170444375937751">Eliminare le pagine dalla cronologia?</translation>
 <translation id="2674804415323431591">Nascondi suggerimenti</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Compleanni e onomastici</translation>
 <translation id="2677748264148917807">Esci</translation>
 <translation id="2679714844901977852">Salva i dati della carta e di fatturazione nel tuo Account Google <ph name="USER_EMAIL" /> per eseguire pagamenti in modo più veloce e sicuro</translation>
@@ -843,6 +841,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3216313131063488104">Blues</translation>
 <translation id="3218181027817787318">Relativo</translation>
 <translation id="3223287115535306850">Icona di caricamento dell'app</translation>
+<translation id="3223425961342298674">Posizione non consentita</translation>
 <translation id="3225347164936328585">Applausi</translation>
 <translation id="3225919329040284222">Il server ha presentato un certificato che non corrisponde alle previsioni integrate. Queste previsioni sono incluse per determinati siti web con protezione elevata allo scopo di proteggerti.</translation>
 <translation id="3226128629678568754">Premi il pulsante Ricarica per inviare di nuovo i dati necessari per caricare la pagina.</translation>
@@ -871,7 +870,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3270156322180235608">Viaggi aerei</translation>
 <translation id="3270847123878663523">&amp;Annulla ridisposizione</translation>
 <translation id="3271648667212143903">Il sito <ph name="ORIGIN" /> desidera collegarsi</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">La tua organizzazione, <ph name="ENROLLMENT_DOMAIN" />, ha inviato alcune informazioni, quali impostazioni o criteri, ai siti web indicati di seguito.</translation>
 <translation id="3282497668470633863">Aggiungi il nome indicato sulla carta</translation>
 <translation id="3286372614333682499">verticale</translation>
@@ -937,7 +935,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3438829137925142401">Usa le password salvate nel tuo Account Google</translation>
 <translation id="3440783957068352691">Quadrata</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Il proprietario del dispositivo ha disattivato il gioco dei dinosauri.</translation>
 <translation id="3447884698081792621">Mostra certificato (rilasciato da <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervallo recupero:</translation>
@@ -1109,7 +1106,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chiede di riprodurre contenuti protetti. Google verificherà l'identità del tuo dispositivo e questo sito potrebbe avervi accesso.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (cartolina)</translation>
 <translation id="3927932062596804919">Non consentire</translation>
 <translation id="393316646445601645">Internet e telecomunicazioni</translation>
 <translation id="3939773374150895049">Usare WebAuthn anziché CVC?</translation>
@@ -1182,6 +1178,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4127575959421463246">Stai cercando i flag di Chrome OS? Visita la pagina</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
 <translation id="4130226655945681476">Controllare i cavi di rete, il modem e il router</translation>
+<translation id="4132448310531350254">Gestori duplicati per file_extension "<ph name="FILE_EXTENSION" />" indicati dalle app "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Crea documento</translation>
 <translation id="413544239732274901">Scopri di più</translation>
 <translation id="4142935452406587478">Vassoio 10</translation>
@@ -1204,6 +1201,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4194250254487269611">Al momento non è possibile salvare la carta</translation>
 <translation id="4196861286325780578">&amp;Ripeti spostamento</translation>
 <translation id="4202554117186904723">Quinto rullo</translation>
+<translation id="4203769790323223880">Fotocamera non consentita</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Controllare le configurazioni del firewall e antivirus<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Grande</translation>
 <translation id="4210602799576081649">Codice di verifica scaduto, richiedi nuovo codice</translation>
@@ -1230,6 +1228,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
     &lt;p&gt;Terminata l'operazione, ricordati di riattivare il programma antivirus.&lt;/p&gt;
     &lt;h4&gt;Passaggio 5: richiedi ulteriore assistenza&lt;/h4&gt;
     &lt;p&gt;Se l'errore persiste, contatta il proprietario del sito web.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Microfono non consentito</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Prova a eseguire lo strumento Diagnostica di rete<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Può chiedere di usare e muovere la videocamera</translation>
 <translation id="4235360514405112390">Valido</translation>
@@ -1277,7 +1276,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4340575312453649552">Questo annuncio usava troppe risorse per il tuo dispositivo, pertanto Chrome l'ha rimosso.</translation>
 <translation id="4340982228985273705">Questo computer sembra non essere gestito dall'azienda, pertanto la norma consente di installare automaticamente soltanto le estensioni ospitate sul Chrome Web Store. L'URL di aggiornamento del Chrome Web Store è "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Carte di credito accettate</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">La connessione al sito <ph name="SITE" /> non è sicura</translation>
 <translation id="4349365535725594680">Impossibile condividere contenuti riservati</translation>
 <translation id="4349810866125026513">Carica comunque</translation>
@@ -1601,6 +1599,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5177076414499237632">Scopri di più sulla fonte e sull'argomento di questa pagina</translation>
 <translation id="5179510805599951267">Non in <ph name="ORIGINAL_LANGUAGE" />? Segnala questo errore</translation>
 <translation id="518639307526414276">Cibo e articoli per animali domestici</translation>
+<translation id="5190072300954988691">Fotocamera e microfono non consentiti</translation>
 <translation id="5190835502935405962">Barra dei Preferiti</translation>
 <translation id="5191315092027169558">Il tuo profilo è gestito da <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vuole scaricare più file</translation>
@@ -1621,6 +1620,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Ignora</translation>
+<translation id="5239623327352565343">Posizione consentita</translation>
 <translation id="5242889659037569123">Bagagli e accessori da viaggio</translation>
 <translation id="5250209940322997802">"Collegati alla rete"</translation>
 <translation id="52517543715119994">Scopri di più sulle funzionalità di Chrome</translation>
@@ -2164,7 +2164,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Il dispositivo è entrato in modalità sospensione.</translation>
 <translation id="6767985426384634228">Vuoi aggiornare l'indirizzo?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Prestiti al commercio</translation>
 <translation id="6786145470008421571">Busta 6 x 9 pollici</translation>
@@ -2496,6 +2495,7 @@ Ulteriori dettagli:
 <translation id="7581199239021537589">Spostamento Y lato 2 immagine</translation>
 <translation id="7582602800368606489">Crea rapidamente un nuovo evento in Google Calendar</translation>
 <translation id="7583969447617676942">Servizi legali</translation>
+<translation id="7586676035079382730">Notifiche non consentite</translation>
 <translation id="7591288787774558753">Vuoi condividere contenuti riservati?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vorrebbe usare cookie e dati del sito su <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Il certificato del server vìola i vincoli relativi ai nomi.</translation>
@@ -2566,7 +2566,6 @@ Ulteriori dettagli:
 <translation id="7751971323486164747">Personalizza le dimensioni dei caratteri e i caratteri tipografici in Chrome</translation>
 <translation id="7752995774971033316">Non gestito</translation>
 <translation id="7755624218968747854">Rullo principale</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Il software antivirus o il firewall potrebbe avere bloccato la connessione.</translation>
 <translation id="7760497246331667482">Musica reggae e caraibica</translation>
 <translation id="776110834126722255">Obsoleto</translation>
@@ -2874,7 +2873,6 @@ Ulteriori dettagli:
 <translation id="8676424191133491403">Nessun ritardo</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, risposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Impossibile caricare la pagina web all'indirizzo <ph name="PAGE" /> perché:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Il tuo dispositivo e il tuo account sono gestiti da <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponibile</translation>
 <translation id="868922510921656628">Pagine per insieme</translation>
@@ -3049,6 +3047,7 @@ Ulteriori dettagli:
 <translation id="9131119348384879525">Vuoi acquisire contenuti riservati?</translation>
 <translation id="9136861683332321024">Veicoli di lusso</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
+<translation id="9138037198177304356">Notifiche consentite</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">Gestisci gli indirizzi</translation>
 <translation id="9144951720726881238">Data di scadenza:</translation>
@@ -3109,7 +3108,6 @@ Ulteriori dettagli:
 <translation id="984275831282074731">Metodi di pagamento</translation>
 <translation id="985199708454569384">&lt;p&gt;Vedrai questo errore se la data e l'ora del dispositivo mobile o del computer non sono esatte.&lt;/p&gt;
     &lt;p&gt;Per risolvere il problema, apri l'orologio del dispositivo e assicurati che la data e l'ora siano corrette.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Generali</translation>
 <translation id="988159990683914416">Build</translation>
 <translation id="989988560359834682">Modifica indirizzo</translation>

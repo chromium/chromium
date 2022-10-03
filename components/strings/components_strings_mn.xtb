@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">Холболтыг хүлээж байна...</translation>
 <translation id="1529789484829130889">Гарах цаасны тавиур 8</translation>
 <translation id="1530707389502320859">Таны дөнгөж сая зочлохыг оролдсон сайт хуурамч юм шиг харагдаж байна. Халдагч этгээдүүд заримдаа харахад хэцүү, бага зэргийн өөрчлөлтийг URL-д оруулах замаар сайтыг дуурайдаг.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Энэ хуудас хэлэхдээ</translation>
 <translation id="153384715582417236">Дууслаа</translation>
 <translation id="1536390784834419204">Хуудсыг орчуулах</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">Тоглоом</translation>
 <translation id="2674170444375937751">Та өөрийн түүхээс эдгээр хуудсыг устгахдаа итгэлтэй байна уу?</translation>
 <translation id="2674804415323431591">Зөвлөмжүүдийг нуух</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Төрсөн өдөр, нэрийн өдөр</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2679714844901977852">Аюулгүй бөгөөд илүү хурдан тооцоо хийх бол карт болон төлбөр тооцооны мэдээллээ <ph name="USER_EMAIL" /> Google Бүртгэлдээ хадгална уу</translation>
@@ -876,7 +874,6 @@
 <translation id="3270156322180235608">Агаарын аялал</translation>
 <translation id="3270847123878663523">&amp; Дахин эрэмбэлэх үйлдлийг буцаах</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
-<translation id="3274521967729236597">Па-Кай</translation>
 <translation id="3282085321714087552">Танай байгууллага, <ph name="ENROLLMENT_DOMAIN" /> дараах вебсайтууд руу тохиргоо эсвэл бодлого зэрэг зарим мэдээллийг илгээсэн.</translation>
 <translation id="3282497668470633863">Картанд нэр нэмэх</translation>
 <translation id="3286372614333682499">хөрөг зураг</translation>
@@ -942,7 +939,6 @@
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3438829137925142401">Google Бүртгэлдээ хадгалсан нууц үгсээ ашиглах</translation>
 <translation id="3440783957068352691">дөрвөлжин</translation>
-<translation id="3443726618221119081">Жууро-Ку-Кай</translation>
 <translation id="3447661539832366887">Энэ төхөөрөмжийг эзэмшигч нь үлэг гүрвэлтэй тоглоомыг унтраасан байна.</translation>
 <translation id="3447884698081792621">Гэрчилгээ харуулах (<ph name="ISSUER" />-с олгосон)</translation>
 <translation id="3452404311384756672">Интервалыг татаж авчрах:</translation>
@@ -1114,7 +1110,6 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> хамгаалагдсан контент тоглуулах хүсэлтэй байна. Таны төхөөрөмжийн таниулбарыг Google-с баталгаажуулах бөгөөд үүнд энэ сайтаас хандаж болзошгүй.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Оүфүкү Хагаки (Postcard)</translation>
 <translation id="3927932062596804919">Татгалзах</translation>
 <translation id="393316646445601645">Интернэт, телеком</translation>
 <translation id="3939773374150895049">Карт баталгаажуулалтын кодын оронд WebAuthn-г ашиглах уу?</translation>
@@ -1285,7 +1280,6 @@
 <translation id="4340575312453649552">Энэ зар таны төхөөрөмжийн хэт их нөөцийг ашигласан тул Chrome үүнийг хассан.</translation>
 <translation id="4340982228985273705">Энэ компьютерийг байгууллагаас удирддаг гэж илрүүлээгүй тул удирдамж нь зөвхөн Chrome Webstore-т хост хийсэн өргөтгөлийг автоматаар суулгах боломжтой. Chrome Webstore шинэчлэлтийн URL нь "<ph name="CWS_UPDATE_URL" />" юм.</translation>
 <translation id="4346197816712207223">Зөвшөөрсөн кредит карт</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-н холболт аюултай байна</translation>
 <translation id="4349365535725594680">Нууцлалтай контент хуваалцах боломжгүй</translation>
 <translation id="4349810866125026513">Ямартай ч байршуулах</translation>
@@ -2174,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Таны төхөөрөмж идэвхгүй болсон байна.</translation>
 <translation id="6767985426384634228">Хаягийг шинэчлэх үү?</translation>
-<translation id="6768213884286397650">Хагаки (Ил захидал)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Арилжааны зээл</translation>
 <translation id="6786145470008421571">Дугтуй 6 x 9 инч</translation>
@@ -2577,7 +2570,6 @@
 <translation id="7751971323486164747">Chrome-д фонтын хэмжээ болон үсгийн хэлбэрийг өөрчилнө үү</translation>
 <translation id="7752995774971033316">Ажиллаж дуусаагүй</translation>
 <translation id="7755624218968747854">Үндсэн хуйлмал</translation>
-<translation id="7757555340166475417">Дай-Па-Кай</translation>
 <translation id="7758069387465995638">Галт хана, эсвэл вирусын эсрэг программ холболтыг блоклосон байж болзошгүй.</translation>
 <translation id="7760497246331667482">Регги болон карибын хөгжим</translation>
 <translation id="776110834126722255">Зогсоосон</translation>
@@ -2884,7 +2876,6 @@
 <translation id="8676424191133491403">Хүлээхгүй</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, хариулт, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ын веб хуудсыг дараах шалтгааны улмаас ачаалж чадсангүй:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Таны төхөөрөмж болон бүртгэлийг <ph name="MANAGER" /> удирддаг.</translation>
 <translation id="8688672835843460752">Боломжтой</translation>
 <translation id="868922510921656628">Багц бүрийн хуудас</translation>
@@ -3120,7 +3111,6 @@
 <translation id="984275831282074731">Төлбөрийн хэрэгсэл</translation>
 <translation id="985199708454569384">&lt;p&gt;Хэрэв таны компьютер эсвэл мобайл төхөөрөмжийн огноо болон цаг буруу байвал та тус алдааг харах болно.&lt;/p&gt;
     &lt;p&gt;Алдааг засахын тулд төхөөрөмжийнхөө цагийг нээнэ үү. Огноо болон цаг зөв эсэхийг шалгана уу.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Ерөнхий</translation>
 <translation id="988159990683914416">Хөгжүүлэгчийн хөгжүүлэх хэсэг</translation>
 <translation id="989988560359834682">Хаягийг засварлах</translation>

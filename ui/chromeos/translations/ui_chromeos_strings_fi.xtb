@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Vaihda luettelonäkymään</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kansiota jaettu Linuxille</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> tiedostoa on valittu</translation>
+<translation id="2383454254762599978">Siirrä roskakoriin</translation>
 <translation id="2387458720915042159">Välityspalvelinyhteyden tyyppi</translation>
 <translation id="2389832672041313158">burma (Myanmar)</translation>
 <translation id="2392369802118427583">Aktivoi</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Siirry osoitteeseen drive.google.com...</translation>
 <translation id="3553048479571901246">Jos haluat avata tiedoston sovelluksella <ph name="APP_NAME" />, kopioi se ensin Windowsin tiedostot ‑kansioon.</translation>
 <translation id="3556731189587832921">englanti (Yhdysvallat), kansainvälinen PC-näppäimistö</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> siirretään roskakoriin</translation>
 <translation id="3567221313191587603">Jos haluat käyttää tiedostoja ilman verkkoyhteyttä, valitse tiedosto ja laita <ph name="OFFLINE_CHECKBOX_NAME" /> päälle.</translation>
 <translation id="357479282490346887">liettua</translation>
 <translation id="3587482841069643663">Kaikki</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">foneettinen bangla</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4017788180641807848">englanti (Yhdysvallat), Workman-näppäimistö</translation>
+<translation id="4019998208269143058">Kiinnitä pikatiedostoihin</translation>
 <translation id="4040753847560036377">Väärä PUK-koodi</translation>
 <translation id="4057991113334098539">Aktivoidaan...</translation>
 <translation id="4092890906744441904">iiri</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Järjestelmänvalvojakäytännössä ei suositella seuraavia:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> siirretty.</translation>
 <translation id="4176286497474237543">Tyhjennä roskakori nyt</translation>
+<translation id="4179621117429069925">Tämä kohde on roskakorissasi</translation>
 <translation id="4186579485882418952">Ota Docs Offline käyttöön</translation>
 <translation id="4193154014135846272">Google-dokumentti</translation>
 <translation id="4197674956721858839">Pakkaa valitut</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Todennusvarmenne on hylätty etäyhteyden kautta</translation>
 <translation id="4394214039309501350">Ulkoinen linkki</translation>
 <translation id="4394980935660306080">Aiemmin tällä viikolla</translation>
+<translation id="4398096759193130964">Palauta kohteet tai vedä ne uuteen kansioon roskakorin ulkopuolelle</translation>
 <translation id="4401287888955153199">Laajenna kaikki</translation>
 <translation id="4410695710508688828">Purkaminen epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Luo tiedostoille pikakuvake</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">hindi, InScript-näppäimistö</translation>
 <translation id="4801956050125744859">Pidä molemmat</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832">Palautetaan <ph name="COUNT" /> kohdetta</translation>
 <translation id="4823651846660089135">Laite on vain luku ‑tilassa.</translation>
 <translation id="4826849268470072925">tamil (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> kohdetta on valittu</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Kukka</translation>
 <translation id="4943368462779413526">Jalkapallo</translation>
 <translation id="4961158930123534723">1 kansio jaettu Parallels Desktopille</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> palautettu</translation>
 <translation id="4969785127455456148">Albumi</translation>
 <translation id="4973523518332075481">Käytä nimeä, jonka pituus on enintään <ph name="MAX_LENGTH" /> merkkiä.</translation>
 <translation id="4973970068702235170">Pakkaus epäonnistui odottamattoman virheen vuoksi: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Hups, kohdetta <ph name="FILE_NAME" /> ei ole enää olemassa.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, avaa lukitus</translation>
 <translation id="5700087501958648444">Äänitiedoston tiedot</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> siirretty roskakoriin</translation>
 <translation id="5724172041621205163">thai, pattachote-näppäimistö</translation>
 <translation id="5756666464756035725">Unkarilainen QWERTY</translation>
 <translation id="5763377084591234761">saksa (Sveitsi)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkisto</translation>
 <translation id="6321303798550928047">Vilkuttaa</translation>
 <translation id="6327785803543103246">Verkkovälityspalvelimen automaattinen tunnistaminen</translation>
+<translation id="6337014272874260727">Irrota pikatiedostoista</translation>
 <translation id="6339145975392024142">US, kansainvälinen (PC)</translation>
 <translation id="6346310558342052870">Käyttö rajoitettu</translation>
 <translation id="6356685157277930264">Tiedostojen tietoikkuna</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 kansio valittu</translation>
 <translation id="6755827872271341378">ChromeOS Flex ‑laite</translation>
 <translation id="6790428901817661496">Toista</translation>
+<translation id="6794539005637808366">Palauta kohde tai vedä se uuteen kansioon roskakorin ulkopuolelle</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Määritä Linux-jakaminen</translation>
 <translation id="6806796368146926706">aakkosnumeerinen, japanilainen näppäimistö</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ruotsi</translation>
 <translation id="6990081529015358884">Tila ei riitä</translation>
+<translation id="6993826899923627728">Nämä kohteet ovat roskakorissa</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> kansiota valittu</translation>
 <translation id="7008426324576352165">Organisaatiosi tarvitsee lisää tallennustilaa latausta varten.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">tšekki</translation>
 <translation id="7417453074306512035">Etiopialainen näppäimistö</translation>
 <translation id="7417705661718309329">Google-kartta</translation>
+<translation id="7419668828140929293">Palautetaan <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">Ei viimeaikaisia kuvia</translation>
 <translation id="7460898608667578234">ukraina</translation>
 <translation id="7469894403370665791">Yhdistä automaattisesti tähän verkkoon</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Avaa Google Kuvat helposti</translation>
 <translation id="7658239707568436148">Peru</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty roskakoriin</translation>
 <translation id="7693909743393669729">Aseman alustaminen poistaa kaiken sille tallennetun datan sekä kaikki osiot, myös näkymättömät sellaiset. Tätä toimintoa ei voi kumota.</translation>
 <translation id="7695430100978772476">Ei voitu alustaa: <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Roskakorin tyhjentäminen epäonnistui.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">kiina (wubi)</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7774365994322694683">Lintu</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> kohdetta palautettu</translation>
 <translation id="7781829728241885113">Eilen</translation>
 <translation id="7788080748068240085">Jos haluat tallentaa tiedoston <ph name="FILE_NAME" /> offline-version, vapauta vielä <ph name="TOTAL_FILE_SIZE" /> levytilaa:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />irrota tiedostoja, joita et enää tarvitse offline-tilassa<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Valittiin <ph name="ENTRY_COUNT" /> kohdetta välillä <ph name="FROM_ENTRY_NAME" /> ja <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Järjestelmänvalvojakäytännössä estetään nämä:</translation>
 <translation id="965477715979482472">englanti (Etelä-Afrikka)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretään roskakoriin</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Haluatko korvata sen?</translation>
 <translation id="992401651319295351">Sinulla on <ph name="RETRIES" /> yritystä jäljellä. Et voi käyttää tätä verkkoa ennen kuin luot uuden PIN-koodin.</translation>

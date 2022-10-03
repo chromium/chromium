@@ -71,6 +71,7 @@
 <translation id="1067661089446014701">Zaradi dodatne varnosti lahko šifrirate gesla v napravi, preden se shranijo v računu Google.</translation>
 <translation id="1067922213147265141">Druge Googlove storitve</translation>
 <translation id="1069355737714877171">Odstrani profil za eSIM z imenom <ph name="PROFILE_NAME" /></translation>
+<translation id="1069814191880976658">Izberite drug zaslon</translation>
 <translation id="1070377999570795893">Drug program v računalniku je dodal razširitev, ki lahko spremeni način delovanja Chroma. 
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -231,6 +232,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="120069043972472860">Ni mogoče gledati</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1201564082781748151">Če pozabite geslo, je mogoče obnoviti lokalne podatke.</translation>
+<translation id="1202116106683864634">Ali res želite izbrisati to geslo?</translation>
 <translation id="1202596434010270079">Aplikacija za kiosk je posodobljena. Odstranite ključek USB.</translation>
 <translation id="120368089816228251">Glasbena nota</translation>
 <translation id="1203942045716040624">Proces v skupni rabi: <ph name="SCRIPT_URL" /></translation>
@@ -254,6 +256,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1223853788495130632">Skrbnik priporoča za to nastavitev posebno vrednost.</translation>
 <translation id="1225177025209879837">Obdelava zahteve ...</translation>
 <translation id="1227507814927581609">Med povezovanjem z napravo »<ph name="DEVICE_NAME" />« ni uspelo preverjanje pristnosti.</translation>
+<translation id="1227660082540388410">Urejanje gesla</translation>
 <translation id="1227993798763400520">Predvajanje ni uspelo. Poskusite znova.</translation>
 <translation id="1230417814058465809">Standardna zaščita je vklopljena. Za večjo varnost uporabite izboljšano zaščito.</translation>
 <translation id="1231733316453485619">Želite vklopiti sinhronizacijo?</translation>
@@ -782,6 +785,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorna)</translation>
 <translation id="1709217939274742847">Izberite kartonček za preverjanje pristnosti. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Omrežne nastavitve</translation>
+<translation id="1709916727352927457">Brisanje gesla</translation>
 <translation id="1709972045049031556">Ni mogoče deliti</translation>
 <translation id="1711935594505774770">S tem bodo izbrisani vsi podatki in piškotki, ki so jih shranili skupina <ph name="SITE_GROUP_NAME" />, vsa spletna mesta v njej in vse nameščene aplikacije.</translation>
 <translation id="1714644264617423774">Omogočite funkcije za ljudi s posebnimi potrebami za preprostejšo uporabo naprave. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -1109,6 +1113,7 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="2007404777272201486">Prijavi težavo ...</translation>
 <translation id="2009590708342941694">Orodje za emodžije</translation>
 <translation id="2010501376126504057">Združljive naprave</translation>
+<translation id="2010888903612390044">Mikrofon ni povezan</translation>
 <translation id="2015232545623037616">Računalnik in Chromecast v istem omrežju Wi-Fi</translation>
 <translation id="2016473077102413275">Funkcije, ki potrebujejo slike, ne bodo delovale.</translation>
 <translation id="2016574333161572915">Strojna oprema za Google Meet je pripravljena za nastavitev.</translation>
@@ -3045,6 +3050,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3813296892522778813">Odprite <ph name="BEGIN_LINK_CHROMIUM" />pomoč za Google Chrome<ph name="END_LINK_CHROMIUM" />, če ne najdete tega, kar iščete</translation>
 <translation id="3813358687923336574">Jezik, uporabljen za prevajanje strani, in hitri odgovori</translation>
 <translation id="3814529970604306954">Šolski račun</translation>
+<translation id="3814792775883886759">Povezana ni nobena kamera</translation>
 <translation id="3816118180265633665">Barve za Chrome</translation>
 <translation id="3817524650114746564">V računalniku odprite nastavitve strežnika proxy</translation>
 <translation id="3819164369574292143">Povečajte sliko, če želite povečati elemente na zaslonu. Če želite vklopiti ali izklopiti lupo, pritisnite tipko za iskanje + Ctrl + M. Pri povečavi za premikanje uporabite tipke Ctrl + Alt + puščične tipke.</translation>
@@ -4291,6 +4297,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5017643436812738274">Po straneh se lahko premikate s kazalcem besedila. Pritisnite Ctrl + Search + 7 za izklop.</translation>
 <translation id="5018207570537526145">Odpri spletno mesto razširitve</translation>
 <translation id="5018526990965779848">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Te podatke uporabljamo za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. Če ste vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v vašem računu Google.</translation>
+<translation id="5020008942039547742">Izberite drugo okno</translation>
 <translation id="5021750053540820849">Še ni posodobljeno</translation>
 <translation id="5024511550058813796">Zgodovino si boste lahko ogledali v vseh sinhroniziranih napravah, da boste lahko nadaljevali, kar ste počeli.</translation>
 <translation id="5026492829171796515">Prijavite se, če želite dodati račun Google</translation>
@@ -4517,6 +4524,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5252653240322147470">Koda PIN sme imeti največ toliko števk: <ph name="MAXIMUM" /></translation>
 <translation id="5254368820972107711">Prikaz datotek, ki jih želite odstraniti</translation>
 <translation id="52550593576409946">Aplikacije Kiosk ni bilo mogoče zagnati.</translation>
+<translation id="5255726914791076208">Ko boste uredili ključ za dostop, se račun <ph name="RP_ID" /> ne bo spremenil.</translation>
 <translation id="5255859108402770436">Vnovična prijava</translation>
 <translation id="52566111838498928">Nalaganje pisav …</translation>
 <translation id="5256861893479663409">Na vseh spletnih mestih</translation>
@@ -6063,6 +6071,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="672609503628871915">Oglejte si novosti</translation>
 <translation id="67269783048918309">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Ta naprava trenutno Googlu samodejno pošilja diagnostične podatke ter podatke o uporabi naprave in aplikacij. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To <ph name="BEGIN_LINK1" />nastavitev<ph name="END_LINK1" /> je uveljavil lastnik naprave. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu za Google. <ph name="BEGIN_LINK2" />Več o tem<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Povezano, <ph name="BATTERY_PERCENTAGE" /> % energije akumulatorja</translation>
+<translation id="6729192290958770680">Vnesite uporabniško ime</translation>
 <translation id="6731320427842222405">To lahko traja nekaj minut</translation>
 <translation id="6733620523445262364">Ustvarjeno: »<ph name="BOOKMARK_TITLE" />«.</translation>
 <translation id="6735304988756581115">Prikaz piškotkov in drugih podatkov mesta ...</translation>

@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> file dipilih</translation>
+<translation id="2383454254762599978">Pindahkan ke sampah</translation>
 <translation id="2387458720915042159">Jenis sambungan proxy</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Buka drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
 <translation id="3556731189587832921">Inggris (AS) dengan keyboard International PC</translation>
+<translation id="3557414470514932909">Memindahkan <ph name="FILE_NAME" /> ke sampah</translation>
 <translation id="3567221313191587603">Pilih file, dan aktifkan <ph name="OFFLINE_CHECKBOX_NAME" /> untuk mendapatkan akses offline ke file Anda.</translation>
 <translation id="357479282490346887">Lituania</translation>
 <translation id="3587482841069643663">Semua</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Fonetik Bengali</translation>
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4017788180641807848">Inggris (AS) dengan keyboard Workman</translation>
+<translation id="4019998208269143058">Sematkan ke file cepat</translation>
 <translation id="4040753847560036377">PUK salah</translation>
 <translation id="4057991113334098539">Mengaktifkan...</translation>
 <translation id="4092890906744441904">Irlandia</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Kebijakan administrator tidak merekomendasikan:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> dipindahkan.</translation>
 <translation id="4176286497474237543">Kosongkan sampah sekarang</translation>
+<translation id="4179621117429069925">Item ini ada di sampah Anda</translation>
 <translation id="4186579485882418952">Aktifkan Offline</translation>
 <translation id="4193154014135846272">Dokumen Google</translation>
 <translation id="4197674956721858839">Pilihan file zip</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Sertifikat atutentikasi ditolak dari jarak jauh</translation>
 <translation id="4394214039309501350">Link eksternal</translation>
 <translation id="4394980935660306080">Awal minggu ini</translation>
+<translation id="4398096759193130964">Pulihkan item atau tarik ke folder baru di luar sampah</translation>
 <translation id="4401287888955153199">Ekstrak semua</translation>
 <translation id="4410695710508688828">Operasi pengekstrakan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Buat pintasan untuk file Anda</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi dengan keyboard InScript</translation>
 <translation id="4801956050125744859">Simpan keduanya</translation>
 <translation id="4804827417948292437">Avokad</translation>
+<translation id="4805966553127040832">Memulihkan <ph name="COUNT" /> item</translation>
 <translation id="4823651846660089135">Perangkat berstatus hanya-baca</translation>
 <translation id="4826849268470072925">ITRANS Tamil</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> item dipilih</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Sepak bola</translation>
 <translation id="4961158930123534723">1 folder dibagikan ke Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Gunakan nama yang terdiri dari <ph name="MAX_LENGTH" /> karakter atau kurang</translation>
 <translation id="4973970068702235170">Gagal membuat file zip, error: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Ups, <ph name="FILE_NAME" /> sudah tidak ada.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Buka kunci</translation>
 <translation id="5700087501958648444">Info audio</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> dipindahkan ke sampah</translation>
 <translation id="5724172041621205163">Thai dengan keyboard Pattachote</translation>
 <translation id="5756666464756035725">QWERTY Magyar</translation>
 <translation id="5763377084591234761">Jerman (Swiss)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Arsip <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Melambaikan tangan</translation>
 <translation id="6327785803543103246">Penemuan otomatis proksi web</translation>
+<translation id="6337014272874260727">Lepaskan dari file cepat</translation>
 <translation id="6339145975392024142">Internasional AS (PC)</translation>
 <translation id="6346310558342052870">Akses dibatasi</translation>
 <translation id="6356685157277930264">Jendela masukan file</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 folder dipilih</translation>
 <translation id="6755827872271341378">Perangkat ChromeOS Flex</translation>
 <translation id="6790428901817661496">Putar</translation>
+<translation id="6794539005637808366">Pulihkan item atau tarik ke folder baru di luar sampah</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Kelola fitur berbagi Linux</translation>
 <translation id="6806796368146926706">Alfanumerik dengan keyboard bahasa Jepang</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Swedia</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
+<translation id="6993826899923627728">Item ini ada di sampah Anda</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> folder dipilih</translation>
 <translation id="7008426324576352165">Organisasi Anda memerlukan penyimpanan ekstra untuk menyelesaikan upload.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Ceko</translation>
 <translation id="7417453074306512035">Keyboard Ethiopia</translation>
 <translation id="7417705661718309329">Peta Google</translation>
+<translation id="7419668828140929293">Memulihkan "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">Tidak ada gambar terbaru</translation>
 <translation id="7460898608667578234">Ukraina</translation>
 <translation id="7469894403370665791">Otomatis hubungkan ke jaringan ini</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Akses Google Foto dengan mudah</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> item dipindahkan ke sampah</translation>
 <translation id="7693909743393669729">Memformat drive akan menghapus semua data yang tersimpan di dalamnya dan menghapus semua partisi yang ada, termasuk partisi yang mungkin tidak terlihat. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="7695430100978772476">Tidak dapat memformat <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Gagal mengosongkan sampah.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Wubi China</translation>
 <translation id="7765158879357617694">Pindahkan</translation>
 <translation id="7774365994322694683">Burung</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> item dipulihkan</translation>
 <translation id="7781829728241885113">Kemarin</translation>
 <translation id="7788080748068240085">Untuk menyimpan "<ph name="FILE_NAME" />" secara offline, Anda harus mengosongkan ruang tambahan sebesar <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />lepas sematan file yang tidak lagi Anda gunakan untuk mengakses secara offline<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
 <translation id="954194396377670556">Kebijakan administrator mencegah:</translation>
 <translation id="965477715979482472">Inggris (Afrika Selatan)</translation>
+<translation id="976666271385981812">Memindahkan <ph name="NUMBER_OF_ITEMS" /> item ke sampah</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>
 <translation id="992401651319295351">Tersisa <ph name="RETRIES" /> upaya lagi. Anda tidak akan dapat menggunakan jaringan ini hingga Anda menyiapkan PIN baru.</translation>

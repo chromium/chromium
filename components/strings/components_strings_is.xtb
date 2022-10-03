@@ -244,7 +244,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1527263332363067270">Bíður tengingar...</translation>
 <translation id="1529789484829130889">Bakki 8</translation>
 <translation id="1530707389502320859">Vefsvæðið sem þú varst að reyna að opna virðist vera falskt. Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera litlar og illgreinanlegar breytingar á vefslóðinni.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Þessi síða segir</translation>
 <translation id="153384715582417236">Það er allt og sumt í bili</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
@@ -668,7 +667,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2673968385134502798">Leikir</translation>
 <translation id="2674170444375937751">Ertu viss um að þú viljir eyða þessum síðum úr ferlinum?</translation>
 <translation id="2674804415323431591">Fela tillögur</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Afmæli og nafnadagar</translation>
 <translation id="2677748264148917807">Yfirgefa</translation>
 <translation id="2679714844901977852">Vistaðu korta- og innheimtuupplýsingarnar þínar á Google reikningnum þínum <ph name="USER_EMAIL" /> fyrir öruggari og hraðari greiðslur</translation>
@@ -874,7 +872,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3270156322180235608">Flugferðir</translation>
 <translation id="3270847123878663523">Aft&amp;urkalla nýja röðun</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vill tengjast</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Fyrirtækið þitt, <ph name="ENROLLMENT_DOMAIN" />, hefur sent einhverjar upplýsingar á eftirfarandi vefsvæði, á borð við stillingar og reglur.</translation>
 <translation id="3282497668470633863">Bæta við nafni á korti</translation>
 <translation id="3286372614333682499">skammsnið</translation>
@@ -940,7 +937,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3438829137925142401">Nota aðgangsorð sem eru vistuð á Google reikningnum þínum</translation>
 <translation id="3440783957068352691">ferningslaga</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Eigandi þessa tækis hefur slökkt á risaeðluleiknum.</translation>
 <translation id="3447884698081792621">Sýna vottorð (gefið út af <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Tími milli endurnýjunar:</translation>
@@ -1112,7 +1108,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vill spila varið efni. Auðkenni tækisins verður staðfest af Google og þetta vefsvæði kann að fá aðgang að því.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (póstkort)</translation>
 <translation id="3927932062596804919">Hafna</translation>
 <translation id="393316646445601645">Internet og símaþjónusta</translation>
 <translation id="3939773374150895049">Nota WebAuthn í stað CVC-númers?</translation>
@@ -1280,7 +1275,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4340575312453649552">Chrome fjarlægði þessa auglýsingu vegna þess að hún notaði of mikið af gögnum fyrir tækið þitt.</translation>
 <translation id="4340982228985273705">Tölvunni virðist ekki vera stýrt af fyrirtæki og því getur reglan aðeins sett sjálfkrafa upp viðbætur sem hýstar eru í vefverslun Chrome. Uppfærsluvefslóð vefverslunar Chrome er „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">Kreditkort sem tekið er við</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Tengingin við <ph name="SITE" /> er ekki örugg</translation>
 <translation id="4349365535725594680">Ekki er hægt að deila trúnaðarupplýsingum</translation>
 <translation id="4349810866125026513">Hlaða samt upp</translation>
@@ -2168,7 +2162,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Tækið þitt fór að sofa.</translation>
 <translation id="6767985426384634228">Uppfæra heimilisfang?</translation>
-<translation id="6768213884286397650">Hagaki (póstkort)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Viðskiptalán</translation>
 <translation id="6786145470008421571">Umslag: 16 x 23 cm</translation>
@@ -2570,7 +2563,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7751971323486164747">Sérsníða leturstærðir og leturgerðir í Chrome</translation>
 <translation id="7752995774971033316">Ekki stjórnað</translation>
 <translation id="7755624218968747854">Aðalrúlla</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Hugsanlega lokaði eldveggur eða vírusvörn fyrir þessa tengingu.</translation>
 <translation id="7760497246331667482">Reggí og Karíbahafstónlist</translation>
 <translation id="776110834126722255">Úrelt</translation>
@@ -2877,7 +2869,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8676424191133491403">Engin töf</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, svar, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ekki var hægt að hlaða vefsíðuna á <ph name="PAGE" /> vegna þess að:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> hefur umsjón með tækinu þínu og reikningnum.</translation>
 <translation id="8688672835843460752">Laust</translation>
 <translation id="868922510921656628">Síður í setti</translation>
@@ -3112,7 +3103,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="984275831282074731">Greiðslumátar</translation>
 <translation id="985199708454569384">&lt;p&gt;Þessi villa birtist ef dagsetning og tími tölvunnar eða tækisins eru stillt rangt.&lt;/p&gt;
     &lt;p&gt;Leystu úr þessu með því að opna klukku tölvunnar eða tækisins og stilla rétta dagsetningu og tíma.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Almennt</translation>
 <translation id="988159990683914416">Forritarasmíði</translation>
 <translation id="989988560359834682">Breyta heimilisfangi</translation>

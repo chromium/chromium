@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">ግንኙነትን በመጠበቅ ላይ…</translation>
 <translation id="1529789484829130889">መሳቢያ 8</translation>
 <translation id="1530707389502320859">አሁን ለመጎብኘት የሞከሩት ጣቢያ የሐስት ይመስላል። አጥቂዎች አንዳንድ ግ ጊዜ በዩአርኤሉ ላይ ለመታየት የሚያስቸግሩ አነስተኛ ለውጦችን በማድረግ ጥኣቢያዎችን ያስመስላሉ።</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">ይህ ገጽ እንዲህ ይላል፦</translation>
 <translation id="153384715582417236">ለአሁን ያለው ይኸው ነው</translation>
 <translation id="1536390784834419204">ገጽ ተርጉም</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">ጨዋታዎች</translation>
 <translation id="2674170444375937751">እርግጠኛ ነዎት እነዚህን ገጾች ከታሪክዎ መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2674804415323431591">የአስተያየት ጥቆማዎችን ደብቅ</translation>
-<translation id="2676271551327853224">ROC 8K</translation>
 <translation id="2677696497921480781">የልደት ቀናት እና የስም ቀናት</translation>
 <translation id="2677748264148917807">ለቅቀህ ውጣ</translation>
 <translation id="2679714844901977852">ለደህንነታቸው የተጠበቀ እና ፈጣን ክፍያ ማጠናቀቆች የካርድዎን እና የሂሳብ አከፋፈልዎን መረጃ በእርስዎ Google መለያ <ph name="USER_EMAIL" /> ላይ ያስቀምጡ</translation>
@@ -873,7 +871,6 @@
 <translation id="3270156322180235608">የአየር ጉዞ</translation>
 <translation id="3270847123878663523">&amp;ዳግም ደርድርን ቀልብስ</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> መገናኘት ይፈልጋል</translation>
-<translation id="3274521967729236597">ፓ-ካይ</translation>
 <translation id="3282085321714087552">ድርጅትዎ <ph name="ENROLLMENT_DOMAIN" /> እንደ ቅንብሮች ወይም መመሪያዎች ላሉት ለሚከተሉት ድር ጣቢያዎች የተወሰነ መረጃ ልኳል።</translation>
 <translation id="3282497668470633863">በካርድ ላይ ስም ያክሉ</translation>
 <translation id="3286372614333682499">የምስል ፍሬ</translation>
@@ -939,7 +936,6 @@
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
 <translation id="3438829137925142401">በእርስዎ የGoogle መለያ ውስጥ የተቀመጡ የይለፍ ቃሎችን ይጠቀሙ</translation>
 <translation id="3440783957068352691">ካሬ</translation>
-<translation id="3443726618221119081">ጁሮ-ኩ-ካይ</translation>
 <translation id="3447661539832366887">የዚህ መሣሪያ ባለቤት የዳይኖሰር ጨዋታውን አጥፍቶታል።</translation>
 <translation id="3447884698081792621">የእውቅና ማረጋገጫን አሳይ (በ<ph name="ISSUER" /> የሚሰጥ)</translation>
 <translation id="3452404311384756672">የሚመጣው በየ፦</translation>
@@ -1111,7 +1107,6 @@
 <translation id="3906954721959377182">ጡባዊ</translation>
 <translation id="3909477809443608991"><ph name="URL" /> የተጠበቀ ይዘትን ማጫወት ይፈልጋል። የመሣሪያዎ ማንነት በGoogle የሚረጋገጥ ሲሆን በዚህ ጣቢያ ሊደረስበት ይችላል።</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">ኦፉኩ ሃጋኪ (ፖስት ካርድ)</translation>
 <translation id="3927932062596804919">ከልክል</translation>
 <translation id="393316646445601645">በይነመረብ እና ቴሌኮም</translation>
 <translation id="3939773374150895049">ከCVC ይልቅ WebAuthnን ይጠቀሙ?</translation>
@@ -1279,7 +1274,6 @@
 <translation id="4340575312453649552">ይህ ማስታወቂያ ለመሣሪያዎ በጣም ብዙ ሀብቶችን ተጠቅሟል፣ ስለዚህ Chrome አስወግደውታል።</translation>
 <translation id="4340982228985273705">ይህ ኮምፒውተር እንደ በድርጅት የሚተዳደር ሆኖ አይታይም፣ ስለዚህ መመሪያ በChrome የድር ማከማቻ ላይ የሚስተናገዱ ቅጥያዎችን ብቻ በራስ-ሰር ነው መጫን የሚችለው። የChrome ድር ማከማቻው ዝማኔ ዩአርኤል «<ph name="CWS_UPDATE_URL" />» ነው።</translation>
 <translation id="4346197816712207223">ተቀባይነት ያላቸው ክሬዲት ካርዶች</translation>
-<translation id="4346833872170306413">ROC 8K</translation>
 <translation id="4348834659292907206">ከ<ph name="SITE" /> ጋር ያለው ግንኙነት ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="4349365535725594680">ሚስጥራዊ ይዘትን ማጋራት አይቻልም</translation>
 <translation id="4349810866125026513">ቢሆንም ስቀል</translation>
@@ -2167,7 +2161,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">የእርስዎ መሣሪያ ተኝቷል።</translation>
 <translation id="6767985426384634228">አድራሻ ይዘምን?</translation>
-<translation id="6768213884286397650">ሃጋኪ (ፖስታ ካርድ)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">የንግድ ብድር</translation>
 <translation id="6786145470008421571">6 x 9 ኢንች ፖስታ</translation>
@@ -2569,7 +2562,6 @@
 <translation id="7751971323486164747">በChrome ውስጥ የቅርጸ-ቁምፊ መጠኖችን እና መልከ ቁምፊዎችን ያብጁ</translation>
 <translation id="7752995774971033316">አይቀናበርም</translation>
 <translation id="7755624218968747854">ዋና ጥቅልል</translation>
-<translation id="7757555340166475417">ዳይ ፓ ካይ</translation>
 <translation id="7758069387465995638">የኬላ ወይም የፀረ-ቫይረስ ሶፍትዌር ግንኙነቱን አግዶት ሊሆን ይችላል።</translation>
 <translation id="7760497246331667482">ሬጌ እና የካሪቢያን ሙዚቃ</translation>
 <translation id="776110834126722255">ተቋርጧል</translation>
@@ -2877,7 +2869,6 @@
 <translation id="8676424191133491403">የዘገየ የለም</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />፣ መልስ፣ <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገጽ ሊጫን አልቻለም ምክንያቱም፦</translation>
-<translation id="8685155993131031756">PRC 16K</translation>
 <translation id="8687429322371626002">የእርስዎ መሣሪያ እና መለያ የሚተዳደሩት በ<ph name="MANAGER" /> ነው።</translation>
 <translation id="8688672835843460752">ይገኛል</translation>
 <translation id="868922510921656628">ገጾች በስብስብብ</translation>
@@ -3112,7 +3103,6 @@
 <translation id="984275831282074731">የመክፈያ ዘዴዎች</translation>
 <translation id="985199708454569384">&lt;p&gt;የእርስዎ ኮምፒውተር ወይም የተንቀሳቃሽ መሣሪያ ውሂብና ሰዓት ትክክል ካልሆኑ ይህን ስህተት ያዩታል።&lt;/p&gt;
     &lt;p&gt;ስህተቱን ለማስተካከል የመሣሪያዎን ሰዓት ይክፈቱ። ሰዓቱ እና ቀኑ ትክክል መሆኑን ያረጋግጡ።&lt;/p&gt;</translation>
-<translation id="985956168329721395">PRC 16K</translation>
 <translation id="987264212798334818">አጠቃላይ</translation>
 <translation id="988159990683914416">የገንቢዎች ግንባታ</translation>
 <translation id="989988560359834682">አድራሻ ያርትዑ</translation>

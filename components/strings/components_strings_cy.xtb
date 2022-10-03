@@ -244,7 +244,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1527263332363067270">Wrthi'n aros am gysylltiad…</translation>
 <translation id="1529789484829130889">Hambwrdd 8</translation>
 <translation id="1530707389502320859">Mae'r wefan rydych newydd geisio ymweld â hi yn ymddangos yn ffug. Weithiau mae ymosodwyr yn dynwared gwefannau drwy wneud newidiadau bach, anodd eu gweld i'r URL.</translation>
-<translation id="1531205177818805254">Gweithrediaeth</translation>
 <translation id="1532118530259321453">Dywed y dudalen hon</translation>
 <translation id="153384715582417236">Dyna'r cyfan am nawr</translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
@@ -668,7 +667,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2673968385134502798">Gemau</translation>
 <translation id="2674170444375937751">Ydych chi'n siŵr eich bod chi am ddileu'r tudalennau hyn o'ch hanes?</translation>
 <translation id="2674804415323431591">Cuddio awgrymiadau</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Penblwyddi a dyddiau enwau</translation>
 <translation id="2677748264148917807">Gadael</translation>
 <translation id="2679714844901977852">Cadw eich cerdyn a gwybodaeth bilio i'ch Cyfrif Google <ph name="USER_EMAIL" /> er mwyn talu'n gyflymach ac yn ddiogel</translation>
@@ -874,7 +872,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3270156322180235608">Teithio awyr</translation>
 <translation id="3270847123878663523">&amp;Ailwneud Aildrefnu</translation>
 <translation id="3271648667212143903">Mae <ph name="ORIGIN" /> eisiau cysylltu</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Mae eich sefydliad, <ph name="ENROLLMENT_DOMAIN" />, wedi anfon rhywfaint o wybodaeth at y gwefannau canlynol, megis gosodiadau neu bolisïau.</translation>
 <translation id="3282497668470633863">Ychwanegwch yr enw ar y cerdyn</translation>
 <translation id="3286372614333682499">portread</translation>
@@ -940,7 +937,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3438829137925142401">Defnyddiwch gyfrineiriau a gedwir yn eich Cyfrif Google</translation>
 <translation id="3440783957068352691">sgwar</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Gwnaeth perchennog y ddyfais hon ddiffodd y gêm ddeinosor.</translation>
 <translation id="3447884698081792621">Dangos tystysgrif (cyhoeddwyd gan <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Cyfnod Nôl:</translation>
@@ -1112,7 +1108,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3906954721959377182">Llechen</translation>
 <translation id="3909477809443608991">Mae <ph name="URL" /> eisiau chwarae cynnwys gwarchodedig. Bydd hunaniaeth eich dyfais yn cael ei gwirio gan Google ac mae'n bosib y bydd y wefan hon yn gallu cael mynediad ati.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Cerdyn post)</translation>
 <translation id="3927932062596804919">Gwrthod</translation>
 <translation id="393316646445601645">Rhyngrwyd a thelathrebu</translation>
 <translation id="3939773374150895049">Defnyddio WebAuthn yn lle CVC?</translation>
@@ -1280,7 +1275,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4340575312453649552">Gwnaeth yr hysbyseb hon ddefnyddio gormod o adnoddau i'ch dyfais, felly gwnaeth Chrome ei dynnu.</translation>
 <translation id="4340982228985273705">Nid yw'r cyfrifiadur hwn yn cael ei ganfod fel un a reolir gan fenter, felly dim ond estyniadau a gynhelir ar Chrome Webstore y gall y polisi eu gosod yn awtomatig. Yr URL diweddaru Chrome Webstore yw "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Cardiau Credyd a Dderbynnir</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Nid yw'r cysylltiad â <ph name="SITE" /> yn ddiogel</translation>
 <translation id="4349365535725594680">Methu â rhannu cynnwys cyfrinachol</translation>
 <translation id="4349810866125026513">Uwchlwytho beth bynnag</translation>
@@ -2168,7 +2162,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Aeth eich dyfais i gysgu.</translation>
 <translation id="6767985426384634228">Diweddaru'r Cyfeiriad?</translation>
-<translation id="6768213884286397650">Hagaki (Cerdyn Post)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Benthyca masnachol</translation>
 <translation id="6786145470008421571">Amlen 6 x 9 o fodfeddi</translation>
@@ -2570,7 +2563,6 @@ Manylion ychwanegol:
 <translation id="7751971323486164747">Personoleiddio meintiau ffont a theipiau yn Chrome</translation>
 <translation id="7752995774971033316">Heb ei reoli</translation>
 <translation id="7755624218968747854">Prif Rôl</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Mae'n bosib bod meddalwedd wal dân neu wrthfeirysau wedi rhwystro'r cysylltiad.</translation>
 <translation id="7760497246331667482">Cerddoriaeth reggae a charibïaidd</translation>
 <translation id="776110834126722255">Anghymeradwy</translation>
@@ -2877,7 +2869,6 @@ Manylion ychwanegol:
 <translation id="8676424191133491403">Dim oedi</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ateb, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ni ellid llwytho'r dudalen we yn <ph name="PAGE" /> oherwydd:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Rheolir eich dyfais a'ch cyfrif gan <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Ar gael</translation>
 <translation id="868922510921656628">Tudalennau fesul set</translation>
@@ -3112,7 +3103,6 @@ Manylion ychwanegol:
 <translation id="984275831282074731">Dulliau talu</translation>
 <translation id="985199708454569384">&lt;p&gt;Byddwch yn gweld y gwall hwn os yw dyddiad ac amser eich cyfrifiadur neu ddyfais symudol yn anghywir.&lt;/p&gt;
     &lt;p&gt;Agorwch gloc eich dyfais i gywiro'r gwall. Gwnewch yn siŵr bod yr amser a'r dyddiad yn gywir.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Cyffredinol</translation>
 <translation id="988159990683914416">Fersiwn Datblygwyr</translation>
 <translation id="989988560359834682">Golygu'r Cyfeiriad</translation>

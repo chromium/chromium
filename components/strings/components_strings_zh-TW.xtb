@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">正在等待連線…</translation>
 <translation id="1529789484829130889">紙匣 8</translation>
 <translation id="1530707389502320859">你剛才嘗試造訪的網站可能是假網站。攻擊者有時會在網址中加入難以辨識的細微變更來仿冒網站。</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">這個網頁顯示</translation>
 <translation id="153384715582417236">暫無內容</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">遊戲</translation>
 <translation id="2674170444375937751">確定要從你的記錄中刪除這些網頁嗎？</translation>
 <translation id="2674804415323431591">隱藏建議項目</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">生日與命名日</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2679714844901977852">將卡片和帳單資訊儲存在你的 Google 帳戶 <ph name="USER_EMAIL" /> 中，享受更安全便捷的結帳程序</translation>
@@ -873,7 +871,6 @@
 <translation id="3270156322180235608">航空旅遊</translation>
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連線</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">貴機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到下列網站。</translation>
 <translation id="3282497668470633863">新增持卡人姓名</translation>
 <translation id="3286372614333682499">肖像</translation>
@@ -939,7 +936,6 @@
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3438829137925142401">使用儲存在 Google 帳戶中的密碼</translation>
 <translation id="3440783957068352691">正方形</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">這個裝置的擁有者已關閉恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
@@ -1111,7 +1107,6 @@
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想要播放受到保護的內容。Google 會驗證你的裝置身分，這個網站可能也會存取你的裝置身分。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (明信片)</translation>
 <translation id="3927932062596804919">拒絕</translation>
 <translation id="393316646445601645">網際網路與電信</translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代信用卡驗證碼嗎？</translation>
@@ -1279,7 +1274,6 @@
 <translation id="4340575312453649552">這個廣告使用了太多裝置資源，因此 Chrome 已將其移除。</translation>
 <translation id="4340982228985273705">系統偵測結果顯示這台電腦未受企業管理，因此政策只能自動安裝透過 Chrome 線上應用程式商店代管的擴充功能。Chrome 線上應用程式商店更新網址為「<ph name="CWS_UPDATE_URL" />」。</translation>
 <translation id="4346197816712207223">接受的信用卡</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">與 <ph name="SITE" /> 的連線並不安全</translation>
 <translation id="4349365535725594680">無法分享機密內容</translation>
 <translation id="4349810866125026513">仍要上傳</translation>
@@ -2167,7 +2161,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">您的裝置已進入睡眠模式。</translation>
 <translation id="6767985426384634228">要更新地址嗎？</translation>
-<translation id="6768213884286397650">Hagaki (明信片)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">商業借款</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
@@ -2569,7 +2562,6 @@
 <translation id="7751971323486164747">自訂 Chrome 中的字型大小和字體</translation>
 <translation id="7752995774971033316">未管理</translation>
 <translation id="7755624218968747854">主卷</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">防火牆或防毒軟體可能封鎖了連線。</translation>
 <translation id="7760497246331667482">雷鬼樂與加勒比海音樂</translation>
 <translation id="776110834126722255">已淘汰</translation>
@@ -2876,7 +2868,6 @@
 <translation id="8676424191133491403">不延遲</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案：<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">無法載入位於 <ph name="PAGE" /> 的網頁，原因如下：</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">你的裝置和帳戶是由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8688672835843460752">可用空間</translation>
 <translation id="868922510921656628">每組頁數</translation>
@@ -3111,7 +3102,6 @@
 <translation id="984275831282074731">付款方式</translation>
 <translation id="985199708454569384">&lt;p&gt;如果畫面顯示這則錯誤訊息，表示您電腦或行動裝置的日期或時間不正確。&lt;/p&gt;
     &lt;p&gt;如要修正這項錯誤，請開啟裝置的時鐘，確認時間和日期是否正確無誤。&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="988159990683914416">開發人員版本</translation>
 <translation id="989988560359834682">編輯地址</translation>

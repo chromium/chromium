@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">درانتظار برقراری اتصال…‏</translation>
 <translation id="1529789484829130889">سینی ۸</translation>
 <translation id="1530707389502320859">سایتی که لحظاتی پیش تلاش کردید از آن بازدید کنید، جعلی به‌نظر می‌رسد. گاهی‌اوقات حمله‌کنندگان با ایجاد تغییرات کوچک در نشانی وب که به‌آسانی قابل‌دیدن نیست، سایت‌ها را جعل می‌کنند.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">این صفحه می‌گوید</translation>
 <translation id="153384715582417236">درحال‌حاضر مورد دیگری وجود ندارد</translation>
 <translation id="1536390784834419204">ترجمه صفحه</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">بازی‌ها</translation>
 <translation id="2674170444375937751">آیا مطمئن هستید می‌خواهید این صفحات را از سابقه خود حذف کنید؟</translation>
 <translation id="2674804415323431591">پنهان کردن پیشنهادها</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">تاریخ تولد و روز نام‌گذاری</translation>
 <translation id="2677748264148917807">خروج</translation>
 <translation id="2679714844901977852">‏برای تسویه‌حساب ایمن و سریع‌تر، اطلاعات کارت و صورت‌حساب را در «حساب Google» <ph name="USER_EMAIL" /> ذخیره کنید</translation>
@@ -846,6 +844,7 @@
 <translation id="3216313131063488104">بلوز</translation>
 <translation id="3218181027817787318">خویشاوند</translation>
 <translation id="3223287115535306850">نماد متحرک راه‌اندازی برنامه</translation>
+<translation id="3223425961342298674">مکان مجاز نیست</translation>
 <translation id="3225347164936328585">دست زدن</translation>
 <translation id="3225919329040284222">سرور گواهی را نشان می‌دهد که با موارد پیش‌بینی‌شده داخلی مطابقت ندارد. این پیش‌بینی‌ها به‌طور حتم وب‌سایتهای دارای امنیت بالا را جهت محافظت از شما در بر می‌گیرند.</translation>
 <translation id="3226128629678568754">دکمه بار کردن مجدد را فشار دهید تا داده‌های مورد نیاز برای بارگیری صفحه مجدداً ارسال شود.</translation>
@@ -874,7 +873,6 @@
 <translation id="3270156322180235608">سفر هوایی</translation>
 <translation id="3270847123878663523">&amp;واگرد ترتیب‌بندی مجدد</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">سازمان شما، <ph name="ENROLLMENT_DOMAIN" />، اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>
 <translation id="3282497668470633863">افزودن نام روی کارت</translation>
 <translation id="3286372614333682499">عمودی</translation>
@@ -940,7 +938,6 @@
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3438829137925142401">‏استفاده از گذرواژه‌های ذخیره‌شده در «حساب Google»</translation>
 <translation id="3440783957068352691">مربع</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">مالک این دستگاه بازی دایناسور را خاموش کرده است</translation>
 <translation id="3447884698081792621">نمایش  گواهی (صادرشده توسط <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">فاصله زمانی واکشی:</translation>
@@ -1112,7 +1109,6 @@
 <translation id="3906954721959377182">رایانه لوحی</translation>
 <translation id="3909477809443608991">‏<ph name="URL" /> می‌خواهد محتوای محافظت‌شده پخش کند. هویت دستگاهتان توسط Google به‌تأیید می‌رسد و ممکن است این سایت به آن دسترسی داشته باشد.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">‏Oufuku Hagaki (کارت‌پستال)</translation>
 <translation id="3927932062596804919">ردکردن</translation>
 <translation id="393316646445601645">اینترنت و مخابرات</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
@@ -1185,6 +1181,7 @@
 <translation id="4127575959421463246">‏به‌دنبال پرچم‌های ChromeOS هستید؟ بازدید</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{۱ مورد دیگر}one{# مورد دیگر}other{# مورد دیگر}}</translation>
 <translation id="4130226655945681476">بررسی کابل‌های شبکه، مودم یا رهیاب</translation>
+<translation id="4132448310531350254">کنترل‌کننده تکراری برای پسوند فایل «<ph name="FILE_EXTENSION" />» که توسط برنامه‌های «<ph name="POLICY_IDS_LIST" />» ارجاع داده شده است.</translation>
 <translation id="4134123981501319574">ایجاد سند</translation>
 <translation id="413544239732274901">بیشتر بدانید</translation>
 <translation id="4142935452406587478">سینی ۱۰</translation>
@@ -1207,6 +1204,7 @@
 <translation id="4194250254487269611">متأسفیم، درحال‌حاضر نمی‌توان کارت شما را ذخیره کرد</translation>
 <translation id="4196861286325780578">&amp;انجام مجدد انتقال</translation>
 <translation id="4202554117186904723">رول پنجم</translation>
+<translation id="4203769790323223880">دوربین مجاز نیست</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />بررسی پیکربندی آنتی‌ویروس و دیوار آتش<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">بزرگ</translation>
 <translation id="4210602799576081649">کد درستی‌سنجی منقضی شده است؛ کد جدیدی درخواست کنید</translation>
@@ -1233,6 +1231,7 @@
     &lt;p&gt;وقتی کارتان تمام شد، فراموش نکنید که برنامه ضدویروس را دوباره روشن کنید.&lt;/p&gt;
     &lt;h4&gt;مرحله ۵: دریافت راهنمایی بیشتر&lt;/h4&gt;
     &lt;p&gt;اگر همچنان خطا را می‌بینید، با مالک وب‌سایت تماس بگیرید.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">میکروفون مجاز نیست</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />عیب‌یابی شبکه را اجرا کنید<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">می‌تواند برای استفاده از دوربین و حرکت دادن آن درخواست دهد</translation>
 <translation id="4235360514405112390">معتبر</translation>
@@ -1280,7 +1279,6 @@
 <translation id="4340575312453649552">‏این آگهی از منابع زیادی برای دستگاهتان استفاده کرده بود، بنابراین Chrome آن را حذف کرد.</translation>
 <translation id="4340982228985273705">‏این رایانه به‌صورت سازمانی مدیریت نمی‌شود، بنابراین خط‌مشی تنها می‌تواند به‌صورت خودکار افزونه‌های میزبانی‌شده در «نت‌بازار Chrome» را نصب کند. نشانی وب به‌روزرسانی «نت‌بازار Chrome» «<ph name="CWS_UPDATE_URL" />» است.</translation>
 <translation id="4346197816712207223">کارت‌های اعتباری قابل‌‌قبول</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">اتصال به <ph name="SITE" /> امن نیست</translation>
 <translation id="4349365535725594680">هم‌رسانی محتوای محرمانه ممکن نیست</translation>
 <translation id="4349810866125026513">به‌هرحال بارگذاری شود</translation>
@@ -1604,6 +1602,7 @@
 <translation id="5177076414499237632">آشنایی با منبع و موضوع این صفحه</translation>
 <translation id="5179510805599951267">به زبان <ph name="ORIGINAL_LANGUAGE" /> نیست؟ گزارش این خطا</translation>
 <translation id="518639307526414276">غذای حیوانات خانگی و وسایل مراقبت از آن‌ها</translation>
+<translation id="5190072300954988691">دوربین و میکروفون مجاز نیست</translation>
 <translation id="5190835502935405962">نوار نشانک‌ها</translation>
 <translation id="5191315092027169558">نمایه‌تان تحت‌مدیریت <ph name="DOMAIN" /> است</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> می‌خواهد چند فایل را بارگیری کند</translation>
@@ -1624,6 +1623,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">رد کردن</translation>
+<translation id="5239623327352565343">مکان مجاز است</translation>
 <translation id="5242889659037569123">لوازم سفر و چمدان</translation>
 <translation id="5250209940322997802">«به شبکه متصل شوید»</translation>
 <translation id="52517543715119994">‏با ویژگی‌های Chrome آشنا شوید</translation>
@@ -2168,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">دستگاهتان به خواب رفته است.</translation>
 <translation id="6767985426384634228">نشانی به‌روزرسانی شود؟</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">وام تجاری</translation>
 <translation id="6786145470008421571">پاکت ۹×۶ اینچی</translation>
@@ -2500,6 +2499,7 @@
 <translation id="7581199239021537589">‏روی ۲، تغییر جهت تصویر حول محور Y</translation>
 <translation id="7582602800368606489">‏ایجاد سریع رویداد جدید در «تقویم Google»</translation>
 <translation id="7583969447617676942">خدمات حقوقی</translation>
+<translation id="7586676035079382730">اعلان‌ها مجاز نیست</translation>
 <translation id="7591288787774558753">محتوای محرمانه هم‌رسانی شود؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> می‌خواهد از کوکی‌ها و داده‌های سایت <ph name="TOP_LEVEL_URL" /> استفاده کند</translation>
 <translation id="7592362899630581445">گواهی سرور محدودیت‌های نام را نقض می‌کند.</translation>
@@ -2570,7 +2570,6 @@
 <translation id="7751971323486164747">‏سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome</translation>
 <translation id="7752995774971033316">مدیریت نشده</translation>
 <translation id="7755624218968747854">رول اصلی</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">دیوار آتش یا نرم‌افزار ضدویروس ممکن است مانع اتصال شده باشد.</translation>
 <translation id="7760497246331667482">موسیقی رگی و کارائیبی</translation>
 <translation id="776110834126722255">منسوخ</translation>
@@ -2877,7 +2876,6 @@
 <translation id="8676424191133491403">بدون تأخیر</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />، پاسخ، <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">صفحه وب در <ph name="PAGE" /> نمی‌تواند بارگیری شود، زیرا:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">دستگاه و حسابتان توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="8688672835843460752">دردسترس</translation>
 <translation id="868922510921656628">صفحه‌های هر مجموعه</translation>
@@ -3052,6 +3050,7 @@
 <translation id="9131119348384879525">محتوای محرمانه ضبط شود؟</translation>
 <translation id="9136861683332321024">وسایل نقلیه گران‌قیمت</translation>
 <translation id="9137013805542155359">نمایش مورد اصلی</translation>
+<translation id="9138037198177304356">اعلان‌ها مجاز است</translation>
 <translation id="9139318394846604261">خرید</translation>
 <translation id="9141013498910525015">مدیریت نشانی‌ها</translation>
 <translation id="9144951720726881238">تاریخ انقضا:</translation>
@@ -3112,7 +3111,6 @@
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر تاریخ و زمان رایانه یا دستگاه همراهتان درست نباشد این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، ساعت دستگاه را باز کنید. مطمئن شوید تاریخ و زمان صحیح است.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">موارد کلی</translation>
 <translation id="988159990683914416">ساخت برنامه‌نویس</translation>
 <translation id="989988560359834682">ویرایش آدرس</translation>

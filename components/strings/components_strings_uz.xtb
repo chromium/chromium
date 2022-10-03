@@ -244,7 +244,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1527263332363067270">Aloqa kutilmoqda…</translation>
 <translation id="1529789484829130889">Tarnov 8</translation>
 <translation id="1530707389502320859">Hozirgina ochilgan sayt soxta shekilli. Odatda shubhali kimsalar URL manzilda kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Amalni tasdiqlang</translation>
 <translation id="153384715582417236">Hozircha hammasi shu</translation>
 <translation id="1536390784834419204">Sahifani tarjima qilish</translation>
@@ -667,7 +666,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2673968385134502798">Oʻyinlar</translation>
 <translation id="2674170444375937751">Ushbu sahifalar tarixdan butunlay o‘chirilsinmi?</translation>
 <translation id="2674804415323431591">Tavsiyalarni berkitish</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Tavallud va ism berish kunlari</translation>
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2679714844901977852">Xavfsiz va tez hisob-kitob qilish uchun Google hisobingizga (<ph name="USER_EMAIL" />) karta va hisob-kitob maʼlumotlarini saqlang</translation>
@@ -871,7 +869,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3270156322180235608">Avia sayohatlar</translation>
 <translation id="3270847123878663523">&amp;Qayta tartiblashni bekor qilish</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> qurilmangizga ulanmoqchi</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> tashkilotingiz quyidagi saytlarga sozlamalar va qoidalar kabi ayrim axborotlarni yubordi.</translation>
 <translation id="3282497668470633863">Karta egasining ismini kiriting</translation>
 <translation id="3286372614333682499">tik</translation>
@@ -937,7 +934,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3438829137925142401">Google hisobingizda saqlangan parollarni ishlatish</translation>
 <translation id="3440783957068352691">kvadrat</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Bu qurilmaning egasi dinozavr o‘yinini o‘chirib qo‘ygan.</translation>
 <translation id="3447884698081792621">Sertifikatni ko‘rsatish (noshir: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Yuklash oralig‘i:</translation>
@@ -1107,7 +1103,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3906954721959377182">Planshet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> himoyalangan kontentni ijro etmoqchi. Bu saytdagi himoyalangan kontent ijro etilishi uchun qurilmangizdagi shaxsni tasdiqlash axboroti Google tomonidan tekshiriladi.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Ochiq xat)</translation>
 <translation id="3927932062596804919">Taqiqlash</translation>
 <translation id="393316646445601645">Internet va telekom</translation>
 <translation id="3939773374150895049">CVC oʻrniga WebAuthn ishlatilsinmi?</translation>
@@ -1275,7 +1270,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4340575312453649552">Bu reklama qurilamangizdan koʻp tizim manbalarini ishlatdi, shuning uchun uni Chrome olib tashladi.</translation>
 <translation id="4340982228985273705">Bu kompyuter korporativ boshqaruv ostida ekanligi aniqlanmadi, shuning uchun faqat Chrome internet-do‘konidagi kengaytmalar avtomatik tarzda o‘rnatilishi mumkin. Yangilash uchun URL manzili: “<ph name="CWS_UPDATE_URL" />”.</translation>
 <translation id="4346197816712207223">Qabul qilinadigan kredit kartalar</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> saytiga ulanish xavfsiz emas</translation>
 <translation id="4349365535725594680">Maxfiy kontent ulashilmadi</translation>
 <translation id="4349810866125026513">Baribir yuklash</translation>
@@ -2162,7 +2156,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Qurilma uyqu rejimiga o‘tib qoldi.</translation>
 <translation id="6767985426384634228">Manzil yangilansinmi?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Tijoriy ijara</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
@@ -2564,7 +2557,6 @@ Batafsil axborot:
 <translation id="7751971323486164747">Chromeda shrift oʻlchami va yozuvlarini moslash</translation>
 <translation id="7752995774971033316">Boshqarilmaydi</translation>
 <translation id="7755624218968747854">Asosiy oʻram</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Himoya devori yoki antivirus dasturi tarmoqqa ulanishni taqiqlab qo‘ygan bo‘lishi mumkin.</translation>
 <translation id="7760497246331667482">Reggi va karib musiqasi</translation>
 <translation id="776110834126722255">Eskirgan</translation>
@@ -2871,7 +2863,6 @@ Batafsil axborot:
 <translation id="8676424191133491403">Kechikishsiz</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, javob, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> veb-sahifasi quyidagi sabablarga ko‘ra yuklanmadi:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Qurilmangiz va hisobingiz <ph name="MANAGER" /> domeni tomonidan boshqariladi.</translation>
 <translation id="8688672835843460752">Bo‘sh</translation>
 <translation id="868922510921656628">Majmuadagi sahifalar soni</translation>
@@ -3106,7 +3097,6 @@ Batafsil axborot:
 <translation id="984275831282074731">To‘lov usullari</translation>
 <translation id="985199708454569384">&lt;p&gt;Kompyuter yoki mobil qurilmangizning soati xato bo‘lsa, bu xabar sizga bildiriladi.&lt;/p&gt;
     &lt;p&gt;Buni hal qilish uchun qurilmangiz soatidan vaqt va sanani tuzating.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Umumiy</translation>
 <translation id="988159990683914416">Dasturchilar yig‘masi</translation>
 <translation id="989988560359834682">Manzilni o‘zgartirish</translation>

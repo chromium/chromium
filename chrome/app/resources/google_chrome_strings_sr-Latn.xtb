@@ -260,6 +260,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="608006075545470555">Dodajte poslovni profil u ovaj pregledač</translation>
 <translation id="6113794647360055231">Upravo smo poboljšali Chrome</translation>
 <translation id="6145313976051292476">Otvarajte PDF-ove u Chrome-u</translation>
+<translation id="6155960517327665396">Ušteda memorije je ubrzala Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6235018212288296708">Pravilo za dolazni saobraćaj za Google Chrome da biste omogućili mDNS saobraćaj.</translation>
@@ -360,6 +361,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="8286862437124483331">Google Chrome pokušava da prikaže lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="828798499196665338">Roditelj je isključio „Dozvole za sajtove, aplikacije i dodatke“ za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome je otkazao. Želite li da ga odmah ponovo pokrenete?</translation>
+<translation id="8341646175450781745">Kada je uključeno, Chrome oslobađa memoriju sa neaktivnih kartica. To aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i održava Chrome brzim. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> ili <ph name="BEGIN_LINK_2" />pošaljite povratne informacije<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Ova datoteka je opasna, pa ju je Chrome blokirao.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Sajtovi mogu da čuvaju informacije o vašim interesovanjima u Chrome-u. Na primer, ako posetite sajt da biste kupili patike za maraton, taj sajt može da definiše vaše interesovanje kao trčanje maratona. Kasnije, ako posetite neki drugi sajt da biste se prijavili za trku, taj sajt može da vam prikaže oglas za patike za trčanje na osnovu interesovanja.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>

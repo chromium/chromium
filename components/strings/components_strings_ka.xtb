@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">კავშირის მოლოდინში…</translation>
 <translation id="1529789484829130889">ლანგარი 8</translation>
 <translation id="1530707389502320859">როგორც ჩანს, საიტი, რომლის მონახულებასაც ეს-ესაა ცდილობდით, ყალბია. თავდამსხმელები, ზოგჯერ, ახდენენ საიტების იმიტირებას URL-ში მცირე, რთულად შესამჩნევი ცვლილებების შეტანით.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">ეს გვერდი იუწყება:</translation>
 <translation id="153384715582417236">ამ დროისთვის სულ ეს არის</translation>
 <translation id="1536390784834419204">გვერდის თარგმნა</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">თამაშები</translation>
 <translation id="2674170444375937751">დარწმუნებული ხართ, რომ გსურთ ამ გვერდების თქვენი ისტორიიდან წაშლა?</translation>
 <translation id="2674804415323431591">შემოთავაზებების დამალვა</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">დაბადებისა და სახელების დღეები</translation>
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2679714844901977852">უსაფრთხო და სწრაფი ანგარიშსწორებისთვის შეინახეთ თქვენი ბარათისა და ბილინგის ინფორმაცია თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />)</translation>
@@ -875,7 +873,6 @@
 <translation id="3270156322180235608">საჰაერო მოგზაურობა</translation>
 <translation id="3270847123878663523">გადალაგების &amp;მოქმედების გაუქმება</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> დაკავშირებას ითხოვს</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">თქვენმა ორგანიზაციამ (<ph name="ENROLLMENT_DOMAIN" />) მითითებულ ვებსაიტებს გაუგზავნა გარკვეული ინფორმაცია, როგორიცაა პარამეტრები თუ წესები.</translation>
 <translation id="3282497668470633863">ბარათზე სახელის დამატება</translation>
 <translation id="3286372614333682499">პორტრეტი</translation>
@@ -941,7 +938,6 @@
 <translation id="3435738964857648380">უსაფრთხოება</translation>
 <translation id="3438829137925142401">თქვენს Google ანგარიშში შენახული პაროლების გამოყენება</translation>
 <translation id="3440783957068352691">კვადრატი</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">ამ მოწყობილობის მფლობელმა გამორთო დინოზავრის თამაში.</translation>
 <translation id="3447884698081792621">სერტიფიკატის ჩვენება (გამომცემელი: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">შერჩევის ინტერვალი:</translation>
@@ -1113,7 +1109,6 @@
 <translation id="3906954721959377182">ტაბლეტი</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ითხოვს დაცული კონტენტის დაკვრას. Google განახორციელებს თქვენი მოწყობილობის იდენტიფიკაციას, ხოლო ამ ინფორმაციაზე წვდომა შეიძლება ჰქონდეს ამ საიტსაც.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (ღია ბარათი)</translation>
 <translation id="3927932062596804919">უარყოფა</translation>
 <translation id="393316646445601645">ინტერნეტი და ტელეკომუნიკაცია</translation>
 <translation id="3939773374150895049">გსურთ გამოიყენოთ WebAuthn ნაცვლად CVC-ისა?</translation>
@@ -1284,7 +1279,6 @@
 <translation id="4340575312453649552">ეს რეკლამა იყენებდა თქვენი მოწყობილობის მეტისმეტად ბევრ რესურს, ამიტომ Chrome-მა ამოშალა ის.</translation>
 <translation id="4340982228985273705">ამ კომპიუტერს არ მართავს ორგანიზაცია. შესაბამისად, წესების მეშვეობით ავტომატურად შეიძლება დაინსტალირდეს მხოლოდ Chrome Web Store-ში არსებული გაფართოებები. Chrome Web Store-ის განახლების URL: „<ph name="CWS_UPDATE_URL" />“.</translation>
 <translation id="4346197816712207223">მისაღები საკრედიტო ბარათები</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-თან კავშირი არ არის დაცული</translation>
 <translation id="4349365535725594680">კონფიდენციალური კონტენტის გაზიარება ვერ მოხერხდება</translation>
 <translation id="4349810866125026513">მაინც ატვირთვა</translation>
@@ -2174,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">თქვენი მოწყობილობა ძილის რეჟიმზე გადავიდა.</translation>
 <translation id="6767985426384634228">გსურთ, განაახლოთ მისამართი?</translation>
-<translation id="6768213884286397650">Hagaki (ღია ბარათი)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">კომერციული დაკრედიტება</translation>
 <translation id="6786145470008421571">კონვერტი 6 x 9 დუიმი</translation>
@@ -2577,7 +2570,6 @@
 <translation id="7751971323486164747">შრიფტების ზომებისა და ტიპების მორგება Chrome-ში</translation>
 <translation id="7752995774971033316">არამართვადი</translation>
 <translation id="7755624218968747854">ძირითადი რულონი</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">კავშირი შეიძლება ქსელის დაცვის ან ანტივირუსული პროგრამული უზრუნველყოფის მიერ იყოს დაბლოკილი.</translation>
 <translation id="7760497246331667482">რეგი და კარიბული მუსიკა</translation>
 <translation id="776110834126722255">მოძველებული</translation>
@@ -2884,7 +2876,6 @@
 <translation id="8676424191133491403">დაყოვნების გარეშე</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, პასუხი, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-ზე არსებული ვებგვერდის ჩატვირთვა ვერ ხერხდება, რადგან:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">თქვენს მოწყობილობასა და ანგარიშს მართავს <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">ხელმისაწვდომი</translation>
 <translation id="868922510921656628">გვერდების რაოდენობა ნაკრებში</translation>
@@ -3120,7 +3111,6 @@
 <translation id="984275831282074731">გადახდის მეთოდები</translation>
 <translation id="985199708454569384">&lt;p&gt;ამ ტიპის შეცდომის შესახებ შეტყობინებას დაინახავთ იმ შემთხვევაში, თუ თქვენი კომპიუტერის ან მობილური მოწყობილობის დრო და თარიღი არასწორია.&lt;/p&gt;
     &lt;p&gt;ამ პრობლემის მოსაგვარებლად გახსენით თქვენი მოწყობილობის საათი. დარწმუნდით, რომ დრო და თარიღი სწორია.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">ზოგადი</translation>
 <translation id="988159990683914416">დეველოპერის კონსტრუქცია</translation>
 <translation id="989988560359834682">მისამართის რედაქტირება</translation>

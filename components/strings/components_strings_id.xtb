@@ -244,7 +244,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1527263332363067270">Menunggu koneksi internet...</translation>
 <translation id="1529789484829130889">Baki 8</translation>
 <translation id="1530707389502320859">Situs yang baru saja Anda coba kunjungi terlihat palsu. Penyerang terkadang meniru situs dengan membuat perubahan kecil dan sulit terlihat pada URL situs.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Halaman ini menyatakan</translation>
 <translation id="153384715582417236">Itu saja untuk sekarang</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
@@ -668,7 +667,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2673968385134502798">Game</translation>
 <translation id="2674170444375937751">Yakin ingin menghapus halaman ini dari histori?</translation>
 <translation id="2674804415323431591">Sembunyikan saran</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Hari ulang tahun &amp; pemberian nama</translation>
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2679714844901977852">Menyimpan info kartu dan tagihan ke Akun Google Anda <ph name="USER_EMAIL" /> untuk checkout yang lebih cepat dan aman</translation>
@@ -846,6 +844,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3216313131063488104">Musik blues</translation>
 <translation id="3218181027817787318">Relatif</translation>
 <translation id="3223287115535306850">Aplikasi sedang meluncurkan ikon pemuatan</translation>
+<translation id="3223425961342298674">Lokasi tidak diizinkan</translation>
 <translation id="3225347164936328585">Tepuk Tangan</translation>
 <translation id="3225919329040284222">Server menunjukkan sertifikat yang tidak sesuai dengan harapan terpasang. Harapan ini disertakan untuk situs web tertentu dengan keamanan tinggi guna melindungi Anda.</translation>
 <translation id="3226128629678568754">Tekan tombol muat ulang untuk mengirimkan lagi data yang dibutuhkan untuk memuat halaman ini.</translation>
@@ -874,7 +873,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3270156322180235608">Perjalanan udara</translation>
 <translation id="3270847123878663523">&amp;Urungkan Pengaturan Ulang</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ingin terhubung</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="3282497668470633863">Tambahkan nama di kartu</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -940,7 +938,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3435738964857648380">Keamanan</translation>
 <translation id="3438829137925142401">Gunakan sandi yang disimpan di Akun Google Anda</translation>
 <translation id="3440783957068352691">persegi</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Pemilik perangkat ini menonaktifkan game dinosaurus.</translation>
 <translation id="3447884698081792621">Tampilkan sertifikat (diterbitkan oleh <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval pengambilan:</translation>
@@ -1111,7 +1108,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ingin memutar konten yang dilindungi. Identitas perangkat Anda akan diverifikasi oleh Google dan akan dapat diakses oleh situs ini.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Kartu Pos)</translation>
 <translation id="3927932062596804919">Tolak</translation>
 <translation id="393316646445601645">Internet &amp; telekomunikasi</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
@@ -1184,6 +1180,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4127575959421463246">Mencari tanda ChromeOS? Buka</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
 <translation id="4130226655945681476">Periksa kabel jaringan, modem, dan router</translation>
+<translation id="4132448310531350254">Pengendali duplikat untuk file_extension "<ph name="FILE_EXTENSION" />" yang direferensikan oleh aplikasi "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Buat dokumen</translation>
 <translation id="413544239732274901">Pelajari lebih lanjut</translation>
 <translation id="4142935452406587478">Baki 10</translation>
@@ -1206,6 +1203,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4194250254487269611">Saat ini informasi kartu Anda tidak dapat disimpan</translation>
 <translation id="4196861286325780578">&amp;Ulangi pemindahan</translation>
 <translation id="4202554117186904723">Rol Kelima</translation>
+<translation id="4203769790323223880">Kamera tidak diizinkan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Periksa konfigurasi antivirus dan firewall<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Besar</translation>
 <translation id="4210602799576081649">Kode verifikasi sudah tidak berlaku, minta kode baru</translation>
@@ -1232,6 +1230,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
     &lt;p&gt;Ingat untuk menonaktifkan kembali program antivirus setelah Anda selesai.&lt;/p&gt;
     &lt;h4&gt;Langkah 5: Dapatkan bantuan ekstra&lt;/h4&gt;
     &lt;p&gt;Jika Anda masih melihat error, hubungi pemilik situs.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofon tidak diizinkan</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Coba jalankan Diagnostik Jaringan<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Dapat meminta untuk menggunakan &amp; menggerakkan kamera Anda</translation>
 <translation id="4235360514405112390">Valid</translation>
@@ -1279,7 +1278,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4340575312453649552">Iklan ini menggunakan terlalu banyak resource untuk perangkat Anda, sehingga Chrome menghapusnya.</translation>
 <translation id="4340982228985273705">Komputer ini tidak terdeteksi sebagai dikelola perusahaan sehingga kebijakan hanya dapat secara otomatis menginstal ekstensi yang dihosting di Chrome Webstore. URL update Chrome Webstore-nya adalah "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Kartu Kredit yang Diterima</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Koneksi ke <ph name="SITE" /> tidak aman</translation>
 <translation id="4349365535725594680">Tidak dapat membagikan konten rahasia</translation>
 <translation id="4349810866125026513">Tetap upload</translation>
@@ -1603,6 +1601,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5177076414499237632">Pelajari sumber &amp; topik halaman ini</translation>
 <translation id="5179510805599951267">Bukan <ph name="ORIGINAL_LANGUAGE" />? Laporkan kesalahan deteksi ini</translation>
 <translation id="518639307526414276">Makanan &amp; perlengkapan perawatan hewan peliharaan</translation>
+<translation id="5190072300954988691">Kamera dan mikrofon tidak diizinkan</translation>
 <translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="5191315092027169558">Profil Anda dikelola oleh <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ingin mendownload beberapa file</translation>
@@ -1623,6 +1622,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Tutup</translation>
+<translation id="5239623327352565343">Lokasi diizinkan</translation>
 <translation id="5242889659037569123">Koper &amp; aksesori perjalanan</translation>
 <translation id="5250209940322997802">"Sambungkan ke jaringan"</translation>
 <translation id="52517543715119994">Pelajari fitur-fitur Chrome</translation>
@@ -2167,7 +2167,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Perangkat Anda sedang dalam mode tidur.</translation>
 <translation id="6767985426384634228">Perbarui Alamat?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Pinjaman komersial</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 inci</translation>
@@ -2497,6 +2496,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7581199239021537589">Perpindahan image Y sisi 2</translation>
 <translation id="7582602800368606489">Buat acara baru di Google Kalender dengan cepat</translation>
 <translation id="7583969447617676942">Layanan hukum</translation>
+<translation id="7586676035079382730">Notifikasi tidak diizinkan</translation>
 <translation id="7591288787774558753">Bagikan konten rahasia?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ingin menggunakan cookie dan data situs di <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Sertifikat server melanggar batasan nama.</translation>
@@ -2567,7 +2567,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7751971323486164747">Sesuaikan ukuran font dan rupa huruf di Chrome</translation>
 <translation id="7752995774971033316">Tidak dikelola</translation>
 <translation id="7755624218968747854">Rol Utama</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Software antivirus atau firewall mungkin memblokir sambungan.</translation>
 <translation id="7760497246331667482">Musik reggae &amp; karibia</translation>
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
@@ -2872,7 +2871,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8676424191133491403">Tanpa penundaan</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, dengan jawaban, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Halaman web di <ph name="PAGE" /> tidak dapat dimuat karena:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Perangkat dan akun Anda dikelola oleh <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Tersedia</translation>
 <translation id="868922510921656628">Halaman per set</translation>
@@ -3047,6 +3045,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9131119348384879525">Rekam konten rahasia?</translation>
 <translation id="9136861683332321024">Kendaraan mewah</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
+<translation id="9138037198177304356">Notifikasi diizinkan</translation>
 <translation id="9139318394846604261">Belanja</translation>
 <translation id="9141013498910525015">Kelola alamat</translation>
 <translation id="9144951720726881238">Tanggal kedaluwarsa:</translation>
@@ -3107,7 +3106,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="984275831282074731">Metode pembayaran</translation>
 <translation id="985199708454569384">&lt;p&gt;Anda akan melihat error ini jika tanggal dan waktu di komputer atau perangkat seluler Anda tidak akurat.&lt;/p&gt;
     &lt;p&gt;Untuk memperbaiki error, buka jam perangkat. Pastikan waktu dan tanggal sudah tepat.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="988159990683914416">Buatan Pengembang</translation>
 <translation id="989988560359834682">Edit Alamat</translation>

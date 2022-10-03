@@ -260,6 +260,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="608006075545470555">Додајте пословни профил у овај прегледач</translation>
 <translation id="6113794647360055231">Управо смо побољшали Chrome</translation>
 <translation id="6145313976051292476">Отварајте PDF-ове у Chrome-у</translation>
+<translation id="6155960517327665396">Уштеда меморије је убрзала Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="6235018212288296708">Правило за долазни саобраћај за Google Chrome да бисте омогућили mDNS саобраћај.</translation>
@@ -360,6 +361,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8286862437124483331">Google Chrome покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="828798499196665338">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
 <translation id="8290100596633877290">Опа! Google Chrome је отказао. Желите ли да га одмах поново покренете?</translation>
+<translation id="8341646175450781745">Када је укључено, Chrome ослобађа меморију са неактивних картица. То активним картицама и другим апликацијама пружа више рачунарских ресурса и одржава Chrome брзим. Неактивне картице се аутоматски поново активирају када се вратите на њих. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /> или <ph name="BEGIN_LINK_2" />пошаљите повратне информације<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">Ова датотека је опасна, па ју је Chrome блокирао.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Како користимо ове податке:<ph name="END_BOLD" /> Сајтови могу да чувају информације о вашим интересовањима у Chrome-у. На пример, ако посетите сајт да бисте купили патике за маратон, тај сајт може да дефинише ваше интересовање као трчање маратона. Касније, ако посетите неки други сајт да бисте се пријавили за трку, тај сајт може да вам прикаже оглас за патике за трчање на основу интересовања.</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>

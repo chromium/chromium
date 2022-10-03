@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
 <translation id="2378075407703503998">ເລືອກ <ph name="SELCTED_FILE_COUNT" /> ໄຟລ໌ແລ້ວ</translation>
+<translation id="2383454254762599978">ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
 <translation id="2389832672041313158">ພາສາມຽນມາ/ພະມ້າ</translation>
 <translation id="2392369802118427583">ເປີດໃຊ້ງານ</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">ໄປທີ່ drive.google.com...</translation>
 <translation id="3553048479571901246">ເພື່ອເປີດໄຟລ໌ດ້ວຍ <ph name="APP_NAME" />, ກະລຸນາສຳເນົາພວກມັນໄປໃສ່ໂຟນເດີໄຟລ໌ຂອງ Windows ກ່ອນ.</translation>
 <translation id="3556731189587832921">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມຄອມພິວເຕີສາກົນ</translation>
+<translation id="3557414470514932909">ກຳລັງຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="3567221313191587603">ເລືອກໄຟລ໌ແລ້ວເປີດໃຊ້ <ph name="OFFLINE_CHECKBOX_NAME" /> ສຳລັບການເຂົ້າເຖິງອອບລາຍຫາໄຟລ໌ຂອງທ່ານ.</translation>
 <translation id="357479282490346887">ພາສາລິດທົວນີ</translation>
 <translation id="3587482841069643663">ທັງໝົດ</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">ການອອກສຽງພາສາບັງກລາ</translation>
 <translation id="4002066346123236978">ຫົວຂໍ້</translation>
 <translation id="4017788180641807848">ພາສາອັງກິດ (ສະຫະລັດ) ທີ່ໃຊ້ແປ້ນພິມ Workman</translation>
+<translation id="4019998208269143058">ປັກໝຸດໃສ່ໄຟລ໌ດ່ວນ</translation>
 <translation id="4040753847560036377">PUK ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4057991113334098539">ກຳລັງເປີດນຳໃຊ້...</translation>
 <translation id="4092890906744441904">ພາສາໄອຣິຊ</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳ:</translation>
 <translation id="4159731583141908892">ຍ້າຍ <ph name="FILE_NAME" /> ແລ້ວ.</translation>
 <translation id="4176286497474237543">ລ້າງຖັງຂີ້ເຫຍື້ອດຽວນີ້</translation>
+<translation id="4179621117429069925">ລາຍການນີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ.</translation>
 <translation id="4186579485882418952">ເປີດການນຳໃຊ້ອອບລາຍ</translation>
 <translation id="4193154014135846272">ເອ​ກະ​ສານ​ Google</translation>
 <translation id="4197674956721858839">ການເລືອກຊິບໄຟລ໌</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງທາງໄກແລ້ວ</translation>
 <translation id="4394214039309501350">ລິ້ງພາຍນອກ</translation>
 <translation id="4394980935660306080">ຕົ້ນອາທິດນີ້</translation>
+<translation id="4398096759193130964">ກູ້ຄືນລາຍການ ຫຼື ລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="4401287888955153199">ແຕກໄຟລ໌ທັງໝົດ</translation>
 <translation id="4410695710508688828">ແຕກໄຟລ໌ບໍ່ສຳເລັດ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">ສ້າງທາງລັດສຳລັບໄຟລ໌ຂອງທ່ານ</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">ພາສາຮິນດີ້ທີ່ໃຊ້ແປ້ນພິມ InScript</translation>
 <translation id="4801956050125744859">ຮັກສາ​ທັງ​ສອງ</translation>
 <translation id="4804827417948292437">ອາໂວຄາໂດ</translation>
+<translation id="4805966553127040832">ກຳລັງກູ້ຄືນ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="4823651846660089135">ອຸປະກອນເປັນແບບອ່ານເທົ່ານັ້ນ</translation>
 <translation id="4826849268470072925">ພາສາທາມິລ (ITRANS)</translation>
 <translation id="4839847978919684242">ເລືອກ <ph name="SELCTED_FILES_COUNT" /> ລາຍ​ການແລ້ວ</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">ດອກ​ກາ​ຊາ​ເນຍ</translation>
 <translation id="4943368462779413526">ບານເຕະ</translation>
 <translation id="4961158930123534723">ແບ່ງປັນ 1 ໂຟນເດີກັບ Parallels Desktop ແລ້ວ</translation>
+<translation id="496656650103537022">ກູ້ຄືນ <ph name="FILE_NAME" /> ແລ້ວ</translation>
 <translation id="4969785127455456148">ອະ​ລະ​ບໍ້າ</translation>
 <translation id="4973523518332075481">ໃຊ້ຊື່ທີ່ມີຕົວອັກສອນ <ph name="MAX_LENGTH" /> ຕົວລົງມາ</translation>
 <translation id="4973970068702235170">ການຊິບບໍ່ສຳເລັດ, ເກີດຄວາມຜິດພາດທີ່ບໍ່ຄາດຄິດ: <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +558,7 @@
 <translation id="5691596662111998220">ອຸ້ຍ, ຈະບໍ່ມີ <ph name="FILE_NAME" /> ຢູ່ອີກ.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, ປົດລັອກ</translation>
 <translation id="5700087501958648444">ຂໍ້ມູນສຽງ</translation>
+<translation id="5720028165859493293">ຍ້າຍ <ph name="FILE_NAME" /> ໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="5724172041621205163">ພາສາໄທທີ່ໃຊ້ແປ້ນພິມປັດຕາໂຊດ</translation>
 <translation id="5756666464756035725">QWERTY ພາ​ສາ​ຮົງ​ກາ​ລີ</translation>
 <translation id="5763377084591234761">ພາສາເຢຍລະມັນ (ສະວິດເຊີແລນ)</translation>
@@ -621,6 +629,7 @@
 <translation id="6320212353742551423">ແຟ້ມຈັດເກັບ <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">ໂບກມື</translation>
 <translation id="6327785803543103246">ຄົ້ນຫາເວັບພຣັອກຊີໂດຍອັດຕະໂນມັດ</translation>
+<translation id="6337014272874260727">ຖອນໝຸດຈາກໄຟລ໌ດ່ວນ</translation>
 <translation id="6339145975392024142">ສະຫະລັດສາກົນ (ຄອມພິວເຕີ)</translation>
 <translation id="6346310558342052870">ຈຳກັດການເຂົ້າເຖິງໄວ້ແລ້ວ</translation>
 <translation id="6356685157277930264">ໜ້າຈໍຄຳເຫັນຂອງ Files</translation>
@@ -661,6 +670,7 @@
 <translation id="6751256176799620176">ເລືອກ 1 ໂຟນເດີແລ້ວ</translation>
 <translation id="6755827872271341378">ອຸປະກອນ ChromeOS Flex</translation>
 <translation id="6790428901817661496">​ຫຼິ້ນ</translation>
+<translation id="6794539005637808366">ກູ້ຄືນລາຍການ ຫຼື ລາກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="6795884519221689054">ແພນດ້າ</translation>
 <translation id="6806699711453372963">ຈັດການການແບ່ງປັນ Linux</translation>
 <translation id="6806796368146926706">ຕົວອັກສອນ ແລະ ຕົວເລກທີ່ໃຊ້ແປ້ນພິມພາສາຍີ່ປຸ່ນ</translation>
@@ -697,6 +707,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">ພາສາສະວີດິດ</translation>
 <translation id="6990081529015358884">ທ່ານໝົດບ່ອນ​ວ່າງ​ແລ້ວ</translation>
+<translation id="6993826899923627728">ລາຍການເຫຼົ່ານີ້ແມ່ນຢູ່ໃນຖັງຂີ້ເຫຍື້ອຂອງທ່ານ</translation>
 <translation id="6998711733709403587">ເລືອກໂຟນເດີ <ph name="SELCTED_FOLDERS_COUNT" /> ແລ້ວ</translation>
 <translation id="7008426324576352165">ອົງກອນຂອງທ່ານຕ້ອງການບ່ອນຈັດເກັບຂໍ້ມູນເພີ່ມເຕີມເພື່ອສຳເລັດການອັບໂຫຼດ.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +753,7 @@
 <translation id="7408870451288633753">ພາສາເຊັກ</translation>
 <translation id="7417453074306512035">ຄີບອດພາສາເອທິໂອເປຍ</translation>
 <translation id="7417705661718309329">ແຜນ​ທີ່ Google</translation>
+<translation id="7419668828140929293">ກຳລັງກູ້ຄືນ "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">ບໍ່ມີຮູບຫຼ້າສຸດ</translation>
 <translation id="7460898608667578234">ພາສາຢູ​ເຄຣນ</translation>
 <translation id="7469894403370665791">ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍນີ້ອັດຕະໂນມັດ</translation>
@@ -770,6 +782,7 @@
 <translation id="7655441028674523381">ເຂົ້າເຖິງ Google ຮູບພາບໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7663224033570512922">ພາສາຮິນດິ</translation>
+<translation id="7689532716264131859">ຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອແລ້ວ</translation>
 <translation id="7693909743393669729">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ແລະ ລຶບຫ້ອງຂໍ້ມູນທີ່ມີຢູ່ທັງໝົດ, ຮວມທັງຫ້ອງຂໍ້ມູນທີ່ອາດຈະເບິ່ງບໍ່ເຫັນ. ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="7695430100978772476">ບໍ່ສາມາດຟໍແມັດ <ph name="DRIVE_NAME" /> ໄດ້</translation>
 <translation id="76959938259365003">ລ້າງຖັງຂີ້ເຫຍື້ອບໍ່ສຳເລັດ.</translation>
@@ -784,6 +797,7 @@
 <translation id="7760449188139285140">ພາສາຈີນ (Wubi)</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7774365994322694683">ນົກ</translation>
+<translation id="7780322752056734036">ກູ້ຄືນ <ph name="NUMBER_OF_ITEMS" /> ລາຍການແລ້ວ</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7788080748068240085">ເພື່ອບັນທຶກ "<ph name="FILE_NAME" />" ອອຟລາຍນ໌ ທ່ານຕ້ອງເຮັດໃຫ້ມີເນື້ອທີ່ <ph name="TOTAL_FILE_SIZE" /> ເພີ່ມເຕີມອີກ:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ຖອນປັກໝຸດໄຟລ໌ທີ່ທ່ານບໍ່ຕ້ອງການເຂົ້າຫາອອຟລາຍນ໌ອີກ<ph name="MARKUP_3" />
@@ -964,6 +978,7 @@
 <translation id="947144732524271678">ເລືອກລາຍການທັງໝົດ <ph name="ENTRY_COUNT" /> ລາຍການ ຕັ້ງແຕ່ <ph name="FROM_ENTRY_NAME" /> ຈົນເຖິງ <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">ນະໂຍບາຍຜູ້ເບິ່ງແຍງລະບົບປ້ອງກັນ:</translation>
 <translation id="965477715979482472">ອັງກິດ (ອາຟຣິກາໃຕ້)</translation>
+<translation id="976666271385981812">ກຳລັງຍ້າຍ <ph name="NUMBER_OF_ITEMS" /> ລາຍການໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>
 <translation id="988685240266037636">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ທ່ານຕ້ອງການປ່ຽນແທນມັນບໍ?</translation>
 <translation id="992401651319295351">ທ່ານລອງໄດ້ອີກ <ph name="RETRIES" /> ເທື່ອ. ທ່ານຈະບໍ່ສາມາດໃຊ້ເຄືອຂ່າຍນີ້ໄດ້ຈົນກວ່າທ່ານຈະຕັ້ງ PIN ໃໝ່.</translation>

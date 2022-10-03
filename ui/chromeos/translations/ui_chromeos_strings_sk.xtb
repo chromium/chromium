@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Mjanmarská klávesnica</translation>
 <translation id="2392369802118427583">Aktivovať</translation>
 <translation id="240770291734945588">Voľné miesto: <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Prihlásenie do siete</translation>
 <translation id="2425665904502185219">Celková veľkosť súboru</translation>
 <translation id="2428749644083375155">Kopírujú sa položky (<ph name="NUMBER_OF_ITEMS" />) do priečinka <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Typ</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Prehrávanie nie je k dispozícii</translation>
 <translation id="383652340667548381">Srbčina</translation>
 <translation id="385051799172605136">Späť</translation>
+<translation id="3851491607336266896">Pripojené, obmedzené pripojenie</translation>
 <translation id="3855472144336161447">Nemecká klávesnica Neo 2</translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3866249974567520381">Popis</translation>
@@ -939,6 +941,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8903931173357132290">Absolvent</translation>
 <translation id="8912078710089354287">Pes krútiaci chvostom</translation>
 <translation id="8919081441417203123">Dánčina</translation>
+<translation id="8949925099261528566">Pripojené, bez internetu</translation>
 <translation id="8965697826696209160">Nedostatok miesta</translation>
 <translation id="8997962250644902079">Čínska klávesnica Pchin-jin (tradičná)</translation>
 <translation id="8998871447376656508">Na Disku Google nie je dostatok voľného priestoru na dokončenie nahrávania.</translation>

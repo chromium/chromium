@@ -32,6 +32,7 @@
 
       現在サポートされている言語は、af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi です。</translation>
 <translation id="1019101089073227242">ユーザー データ ディレクトリを設定する</translation>
+<translation id="1020006815010587263">ユーザーがゴミ箱を使用できないようにする。</translation>
 <translation id="1022361784792428773">ユーザーに対してインストールを禁止する拡張機能 ID (すべて指定する場合は *)</translation>
 <translation id="102492767056134033">ログイン画面での画面キーボードのデフォルト状態を設定する</translation>
 <translation id="102658870205613876">ポップアップの設定</translation>
@@ -522,6 +523,9 @@
 <translation id="1553532014072799546">アプリごとの時間制限のホワイトリスト</translation>
 <translation id="1553956579506604198">外部拡張機能のインストールをブロックする</translation>
 <translation id="1555248923316727072">SAML ユーザー ID 管理の設定</translation>
+<translation id="1557113199339446336">このポリシーを True に設定した場合、登録済みのデバイスから広範な検出と対応（XDR）イベントに関する情報を報告します。
+
+      このポリシーを False に設定するか未設定のままにした場合、登録済みのデバイスから広範な検出と対応（XDR）イベントは報告しません。</translation>
 <translation id="1561424797596341174">リモート アクセス ホストの Debug ビルドでのポリシー オーバーライド</translation>
 <translation id="1561967320164410511">U2F と個人認証用拡張機能</translation>
 <translation id="1567718448549957373">このポリシーを有効に設定するか未設定のままにした場合、保護されていない HTTP 経由で受信した <ph name="BASIC_AUTH" /> 認証チャレンジが許可されます。
@@ -1101,6 +1105,9 @@
 <translation id="2157842368188031417">このポリシーは、管理対象ゲスト セッションにのみ適用されます。Imprivata の共有ワークステーション モードでセッション中のユーザー切り替えを可能にするには、このポリシーを有効にする必要があります。
       このポリシーを True に設定した場合、ユーザーの機密情報を保持し、Imprivata の共有ワークステーション モードでのセッション中のユーザー切り替えで使用される削除メカニズムによって処理されない機能に関する特定のポリシーが強制的にオーバーライドされます。
       このポリシーを False に設定するか未設定のままにした場合、ポリシーのオーバーライドは行われません。</translation>
+<translation id="2158741059065130266">このポリシーを True に設定した場合、<ph name="PRODUCT_OS_NAME" /> のファイルアプリにゴミ箱が表示され、「マイファイル」と「ダウンロード」（ユーザーがその下に作成したフォルダも含む）のファイルは削除時にゴミ箱に移動されます。
+
+      このポリシーを False に設定した場合、それまでゴミ箱に入っていたファイルは、隠しファイルを表示して「マイファイル」または「ダウンロード」の下にあるゴミ箱ディレクトリを探すことで使用できます。</translation>
 <translation id="2159486052528894673">ユーザーのクラウド ポリシーがマシンのクラウド ポリシーを上書きできるようにする</translation>
 <translation id="2160336427036785721">メモリを節約するため、タブの破棄（タブで使用されているメモリが解放され、次回表示したときに再読み込みする必要があります）を開始するまでに 1 つの <ph name="PRODUCT_NAME" /> インスタンスで使用できるメモリの量を設定します。
 
@@ -1505,6 +1512,7 @@
           Google のインスタント検索結果の URL は、<ph name="GOOGLE_INSTANT_SEARCH_URL" /> のように指定できます。
 
           このポリシーは、「DefaultSearchProviderEnabled」ポリシーが有効な場合にのみ適用されます。</translation>
+<translation id="2563373001850981577"><ph name="PRODUCT_OS_NAME" /> のファイルアプリで、ファイルを（対応しているファイル システム上の）ゴミ箱に移動する機能を有効にする</translation>
 <translation id="2567227673131796227">このポリシーはサポートが終了しています。代わりに <ph name="NATIVE_MESSAGING_BLOCKLIST_POLICY_NAME" /> ポリシーを使用してください。
 
       このポリシーでは、読み込まないネイティブ メッセージング ホストを指定できます。拒否リストに「<ph name="WILDCARD_VALUE" />」の値を指定した場合は、明示的に許可されていない限り、すべてのネイティブ メッセージング ホストが拒否されます。
@@ -2821,6 +2829,7 @@
       このポリシーを無効に設定するか未設定のままにした場合は、自動選択と一致する証明書がない場合のみユーザーにメッセージが表示されます。</translation>
 <translation id="3950110092991281616">標準のセッションでのみ、アンビエント認証を有効にします。</translation>
 <translation id="3950239119790560549">時間に関する制約を更新する</translation>
+<translation id="3953860513079094502">広範な検出と対応（XDR）イベントに関する情報を報告する</translation>
 <translation id="3956243291190637924">印刷プレビューにヘッダーとフッターを表示しない</translation>
 <translation id="3956573780915784996">ユーザーにシステム全体のパフォーマンス トレースの収集を許可する</translation>
 <translation id="3956686688560604829">従来のブラウザのサポートで Internet Explorer の SiteList ポリシーを使用する。</translation>
@@ -2950,6 +2959,7 @@
 <translation id="4098920079809952737">背景のグラフィックありの印刷となしの印刷を両方許可する</translation>
 <translation id="410068710490553233">別の Google アカウントへのログインを許可する</translation>
 <translation id="4101282687722389021">このエントリが前回更新された時間を示す UTC のタイムスタンプです。このタイムスタンプは整数値には適合しないため、文字列として送信されます。</translation>
+<translation id="4102347680024644994">広範な検出と対応（XDR）イベントを報告する</translation>
 <translation id="4105989332710272578">指定した URL に対して証明書の透明性ポリシーの適用を無効にする</translation>
 <translation id="4114059938441379876">このポリシーでは、ブラウザで警告が表示された後にユーザーがパスワードを変更するための URL を設定できます。パスワード保護サービスにより、ユーザーはこのポリシーで指定した URL（HTTP と HTTPS プロトコルのみ）にリダイレクトされます。<ph name="PRODUCT_NAME" /> で、このパスワード変更ページの新しいパスワードのソルトハッシュが適切に取得されるようにするには、パスワード変更ページが https://www.chromium.org/developers/design-documents/create-amazing-password-forms のガイドラインに沿っていることを確認します。
 
@@ -5348,6 +5358,7 @@
       <ph name="PRODUCT_NAME" /> の起動時に適用するフラグを指定します。指定したフラグはログイン画面にのみ適用されます。このポリシーで設定したフラグはユーザーのセッションには影響しません。</translation>
 <translation id="6857240169209507953">デバイスでの <ph name="BOREALIS_NAME" /> の実行をブロックする</translation>
 <translation id="685769593149966548">YouTube で制限付きモード「強」を強制する</translation>
+<translation id="6860349155164463644">広範な検出と対応（XDR）イベントに関する情報を報告しない</translation>
 <translation id="686079137349561371">Microsoft Windows 7 以降</translation>
 <translation id="68818134518270542">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のロック画面でメモアプリとして有効にできるアプリを指定できます。任意のメモアプリをロック画面に設定すると、そのアプリを起動するための UI 要素が画面に表示されます。アプリを起動すると、ロック画面の上部にウィンドウが表示され、このコンテキストにメモを作成できます。アプリを使用して、作成したメモをメインのユーザー セッションに読み込むことができます（セッションがロックされていない場合）。ロック画面でサポートされているのは <ph name="PRODUCT_NAME" /> のメモアプリのみです。このポリシーを設定すると、アプリの拡張機能 ID がポリシーのリスト値に含まれている場合に、ユーザーはロック画面でアプリを有効にできます。このため、このポリシーを空のリストに設定すると、メモアプリはロック画面で無効になります。ポリシーでアプリ ID を指定しても、ユーザーがロック画面でそのアプリをメモアプリとして有効にできるとは限りません。たとえば、<ph name="PRODUCT_NAME" /> 61 では、使用できる一連のアプリに関して、さらにプラットフォームによる制限が適用されます。このポリシーを未設定のままにした場合、ユーザーがロック画面で有効にできる一連のアプリに関して、ポリシーを通じて適用される制限はありません。</translation>
 <translation id="6882028194958060206">Flash コンテンツ設定をすべてのコンテンツに拡張する（サポート終了）</translation>
@@ -5915,6 +5926,7 @@
       <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAG_FIELD" /> フィールドでは、スキャンの結果に問題がある場合に、ユーザーに表示する警告メッセージを設定します。message フィールドでは、ユーザーに表示するテキストを半角 200 文字以内で指定します。learn_more_url フィールドでは、管理者が提供する URL を指定します。ユーザーはこの URL をクリックして、操作がブロックされた理由について、お客様から提供された情報を確認できます。language フィールドでは、メッセージの言語を指定します（省略可）。このフィールドを空白にするか、「default」の値を指定した場合、ユーザーの言語のメッセージがないときは、デフォルトのメッセージが使用されます。tag フィールドでは、メッセージを表示するスキャンの種類を指定します。custom_messages リストには、0 以上のエントリを指定できます。各エントリには、空白以外のメッセージと tag フィールドを含める必要があります。
 
       このポリシーを適用するには、追加の設定が必要です。詳しくは https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting をご確認ください。</translation>
+<translation id="7481702249684965639">ユーザーがゴミ箱を使用できるようにする。</translation>
 <translation id="7482768039644066614">ブラウジングの利便性向上を目的としたページ読み込みメタデータと機械学習モデルの取得を許可する</translation>
 <translation id="7485481791539008776">デフォルト プリンタ選択ルール</translation>
 <translation id="7486205887492534734">ログイン画面で複数の証明書が一致した場合にメッセージを表示する</translation>

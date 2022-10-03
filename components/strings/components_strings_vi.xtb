@@ -244,7 +244,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1527263332363067270">Đang chờ kết nối…</translation>
 <translation id="1529789484829130889">Khay 8</translation>
 <translation id="1530707389502320859">Có vẻ như trang web bạn vừa cố truy cập là giả mạo. Kẻ tấn công đôi khi bắt chước các trang web bằng cách thực hiện các thay đổi nhỏ, khó phát hiện đối với URL.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Trang này cho biết</translation>
 <translation id="153384715582417236">Hiện chưa có nội dung</translation>
 <translation id="1536390784834419204">Dịch trang</translation>
@@ -668,7 +667,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2673968385134502798">Trò chơi</translation>
 <translation id="2674170444375937751">Bạn có chắc chắn muốn xóa những trang này khỏi nhật ký duyệt web của mình không?</translation>
 <translation id="2674804415323431591">Ẩn các đề xuất</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Sinh nhật và ngày đặt tên</translation>
 <translation id="2677748264148917807">Rời khỏi</translation>
 <translation id="2679714844901977852">Lưu thông tin thẻ và thông tin thanh toán vào Tài khoản Google <ph name="USER_EMAIL" /> để thanh toán an toàn và nhanh hơn</translation>
@@ -875,7 +873,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3270156322180235608">Du lịch hàng không</translation>
 <translation id="3270847123878663523">&amp;Hoàn tác sắp xếp lại</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> muốn kết nối</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Tổ chức <ph name="ENROLLMENT_DOMAIN" /> của bạn đã gửi một số thông tin (chẳng hạn như chế độ cài đặt hoặc chính sách) đến các trang web sau đây.</translation>
 <translation id="3282497668470633863">Thêm tên trên thẻ</translation>
 <translation id="3286372614333682499">dọc</translation>
@@ -941,7 +938,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3438829137925142401">Dùng mật khẩu đã lưu trong Tài khoản Google của bạn</translation>
 <translation id="3440783957068352691">hình vuông</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Chủ sở hữu của thiết bị này đã tắt trò chơi khủng long.</translation>
 <translation id="3447884698081792621">Hiển thị chứng chỉ (do <ph name="ISSUER" /> cấp)</translation>
 <translation id="3452404311384756672">Khoảng thời gian tìm nạp:</translation>
@@ -1113,7 +1109,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3909477809443608991"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh của thiết bị sẽ được Google xác minh và trang web này có thể truy cập vào thông tin đó.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Bưu thiếp)</translation>
 <translation id="3927932062596804919">Từ chối</translation>
 <translation id="393316646445601645">Internet và viễn thông</translation>
 <translation id="3939773374150895049">Sử dụng WebAuthn thay cho CVC?</translation>
@@ -1284,7 +1279,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4340575312453649552">Chrome đã xóa quảng cáo này vì quảng cáo sử dụng quá nhiều tài nguyên của thiết bị.</translation>
 <translation id="4340982228985273705">Máy tính này không được coi là máy tính do doanh nghiệp quản lý, vì vậy, chính sách này chỉ có thể tự động cài đặt các tiện ích được lưu trữ trên Cửa hàng Chrome trực tuyến. URL cập nhật Cửa hàng Chrome trực tuyến là "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Thẻ tín dụng được chấp nhận</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Kết nối đến <ph name="SITE" /> không an toàn</translation>
 <translation id="4349365535725594680">Không thể chia sẻ nội dung bảo mật</translation>
 <translation id="4349810866125026513">Vẫn tải lên</translation>
@@ -2174,7 +2168,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Thiết bị của bạn đã chuyển sang chế độ ngủ.</translation>
 <translation id="6767985426384634228">Cập nhật địa chỉ?</translation>
-<translation id="6768213884286397650">Hagaki (Bưu thiếp)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Cho vay thương mại</translation>
 <translation id="6786145470008421571">Phong bì 6 x 9 inch</translation>
@@ -2577,7 +2570,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7751971323486164747">Tùy chỉnh kích thước phông chữ và kiểu chữ trong Chrome</translation>
 <translation id="7752995774971033316">Không được quản lý</translation>
 <translation id="7755624218968747854">Cuộn chính</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Tường lửa hoặc phần mềm diệt vi-rút có thể đã chặn kết nối.</translation>
 <translation id="7760497246331667482">Nhạc reggae và nhạc Ca-ri-bê</translation>
 <translation id="776110834126722255">Không dùng nữa</translation>
@@ -2885,7 +2877,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8676424191133491403">Không trì hoãn</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, câu trả lời, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Không thể tải trang web tại <ph name="PAGE" /> do:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Thiết bị và tài khoản của bạn do <ph name="MANAGER" /> quản lý.</translation>
 <translation id="8688672835843460752">Có sẵn</translation>
 <translation id="868922510921656628">Số trang mỗi tập</translation>
@@ -3121,7 +3112,6 @@ Thông tin chi tiết bổ sung:
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 <translation id="985199708454569384">&lt;p&gt;Bạn sẽ gặp lỗi này nếu ngày và giờ trên máy tính hoặc thiết bị di động không chính xác.&lt;/p&gt;
     &lt;p&gt;Để khắc phục lỗi này, hãy mở đồng hồ trên thiết bị. Đảm bảo ngày và giờ chính xác.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Chung</translation>
 <translation id="988159990683914416">Phiên bản dành cho Nhà phát triển</translation>
 <translation id="989988560359834682">Chỉnh sửa địa chỉ</translation>

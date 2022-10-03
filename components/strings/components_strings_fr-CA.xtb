@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">En attente de connexion…</translation>
 <translation id="1529789484829130889">Bac 8</translation>
 <translation id="1530707389502320859">Le site que vous venez d'essayer de visiter semble être un faux. Les pirates tentent parfois d'imiter des sites Web en modifiant légèrement l'URL utilisée.</translation>
-<translation id="1531205177818805254">Executive</translation>
 <translation id="1532118530259321453">Cette page indique</translation>
 <translation id="153384715582417236">C'est tout pour le moment</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">Jeux</translation>
 <translation id="2674170444375937751">Voulez-vous vraiment supprimer ces pages de votre historique?</translation>
 <translation id="2674804415323431591">Masquer les suggestions</translation>
-<translation id="2676271551327853224">Roc 8K</translation>
 <translation id="2677696497921480781">Fêtes et anniversaires</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2679714844901977852">Enregistrez votre carte et vos données de facturation dans votre compte Google <ph name="USER_EMAIL" /> pour effectuer des paiements sécurisés et plus rapides</translation>
@@ -875,7 +873,6 @@
 <translation id="3270156322180235608">Voyage en avion</translation>
 <translation id="3270847123878663523">&amp;Annuler la réorganisation</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> veut se connecter</translation>
-<translation id="3274521967729236597">Pa Kai</translation>
 <translation id="3282085321714087552">Votre organisation, <ph name="ENROLLMENT_DOMAIN" />, a envoyé de l'information, comme des paramètres ou des politiques, aux sites Web suivants.</translation>
 <translation id="3282497668470633863">Ajouter le nom sur la carte</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -941,7 +938,6 @@
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3438829137925142401">Utiliser les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="3440783957068352691">carrée</translation>
-<translation id="3443726618221119081">Jurro Ku Kai</translation>
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (délivré par <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Intervalle de récupération :</translation>
@@ -1113,7 +1109,6 @@
 <translation id="3906954721959377182">Tablette</translation>
 <translation id="3909477809443608991"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google et sera accessible par ce site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (carte postale)</translation>
 <translation id="3927932062596804919">Refuser</translation>
 <translation id="393316646445601645">Internet et télécommunications</translation>
 <translation id="3939773374150895049">Utiliser WebAuthn au lieu du code CVC?</translation>
@@ -1284,7 +1279,6 @@
 <translation id="4340575312453649552">Cette annonce utilisait trop de ressources pour votre appareil, alors Chrome l'a supprimée.</translation>
 <translation id="4340982228985273705">Cet ordinateur n'est pas détecté comme étant géré par une entreprise, la politique peut donc uniquement installer des extensions hébergées par la boutique Chrome Webstore. L'URL de mise à jour de la boutique Chrome Webstore est « <ph name="CWS_UPDATE_URL" /> ».</translation>
 <translation id="4346197816712207223">Cartes de crédit acceptées</translation>
-<translation id="4346833872170306413">ROC 16K</translation>
 <translation id="4348834659292907206">La connexion au site <ph name="SITE" /> n'est pas sécurisée</translation>
 <translation id="4349365535725594680">Impossible de partager le contenu confidentiel</translation>
 <translation id="4349810866125026513">Téléverser quand même</translation>
@@ -2174,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Votre appareil s'est mis en veille.</translation>
 <translation id="6767985426384634228">Mettre à jour l'adresse?</translation>
-<translation id="6768213884286397650">Carte postale hagaki</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Prêts commerciaux</translation>
 <translation id="6786145470008421571">Enveloppe 6 x 9 po</translation>
@@ -2577,7 +2570,6 @@ Détails supplémentaires :
 <translation id="7751971323486164747">Personnalisez la taille des polices et les caractères dans Chrome</translation>
 <translation id="7752995774971033316">Non géré</translation>
 <translation id="7755624218968747854">Premier rouleau</translation>
-<translation id="7757555340166475417">Dai Pa Kai</translation>
 <translation id="7758069387465995638">Votre pare-feu ou votre antivirus ont peut-être bloqué la connexion.</translation>
 <translation id="7760497246331667482">Reggae et musique des Caraïbes</translation>
 <translation id="776110834126722255">Obsolète</translation>
@@ -2884,7 +2876,6 @@ Détails supplémentaires :
 <translation id="8676424191133491403">Aucun délai</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, réponse, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Impossible de charger la page Web à l'adresse <ph name="PAGE" />, car :</translation>
-<translation id="8685155993131031756">PRC 16K</translation>
 <translation id="8687429322371626002">Votre appareil et votre compte sont gérés par <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponible</translation>
 <translation id="868922510921656628">Pages par ensemble</translation>
@@ -3120,7 +3111,6 @@ Détails supplémentaires :
 <translation id="984275831282074731">Modes de paiement</translation>
 <translation id="985199708454569384">&lt;p&gt;Cette erreur s'affiche si la date et l'heure de votre ordinateur ou de votre appareil mobile sont inexactes.&lt;/p&gt;
     &lt;p&gt;Pour corriger l'erreur, ouvrez l'horloge de votre appareil. Assurez-vous que la date et l'heure sont correctes.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc 32K</translation>
 <translation id="987264212798334818">Généralités</translation>
 <translation id="988159990683914416">Version de développeur</translation>
 <translation id="989988560359834682">Modifier l'adresse</translation>

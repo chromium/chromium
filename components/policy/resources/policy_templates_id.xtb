@@ -217,6 +217,7 @@
       Tidak menyetel kebijakan berarti <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> akan berlaku untuk semua situs, jika disetel. Jika tidak, setelan pribadi pengguna akan digunakan.
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
+<translation id="1209096923317019235">Menetapkan aplikasi sebagai pengendali default untuk ekstensi file yang ditentukan</translation>
 <translation id="120937472976628837">Melaporkan info kipas</translation>
 <translation id="1212233008927724662">Nonaktifkan pemuatan WebUI Login Lambat.</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
@@ -2379,6 +2380,15 @@ Perilaku ini sama dengan <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DA
       Jika <ph name="PRODUCT_NAME" /> tidak ditutup dengan benar (misalnya, browser atau OS mengalami error), data penjelajahan akan dihapus saat berikutnya profil dimuat.</translation>
 <translation id="3264793472749429012">Penyandiaksaraan penyedia penelusuran default</translation>
 <translation id="3273221114520206906">Setelan JavaScript default</translation>
+<translation id="3282240846541032181">Kebijakan ini memungkinkan admin menentukan aplikasi yang bertindak sebagai pengendali default untuk setiap ekstensi file di <ph name="PRODUCT_OS_NAME" /> yang tidak dapat diubah pengguna.
+      Untuk semua ekstensi file yang tidak ditentukan dalam kebijakan, pengguna bebas menetapkan setelan default mereka sendiri sesuai dengan alur kerja biasa.
+
+      Tentukan aplikasi Chrome berdasarkan ID-nya, seperti <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" /> dan aplikasi web menurut URL yang digunakan di <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, seperti <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
+
+      Perhatikan bahwa aplikasi HARUS mendeklarasikan diri sebagai pengendali file untuk ekstensi file tertentu dalam manifes agar item kebijakan tersebut dapat diterapkan (yaitu, kebijakan TIDAK memperluas kemampuan aplikasi yang ada).
+
+      Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih pengendali default sesuai dengan logika internal.
+      </translation>
 <translation id="328347261792478720">Secara default, browser akan menampilkan rekomendasi media yang dipersonalisasi kepada pengguna. Jika kebijakan ini disetel ke Nonaktif, rekomendasi ini akan disembunyikan dari pengguna. Jika kebijakan ini disetel ke Aktif atau tidak disetel, rekomendasi media akan ditampilkan kepada pengguna.</translation>
 <translation id="3284094172359247914">Penggunaan kontrol WebUSB API</translation>
 <translation id="3288595667065905535">Saluran rilis</translation>
@@ -4239,6 +4249,35 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="5330684698007383292">Izinkan <ph name="PRODUCT_FRAME_NAME" /> menangani jenis konten berikut</translation>
 <translation id="5331746669335642668">Kebijakan cloud <ph name="PRODUCT_NAME" /> menggantikan kebijakan Platform.</translation>
 <translation id="5346587320074666194">Memblokir akses ke sensor di situs ini</translation>
+<translation id="5357039649371478544">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
+      Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
+
+      Setiap aturan terdiri dari hal-hal berikut:
+      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia. Batasan akan diterapkan terhadap data tersebut.
+      - Daftar tujuan yang ditentukan sebagai URL atau komponen. Data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
+      - Daftar batasan yang akan diterapkan pada data sumber.
+
+      Aturan dapat ditambahkan untuk:
+      - Mengontrol data papan klip yang dibagikan antara sumber dan tujuan.
+      - Mengontrol pengambilan screenshot dari sumber mana pun.
+      - Mengontrol pencetakan dari sumber mana pun.
+      - Mengontrol layar privasi saat sumber mana pun terlihat.
+      - Mengontrol berbagi layar dari sumber mana pun.
+      - Mengontrol file yang didownload dari sumber mana pun saat ditransfer ke tujuan. Didukung di <ph name="PRODUCT_OS_NAME" /> versi 108 dan yang lebih baru.
+
+      Level batasan dapat disetel ke BLOCK, ALLOW, REPORT, atau WARN.
+      - Jika level batasan disetel ke BLOCK, tindakan tidak akan diizinkan. Jika <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> disetel ke Benar (True), tindakan yang diblokir akan dilaporkan ke admin.
+      - Jika level batasan disetel ke ALLOW, tindakan akan diizinkan.
+      - Jika level batasan disetel ke REPORT dan <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> disetel ke Benar (True), tindakan akan dilaporkan ke admin.
+      - Jika level batasan disetel ke WARN, pengguna akan diberi peringatan dan dapat memilih untuk melanjutkan atau membatalkan tindakan. Jika <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> disetel ke Benar (True), peristiwa menampilkan peringatan akan dilaporkan ke admin; peristiwa melanjutkan tindakan juga akan dilaporkan ke admin.
+
+      Catatan:
+      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
+      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD atau FILES, tetapi tujuan tidak berpengaruh pada batasan lainnya.
+      - Jika level batasan disetel ke CLIPBOARD, tujuan DRIVE dan USB akan diabaikan.
+      - Format pola URL sesuai dengan format ini ( https://www.chromium.org/administrators/url-blocklist-filter-format ).
+
+      Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
 <translation id="5362531528507578966">Mengganti mode pencetakan grafis latar belakang default.</translation>
 <translation id="5365476955714838841">Parameter command line untuk browser alternatif.</translation>
 <translation id="5365946944967967336">Tampilkan tombol Layar Utama di toolbar</translation>

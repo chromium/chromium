@@ -218,6 +218,7 @@
       Se il criterio non viene configurato, <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> si applica per tutti i siti, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> non è un valore accettato per questo criterio.</translation>
+<translation id="1209096923317019235">Assegna le app come gestori predefiniti per le estensioni dei file specificate</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
 <translation id="1212233008927724662">Disattiva il caricamento lento di WebUI di accesso.</translation>
 <translation id="1216919699175573511">Attiva il supporto per Signed HTTP Exchange (SXG)</translation>
@@ -2347,6 +2348,15 @@ Questo è lo stesso comportamento di <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP
       Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso di arresto anomalo del browser o del sistema operativo), i dati di navigazione verranno cancellati al successivo caricamento del profilo.</translation>
 <translation id="3264793472749429012">Codifiche del provider di ricerca predefinito</translation>
 <translation id="3273221114520206906">Impostazione JavaScript predefinita</translation>
+<translation id="3282240846541032181">Questo criterio consente agli amministratori di specificare le app che fungono da gestori predefiniti per le rispettive estensioni dei file su <ph name="PRODUCT_OS_NAME" /> che gli utenti non possono modificare.
+      Per tutte le estensioni dei file non specificate nel criterio, gli utenti sono liberi di impostare le loro impostazioni predefinite nel rispetto del normale flusso di lavoro.
+
+      Specifica le app di Chrome tramite il relativo ID, ad esempio <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, e le app web tramite l'URL utilizzato in <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, come <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
+
+      Tieni presente che le app DEVONO dichiararsi come gestori di file per le estensioni specificate nel file manifest affinché l'elemento del criterio abbia effetto (ossia il criterio NON estende le funzionalità di app esistenti).
+
+      Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezionare gestori predefiniti in base alla logica interna.
+      </translation>
 <translation id="328347261792478720">Per impostazione predefinita, nel browser vengono mostrati consigli di contenuti multimediali personalizzati in base agli interessi dell'utente. Se questo criterio viene impostato su Disattivato, questi consigli vengono nascosti all'utente. Se il criterio viene impostato su Attivato o se non viene configurato, i consigli di contenuti multimediali vengono mostrati all'utente.</translation>
 <translation id="3284094172359247914">Controlla l'utilizzo dell'API WebUSB</translation>
 <translation id="3288595667065905535">Canale di rilascio</translation>
@@ -4190,6 +4200,35 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="5330684698007383292">Consenti a <ph name="PRODUCT_FRAME_NAME" /> di gestire i seguenti tipi di contenuti</translation>
 <translation id="5331746669335642668">La norma relativa al cloud <ph name="PRODUCT_NAME" /> esegue l'override della norma relativa alla piattaforma.</translation>
 <translation id="5346587320074666194">Blocca l'accesso ai sensori su questi siti</translation>
+<translation id="5357039649371478544">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
+      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot e così via.
+
+      Ciascuna regola prevede quanto segue:
+      - Un elenco di origini definite come URL. Tutti i dati delle origini saranno considerati dati riservati, a cui verranno applicate limitazioni.
+      - Un elenco di destinazioni definite come URL o componenti, con i quali la condivisione dei dati riservati è consentita o meno.
+      - Un elenco di limitazioni da applicare ai dati delle origini.
+
+      È possibile aggiungere regole per:
+      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
+      - Controllare l'acquisizione di screenshot di tutte le origini.
+      - Controllare la stampa di tutte le origini.
+      - Controllare la Schermata privata quando una delle origini è visibile.
+      - Controllare la condivisione schermo di tutte le origini.
+      - Controllare i file scaricati da tutte le origini quando vengono trasferiti alla destinazione. Funzionalità supportata su <ph name="PRODUCT_OS_NAME" /> 108 e versioni successive.
+
+      Il livello di limitazione può essere impostato su BLOCK, ALLOW, REPORT o WARN.
+      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita. Se il criterio <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su True, l'azione bloccata verrà segnalata all'amministratore.
+      - Se il livello di limitazione è impostato su ALLOW, l'azione sarà consentita.
+      - Se il livello di limitazione è impostato su REPORT e il criterio <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su True, l'azione verrà segnalata all'amministratore.
+      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione. Se il criterio <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> è impostato su True, la visualizzazione dell'avviso verrà segnalata all'amministratore; verrà segnalata anche la prosecuzione dell'azione.
+
+      Note:
+      - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la Schermata privata, ma la applica in modo forzato quando la classe della limitazione è impostata su BLOCK.
+      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD o FILES, ma questo non fa alcuna differenza per le altre limitazioni.
+      - Le destinazioni DRIVE e USB vengono ignorate per la limitazione CLIPBOARD.
+      - I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+      Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
 <translation id="5362531528507578966">Consente di sostituire la modalità di stampa predefinita delle immagini di sfondo.</translation>
 <translation id="5365476955714838841">Parametri della riga di comando per il browser alternativo.</translation>
 <translation id="5365946944967967336">Mostra il pulsante Pagina iniziale nella barra degli strumenti</translation>

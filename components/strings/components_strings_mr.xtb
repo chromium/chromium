@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">कनेक्शनची वाट पाहत आहे...</translation>
 <translation id="1529789484829130889">ट्रे ८</translation>
 <translation id="1530707389502320859">तुम्ही नुकतेच भेट देण्याचा प्रयत्न करत असलेली साइट बनावट असल्याची दिसते. आक्रमणकर्ते काहीवेळा URL मध्ये छोटे व पाहण्यासाठी कठीण असलेले बदल करून बनावट साइट बनवतात.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">या पेजचे म्हणणे हे आहे की</translation>
 <translation id="153384715582417236">सध्या इतकेच</translation>
 <translation id="1536390784834419204">पेजचे भाषांतर करायचे आहे</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">गेम</translation>
 <translation id="2674170444375937751">तुमची खात्री आहे की तुम्ही ही पेज आपल्‍या इतिहासातून हटवू इच्छिता?</translation>
 <translation id="2674804415323431591">सूचना लपवा</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">वाढदिवस आणि बारसे</translation>
 <translation id="2677748264148917807">सोडा</translation>
 <translation id="2679714844901977852">सुरक्षित आणि आणखी जलद चेकआउट करण्यासाठी तुमच्या <ph name="USER_EMAIL" /> Google खाते मध्ये तुमचे कार्ड व बिलिंग माहिती सेव्ह करा</translation>
@@ -875,7 +873,6 @@
 <translation id="3270156322180235608">विमान प्रवास</translation>
 <translation id="3270847123878663523">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करू इच्छिते</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">तुमच्या संस्थेने <ph name="ENROLLMENT_DOMAIN" /> खालील वेबसाइटना सेटिंग्ज किंवा धोरणे यांसारखी काही माहिती पाठवली आहे.</translation>
 <translation id="3282497668470633863">कार्डवर नाव जोडा</translation>
 <translation id="3286372614333682499">पोट्रेट</translation>
@@ -941,7 +938,6 @@
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3438829137925142401">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड वापरा</translation>
 <translation id="3440783957068352691">चौरस</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">या डिव्हाइसच्या मालकाने डायनासोर गेम बंद केला आहे.</translation>
 <translation id="3447884698081792621">सर्टिफिकेट दाखवा (<ph name="ISSUER" /> ने जारी केलेले)</translation>
 <translation id="3452404311384756672">मध्यंतर मिळवा:</translation>
@@ -1112,7 +1108,6 @@
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ला संरक्षित आशय प्ले करायचा आहे. तुमच्या डिव्हाइसच्या ओळखीची Google कडून पडताळणी केली जाईल आणि कदाचित या साइटकडून अ‍ॅक्सेस केली जाईल.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (पोस्टकार्ड)</translation>
 <translation id="3927932062596804919">नकार द्या</translation>
 <translation id="393316646445601645">इंटरनेट आणि टेलिकॉम</translation>
 <translation id="3939773374150895049">CVC ऐवजी WebAuthn वापरायचे का?</translation>
@@ -1283,7 +1278,6 @@
 <translation id="4340575312453649552">या जाहिरातीने तुमच्या डिव्हाइससाठी खूप जास्त स्रोत वापरल्यामुळे, Chrome ने ती काढून टाकली.</translation>
 <translation id="4340982228985273705">हा कॉंप्युटर एंटरप्राइझ व्यवस्थापित म्हणून आढळला नाही म्हणून धोरण फक्त Chrome वेबस्टोअरवर होस्ट केलेले एक्स्टेंशन आपोआप इंस्टॉल करू शकते. Chrome वेबस्टोअर अपडेट URL <ph name="CWS_UPDATE_URL" /> ही आहे.</translation>
 <translation id="4346197816712207223">स्वीकारली जाणारी क्रेडिट कार्डे</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> चे कनेक्शन सुरक्षित नाही</translation>
 <translation id="4349365535725594680">गोपनीय आशय शेअर करू शकत नाही</translation>
 <translation id="4349810866125026513">तरीही अपलोड करा</translation>
@@ -2174,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">तुमचे डिव्हाइस निष्क्रीय झाले.</translation>
 <translation id="6767985426384634228">पत्ता अपडेट करायचा आहे का?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">व्यावसायिक कर्ज</translation>
 <translation id="6786145470008421571">एन्व्हलप ६ x ९ इंच</translation>
@@ -2577,7 +2570,6 @@
 <translation id="7751971323486164747">Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करा</translation>
 <translation id="7752995774971033316">व्यवस्थापित न केलेले</translation>
 <translation id="7755624218968747854">प्राथमिक रोल</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">फायरवॉल किंवा अँटीव्हायरस सॉफ्टवेअरने कदाचित कनेक्शन ब्लॉक केले असावे.</translation>
 <translation id="7760497246331667482">रेगे आणि कॅरिबियन संगीत</translation>
 <translation id="776110834126722255">कालबाह्य झाले</translation>
@@ -2884,7 +2876,6 @@
 <translation id="8676424191133491403">विलंब नाही</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> वरील वेबपेज लोड केले जाऊ शकले नाही कारण:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">तुमचे डिव्हाइस आणि खाते <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">प्रति संच पेज</translation>
@@ -3120,7 +3111,6 @@
 <translation id="984275831282074731">पेमेंट पद्धती</translation>
 <translation id="985199708454569384">&lt;p&gt;जर तुमच्या कॉंप्युटर किंवा मोबाइल डिव्हाइसची तारीख आणि वेळ चुकीची असेल, तर तुम्हाला ही एरर दिसेल.&lt;/p&gt;
     &lt;p&gt;या एररला घालवण्यासाठी, तुमच्या डिव्हाइसचे क्लॉक उघडा. वेळ आणि तारीख अचूक असल्याची खात्री करा.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988159990683914416">डेव्हलपर बिल्ड</translation>
 <translation id="989988560359834682">पत्ता संपादित करा</translation>

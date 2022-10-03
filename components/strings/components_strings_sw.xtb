@@ -244,7 +244,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1527263332363067270">Inasubiri muunganisho...</translation>
 <translation id="1529789484829130889">Trei ya nane</translation>
 <translation id="1530707389502320859">Tovuti ambayo umejaribu kutembelea inaonekana kuwa bandia. Wakati mwingine, wadukuzi wanaweza kuiga tovuti kwa kufanya mabadiliko madogo na yasiyoonekana kwa urahisi kwenye URL.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Ukurasa huu unasema</translation>
 <translation id="153384715582417236">Hakuna maudhui mengine kwa sasa</translation>
 <translation id="1536390784834419204">Tafsiri ukurasa</translation>
@@ -668,7 +667,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2673968385134502798">Michezo</translation>
 <translation id="2674170444375937751">Je, una hakika kuwa ungependa kufuta kurasa hizi kutoka historia yako?</translation>
 <translation id="2674804415323431591">Usionyeshe mapendekezo</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Sherehe za siku ya kuzaliwa na siku muhimu zinazoambatana na jina</translation>
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2679714844901977852">Hifadhi maelezo yako ya kadi na malipo kwenye Akaunti yako ya Google <ph name="USER_EMAIL" /> ili kulipa kwa usalama na kwa haraka</translation>
@@ -874,7 +872,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3270156322180235608">Usafiri wa anga</translation>
 <translation id="3270847123878663523">Tendua Kupanga upya</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> inataka kuunganisha</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Shirika lako, <ph name="ENROLLMENT_DOMAIN" />, limetuma maelezo fulani kwenye tovuti zifuatazo, kama vile mipangilio au sera.</translation>
 <translation id="3282497668470633863">Ongeza jina kwenye kadi</translation>
 <translation id="3286372614333682499">wima</translation>
@@ -940,7 +937,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3438829137925142401">Tumia manenosiri uliyohifadhi kwenye Akaunti yako ya Google</translation>
 <translation id="3440783957068352691">mraba</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Mmiliki wa kifaa hiki amezima mchezo wa dinosau.</translation>
 <translation id="3447884698081792621">Onyesha cheti (kilitolewa na <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Muda unaotumika kuleta:</translation>
@@ -1112,7 +1108,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3906954721959377182">Kompyuta kibao</translation>
 <translation id="3909477809443608991"><ph name="URL" /> inataka kucheza maudhui yanayolindwa. Utambulisho wa kifaa chako utathibitishwa na Google na kinaweza kufikiwa na tovuti hii.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Postikadi)</translation>
 <translation id="3927932062596804919">Kataza</translation>
 <translation id="393316646445601645">Intaneti na mawasiliano ya simu</translation>
 <translation id="3939773374150895049">Ungependa kutumia WebAuthn badala ya CVC?</translation>
@@ -1280,7 +1275,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4340575312453649552">Tangazo hili lilitumia nyenzo nyingi mno katika kifaa chako, kwa hivyo Chrome ililiondoa.</translation>
 <translation id="4340982228985273705">Kompyuta hii haitambuliwi kama inayodhibitiwa na biashara. Kwa hivyo, sera inaweza tu kusakinisha viendelezi vinavyopangishwa kwenye Duka la Chrome kwenye Wavuti. URL ya kusasisha Duka la Chrome kwenye Wavuti ni "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Kadi za Mikopo Zinazokubaliwa</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Muunganisho kwenye <ph name="SITE" /> si salama</translation>
 <translation id="4349365535725594680">Huwezi kushiriki maudhui ya siri</translation>
 <translation id="4349810866125026513">Pakia licha ya hayo</translation>
@@ -2168,7 +2162,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Kifaa chako kiko katika hali tuli.</translation>
 <translation id="6767985426384634228">Ungependa Kusasisha Anwani?</translation>
-<translation id="6768213884286397650">Hagaki (Kadi ya Posta)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Ukopeshaji wa biashara</translation>
 <translation id="6786145470008421571">Bahasha ya ukubwa wa inchi 6 kwa 9</translation>
@@ -2568,7 +2561,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7751971323486164747">Weka mapendeleo ya ukubwa wa fonti na miundo ya maandishi katika Chrome</translation>
 <translation id="7752995774971033316">Haidhibitiwi</translation>
 <translation id="7755624218968747854">Gombo la Msingi</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Huenda muunganisho huu umezuiwa na kinga mtandao au kingavirusi.</translation>
 <translation id="7760497246331667482">Muziki wa rege na wa kikaribi</translation>
 <translation id="776110834126722255">Haitumiki</translation>
@@ -2874,7 +2866,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8676424191133491403">Hakuna kuchelewa</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, jibu, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Ukurasa wa wavuti ulio kwenye <ph name="PAGE" /> haukuweza kupakiwa kwa sababu:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002"><ph name="MANAGER" /> inadhibiti akaunti na kifaa chako.</translation>
 <translation id="8688672835843460752">Inapatikana</translation>
 <translation id="868922510921656628">Kurasa kwa kila laha</translation>
@@ -3109,7 +3100,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="984275831282074731">Njia za kulipa</translation>
 <translation id="985199708454569384">&lt;p&gt;Utaona hitilafu hii kwenye kompyuta au simu yako kwa sababu tarehe na wakati wa kifaa chako si sahihi.&lt;/p&gt;
     &lt;p&gt;Ili urekebishe hitilafu, fungua saa ya kifaa chako. Hakikisha kuwa tarehe na wakati ni sahihi.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Jumla</translation>
 <translation id="988159990683914416">Muundo wa Wasanidi Programu</translation>
 <translation id="989988560359834682">Badilisha Anwani</translation>

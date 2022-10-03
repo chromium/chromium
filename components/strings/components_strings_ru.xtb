@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">Ожидание подключения…</translation>
 <translation id="1529789484829130889">Лоток 8</translation>
 <translation id="1530707389502320859">Сайт, на который вы пытались перейти, похож на подделку. Иногда злоумышленники создают копии сайтов и вносят небольшие изменения в их адрес, которые сложно заметить сразу.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Подтвердите действие</translation>
 <translation id="153384715582417236">Пока это всё</translation>
 <translation id="1536390784834419204">Перевести страницу</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">Игры</translation>
 <translation id="2674170444375937751">Удалить эти страницы из истории посещений?</translation>
 <translation id="2674804415323431591">Скрыть подсказки</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Дни рождения и именины</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2679714844901977852">Сохраните карту и платежную информацию в аккаунте Google (<ph name="USER_EMAIL" />) для безопасной и более быстрой оплаты покупок.</translation>
@@ -874,7 +872,6 @@
 <translation id="3270156322180235608">Авиапутешествия</translation>
 <translation id="3270847123878663523">&amp;Отменить изменение порядка</translation>
 <translation id="3271648667212143903">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Ваша организация (<ph name="ENROLLMENT_DOMAIN" />) отправила на следующие веб-сайты некоторые данные, такие как настройки и правила.</translation>
 <translation id="3282497668470633863">Укажите имя владельца карты</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
@@ -940,7 +937,6 @@
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="3438829137925142401">Использовать пароли, сохраненные в аккаунте Google</translation>
 <translation id="3440783957068352691">квадрат</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Владелец этого устройства отключил игру с динозавром.</translation>
 <translation id="3447884698081792621">Показать сертификат (издатель: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Выберите интервал:</translation>
@@ -1112,7 +1108,6 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991">Сайт <ph name="URL" /> собирается воспроизвести защищенный контент. Ваше устройство пройдет проверку в Google, и этот сайт сможет получать к нему доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Открытка)</translation>
 <translation id="3927932062596804919">Запретить</translation>
 <translation id="393316646445601645">Интернет и телекоммуникации</translation>
 <translation id="3939773374150895049">Использовать WebAuthn вместо CVC-кода?</translation>
@@ -1283,7 +1278,6 @@
 <translation id="4340575312453649552">Это объявление удалено, так как оно использовало слишком много системных ресурсов.</translation>
 <translation id="4340982228985273705">По нашим данным, этот компьютер не является корпоративным, поэтому в соответствии с правилом на него можно автоматически устанавливать только расширения из Интернет-магазина Chrome. URL для обновления: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Кредитные карты, которые принимаются к оплате</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Подключение к сайту <ph name="SITE" /> не защищено.</translation>
 <translation id="4349365535725594680">Невозможно поделиться конфиденциальным контентом</translation>
 <translation id="4349810866125026513">Все равно загрузить</translation>
@@ -2173,7 +2167,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Устройство находится в спящем режиме.</translation>
 <translation id="6767985426384634228">Изменить адрес?</translation>
-<translation id="6768213884286397650">Hagaki (открытка)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Коммерческое кредитование</translation>
 <translation id="6786145470008421571">Конверт 152 x 229 мм</translation>
@@ -2576,7 +2569,6 @@
 <translation id="7751971323486164747">Настроить шрифты и их размеры в Chrome</translation>
 <translation id="7752995774971033316">Не управляется</translation>
 <translation id="7755624218968747854">Основной рулон</translation>
-<translation id="7757555340166475417">Dai Pa Kai</translation>
 <translation id="7758069387465995638">Возможно, подключение заблокировано брандмауэром или антивирусным ПО.</translation>
 <translation id="7760497246331667482">Регги и карибская музыка</translation>
 <translation id="776110834126722255">Устаревшее правило</translation>
@@ -2883,7 +2875,6 @@
 <translation id="8676424191133491403">Без задержки</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, ответ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">При загрузке веб-страницы <ph name="PAGE" /> произошла ошибка по следующим причинам:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Вашим устройством и аккаунтом управляет <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Свободно</translation>
 <translation id="868922510921656628">Число страниц в наборе</translation>
@@ -3119,7 +3110,6 @@
 <translation id="984275831282074731">Способы оплаты</translation>
 <translation id="985199708454569384">&lt;p&gt;Эта ошибка возникает, если дата и время на компьютере или мобильном устройстве установлены неправильно.&lt;/p&gt;
     &lt;p&gt;Чтобы устранить проблему, откройте настройки системных часов и установите правильные параметры.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Общие</translation>
 <translation id="988159990683914416">Сборка для разработчиков</translation>
 <translation id="989988560359834682">Изменение адреса</translation>

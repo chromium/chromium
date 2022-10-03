@@ -217,6 +217,7 @@
       Wenn die Richtlinie nicht konfiguriert ist, gilt <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Genaue Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> ist kein akzeptierter Wert für diese Richtlinie.</translation>
+<translation id="1209096923317019235">Weist Apps angegebenen Dateierweiterungen als Standard-Handler zu</translation>
 <translation id="120937472976628837">Informationen zum Lüfter melden</translation>
 <translation id="1212233008927724662">Laden von Lazy Login WebUI deaktivieren.</translation>
 <translation id="1216919699175573511">Unterstützung für Signed HTTP Exchange (SXG) aktivieren</translation>
@@ -2352,6 +2353,15 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
       Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim Absturz des Browsers oder Betriebssystems, werden die Browserdaten beim nächsten Laden des Profils gelöscht.</translation>
 <translation id="3264793472749429012">Standardsuchmaschinen-Codierungen</translation>
 <translation id="3273221114520206906">JavaScript-Standardeinstellung</translation>
+<translation id="3282240846541032181">Mit dieser Richtlinie können Administratoren Apps festlegen, die als Standard-Handler für die einzelnen Dateierweiterungen unter <ph name="PRODUCT_OS_NAME" /> dienen und von Nutzern nicht geändert werden können.
+      Für alle Dateiendungen, die in der Richtlinie nicht angegeben sind, können Nutzer hinsichtlich des üblichen Workflows eigene Standardeinstellungen festlegen.
+
+      Chrome-Apps werden mit ihrer ID angegeben, z. B. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />, und Web-Apps mit ihrer URL aus <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />, z. B. <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />.
+
+      Beachte, dass Apps im Manifest für angegebene Dateierweiterungen als Datei-Handler deklariert werden MÜSSEN, damit dieses Richtlinienelement wirksam wird (die Richtlinie erweitert also NICHT vorhandene App-Funktionen).
+
+      Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> gemäß der internen Logik Standard-Handler selbst festlegen.
+      </translation>
 <translation id="328347261792478720">Der Browser zeigt standardmäßig für den Nutzer personalisierte Empfehlungen zu Medien an. Wenn diese Richtlinie deaktiviert ist, sind diese Empfehlungen für den Nutzer nicht sichtbar. Wenn sie aktiviert oder nicht konfiguriert ist, werden dem Nutzer die Empfehlungen zu Medien angezeigt.</translation>
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
 <translation id="3288595667065905535">Release-Kanal</translation>
@@ -4182,6 +4192,35 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 <translation id="5330684698007383292">Verarbeitung der folgenden Inhaltstypen durch <ph name="PRODUCT_FRAME_NAME" /> zulassen</translation>
 <translation id="5331746669335642668">Cloud-Richtlinie von <ph name="PRODUCT_NAME" /> überschreibt Plattformrichtlinie.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
+<translation id="5357039649371478544">Konfiguriert eine Liste mit Regeln zur Vermeidung von Datenlecks unter <ph name="PRODUCT_OS_NAME" />.
+      Datenlecks können unter anderem beim Kopieren und Einfügen von Daten, beim Übertragen von Dateien, beim Drucken, bei der Bildschirmfreigabe oder beim Aufnehmen von Screenshots auftreten.
+
+Jede Regel hat folgende Bestandteile:
+– Eine Liste von Quellen, die als URLs definiert sind. Alle Daten in den Quellen werden als vertrauliche Daten behandelt, auf die Einschränkungen angewendet werden.
+      – Eine Liste von Zielen, die als URLs oder Komponenten definiert sind und für die vertrauliche Daten entweder freigegeben oder nicht freigegeben werden dürfen.
+      – Eine Liste von Einschränkungen, die auf die Daten der Quellen angewendet werden.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes festzulegen:
+– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
+      – Die Aufnahme von Screenshots der Quellen.
+      – Das Drucken von Quellen.
+      – Die Privatsphärefunktion, wenn eine der Quellen sichtbar ist.
+      – Die Bildschirmfreigabe von einer der Quellen.
+      – Aus einer der Quellen heruntergeladene Dateien, wenn sie an das Ziel übertragen werden. Wird unter <ph name="PRODUCT_OS_NAME" /> Version 108 und höher unterstützt.
+
+      Die Einschränkungsebene kann mit BLOCK, ALLOW, REPORT oder WARN festgelegt werden.
+      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen. Ist <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> auf „true“ gesetzt, wird die blockierte Aktion dem Administrator gemeldet.
+      – Wenn die Einschränkungsebene auf ALLOW gesetzt ist, wird die Aktion zugelassen.
+      – Wenn die Einschränkungsebene auf REPORT und <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> auf „true“ gesetzt sind, wird die Aktion dem Administrator gemeldet.
+      – Wenn die Einschränkungsebene auf WARN gesetzt ist, erhält der Nutzer eine Warnung und kann entweder mit der Aktion fortfahren oder sie abbrechen. Ist <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> auf „true“ gesetzt, wird die Warnung dem Administrator gemeldet. Fährt der Nutzer mit der Aktion fort, erhält der Administrator ebenfalls eine Meldung.
+
+      Hinweise:
+– Die Einschränkung PRIVACY_SCREEN blockiert nicht das Aktivieren der Privatsphärefunktion, sondern erzwingt diese, wenn die Einschränkungsklasse auf BLOCK gesetzt ist.
+      – Ziele dürfen nicht leer sein, für den Fall, dass eine der Einschränkungen CLIPBOARD oder FILES lautet. Sie wirken sich jedoch nicht auf andere Einschränkungen aus.
+      – DRIVE- und USB-Ziele werden für die Einschränkung CLIPBOARD ignoriert.
+      – Formatiere die URL-Muster entsprechend dem Format unter https://www.chromium.org/administrators/url-blocklist-filter-format.
+
+Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewendet.</translation>
 <translation id="5362531528507578966">Überschreibt den Standarddruckmodus mit Hintergrundgrafiken.</translation>
 <translation id="5365476955714838841">Befehlszeilenparameter für den alternativen Browser.</translation>
 <translation id="5365946944967967336">Startseiten-Schaltfläche auf Symbolleiste anzeigen</translation>

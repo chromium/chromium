@@ -244,7 +244,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1527263332363067270">Naghihintay ng koneksyon…</translation>
 <translation id="1529789484829130889">Tray 8</translation>
 <translation id="1530707389502320859">Mukhang peke ang site na sinubukan mong bisitahin. Kung minsan, ginagaya ng mga nang-aatake ang mga site sa pamamagitan ng paggawa ng mga pagbabago sa URL na maliit at mahirap makita.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Isinasaad ng page na ito na</translation>
 <translation id="153384715582417236">'Yan na muna sa ngayon</translation>
 <translation id="1536390784834419204">Isalin ang page</translation>
@@ -668,7 +667,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2673968385134502798">Mga Laro</translation>
 <translation id="2674170444375937751">Sigurado ka bang nais mong tanggalin ang mga pahinang ito mula sa iyong history?</translation>
 <translation id="2674804415323431591">Itago ang mga suhestyon</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Mga kaarawan at pangalan ng araw</translation>
 <translation id="2677748264148917807">Umalis</translation>
 <translation id="2679714844901977852">I-save sa Google Account mo na <ph name="USER_EMAIL" /> ang iyong impormasyon ng card at impormasyon sa pagsingil para sa secure at mas mabilis na pag-checkout</translation>
@@ -874,7 +872,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3270156322180235608">Paglalakbay sa himpapawid</translation>
 <translation id="3270847123878663523">&amp;I-undo ang Pagbabago sa Ayos</translation>
 <translation id="3271648667212143903">Gustong kumonekta ng <ph name="ORIGIN" /></translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Nagpadala ang iyong organisasyon, ang <ph name="ENROLLMENT_DOMAIN" />, ng ilang impormasyon sa mga sumusunod na website, tulad ng mga setting o patakaran.</translation>
 <translation id="3282497668470633863">Magdagdag ng pangalan sa card</translation>
 <translation id="3286372614333682499">portrait</translation>
@@ -940,7 +937,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3438829137925142401">Gamitin ang mga naka-save na password sa iyong Google Account</translation>
 <translation id="3440783957068352691">square</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Na-off ng may-ari ng device na ito ang larong dinosaur.</translation>
 <translation id="3447884698081792621">Ipakita ang certificate (ibinigay ng <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Kunin ang agwat:</translation>
@@ -1112,7 +1108,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Gusto ng <ph name="URL" /> na mag-play ng pinoprotektahang content. Ive-verify ng Google ang pagkakakilanlan ng iyong device, at maaari itong i-access ng site na ito.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (Postcard)</translation>
 <translation id="3927932062596804919">Tanggihan</translation>
 <translation id="393316646445601645">Internet at telecom</translation>
 <translation id="3939773374150895049">Gamitin ang WebAuthn sa halip na CVC?</translation>
@@ -1280,7 +1275,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4340575312453649552">Gumamit ang ad na ito ng masyadong maraming resource para sa iyong device kaya inalis ito ng Chrome.</translation>
 <translation id="4340982228985273705">Hindi na-detect ang computer na ito bilang pinamamahalaan ng enterprise kaya awtomatiko lang na mai-install ng patakaran ang mga extension na hino-host sa Chrome Webstore. Ang URL ng pag-update ng Chrome Webstore ay "<ph name="CWS_UPDATE_URL" />."</translation>
 <translation id="4346197816712207223">Mga Tinatanggap na Credit Card</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Hindi secure ang koneksyon sa <ph name="SITE" /></translation>
 <translation id="4349365535725594680">Hindi puwedeng magbahagi ng kumpidensyal na content</translation>
 <translation id="4349810866125026513">I-upload pa rin</translation>
@@ -2168,7 +2162,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Nag-sleep ang iyong device.</translation>
 <translation id="6767985426384634228">I-update ang Address?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Komersyal na pagpapautang</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
@@ -2570,7 +2563,6 @@ Mga karagdagang detalye:
 <translation id="7751971323486164747">I-customize ang mga laki ng font at typeface sa Chrome</translation>
 <translation id="7752995774971033316">Hindi pinamamahalaan</translation>
 <translation id="7755624218968747854">Pangunahing Rolyo</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Maaaring na-block ng firewall o antivirus software ang koneksyon.</translation>
 <translation id="7760497246331667482">Reggae at Caribbean na musika</translation>
 <translation id="776110834126722255">Hindi na Ginagamit</translation>
@@ -2877,7 +2869,6 @@ Mga karagdagang detalye:
 <translation id="8676424191133491403">Walang pagkaantala</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, sagot, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Hindi ma-load ang webpage sa <ph name="PAGE" /> dahil:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Pinapamahalaan ng <ph name="MANAGER" /> ang iyong device at account.</translation>
 <translation id="8688672835843460752">Available</translation>
 <translation id="868922510921656628">Mga page bawat hanay</translation>
@@ -3112,7 +3103,6 @@ Mga karagdagang detalye:
 <translation id="984275831282074731">Mga paraan ng pagbabayad</translation>
 <translation id="985199708454569384">&lt;p&gt;Makikita mo ang error na ito kung hindi tumpak ang petsa at oras ng iyong computer o mobile device.&lt;/p&gt;
     &lt;p&gt;Para maayos ang error, buksan ang orasan ng iyong device. Tiyaking tama ang oras at petsa.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>
 <translation id="988159990683914416">Bumuo ang Developer</translation>
 <translation id="989988560359834682">I-edit ang Address</translation>

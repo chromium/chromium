@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Canvia a la visualització de llista</translation>
 <translation id="2377590462528165447">S'han compartit <ph name="NUMBER_OF_ITEMS" /> carpetes amb Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fitxers seleccionats</translation>
+<translation id="2383454254762599978">Mou a la paperera</translation>
 <translation id="2387458720915042159">Tipus de connexió del servidor intermediari</translation>
 <translation id="2389832672041313158">Birmà (Birmània)</translation>
 <translation id="2392369802118427583">Activa</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Ves a drive.google.com...</translation>
 <translation id="3553048479571901246">Per obrir fitxers amb <ph name="APP_NAME" />, primer copia'ls a la carpeta de fitxers de Windows.</translation>
 <translation id="3556731189587832921">Anglès (EUA) amb teclat internacional (PC)</translation>
+<translation id="3557414470514932909">S'està movent <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="3567221313191587603">Selecciona un fitxer i activa l'opció <ph name="OFFLINE_CHECKBOX_NAME" /> per poder accedir als fitxers sense connexió.</translation>
 <translation id="357479282490346887">Lituà</translation>
 <translation id="3587482841069643663">Tots</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bengalí fonètic</translation>
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4017788180641807848">Anglès (EUA) amb teclat Workman</translation>
+<translation id="4019998208269143058">Fixa als fitxers ràpids</translation>
 <translation id="4040753847560036377">El PUK no és correcte</translation>
 <translation id="4057991113334098539">S'està activant...</translation>
 <translation id="4092890906744441904">Irlandès</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">La política de l'administrador no recomana:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> s'ha mogut.</translation>
 <translation id="4176286497474237543">Buida la paperera ara</translation>
+<translation id="4179621117429069925">Aquest element és a la paperera</translation>
 <translation id="4186579485882418952">Activa el mode sense connexió</translation>
 <translation id="4193154014135846272">Document de Google</translation>
 <translation id="4197674956721858839">Selecció de ZIP</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">S'ha rebutjat el certificat d'autenticació de manera remota</translation>
 <translation id="4394214039309501350">Enllaç extern</translation>
 <translation id="4394980935660306080">Aquesta setmana</translation>
+<translation id="4398096759193130964">Restaura els elements o arrossega'ls a una carpeta nova fora de la paperera</translation>
 <translation id="4401287888955153199">Extreu-ho tot</translation>
 <translation id="4410695710508688828">L'operació d'extracció ha fallat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Crea una drecera per als fitxers</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindi amb teclat InScript</translation>
 <translation id="4801956050125744859">Mantén-les totes dues</translation>
 <translation id="4804827417948292437">Alvocat</translation>
+<translation id="4805966553127040832">S'estan restaurant <ph name="COUNT" /> elements</translation>
 <translation id="4823651846660089135">El dispositiu és només de lectura</translation>
 <translation id="4826849268470072925">Tàmil (itrans)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> elements seleccionats</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Flor de gazània</translation>
 <translation id="4943368462779413526">Pilota de futbol americà</translation>
 <translation id="4961158930123534723">S'ha compartit 1 carpeta amb Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> s'ha restaurat</translation>
 <translation id="4969785127455456148">Àlbum</translation>
 <translation id="4973523518332075481">Utilitza un nom que tingui <ph name="MAX_LENGTH" /> caràcters com a màxim</translation>
 <translation id="4973970068702235170">S'ha produït un error en la compressió; error inesperat: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> ja no existeix.</translation>
 <translation id="5698411045597658393">Desbloqueja <ph name="NETWORK_NAME" /></translation>
 <translation id="5700087501958648444">Informació de l'àudio</translation>
+<translation id="5720028165859493293">S'ha mogut <ph name="FILE_NAME" /> a la paperera</translation>
 <translation id="5724172041621205163">Tai amb teclat pattachote</translation>
 <translation id="5756666464756035725">QWERTY hongarès</translation>
 <translation id="5763377084591234761">Alemany (Suïssa)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Arxiu <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Salutació</translation>
 <translation id="6327785803543103246">Detecció automàtica de servidors intermediaris web</translation>
+<translation id="6337014272874260727">Deixa de fixar als fitxers ràpids</translation>
 <translation id="6339145975392024142">Teclat internacional dels EUA (PC)</translation>
 <translation id="6346310558342052870">Accés restringit</translation>
 <translation id="6356685157277930264">Finestra de suggeriments en fitxers</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 carpeta seleccionada</translation>
 <translation id="6755827872271341378">Dispositiu ChromeOS Flex</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
+<translation id="6794539005637808366">Restaura l'element o arrossega'l a una carpeta nova fora de la paperera</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Gestiona les opcions per compartir amb Linux</translation>
 <translation id="6806796368146926706">Alfanumèric amb teclat japonès</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">Suec</translation>
 <translation id="6990081529015358884">Us heu quedat sense espai</translation>
+<translation id="6993826899923627728">Aquests elements són a la paperera</translation>
 <translation id="6998711733709403587">S'han seleccionat <ph name="SELCTED_FOLDERS_COUNT" /> carpetes</translation>
 <translation id="7008426324576352165">La teva organització requereix més emmagatzematge per completar la pujada.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Txec</translation>
 <translation id="7417453074306512035">Teclat etíop</translation>
 <translation id="7417705661718309329">Mapa de Google</translation>
+<translation id="7419668828140929293">S'està restaurant <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">No hi ha cap imatge recent</translation>
 <translation id="7460898608667578234">Ucraïnès</translation>
 <translation id="7469894403370665791">Connecta automàticament a aquesta xarxa</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Accedeix fàcilment a Google Fotos</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7663224033570512922">Hindi</translation>
+<translation id="7689532716264131859">S'han mogut <ph name="NUMBER_OF_ITEMS" /> elements a la paperera</translation>
 <translation id="7693909743393669729">En formatar una unitat, se n'esborren totes les dades que s'hi hagin emmagatzemat i se'n suprimeixen totes les particions existents, incloses algunes que potser no es veuen. Aquesta acció no es pot desfer.</translation>
 <translation id="7695430100978772476">No s'ha pogut formatar <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">No s'ha pogut buidar la paperera.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Xinès (wubi)</translation>
 <translation id="7765158879357617694">Mou</translation>
 <translation id="7774365994322694683">Ocell</translation>
+<translation id="7780322752056734036">S'han restaurat <ph name="NUMBER_OF_ITEMS" /> elements</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7788080748068240085">Per desar "<ph name="FILE_NAME" />" fora de línia, cal que allibereu <ph name="TOTAL_FILE_SIZE" /> més d'espai:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />Desfixeu els fitxers als quals ja no necessiteu accedir fora de línia<ph name="MARKUP_3" />.
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">S'ha seleccionat un interval de <ph name="ENTRY_COUNT" /> entrades, de l'entrada <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">La política de l'administrador impedeix:</translation>
 <translation id="965477715979482472">Anglès (Sud-àfrica)</translation>
+<translation id="976666271385981812">S'estan movent <ph name="NUMBER_OF_ITEMS" /> elements a la paperera</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="988685240266037636">El nom de fitxer "<ph name="FILE_NAME" />" ja existeix. El vols substituir?</translation>
 <translation id="992401651319295351">Et queden <ph name="RETRIES" /> intents. No podràs utilitzar aquesta xarxa fins que no configuris un PIN nou.</translation>

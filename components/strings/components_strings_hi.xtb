@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">कनेक्शन का इंतज़ार हो रहा है</translation>
 <translation id="1529789484829130889">ट्रे 8</translation>
 <translation id="1530707389502320859">जिस साइट पर आपने जाने की कोशिश की, वह नकली लग रही है. हमलावर कभी-कभी यूआरएल में छोटे और नज़र न आने वाले बदलाव करके साइट की नकल कर लेते हैं.</translation>
-<translation id="1531205177818805254">एक्ज़ीक्यूटिव</translation>
 <translation id="1532118530259321453">इस पेज का कहना है कि</translation>
 <translation id="153384715582417236">फिलहाल बस इतना ही</translation>
 <translation id="1536390784834419204">पेज का अनुवाद करें</translation>
@@ -669,7 +668,6 @@
 <translation id="2673968385134502798">गेम्स</translation>
 <translation id="2674170444375937751">क्या आप वाकई अपने इतिहास से इन पेजों को मिटाना चाहते हैं?</translation>
 <translation id="2674804415323431591">सुझाव छिपाएं</translation>
-<translation id="2676271551327853224">रॉक-8के</translation>
 <translation id="2677696497921480781">जन्मदिन और नामकरण का दिन</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2679714844901977852">झटपट और सुरक्षित तरीके से चेकआउट करने के लिए, अपने कार्ड और बिलिंग से जुड़ी जानकारी को अपने Google खाते <ph name="USER_EMAIL" /> में सेव करें</translation>
@@ -874,7 +872,6 @@
 <translation id="3270156322180235608">हवाई यात्रा</translation>
 <translation id="3270847123878663523">&amp;पुन: क्रमित करना वापस लाएं</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करना चाहती है</translation>
-<translation id="3274521967729236597">पा-काई</translation>
 <translation id="3282085321714087552">आपके संगठन <ph name="ENROLLMENT_DOMAIN" /> ने नीचे दी गई वेबसाइटों को सेटिंग या नीतियों वगैरह के बारे में कुछ जानकारी भेजी है.</translation>
 <translation id="3282497668470633863">कार्ड पर नाम जोड़ें</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -940,7 +937,6 @@
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3438829137925142401">अपने Google खाते में सेव किए गए पासवर्ड इस्तेमाल करें</translation>
 <translation id="3440783957068352691">स्क्वेयर</translation>
-<translation id="3443726618221119081">जूरो-कु-काई</translation>
 <translation id="3447661539832366887">इस डिवाइस के मालिक ने डायनासोर गेम को बंद कर दिया है.</translation>
 <translation id="3447884698081792621">प्रमाणपत्र (<ph name="ISSUER" /> की ओर से जारी किया गया) दिखाएं</translation>
 <translation id="3452404311384756672">दो रीफ़्रेश के बीच का अंतराल:</translation>
@@ -1112,7 +1108,6 @@
 <translation id="3906954721959377182">टैबलेट</translation>
 <translation id="3909477809443608991"><ph name="URL" /> सुरक्षित सामग्री चलाना चाहता है . Google आपके डिवाइस की पहचान की पुष्टि कर सकता है और यह साइट उसे ऐक्सेस कर सकती है.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (पोस्टकार्ड)</translation>
 <translation id="3927932062596804919">अस्वीकार करें</translation>
 <translation id="393316646445601645">इंटरनेट और टेलिकॉम</translation>
 <translation id="3939773374150895049">क्या आप कार्ड वेरीफ़िकेशन कोड (सीवीसी) के बजाय WebAuthn का इस्तेमाल करना चाहते हैं?</translation>
@@ -1280,7 +1275,6 @@
 <translation id="4340575312453649552">यह विज्ञापन आपके डिवाइस के बहुत से संसाधन इस्तेमाल करता था, इसलिए Chrome ने इसे हटा दिया है.</translation>
 <translation id="4340982228985273705">इस कंप्यूटर की पहचान एंटरप्राइज़ की ओर से प्रबंधित होने के रूप में नहीं की गई है, इसलिए नीति सिर्फ़ Chrome वेबस्टोर पर होस्ट किए जाने वाले एक्सटेंशन ही अपने आप इंस्टॉल कर सकती है. Chrome वेबस्टोर अपडेट यूआरएल "<ph name="CWS_UPDATE_URL" />" है.</translation>
 <translation id="4346197816712207223">स्वीकार किए जाने वाले क्रेडिट कार्ड</translation>
-<translation id="4346833872170306413">आरओसी-16के</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> से कनेक्शन सुरक्षित नहीं है</translation>
 <translation id="4349365535725594680">गोपनीय कॉन्टेंट शेयर नहीं किया जा सकता</translation>
 <translation id="4349810866125026513">फिर भी अपलोड करें</translation>
@@ -2168,7 +2162,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">आपका डिवाइस निष्क्रिय हो गया है.</translation>
 <translation id="6767985426384634228">क्या आप पता अपडेट करना चाहते हैं?</translation>
-<translation id="6768213884286397650">हगाकी (पोस्टकार्ड)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">व्यावसायिक लोन</translation>
 <translation id="6786145470008421571">6 x 9 इंच का लिफ़ाफ़ा</translation>
@@ -2570,7 +2563,6 @@
 <translation id="7751971323486164747">Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाएं</translation>
 <translation id="7752995774971033316">अप्रबंधित</translation>
 <translation id="7755624218968747854">प्राइमरी रोल</translation>
-<translation id="7757555340166475417">दाई-पा-काई</translation>
 <translation id="7758069387465995638">हो सकता है कि फायरवॉल या एंटीवायरस ने कनेक्शन को रोक दिया हो.</translation>
 <translation id="7760497246331667482">रैगे और कैरेबियन म्यूज़िक</translation>
 <translation id="776110834126722255">समर्थन नहीं है या रोक दिया गया है</translation>
@@ -2878,7 +2870,6 @@
 <translation id="8676424191133491403">बिना देरी के</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> पर वेबपेज को लोड नहीं किया जा सका क्योंकि:</translation>
-<translation id="8685155993131031756">पीआरसी-16के</translation>
 <translation id="8687429322371626002">आपके डिवाइस और खाते को <ph name="MANAGER" /> प्रबंधित करता है.</translation>
 <translation id="8688672835843460752">उपलब्ध</translation>
 <translation id="868922510921656628">हर सेट पर मौजूद पेजों की संख्या</translation>
@@ -3113,7 +3104,6 @@
 <translation id="984275831282074731">पैसे चुकाने के तरीके</translation>
 <translation id="985199708454569384">&lt;p&gt;अगर आपके कंप्यूटर या मोबाइल डिवाइस की तारीख और समय गलत है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
     &lt;p&gt;इस गड़बड़ी को ठीक करने के लिए, अपने डिवाइस की घड़ी खोलें. पक्का करें कि समय और तारीख सही हों.&lt;/p&gt;</translation>
-<translation id="985956168329721395">पीआरसी-32के</translation>
 <translation id="987264212798334818">सामान्य</translation>
 <translation id="988159990683914416">डेवलपर बिल्ड</translation>
 <translation id="989988560359834682">पते में बदलाव करें</translation>

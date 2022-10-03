@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">Очікується з’єднання…</translation>
 <translation id="1529789484829130889">Лоток 8</translation>
 <translation id="1530707389502320859">Сайт, на який ви намагалися перейти, виглядає несправжнім. Зловмисники іноді імітують сайти, вносячи майже непомітні зміни в URL-адресу.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Повідомлення з цієї сторінки</translation>
 <translation id="153384715582417236">Більше нічого немає</translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">Ігри</translation>
 <translation id="2674170444375937751">Ви дійсно бажаєте видалити ці сторінки зі своєї історії?</translation>
 <translation id="2674804415323431591">Сховати пропозиції</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Дні народження й іменини</translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2679714844901977852">Збережіть свою картку та платіжну інформацію в обліковому записі Google <ph name="USER_EMAIL" />, щоб сплачувати безпечно й швидко</translation>
@@ -874,7 +872,6 @@
 <translation id="3270156322180235608">Авіаподорожі</translation>
 <translation id="3270847123878663523">&amp;Відмінити перевпорядкування</translation>
 <translation id="3271648667212143903">Сайт <ph name="ORIGIN" /> хоче підключитися</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Ваша організація (<ph name="ENROLLMENT_DOMAIN" />) надіслала вказаним веб-сайтам деяку інформацію, таку як налаштування й правила.</translation>
 <translation id="3282497668470633863">Додати ім’я на кредитній картці</translation>
 <translation id="3286372614333682499">книжкова</translation>
@@ -940,7 +937,6 @@
 <translation id="3435738964857648380">Безпека</translation>
 <translation id="3438829137925142401">Використовувати паролі, збережені в обліковому записі Google</translation>
 <translation id="3440783957068352691">квадрат</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Власник цього пристрою вимкнув гру з динозавром.</translation>
 <translation id="3447884698081792621">Показати сертифікат (видавець: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Інтервал отримання:</translation>
@@ -1112,7 +1108,6 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> хоче відтворити захищений вміст. Ми перевіримо ідентифікаційні дані вашого пристрою, і сайт зможе отримати до нього доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Уфуку Хагакі (листівка)</translation>
 <translation id="3927932062596804919">Відмовити</translation>
 <translation id="393316646445601645">Інтернет і телекомунікація</translation>
 <translation id="3939773374150895049">Використовувати веб-автентифікацію замість коду CVC?</translation>
@@ -1280,7 +1275,6 @@
 <translation id="4340575312453649552">Це оголошення використовувало забагато ресурсів пристрою, тож веб-переглядач Chrome видалив його.</translation>
 <translation id="4340982228985273705">Цим комп’ютером не керує адміністратор підприємства, тому правило може лише автоматично встановити розширення, розміщені у Веб-магазині Chrome. URL-адреса для оновлення Веб-магазину Chrome: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Кредитні картки, які приймаються до оплати</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">З’єднання із сайтом <ph name="SITE" /> не захищене</translation>
 <translation id="4349365535725594680">Неможливо поділитися конфіденційним контентом</translation>
 <translation id="4349810866125026513">Усе одно завантажити</translation>
@@ -2168,7 +2162,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Ваш пристрій перейшов у режим сну.</translation>
 <translation id="6767985426384634228">Оновити адресу?</translation>
-<translation id="6768213884286397650">Hagaki (листівка)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Комерційне кредитування</translation>
 <translation id="6786145470008421571">Конверт 6 x 9 дюймів</translation>
@@ -2570,7 +2563,6 @@
 <translation id="7751971323486164747">Налаштуйте розміри та гарнітури шрифтів у Chrome</translation>
 <translation id="7752995774971033316">Некерований клієнт</translation>
 <translation id="7755624218968747854">Основний рулон</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Можливо, брандмауер або антивірусна програма заблокували з’єднання.</translation>
 <translation id="7760497246331667482">Реггі й карибська музика</translation>
 <translation id="776110834126722255">Не підтримується</translation>
@@ -2878,7 +2870,6 @@
 <translation id="8676424191133491403">Без затримки</translation>
 <translation id="8680536109547170164">"<ph name="QUERY" />", відповідь: "<ph name="ANSWER" />"</translation>
 <translation id="8681531050781943054">Не вдалося завантажити веб-сторінку <ph name="PAGE" />.</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Вашим пристроєм і обліковим записом керує <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Доступно</translation>
 <translation id="868922510921656628">Кількість сторінок у наборі</translation>
@@ -3113,7 +3104,6 @@
 <translation id="984275831282074731">Способи оплати</translation>
 <translation id="985199708454569384">&lt;p&gt;Це повідомлення про помилку з’являється, якщо дата й час на комп’ютері або мобільному пристрої неправильні.&lt;/p&gt;
     &lt;p&gt;Щоб виправити цю помилку, відкрийте годинник на пристрої та переконайтеся, що дата й час правильні.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Загальне</translation>
 <translation id="988159990683914416">Конструкція розробника</translation>
 <translation id="989988560359834682">Редагувати адресу</translation>

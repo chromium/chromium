@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">接続を待機しています…</translation>
 <translation id="1529789484829130889">トレイ 8</translation>
 <translation id="1530707389502320859">アクセスしようとしたサイトは偽装サイトのようです。不正なユーザーが URL のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">このページの内容</translation>
 <translation id="153384715582417236">現在、コンテンツはありません</translation>
 <translation id="1536390784834419204">ページを翻訳</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">ゲーム</translation>
 <translation id="2674170444375937751">履歴からこれらのページを削除してもよろしいですか？</translation>
 <translation id="2674804415323431591">候補を非表示にする</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">誕生日</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2679714844901977852">Google アカウント（<ph name="USER_EMAIL" />）にカードとお支払い情報を保存すると、すばやく安全にご購入手続きを行えます</translation>
@@ -874,7 +872,6 @@
 <translation id="3270156322180235608">空の旅</translation>
 <translation id="3270847123878663523">順序変更の取り消し（&amp;U）</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> が接続を要求しています</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">あなたの組織（<ph name="ENROLLMENT_DOMAIN" />）は次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
 <translation id="3282497668470633863">名義人名を追加</translation>
 <translation id="3286372614333682499">縦向き</translation>
@@ -940,7 +937,6 @@
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3438829137925142401">Google アカウントに保存したパスワードを使用する</translation>
 <translation id="3440783957068352691">スクエア</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">このデバイスの所有者が恐竜ゲームを無効にしています。</translation>
 <translation id="3447884698081792621">証明書（発行元: <ph name="ISSUER" />）を表示</translation>
 <translation id="3452404311384756672">取得間隔:</translation>
@@ -1112,7 +1108,6 @@
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909477809443608991"><ph name="URL" /> が保護されたコンテンツの再生を要求しています。デバイスの認証情報が Google によって確認され、このサイトによる認証情報へのアクセスが許可されます。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">往復はがき</translation>
 <translation id="3927932062596804919">拒否</translation>
 <translation id="393316646445601645">インターネット、通信</translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
@@ -1280,7 +1275,6 @@
 <translation id="4340575312453649552">この広告は、デバイスのリソース消費が多すぎるため、Chrome によって削除されました。</translation>
 <translation id="4340982228985273705">このパソコンは企業の管理対象として検出されていないため、ポリシーで自動的にインストールできるのは Chrome ウェブストアでホストされている拡張機能のみとなります。Chrome ウェブストアの更新 URL は「<ph name="CWS_UPDATE_URL" />」です。</translation>
 <translation id="4346197816712207223">利用可能なクレジット カード</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> への接続は安全ではありません</translation>
 <translation id="4349365535725594680">機密コンテンツは共有できません</translation>
 <translation id="4349810866125026513">そのままアップロード</translation>
@@ -2167,7 +2161,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">デバイスがスリープ状態です。</translation>
 <translation id="6767985426384634228">住所を更新しますか？</translation>
-<translation id="6768213884286397650">はがき</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">営利貸付</translation>
 <translation id="6786145470008421571">6x9 インチ封筒</translation>
@@ -2568,7 +2561,6 @@
 <translation id="7751971323486164747">Chrome のフォントサイズと書体をカスタマイズします</translation>
 <translation id="7752995774971033316">管理されていません</translation>
 <translation id="7755624218968747854">メインロール</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">ファイアウォールまたはウイルス対策ソフトウェアによって接続がブロックされた可能性があります。</translation>
 <translation id="7760497246331667482">レゲエ、カリビアン音楽</translation>
 <translation id="776110834126722255">廃止</translation>
@@ -2875,7 +2867,6 @@
 <translation id="8676424191133491403">今すぐ</translation>
 <translation id="8680536109547170164">「<ph name="QUERY" />」に対する答え: 「<ph name="ANSWER" />」</translation>
 <translation id="8681531050781943054">ウェブページ（<ph name="PAGE" />）は次の理由で読み込めませんでした:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">ご使用のデバイスとアカウントは <ph name="MANAGER" /> で管理されています。</translation>
 <translation id="8688672835843460752">使用可能</translation>
 <translation id="868922510921656628">1 部あたりのページ数</translation>
@@ -3110,7 +3101,6 @@
 <translation id="984275831282074731">お支払い方法</translation>
 <translation id="985199708454569384">&lt;p&gt;このエラーは、パソコンまたはモバイル デバイスの日付と時刻が正確でない場合に表示されます。&lt;/p&gt;
     &lt;p&gt;エラーを解決するには、デバイスの時計を開き、日付と時刻が正しいことを確認します。&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">全般</translation>
 <translation id="988159990683914416">Developer Build</translation>
 <translation id="989988560359834682">住所の編集</translation>

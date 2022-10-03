@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">正在等待建立连接…</translation>
 <translation id="1529789484829130889">纸匣 8</translation>
 <translation id="1530707389502320859">您刚才尝试访问的网站貌似为虚假网站。攻击者有时会对网址做些令人难以发现的细微更改来仿冒网站。</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">此网页显示</translation>
 <translation id="153384715582417236">暂无新内容</translation>
 <translation id="1536390784834419204">翻译网页</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">游戏</translation>
 <translation id="2674170444375937751">确定要从历史记录中删除这些页吗？</translation>
 <translation id="2674804415323431591">隐藏建议</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">生日与命名日</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2679714844901977852">将您的付款卡信息和结算信息保存到您的 Google 帐号 <ph name="USER_EMAIL" />，以便您安全快捷地结账</translation>
@@ -872,7 +870,6 @@
 <translation id="3270156322180235608">航空旅行</translation>
 <translation id="3270847123878663523">撤消顺序调整(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 希望连接到以下所选设备：</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">贵组织 <ph name="ENROLLMENT_DOMAIN" /> 已将某些信息（例如设置或政策）发送给下列网站。</translation>
 <translation id="3282497668470633863">添加持卡人姓名</translation>
 <translation id="3286372614333682499">纵向</translation>
@@ -938,7 +935,6 @@
 <translation id="3435738964857648380">安全</translation>
 <translation id="3438829137925142401">使用您 Google 帐号中保存的密码</translation>
 <translation id="3440783957068352691">方形</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">此设备的所有者已关闭恐龙游戏。</translation>
 <translation id="3447884698081792621">显示证书（由<ph name="ISSUER" />签发）</translation>
 <translation id="3452404311384756672">抓取时间间隔：</translation>
@@ -1108,7 +1104,6 @@
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想播放受保护内容。Google 将会验证您的设备身份，而且此网站可能会查看您的设备身份。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki（明信片）</translation>
 <translation id="3927932062596804919">拒绝</translation>
 <translation id="393316646445601645">互联网与电信</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
@@ -1276,7 +1271,6 @@
 <translation id="4340575312453649552">对于您的设备来说，此广告占用了太多资源，因此 Chrome 已将其移除。</translation>
 <translation id="4340982228985273705">系统检测到，此计算机不是由企业管理，因此政策只能自动安装 Chrome 应用商店中的扩展程序。对应的 Chrome 应用商店更新网址为“<ph name="CWS_UPDATE_URL" />”。</translation>
 <translation id="4346197816712207223">接受的信用卡</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">与 <ph name="SITE" /> 的连接不安全</translation>
 <translation id="4349365535725594680">无法共享机密内容</translation>
 <translation id="4349810866125026513">仍然上传</translation>
@@ -2163,7 +2157,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">您的设备已进入休眠模式。</translation>
 <translation id="6767985426384634228">更新地址？</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">商业贷款</translation>
 <translation id="6786145470008421571">6 x 9 英寸信封</translation>
@@ -2565,7 +2558,6 @@
 <translation id="7751971323486164747">自定义 Chrome 中的字号和字型</translation>
 <translation id="7752995774971033316">非托管</translation>
 <translation id="7755624218968747854">主卷</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
 <translation id="7760497246331667482">雷鬼与加勒比音乐</translation>
 <translation id="776110834126722255">已弃用</translation>
@@ -2873,7 +2865,6 @@
 <translation id="8676424191133491403">无延迟</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />，答案，<ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">位于 <ph name="PAGE" /> 的网页无法加载，因为：</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">您的设备和帐号由 <ph name="MANAGER" /> 管理。</translation>
 <translation id="8688672835843460752">可用</translation>
 <translation id="868922510921656628">每组页数</translation>
@@ -3108,7 +3099,6 @@
 <translation id="984275831282074731">付款方式</translation>
 <translation id="985199708454569384">&lt;p&gt;如果您的计算机或移动设备的日期与时间不准确，您就会看到这条错误消息。&lt;/p&gt;
     &lt;p&gt;要修正该错误，请打开您设备的时钟，并确保日期与时间正确无误。&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">常规</translation>
 <translation id="988159990683914416">开发者内部版本</translation>
 <translation id="989988560359834682">修改地址</translation>

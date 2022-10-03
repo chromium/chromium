@@ -71,6 +71,7 @@
 <translation id="1067661089446014701">Pentru siguranță suplimentară, criptează parolele pe dispozitiv înainte să se salveze în Contul Google</translation>
 <translation id="1067922213147265141">Alte servicii Google</translation>
 <translation id="1069355737714877171">Elimină profilul eSIM numit <ph name="PROFILE_NAME" /></translation>
+<translation id="1069814191880976658">Alege alt ecran</translation>
 <translation id="1070377999570795893">Un alt program de pe computerul tău a adăugat o extensie care poate schimba modul în care funcționează Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -227,6 +228,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="120069043972472860">Nu se poate viziona</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1201564082781748151">Datele locale pot fi restabilite dacă uiți parola</translation>
+<translation id="1202116106683864634">Sigur vrei să ștergi această cheie de acces?</translation>
 <translation id="1202596434010270079">Aplicația de tip chioșc a fost actualizată. Scoate stickul USB.</translation>
 <translation id="120368089816228251">Notă muzicală</translation>
 <translation id="1203942045716040624">Worker folosit în comun: <ph name="SCRIPT_URL" /></translation>
@@ -250,6 +252,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1223853788495130632">Administratorul dvs. recomandă o valoare specifică pentru această setare.</translation>
 <translation id="1225177025209879837">Se procesează solicitarea...</translation>
 <translation id="1227507814927581609">Autentificarea nu a reușit în timpul conectării la „<ph name="DEVICE_NAME" />”.</translation>
+<translation id="1227660082540388410">Editează cheia de acces</translation>
 <translation id="1227993798763400520">Nu s-a putut proiecta. Încearcă din nou.</translation>
 <translation id="1230417814058465809">Protecția standard este activată. Pentru securitate sporită, folosește protecția îmbunătățită.</translation>
 <translation id="1231733316453485619">Activezi sincronizarea?</translation>
@@ -769,6 +772,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativă)</translation>
 <translation id="1709217939274742847">Alege un tichet pe care să îl folosești pentru autentificare. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Setări de rețea</translation>
+<translation id="1709916727352927457">Șterge cheia de acces</translation>
 <translation id="1709972045049031556">Nu se pot trimite fișierele</translation>
 <translation id="1711935594505774770">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="SITE_GROUP_NAME" /> și de site-urile subordonate, precum și de aplicațiile instalate asociate</translation>
 <translation id="1714644264617423774">Activează funcțiile de accesibilitate, pentru a face dispozitivul mai ușor de utilizat. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -1095,6 +1099,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="2007404777272201486">Raportează o problemă...</translation>
 <translation id="2009590708342941694">Instrument pentru emoji</translation>
 <translation id="2010501376126504057">Dispozitive compatibile</translation>
+<translation id="2010888903612390044">Nu este conectat niciun microfon</translation>
 <translation id="2015232545623037616">PC și Chromecast în aceeași rețea Wi-Fi</translation>
 <translation id="2016473077102413275">Opțiunile care au nevoie de imagini nu vor funcționa</translation>
 <translation id="2016574333161572915">Hardware-ul Google Meet este gata pentru configurare</translation>
@@ -3028,6 +3033,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3813296892522778813">Accesează <ph name="BEGIN_LINK_CHROMIUM" />Ajutor Google Chrome<ph name="END_LINK_CHROMIUM" /> dacă nu găsești ceea ce cauți</translation>
 <translation id="3813358687923336574">Limba folosită pentru traducerea paginilor și Răspunsuri rapide</translation>
 <translation id="3814529970604306954">Contul de la școală</translation>
+<translation id="3814792775883886759">Nu este conectată nicio cameră foto</translation>
 <translation id="3816118180265633665">Culori Chrome</translation>
 <translation id="3817524650114746564">Deschide setările proxy ale computerului</translation>
 <translation id="3819164369574292143">Mărește pentru a face mai mari elementele de pe ecran. Folosește tasta de căutare + Ctrl + M pentru a activa și a dezactiva lupa. Folosește Ctrl + Alt + tastele săgeți ca să te deplasezi pe ecran după ce l-ai mărit.</translation>
@@ -4273,6 +4279,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5017643436812738274">Poți să navighezi în pagini folosind cursorul pentru text. Apasă Ctrl + tasta de căutare + 7 pentru a-l dezactiva.</translation>
 <translation id="5018207570537526145">Deschide site-ul extensiei</translation>
 <translation id="5018526990965779848">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google.</translation>
+<translation id="5020008942039547742">Alege altă fereastră</translation>
 <translation id="5021750053540820849">Nu s-a actualizat încă</translation>
 <translation id="5024511550058813796">Istoricul apare pe toate dispozitivele tale sincronizate. Astfel, poți continua ceea ce făceai</translation>
 <translation id="5026492829171796515">Conectează-te pentru a adăuga un cont Google</translation>
@@ -4499,6 +4506,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5252653240322147470">Codul PIN trebuie să conțină maximum <ph name="MAXIMUM" /> cifre</translation>
 <translation id="5254368820972107711">Afișează fișierele care trebuie eliminate</translation>
 <translation id="52550593576409946">Aplicația de tip chioșc nu a putut fi lansată.</translation>
+<translation id="5255726914791076208">Când editezi cheia de acces, contul tău <ph name="RP_ID" /> nu se va modifica</translation>
 <translation id="5255859108402770436">Conectează-te din nou</translation>
 <translation id="52566111838498928">Se încarcă fonturi...</translation>
 <translation id="5256861893479663409">Pe toate site-urile</translation>
@@ -6039,6 +6047,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="672609503628871915">Vedeți noutățile</translation>
 <translation id="67269783048918309">Trimite date de utilizare și diagnosticare. Momentan, dispozitivul trimite automat date de diagnosticare și de utilizare a dispozitivului și aplicațiilor la Google. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această <ph name="BEGIN_LINK1" />setare<ph name="END_LINK1" /> este impusă de proprietar. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google. <ph name="BEGIN_LINK2" />Află mai multe<ph name="END_LINK2" /></translation>
 <translation id="6727969043791803658">Conectat, nivelul bateriei: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="6729192290958770680">Introdu numele tău de utilizator</translation>
 <translation id="6731320427842222405">Aceasta poate dura câteva minute</translation>
 <translation id="6733620523445262364">„<ph name="BOOKMARK_TITLE" />” a fost creat.</translation>
 <translation id="6735304988756581115">Afișează cookie-uri și alte date privind site-ul...</translation>

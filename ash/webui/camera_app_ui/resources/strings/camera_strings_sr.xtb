@@ -10,6 +10,7 @@
 <translation id="1309250603447638106">Преузимају се ажурирања за скенирање докумената</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Тастер за претрагу + стрелица налево да бисте приступили.</translation>
 <translation id="1393338179284529051">Quad HD</translation>
+<translation id="1417314334557041815">Измени <ph name="INDEX" />. страницу</translation>
 <translation id="1430915738399379752">Штампај</translation>
 <translation id="1467231725790366244">Камера <ph name="CAMERA" /> је искључена.</translation>
 <translation id="1473110567575736769">Тајмер за 3 секунде</translation>
@@ -21,6 +22,7 @@
 <translation id="1627744224761163218">4×4</translation>
 <translation id="1664224225747386870">Ништа није снимљено</translation>
 <translation id="1838104802459806957">Нагињање нагоре</translation>
+<translation id="1843105061469674856">Скенирај додатну страницу</translation>
 <translation id="1851169887664797861">Доступне су додатне контроле за камеру</translation>
 <translation id="1851616744363735765">ПАУЗИРАНО</translation>
 <translation id="1862930711583847113">Извоз датотеке <ph name="FILE" /> није успео</translation>
@@ -79,6 +81,7 @@
 <translation id="414641094616694804">Ова камера не може да промени резолуцију</translation>
 <translation id="4269820728363426813">Копирај адресу линка</translation>
 <translation id="4281620174117014503">Средња резолуција</translation>
+<translation id="428234092390943511">Сличица странице</translation>
 <translation id="4329152592498422850">Пређи на режим за снимање слика у облику квадрата</translation>
 <translation id="4340659173795395806">Сада можете да направите PDF са више страница</translation>
 <translation id="4383571725254449280">Евиденције о учинку штампања</translation>

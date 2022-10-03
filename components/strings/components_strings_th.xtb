@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">กำลังรอการเชื่อมต่อ…</translation>
 <translation id="1529789484829130889">ถาด 8</translation>
 <translation id="1530707389502320859">เว็บไซต์ที่คุณเพิ่งพยายามเข้าถึงดูเป็นเว็บไซต์ปลอม บางครั้งผู้โจมตีจะเลียนแบบเว็บไซต์ต่างๆ โดยทำการเปลี่ยนแปลงเล็กๆ น้อยๆ ที่สังเกตเห็นได้ยากกับ URL</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">หน้านี้บอกว่า</translation>
 <translation id="153384715582417236">เสร็จเรียบร้อย</translation>
 <translation id="1536390784834419204">แปลหน้าเว็บ</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">เกม</translation>
 <translation id="2674170444375937751">คุณแน่ใจหรือไม่ว่าต้องการนำออกหน้าเหล่านี้ออกจากประวัติการเข้าชมของคุณ</translation>
 <translation id="2674804415323431591">ซ่อนคำแนะนำ</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">วันเกิดและวันตั้งชื่อ</translation>
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2679714844901977852">บันทึกบัตรและข้อมูลการเรียกเก็บเงินไว้ในบัญชี Google <ph name="USER_EMAIL" /> เพื่อให้ชำระเงินได้อย่างปลอดภัยและรวดเร็วยิ่งขึ้น</translation>
@@ -875,7 +873,6 @@
 <translation id="3270156322180235608">การเดินทางโดยเครื่องบิน</translation>
 <translation id="3270847123878663523">&amp;เลิกทำการจัดลำดับใหม่</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ต้องการเชื่อมต่อ</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">องค์กรของคุณ <ph name="ENROLLMENT_DOMAIN" /> ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
 <translation id="3282497668470633863">เพิ่มชื่อบนบัตร</translation>
 <translation id="3286372614333682499">แนวตั้ง</translation>
@@ -941,7 +938,6 @@
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3438829137925142401">ใช้รหัสผ่านที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="3440783957068352691">สี่เหลี่ยมจัตุรัส</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">เจ้าของอุปกรณ์นี้ปิดเกมไดโนเสาร์</translation>
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
@@ -1112,7 +1108,6 @@
 <translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ต้องการเล่นเนื้อหาที่ได้รับความคุ้มครอง ข้อมูลประจำตัวของอุปกรณ์จะได้รับการยืนยันโดย Google และเว็บไซต์นี้อาจเข้าถึงข้อมูลดังกล่าว</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (ไปรษณียบัตร)</translation>
 <translation id="3927932062596804919">ปฏิเสธ</translation>
 <translation id="393316646445601645">อินเทอร์เน็ตและโทรคมนาคม</translation>
 <translation id="3939773374150895049">ใช้ WebAuthn แทน CVC ไหม</translation>
@@ -1283,7 +1278,6 @@
 <translation id="4340575312453649552">โฆษณานี้ใช้ทรัพยากรมากเกินไปสำหรับอุปกรณ์ของคุณ Chrome จึงนำโฆษณานี้ออก</translation>
 <translation id="4340982228985273705">ไม่มีการตรวจพบว่าคอมพิวเตอร์เครื่องนี้ได้รับการจัดการโดยองค์กร ดังนั้นนโยบายจะติดตั้งเฉพาะส่วนขยายที่โฮสต์ใน Chrome เว็บสโตร์โดยอัตโนมัติ URL การอัปเดตของ Chrome เว็บสโตร์คือ "<ph name="CWS_UPDATE_URL" />"</translation>
 <translation id="4346197816712207223">บัตรเครดิตที่ยอมรับ</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">การเชื่อมต่อกับ <ph name="SITE" /> ไม่ปลอดภัย</translation>
 <translation id="4349365535725594680">แชร์เนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="4349810866125026513">อัปโหลดเลย</translation>
@@ -2173,7 +2167,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">อุปกรณ์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
 <translation id="6767985426384634228">อัปเดตที่อยู่ไหม</translation>
-<translation id="6768213884286397650">Hagaki (โปสการ์ด)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">สินเชื่อธุรกิจ</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 นิ้ว</translation>
@@ -2576,7 +2569,6 @@
 <translation id="7751971323486164747">ปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
 <translation id="7752995774971033316">ไม่ได้จัดการ</translation>
 <translation id="7755624218968747854">ม้วนกระดาษหลัก</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">ไฟร์วอลล์หรือซอฟต์แวร์ป้องกันไวรัสอาจบล็อกการเชื่อมต่อนี้</translation>
 <translation id="7760497246331667482">เพลงเรกเก้และแคริบเบียน</translation>
 <translation id="776110834126722255">เลิกใช้งาน</translation>
@@ -2884,7 +2876,6 @@
 <translation id="8676424191133491403">ไม่หน่วงเวลา</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, คำตอบ, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">ไม่สามารถโหลดหน้าเว็บที่ <ph name="PAGE" /> เนื่องจาก:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">อุปกรณ์และบัญชีของคุณจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="8688672835843460752">มีอยู่</translation>
 <translation id="868922510921656628">จำนวนหน้าต่อชุด</translation>
@@ -3120,7 +3111,6 @@
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 <translation id="985199708454569384">&lt;p&gt;คุณจะเห็นข้อผิดพลาดนี้หากวันที่และเวลาของคอมพิวเตอร์หรืออุปกรณ์เคลื่อนที่ไม่ถูกต้อง&lt;/p&gt;
     &lt;p&gt;ในการแก้ไขข้อผิดพลาด ให้เปิดนาฬิกาของอุปกรณ์ ตรวจสอบให้แน่ใจว่าเวลาและวันที่ถูกต้องแล้ว&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">ทั่วไป</translation>
 <translation id="988159990683914416">รุ่นนักพัฒนา</translation>
 <translation id="989988560359834682">แก้ไขที่อยู่</translation>

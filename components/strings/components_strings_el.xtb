@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">Αναμονή για σύνδεση…</translation>
 <translation id="1529789484829130889">Δίσκος 8</translation>
 <translation id="1530707389502320859">Ο ιστότοπος που προσπαθήσατε μόλις να επισκεφτείτε μοιάζει ψεύτικος. Οι εισβολείς απομιμούνται μερικές φορές ιστοτόπους κάνοντας μικρές, δυσδιάκριτες αλλαγές στο URL.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Αυτή η σελίδα λέει</translation>
 <translation id="153384715582417236">Αυτά προς το παρόν</translation>
 <translation id="1536390784834419204">Μετάφραση σελίδας</translation>
@@ -668,7 +667,6 @@
 <translation id="2673968385134502798">Παιχνίδια</translation>
 <translation id="2674170444375937751">Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτές τις σελίδες από το ιστορικό σας;</translation>
 <translation id="2674804415323431591">Απόκρυψη προτάσεων</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">Γενέθλια και ονομαστικές εορτές</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2679714844901977852">Αποθηκεύστε τις πληροφορίες της κάρτας και τις πληροφορίες χρέωσης στον Λογαριασμό σας Google <ph name="USER_EMAIL" /> για ασφαλείς και πιο γρήγορες ολοκληρώσεις αγορών.</translation>
@@ -876,7 +874,6 @@
 <translation id="3270156322180235608">Αεροπορικά ταξίδια</translation>
 <translation id="3270847123878663523">&amp;Αναίρεση αναδιάταξης</translation>
 <translation id="3271648667212143903">Ο ιστότοπος <ph name="ORIGIN" /> επιθυμεί σύνδεση</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Ο οργανισμός σας, <ph name="ENROLLMENT_DOMAIN" />, έστειλε ορισμένες πληροφορίες στους παρακάτω ιστοτόπους, όπως ρυθμίσεις ή πολιτικές.</translation>
 <translation id="3282497668470633863">Προσθήκη ονόματος στην κάρτα</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
@@ -942,7 +939,6 @@
 <translation id="3435738964857648380">Ασφάλεια</translation>
 <translation id="3438829137925142401">Χρησιμοποιήστε τους κωδικούς πρόσβασης που έχουν αποθηκευτεί στον Λογαριασμό σας Google.</translation>
 <translation id="3440783957068352691">τετράγωνο</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Ο κάτοχος αυτής της συσκευής απενεργοποίησε το παιχνίδι με τους δεινοσαύρους.</translation>
 <translation id="3447884698081792621">Εμφάνιση πιστοποιητικού (εκδόθηκε από <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Διάστημα ανάκτησης:</translation>
@@ -1114,7 +1110,6 @@
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Το <ph name="URL" /> επιθυμεί την αναπαραγωγή προστατευμένου περιεχομένου. Η ταυτότητα της συσκευής σας θα επαληθευτεί από την Google και αυτός ο ιστότοπος μπορεί να αποκτήσει πρόσβαση σε αυτήν.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Ουφούκου Χαγκάκι (καρτ ποστάλ)</translation>
 <translation id="3927932062596804919">Άρνηση</translation>
 <translation id="393316646445601645">Διαδίκτυο και τηλεπικοινωνίες</translation>
 <translation id="3939773374150895049">Χρήση WebAuthn αντί του CVC;</translation>
@@ -1286,7 +1281,6 @@
 <translation id="4340575312453649552">Αυτή η διαφήμιση καταργήθηκε από το Chrome επειδή χρησιμοποιεί υπερβολικά πολλούς πόρους στη συσκευή σας.</translation>
 <translation id="4340982228985273705">Αυτός ο υπολογιστής δεν έχει εντοπιστεί ως διαχειριζόμενος από επιχείρηση. Συνεπώς, η πολιτική μπορεί να εγκαθιστά αυτόματα μόνο επεκτάσεις οι οποίες φιλοξενούνται στο Chrome Webstore. Το URL ενημέρωσης του Chrome Webstore είναι το "<ph name="CWS_UPDATE_URL" />".</translation>
 <translation id="4346197816712207223">Αποδεκτές πιστωτικές κάρτες</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">Η σύνδεση στον ιστότοπο <ph name="SITE" /> δεν είναι ασφαλής</translation>
 <translation id="4349365535725594680">Δεν είναι δυνατή η κοινοποίηση εμπιστευτικού περιεχομένου</translation>
 <translation id="4349810866125026513">Μεταφόρτωση ούτως ή άλλως</translation>
@@ -2178,7 +2172,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Η συσκευή σας τέθηκε σε αδράνεια.</translation>
 <translation id="6767985426384634228">Ενημέρωση διεύθυνσης;</translation>
-<translation id="6768213884286397650">Hagaki (Ταχυδρομική κάρτα)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Εμπορικά δάνεια</translation>
 <translation id="6786145470008421571">Φάκελος 6 x 9 ίντσες</translation>
@@ -2581,7 +2574,6 @@
 <translation id="7751971323486164747">Προσαρμογή μεγεθών γραμματοσειρών και οικογενειών χαρακτήρων στο Chrome</translation>
 <translation id="7752995774971033316">Χωρίς διαχείριση</translation>
 <translation id="7755624218968747854">Κύριο ρολό</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Το τείχος προστασίας ή το λογισμικό προστασίας από ιούς ενδέχεται να έχει αποκλείσει τη σύνδεση.</translation>
 <translation id="7760497246331667482">Ρέγκε και μουσική της Καραϊβικής</translation>
 <translation id="776110834126722255">Καταργήθηκε</translation>
@@ -2891,7 +2883,6 @@
 <translation id="8676424191133491403">Χωρίς καθυστέρηση</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, απάντηση, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Η φόρτωση της ιστοσελίδας στη διεύθυνση <ph name="PAGE" /> δεν ήταν δυνατή επειδή:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Η διαχείριση της συσκευής και του λογαριασμού γίνεται από τον τομέα <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Διαθέσιμο</translation>
 <translation id="868922510921656628">Σελίδες ανά δευτερόλεπτο</translation>
@@ -3127,7 +3118,6 @@
 <translation id="984275831282074731">Τρόποι πληρωμής</translation>
 <translation id="985199708454569384">&lt;p&gt;Αυτό το σφάλμα θα εμφανιστεί εάν η ημερομηνία και η ώρα του υπολογιστή ή της κινητής συσκευής σας είναι ανακριβείς.&lt;/p&gt;
     &lt;p&gt;Για να διορθώσετε το σφάλμα, ανοίξτε το ρολόι της συσκευής. Βεβαιωθείτε ότι η ώρα και η ημερομηνία είναι σωστές.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Γενικά</translation>
 <translation id="988159990683914416">Έκδοση προγραμματιστή</translation>
 <translation id="989988560359834682">Επεξεργασία διεύθυνσης</translation>

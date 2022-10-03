@@ -10,6 +10,7 @@
 <translation id="1309250603447638106">Dokumendi skannimiseks värskenduste allalaadimine</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Juurdepääsemine: Otsing + vasaknool.</translation>
 <translation id="1393338179284529051">Quad HD</translation>
+<translation id="1417314334557041815">Muuda <ph name="INDEX" />. lehte</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on eemaldatud.</translation>
 <translation id="1473110567575736769">3-sekundiline taimer</translation>
@@ -21,6 +22,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Midagi pole salvestatud</translation>
 <translation id="1838104802459806957">Kalluta üles</translation>
+<translation id="1843105061469674856">Skanni veel üks leht</translation>
 <translation id="1851169887664797861">Saadaval on kaamera täiendavad juhtnupud</translation>
 <translation id="1851616744363735765">PEATATUD</translation>
 <translation id="1862930711583847113">Faili <ph name="FILE" /> ei saa eksportida</translation>
@@ -79,6 +81,7 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="414641094616694804">See kaamera ei saa eraldusvõimet muuta</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="4281620174117014503">Keskmine eraldusvõime</translation>
+<translation id="428234092390943511">Lehe pisipilt</translation>
 <translation id="4329152592498422850">Vaheta ruudukujulise foto jäädvustamiseks</translation>
 <translation id="4340659173795395806">Nüüd saate luua mitme lehega PDF-e</translation>
 <translation id="4383571725254449280">Printimise toimivuslogid</translation>

@@ -244,7 +244,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1527263332363067270">Čakanje na povezavo ...</translation>
 <translation id="1529789484829130889">Pladenj 8</translation>
 <translation id="1530707389502320859">Spletno mesto, ki ste ga pravkar poskusili odpreti, je videti lažno. Napadalci včasih poskušajo kopirati spletna mesta, tako da skoraj neopazno spremenijo URL.</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">Ta stran sporoča:</translation>
 <translation id="153384715582417236">To je vse za zdaj</translation>
 <translation id="1536390784834419204">Prevedi stran</translation>
@@ -668,7 +667,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Ali ste prepričani, da želite te strani izbrisati iz svoje zgodovine?</translation>
 <translation id="2674804415323431591">Skrivanje predlogov</translation>
-<translation id="2676271551327853224">ROC 16K</translation>
 <translation id="2677696497921480781">Rojstni dnevi in godovi</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2679714844901977852">Podatke o kartici in podatke za obračunavanje shranite v račun Google <ph name="USER_EMAIL" /> za varno in hitrejše dokončanje nakupov.</translation>
@@ -846,6 +844,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3216313131063488104">Modre barve</translation>
 <translation id="3218181027817787318">Relativno</translation>
 <translation id="3223287115535306850">Animirana ikona ob zagonu aplikacije</translation>
+<translation id="3223425961342298674">Lokacija ni dovoljena</translation>
 <translation id="3225347164936328585">Ploska</translation>
 <translation id="3225919329040284222">Strežnik je poslal potrdilo, ki se ne ujema z vgrajenimi pričakovanji. Ta pričakovanja so zaradi vaše varnosti vključena za nekatera strogo zavarovana spletna mesta.</translation>
 <translation id="3226128629678568754">Pritisnite gumb za vnovično nalaganje, da znova pošljete podatke za nalaganje strani.</translation>
@@ -874,7 +873,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3270156322180235608">Letalska potovanja</translation>
 <translation id="3270847123878663523">&amp;Razveljavi razvrstitev</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> se želi povezati</translation>
-<translation id="3274521967729236597">Pa Kai</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, je poslala nekatere podatke, kot so nastavitve ali pravilniki, na ta spletna mesta.</translation>
 <translation id="3282497668470633863">Dodajanje imena na kartico</translation>
 <translation id="3286372614333682499">pokončno</translation>
@@ -940,7 +938,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3435738964857648380">Varnost</translation>
 <translation id="3438829137925142401">Uporabite gesla, shranjena v računu Google</translation>
 <translation id="3440783957068352691">kvadrat</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">Lastnik te naprave je izklopil igro z dinozavri</translation>
 <translation id="3447884698081792621">Prikaz potrdila (izdal: <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Interval prejemanja:</translation>
@@ -1112,7 +1109,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3906954721959377182">Tablični računalnik</translation>
 <translation id="3909477809443608991"><ph name="URL" /> želi predvajati zaščiteno vsebino. Google bo preveril identiteto naprave in do nje bo morda dostopalo to spletno mesto.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (razglednica)</translation>
 <translation id="3927932062596804919">Ne dovoli</translation>
 <translation id="393316646445601645">Internet in telekomunikacije</translation>
 <translation id="3939773374150895049">Želite namesto kode CVC uporabiti WebAuthn?</translation>
@@ -1185,6 +1181,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4127575959421463246">Iščete zastavice sistema Chrome OS? Obiščite</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{in še 1 drug}one{in še # drug}two{in še # druga}few{in še # drugi}other{in še # drugih}}</translation>
 <translation id="4130226655945681476">preveriti omrežne kable, modem in usmerjevalnik</translation>
+<translation id="4132448310531350254">Podvojene rutine za obravnavo za pripono datoteke »<ph name="FILE_EXTENSION" />«, navedene v aplikacijah »<ph name="POLICY_IDS_LIST" />«.</translation>
 <translation id="4134123981501319574">Ustvari dokument</translation>
 <translation id="413544239732274901">Več o tem</translation>
 <translation id="4142935452406587478">Pladenj 10</translation>
@@ -1207,6 +1204,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4194250254487269611">Kartice trenutno ni mogoče shraniti</translation>
 <translation id="4196861286325780578">&amp;Uveljavi premik</translation>
 <translation id="4202554117186904723">Kolut 5</translation>
+<translation id="4203769790323223880">Kamera ni dovoljena</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />preveriti požarni zid in konfiguracije protivirusnega programa<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Velika</translation>
 <translation id="4210602799576081649">Potrditvena koda je potekla, zahtevajte novo kodo.</translation>
@@ -1233,6 +1231,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;p&gt;Ko končate, ne pozabite spet vklopiti protivirusne programske opreme.&lt;/p&gt;
     &lt;h4&gt;5. korak: poiščite dodatno pomoč&lt;/h4&gt;
     &lt;p&gt;Če je napaka še vedno prikazana, se obrnite na lastnika spletnega mesta.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofon ni dovoljen</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje za omrežno diagnostiko<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Lahko zahteva uporabo in premik kamere.</translation>
 <translation id="4235360514405112390">Veljavno</translation>
@@ -1280,7 +1279,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4340575312453649552">Ta oglas je uporabljal preveč sredstev za napravo, zato ga je Chrome odstranil.</translation>
 <translation id="4340982228985273705">Ta računalnik ni zaznan kot računalnik, ki ga upravlja podjetje, zato lahko pravilnik samodejno namesti samo razširitve, ki gostujejo v Spletni trgovini Chrome. URL za posodobitve v Spletni trgovini Chrome je »<ph name="CWS_UPDATE_URL" />«.</translation>
 <translation id="4346197816712207223">Sprejete kreditne kartice</translation>
-<translation id="4346833872170306413">ROC 16K</translation>
 <translation id="4348834659292907206">Povezava s spletnim mestom <ph name="SITE" /> ni varna</translation>
 <translation id="4349365535725594680">Zaupne vsebine mi mogoče zajeti</translation>
 <translation id="4349810866125026513">Vseeno naloži</translation>
@@ -1604,6 +1602,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5177076414499237632">Več o virih in temah na tej strani</translation>
 <translation id="5179510805599951267">Ni v <ph name="ORIGINAL_LANGUAGE" />? Obvestite nas o tej napaki</translation>
 <translation id="518639307526414276">Hrana in izdelki za ljubljenčke</translation>
+<translation id="5190072300954988691">Kamera in mikrofon nista dovoljena</translation>
 <translation id="5190835502935405962">Vrstica z zaznamki</translation>
 <translation id="5191315092027169558">Vaš profil upravlja domena <ph name="DOMAIN" />.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi prenesti več datotek</translation>
@@ -1624,6 +1623,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Opusti</translation>
+<translation id="5239623327352565343">Lokacija je dovoljena</translation>
 <translation id="5242889659037569123">Potovalni kovčki in dodatna oprema</translation>
 <translation id="5250209940322997802">»Vzpostavite povezavo z omrežjem«</translation>
 <translation id="52517543715119994">Več o funkcijah Chroma</translation>
@@ -2168,7 +2168,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">Naprava je preklopila v stanje pripravljenosti.</translation>
 <translation id="6767985426384634228">Želite posodobiti naslov?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Komercialna posojila</translation>
 <translation id="6786145470008421571">Kuverta 6 x 9 palcev</translation>
@@ -2500,6 +2499,7 @@ Dodatne podrobnosti:
 <translation id="7581199239021537589">Pomik slike na 2. strani v Y</translation>
 <translation id="7582602800368606489">Hitro ustvarjanje novega dogodka v Google Koledarju</translation>
 <translation id="7583969447617676942">Pravne storitve</translation>
+<translation id="7586676035079382730">Obvestila niso dovoljena</translation>
 <translation id="7591288787774558753">Želite deliti zaupno vsebino?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> želi uporabljati piškotke in podatke spletnih mest na <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Strežnikovo potrdilo krši omejitve imen.</translation>
@@ -2570,7 +2570,6 @@ Dodatne podrobnosti:
 <translation id="7751971323486164747">Prilagajanje velikosti pisav in tipografije v Chromu</translation>
 <translation id="7752995774971033316">Odstranjen iz uporabe</translation>
 <translation id="7755624218968747854">Glavni kolut</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Povezavo je morda blokiral požarni zid ali protivirusni program.</translation>
 <translation id="7760497246331667482">Reggae in karibska glasba</translation>
 <translation id="776110834126722255">Zastarelo</translation>
@@ -2877,7 +2876,6 @@ Dodatne podrobnosti:
 <translation id="8676424191133491403">Brez zakasnitve</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, odgovor, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Spletne strani na naslovu <ph name="PAGE" /> ni bilo mogoče naložiti zaradi teh razlogov:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Vašo napravo in račun upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Na voljo</translation>
 <translation id="868922510921656628">Strani na niz</translation>
@@ -3052,6 +3050,7 @@ Dodatne podrobnosti:
 <translation id="9131119348384879525">Želite zajeti zaupno vsebino?</translation>
 <translation id="9136861683332321024">Luksuzna vozila</translation>
 <translation id="9137013805542155359">Pokaži izvirno besedilo</translation>
+<translation id="9138037198177304356">Obvestila so dovoljena</translation>
 <translation id="9139318394846604261">Nakupovanje</translation>
 <translation id="9141013498910525015">Upravljanje naslovov</translation>
 <translation id="9144951720726881238">Datum poteka:</translation>
@@ -3112,7 +3111,6 @@ Dodatne podrobnosti:
 <translation id="984275831282074731">Plačilna sredstva</translation>
 <translation id="985199708454569384">&lt;p&gt;Ta napaka se prikaže, če datum in ura v računalniku ali mobilni napravi nista točna.&lt;/p&gt;
     &lt;p&gt;Napako odpravite tako, da v napravi odprete uro ter se prepričate, da sta ura in datum pravilna.&lt;/p&gt;</translation>
-<translation id="985956168329721395">PRC 16K</translation>
 <translation id="987264212798334818">Splošno</translation>
 <translation id="988159990683914416">Različica za razvijalce</translation>
 <translation id="989988560359834682">Uredi naslov</translation>

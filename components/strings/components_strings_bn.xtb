@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">সংযোগের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="1529789484829130889">ট্রে ৮</translation>
 <translation id="1530707389502320859">এখন যে সাইট দেখার চেষ্টা করছেন তা নকল বলে মনে হচ্ছে। ইউআরএলে সামান্য বা সহজে দেখা যায় না এমন পরিবর্তন করে আক্রমণকারীরা সাইট নকল করে।</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">এই পৃষ্ঠায় এটি দেখানো হচ্ছে</translation>
 <translation id="153384715582417236">এখন এই পর্যন্তই</translation>
 <translation id="1536390784834419204">পৃষ্ঠাটি অনুবাদ করুন</translation>
@@ -669,7 +668,6 @@
 <translation id="2673968385134502798">গেম</translation>
 <translation id="2674170444375937751">আপনি কি আপনার ইতিহাস থেকে এই পৃষ্ঠাগুলি মোছার বিষয়ে নিশ্চিত?</translation>
 <translation id="2674804415323431591">সাজেশন মেনু লুকান</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">জন্মদিন এবং নাম দিবস</translation>
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2679714844901977852">নিরাপদ এবং দ্রুত চেক-আউটের জন্য আপনার <ph name="USER_EMAIL" /> Google অ্যাকাউন্টে কার্ড এবং বিলিংয়ের তথ্য সেভ করুন</translation>
@@ -876,7 +874,6 @@
 <translation id="3270156322180235608">আকাশপথে ভ্রমণ</translation>
 <translation id="3270847123878663523">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
 <translation id="3282497668470633863">কার্ডে থাকা নাম যোগ করুন</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
@@ -942,7 +939,6 @@
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3438829137925142401">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করুন</translation>
 <translation id="3440783957068352691">বর্গাকার</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">এই ডিভাইসের মালিক ডাইনোসর গেমটি বন্ধ করেছেন৷</translation>
 <translation id="3447884698081792621">সার্টিফিকেট দেখান (<ph name="ISSUER" /> এর দ্বারা জারি করা)</translation>
 <translation id="3452404311384756672">বিরামকাল প্রাপ্ত করুন:</translation>
@@ -1114,7 +1110,6 @@
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909477809443608991"><ph name="URL" /> সুরক্ষিত কন্টেন্ট চালাতে চায়। আপনার ডিভাইসের পরিচয় Google যাচাই করে দেখবে এবং এই সাইট সম্ভবত সেটি অ্যাক্সেস করবে।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (পোস্টকার্ড)</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
 <translation id="393316646445601645">ইন্টারনেট ও টেলিকম</translation>
 <translation id="3939773374150895049">সিভিসি কোডের পরিবর্তে WebAuthn ব্যবহার করবেন?</translation>
@@ -1285,7 +1280,6 @@
 <translation id="4340575312453649552">এই বিজ্ঞাপন আপনার ডিভাইসের অনেক রিসোর্স ব্যবহার করেছে, তাই Chrome সেটি মুছে দিয়েছে।</translation>
 <translation id="4340982228985273705">এই কম্পিউটারটি এন্টারপ্রাইজ স্তরে পরিচালনা করা হচ্ছে হিসেবে শনাক্ত করা যায়নি, তাই নীতিটি শুধুমাত্র Chrome ওয়েব স্টোরে হোস্ট করা এক্সটেনশন নিজে থেকে ইনস্টল করতে পারবে। Chrome ওয়েব স্টোর আপডেটের ইউআরএল হল "<ph name="CWS_UPDATE_URL" />"।</translation>
 <translation id="4346197816712207223">এই ক্রেডিট কার্ডগুলি গ্রহণ করা হয়</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" />-এর কানেকশনটি সুরক্ষিত নয়</translation>
 <translation id="4349365535725594680">গোপনীয় কন্টেন্ট শেয়ার করা যাচ্ছে না</translation>
 <translation id="4349810866125026513">তবুও আপলোড করুন</translation>
@@ -2174,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">আপনার ডিভাইস নিদ্রা মোডে গিয়েছে।</translation>
 <translation id="6767985426384634228">ঠিকানা আপডেট করবেন?</translation>
-<translation id="6768213884286397650">Hagaki (Postcard)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">বাণিজ্যিক ঋণ</translation>
 <translation id="6786145470008421571">এনভেলপ ৬ x ৯ ইঞ্চি</translation>
@@ -2577,7 +2570,6 @@
 <translation id="7751971323486164747">Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করুন</translation>
 <translation id="7752995774971033316">অপরিচালিত</translation>
 <translation id="7755624218968747854">প্রাইমারি রোল</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">ফায়ারওয়াল বা অ্যান্টিভাইরাস সফটওয়্যার সংযোগকে অবরুদ্ধ করে থাকতে পারে।</translation>
 <translation id="7760497246331667482">রেগা ও ক্যারিবিয়ান মিউজিক</translation>
 <translation id="776110834126722255">বাতিল করে দেওয়া</translation>
@@ -2884,7 +2876,6 @@
 <translation id="8676424191133491403">কোনও দেরি হয়নি</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, উত্তর, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি লোড করা যায়নি কারণ:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">আপনার ডিভাইস ও অ্যাকাউন্ট <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়।</translation>
 <translation id="8688672835843460752">উপলব্ধ</translation>
 <translation id="868922510921656628">সেট প্রতি পৃষ্ঠা</translation>
@@ -3120,7 +3111,6 @@
 <translation id="984275831282074731">পেমেন্ট পদ্ধতি</translation>
 <translation id="985199708454569384">&lt;p&gt;আপনার কম্পিউটার অথবা মোবাইল ডিভাইসে সঠিক তারিখ এবং সময় সেট করা না থাকলে এই সমস্যাটি হতে পারে।&lt;/p&gt;
     &lt;p&gt;এই সমস্যার সমাধান করতে, ডিভাইসের ঘড়িতে যান। সঠিক তারিখ এবং সময় সেট করুন।&lt;/p&gt;</translation>
-<translation id="985956168329721395">PRC-32K</translation>
 <translation id="987264212798334818">সাধারণ</translation>
 <translation id="988159990683914416">ডেভেলপার বিল্ড</translation>
 <translation id="989988560359834682">ঠিকানা সম্পাদনা করুন</translation>

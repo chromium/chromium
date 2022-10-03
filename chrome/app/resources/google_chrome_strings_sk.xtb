@@ -258,6 +258,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="608006075545470555">Pridanie pracovného profilu do tohto prehliadača</translation>
 <translation id="6113794647360055231">Prehliadač Chrome bol práve vylepšený</translation>
 <translation id="6145313976051292476">Otvoriť súbory PDF v Chrome</translation>
+<translation id="6155960517327665396">Šetrič pamäte zrýchlil Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6235018212288296708">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome, ktoré povoľuje prenos dát mDNS.</translation>
@@ -358,6 +359,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8286862437124483331">Prehliadač Google Chrome sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="828798499196665338">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v Chrome. Povolenie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) je zakázané.</translation>
 <translation id="8290100596633877290">Google Chrome zlyhal. Chcete ho spustiť znova?</translation>
+<translation id="8341646175450781745">Keď je táto možnosť zapnutá, Chrome bude uvoľňovať pamäť z neaktívnych kariet. Aktívne karty a ďalšie aplikácie tak získajú viac zdrojov počítača a Chrome zostane rýchly. Neaktívne karty sa automaticky znova aktivujú, keď na ne prejdete. Môžete si prečítať <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> alebo <ph name="BEGIN_LINK_2" />odoslať spätnú väzbu<ph name="END_LINK_2" />.</translation>
 <translation id="8342675569599923794">Tento súbor je nebezpečný, a preto ho Chrome zablokoval.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Ako používame tieto údaje:<ph name="END_BOLD" /> weby môžu v Chrome ukladať údaje o vašich záujmoch. Ak napríklad navštívite web na nákup obuvi na maratón, daný web môže definovať váš záujem ako behanie maratónov. Ak neskôr navštívite iný, aby ste sa zaregistrovali na preteky, tento web vám môže zobraziť reklamu na bežeckú obuv na základe vašich záujmov.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>

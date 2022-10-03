@@ -244,7 +244,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1527263332363067270">Aguardando conexão...</translation>
 <translation id="1529789484829130889">Bandeja 8</translation>
 <translation id="1530707389502320859">O site que você tentou acessar parece falso. Os invasores às vezes imitam sites fazendo pequenas alterações quase imperceptíveis no URL.</translation>
-<translation id="1531205177818805254">Executivo</translation>
 <translation id="1532118530259321453">Essa página diz</translation>
 <translation id="153384715582417236">Isso é tudo por enquanto</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
@@ -668,7 +667,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2673968385134502798">Jogos</translation>
 <translation id="2674170444375937751">Você quer mesmo excluir essas páginas do seu histórico?</translation>
 <translation id="2674804415323431591">Ocultar sugestões</translation>
-<translation id="2676271551327853224">8K 273 mm x 394 mm</translation>
 <translation id="2677696497921480781">Aniversários e datas comemorativas</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2679714844901977852">Salve seu cartão e as informações de faturamento na Conta do Google <ph name="USER_EMAIL" /> para fazer compras mais rápidas e seguras</translation>
@@ -875,7 +873,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3270156322180235608">Empresas aéreas</translation>
 <translation id="3270847123878663523">&amp;Desfazer reordenar</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> deseja se conectar</translation>
-<translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282085321714087552">Sua organização, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações, como configurações ou políticas, aos sites a seguir.</translation>
 <translation id="3282497668470633863">Adicionar nome (como consta no cartão)</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -941,7 +938,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3438829137925142401">Usar senhas salvas na sua Conta do Google</translation>
 <translation id="3440783957068352691">quadrado</translation>
-<translation id="3443726618221119081">Juuro-Ku-Kai</translation>
 <translation id="3447661539832366887">O proprietário deste dispositivo desativou o jogo do dinossauro.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3452404311384756672">Buscar intervalo:</translation>
@@ -1113,7 +1109,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Solicitação para reproduzir conteúdo protegido feita por <ph name="URL" />. A identidade do seu dispositivo será verificada pelo Google e poderá ser acessada por esse site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (cartão postal)</translation>
 <translation id="3927932062596804919">Negar</translation>
 <translation id="393316646445601645">Internet e telecomunicações</translation>
 <translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
@@ -1284,7 +1279,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4340575312453649552">O anúncio usava muitos recursos do seu dispositivo, por isso, ele foi removido pelo Chrome.</translation>
 <translation id="4340982228985273705">Este computador não foi detectado como gerenciado por empresa, portanto, a política só pode instalar automaticamente as extensões hospedadas na Chrome Web Store. O URL de atualização da Chrome Web Store é o seguinte: <ph name="CWS_UPDATE_URL" />.</translation>
 <translation id="4346197816712207223">Cartões de crédito aceitos</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206">A conexão com <ph name="SITE" /> não é segura</translation>
 <translation id="4349365535725594680">Não é possível compartilhar conteúdo confidencial</translation>
 <translation id="4349810866125026513">Continuar</translation>
@@ -2174,7 +2168,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">O dispositivo entrou em modo de suspensão.</translation>
 <translation id="6767985426384634228">Atualizar endereço?</translation>
-<translation id="6768213884286397650">Hagaki (Postal)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">Empréstimo comercial</translation>
 <translation id="6786145470008421571">Envelope de 15 cm x 23 cm</translation>
@@ -2577,7 +2570,6 @@ Mais detalhes:
 <translation id="7751971323486164747">Personalizar tamanhos e fontes no Chrome</translation>
 <translation id="7752995774971033316">Não gerenciado</translation>
 <translation id="7755624218968747854">Rolo principal</translation>
-<translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">É possível que o software antivírus ou o firewall tenha bloqueado a conexão.</translation>
 <translation id="7760497246331667482">Reggae e música caribenha</translation>
 <translation id="776110834126722255">Uso suspenso</translation>
@@ -2885,7 +2877,6 @@ Mais detalhes:
 <translation id="8676424191133491403">Sem atraso</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, resposta, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">Não foi possível carregar a página da Web no endereço <ph name="PAGE" /> porque:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">Seu dispositivo e sua conta são gerenciados por <ph name="MANAGER" />.</translation>
 <translation id="8688672835843460752">Disponível</translation>
 <translation id="868922510921656628">Páginas por grupo</translation>
@@ -3122,7 +3113,6 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="984275831282074731">Formas de pagamento</translation>
 <translation id="985199708454569384">&lt;p&gt;Esse erro será exibido se a data e a hora do computador ou dispositivo móvel estiverem incorretas.&lt;/p&gt;
     &lt;p&gt;Para corrigir o erro, abra o relógio do dispositivo e verifique se a hora e a data estão corretas.&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="988159990683914416">Versão do desenvolvedor</translation>
 <translation id="989988560359834682">Editar endereço</translation>

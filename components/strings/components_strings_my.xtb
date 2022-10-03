@@ -244,7 +244,6 @@
 <translation id="1527263332363067270">ချိတ်ဆက်ရန် စောင့်နေသည်...</translation>
 <translation id="1529789484829130889">ဗန်း ၈</translation>
 <translation id="1530707389502320859">သင်ဝင်ကြည့်လိုသော ဝဘ်ဆိုက်က အတုဖြစ်ပုံရသည်။ URL တွင် သေးငယ်ပြီး မြင်ရန်ခက်ခဲသော အပြောင်းအလဲများ ပြုလုပ်ခြင်းဖြင့် တိုက်ခိုက်သူများက တစ်ခါတစ်ရံ ဝဘ်ဆိုက်များကို ပုံတူပြုလုပ်ပါသည်။</translation>
-<translation id="1531205177818805254">Exec</translation>
 <translation id="1532118530259321453">ဤစာမျက်နှာက ဆိုထားသည်မှာ</translation>
 <translation id="153384715582417236">ယခုအတွက်တော့ ဒီလောက်ပါပဲ</translation>
 <translation id="1536390784834419204">စာမျက်နှာကို ဘာသာပြန်ရန်</translation>
@@ -673,7 +672,6 @@
 <translation id="2673968385134502798">ဂိမ်းများ</translation>
 <translation id="2674170444375937751">သင့်သမိုင်းမှ ဤစာမျက်နှာများကို သင်ဖျက်လိုသည်မှာ သင်သေချာပါသလား?</translation>
 <translation id="2674804415323431591">အကြံပြုချက်များကို ဝှက်ရန်</translation>
-<translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677696497921480781">မွေးနေ့နှင့် ကင်ပွန်းတပ်နေ့များ</translation>
 <translation id="2677748264148917807">ထွက်ခွာရန်</translation>
 <translation id="2679714844901977852">လုံခြုံ၍ ပိုမိုမြန်ဆန်စွာ ငွေရှင်းနိုင်ရန် သင့်ကတ်နှင့် ငွေပေးချေမှု အချက်အလက်များကို Google Account <ph name="USER_EMAIL" /> တွင် သိမ်းထားနိုင်သည်</translation>
@@ -877,7 +875,6 @@
 <translation id="3270156322180235608">လေကြောင်း ခရီးသွားခြင်း</translation>
 <translation id="3270847123878663523">&amp;ပြန်စီမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
-<translation id="3274521967729236597">ပါကိုင်</translation>
 <translation id="3282085321714087552">သင့်အဖွဲ့အစည်း <ph name="ENROLLMENT_DOMAIN" /> သည် ဆက်တင်များ (သို့) မူဝါဒများကဲ့သို့ အချက်အလက်အချို့ကို အောက်ပါဝဘ်ဆိုက်များသို့ ပို့လိုက်သည်။</translation>
 <translation id="3282497668470633863">ကတ်ပေါ်ရှိ အမည်ကို ထည့်ပါ</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
@@ -943,7 +940,6 @@
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="3438829137925142401">သင်၏ Google Account တွင် သိမ်းထားသော စကားဝှက်များကို သုံးရန်</translation>
 <translation id="3440783957068352691">စတုရန်း</translation>
-<translation id="3443726618221119081">ဂျူရို ကုကိုင်</translation>
 <translation id="3447661539832366887">ဤကိရိယာ ပိုင်ရှင်သည် ဒိုင်နိုဆောဂိမ်းအား ပိတ်ထား၏။</translation>
 <translation id="3447884698081792621">အသိအမှတ်ပြုလက်မှတ်ကို ပြရန် (<ph name="ISSUER" /> က ထုတ်ပေးထားသည်)</translation>
 <translation id="3452404311384756672">ကြားကာလ ရယူရန်:</translation>
@@ -1113,7 +1109,6 @@
 <translation id="3906954721959377182">တက်ဘလက်</translation>
 <translation id="3909477809443608991"><ph name="URL" /> က ကာကွယ်ထားသည့် အကြောင်းအရာကို ဖွင့်လိုသည်။ သင့်စက်၏ အထောက်အထားကို Google က အတည်ပြုမည် ဖြစ်ပြီး ဤဝဘ်ဆိုက်က ဝင်သုံးခွင့်ရနိုင်ပါသည်။</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3923112503730743940">Oufuku Hagaki (ပို့စ်ကတ်)</translation>
 <translation id="3927932062596804919">ငြင်းပယ်</translation>
 <translation id="393316646445601645">အင်တာနက်နှင့် တယ်လီကွန်</translation>
 <translation id="3939773374150895049">CVC အစား WebAuthn သုံးမလား။</translation>
@@ -1285,7 +1280,6 @@
 <translation id="4340575312453649552">ဤကြော်ငြာသည် သင့်စက်ပစ္စည်းမှ အရင်းအမြစ်များစွာကို အသုံးပြုထားသည့်အတွက် Chrome က ၎င်းကို ဖယ်ရှားထားသည်။</translation>
 <translation id="4340982228985273705">ဤကွန်ပျူတာကို စီးပွားရေးလုပ်ငန်းတစ်ခုက ကြီးကြပ်မထားကြောင်း တွေ့ရှိရသောကြောင့် မူဝါဒသည် Chrome Webstore တွင် တင်ထားသည့် နောက်ဆက်တွဲများကိုသာ အလိုအလျောက် ထည့်သွင်းနိုင်ပါသည်။ Chrome Webstore အပ်ဒိတ် URL သည် "<ph name="CWS_UPDATE_URL" />" ဖြစ်သည်။</translation>
 <translation id="4346197816712207223">အသုံးပြုနိုင်သည့် ခရက်ဒစ်ကတ်များ</translation>
-<translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> သို့ ချိတ်ဆက်မှုသည် မလုံခြုံပါ</translation>
 <translation id="4349365535725594680">လျှို့ဝှက်အကြောင်းအရာကို မျှဝေ၍ မရပါ</translation>
 <translation id="4349810866125026513">မည်သို့ပင်ဖြစ်စေ အပ်လုဒ်လုပ်ရန်</translation>
@@ -2174,7 +2168,6 @@
 <translation id="6755241357817244406">chrome://flags</translation>
 <translation id="6757797048963528358">သင့်စက်ပစ္စည်း အိပ်ပျော်သွားပါသည်။</translation>
 <translation id="6767985426384634228">လိပ်စာ အပ်ဒိတ်လုပ်မလား။</translation>
-<translation id="6768213884286397650">ဟာဂကိ (ပို့စ်ကတ်)</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6784045420901191374">လုပ်ငန်းသုံးငှားခြင်း</translation>
 <translation id="6786145470008421571">၆ x ၉ လက်မ စာအိတ်</translation>
@@ -2578,7 +2571,6 @@
 <translation id="7751971323486164747">Chrome တွင် ဖောင့် အရွယ်အစားများနှင့် စာလုံးပုံစံများကို စိတ်ကြိုက်လုပ်ပါ</translation>
 <translation id="7752995774971033316">စီမံကွပ်ကဲမထား</translation>
 <translation id="7755624218968747854">ပင်မအလိပ်</translation>
-<translation id="7757555340166475417">ဒိုင်ပါကိုင်</translation>
 <translation id="7758069387465995638">Firewall သို့မဟုတ် ဗိုင်းရက်တိုက်ဖျက်ရေးဆော့ဝဲသည် ချိတ်ဆက်မှုကို ပိတ်ဆို့ထားခြင်း ဖြစ်နိုင်သည်။</translation>
 <translation id="7760497246331667482">ရက်ဂေးနှင့် ကာရစ်ဘီယံ တေးဂီတ</translation>
 <translation id="776110834126722255">ရပ်ဆိုင်းထားသည်</translation>
@@ -2886,7 +2878,6 @@
 <translation id="8676424191133491403">မနှောင့်နှေးရ</translation>
 <translation id="8680536109547170164"><ph name="QUERY" /> ဖြေကြားပါ၊ <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> ပေါ်က ဝက်ဘ်စာမျက်နှာကို တင်မရနိုင်ခြင်းရဲ့ အကြောင်းက:</translation>
-<translation id="8685155993131031756">Prc-16K</translation>
 <translation id="8687429322371626002">သင့်စက်ပစ္စည်းနှင့် အကောင့်ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည်။</translation>
 <translation id="8688672835843460752">ရနိုင်သည်</translation>
 <translation id="868922510921656628">အတွဲတစ်တွဲပါ စာမျက်နှာများ</translation>
@@ -3122,7 +3113,6 @@
 <translation id="984275831282074731">ငွေပေးချေ နည်းလမ်းများ</translation>
 <translation id="985199708454569384">&lt;p&gt;သင့်ကွန်ပျူတာ သို့မဟုတ် မိုဘိုင်းစက်၏ ရက်စွဲနှင့် အချိန်တို့ မမှန်ကန်လျှင် ဤအမှားကို တွေ့ရပါမည်။&lt;/p&gt;
     &lt;p&gt;ဤအမှားကို ပြုပြင်ရန် သင့်စက်၏ နာရီကို ဖွင့်ပါ။ ရက်စွဲနှင့် အချိန်တို့ မှန်မမှန် စစ်ဆေးပါ။&lt;/p&gt;</translation>
-<translation id="985956168329721395">Prc-32K</translation>
 <translation id="987264212798334818">အထွေထွေ</translation>
 <translation id="988159990683914416">ပြုစုသူ၏ တည်ဆောက်မှု</translation>
 <translation id="989988560359834682">လိပ်စာ တည်းဖြတ်ရန်</translation>
