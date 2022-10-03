@@ -748,28 +748,30 @@ TEST_F(SimpleFeatureTest, CommandLineSwitch) {
 }
 
 TEST_F(SimpleFeatureTest, FeatureFlags) {
-  const std::vector<base::Feature> features(
-      {{"stub_feature_1", base::FEATURE_ENABLED_BY_DEFAULT},
-       {"stub_feature_2", base::FEATURE_DISABLED_BY_DEFAULT}});
+  static BASE_FEATURE(kStubFeature1, "StubFeature1",
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(kStubFeature2, "StubFeature2",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  const base::Feature* kOverriddenFeatures[] = {&kStubFeature1, &kStubFeature2};
   auto scoped_feature_override =
-      CreateScopedFeatureFlagsOverrideForTesting(&features);
+      CreateScopedFeatureFlagsOverrideForTesting(kOverriddenFeatures);
 
   SimpleFeature simple_feature_1;
-  simple_feature_1.set_feature_flag(features[0].name);
+  simple_feature_1.set_feature_flag(kStubFeature1.name);
   EXPECT_EQ(Feature::IS_AVAILABLE,
             simple_feature_1.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
 
   SimpleFeature simple_feature_2;
-  simple_feature_2.set_feature_flag(features[1].name);
+  simple_feature_2.set_feature_flag(kStubFeature2.name);
   EXPECT_EQ(Feature::FEATURE_FLAG_DISABLED,
             simple_feature_2.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());
 
   // Ensure we take any base::Feature overrides into account.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features[1]} /* enabled_features */,
-                                       {features[0]} /* disabled_features */);
+  scoped_feature_list.InitWithFeatures({kStubFeature2} /* enabled_features */,
+                                       {kStubFeature1} /* disabled_features */);
   EXPECT_EQ(Feature::FEATURE_FLAG_DISABLED,
             simple_feature_1.IsAvailableToEnvironment(kUnspecifiedContextId)
                 .result());

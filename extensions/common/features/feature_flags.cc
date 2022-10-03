@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "extensions/common/extension_features.h"
@@ -23,13 +24,13 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kNewWebstoreDomain,
 };
 
-const std::vector<base::Feature>* g_feature_flags_test_override = nullptr;
+CONSTINIT base::span<const base::Feature*> g_feature_flags_test_override;
 
 const base::Feature* GetFeature(const std::string& feature_flag) {
-  if (g_feature_flags_test_override) {
-    auto iter = base::ranges::find(*g_feature_flags_test_override, feature_flag,
+  if (UNLIKELY(!g_feature_flags_test_override.empty())) {
+    auto iter = base::ranges::find(g_feature_flags_test_override, feature_flag,
                                    &base::Feature::name);
-    return iter == g_feature_flags_test_override->end() ? nullptr : &(*iter);
+    return iter == g_feature_flags_test_override.end() ? nullptr : *iter;
   }
 
   const base::Feature** feature =
@@ -47,8 +48,8 @@ bool IsFeatureFlagEnabled(const std::string& feature_flag) {
 }
 
 ScopedFeatureFlagsOverride CreateScopedFeatureFlagsOverrideForTesting(
-    const std::vector<base::Feature>* features) {
-  return base::AutoReset<const std::vector<base::Feature>*>(
+    base::span<const base::Feature*> features) {
+  return base::AutoReset<base::span<const base::Feature*>>(
       &g_feature_flags_test_override, features);
 }
 
