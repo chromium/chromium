@@ -88,7 +88,7 @@ struct VisibleSuggestionCountModifier: ViewModifier {
       return
     }
     let visibleCellCount = self.visibleHeight! / fakeCellHeight
-    self.model?.visibleSuggestionCount = Int(floor(visibleCellCount))
+    self.model?.visibleSuggestionCount = UInt(max(0, floor(visibleCellCount)))
   }
 }
 

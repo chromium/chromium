@@ -78,7 +78,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
 
 // Estimated maximum number of visible suggestions.
 // Only updated in `newResultsAvailable` method, were the value is used.
-@property(nonatomic, assign) NSInteger visibleSuggestionCount;
+@property(nonatomic, assign) NSUInteger visibleSuggestionCount;
 
 // Boolean to update visible suggestion count only once on event such as device
 // orientation change or multitasking window change, where multiple keyboard and
@@ -97,6 +97,7 @@ const CGFloat kVisibleSuggestionThreshold = 0.6;
   if (self = [super initWithNibName:nil bundle:nil]) {
     _forwardsScrollEvents = YES;
     _preselectedMatchGroupIndex = 0;
+    _visibleSuggestionCount = 0;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // The iPad keyboard can cover some of the rows of the scroll view. The

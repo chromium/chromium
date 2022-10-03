@@ -24,7 +24,7 @@ import UIKit
 
   /// Number of suggestions that can be visible in the `popup_view`.
   /// This variable is modified by an observer and should NOT be published.
-  var visibleSuggestionCount: Int
+  var visibleSuggestionCount: UInt
 
   /// Index of the preselected section when no row is highlighted.
   var preselectedSectionIndex: Int
