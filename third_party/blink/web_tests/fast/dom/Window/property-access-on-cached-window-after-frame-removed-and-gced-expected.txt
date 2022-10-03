@@ -6,8 +6,6 @@ PASS childWindow.anonymouslyFramed is false
 FAIL childWindow.closed should be false. Was true.
 PASS childWindow.crossOriginEmbedderPolicy is 'unsafe-none'
 PASS childWindow.crossOriginIsolated is false
-PASS childWindow.defaultStatus is ''
-PASS childWindow.defaultstatus is ''
 PASS childWindow.devicePixelRatio is 0
 PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0

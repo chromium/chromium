@@ -363,10 +363,6 @@ PASS win['onunload'] is null
 PASS win['onunload'] is null
 PASS win['opener'] is null
 PASS win['opener'] is null
-FAIL win['defaultStatus'] should be undefined (of type undefined). Was  (of type string).
-FAIL win['defaultStatus'] should be undefined (of type undefined). Was  (of type string).
-FAIL win['defaultstatus'] should be undefined (of type undefined). Was  (of type string).
-FAIL win['defaultstatus'] should be undefined (of type undefined). Was  (of type string).
 FAIL win['name'] should be undefined (of type undefined). Was  (of type string).
 FAIL win['name'] should be undefined (of type undefined). Was  (of type string).
 FAIL win['status'] should be undefined (of type undefined). Was  (of type string).

@@ -10397,8 +10397,6 @@ namespace CSS
     getter crossOriginIsolated
     getter crypto
     getter customElements
-    getter defaultStatus
-    getter defaultstatus
     getter devicePixelRatio
     getter document
     getter event
@@ -10621,8 +10619,6 @@ namespace CSS
     method webkitRequestFileSystem
     method webkitResolveLocalFileSystemURL
     setter clientInformation
-    setter defaultStatus
-    setter defaultstatus
     setter devicePixelRatio
     setter event
     setter external

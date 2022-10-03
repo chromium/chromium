@@ -137,6 +137,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -1598,6 +1599,7 @@ void LocalDOMWindow::setStatus(const String& string) {
 }
 
 void LocalDOMWindow::setDefaultStatus(const String& string) {
+  DCHECK(RuntimeEnabledFeatures::WindowDefaultStatusEnabled());
   default_status_ = string;
 }
 

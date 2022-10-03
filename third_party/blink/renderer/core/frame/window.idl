@@ -191,8 +191,8 @@
     [MeasureAs=WindowOffscreenBuffering, Replaceable, NotEnumerable] readonly attribute boolean offscreenBuffering;
     [HighEntropy=Direct, MeasureAs=WindowScreenLeft, Replaceable] readonly attribute long screenLeft;
     [HighEntropy=Direct, MeasureAs=WindowScreenTop, Replaceable] readonly attribute long screenTop;
-    [MeasureAs=WindowDefaultStatus] attribute DOMString defaultStatus;
-    [MeasureAs=WindowDefaultstatus, ImplementedAs=defaultStatus] attribute DOMString defaultstatus;
+    [RuntimeEnabled=WindowDefaultStatus,MeasureAs=WindowDefaultStatus] attribute DOMString defaultStatus;
+    [RuntimeEnabled=WindowDefaultStatus,MeasureAs=WindowDefaultstatus, ImplementedAs=defaultStatus] attribute DOMString defaultstatus;
     [MeasureAs=StyleMedia] readonly attribute StyleMedia styleMedia;
     [DeprecateAs=PrefixedRequestAnimationFrame] long webkitRequestAnimationFrame(FrameRequestCallback callback);
     [DeprecateAs=PrefixedCancelAnimationFrame, ImplementedAs=cancelAnimationFrame] void webkitCancelAnimationFrame(long id);

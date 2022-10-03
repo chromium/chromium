@@ -634,6 +634,7 @@ inline String LocalDOMWindow::status() const {
 }
 
 inline String LocalDOMWindow::defaultStatus() const {
+  DCHECK(RuntimeEnabledFeatures::WindowDefaultStatusEnabled());
   return default_status_;
 }
 

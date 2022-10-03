@@ -267,10 +267,6 @@ PASS: canSet('top') should be 'false' and is.
 
 ----- tests for getting/setting string properties -----
 
-PASS: canGet('defaultStatus') should be 'true' and is.
-PASS: canSetWithTypeConversion('defaultStatus') should be 'true' and is.
-PASS: canGet('defaultstatus') should be 'true' and is.
-PASS: canSetWithTypeConversion('defaultstatus') should be 'true' and is.
 PASS: canGet('name') should be 'true' and is.
 PASS: canSetWithTypeConversion('name') should be 'true' and is.
 PASS: canGet('status') should be 'true' and is.
