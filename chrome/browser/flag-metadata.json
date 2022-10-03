@@ -3805,6 +3805,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "gaia-id-in-amf",
+    "owners": [ "triploblastic", "chrome-signin-team" ],
+    "expiry_milestone":120
+  },
+  {
     "name": "gesture-properties-dbus-service",
     "owners": [ "hcutts", "chromeos-tango@google.com" ],
     // Used by developers for debugging and input device tuning.

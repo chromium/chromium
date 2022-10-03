@@ -413,6 +413,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kEnableCbdSignOut,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
+    &switches::kGaiaIdInAMF,
     &switches::kTangibleSync,
     &syncer::kEnableSyncImmediatelyInFRE,
     &syncer::kSyncTrustedVaultPassphraseRecovery,

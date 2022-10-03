@@ -4622,6 +4622,21 @@
             ]
         }
     ],
+    "GaiaIdInAMF": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GaiaIdInAMF"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlobalMediaControlsForCast": [
         {
             "platforms": [

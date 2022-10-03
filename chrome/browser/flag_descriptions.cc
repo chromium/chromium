@@ -129,6 +129,11 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
+const char kGaiaIdInAMFName[] = "Gaia Id In AccountManagerFacade (AMF)";
+const char kGaiaIdInAMFDescription[] =
+    "If enabled, starts fetching gaia id from android accounts in "
+    "AccountManagerFacade (AMF)";
+
 const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";

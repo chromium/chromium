@@ -110,6 +110,9 @@ extern const char kDocumentPictureInPictureApiDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+extern const char kGaiaIdInAMFName[];
+extern const char kGaiaIdInAMFDescription[];
+
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
