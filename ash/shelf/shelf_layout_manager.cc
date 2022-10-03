@@ -15,6 +15,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/controls/contextual_tooltip.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/drag_drop/scoped_drag_drop_observer.h"
@@ -690,10 +691,13 @@ void ShelfLayoutManager::UpdateContextualNudges() {
   }
 
   // Create home to overview nudge controller if home to overview nudge is
-  // allowed by the current shelf state.
+  // allowed by the current shelf state. Also, the nudge is disable in tast
+  // tests to prevent waiting too long for the nudge animation.
   const bool allow_home_to_overview_nudge =
       in_tablet_mode && !in_app_shelf &&
-      !ShelfConfig::Get()->shelf_controls_shown() && !in_overview_mode;
+      !ShelfConfig::Get()->shelf_controls_shown() && !in_overview_mode &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshNoNudges);
   if (allow_home_to_overview_nudge && !home_to_overview_nudge_controller_) {
     home_to_overview_nudge_controller_ =
         std::make_unique<HomeToOverviewNudgeController>(
