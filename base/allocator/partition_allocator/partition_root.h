@@ -1171,8 +1171,8 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeWithFlags(
 // Returns whether MTE is supported for this partition root. Because MTE stores
 // tagging information in the high bits of the pointer, it causes issues with
 // components like V8's ArrayBuffers which use custom pointer representations.
-// All custom representations encountered so far rely on a caged memory address
-// area / configurable pool, so we use that as a proxy.
+// All custom representations encountered so far rely on an "is in configurable
+// pool?" check, so we use that as a proxy.
 template <bool thread_safe>
 PA_ALWAYS_INLINE bool PartitionRoot<thread_safe>::IsMemoryTaggingEnabled()
     const {

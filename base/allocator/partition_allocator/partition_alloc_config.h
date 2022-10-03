@@ -254,10 +254,10 @@ constexpr bool kUseLazyCommit = false;
 
 // Enable shadow metadata.
 //
-// With this flag, a shadow GigaCage will be mapped, on which writable shadow
+// With this flag, shadow pools will be mapped, on which writable shadow
 // metadatas are placed, and the real metadatas are set to read-only instead.
-// This feature is only enabled with 64-bits CPUs because GigaCage does not
-// exist with 32-bits CPUs.
+// This feature is only enabled with 64-bit environment because pools work
+// differently with 32-bits pointers (see glossary).
 #if BUILDFLAG(ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS) && \
     defined(PA_HAS_64_BITS_POINTERS)
 #define PA_ENABLE_SHADOW_METADATA

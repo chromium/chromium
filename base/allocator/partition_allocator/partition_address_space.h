@@ -32,10 +32,12 @@ namespace partition_alloc {
 namespace internal {
 
 // Reserves address space for PartitionAllocator.
+//
+// This reserves space for the regular and BRP pools. If callers would
+// like to use the configurable pool, they must manually set up the
+// address space themselves and provide the mapping to PartitionAlloc.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
-  // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
-  // supports BackupRefPtr and one that doesn't.
   static PA_ALWAYS_INLINE internal::pool_handle GetRegularPool() {
     return setup_.regular_pool_;
   }
@@ -54,8 +56,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.brp_pool_;
   }
 
-  // The Configurable Pool can be created inside an existing mapping and so will
-  // be located outside PartitionAlloc's GigaCage.
+  // The Configurable Pool can be created inside an existing mapping; we
+  // keep the information with the other pool setup data.
   static PA_ALWAYS_INLINE internal::pool_handle GetConfigurablePool() {
     return setup_.configurable_pool_;
   }
@@ -91,7 +93,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return kConfigurablePoolMinSize;
   }
 
-  // Initialize the GigaCage and the Pools inside of it.
+  // Initialize pools.
+  //
   // This function must only be called from the main thread.
   static void Init();
   // Initialize the ConfigurablePool at the given address |pool_base|. It must
@@ -194,25 +197,25 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   }
 #endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
-  // On 64-bit systems, GigaCage is split into disjoint pools. The BRP pool, is
-  // where all allocations have a BRP ref-count, thus pointers pointing there
-  // can use a BRP protection against UaF. Allocations in the other pools don't
-  // have that.
+  // On 64-bit systems, PA allocates from several contiguous, mutually disjoint
+  // pools. The BRP pool is where all allocations have a BRP ref-count, thus
+  // pointers pointing there can use a BRP protection against UaF. Allocations
+  // in the other pools don't have that.
   //
   // Pool sizes have to be the power of two. Each pool will be aligned at its
   // own size boundary.
   //
   // NOTE! The BRP pool must be preceded by a reserved region, where allocations
-  // are forbidden. This is to prevent a pointer immediately past a non-GigaCage
+  // are forbidden. This is to prevent a pointer to the end of a non-BRP-pool
   // allocation from falling into the BRP pool, thus triggering BRP mechanism
   // and likely crashing. This "forbidden zone" can be as small as 1B, but it's
   // simpler to just reserve an allocation granularity unit.
   //
   // The ConfigurablePool is an optional Pool that can be created inside an
-  // existing mapping by the embedder, and so will be outside of the GigaCage.
-  // This Pool can be used when certain PA allocations must be located inside a
-  // given virtual address region. One use case for this Pool is V8's virtual
-  // memory cage, which requires that ArrayBuffers be located inside of it.
+  // existing mapping by the embedder. This Pool can be used when certain PA
+  // allocations must be located inside a given virtual address region. One
+  // use case for this Pool is V8's virtual memory cage, which requires that
+  // ArrayBuffers be located inside of it.
   static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
@@ -265,11 +268,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kUninitializedPoolBaseAddress =
       static_cast<uintptr_t>(-1);
 
-  struct GigaCageSetup {
+  struct PoolSetup {
     // Before PartitionAddressSpace::Init(), no allocation are allocated from a
     // reserved address space. Therefore, set *_pool_base_address_ initially to
     // -1, so that PartitionAddressSpace::IsIn*Pool() always returns false.
-    constexpr GigaCageSetup()
+    constexpr PoolSetup()
         : regular_pool_base_address_(kUninitializedPoolBaseAddress),
           brp_pool_base_address_(kUninitializedPoolBaseAddress),
           configurable_pool_base_address_(kUninitializedPoolBaseAddress),
@@ -303,15 +306,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
       char one_cacheline_[kPartitionCachelineSize];
     };
   };
-  static_assert(sizeof(GigaCageSetup) % kPartitionCachelineSize == 0,
-                "GigaCageSetup has to fill a cacheline(s)");
+  static_assert(sizeof(PoolSetup) % kPartitionCachelineSize == 0,
+                "PoolSetup has to fill a cacheline(s)");
 
   // See the comment describing the address layout above.
   //
   // These are write-once fields, frequently accessed thereafter. Make sure they
   // don't share a cacheline with other, potentially writeable data, through
   // alignment and padding.
-  alignas(kPartitionCachelineSize) static GigaCageSetup setup_;
+  alignas(kPartitionCachelineSize) static PoolSetup setup_;
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
   static std::ptrdiff_t regular_pool_shadow_offset_;

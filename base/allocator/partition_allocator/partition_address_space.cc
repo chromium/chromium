@@ -66,18 +66,18 @@ bool IsLegacyWindowsVersion() {
 }
 #endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
-PA_NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
+PA_NOINLINE void HandlePoolAllocFailureOutOfVASpace() {
   PA_NO_CODE_FOLDING();
   PA_CHECK(false);
 }
 
-PA_NOINLINE void HandleGigaCageAllocFailureOutOfCommitCharge() {
+PA_NOINLINE void HandlePoolAllocFailureOutOfCommitCharge() {
   PA_NO_CODE_FOLDING();
   PA_CHECK(false);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-PA_NOINLINE void HandleGigaCageAllocFailure() {
+PA_NOINLINE void HandlePoolAllocFailure() {
   PA_NO_CODE_FOLDING();
   uint32_t alloc_page_error_code = GetAllocPageErrorCode();
   PA_DEBUG_DATA_ON_STACK("error", static_cast<size_t>(alloc_page_error_code));
@@ -87,12 +87,12 @@ PA_NOINLINE void HandleGigaCageAllocFailure() {
   if (alloc_page_error_code == ERROR_NOT_ENOUGH_MEMORY) {
     // The error code says NOT_ENOUGH_MEMORY, but since we only do MEM_RESERVE,
     // it must be VA space exhaustion.
-    HandleGigaCageAllocFailureOutOfVASpace();
+    HandlePoolAllocFailureOutOfVASpace();
   } else if (alloc_page_error_code == ERROR_COMMITMENT_LIMIT) {
     // On Windows <8.1, MEM_RESERVE increases commit charge to account for
     // not-yet-committed PTEs needed to cover that VA space, if it was to be
     // committed (see crbug.com/1101421#c16).
-    HandleGigaCageAllocFailureOutOfCommitCharge();
+    HandlePoolAllocFailureOutOfCommitCharge();
   } else
 #endif  // BUILDFLAG(IS_WIN)
   {
@@ -103,7 +103,7 @@ PA_NOINLINE void HandleGigaCageAllocFailure() {
 }  // namespace
 
 alignas(kPartitionCachelineSize)
-    PartitionAddressSpace::GigaCageSetup PartitionAddressSpace::setup_;
+    PartitionAddressSpace::PoolSetup PartitionAddressSpace::setup_;
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
 std::ptrdiff_t PartitionAddressSpace::regular_pool_shadow_offset_ = 0;
@@ -178,7 +178,7 @@ void PartitionAddressSpace::Init() {
                  PageAccessibilityConfiguration::kInaccessible,
                  PageTag::kPartitionAlloc, regular_pool_fd);
   if (!setup_.regular_pool_base_address_)
-    HandleGigaCageAllocFailure();
+    HandlePoolAllocFailure();
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
 #endif
@@ -210,7 +210,7 @@ void PartitionAddressSpace::Init() {
       PageAccessibilityConfiguration::kInaccessible, PageTag::kPartitionAlloc,
       brp_pool_fd);
   if (!base_address)
-    HandleGigaCageAllocFailure();
+    HandlePoolAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
@@ -235,7 +235,7 @@ void PartitionAddressSpace::Init() {
 #endif  // PA_STARSCAN_USE_CARD_TABLE
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
-  // Reserve memory for the shadow GigaCage
+  // Reserve memory for the shadow pools.
   uintptr_t regular_pool_shadow_address =
       AllocPages(regular_pool_size, regular_pool_size,
                  PageAccessibilityConfiguration::kInaccessible,
