@@ -80,9 +80,17 @@ public class AssistantQrCodeCameraPreviewOverlay extends View {
         mInstructionText.append(text);
     }
 
+    public String getInstructionText() {
+        return mInstructionText.toString();
+    }
+
     public void setSecurityText(String text) {
         mSecurityText.clear();
         mSecurityText.append(text);
+    }
+
+    public String getSecurityText() {
+        return mSecurityText.toString();
     }
 
     @Override

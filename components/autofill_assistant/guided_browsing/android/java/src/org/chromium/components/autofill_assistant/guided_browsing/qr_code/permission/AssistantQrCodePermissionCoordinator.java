@@ -38,8 +38,8 @@ public class AssistantQrCodePermissionCoordinator {
         mRequiredPermission = requiredPermission;
         logCurrentPermissionState();
 
-        mPermissionView = new AssistantQrCodePermissionView(
-                context, requiredPermission, new AssistantQrCodePermissionView.Delegate() {
+        mPermissionView = new AssistantQrCodePermissionView(context, windowAndroid,
+                requiredPermission, new AssistantQrCodePermissionView.Delegate() {
                     @Override
                     public void promptForPermission() {
                         AssistantQrCodePermissionUtils.promptForPermission(
@@ -65,7 +65,7 @@ public class AssistantQrCodePermissionCoordinator {
     /** Updates the permission settings with the latest values. */
     public void updatePermissionSettings() {
         mPermissionModel.set(AssistantQrCodePermissionModel.HAS_PERMISSION,
-                AssistantQrCodePermissionUtils.hasPermission(mContext, mRequiredPermission));
+                AssistantQrCodePermissionUtils.hasPermission(mWindowAndroid, mRequiredPermission));
         mPermissionModel.set(AssistantQrCodePermissionModel.CAN_PROMPT_FOR_PERMISSION,
                 AssistantQrCodePermissionUtils.canPromptForPermission(
                         mWindowAndroid, mRequiredPermission));
@@ -98,7 +98,7 @@ public class AssistantQrCodePermissionCoordinator {
                 mRequiredPermission.getAndroidPermissionMetric();
         permissionMetric.recordPermissionMetric(permissionMetric.getCheckingPermissionMetric());
 
-        if (AssistantQrCodePermissionUtils.hasPermission(mContext, mRequiredPermission)) {
+        if (AssistantQrCodePermissionUtils.hasPermission(mWindowAndroid, mRequiredPermission)) {
             permissionMetric.recordPermissionMetric(
                     permissionMetric.getAlreadyHadPermissionMetric());
         } else {

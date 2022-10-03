@@ -54,6 +54,7 @@ class AssistantQrCodeCameraScanView {
         mRootView = createRootView();
         mCameraPermissionView = cameraPermissionView;
         mCameraPreviewOverlay = new AssistantQrCodeCameraPreviewOverlay(context);
+        mCameraPreviewOverlay.setId(R.id.autofill_assistant_qr_code_camera_preview_overlay);
     }
 
     public View getRootView() {
