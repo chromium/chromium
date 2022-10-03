@@ -291,6 +291,10 @@ const char kDnsHttpsSvcbDescription[] =
     "ClientHello, depending on server support and whether those features are "
     "enabled.";
 
+const char kUseDMSAAForTilesName[] = "Use DMSAA for tiles";
+const char kUseDMSAAForTilesDescription[] =
+    "Switches skia to use DMSAA instead of MSAA for tile raster";
+
 const char kUseDnsHttpsSvcbAlpnName[] = "Use DNS https alpn";
 const char kUseDnsHttpsSvcbAlpnDescription[] =
     "When enabled, Chrome may try QUIC on the first connection using the ALPN"

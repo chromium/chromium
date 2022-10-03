@@ -9608,6 +9608,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupForAllScreenSizes)},
 #endif
+    {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
+     flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},
 
     {"enable-web-usb-on-extension-service-worker",
      flag_descriptions::kEnableWebUsbOnExtensionServiceWorkerName,

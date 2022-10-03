@@ -375,6 +375,9 @@ public final class ProductionSupportedFlagList {
                             + "for commit to finish on the compositor thread."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CLIENT_HINTS_CONTROLLER_DELEGATE,
                     "This persists client hints between top-level navigations."),
+            Flag.commandLine(CcFeatures.USE_DMSAA_FOR_TILES,
+                    "Switches skia to use DMSAA instead of MSAA for tile raster"),
+
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

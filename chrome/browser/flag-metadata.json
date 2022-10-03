@@ -6658,6 +6658,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-dmsaa-for-tiles",
+    "owners": [ "vasilyt" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "use-dns-https-svcb-alpn",
     "owners": [ "horo" ],
     "expiry_milestone": 115

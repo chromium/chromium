@@ -429,6 +429,9 @@ extern const char kDoubleBufferCompositingDescription[];
 extern const char kDnsHttpsSvcbName[];
 extern const char kDnsHttpsSvcbDescription[];
 
+extern const char kUseDMSAAForTilesName[];
+extern const char kUseDMSAAForTilesDescription[];
+
 extern const char kUseDnsHttpsSvcbAlpnName[];
 extern const char kUseDnsHttpsSvcbAlpnDescription[];
 
