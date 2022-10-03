@@ -27,7 +27,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -160,10 +160,6 @@ class AnimationSpeedSlider : public views::Slider {
   AnimationSpeedSlider(const base::flat_set<float>& values,
                        views::SliderListener* listener = nullptr)
       : views::Slider(listener) {
-    // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-    // able to submit accessibility checks, but this focusable View needs to
-    // add a name so that the screen reader knows what to announce.
-    SetProperty(views::kSkipAccessibilityPaintChecks, true);
     SetAllowedValues(&values);
   }
 
@@ -306,6 +302,11 @@ AnimationSpeedControl::AnimationSpeedControl() {
   slider_->SetProperty(kHUDClickHandler, HTCLIENT);
   if (slider_value != -1)
     slider_->SetValue(slider_value);
+
+  // Because the slider is focusable, it needs to have an accessible name so
+  // that the screen reader knows what to announce. Indicating the slider is
+  // labelled by the title will cause ViewAccessibility to set the name.
+  slider_->GetViewAccessibility().OverrideLabelledBy(title);
 }
 
 AnimationSpeedControl::~AnimationSpeedControl() = default;
