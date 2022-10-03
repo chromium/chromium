@@ -243,7 +243,8 @@ class StorageTest
       expect_to_need_key_ = true;
     } else {
       // Disable encryption.
-      scoped_feature_list_.InitAndDisableFeature(kEncryptedReportingFeature);
+      scoped_feature_list_.InitFromCommandLine(
+          {}, {EncryptionModuleInterface::kEncryptedReporting});
     }
     test_compression_module_ =
         base::MakeRefCounted<test::TestCompressionModule>();

@@ -161,7 +161,8 @@ TEST_F(EncryptionModuleTest, EncryptionDisabled) {
 
   // Disable encryption for this test.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kEncryptedReportingFeature);
+  scoped_feature_list.InitFromCommandLine(
+      {}, {EncryptionModuleInterface::kEncryptedReporting});
 
   // Encrypt the test string.
   const auto encrypted_result = EncryptSync(kTestString);

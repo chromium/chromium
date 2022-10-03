@@ -67,10 +67,14 @@ class CompressionModuleTest : public ::testing::Test {
   }
 
   void EnableCompression() {
-    scoped_feature_list_.InitAndEnableFeature(kCompressReportingPipeline);
+    // Enable compression.
+    scoped_feature_list_.InitFromCommandLine(
+        {CompressionModule::kCompressReportingFeature}, {});
   }
   void DisableCompression() {
-    scoped_feature_list_.InitAndDisableFeature(kCompressReportingPipeline);
+    // Disable compression.
+    scoped_feature_list_.InitFromCommandLine(
+        {}, {CompressionModule::kCompressReportingFeature});
   }
 
   scoped_refptr<ResourceInterface> memory_resource_;

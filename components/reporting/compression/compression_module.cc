@@ -20,9 +20,13 @@
 
 namespace reporting {
 
-BASE_FEATURE(kCompressReportingPipeline,
-             "CompressReportingPipeline",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::Feature kCompressReportingPipeline{
+    CompressionModule::kCompressReportingFeature,
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// static
+const char CompressionModule::kCompressReportingFeature[] =
+    "CompressReportingPipeline";
 
 namespace {
 
