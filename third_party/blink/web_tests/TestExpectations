@@ -2273,28 +2273,12 @@ crbug.com/410320 external/wpt/css/css-writing-modes/orthogonal-parent-shrink-to-
 
 # These tests pass but images do not match because of wrong half-leading in vertical-lr
 
-# These tests pass but images do not match because of position: absolute in vertical flow bug
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vlr-003.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vlr-005.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vlr-007.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vlr-009.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vrl-002.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vrl-004.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vrl-006.xht [ Failure ]
-crbug.com/492664 external/wpt/css/css-writing-modes/clip-rect-vrl-008.xht [ Failure ]
-
 # These tests pass but images do not match because tests are stricter than the spec.
 crbug.com/492664 external/wpt/css/css-writing-modes/text-combine-upright-value-all-001.html [ Failure ]
 crbug.com/492664 external/wpt/css/css-writing-modes/text-combine-upright-value-all-002.html [ Failure ]
 crbug.com/492664 external/wpt/css/css-writing-modes/text-combine-upright-value-all-003.html [ Failure ]
 
 # We're experimenting with changing the behavior of the 'nonce' attribute
-
-# These CSS Writing Modes Level 3 tests pass but causes 1px diff on images, notified to the submitter.
-crbug.com/492664 [ Mac ] external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vlr-008.xht [ Failure ]
-crbug.com/492664 [ Mac ] external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vlr-020.xht [ Failure ]
-crbug.com/492664 [ Mac ] external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-008.xht [ Failure ]
-crbug.com/492664 [ Mac ] external/wpt/css/css-writing-modes/sizing-orthog-htb-in-vrl-020.xht [ Failure ]
 
 crbug.com/381684 [ Mac ] fonts/family-fallback-gardiner.html [ Skip ]
 crbug.com/381684 [ Win ] fonts/family-fallback-gardiner.html [ Skip ]
