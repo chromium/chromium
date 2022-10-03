@@ -14,4 +14,7 @@ html {
 :host {
   --shortcuts-font-weight-regular: 400;
   --shortcuts-font-weight-medium: 500;
+
+  --shortcuts-default-font-family: "Google Sans", Roboto, sans-serif;
+  --shortcuts-default-font-size: 13px;
 }

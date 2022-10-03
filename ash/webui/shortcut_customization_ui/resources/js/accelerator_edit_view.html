@@ -16,7 +16,7 @@
   }
 
   :host([has-error]) #acceleratorInfoText {
-    color: #D93025;
+    color: var(--cros-color-alert);
   }
 
   #cancelButtonContainer {
@@ -29,11 +29,11 @@
   }
 
   .clickable-button {
-    --cr-icon-button-fill-color: #1A73E8;
+    --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
   }
 
   :host([is-edit-view]) #acceleratorView {
-    border-color: var(--google-blue-600);
+    border-color: var(--cros-color-prominent);
     border-radius: 5px;
     border-style: solid;
     border-width: thin;
