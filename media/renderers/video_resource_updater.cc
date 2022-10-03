@@ -41,6 +41,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "media/base/format_utils.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/half_float_maker.h"
@@ -75,19 +76,31 @@ gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
 }
 
 VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
-    VideoPixelFormat format,
+    const VideoFrame& frame,
     GLuint target,
-    int num_textures,
     gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes],
-    bool use_stream_video_draw_quad,
-    bool dcomp_surface) {
+    bool use_stream_video_draw_quad) {
+  const VideoPixelFormat format = frame.format();
+  const size_t num_textures = frame.NumTextures();
+
+  if (frame.RequiresExternalSampler()) {
+    DCHECK_EQ(target, static_cast<GLuint>(GL_TEXTURE_EXTERNAL_OES))
+        << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
+    DCHECK_EQ(num_textures, 1u);
+    absl::optional<gfx::BufferFormat> buffer_format =
+        VideoPixelFormatToGfxBufferFormat(format);
+    DCHECK(buffer_format.has_value());
+    buffer_formats[0] = buffer_format.value();
+    return VideoFrameResourceType::RGB;
+  }
+
   switch (format) {
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
-      DCHECK_EQ(num_textures, 1);
+      DCHECK_EQ(num_textures, 1u);
       // This maps VideoPixelFormat back to GMB BufferFormat
       // NOTE: ABGR == RGBA and ARGB == BGRA, they differ only byte order
       // See: VideoFormat function in gpu_memory_buffer_video_frame_pool
@@ -104,7 +117,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
           // TODO(sunnyps): It's odd to reuse the Android path on Windows. There
           // could be other unknown assumptions in other parts of the rendering
           // stack about stream video quads. Investigate alternative solutions.
-          if (use_stream_video_draw_quad || dcomp_surface)
+          if (use_stream_video_draw_quad || frame.metadata().dcomp_surface)
             return VideoFrameResourceType::STREAM_TEXTURE;
           [[fallthrough]];
         case GL_TEXTURE_2D:
@@ -124,7 +137,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
                               : gfx::BufferFormat::RGBA_1010102;
       return VideoFrameResourceType::RGB;
     case PIXEL_FORMAT_I420:
-      DCHECK_EQ(num_textures, 3);
+      DCHECK_EQ(num_textures, 3u);
       buffer_formats[0] = gfx::BufferFormat::R_8;
       buffer_formats[1] = gfx::BufferFormat::R_8;
       buffer_formats[2] = gfx::BufferFormat::R_8;
@@ -132,26 +145,24 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 
     case PIXEL_FORMAT_NV12:
       // |target| is set to 0 for Vulkan textures.
+      //
+      // TODO(https://crbug.com/1116101): Note that GL_TEXTURE_EXTERNAL_OES is
+      // allowed even for two-texture NV12 frames. This is intended to handle a
+      // couple of cases: a) when these textures are connected to the
+      // corresponding plane of the contents of an EGLStream using
+      // EGL_NV_stream_consumer_gltexture_yuv; b) when gl::GLImageD3D is used
+      // with GL_TEXTURE_EXTERNAL_OES (note that this case should be able to be
+      // migrated to GL_TEXTURE_2D after https://crrev.com/c/3856660).
       DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES ||
              target == GL_TEXTURE_2D || target == GL_TEXTURE_RECTANGLE_ARB)
           << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
-
-      if (num_textures == 1) {
-        // Single-texture multi-planar frames can be sampled as RGB.
-        buffer_formats[0] = gfx::BufferFormat::YUV_420_BIPLANAR;
-        return VideoFrameResourceType::RGB;
-      }
-
+      DCHECK_EQ(num_textures, 2u);
       buffer_formats[0] = gfx::BufferFormat::R_8;
       buffer_formats[1] = gfx::BufferFormat::RG_88;
       return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_P016LE:
-      if (num_textures == 1) {
-        // Single-texture multi-planar frames can be sampled as RGB.
-        buffer_formats[0] = gfx::BufferFormat::P010;
-        return VideoFrameResourceType::RGB;
-      }
+      DCHECK_EQ(num_textures, 2u);
       // TODO(mcasas): Support other formats such as e.g. P012.
       buffer_formats[0] = gfx::BufferFormat::R_16;
       // TODO(https://crbug.com/1233228): This needs to be
@@ -164,7 +175,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       return VideoFrameResourceType::YUV;
 
     case PIXEL_FORMAT_RGBAF16:
-      DCHECK_EQ(num_textures, 1);
+      DCHECK_EQ(num_textures, 1u);
       buffer_formats[0] = gfx::BufferFormat::RGBA_F16;
       return VideoFrameResourceType::RGBA;
 
@@ -857,8 +868,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
 
   gfx::BufferFormat buffer_formats[VideoFrame::kMaxPlanes];
   external_resources.type = ExternalResourceTypeForHardwarePlanes(
-      video_frame->format(), target, video_frame->NumTextures(), buffer_formats,
-      use_stream_video_draw_quad_, video_frame->metadata().dcomp_surface);
+      *video_frame, target, buffer_formats, use_stream_video_draw_quad_);
 
   if (external_resources.type == VideoFrameResourceType::NONE) {
     DLOG(ERROR) << "Unsupported Texture format"

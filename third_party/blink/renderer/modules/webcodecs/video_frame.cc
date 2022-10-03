@@ -338,6 +338,13 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
   const size_t num_planes =
       mappable ? frame.layout().num_planes() : frame.NumTextures();
 
+  // The |frame|.BitDepth() restriction is to avoid treating a P016LE frame as a
+  // low-bit depth frame.
+  if (!mappable && frame.RequiresExternalSampler() && frame.BitDepth() == 8u) {
+    DCHECK_EQ(frame.NumTextures(), 1u);
+    return media::PIXEL_FORMAT_XRGB;
+  }
+
   switch (frame.format()) {
     case media::PIXEL_FORMAT_I420:
     case media::PIXEL_FORMAT_I420A:
@@ -347,12 +354,7 @@ absl::optional<media::VideoPixelFormat> CopyToFormat(
     case media::PIXEL_FORMAT_ABGR:
     case media::PIXEL_FORMAT_XRGB:
     case media::PIXEL_FORMAT_ARGB:
-      break;
     case media::PIXEL_FORMAT_NV12:
-      // Single-texture NV12 is sampled as RGBA even though the underlying
-      // graphics buffer is NV12.
-      if (!mappable && num_planes == 1)
-        return media::PIXEL_FORMAT_XRGB;
       break;
     default:
       return absl::nullopt;

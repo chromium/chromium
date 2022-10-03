@@ -481,6 +481,16 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   VideoPixelFormat format() const { return layout_.format(); }
   StorageType storage_type() const { return storage_type_; }
 
+  // Returns true if the video frame's contents should be accessed by sampling
+  // its one texture using an external sampler. Returns false if the video
+  // frame's planes should be accessed separately or if it's unknown whether an
+  // external sampler should be used.
+  //
+  // If this method returns true, VideoPixelFormatToGfxBufferFormat(format()) is
+  // guaranteed to not return nullopt.
+  // TODO(andrescj): enforce this with a test.
+  bool RequiresExternalSampler() const;
+
   // The full dimensions of the video frame data.
   const gfx::Size& coded_size() const { return layout_.coded_size(); }
   // A subsection of [0, 0, coded_size().width(), coded_size.height()]. This

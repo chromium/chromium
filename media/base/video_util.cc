@@ -67,6 +67,11 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
 }
 
 VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
+  // The |frame|.BitDepth() restriction is to avoid treating a P016LE frame as a
+  // low-bit depth frame.
+  if (frame.RequiresExternalSampler() && frame.BitDepth() == 8u)
+    return PIXEL_FORMAT_XRGB;
+
   switch (frame.format()) {
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_I420A:
@@ -76,11 +81,8 @@ VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
-      return frame.format();
     case PIXEL_FORMAT_NV12:
-      // |frame| may be backed by a graphics buffer that is NV12, but sampled as
-      // a single RGB texture.
-      return frame.NumTextures() == 1 ? PIXEL_FORMAT_XRGB : PIXEL_FORMAT_NV12;
+      return frame.format();
     default:
       // Currently unsupported.
       return PIXEL_FORMAT_UNKNOWN;

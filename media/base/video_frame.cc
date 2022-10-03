@@ -4,6 +4,9 @@
 
 #include "media/base/video_frame.h"
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+
 #include <algorithm>
 #include <climits>
 #include <numeric>
@@ -363,7 +366,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapNativeTextures(
       format != PIXEL_FORMAT_NV12 && format != PIXEL_FORMAT_I420 &&
       format != PIXEL_FORMAT_ABGR && format != PIXEL_FORMAT_XBGR &&
       format != PIXEL_FORMAT_XR30 && format != PIXEL_FORMAT_XB30 &&
-      format != PIXEL_FORMAT_P016LE && format != PIXEL_FORMAT_RGBAF16) {
+      format != PIXEL_FORMAT_P016LE && format != PIXEL_FORMAT_RGBAF16 &&
+      format != PIXEL_FORMAT_YV12) {
     DLOG(ERROR) << "Unsupported pixel format: "
                 << VideoPixelFormatToString(format);
     return nullptr;
@@ -1209,6 +1213,16 @@ bool VideoFrame::IsSameAllocation(VideoPixelFormat format,
 
 gfx::ColorSpace VideoFrame::ColorSpace() const {
   return color_space_;
+}
+
+bool VideoFrame::RequiresExternalSampler() const {
+  const bool result =
+      (format() == PIXEL_FORMAT_NV12 || format() == PIXEL_FORMAT_YV12 ||
+       format() == PIXEL_FORMAT_P016LE) &&
+      NumTextures() == 1;
+  DCHECK(!result ||
+         mailbox_holder(0).texture_target == GL_TEXTURE_EXTERNAL_OES);
+  return result;
 }
 
 int VideoFrame::row_bytes(size_t plane) const {
