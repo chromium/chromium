@@ -265,7 +265,7 @@ constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 // The 3rd, Configurable Pool is only available in 64-bit mode.
 constexpr size_t kNumPools = 3;
 // Maximum pool size. With exception of Configurable Pool, it is also
-// the actual size, unless PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE is set, which
+// the actual size, unless PA_DYNAMICALLY_SELECT_POOL_SIZE is set, which
 // allows to choose a different size at initialization time for certain
 // configurations.
 //

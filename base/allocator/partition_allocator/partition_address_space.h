@@ -40,7 +40,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return setup_.regular_pool_;
   }
 
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   static PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
     return setup_.regular_pool_base_mask_;
   }
@@ -121,7 +121,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
 #else
     constexpr uintptr_t regular_pool_base_mask = kRegularPoolBaseMask;
@@ -136,7 +136,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
     const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
 #else
     constexpr uintptr_t brp_pool_base_mask = kBRPPoolBaseMask;
@@ -181,7 +181,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   void* operator new(size_t, void*) = delete;
 
  private:
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   static PA_ALWAYS_INLINE size_t RegularPoolSize();
   static PA_ALWAYS_INLINE size_t BRPPoolSize();
 #else
@@ -192,7 +192,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   constexpr static PA_ALWAYS_INLINE size_t BRPPoolSize() {
     return kBRPPoolSize;
   }
-#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
   // On 64-bit systems, GigaCage is split into disjoint pools. The BRP pool, is
   // where all allocations have a BRP ref-count, thus pointers pointing there
@@ -217,7 +217,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
                 base::bits::IsPowerOfTwo(kBRPPoolSize));
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   // We can't afford pool sizes as large as kPoolMaxSize on Windows <8.1 (see
   // crbug.com/1101421 and crbug.com/1217759).
   static constexpr size_t kRegularPoolSizeForLegacyWindows = 4 * kGiB;
@@ -226,7 +226,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static_assert(kBRPPoolSizeForLegacyWindows < kBRPPoolSize);
   static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForLegacyWindows) &&
                 base::bits::IsPowerOfTwo(kBRPPoolSizeForLegacyWindows));
-#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
   static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
   static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
@@ -235,7 +235,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
 #if BUILDFLAG(IS_IOS)
 
-#if !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 #error iOS is only supported with a dynamically sized GigaCase.
 #endif
 
@@ -250,7 +250,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
                 base::bits::IsPowerOfTwo(kBRPPoolSizeForIOSTestProcess));
 #endif  // BUILDFLAG(IOS_IOS)
 
-#if !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.
   static constexpr uintptr_t kRegularPoolOffsetMask =
       static_cast<uintptr_t>(kRegularPoolSize) - 1;
@@ -258,7 +258,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
-#endif  // !defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#endif  // !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
   // This must be set to such a value that IsIn*Pool() always returns false when
   // the pool isn't initialized.
@@ -273,7 +273,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         : regular_pool_base_address_(kUninitializedPoolBaseAddress),
           brp_pool_base_address_(kUninitializedPoolBaseAddress),
           configurable_pool_base_address_(kUninitializedPoolBaseAddress),
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
           regular_pool_base_mask_(0),
           brp_pool_base_mask_(0),
 #endif
@@ -289,7 +289,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
         uintptr_t regular_pool_base_address_;
         uintptr_t brp_pool_base_address_;
         uintptr_t configurable_pool_base_address_;
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
         uintptr_t regular_pool_base_mask_;
         uintptr_t brp_pool_base_mask_;
 #endif

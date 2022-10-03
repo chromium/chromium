@@ -40,7 +40,7 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 bool IsLegacyWindowsVersion() {
   // Use ::RtlGetVersion instead of ::GetVersionEx or helpers from
   // VersionHelpers.h because those alternatives change their behavior depending
@@ -64,7 +64,7 @@ bool IsLegacyWindowsVersion() {
   return version_info.dwMajorVersion < 6 ||
          (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion < 3);
 }
-#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
 PA_NOINLINE void HandleGigaCageAllocFailureOutOfVASpace() {
   PA_NO_CODE_FOLDING();
@@ -110,7 +110,7 @@ std::ptrdiff_t PartitionAddressSpace::regular_pool_shadow_offset_ = 0;
 std::ptrdiff_t PartitionAddressSpace::brp_pool_shadow_offset_ = 0;
 #endif
 
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 #if BUILDFLAG(IS_IOS)
 namespace {
 bool IsIOSTestProcess() {
@@ -161,7 +161,7 @@ PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
   return IsLegacyWindowsVersion() ? kBRPPoolSizeForLegacyWindows : kBRPPoolSize;
 }
 #endif  // BUILDFLAG(IS_IOS)
-#endif  // defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
 
 void PartitionAddressSpace::Init() {
   if (IsInitialized())
@@ -179,7 +179,7 @@ void PartitionAddressSpace::Init() {
                  PageTag::kPartitionAlloc, regular_pool_fd);
   if (!setup_.regular_pool_base_address_)
     HandleGigaCageAllocFailure();
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
 #endif
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
@@ -212,7 +212,7 @@ void PartitionAddressSpace::Init() {
   if (!base_address)
     HandleGigaCageAllocFailure();
   setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
-#if defined(PA_USE_DYNAMICALLY_SIZED_GIGA_CAGE)
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
 #endif
   PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
