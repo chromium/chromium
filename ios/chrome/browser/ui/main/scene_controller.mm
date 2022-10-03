@@ -2261,21 +2261,6 @@ bool IsSigninForcedByPolicy() {
                                                        kExternalIntent];
 }
 
-#pragma mark - TabSwitching
-
-- (BOOL)openNewTabFromTabSwitcher {
-  if (!self.mainCoordinator)
-    return NO;
-
-  UrlLoadParams urlLoadParams =
-      UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
-  urlLoadParams.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-
-  [self addANewTabAndPresentBrowser:self.mainInterface.browser
-                  withURLLoadParams:urlLoadParams];
-  return YES;
-}
-
 #pragma mark - TabOpening implementation.
 
 - (void)dismissModalsAndMaybeOpenSelectedTabInMode:

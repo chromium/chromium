@@ -20,7 +20,6 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/mock_tab_opener.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
-#import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
 #import "ios/chrome/app/main_application_delegate.h"

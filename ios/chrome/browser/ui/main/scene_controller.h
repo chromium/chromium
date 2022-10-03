@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/app/application_delegate/tab_opening.h"
-#import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -17,7 +16,6 @@
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
                                        ApplicationCommands,
-                                       TabSwitching,
                                        ConnectionInformation,
                                        TabOpening,
                                        WebStateListObserving>

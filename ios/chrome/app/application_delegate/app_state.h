@@ -25,7 +25,6 @@ typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class MetricsMediator;
 @protocol StartupInformation;
 @protocol TabOpening;
-@protocol TabSwitching;
 
 namespace base {
 class TimeTicks;

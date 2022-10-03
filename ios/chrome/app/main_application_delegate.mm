@@ -18,7 +18,6 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
-#import "ios/chrome/app/application_delegate/tab_switching.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/application_delegate/user_activity_handler.h"
@@ -57,8 +56,6 @@ const int kMainIntentCheckDelay = 1;
   id<StartupInformation> _startupInformation;
   // Helper to open new tabs.
   id<TabOpening> _tabOpener;
-  // Handles tab switcher.
-  id<TabSwitching> _tabSwitcher;
   // The set of "scene sessions" that needs to be discarded. See
   // -applicatiopn:didDiscardSceneSessions: for details.
   NSSet<UISceneSession*>* _sceneSessionsToDiscard;
@@ -298,7 +295,6 @@ const int kMainIntentCheckDelay = 1;
     return;
 
   SceneController* sceneController = sceneDelegate.sceneController;
-  _tabSwitcher = sceneController;
   _tabOpener = sceneController;
 
   // TODO(crbug.com/1060645): This should be called later, or this flow should

@@ -102,10 +102,7 @@ source_set("unit_tests") {
 
 source_set("tab_opening") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "tab_opening.h",
-    "tab_switching.h",
-  ]
+  sources = [ "tab_opening.h" ]
   deps = [
     "//base",
     "//ios/chrome/app",
@@ -185,7 +182,6 @@ source_set("application_delegate_internal") {
     "browser_launcher.h",
     "metrics_mediator.h",
     "metrics_mediator.mm",
-    "tab_switching.h",
     "url_opener.h",
     "url_opener.mm",
     "user_activity_handler.h",
