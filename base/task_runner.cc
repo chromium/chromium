@@ -43,20 +43,6 @@ static void RecordReplayUnregisterPointer(void* ptr) {
   gRecordReplayUnregisterPointerFn(ptr);
 }
 
-static size_t (*gRecordReplayPointerIdFn)(void*);
-
-static size_t RecordReplayPointerId(void* ptr) {
-  if (!gRecordReplayPointerIdFn) {
-    void* fnptr = dlsym(RTLD_DEFAULT, "RecordReplayPointerId");
-    if (!fnptr) {
-      return 0;
-    }
-    gRecordReplayPointerIdFn = reinterpret_cast<size_t(*)(void*)>(fnptr);
-  }
-
-  return gRecordReplayPointerIdFn(ptr);
-}
-
 namespace base {
 
 namespace {
