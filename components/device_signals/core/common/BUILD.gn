@@ -5,6 +5,7 @@
 static_library("common") {
   public = [
     "common_types.h",
+    "platform_utils.h",
     "signals_constants.h",
   ]
 
@@ -12,6 +13,13 @@ static_library("common") {
     "common_types.cc",
     "signals_constants.cc",
   ]
+  if (is_win) {
+    sources += [ "win/platform_utils_win.cc" ]
+  }
+
+  if (is_mac || is_linux) {
+    sources += [ "posix/platform_utils_posix.cc" ]
+  }
 
   public_deps = [ "//third_party/abseil-cpp:absl" ]
 

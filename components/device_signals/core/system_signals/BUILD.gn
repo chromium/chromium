@@ -7,7 +7,6 @@ static_library("system_signals") {
     "executable_metadata_service.h",
     "file_system_service.h",
     "platform_delegate.h",
-    "platform_utils.h",
   ]
 
   sources = [
@@ -22,14 +21,6 @@ static_library("system_signals") {
     public += [ "base_platform_delegate.h" ]
 
     sources += [ "base_platform_delegate.cc" ]
-  }
-
-  if (is_win) {
-    sources += [ "win/platform_utils_win.cc" ]
-  }
-
-  if (is_mac || is_linux) {
-    sources += [ "posix/platform_utils_posix.cc" ]
   }
 
   public_deps = [ "//third_party/abseil-cpp:absl" ]

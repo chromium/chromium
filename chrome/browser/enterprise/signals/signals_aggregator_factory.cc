@@ -14,6 +14,7 @@
 #include "chrome/browser/enterprise/signals/user_permission_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_signals/core/browser/file_system_signals_collector.h"
+#include "components/device_signals/core/browser/settings_signals_collector.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/browser/signals_aggregator_impl.h"
 #include "components/device_signals/core/browser/signals_collector.h"
@@ -21,6 +22,10 @@
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "components/device_signals/core/browser/mac/plist_settings_client.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
 #include "components/device_signals/core/browser/win/win_signals_collector.h"
@@ -60,6 +65,13 @@ KeyedService* SignalsAggregatorFactory::BuildServiceInstanceFor(
   collectors.push_back(
       std::make_unique<device_signals::FileSystemSignalsCollector>(
           service_host));
+
+#if BUILDFLAG(IS_MAC)
+  collectors.push_back(
+      std::make_unique<device_signals::SettingsSignalsCollector>(
+          std::make_unique<device_signals::PlistSettingsClient>()));
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
   collectors.push_back(
       std::make_unique<device_signals::WinSignalsCollector>(service_host));

@@ -6435,6 +6435,10 @@ static_library("browser") {
         "//components/device_signals/core/common/win",
       ]
     }
+
+    if (is_mac) {
+      deps += [ "//components/device_signals/core/browser/mac" ]
+    }
   }
 
   if (is_linux || is_chromeos) {

@@ -17,12 +17,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/process/process.h"
-#include "base/process/process_iterator.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
 #include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/platform_utils.h"
 #include "crypto/scoped_capi_types.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"
@@ -39,27 +38,6 @@ struct FreeCertBufferFunctor {
     }
   }
 };
-
-// Helper function for expanding all environment variables in `path`.
-absl::optional<std::wstring> ExpandEnvironmentVariables(
-    const std::wstring& path) {
-  static const DWORD kMaxBuffer = 32 * 1024;  // Max according to MSDN.
-  std::wstring path_expanded;
-  DWORD path_len = MAX_PATH;
-  do {
-    DWORD result = ::ExpandEnvironmentStrings(
-        path.c_str(), base::WriteInto(&path_expanded, path_len), path_len);
-    if (!result) {
-      // Failed to expand variables.
-      break;
-    }
-    if (result <= path_len)
-      return path_expanded.substr(0, result - 1);
-    path_len = result;
-  } while (path_len < kMaxBuffer);
-
-  return absl::nullopt;
-}
 
 // Returns the SHA-256 hash for the DER-encoded SPKI from the first signer
 // cert chain's leaf cert. Return absl::nullopt if unable to get to that
@@ -113,18 +91,7 @@ WinPlatformDelegate::~WinPlatformDelegate() = default;
 
 bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
                                           base::FilePath* resolved_file_path) {
-  auto expanded_path_wstring = ExpandEnvironmentVariables(file_path.value());
-  if (!expanded_path_wstring) {
-    return false;
-  }
-
-  auto expanded_file_path = base::FilePath(expanded_path_wstring.value());
-  if (!base::PathExists(expanded_file_path)) {
-    return false;
-  }
-
-  *resolved_file_path = base::MakeAbsoluteFilePath(expanded_file_path);
-  return true;
+  return ResolvePath(file_path, resolved_file_path);
 }
 
 absl::optional<std::vector<std::string>>
