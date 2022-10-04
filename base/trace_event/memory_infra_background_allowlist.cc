@@ -137,7 +137,7 @@ constexpr auto kAllocatorDumpNameAllowlist = base::MakeFixedFlatSet<
         "gpu/gl/renderbuffers/context_group_0x?",
         "gpu/gl/textures/context_group_0x?",
         "gpu/gr_shader_cache/cache_0x?",
-        "gpu/shared_images/client_0x?",
+        "gpu/shared_images",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
         "history/delta_file_service/leveldb_0x?",

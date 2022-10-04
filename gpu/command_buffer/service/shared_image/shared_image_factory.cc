@@ -509,20 +509,6 @@ bool SharedImageFactory::ReleaseSysmemBufferCollection(
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-// TODO(ericrk): Move this entirely to SharedImageManager.
-bool SharedImageFactory::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& dump_base_name,
-    uint64_t client_tracing_id) {
-  for (const auto& shared_image : shared_images_) {
-    shared_image_manager_->OnMemoryDump(shared_image->mailbox(), pmd,
-                                        dump_base_name, client_tracing_id);
-  }
-
-  return true;
-}
-
 #if BUILDFLAG(IS_WIN)
 bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
   auto it = shared_images_.find(mailbox);

@@ -51,6 +51,7 @@ class OverlayImageRepresentation;
 class MemoryImageRepresentation;
 class VaapiImageRepresentation;
 class RasterImageRepresentation;
+class MemoryTracker;
 class MemoryTypeTracker;
 class SharedImageFactory;
 class VaapiDependenciesFactory;
@@ -114,6 +115,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   void AddRef(SharedImageRepresentation* representation);
   void ReleaseRef(SharedImageRepresentation* representation);
   bool HasAnyRefs() const;
+
+  // Returns the memory tracker this backing is registering memory with.
+  const MemoryTracker* GetMemoryTracker() const;
 
   // Notify backing a read access is succeeded
   void OnReadSucceeded();

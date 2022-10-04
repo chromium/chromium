@@ -7,29 +7,32 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "gpu/command_buffer/service/mailbox_manager_impl.h"
-#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
-#include "gpu/command_buffer/service/texture_manager.h"
-#include "gpu/command_buffer/tests/texture_image_factory.h"
-#include "gpu/config/gpu_driver_bug_workarounds.h"
-#include "gpu/config/gpu_feature_info.h"
-#include "gpu/config/gpu_preferences.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/gl_surface.h"
-#include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
 namespace {
+
+std::unique_ptr<TestImageBacking> CreateImageBacking(size_t size_in_bytes) {
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto format = viz::ResourceFormat::RGBA_8888;
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  auto surface_origin = kTopLeft_GrSurfaceOrigin;
+  auto alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
+
+  return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
+                                            surface_origin, alpha_type, usage,
+                                            size_in_bytes);
+}
 
 TEST(SharedImageManagerTest, BasicRefCounting) {
   const size_t kSizeBytes = 1024;
@@ -69,6 +72,38 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
 
   factory_ref.reset();
   EXPECT_EQ(0u, tracker->GetMemRepresented());
+}
+
+TEST(SharedImageManagerTest, MemoryDumps) {
+  constexpr size_t kSizeBytes1 = 1000;
+  constexpr size_t kSizeBytes2 = 2000;
+
+  SharedImageManager manager;
+  auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
+
+  auto factory_ref1 =
+      manager.Register(CreateImageBacking(kSizeBytes1), tracker.get());
+  auto factory_ref2 =
+      manager.Register(CreateImageBacking(kSizeBytes2), tracker.get());
+
+  base::trace_event::MemoryDumpArgs args = {
+      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND};
+  base::trace_event::ProcessMemoryDump pmd(args);
+
+  manager.OnMemoryDump(args, &pmd);
+
+  auto* dump = pmd.GetAllocatorDump("gpu/shared_images");
+  ASSERT_NE(nullptr, dump);
+  ASSERT_EQ(dump->entries().size(), 1u);
+
+  // There should be a single memory dump entry with total size of both
+  // backings.
+  auto& entry = dump->entries()[0];
+  DCHECK_EQ(entry.name, base::trace_event::MemoryAllocatorDump::kNameSize);
+  DCHECK_EQ(entry.units, base::trace_event::MemoryAllocatorDump::kUnitsBytes);
+  DCHECK_EQ(entry.entry_type,
+            base::trace_event::MemoryAllocatorDump::Entry::kUint64);
+  DCHECK_EQ(entry.value_uint64, kSizeBytes1 + kSizeBytes2);
 }
 
 TEST(SharedImageManagerTest, TransferRefSameTracker) {

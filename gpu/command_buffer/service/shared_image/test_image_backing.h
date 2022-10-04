@@ -45,10 +45,6 @@ class TestImageBacking : public SharedImageBacking {
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override {}
   bool UploadFromMemory(const SkPixmap& pixmap) override;
   bool ReadbackToMemory(SkPixmap& pixmap) override;
-  void OnMemoryDump(const std::string& dump_name,
-                    base::trace_event::MemoryAllocatorDumpGuid client_guid,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    uint64_t client_tracing_id) override {}
 
   // Helper functions
   GLuint service_id() const { return service_id_; }

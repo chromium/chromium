@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -20,7 +21,8 @@ class DXGISharedHandleManager;
 class SharedImageRepresentationFactoryRef;
 class VaapiDependenciesFactory;
 
-class GPU_GLES2_EXPORT SharedImageManager {
+class GPU_GLES2_EXPORT SharedImageManager
+    : public base::trace_event::MemoryDumpProvider {
  public:
   // If |thread_safe| is set, the manager itself can be safely accessed from
   // other threads but the backings themselves may not be thread-safe so
@@ -35,7 +37,11 @@ class GPU_GLES2_EXPORT SharedImageManager {
   SharedImageManager(const SharedImageManager&) = delete;
   SharedImageManager& operator=(const SharedImageManager&) = delete;
 
-  ~SharedImageManager();
+  ~SharedImageManager() override;
+
+  // base::trace_event::MemoryDumpProvider implementation:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   // Registers a SharedImageBacking with the manager and returns a
   // SharedImageRepresentationFactoryRef which holds a ref on the SharedImage.
@@ -95,12 +101,6 @@ class GPU_GLES2_EXPORT SharedImageManager {
   void OnRepresentationDestroyed(const Mailbox& mailbox,
                                  SharedImageRepresentation* representation);
 
-  // Dump memory for the given mailbox.
-  void OnMemoryDump(const Mailbox& mailbox,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    const std::string& dump_base_name,
-                    uint64_t client_tracing_id);
-
   bool is_thread_safe() const { return !!lock_; }
 
   bool display_context_on_another_thread() const {
@@ -129,6 +129,8 @@ class GPU_GLES2_EXPORT SharedImageManager {
   base::flat_set<std::unique_ptr<SharedImageBacking>> images_ GUARDED_BY(lock_);
 
   const bool display_context_on_another_thread_;
+
+  bool is_registered_as_memory_dump_provider_ = false;
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;

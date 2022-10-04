@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -23,9 +22,7 @@ struct Mailbox;
 class GpuChannel;
 class SharedImageFactory;
 
-class GPU_IPC_SERVICE_EXPORT SharedImageStub
-    : public MemoryTracker,
-      public base::trace_event::MemoryDumpProvider {
+class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
  public:
   ~SharedImageStub() override;
 
@@ -44,10 +41,6 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   uint64_t ClientTracingId() const override;
   int ClientId() const override;
   uint64_t ContextGroupTracingId() const override;
-
-  // base::trace_event::MemoryDumpProvider implementation:
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   SequenceId sequence() const { return sequence_; }
   SharedImageFactory* factory() const { return factory_.get(); }

@@ -112,10 +112,6 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   bool ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
-                    base::trace_event::ProcessMemoryDump* pmd,
-                    const std::string& dump_base_name,
-                    uint64_t client_tracing_id);
   bool RegisterBacking(std::unique_ptr<SharedImageBacking> backing);
 
   SharedContextState* GetSharedContextState() const {

@@ -11,7 +11,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -36,10 +35,7 @@ SharedImageStub::SharedImageStub(GpuChannel* channel, int32_t route_id)
           channel->sync_point_manager()->CreateSyncPointClientState(
               CommandBufferNamespace::GPU_IO,
               command_buffer_id_,
-              sequence_)) {
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "gpu::SharedImageStub", channel_->task_runner());
-}
+              sequence_)) {}
 
 SharedImageStub::~SharedImageStub() {
   channel_->scheduler()->DestroySequence(sequence_);
@@ -48,8 +44,6 @@ SharedImageStub::~SharedImageStub() {
     bool have_context = MakeContextCurrent();
     factory_->DestroyAllSharedImages(have_context);
   }
-  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
-      this);
 }
 
 std::unique_ptr<SharedImageStub> SharedImageStub::Create(GpuChannel* channel,
@@ -508,29 +502,6 @@ int SharedImageStub::ClientId() const {
 
 uint64_t SharedImageStub::ContextGroupTracingId() const {
   return sync_point_client_state_->command_buffer_id().GetUnsafeValue();
-}
-
-bool SharedImageStub::OnMemoryDump(
-    const base::trace_event::MemoryDumpArgs& args,
-    base::trace_event::ProcessMemoryDump* pmd) {
-  if (!factory_)
-    return true;
-
-  std::string dump_name =
-      base::StringPrintf("gpu/shared_images/client_0x%" PRIX32, ClientId());
-
-  if (args.level_of_detail ==
-      base::trace_event::MemoryDumpLevelOfDetail::BACKGROUND) {
-    base::trace_event::MemoryAllocatorDump* dump =
-        pmd->CreateAllocatorDump(dump_name);
-    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                    base::trace_event::MemoryAllocatorDump::kUnitsBytes, size_);
-
-    // Early out, no need for more detail in a BACKGROUND dump.
-    return true;
-  }
-
-  return factory_->OnMemoryDump(args, pmd, dump_name, ClientTracingId());
 }
 
 SharedImageStub::SharedImageDestructionCallback

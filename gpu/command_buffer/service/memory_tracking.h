@@ -75,6 +75,8 @@ class GPU_EXPORT MemoryTypeTracker {
 
   ~MemoryTypeTracker();
 
+  const MemoryTracker* memory_tracker() const { return memory_tracker_; }
+
   void TrackMemAlloc(size_t bytes);
   void TrackMemFree(size_t bytes);
   size_t GetMemRepresented() const;

@@ -239,6 +239,14 @@ void SharedImageBacking::ReleaseRef(SharedImageRepresentation* representation) {
   }
 }
 
+const MemoryTracker* SharedImageBacking::GetMemoryTracker() const {
+  AutoLock auto_lock(this);
+  if (refs_.empty())
+    return nullptr;
+
+  return refs_[0]->tracker()->memory_tracker();
+}
+
 void SharedImageBacking::RegisterImageFactory(SharedImageFactory* factory) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
   DCHECK(!factory_);
