@@ -1526,13 +1526,23 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   if (grid && grid->IsDropTargetWindow(window))
     return;
 
-  // Transfer focus from |window| to |overview_focus_widget_| to match the
+  // Transfer focus from `window` to `overview_focus_widget_` to match the
   // behavior of entering overview mode in the beginning.
   DCHECK(overview_focus_widget_);
-  // |overview_focus_widget_| might not visible yet as OnItemAdded() might be
-  // called before OnStartingAnimationComplete() is called, so use Show()
-  // instead of ActivateWindow() to show and activate the widget.
-  overview_focus_widget_->Show();
+  // `overview_focus_widget_` might not visible yet as `OnItemAdded()` might be
+  // called before `OnStartingAnimationComplete()` is called, so use `Show()` or
+  // `ShowInactive()` instead of `ActivateWindow()` to show the widget.
+  // When the saved desk grid is on, do not switch focus to avoid unexpected
+  // name commit.
+  bool saved_desk_grid_should_keep_focus =
+      IsShowingDesksTemplatesGrid() && grid_list_.front()
+                                               ->saved_desk_library_widget()
+                                               ->GetLayer()
+                                               ->GetTargetOpacity() != 0.f;
+  if (saved_desk_grid_should_keep_focus)
+    overview_focus_widget_->ShowInactive();
+  else
+    overview_focus_widget_->Show();
 
   UpdateAccessibilityFocus();
 }
