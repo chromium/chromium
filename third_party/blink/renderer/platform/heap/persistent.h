@@ -35,6 +35,8 @@ using WeakPersistent = cppgc::WeakPersistent<T>;
 // CrossThreadPersistent allows retaining objects from threads other than the
 // thread that owns the heap of the corresponding object.
 //
+// Strongly prefer using `CrossThreadHandle` if the use case allows.
+//
 // Caveats:
 // - Does not protect the heap owning an object from terminating. E.g., posting
 //   a task with a CrossThreadPersistent for `this` will result in a
@@ -47,6 +49,8 @@ using CrossThreadPersistent = cppgc::subtle::CrossThreadPersistent<T>;
 
 // CrossThreadWeakPersistent allows weakly retaining objects from threads other
 // than the thread that owns the heap of the corresponding object.
+//
+// Strongly prefer using `CrossThreadWeakHandle` if the use case allows.
 //
 // Caveats:
 // - Does not protect the heap owning an object from termination, as the
