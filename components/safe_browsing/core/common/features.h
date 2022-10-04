@@ -120,6 +120,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryPotentialPasswordTheft);
 // cookies.getAll API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetAllSignal);
 
+// Enables collection of arguments whenever an extension invokes the
+// cookies.get API call.
+BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetSignal);
+
 // Determines the tag to pass to Omaha to get a file type policy.
 BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 

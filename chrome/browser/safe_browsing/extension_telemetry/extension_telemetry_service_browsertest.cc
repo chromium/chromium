@@ -42,6 +42,10 @@ using CookiesGetAllInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo;
 using GetAllArgsInfo =
     ExtensionTelemetryReportRequest_SignalInfo_CookiesGetAllInfo_GetAllArgsInfo;
+using CookiesGetInfo =
+    ExtensionTelemetryReportRequest_SignalInfo_CookiesGetInfo;
+using GetArgsInfo =
+    ExtensionTelemetryReportRequest_SignalInfo_CookiesGetInfo_GetArgsInfo;
 using RemoteHostContactedInfo =
     ExtensionTelemetryReportRequest_SignalInfo_RemoteHostContactedInfo;
 using RemoteHostInfo =
@@ -53,7 +57,8 @@ class ExtensionTelemetryServiceBrowserTest
   ExtensionTelemetryServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {kExtensionTelemetry, kExtensionTelemetryReportContactedHosts,
-         kExtensionTelemetryCookiesGetAllSignal},
+         kExtensionTelemetryCookiesGetAllSignal,
+         kExtensionTelemetryCookiesGetSignal},
         {});
     CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &test_extension_dir_));
     test_extension_dir_ =
@@ -254,6 +259,96 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
   EXPECT_EQ(get_all_args_info.store_id(), "0");
   EXPECT_EQ(get_all_args_info.url(), "https://extensions.cookies.com");
   EXPECT_EQ(get_all_args_info.is_session(), false);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
+                       DetectsAndReportsCookiesGetSignal) {
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  constexpr char kManifest[] =
+      R"({
+         "name": "Simple Cookies Extension",
+         "version": "0.1",
+         "manifest_version": 3,
+         "background": { "service_worker": "background.js" },
+         "permissions": ["cookies"],
+         "host_permissions": ["<all_urls>"]
+       })";
+  constexpr char kBackground[] =
+      R"(
+        var TEST_BASIC_COOKIE = {
+          url: 'https://extensions.cookies.com',
+          name: 'test_basic_cookie',
+          value: 'helloworld'
+        };
+
+        chrome.test.runTests([
+          async function getCookies() {
+            await chrome.cookies.set(TEST_BASIC_COOKIE);
+            for (let i = 0; i < 2; ++i) {
+              await chrome.cookies.get({
+                name: TEST_BASIC_COOKIE.name,
+                url: TEST_BASIC_COOKIE.url
+              });
+            }
+            chrome.test.succeed();
+          },
+         ]);)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+
+  extensions::ResultCatcher result_catcher;
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+
+  // Retrieve extension telemetry service instance.
+  auto* telemetry_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(profile());
+  ASSERT_NE(telemetry_service, nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+  {
+    // Verify the contents of telemetry report generated.
+    std::unique_ptr<TelemetryReport> telemetry_report_pb =
+        GetTelemetryReport(telemetry_service);
+    ASSERT_NE(telemetry_report_pb, nullptr);
+    // Retrieve the report corresponding to the test extension.
+    int report_index = -1;
+    for (int i = 0; i < telemetry_report_pb->reports_size(); i++) {
+      if (telemetry_report_pb->reports(i).extension().id() == extension->id()) {
+        report_index = i;
+      }
+    }
+    ASSERT_NE(report_index, -1);
+
+    const auto& extension_report = telemetry_report_pb->reports(report_index);
+    EXPECT_EQ(extension_report.extension().id(), extension->id());
+    EXPECT_EQ(extension_report.extension().name(), "Simple Cookies Extension");
+    EXPECT_EQ(extension_report.extension().version(), "0.1");
+    // Verify the designated test extension's report has signal data.
+    ASSERT_EQ(extension_report.signals().size(), 1);
+    // Verify that extension store has been cleared after creating a telemetry
+    // report.
+    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+
+    // Verify signal proto from the reports.
+    const ExtensionTelemetryReportRequest_SignalInfo& signal =
+        extension_report.signals()[0];
+    const CookiesGetInfo& cookies_get_info = signal.cookies_get_info();
+    ASSERT_EQ(cookies_get_info.get_args_info_size(), 1);
+    ASSERT_EQ(cookies_get_info.max_exceeded_args_count(),
+              static_cast<uint32_t>(0));
+
+    const GetArgsInfo& get_args_info = cookies_get_info.get_args_info(0);
+    EXPECT_EQ(get_args_info.count(), static_cast<uint32_t>(2));
+    EXPECT_EQ(get_args_info.name(), "test_basic_cookie");
+    EXPECT_EQ(get_args_info.store_id(), "0");
+    EXPECT_EQ(get_args_info.url(), "https://extensions.cookies.com");
+  }
 }
 
 }  // namespace safe_browsing

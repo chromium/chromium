@@ -21,6 +21,7 @@
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -255,6 +256,9 @@ ExtensionFunction::ResponseAction CookiesGetFunction::Run() {
       cookie_manager, url_,
       base::BindOnce(&CookiesGetFunction::GetCookieListCallback, this));
 
+  // Extension telemetry signal intercept
+  NotifyExtensionTelemetry();
+
   // Will finish asynchronously.
   return RespondLater();
 }
@@ -278,6 +282,24 @@ void CookiesGetFunction::GetCookieListCallback(
 
   // The cookie doesn't exist; return null.
   Respond(WithArguments(base::Value()));
+}
+
+void CookiesGetFunction::NotifyExtensionTelemetry() {
+  auto* telemetry_service =
+      safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
+
+  if (!telemetry_service || !telemetry_service->enabled() ||
+      !base::FeatureList::IsEnabled(
+          safe_browsing::kExtensionTelemetryCookiesGetSignal)) {
+    return;
+  }
+
+  auto cookies_get_signal = std::make_unique<safe_browsing::CookiesGetSignal>(
+      extension_id(), parsed_args_->details.name,
+      parsed_args_->details.store_id.value_or(std::string()),
+      parsed_args_->details.url);
+  telemetry_service->AddSignal(std::move(cookies_get_signal));
 }
 
 CookiesGetAllFunction::CookiesGetAllFunction() {

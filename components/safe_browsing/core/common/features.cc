@@ -130,6 +130,10 @@ BASE_FEATURE(kExtensionTelemetryCookiesGetAllSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetAllSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionTelemetryCookiesGetSignal,
+             "SafeBrowsingExtensionTelemetryCookiesGetSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFileTypePoliciesTag,
              "FileTypePoliciesTag",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -237,11 +241,12 @@ constexpr struct {
     {&kEnhancedProtection, true},
     {&kEnhancedProtectionPhase2IOS, true},
     {&kExtensionTelemetry, true},
-    {&kExtensionTelemetryReportContactedHosts, true},
-    {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
     {&kExtensionTelemetryCookiesGetAllSignal, true},
+    {&kExtensionTelemetryCookiesGetSignal, true},
     {&kExtensionTelemetryPersistence, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
+    {&kExtensionTelemetryReportContactedHosts, true},
+    {&kExtensionTelemetryReportHostsContactedViaWebSocket, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kRealTimeUrlLookupForEnterpriseAllowlistBypass, true},
