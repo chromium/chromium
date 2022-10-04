@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/history/profile_based_browsing_history_driver.h"
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/history/core/browser/history_types.h"

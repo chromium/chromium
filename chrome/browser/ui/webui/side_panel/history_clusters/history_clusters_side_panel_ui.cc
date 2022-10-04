@@ -17,11 +17,13 @@
 #include "chrome/grit/side_panel_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
 HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui) {
+    : ui::MojoBubbleWebUIController(web_ui),
+      content::WebContentsObserver(web_ui->GetWebContents()) {
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUIHistoryClustersSidePanelHost);
 
@@ -75,4 +77,27 @@ void HistoryClustersSidePanelUI::SetQuery(const std::string& query) {
   if (history_clusters_handler_) {
     history_clusters_handler_->SetQuery(query);
   }
+}
+
+void HistoryClustersSidePanelUI::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  if (navigation_handle->GetURL().host_piece() !=
+      chrome::kChromeUIHistoryClustersSidePanelHost) {
+    return;
+  }
+
+  // Early exit in case we've already set the initial state once.
+  auto* logger =
+      history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
+          navigation_handle->GetWebContents()->GetPrimaryPage());
+  if (logger->initial_state()) {
+    return;
+  }
+
+  logger->set_navigation_id(navigation_handle->GetNavigationId());
+  logger->set_initial_state(metrics_initial_state_);
 }

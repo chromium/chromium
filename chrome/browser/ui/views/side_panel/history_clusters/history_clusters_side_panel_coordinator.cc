@@ -8,6 +8,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -47,6 +48,13 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
   std::string query_string = base::StringPrintf(
       "initial_query=%s",
       base::EscapeQueryParamValue(initial_query_, /*use_plus=*/false).c_str());
+
+  // Side Panel WebViews created from the omnibox have a non-empty query, and
+  // ones created from the toolbar have an empty query.
+  const auto created_from_omnibox = !initial_query_.empty();
+
+  // Clear the initial query, because this is a singleton, and we want to
+  // "consume" the initial query after we create a side panel with it.
   initial_query_.clear();
 
   GURL::Replacements replacements;
@@ -65,6 +73,13 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
 
   history_clusters_ui_ =
       side_panel_ui->contents_wrapper()->GetWebUIController()->GetWeakPtr();
+  if (history_clusters_ui_) {
+    history_clusters_ui_->set_metrics_initial_state(
+        created_from_omnibox ? history_clusters::HistoryClustersInitialState::
+                                   kSidePanelFromOmnibox
+                             : history_clusters::HistoryClustersInitialState::
+                                   kSidePanelFromToolbarButton);
+  }
 
   return std::move(side_panel_ui);
 }

@@ -48537,6 +48537,14 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     History first, and then clicking the Journeys Tab. This also includes other
     edge cases, like if the user clicked over from 'Tabs on other devices'.
   </int>
+  <int value="4" label="kSidePanelFromOmnibox">
+    The Side Panel HistoryClusters UI was opened from the omnibox. Technically
+    this COULD be logged as kIndirectNavigation, but we want to be able to
+    distinguish between Side Panel and History WebUI initializations.
+  </int>
+  <int value="5" label="kSidePanelFromToolbarButton">
+    The Side Panel HistoryClusters UI was opened from side panel toolbar button.
+  </int>
 </enum>
 
 <enum name="HistoryClustersSurvey">

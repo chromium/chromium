@@ -28,8 +28,15 @@ enum class HistoryClustersInitialState {
   // The HistoryClusters UI was opened via a same-document navigation, which
   // means the user likely clicked the tab over from History to Journeys.
   kSameDocument = 3,
+  // The Side Panel HistoryClusters UI was opened from the omnibox. Technically
+  // this COULD be logged as kIndirectNavigation, but we want to be able to
+  // distinguish between Side Panel and History WebUI initializations.
+  kSidePanelFromOmnibox = 4,
+  // The Side Panel HistoryClusters UI was opened from side panel toolbar
+  // button.
+  kSidePanelFromToolbarButton = 5,
   // Add new values above this line.
-  kMaxValue = kSameDocument,
+  kMaxValue = kSidePanelFromToolbarButton,
 };
 
 // HistoryClustersMetricsLogger contains all the metrics/events associated with
