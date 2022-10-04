@@ -144,7 +144,8 @@ bool IsUserAllowedForARC(const AccountId& account_id) {
 AccountId GetOwnerAccountId() {
   std::string owner_email;
   CrosSettings::Get()->GetString(kDeviceOwner, &owner_email);
-  const AccountId owner = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId owner = known_user.GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   return owner;
 }

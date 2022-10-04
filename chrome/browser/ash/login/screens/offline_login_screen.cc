@@ -132,7 +132,8 @@ void OfflineLoginScreen::HandleTryLoadOnlineLogin() {
 void OfflineLoginScreen::HandleCompleteAuth(const std::string& email,
                                             const std::string& password) {
   const std::string sanitized_email = gaia::SanitizeEmail(email);
-  const AccountId account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id = known_user.GetAccountId(
       sanitized_email, std::string() /* id */, AccountType::UNKNOWN);
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(account_id);

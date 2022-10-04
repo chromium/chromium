@@ -82,7 +82,8 @@ void ChromeUserSelectionScreen::OnDeviceLocalAccountsChanged() {
 
 void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
     policy::DeviceLocalAccountPolicyBroker* broker) {
-  const AccountId& account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id = known_user.GetAccountId(
       broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
   DCHECK(account_id.is_valid());
   const std::string& display_name = broker->GetDisplayName();
@@ -113,7 +114,8 @@ void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
 
 void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
     policy::DeviceLocalAccountPolicyBroker* broker) {
-  const AccountId& account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const AccountId account_id = known_user.GetAccountId(
       broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
   DCHECK(account_id.is_valid());
   const policy::PolicyMap::Entry* entry =

@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
@@ -114,7 +115,8 @@ void ActiveDirectoryPasswordChangeScreen::OnAuthFinished(
     case authpolicy::ERROR_NONE: {
       DCHECK(account_info.has_account_id() &&
              !account_info.account_id().empty());
-      const AccountId account_id = user_manager::known_user::GetAccountId(
+      user_manager::KnownUser known_user(g_browser_process->local_state());
+      const AccountId account_id = known_user.GetAccountId(
           username, account_info.account_id(), AccountType::ACTIVE_DIRECTORY);
       DCHECK(LoginDisplayHost::default_host());
       LoginDisplayHost::default_host()->SetDisplayAndGivenName(
