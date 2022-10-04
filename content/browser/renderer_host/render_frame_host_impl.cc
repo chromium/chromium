@@ -1979,15 +1979,30 @@ void RenderFrameHostImpl::AudioContextPlaybackStopped(int audio_context_id) {
 void RenderFrameHostImpl::DidEnterBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::EnterBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kActive);
-  bool was_in_primary_main_frame = IsInPrimaryMainFrame();
-  SetLifecycleState(LifecycleStateImpl::kInBackForwardCache);
+  DCHECK(IsInPrimaryMainFrame());
+
+  DidEnterBackForwardCacheInternal();
   // Pages in the back-forward cache are automatically evicted after a certain
   // time.
-  if (was_in_primary_main_frame)
-    StartBackForwardCacheEvictionTimer();
-  for (auto& child : children_)
-    child->current_frame_host()->DidEnterBackForwardCache();
+  StartBackForwardCacheEvictionTimer();
+
+  for (FrameTreeNode* node : FrameTree::SubtreeAndInnerTreeNodes(
+           this,
+           /*include_delegate_nodes_for_inner_frame_trees=*/true)) {
+    if (RenderFrameHostImpl* rfh = node->current_frame_host())
+      rfh->DidEnterBackForwardCacheInternal();
+  }
+}
+
+void RenderFrameHostImpl::DidEnterBackForwardCacheInternal() {
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kActive);
+  SetLifecycleState(LifecycleStateImpl::kInBackForwardCache);
+
+  // If we are a delegate node we don't need to do anything else.
+  if (inner_tree_main_frame_tree_node_id_ !=
+      FrameTreeNode::kFrameTreeNodeInvalidId) {
+    return;
+  }
 
   for (auto& entry : service_worker_container_hosts_) {
     if (base::WeakPtr<ServiceWorkerContainerHost> host = entry.second)
@@ -2005,11 +2020,28 @@ void RenderFrameHostImpl::DidEnterBackForwardCache() {
 void RenderFrameHostImpl::WillLeaveBackForwardCache() {
   TRACE_EVENT0("navigation", "RenderFrameHostImpl::LeaveBackForwardCache");
   DCHECK(IsBackForwardCacheEnabled());
-  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
+  DCHECK(IsOutermostMainFrame());
   if (back_forward_cache_eviction_timer_.IsRunning())
     back_forward_cache_eviction_timer_.Stop();
-  for (auto& child : children_)
-    child->current_frame_host()->WillLeaveBackForwardCache();
+
+  WillLeaveBackForwardCacheInternal();
+  for (FrameTreeNode* node : FrameTree::SubtreeAndInnerTreeNodes(
+           this,
+           /*include_delegate_nodes_for_inner_frame_trees=*/true)) {
+    if (RenderFrameHostImpl* rfh = node->current_frame_host())
+      rfh->WillLeaveBackForwardCacheInternal();
+  }
+}
+
+void RenderFrameHostImpl::WillLeaveBackForwardCacheInternal() {
+  DCHECK_EQ(lifecycle_state(), LifecycleStateImpl::kInBackForwardCache);
+  DCHECK(!back_forward_cache_eviction_timer_.IsRunning());
+
+  // If we are a delegate node we don't need to do anything else.
+  if (inner_tree_main_frame_tree_node_id_ !=
+      FrameTreeNode::kFrameTreeNodeInvalidId) {
+    return;
+  }
 
   for (auto& entry : service_worker_container_hosts_) {
     if (base::WeakPtr<ServiceWorkerContainerHost> host = entry.second)
@@ -5140,6 +5172,11 @@ void RenderFrameHostImpl::DisableUnloadTimerForTesting() {
   unload_event_monitor_timeout_.reset();
 }
 
+bool RenderFrameHostImpl::IsBackForwardCacheEvictionTimeRunningForTesting()
+    const {
+  return back_forward_cache_eviction_timer_.IsRunning();
+}
+
 void RenderFrameHostImpl::SetSubframeUnloadTimeoutForTesting(
     const base::TimeDelta& timeout) {
   subframe_unload_timeout_ = timeout;
@@ -6432,8 +6469,9 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
   bool in_back_forward_cache = IsInBackForwardCache();
 
   RenderFrameHostImpl* top_document = this;
-  while (top_document->parent_) {
-    top_document = top_document->parent_;
+  while (RenderFrameHostImpl* parent =
+             top_document->GetParentOrOuterDocument()) {
+    top_document = parent;
     DCHECK_EQ(top_document->IsInBackForwardCache(), in_back_forward_cache);
   }
 
@@ -6458,7 +6496,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
     // A document is evicted from the BackForwardCache, but it has already been
     // restored. The current document should be reloaded, because it is not
     // salvageable.
-    frame_tree()->controller().Reload(ReloadType::NORMAL, false);
+    top_document->frame_tree()->controller().Reload(ReloadType::NORMAL, false);
     return;
   }
 
@@ -6488,7 +6526,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
   // immediately, but destruction is delayed, so that callers don't have to
   // worry about use-after-free of |this|.
   top_document->is_evicted_from_back_forward_cache_ = true;
-  frame_tree()
+  top_document->frame_tree()
       ->controller()
       .GetBackForwardCache()
       .PostTaskToDestroyEvictedFrames();
@@ -13564,14 +13602,12 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
   if (!IsInBackForwardCache())
     return;
 
-  RenderFrameHostImpl* top_document = this;
-  while (RenderFrameHostImpl* parent = top_document->GetParent())
-    top_document = parent;
+  RenderFrameHostImpl* outermost_main_frame = GetOutermostMainFrame();
   BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
-      frame_tree()
+      outermost_main_frame->frame_tree()
           ->controller()
           .GetBackForwardCache()
-          .GetCurrentBackForwardCacheEligibility(top_document);
+          .GetCurrentBackForwardCacheEligibility(outermost_main_frame);
 
   TRACE_EVENT("navigation",
               "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
@@ -13965,12 +14001,30 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
       // happens after commit.
       DCHECK(children_.empty());
     }
-    if (lifecycle_state() == LifecycleStateImpl::kInBackForwardCache ||
-        lifecycle_state() == LifecycleStateImpl::kPrerendering) {
-      for (auto& child : children_) {
-        DCHECK_EQ(child->current_frame_host()->lifecycle_state(),
-                  lifecycle_state_);
-        child->current_frame_host()->SetLifecycleState(new_state);
+    if (GetOutermostMainFrameOrEmbedder() == this &&
+        (lifecycle_state() == LifecycleStateImpl::kInBackForwardCache ||
+         lifecycle_state() == LifecycleStateImpl::kPrerendering)) {
+      // We mark all the children, including inner FrameTrees and delegate
+      // nodes to have the same lifecycle state.
+      FrameTree::NodeRange node_range = FrameTree::SubtreeAndInnerTreeNodes(
+          this,
+          /*include_delegate_nodes_for_inner_frame_trees=*/true);
+      FrameTree::NodeIterator node_iter = node_range.begin();
+      while (node_iter != node_range.end()) {
+        FrameTreeNode* ftn = *node_iter;
+        // TODO(crbug.com/1232528): Inner WebContents do not know about
+        // prerendering state so skip them for now. This check does not
+        // impact back/forward cache since inner WebContents aren't allowed.
+        if (ftn->IsOutermostMainFrame()) {
+          DCHECK(ftn->current_frame_host()->lifecycle_state() !=
+                 LifecycleStateImpl::kInBackForwardCache);
+          node_iter.AdvanceSkippingChildren();
+        } else {
+          RenderFrameHostImpl* rfh = ftn->current_frame_host();
+          DCHECK_EQ(rfh->lifecycle_state(), lifecycle_state_);
+          rfh->SetLifecycleState(new_state);
+          ++node_iter;
+        }
       }
     }
   }

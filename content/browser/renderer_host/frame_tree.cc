@@ -85,9 +85,13 @@ FrameTree::NodeIterator& FrameTree::NodeIterator::operator++() {
     for (size_t i = 0; i < current_node_->child_count(); ++i) {
       FrameTreeNode* child = current_node_->child_at(i);
       FrameTreeNode* inner_tree_main_ftn = GetInnerTreeMainFrameNode(child);
-      queue_.push_back((should_descend_into_inner_trees_ && inner_tree_main_ftn)
-                           ? inner_tree_main_ftn
-                           : child);
+      if (should_descend_into_inner_trees_ && inner_tree_main_ftn) {
+        if (include_delegate_nodes_for_inner_frame_trees_)
+          queue_.push_back(child);
+        queue_.push_back(inner_tree_main_ftn);
+      } else {
+        queue_.push_back(child);
+      }
     }
 
     if (should_descend_into_inner_trees_) {
@@ -131,11 +135,18 @@ void FrameTree::NodeIterator::AdvanceNode() {
 FrameTree::NodeIterator::NodeIterator(
     const std::vector<FrameTreeNode*>& starting_nodes,
     const FrameTreeNode* root_of_subtree_to_skip,
-    bool should_descend_into_inner_trees)
+    bool should_descend_into_inner_trees,
+    bool include_delegate_nodes_for_inner_frame_trees)
     : current_node_(nullptr),
       root_of_subtree_to_skip_(root_of_subtree_to_skip),
       should_descend_into_inner_trees_(should_descend_into_inner_trees),
+      include_delegate_nodes_for_inner_frame_trees_(
+          include_delegate_nodes_for_inner_frame_trees),
       queue_(starting_nodes.begin(), starting_nodes.end()) {
+  // If `include_delegate_nodes_for_inner_frame_trees_` is true then
+  // `should_descend_into_inner_trees_` must be true.
+  DCHECK(!include_delegate_nodes_for_inner_frame_trees_ ||
+         should_descend_into_inner_trees_);
   AdvanceNode();
 }
 
@@ -147,20 +158,25 @@ FrameTree::NodeIterator FrameTree::NodeRange::begin() {
   }));
 
   return NodeIterator(starting_nodes_, root_of_subtree_to_skip_,
-                      should_descend_into_inner_trees_);
+                      should_descend_into_inner_trees_,
+                      include_delegate_nodes_for_inner_frame_trees_);
 }
 
 FrameTree::NodeIterator FrameTree::NodeRange::end() {
-  return NodeIterator({}, nullptr, should_descend_into_inner_trees_);
+  return NodeIterator({}, nullptr, should_descend_into_inner_trees_,
+                      include_delegate_nodes_for_inner_frame_trees_);
 }
 
 FrameTree::NodeRange::NodeRange(
     const std::vector<FrameTreeNode*>& starting_nodes,
     const FrameTreeNode* root_of_subtree_to_skip,
-    bool should_descend_into_inner_trees)
+    bool should_descend_into_inner_trees,
+    bool include_delegate_nodes_for_inner_frame_trees)
     : starting_nodes_(starting_nodes),
       root_of_subtree_to_skip_(root_of_subtree_to_skip),
-      should_descend_into_inner_trees_(should_descend_into_inner_trees) {}
+      should_descend_into_inner_trees_(should_descend_into_inner_trees),
+      include_delegate_nodes_for_inner_frame_trees_(
+          include_delegate_nodes_for_inner_frame_trees) {}
 
 FrameTree::NodeRange::NodeRange(const NodeRange&) = default;
 FrameTree::NodeRange::~NodeRange() = default;
@@ -261,12 +277,14 @@ FrameTree::NodeRange FrameTree::Nodes() {
 
 FrameTree::NodeRange FrameTree::SubtreeNodes(FrameTreeNode* subtree_root) {
   return NodeRange({subtree_root}, nullptr,
-                   /* should_descend_into_inner_trees */ false);
+                   /*should_descend_into_inner_trees=*/false,
+                   /*include_delegate_nodes_for_inner_frame_trees=*/false);
 }
 
 FrameTree::NodeRange FrameTree::NodesIncludingInnerTreeNodes() {
   return NodeRange({root_}, nullptr,
-                   /* should_descend_into_inner_trees */ true);
+                   /*should_descend_into_inner_trees=*/true,
+                   /*include_delegate_nodes_for_inner_frame_trees=*/false);
 }
 
 std::vector<FrameTreeNode*> FrameTree::CollectNodesForIsLoading() {
@@ -290,24 +308,33 @@ std::vector<FrameTreeNode*> FrameTree::CollectNodesForIsLoading() {
 }
 
 FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
-    RenderFrameHostImpl* parent) {
+    RenderFrameHostImpl* parent,
+    bool include_delegate_nodes_for_inner_frame_trees) {
   std::vector<FrameTreeNode*> starting_nodes;
   starting_nodes.reserve(parent->child_count());
   for (size_t i = 0; i < parent->child_count(); ++i) {
     FrameTreeNode* child = parent->child_at(i);
     FrameTreeNode* inner_tree_main_ftn = GetInnerTreeMainFrameNode(child);
-    starting_nodes.push_back(inner_tree_main_ftn ? inner_tree_main_ftn : child);
+    if (inner_tree_main_ftn) {
+      if (include_delegate_nodes_for_inner_frame_trees)
+        starting_nodes.push_back(child);
+      starting_nodes.push_back(inner_tree_main_ftn);
+    } else {
+      starting_nodes.push_back(child);
+    }
   }
   const std::vector<FrameTreeNode*> unattached_owned_nodes =
       parent->delegate()->GetUnattachedOwnedNodes(parent);
   starting_nodes.insert(starting_nodes.end(), unattached_owned_nodes.begin(),
                         unattached_owned_nodes.end());
   return NodeRange(starting_nodes, nullptr,
-                   /* should_descend_into_inner_trees */ true);
+                   /* should_descend_into_inner_trees */ true,
+                   include_delegate_nodes_for_inner_frame_trees);
 }
 
 FrameTree::NodeRange FrameTree::NodesExceptSubtree(FrameTreeNode* node) {
-  return NodeRange({root_}, node, /* should_descend_into_inner_trees */ false);
+  return NodeRange({root_}, node, /*should_descend_into_inner_trees=*/false,
+                   /*include_delegate_nodes_for_inner_frame_trees=*/false);
 }
 
 FrameTree* FrameTree::LoadingTree() {

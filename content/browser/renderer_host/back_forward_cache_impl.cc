@@ -376,6 +376,16 @@ CacheControlNoStoreExperimentLevel GetCacheControlNoStoreLevel() {
   return cache_control_level.Get();
 }
 
+bool IsSameOriginForTreeResult(RenderFrameHostImpl* rfh,
+                               const GURL& url,
+                               const url::Origin& main_document_origin) {
+  // Treat any frame inside a fenced frame as cross origin so we don't leak
+  // any information.
+  if (rfh->IsNestedWithinFencedFrame())
+    return false;
+  return url::Origin::Create(url).IsSameOriginWith(main_document_origin);
+}
+
 }  // namespace
 
 // static
@@ -691,7 +701,7 @@ BackForwardCacheImpl::PopulateReasonsForPage(
   // This function can be called during eviction, and |rfh| can be in
   // back/forward cache, which is considered as non primary main frame.
   bool main_frame_in_bfcache =
-      rfh->IsInBackForwardCache() && rfh->is_main_frame();
+      rfh->IsInBackForwardCache() && rfh->IsOutermostMainFrame();
 
   if (!rfh->IsInPrimaryMainFrame() && !main_frame_in_bfcache) {
     // When |rfh| is not the primary main frame and is not the bfcache main
@@ -729,7 +739,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
     BackForwardCacheCanStoreDocumentResult& result,
     RenderFrameHostImpl* rfh) {
   bool main_frame_in_bfcache =
-      rfh->IsInBackForwardCache() && rfh->is_main_frame();
+      rfh->IsInBackForwardCache() && rfh->IsOutermostMainFrame();
   DCHECK(rfh->IsInPrimaryMainFrame() || main_frame_in_bfcache);
 
   // If the the delegate doesn't support back forward cache, disable it.
@@ -862,9 +872,13 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
         rfh->back_forward_cache_disabled_reasons());
   }
 
-  // Do not store documents if they have inner WebContents.
-  if (rfh->inner_tree_main_frame_tree_node_id() !=
-      FrameTreeNode::kFrameTreeNodeInvalidId) {
+  // Do not store documents if they have inner WebContents. Inner frame trees
+  // that are based on MPArch are allowed to be stored. To determine if this
+  // is an inner WebContents we check the inner frame tree's type to see if
+  // it is `kPrimary`.
+  if (rfh->frame_tree()->delegate()->GetOuterDelegateFrameTreeNodeId() !=
+          FrameTreeNode::kFrameTreeNodeInvalidId &&
+      rfh->frame_tree()->type() == FrameTree::Type::kPrimary) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }
 
@@ -917,13 +931,6 @@ void BackForwardCacheImpl::PopulateNonStickyReasonsForDocument(
     result.No(
         BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
   }
-
-  // TODO(https://crbug.com/1251387): Frames embedding FencedFrames are not
-  // supported.
-  if (!rfh->GetFencedFrames().empty()) {
-    result.No(
-        BackForwardCacheMetrics::NotRestoredReason::kFencedFramesEmbedder);
-  }
 }
 
 void BackForwardCacheImpl::PopulateReasonsForDocument(
@@ -943,7 +950,7 @@ BackForwardCacheImpl::CreateEvictionBackForwardCacheCanStoreTreeResult(
   // At this point the page already has some NotRestoredReasons for eviction, so
   // we should always record cache_control:no-store related reasons.
   BackForwardCacheImpl::NotRestoredReasonBuilder builder(
-      rfh.GetMainFrame(),
+      rfh.GetOutermostMainFrame(),
       /* include_non_sticky = */ false,
       BackForwardCacheImpl::NotRestoredReasonBuilder::EvictionInfo(
           rfh, &eviction_reason));
@@ -976,18 +983,35 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::NotRestoredReasonBuilder(
       include_non_sticky_(include_non_sticky),
       eviction_info_(eviction_info) {
   // |root_rfh_| should be either primary main frame or back/forward cached
-  // page's main frame.
-  DCHECK(root_rfh_->IsInPrimaryMainFrame() ||
-         (root_rfh_->IsInBackForwardCache() && root_rfh_->is_main_frame()));
+  // page's outermost main frame.
+  DCHECK(
+      root_rfh_->IsInPrimaryMainFrame() ||
+      (root_rfh_->IsInBackForwardCache() && root_rfh_->IsOutermostMainFrame()));
   // Populate the reasons and build the tree.
-  tree_result_ = PopulateReasonsAndReturnSubtree(root_rfh_);
+  std::map<RenderFrameHostImpl*, BackForwardCacheCanStoreTreeResult*>
+      parent_map;
+  root_rfh_->ForEachRenderFrameHost([&](RenderFrameHostImpl* rfh) {
+    auto rfh_result = PopulateReasons(rfh);
+    parent_map[rfh] = rfh_result.get();
+
+    if (rfh == root_rfh_) {
+      tree_result_ = std::move(rfh_result);
+    } else {
+      RenderFrameHostImpl* parent = rfh->GetParentOrOuterDocumentOrEmbedder();
+      // TODO(https://crbug.com/1257276): parent can return null for unattached
+      // guests.
+      if (!parent)
+        parent = root_rfh_;
+      parent_map[parent]->AppendChild(std::move(rfh_result));
+    }
+  });
 }
 
 BackForwardCacheImpl::NotRestoredReasonBuilder::~NotRestoredReasonBuilder() =
     default;
 
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
-BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
+BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasons(
     RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult result_for_rfh;
   if (eviction_info_.has_value()) {
@@ -1006,19 +1030,10 @@ BackForwardCacheImpl::NotRestoredReasonBuilder::PopulateReasonsAndReturnSubtree(
   bfcache_.UpdateCanStoreToIncludeCacheControlNoStore(result_for_rfh, rfh);
   flattened_result_.AddReasonsFrom(result_for_rfh);
 
-  // Finds the reasons recursively and create the reason subtree for the
-  // children if needed.
-  BackForwardCacheCanStoreTreeResult::ChildrenVector children_result;
-  for (size_t i = 0; i < rfh->child_count(); i++) {
-    std::unique_ptr<BackForwardCacheCanStoreTreeResult> child =
-        PopulateReasonsAndReturnSubtree(rfh->child_at(i)->current_frame_host());
-    children_result.emplace_back(std::move(child));
-  }
-
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree(
       new BackForwardCacheCanStoreTreeResult(
           rfh, root_rfh_->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
-          result_for_rfh, std::move(children_result)));
+          result_for_rfh));
   return tree;
 }
 
@@ -1435,12 +1450,10 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     RenderFrameHostImpl* rfh,
     const url::Origin& main_document_origin,
     const GURL& url,
-    BackForwardCacheCanStoreDocumentResult& result_for_this_document,
-    BackForwardCacheCanStoreTreeResult::ChildrenVector children)
+    BackForwardCacheCanStoreDocumentResult& result_for_this_document)
     : document_result_(std::move(result_for_this_document)),
-      children_(std::move(children)),
       is_same_origin_(
-          url::Origin::Create(url).IsSameOriginWith(main_document_origin)),
+          IsSameOriginForTreeResult(rfh, url, main_document_origin)),
       id_(rfh->frame_tree_node()->html_id()),
       name_(rfh->frame_tree_node()->html_name()),
       src_(rfh->frame_tree_node()->html_src()),
@@ -1452,6 +1465,11 @@ BackForwardCacheCanStoreTreeResult::~BackForwardCacheCanStoreTreeResult() =
 void BackForwardCacheCanStoreTreeResult::AddReasonsToSubtreeRootFrom(
     const BackForwardCacheCanStoreDocumentResult& result) {
   document_result_.AddReasonsFrom(result);
+}
+
+void BackForwardCacheCanStoreTreeResult::AppendChild(
+    std::unique_ptr<BackForwardCacheCanStoreTreeResult> child) {
+  children_.push_back(std::move(child));
 }
 
 const BackForwardCacheCanStoreDocumentResult
@@ -1472,11 +1490,10 @@ void BackForwardCacheCanStoreTreeResult::FlattenTreeHelper(
 std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheCanStoreTreeResult::CreateEmptyTree(RenderFrameHostImpl* rfh) {
   BackForwardCacheCanStoreDocumentResult empty_result;
-  BackForwardCacheCanStoreTreeResult::ChildrenVector empty_vector;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
-      new BackForwardCacheCanStoreTreeResult(
-          rfh, rfh->GetLastCommittedOrigin(), rfh->GetLastCommittedURL(),
-          empty_result, std::move(empty_vector)));
+      new BackForwardCacheCanStoreTreeResult(rfh, rfh->GetLastCommittedOrigin(),
+                                             rfh->GetLastCommittedURL(),
+                                             empty_result));
   return empty_tree;
 }
 
@@ -1484,11 +1501,10 @@ std::unique_ptr<BackForwardCacheCanStoreTreeResult>
 BackForwardCacheCanStoreTreeResult::CreateEmptyTreeBeforeCommit(
     NavigationRequest* navigation) {
   BackForwardCacheCanStoreDocumentResult empty_result;
-  BackForwardCacheCanStoreTreeResult::ChildrenVector empty_vector;
   std::unique_ptr<BackForwardCacheCanStoreTreeResult> empty_tree(
       new BackForwardCacheCanStoreTreeResult(
           navigation->GetRenderFrameHost(), navigation->GetOriginToCommit(),
-          navigation->GetURL(), empty_result, std::move(empty_vector)));
+          navigation->GetURL(), empty_result));
   return empty_tree;
 }
 

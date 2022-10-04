@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -3669,6 +3670,7 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
   EXPECT_EQ(fenced_frame_url_2,
             fenced_frame->current_frame_host()->GetLastCommittedURL());
+  EXPECT_TRUE(WaitForDOMContentLoaded(fenced_frame->current_frame_host()));
 
   // Navigate the top-level page to another document.
   GURL new_main_url(https_server()->GetURL("b.test", "/hello.html"));
@@ -3690,24 +3692,17 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   // ShadowDOM fenced frames have the same NavigationController as the top-level
   // frame, therefore the count here is 2 because of the navigation of the
   // top-level frame.
-  // Note the last committed url is the latest one in shadowDOM due to the joint
-  // history maintained in the single navigation controller and going back can
-  // therefore get the latest navigation in the frame which is
-  // `fenced_frame_url_2`. However, when back/forward cache is disabled,
-  // it will navigate to `fenced_frame_url_1`.
-  // MPArch fenced frame has its own NavigationController which is not retained
-  // when the top-level page navigates. Therefore going back lands on the
-  // initial navigation in the Fenced Frame.
+  // Note the last committed url is the latest one (`fenced_frame_url_2`) when
+  // back/forward cache is enabled. However, when back/forward cache is
+  // disabled, it will navigate to `fenced_frame_url_1`. MPArch fenced frame has
+  // its own NavigationController which is not retained when the top-level page
+  // navigates. Therefore going back lands on the initial navigation in the
+  // Fenced Frame.
   CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/2,
                             /*mparch_cnt=*/1);
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
-      EXPECT_EQ(fenced_frame_url_2,
-                fenced_frame->current_frame_host()->GetLastCommittedURL());
-    else
-      EXPECT_EQ(fenced_frame_url_1,
-                fenced_frame->current_frame_host()->GetLastCommittedURL());
+  if (BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    EXPECT_EQ(fenced_frame_url_2,
+              fenced_frame->current_frame_host()->GetLastCommittedURL());
   } else {
     EXPECT_EQ(fenced_frame_url_1,
               fenced_frame->current_frame_host()->GetLastCommittedURL());

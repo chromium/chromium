@@ -16,6 +16,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace page_load_metrics {
@@ -81,18 +82,21 @@ class FencedFramesPageLoadMetricsObserverTest
 TEST_F(FencedFramesPageLoadMetricsObserverTest, Foreground) {
   NavigateAndCommit(GURL(kTestUrl));
 
-  content::RenderFrameHost* fenced_frame_root =
+  content::RenderFrameHostWrapper fenced_frame_root(
       content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-          ->AppendFencedFrame();
+          ->AppendFencedFrame());
   ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL(kFencedFramesUrl), fenced_frame_root);
+      GURL(kFencedFramesUrl), fenced_frame_root.get());
   ASSERT_NE(nullptr, simulator);
   simulator->Commit();
 
-  PopulateTimingForHistograms(fenced_frame_root);
+  PopulateTimingForHistograms(fenced_frame_root.get());
   tester()->NavigateToUntrackedUrl();
+
+  web_contents()->GetController().GetBackForwardCache().Flush();
+  EXPECT_TRUE(fenced_frame_root.WaitUntilRenderFrameDeleted());
 
   // Verify if FencedFrames prefixed metrics are recorded as expected.
   tester()->histogram_tester().ExpectTotalCount(
@@ -124,18 +128,21 @@ TEST_F(FencedFramesPageLoadMetricsObserverTest, Background) {
   // Simulate a background tab.
   web_contents()->WasHidden();
 
-  content::RenderFrameHost* fenced_frame_root =
+  content::RenderFrameHostWrapper fenced_frame_root(
       content::RenderFrameHostTester::For(web_contents()->GetPrimaryMainFrame())
-          ->AppendFencedFrame();
+          ->AppendFencedFrame());
   ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
-      GURL(kFencedFramesUrl), fenced_frame_root);
+      GURL(kFencedFramesUrl), fenced_frame_root.get());
   ASSERT_NE(nullptr, simulator);
   simulator->Commit();
 
-  PopulateTimingForHistograms(fenced_frame_root);
+  PopulateTimingForHistograms(fenced_frame_root.get());
   tester()->NavigateToUntrackedUrl();
+
+  web_contents()->GetController().GetBackForwardCache().Flush();
+  EXPECT_TRUE(fenced_frame_root.WaitUntilRenderFrameDeleted());
 
   tester()->histogram_tester().ExpectTotalCount(
       ::internal::kHistogramFencedFramesNavigationToFirstPaint, 0);

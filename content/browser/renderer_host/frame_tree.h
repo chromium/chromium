@@ -94,7 +94,8 @@ class CONTENT_EXPORT FrameTree {
 
     NodeIterator(const std::vector<FrameTreeNode*>& starting_nodes,
                  const FrameTreeNode* root_of_subtree_to_skip,
-                 bool should_descend_into_inner_trees);
+                 bool should_descend_into_inner_trees,
+                 bool include_delegate_nodes_for_inner_frame_trees);
 
     void AdvanceNode();
 
@@ -105,6 +106,7 @@ class CONTENT_EXPORT FrameTree {
     RAW_PTR_EXCLUSION const FrameTreeNode* const root_of_subtree_to_skip_;
 
     const bool should_descend_into_inner_trees_;
+    const bool include_delegate_nodes_for_inner_frame_trees_;
     base::circular_deque<FrameTreeNode*> queue_;
   };
 
@@ -121,11 +123,13 @@ class CONTENT_EXPORT FrameTree {
 
     NodeRange(const std::vector<FrameTreeNode*>& starting_nodes,
               const FrameTreeNode* root_of_subtree_to_skip,
-              bool should_descend_into_inner_trees);
+              bool should_descend_into_inner_trees,
+              bool include_delegate_nodes_for_inner_frame_trees);
 
     const std::vector<FrameTreeNode*> starting_nodes_;
     const raw_ptr<const FrameTreeNode> root_of_subtree_to_skip_;
     const bool should_descend_into_inner_trees_;
+    const bool include_delegate_nodes_for_inner_frame_trees_;
   };
 
   class CONTENT_EXPORT Delegate {
@@ -305,8 +309,11 @@ class CONTENT_EXPORT FrameTree {
   // Returns a range to iterate over all FrameTreeNodes in a subtree, starting
   // from, but not including |parent|, as well as any FrameTreeNodes of inner
   // frame trees. Note that this includes inner frame trees of inner WebContents
-  // as well.
-  static NodeRange SubtreeAndInnerTreeNodes(RenderFrameHostImpl* parent);
+  // as well. If `include_delegate_nodes_for_inner_frame_trees` is true the
+  // delegate RenderFrameHost owning the inner frame tree will also be returned.
+  static NodeRange SubtreeAndInnerTreeNodes(
+      RenderFrameHostImpl* parent,
+      bool include_delegate_nodes_for_inner_frame_trees = false);
 
   // Adds a new child frame to the frame tree. |process_id| is required to
   // disambiguate |new_routing_id|, and it must match the process of the

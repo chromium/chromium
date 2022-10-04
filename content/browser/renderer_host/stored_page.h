@@ -106,7 +106,8 @@ class StoredPage : public SiteInstanceGroup::Observer {
   // not cached.
   RenderFrameProxyHostMap proxy_hosts_;
 
-  // RenderViewHosts belonging to the main frame, and its proxies (if any).
+  // RenderViewHosts belonging to the main frames, and its proxies (if any).
+  // Note this includes all `RenderViewHost`s from inner frame trees as well.
   //
   // While RenderViewHostImpl(s) are in the BackForwardCache, they aren't
   // reused for pages outside the cache. This prevents us from having two

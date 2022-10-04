@@ -117,15 +117,12 @@ PageLoadMetricsForwardObserver::OnShown() {
 PageLoadMetricsObserverInterface::ObservePolicy
 PageLoadMetricsForwardObserver::OnEnterBackForwardCache(
     const mojom::PageLoadTiming& timing) {
-  NOTREACHED() << "Not supported.";
   return CONTINUE_OBSERVING;
 }
 
 void PageLoadMetricsForwardObserver::OnRestoreFromBackForwardCache(
     const mojom::PageLoadTiming& timing,
-    content::NavigationHandle* navigation_handle) {
-  NOTREACHED() << "Not supported.";
-}
+    content::NavigationHandle* navigation_handle) {}
 
 PageLoadMetricsObserverInterface::ObservePolicy
 PageLoadMetricsForwardObserver::ShouldObserveMimeType(
@@ -385,9 +382,7 @@ void PageLoadMetricsForwardObserver::DidActivatePortal(
 }
 
 void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
-    content::NavigationHandle* navigation_handle) {
-  NOTREACHED() << "Not supported.";
-}
+    content::NavigationHandle* navigation_handle) {}
 
 void PageLoadMetricsForwardObserver::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {

@@ -564,8 +564,13 @@ void RenderViewHostImpl::EnterBackForwardCache() {
   TRACE_EVENT("navigation", "RenderViewHostImpl::EnterBackForwardCache",
               ChromeTrackEvent::kRenderViewHost, *this);
   DCHECK(registered_with_frame_tree_);
-  frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
-  registered_with_frame_tree_ = false;
+  // Only unregister the RenderViewHost if the FrameTree is the primary
+  // FrameTree, inner FrameTrees hold their state when they enter back/forward
+  // cache.
+  if (frame_tree_->type() == FrameTree::Type::kPrimary) {
+    frame_tree_->UnregisterRenderViewHost(render_view_host_map_id_, this);
+    registered_with_frame_tree_ = false;
+  }
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
@@ -584,11 +589,14 @@ void RenderViewHostImpl::LeaveBackForwardCache(
     blink::mojom::PageRestoreParamsPtr page_restore_params) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::LeaveBackForwardCache",
               ChromeTrackEvent::kRenderViewHost, *this);
-  DCHECK(!registered_with_frame_tree_);
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
-  frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
-  registered_with_frame_tree_ = true;
+  // `registered_with_frame_tree_` will already be true for inner frame
+  // trees.
+  if (!registered_with_frame_tree_) {
+    registered_with_frame_tree_ = true;
+    frame_tree_->RegisterRenderViewHost(render_view_host_map_id_, this);
+  }
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));

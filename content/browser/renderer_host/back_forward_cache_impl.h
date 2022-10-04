@@ -515,11 +515,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
     }
 
    private:
-    // Populate NotRestoredReasons for the subtree whose root is |rfh| by
+    // Populate NotRestoredReasons for the `rfh` by
     // iterating the frame tree and populating NotRestoredReasons in
     // |flattened_result_|.
-    std::unique_ptr<BackForwardCacheCanStoreTreeResult>
-    PopulateReasonsAndReturnSubtree(RenderFrameHostImpl* rfh);
+    std::unique_ptr<BackForwardCacheCanStoreTreeResult> PopulateReasons(
+        RenderFrameHostImpl* rfh);
 
     // Root document of the tree.
     const raw_ptr<RenderFrameHostImpl> root_rfh_;
@@ -618,17 +618,18 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
       RenderFrameHostImpl* rfh,
       const url::Origin& main_document_origin,
       const GURL& url,
-      BackForwardCacheCanStoreDocumentResult& result_for_this_document,
-      ChildrenVector children);
+      BackForwardCacheCanStoreDocumentResult& result_for_this_document);
 
   void FlattenTreeHelper(
       BackForwardCacheCanStoreDocumentResult* document_result);
+
+  void AppendChild(std::unique_ptr<BackForwardCacheCanStoreTreeResult> child);
 
   // See |GetDocumentResult|
   BackForwardCacheCanStoreDocumentResult document_result_;
 
   // See |GetChildren|
-  const ChildrenVector children_;
+  ChildrenVector children_;
 
   // See |IsSameOrigin|
   const bool is_same_origin_;

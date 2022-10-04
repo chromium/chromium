@@ -684,38 +684,57 @@ void RenderFrameHostManager::PrepareForCollectingPage(
     BrowsingContextState::RenderFrameProxyHostMap* proxy_hosts) {
   TRACE_EVENT("navigation", "RenderFrameHostManager::PrepareForCollectingPage");
 
-  // Prepare the main frame.
-  render_view_hosts->insert(
-      main_render_frame_host->render_view_host()->GetSafeRef());
+  // We insert RenderViewHosts for all frames.
+  main_render_frame_host->ForEachRenderFrameHost([&](RenderFrameHostImpl* rfh) {
+    render_view_hosts->insert(rfh->render_view_host()->GetSafeRef());
+    if (rfh->is_main_frame()) {
+      for (auto& it : rfh->browsing_context_state()->proxy_hosts()) {
+        // This avoids including the proxy created when starting a
+        // new cross-process, cross-BrowsingInstance navigation, as well as any
+        // restored proxies which are also in a different BrowsingInstance.
+        if (rfh->GetSiteInstance()->IsRelatedSiteInstance(
+                it.second->GetSiteInstance())) {
+          render_view_hosts->insert(
+              it.second->GetRenderViewHost()->GetSafeRef());
+        }
+      }
+    }
+  });
+
+  // When BrowsingContextState is decoupled from the FrameTreeNode and
+  // RenderFrameHostManager (legacy mode is disabled), proxies and
+  // replication state will be stored in a separate BrowsingContextState,
+  // which won't need any updates. However, RenderViewHosts are still stored
+  // in FrameTree (which, for example, is shared between the new page and
+  // the page entering BFCache), so they have to be collected explicitly above.
+  // Since proxies are not collected, we can return early here.
+  if (features::GetBrowsingContextMode() ==
+      features::BrowsingContextStateImplementationType::
+          kSwapForCrossBrowsingInstanceNavigations) {
+    return;
+  }
+
+  DCHECK_EQ(features::GetBrowsingContextMode(),
+            features::BrowsingContextStateImplementationType::
+                kLegacyOneToOneWithFrameTreeNode);
+
   // Prepare the proxies.
   SiteInstance* instance = main_render_frame_host->GetSiteInstance();
 
+  // Store the proxies only for main frame in the primary FrameTree because the
+  // FrameTreeNode gets reused for back/forward cache. It is not needed to
+  // store proxies for embedded main frames since each have their unique
+  // FrameTreeNode and their own BrowsingContextState.
   for (auto& it :
        main_render_frame_host->browsing_context_state()->proxy_hosts()) {
     // This avoids including the proxy created when starting a
     // new cross-process, cross-BrowsingInstance navigation, as well as any
     // restored proxies which are also in a different BrowsingInstance.
     if (instance->IsRelatedSiteInstance(it.second->GetSiteInstance())) {
-      render_view_hosts->insert(it.second->GetRenderViewHost()->GetSafeRef());
-      // When BrowsingContextState is decoupled from the FrameTreeNode and
-      // RenderFrameHostManager (legacy mode is disabled), proxies and
-      // replication state will be stored in a separate BrowsingContextState,
-      // which won't need any updates. However, RenderViewHosts are still stored
-      // in FrameTree (which, for example, is shared between the new page and
-      // the page entering BFCache), so they have to be collected explicitly.
-      if (features::GetBrowsingContextMode() ==
-          features::BrowsingContextStateImplementationType::
-              kLegacyOneToOneWithFrameTreeNode) {
-        (*proxy_hosts)[it.first] = std::move(it.second);
-      }
+      DCHECK(base::Contains(*render_view_hosts,
+                            it.second->GetRenderViewHost()->GetSafeRef()));
+      (*proxy_hosts)[it.first] = std::move(it.second);
     }
-  }
-
-  // Since proxies are not collected, we can return early here.
-  if (features::GetBrowsingContextMode() ==
-      features::BrowsingContextStateImplementationType::
-          kSwapForCrossBrowsingInstanceNavigations) {
-    return;
   }
 
   // Remove the previously extracted proxies from the
