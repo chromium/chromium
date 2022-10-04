@@ -22,6 +22,9 @@ namespace ash {
 
 class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     : public UserDataAuthClient {
+ private:
+  struct UserCryptohomeState;
+
  public:
   // The method by which a user's home directory can be encrypted.
   enum class HomeEncryptionMethod {
@@ -101,6 +104,13 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // already exist).
     void AddKey(const cryptohome::AccountIdentifier& account_id,
                 const cryptohome::Key& key);
+
+    void AddRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
+    bool HasRecoveryFactor(const cryptohome::AccountIdentifier& account_id);
+
+   private:
+    FakeUserDataAuthClient::UserCryptohomeState& GetUserState(
+        const cryptohome::AccountIdentifier& account_id);
   };
 
   // Represents the ongoing AuthSessions.
@@ -297,8 +307,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   void SetUserDataDir(base::FilePath path);
 
  private:
-  struct UserCryptohomeState;
-
   enum class AuthResult {
     kAuthSuccess,
     kUserNotFound,

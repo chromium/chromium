@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -58,6 +59,9 @@ using FakeAuthFactor =
 // "-hash" is as in `GetStubSanitizedUsername`.
 const std::string kUserDataDirNamePrefix = "u-";
 const std::string kUserDataDirNameSuffix = "-hash";
+
+// Label of the recovery auth factor.
+const std::string kCryptohomeRecoveryKeyLabel = "recovery";
 
 }  // namespace
 
@@ -274,6 +278,17 @@ bool CheckCredentialsViaAuthFactor(const FakeAuthFactor& factor,
       factor);
 }
 
+template <class FakeFactorType>
+bool ContainsFakeFactor(
+    const base::flat_map<std::string, FakeAuthFactor>& factors) {
+  const auto it =
+      base::ranges::find_if(factors, [](const auto label_factor_pair) {
+        const FakeAuthFactor& fake_factor = label_factor_pair.second;
+        return absl::get_if<FakeFactorType>(&fake_factor) != nullptr;
+      });
+  return it != std::end(factors);
+}
+
 bool AuthInputMatchesFakeFactorType(
     const ::user_data_auth::AuthInput& auth_input,
     const FakeAuthFactor& fake_factor) {
@@ -407,12 +422,35 @@ FakeUserDataAuthClient::TestApi::GetUserProfileDir(
 void FakeUserDataAuthClient::TestApi::AddKey(
     const cryptohome::AccountIdentifier& account_id,
     const cryptohome::Key& key) {
-  const auto user_it = g_instance->users_.find(account_id);
-  CHECK(user_it != std::end(g_instance->users_)) << "User doesn't exist";
-  UserCryptohomeState& user_state = user_it->second;
+  UserCryptohomeState& user_state = GetUserState(account_id);
+
   const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
       KeyToFakeAuthFactor(key, g_instance->enable_auth_check_));
   CHECK(was_inserted) << "Factor already exists";
+}
+
+void FakeUserDataAuthClient::TestApi::AddRecoveryFactor(
+    const cryptohome::AccountIdentifier& account_id) {
+  UserCryptohomeState& user_state = GetUserState(account_id);
+
+  FakeAuthFactor factor{RecoveryFactor()};
+  const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
+      {kCryptohomeRecoveryKeyLabel, std::move(factor)});
+  CHECK(was_inserted) << "Factor already exists";
+}
+
+bool FakeUserDataAuthClient::TestApi::HasRecoveryFactor(
+    const cryptohome::AccountIdentifier& account_id) {
+  const UserCryptohomeState& user_state = GetUserState(account_id);
+  return ContainsFakeFactor<RecoveryFactor>(user_state.auth_factors);
+}
+
+FakeUserDataAuthClient::UserCryptohomeState&
+FakeUserDataAuthClient::TestApi::GetUserState(
+    const cryptohome::AccountIdentifier& account_id) {
+  const auto user_it = g_instance->users_.find(account_id);
+  CHECK(user_it != std::end(g_instance->users_)) << "User doesn't exist";
+  return user_it->second;
 }
 
 FakeUserDataAuthClient::FakeUserDataAuthClient() {
