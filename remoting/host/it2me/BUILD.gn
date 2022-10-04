@@ -211,6 +211,9 @@ if (!is_chromeos_ash && enable_remoting_host) {
         "//build/config/linux/gtk",
         "//ui/events/platform/x11",
       ]
+    } else if (remoting_use_wayland) {
+      defines = [ "REMOTING_USE_WAYLAND" ]
+      deps += [ "//ui/gtk:gtk_config" ]
     }
 
     if (is_mac) {

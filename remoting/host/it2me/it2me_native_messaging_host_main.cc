@@ -30,14 +30,17 @@
 #include "remoting/host/resources.h"
 #include "remoting/host/usage_stats_consent.h"
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 #include <gtk/gtk.h>
-
 #include "base/linux_util.h"
+#endif  // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
+
+#if defined(REMOTING_USE_X11)
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
+#endif  // defined(REMOTING_USE_X11)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) &&
 
 #if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
@@ -123,7 +126,8 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   remoting::LoadResources("");
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    (defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND))
   // Required for any calls into GTK functions, such as the Disconnect and
   // Continue windows. Calling with nullptr arguments because we don't have
   // any command line arguments for gtk to consume.
@@ -137,7 +141,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
+        // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 
   base::File read_file;
   base::File write_file;

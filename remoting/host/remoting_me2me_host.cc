@@ -125,13 +125,16 @@
 #include "remoting/host/mac/permission_utils.h"
 #endif  // BUILDFLAG(IS_APPLE)
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 #include <gtk/gtk.h>
+#endif  // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 
+#if defined(REMOTING_USE_X11)
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
+#endif  // defined(REMOTING_USE_X11)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
@@ -1945,7 +1948,9 @@ int HostProcessMain() {
   // Initialize Xlib for multi-threaded use, allowing non-Chromium code to
   // use X11 safely (such as the WebRTC capturer, GTK ...)
   x11::InitXlib();
+#endif  // defined(REMOTING_USE_X11)
 
+#if defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
   if (!cmd_line->HasSwitch(kReportOfflineReasonSwitchName)) {
     // Required for any calls into GTK functions, such as the Disconnect and
     // Continue windows, though these should not be used for the Me2Me case
@@ -1956,7 +1961,7 @@ int HostProcessMain() {
     gtk_init(nullptr, nullptr);
 #endif
   }
-#endif  // defined(REMOTING_USE_X11)
+#endif  // defined(REMOTING_USE_X11) || defined(REMOTING_USE_WAYLAND)
 
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
