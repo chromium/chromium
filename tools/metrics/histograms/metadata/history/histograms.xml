@@ -355,7 +355,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
-    Recorded after the user clicks clear data on the CleaerBrowsingData dialog,
+    Recorded after the user clicks clear data on the ClearBrowsingData dialog,
     but before the installed apps dialog is shown to the user. The value will be
     true if there are installed apps (and thus, the installed app dialog will be
     shown), and false otherwise.
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
-    Recorded when we successfuly fetched important sites in the clear browsing
+    Recorded when we successfully fetched important sites in the clear browsing
     data screen. This is the number of sites that we think are important to the
     user.
   </summary>
@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
-    Recorded when we successfuly fetched installed apps in the clear browsing
+    Recorded when we successfully fetched installed apps in the clear browsing
     data screen. This is the number of apps that we think are important to the
     user and allow the users to exclude from clearing browsing data.
   </summary>
@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.FinalState.Number{Event}"
-    units="count" expires_after="2022-12-10">
+    units="count" expires_after="2023-10-01">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -536,7 +536,7 @@ chromium-metrics-reviews@google.com.
     <variant name="RelatedSearchesClicked"
         summary="related search links opened"/>
     <variant name="TogglesToBasicHistory"
-        summary="Tggles to from basic history UI"/>
+        summary="Toggles to from basic history UI"/>
     <variant name="VisibilityToggles" summary="Journeys UI toggles on/off"/>
   </token>
 </histogram>
@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.LinksOpened" units="links opened"
-    expires_after="2022-11-20">
+    expires_after="2023-10-01">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -653,7 +653,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.ClusterSize.{ClusterStatistic}"
-    units="number visits" expires_after="M106">
+    units="number visits" expires_after="2023-10-01">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -699,17 +699,54 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.GetClustersLatency" units="ms"
-    expires_after="2023-03-26">
-  <owner>mcrouse@chromium.org</owner>
+<histogram
+    name="History.Clusters.Backend.GetMostRecentClusters.{Segment}{Source}"
+    units="ms" expires_after="2023-10-01">
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
-    Logs the latency of clustering visits performed by the on-device backend.
-    Logged when clusters have been calculated based on any request to cluster
-    visits, which could be triggered from several things, including loading the
-    journeys UI, putting a query in the journeys page, etc..
+    Near startup and every 1 hour afterwards, unclustered visits are clustered,
+    and the clusters are persisted in the history DB.
+
+    As needed, both fresh and persisted clusters are fetched. Clusters are
+    fetched for: a) displaying on the Journeys WebUI and b) generating keyword
+    caches to match with omnibox inputs and show journey chips or suggestions in
+    the omnibox.
+
+    This histogram records the latency breakdown for fetching both fresh and
+    persisted clusters. See the similar
+    'History.Clusters.Backend.UpdateClusters.*' histograms for the latency
+    breakdown for updating clusters.
+
+    Recorded for every batch of fetched clusters; can be recorded more than once
+    per Journey WebUI load or keyword cache generations
+
+    This slice records the time between the main thread requesting and receiving
+    {Segment}. Records {Source}.
   </summary>
+  <token key="Segment">
+    <variant name="ComputeClustersLatency" summary="clusters from the model"/>
+    <variant name="GetAnnotatedVisitsToClusterLatency"
+        summary="annotated visits to cluster (which can include clustered,
+                 unclustered, incomplete, and complete visits)"/>
+    <variant name="GetMostRecentPersistedClustersLatency"
+        summary="persisted clusters from the history DB"/>
+  </token>
+  <token key="Source">
+    <variant name="" summary="all requests"/>
+    <variant name=".AllKeywordCacheRefresh"
+        summary="only requests for the all-keyword-cache which occurs about
+                 once every 2 hours but can vary if e.g. the user isn't
+                 interacting with the omnibox"/>
+    <variant name=".ShortKeywordCacheRefresh"
+        summary="only requests for the short-keyword cache which occurs up to
+                 once every 10 seconds but can vary if e.g. the user isn't
+                 interacting with the omnibox"/>
+    <variant name=".WebUI"
+        summary="only requests for the Journeys WebUI, either query-less or
+                 query states, both on load and on scroll"/>
+  </token>
 </histogram>
 
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount"
@@ -829,7 +866,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.NumKeywordsPerCluster.{KeywordStatistic}"
-    units="number keywords" expires_after="2022-11-20">
+    units="number keywords" expires_after="2023-10-01">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -883,7 +920,7 @@ chromium-metrics-reviews@google.com.
     Logs the number of visits that were processed on the UI thread in a batch.
     Can be logged multiple times when a request to cluster visits is made, which
     could be triggered from several things, including loading the journeys UI,
-    putting a query in the journeys page, etc.. depending on how many visits
+    putting a query in the journeys page, etc... depending on how many visits
     were sent to the backend to cluster.
   </summary>
 </histogram>
@@ -899,7 +936,7 @@ chromium-metrics-reviews@google.com.
     is performed on the UI thread. This does not include any thread hop or
     queuing delay. Can be logged multiple times when a request to cluster visits
     is made, which could be triggered from several things, including loading the
-    journeys UI, putting a query in the journeys page, etc.. depending on how
+    journeys UI, putting a query in the journeys page, etc... depending on how
     many visits were sent to the backend to cluster.
   </summary>
 </histogram>
@@ -912,29 +949,51 @@ chromium-metrics-reviews@google.com.
   <summary>
     This histogram records the time taken (excluding queuing delay) to retrieve
     visits from the History database, which occurs on the History DB thread.
-    Logged once per request to cluster vists is made, which could be triggered
+    Logged once per request to cluster visits is made, which could be triggered
     from several things, including loading the journeys UI, putting a query in
     the journeys page, etc.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.QueryAnnotatedVisitsLatency"
-    units="ms" expires_after="2023-02-12">
-  <owner>sophiechang@chromium.org</owner>
+<histogram name="History.Clusters.Backend.UpdateClusters.{Segment}" units="ms"
+    expires_after="2023-10-01">
+  <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
-    This histogram records the total time taken (including queuing delay) from
-    which a request to retrieve vists from the History database took. Logged
-    once per request to cluster vists is made, which could be triggered from
-    several things, including loading the journeys UI, putting a query in the
-    journeys page, etc.
+    Near startup and every 1 hour afterwards, unclustered visits are clustered,
+    and the clusters are persisted in the history DB.
+
+    As needed, both fresh and persisted clusters are fetched. Clusters are
+    fetched for: a) displaying on the Journeys WebUI and b) generating keyword
+    caches to match with omnibox inputs and show journey chips or suggestions in
+    the omnibox.
+
+    This histogram records the latency breakdown for updating clusters. See the
+    similar 'History.Clusters.Backend.GetMostRecentClusters.*' histograms for
+    the latency breakdown for fetching clusters.
+
+    Recorded for every batch of visits clustered; can be recorded more than once
+    every hour.
+
+    This slice records the time between the main thread requesting and
+    {Segment}.
   </summary>
+  <token key="Segment">
+    <variant name="ComputeClustersLatency"
+        summary="receiving clusters from the model"/>
+    <variant name="GetAnnotatedVisitsToClusterLatency"
+        summary="receiving annotated visits to cluster (which can include
+                 clustered, unclustered, incomplete, and complete visits)"/>
+    <variant name="PersistClustersLatency"
+        summary="receiving acknowledgement for completion of persisting the
+                 clusters to the history DB"/>
+  </token>
 </histogram>
 
 <histogram
     name="History.Clusters.Backend.WasClusterFiltered.{ClusterFilterReason}"
-    enum="BooleanFiltered" expires_after="2022-11-15">
+    enum="BooleanFiltered" expires_after="2023-10-01">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -952,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.Latency" units="ms"
-    expires_after="2022-07-24">
+    expires_after="2023-10-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -961,10 +1020,19 @@ chromium-metrics-reviews@google.com.
     measured via the wall clock. Most of this time is not on the main thread.
 
     The total time spent populating the keywords cache will be:
-    History.Clusters.KeywordCache.Latency = (number of batches) *
-    (History.Clusters.Backend.QueryAnnotatedVisitsLatency +
-    History.Clusters.Backend.GetClustersLatency +
-    History.Clusters.KeywordCache.ThreadTime)
+    History.Clusters.KeywordCache.Latency = (number of batches) * (
+    History.Clusters.Backend.GetMostRecentClusters.GetAnnotatedVisitsToClusterLatency.AllKeywordCacheRefresh
+    +
+    History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency.AllKeywordCacheRefresh
+    +
+    History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.AllKeywordCacheRefresh
+    +
+    History.Clusters.Backend.GetMostRecentClusters.GetAnnotatedVisitsToClusterLatency.ShortKeywordCacheRefresh
+    +
+    History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency.ShortKeywordCacheRefresh
+    +
+    History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.ShortKeywordCacheRefresh
+    + History.Clusters.KeywordCache.ThreadTime)
   </summary>
 </histogram>
 
@@ -988,14 +1056,14 @@ chromium-metrics-reviews@google.com.
   <component>UI&gt;Browser&gt;Journeys</component>
   <summary>
     This histogram records the total time taken to convert and process visits in
-    in all history cluster available. This is recorded once after the
-    conversion, deduplication and sorting of the clusters. This is recorded
-    using the highest precision clock possible. Like most time measurements this
-    will not have the same behavior regarding system sleep on all platforms. See
+    all history cluster available. This is recorded once after the conversion,
+    deduplication and sorting of the clusters. This is recorded using the
+    highest precision clock possible. Like most time measurements this will not
+    have the same behavior regarding system sleep on all platforms. See
     bit.ly/chrome-clocks-and-sleep for more details. Since the measurement is
     taken after the operation is over it will be missing if the operation never
     completes. This can happen if the user or the system shuts down chrome
-    because of the unresponsiveness. A decidely imperfect strategy to evaluate
+    because of the unresponsiveness. A decidedly imperfect strategy to evaluate
     how often this happens is to compare total counts with another histogram
     that is recorded before the operation starts
     (&quot;History.Clusters.Backend.GetClusterLatency&quot;). Such analysis has
@@ -1025,9 +1093,12 @@ chromium-metrics-reviews@google.com.
     between multiple UIs.
 
     Roughly, History.Clusters.ServiceLatency =
-    History.Clusters.Backend.QueryAnnotatedVisitsLatency +
-    History.Clusters.Backend.GetClustersLatency +
-    History.Clusters.ProcessClustersDuration
+    History.Clusters.Backend.GetMostRecentClusters.GetAnnotatedVisitsToClusterLatency.WebUI
+    +
+    History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency.WebUI
+    +
+    History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.WebUI
+    + History.Clusters.ProcessClustersDuration
   </summary>
 </histogram>
 
@@ -1083,7 +1154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.Cluster.{ClusterAction}"
-    units="index" expires_after="2022-08-25">
+    units="index" expires_after="2023-10-01">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1105,7 +1176,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.UIActions.RelatedSearch.{RelatedSearchAction}"
-    units="index" expires_after="2022-08-25">
+    units="index" expires_after="2023-10-01">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1121,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.ToggledVisibility"
-    enum="BooleanVisible" expires_after="2022-10-30">
+    enum="BooleanVisible" expires_after="2023-10-01">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1133,7 +1204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.{VisitType}Visit.{VisitAction}"
-    units="index" expires_after="2022-08-25">
+    units="index" expires_after="2023-10-01">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1524,7 +1595,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="History.GetFavIconFromDB" units="ms" expires_after="M79">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <component>UI&gt;Browser&gt;History</component>
-  <summary>Time to check the thumbnail database for an url's favicon.</summary>
+  <summary>Time to check the thumbnail database for a URL's favicon.</summary>
 </histogram>
 
 <histogram name="History.HistoryPageView" enum="HistoryPageView"
@@ -1625,7 +1696,7 @@ chromium-metrics-reviews@google.com.
   <component>UI&gt;Browser&gt;History</component>
   <summary>
     Records the total time between when the in-memory url index is requested to
-    be built from the main thread, and when the request is succesfully finished
+    be built from the main thread, and when the request is successfully finished
     and reported back to the main thread. Failed cases are not recorded.
 
     From startup traces, we found that History initialization blocks the DB task
@@ -1679,7 +1750,7 @@ chromium-metrics-reviews@google.com.
     Unique hostnames in History database urls table with last-visit times in the
     last 30 days. Metrics are logged on initialization of the History DB on 0.3%
     of starts. See also ExploreSites.MonthlyHostCount metric which is similar
-    but is reported on a elapsed time basis to help avoid bias toward more
+    but is reported on an elapsed time basis to help avoid bias toward more
     active users.
   </summary>
 </histogram>

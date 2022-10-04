@@ -168,7 +168,8 @@ class HistoryClustersService : public base::SupportsUserData,
                 base::Time begin_time,
                 QueryClustersContinuationParams continuation_params,
                 bool recluster,
-                QueryClustersCallback callback);
+                QueryClustersCallback callback,
+                HistoryClustersServiceTaskGetMostRecentClusters::Source source);
 
   // Invokes `UpdateClusters()` after a short delay, then again periodically.
   // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,

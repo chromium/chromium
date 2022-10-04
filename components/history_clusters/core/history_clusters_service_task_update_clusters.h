@@ -50,11 +50,13 @@ class HistoryClustersServiceTaskUpdateClusters {
   // with clustered visits) and persist the newly created clusters:
   //   Start() ->
   //   GetAnnotatedVisitsToCluster() ->
-  //   OnGotModelClusters()
+  //   OnGotModelClusters() ->
+  //   OnPersistedClusters() ->
+  //   Start()
 
-  // Invoked during construction and after `OnGotModelClusters()` asyncly
+  // Invoked during construction and after `OnPersistedClusters()` asyncly
   // replaces clusters. Will asyncly request annotated visits from
-  // `GetAnnotatedVisitsToCluster`. May instead syncly invoke `callback_` if
+  // `GetAnnotatedVisitsToCluster()`. May instead syncly invoke `callback_` if
   // there's no `ClusteringBackend` or all visits are exhausted.
   void Start();
 
@@ -72,6 +74,10 @@ class HistoryClustersServiceTaskUpdateClusters {
                           QueryClustersContinuationParams continuation_params,
                           std::vector<history::Cluster> clusters);
 
+  // Invoked after `OnGotModelClusters()` asyncly persists clusters. Will syncly
+  // invoke `Start()` to initiate the next iteration.
+  void OnPersistedClusters();
+
   // Never nullptr.
   base::WeakPtr<HistoryClustersService> weak_history_clusters_service_;
   const IncompleteVisitMap incomplete_visit_context_annotations_;
@@ -87,6 +93,14 @@ class HistoryClustersServiceTaskUpdateClusters {
 
   // Invoked after either `Start()` or `OnGotAnnotatedVisitsToCluster()`.
   base::OnceClosure callback_;
+
+  // When `Start()` kicked off the request to fetch visits to cluster.
+  base::TimeTicks get_annotated_visits_to_cluster_start_time_;
+  // When `OnGotAnnotatedVisitsToCluster()` kicked off the request to cluster
+  // the visits.
+  base::TimeTicks get_model_clusters_start_time_;
+  // When `OnGotModelClusters()` kicked off the request to persist the clusters.
+  base::TimeTicks persist_clusters_start_time_;
 
   // Set to true when `callback_` is invoked, either with clusters or no
   // clusters.

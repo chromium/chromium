@@ -157,7 +157,8 @@ HistoryClustersService::QueryClusters(
     base::Time begin_time,
     QueryClustersContinuationParams continuation_params,
     bool recluster,
-    QueryClustersCallback callback) {
+    QueryClustersCallback callback,
+    HistoryClustersServiceTaskGetMostRecentClusters::Source source) {
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("HistoryClustersService::QueryClusters()");
     NotifyDebugMessage(
@@ -174,7 +175,7 @@ HistoryClustersService::QueryClusters(
   return std::make_unique<HistoryClustersServiceTaskGetMostRecentClusters>(
       weak_ptr_factory_.GetWeakPtr(), incomplete_visit_context_annotations_,
       backend_.get(), history_service_, clustering_request_source, begin_time,
-      continuation_params, recluster, std::move(callback));
+      continuation_params, recluster, std::move(callback), source);
 }
 
 void HistoryClustersService::RepeatedlyUpdateClusters() {
@@ -306,7 +307,9 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
                        /*begin_time=*/base::Time(),
                        std::make_unique<KeywordMap>(),
                        std::make_unique<URLKeywordSet>(), &all_keywords_cache_,
-                       &all_url_keywords_cache_));
+                       &all_url_keywords_cache_),
+        HistoryClustersServiceTaskGetMostRecentClusters::Source::
+            kAllKeywordCacheRefresh);
   } else if ((base::Time::Now() - all_keywords_cache_timestamp_).InSeconds() >
                  10 &&
              (base::Time::Now() - short_keyword_cache_timestamp_).InSeconds() >
@@ -324,7 +327,9 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
                        all_keywords_cache_timestamp_,
                        std::make_unique<KeywordMap>(),
                        std::make_unique<URLKeywordSet>(), &short_keyword_cache_,
-                       &short_url_keywords_cache_));
+                       &short_url_keywords_cache_),
+        HistoryClustersServiceTaskGetMostRecentClusters::Source::
+            kShortKeywordCacheRefresh);
   }
 }
 
@@ -399,6 +404,12 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   if (!continuation_params.exhausted_all_visits &&
       (keyword_accumulator->size() < max_keyword_phrases ||
        url_keyword_accumulator->size() < max_keyword_phrases)) {
+    const auto query_purpose =
+        cache == &all_keywords_cache_
+            ? HistoryClustersServiceTaskGetMostRecentClusters::Source::
+                  kAllKeywordCacheRefresh
+            : HistoryClustersServiceTaskGetMostRecentClusters::Source::
+                  kShortKeywordCacheRefresh;
     cache_keyword_query_task_ = QueryClusters(
         ClusteringRequestSource::kKeywordCacheGeneration, begin_time,
         continuation_params, /*recluster=*/false,
@@ -407,7 +418,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
                        std::move(total_latency_timer), begin_time,
                        // Pass on the accumulator sets to the next callback.
                        std::move(keyword_accumulator),
-                       std::move(url_keyword_accumulator), cache, url_cache));
+                       std::move(url_keyword_accumulator), cache, url_cache),
+        query_purpose);
     // Log this even if we go back for more clusters.
     base::UmaHistogramTimes(kKeywordCacheThreadTimeUmaName,
                             populate_keywords_thread_timer.Elapsed());

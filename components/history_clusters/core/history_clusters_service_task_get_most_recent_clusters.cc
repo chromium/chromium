@@ -18,6 +18,28 @@
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 
+namespace {
+
+std::string HistogramNameSlice(
+    history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::Source
+        source) {
+  switch (source) {
+    case history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::
+        Source::kAllKeywordCacheRefresh:
+      return ".AllKeywordCacheRefresh";
+    case history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::
+        Source::kShortKeywordCacheRefresh:
+      return ".ShortKeywordCacheRefresh";
+    case history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::
+        Source::kWebUi:
+      return ".WebUI";
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 namespace history_clusters {
 
 HistoryClustersServiceTaskGetMostRecentClusters::
@@ -30,7 +52,8 @@ HistoryClustersServiceTaskGetMostRecentClusters::
         base::Time begin_time,
         QueryClustersContinuationParams continuation_params,
         bool recluster,
-        QueryClustersCallback callback)
+        QueryClustersCallback callback,
+        Source source)
     : weak_history_clusters_service_(std::move(weak_history_clusters_service)),
       incomplete_visit_context_annotations_(
           incomplete_visit_context_annotations),
@@ -40,7 +63,8 @@ HistoryClustersServiceTaskGetMostRecentClusters::
       begin_time_(begin_time),
       continuation_params_(continuation_params),
       recluster_(recluster),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      source_(source) {
   DCHECK(weak_history_clusters_service_);
   DCHECK(history_service_);
   Start();
@@ -75,8 +99,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
     //  clusters, and current-day visits will never be pre-clustered, we
     //  probably want to make sure they're optimal. So we should probably not
     //  cluster at least the current day in isolation.
-    history_service_get_annotated_visits_to_cluster_start_time_ =
-        base::TimeTicks::Now();
+    get_annotated_visits_to_cluster_start_time_ = base::TimeTicks::Now();
     history_service_->ScheduleDBTask(
         FROM_HERE,
         std::make_unique<GetAnnotatedVisitsToCluster>(
@@ -99,6 +122,18 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
     return;
   DCHECK(backend_);
 
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_annotated_visits_to_cluster_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetAnnotatedVisitsToClusterLatency",
+      elapsed_time);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetAnnotatedVisitsToClusterLatency" +
+          HistogramNameSlice(source_),
+      elapsed_time);
+
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(
         "HistoryClustersServiceTaskGetMostRecentClusters::"
@@ -116,11 +151,6 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
         GetDebugJSONForVisits(annotated_visits));
   }
 
-  base::UmaHistogramTimes(
-      "History.Clusters.Backend.QueryAnnotatedVisitsLatency",
-      base::TimeTicks::Now() -
-          history_service_get_annotated_visits_to_cluster_start_time_);
-
   if (annotated_visits.empty()) {
     // If there're no unclustered visits to cluster, then return persisted
     // clusters.
@@ -129,7 +159,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
   } else {
     base::UmaHistogramCounts1000("History.Clusters.Backend.NumVisitsToCluster",
                                  static_cast<int>(annotated_visits.size()));
-    backend_get_clusters_start_time_ = base::TimeTicks::Now();
+    get_model_clusters_start_time_ = base::TimeTicks::Now();
     backend_->GetClusters(
         clustering_request_source_,
         base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
@@ -145,9 +175,15 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
   if (!weak_history_clusters_service_)
     return;
 
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_model_clusters_start_time_;
   base::UmaHistogramTimes(
-      "History.Clusters.Backend.GetClustersLatency",
-      base::TimeTicks::Now() - backend_get_clusters_start_time_);
+      "History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency",
+      elapsed_time);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency" +
+          HistogramNameSlice(source_),
+      elapsed_time);
   base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
                                clusters.size());
 
@@ -165,6 +201,7 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
 void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
   if (GetConfig().persist_clusters_in_history_db && !recluster_) {
+    get_most_recent_persisted_clusters_start_time_ = base::TimeTicks::Now();
     history_service_->GetMostRecentClusters(
         begin_time_, exclusive_max_time,
         GetConfig().max_persisted_clusters_to_fetch,
@@ -182,6 +219,18 @@ void HistoryClustersServiceTaskGetMostRecentClusters::
     OnGotMostRecentPersistedClusters(std::vector<history::Cluster> clusters) {
   if (!weak_history_clusters_service_)
     return;
+
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_most_recent_persisted_clusters_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetMostRecentPersistedClustersLatency",
+      elapsed_time);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetMostRecentPersistedClustersLatency" +
+          HistogramNameSlice(source_),
+      elapsed_time);
 
   if (GetConfig().persist_clusters_in_history_db && !recluster_ &&
       weak_history_clusters_service_->ShouldNotifyDebugMessage()) {

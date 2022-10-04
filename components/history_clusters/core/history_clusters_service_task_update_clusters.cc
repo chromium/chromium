@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/clustering_backend.h"
@@ -41,6 +42,7 @@ void HistoryClustersServiceTaskUpdateClusters::Start() {
     std::move(callback_).Run();
     return;
   }
+  get_annotated_visits_to_cluster_start_time_ = base::TimeTicks::Now();
   history_service_->ScheduleDBTask(
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
@@ -59,6 +61,13 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
   if (!weak_history_clusters_service_)
     return;
 
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_annotated_visits_to_cluster_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.UpdateClusters."
+      "GetAnnotatedVisitsToClusterLatency",
+      elapsed_time);
+
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "UPDATE CLUSTERS TASK - VISITS %zu:", annotated_visits.size()));
@@ -72,6 +81,7 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotAnnotatedVisitsToCluster(
     std::move(callback_).Run();
     return;
   }
+  get_model_clusters_start_time_ = base::TimeTicks::Now();
   // Using `kKeywordCacheGeneration` as that only determines the task priority.
   backend_->GetClusters(
       ClusteringRequestSource::kKeywordCacheGeneration,
@@ -88,18 +98,35 @@ void HistoryClustersServiceTaskUpdateClusters::OnGotModelClusters(
   if (!weak_history_clusters_service_)
     return;
 
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_model_clusters_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.UpdateClusters.ComputeClustersLatency",
+      elapsed_time);
+
   if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
     weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
         "UPDATE CLUSTERS TASK - CLUSTERS %zu:", clusters.size()));
     weak_history_clusters_service_->NotifyDebugMessage(
         GetDebugJSONForClusters(clusters));
   }
+  persist_clusters_start_time_ = base::TimeTicks::Now();
   continuation_params_ = continuation_params;
   history_service_->ReplaceClusters(
       old_cluster_ids, clusters,
-      base::BindOnce(&HistoryClustersServiceTaskUpdateClusters::Start,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &HistoryClustersServiceTaskUpdateClusters::OnPersistedClusters,
+          weak_ptr_factory_.GetWeakPtr()),
       &task_tracker_);
+}
+
+void HistoryClustersServiceTaskUpdateClusters::OnPersistedClusters() {
+  const auto elapsed_time =
+      base::TimeTicks::Now() - persist_clusters_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.UpdateClusters.PersistClustersLatency",
+      elapsed_time);
+  Start();
 }
 
 }  // namespace history_clusters

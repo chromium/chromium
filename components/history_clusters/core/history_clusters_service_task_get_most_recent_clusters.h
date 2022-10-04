@@ -31,6 +31,15 @@ class HistoryClustersService;
 // callbacks.
 class HistoryClustersServiceTaskGetMostRecentClusters {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Source {
+    kAllKeywordCacheRefresh = 0,
+    kShortKeywordCacheRefresh = 1,
+    kWebUi = 2,
+    kMaxValue = kWebUi,
+  };
+
   HistoryClustersServiceTaskGetMostRecentClusters(
       base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
       const IncompleteVisitMap incomplete_visit_context_annotations,
@@ -40,7 +49,8 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
       base::Time begin_time,
       QueryClustersContinuationParams continuation_params,
       bool recluster,
-      QueryClustersCallback callback);
+      QueryClustersCallback callback,
+      Source source);
   ~HistoryClustersServiceTaskGetMostRecentClusters();
 
   bool Done() { return done_; }
@@ -107,11 +117,16 @@ class HistoryClustersServiceTaskGetMostRecentClusters {
   // `OnGotMostRecentPersistedClusters()`.
   QueryClustersCallback callback_;
 
+  // Used for logging slices.
+  Source source_ = Source::kWebUi;
   // When `Start()` kicked off the request to fetch visits to cluster.
-  base::TimeTicks history_service_get_annotated_visits_to_cluster_start_time_;
+  base::TimeTicks get_annotated_visits_to_cluster_start_time_;
   // When `OnGotAnnotatedVisitsToCluster()` kicked off the request to cluster
   // the visits.
-  base::TimeTicks backend_get_clusters_start_time_;
+  base::TimeTicks get_model_clusters_start_time_;
+  // When `ReturnMostRecentPersistedClusters()` kicked off the request to get
+  // persisted clusters.
+  base::TimeTicks get_most_recent_persisted_clusters_start_time_;
 
   // Set to true when `callback_` is invoked, either with clusters or no
   // clusters.

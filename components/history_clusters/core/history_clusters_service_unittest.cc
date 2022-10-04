@@ -32,6 +32,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
+#include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -255,7 +256,8 @@ class HistoryClustersServiceTestBase : public testing::Test {
               loop.Quit();
               clusters = clusters_temp;
               continuation_params = continuation_params_temp;
-            }));
+            }),
+        HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
 
     // If we expect a clustering call, expect a request and return no clusters.
     if (expect_clustering_backend_call) {
@@ -405,8 +407,8 @@ TEST_F(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
       ClusteringRequestSource::kKeywordCacheGeneration,
       /*begin_time=*/base::Time(), /*continuation_params=*/{},
       /*recluster=*/false,
-      base::DoNothing()  // Only need to verify the correct request is sent
-  );
+      base::DoNothing(),  // Only need to verify the correct request is sent
+      HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
 
   test_clustering_backend_->WaitForGetClustersCall();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -849,7 +851,8 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
         EXPECT_TRUE(cluster.keyword_to_data_map.empty());
 
         run_loop_quit.Run();
-      }));
+      }),
+      HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
 
   AwaitAndVerifyTestClusteringBackendRequest();
 
@@ -881,7 +884,21 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumVisitsToCluster", 2, 1);
   histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.GetClustersLatency", 1);
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "ComputeClustersLatency",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "ComputeClustersLatency.WebUI",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "ComputeClustersLatency.AllKeywordCacheRefresh",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetMostRecentPersistedClustersLatency.ShortKeywordCacheRefresh",
+      0);
 }
 
 TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {
