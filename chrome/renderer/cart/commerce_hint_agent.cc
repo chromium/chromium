@@ -636,8 +636,13 @@ const WebString GetProductExtractionScript(
   if (!product_id_json_component.empty()) {
     script_string = "var idExtractionMap = " + product_id_json_component +
                     ";\n" + script_string;
+    CommerceHeuristicsDataMetricsHelper::RecordProductIDExtractionPatternSource(
+        CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT);
     return WebString::FromUTF8(std::move(script_string));
   }
+  CommerceHeuristicsDataMetricsHelper::RecordProductIDExtractionPatternSource(
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+          FROM_FEATURE_PARAMETER);
   const std::string id_extraction_map =
       kProductIdPatternMapping.Get().empty()
           ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(

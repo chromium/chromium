@@ -42,6 +42,10 @@ class CommerceHeuristicsDataMetricsHelper {
   // skip a product from the extraction results. Record the source of the
   // pattern data.
   static void RecordSkipProductPatternSource(HeuristicsSource source);
+
+  // Gets called when we try to get the product ID extraction pattern. Record
+  // the source of the pattern data.
+  static void RecordProductIDExtractionPatternSource(HeuristicsSource source);
 };
 
 #endif  // COMPONENTS_COMMERCE_CORE_COMMERCE_HEURISTICS_DATA_METRICS_HELPER_H_

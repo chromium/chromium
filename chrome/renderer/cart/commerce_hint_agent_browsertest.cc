@@ -590,6 +590,10 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromResource) {
       "Commerce.Heuristics.CartExtractionScriptSource",
       int(CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_RESOURCE),
       1);
+  WaitForUmaBucketCount("Commerce.Heuristics.ProductIDExtractionPatternSource",
+                        int(CommerceHeuristicsDataMetricsHelper::
+                                HeuristicsSource::FROM_FEATURE_PARAMETER),
+                        1);
   ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionExecutionTime", 1);
   ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionLongestTaskTime", 1);
   ExpectUKMCount(ExtractionEntry::kEntryName, "ExtractionTotalTasksTime", 1);
@@ -618,9 +622,10 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromComponent) {
     }
     extracted_results_promise = extractAllItems(document);
   )###";
+  std::string product_id_json = "{\"foo.com\": \"test\"}";
   bool is_populated =
       commerce_hint_service_->InitializeCommerceHeuristicsForTesting(
-          base::Version("0.0.0.1"), "{}", "{}", "",
+          base::Version("0.0.0.1"), "{}", "{}", std::move(product_id_json),
           std::move(extraction_script));
   DCHECK(is_populated);
 
@@ -636,6 +641,10 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart_ScriptFromComponent) {
   WaitForProductCount(expected_carts);
 #endif
   WaitForUmaBucketCount("Commerce.Heuristics.CartExtractionScriptSource",
+                        int(CommerceHeuristicsDataMetricsHelper::
+                                HeuristicsSource::FROM_COMPONENT),
+                        1);
+  WaitForUmaBucketCount("Commerce.Heuristics.ProductIDExtractionPatternSource",
                         int(CommerceHeuristicsDataMetricsHelper::
                                 HeuristicsSource::FROM_COMPONENT),
                         1);

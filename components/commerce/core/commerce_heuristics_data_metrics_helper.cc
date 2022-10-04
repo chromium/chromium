@@ -35,3 +35,9 @@ void CommerceHeuristicsDataMetricsHelper::RecordSkipProductPatternSource(
   base::UmaHistogramEnumeration("Commerce.Heuristics.SkipProductPatternSource",
                                 source);
 }
+
+void CommerceHeuristicsDataMetricsHelper::
+    RecordProductIDExtractionPatternSource(HeuristicsSource source) {
+  base::UmaHistogramEnumeration(
+      "Commerce.Heuristics.ProductIDExtractionPatternSource", source);
+}

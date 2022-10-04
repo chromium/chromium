@@ -179,6 +179,21 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.Heuristics.ProductIDExtractionPatternSource"
+    enum="CommerceHeuristicsDataSource" expires_after="2023-02-19">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Product ID extraction pattern heuristics could come from Finch feature
+    parameter or component updater. This histogram is logged when we try to get
+    product ID extraction pattern to record from which source we are getting the
+    pattern. The action of getting product ID extraction is triggered every time
+    we try to load the cart extraction script for ChromeCart, which happens
+    after the user navigates to a cart page or updates the cart page.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Heuristics.SkipProductPatternSource"
     enum="CommerceHeuristicsDataSource" expires_after="2023-02-19">
   <owner>yuezhanggg@chromium.org</owner>
