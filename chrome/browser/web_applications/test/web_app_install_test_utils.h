@@ -38,11 +38,12 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile);
 // Wait until the provided WebAppProvider is ready.
 void WaitUntilReady(WebAppProvider* provider);
 
-AppId InstallDummyWebApp(Profile* profile,
-                         const std::string& app_name,
-                         const GURL& app_url,
-                         const webapps::WebappInstallSource install_source =
-                             webapps::WebappInstallSource::EXTERNAL_DEFAULT);
+AppId InstallDummyWebApp(
+    Profile* profile,
+    const std::string& app_name,
+    const GURL& app_url,
+    const webapps::WebappInstallSource install_source =
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
 // Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
 // used in unit tests and browser tests.

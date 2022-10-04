@@ -158,7 +158,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     if (app_id.app_type() == apps::AppType::kWeb) {
       DCHECK(url.has_value());
       const web_app::AppId installed_app_id = web_app::test::InstallDummyWebApp(
-          &profile_, app_name, GURL(url.value()));
+          &profile_, app_name, GURL(url.value()),
+          webapps::WebappInstallSource::EXTERNAL_DEFAULT);
       EXPECT_EQ(installed_app_id, app_id.app_id());
       task_environment_.RunUntilIdle();
       return;
