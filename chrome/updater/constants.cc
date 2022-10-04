@@ -77,6 +77,8 @@ const char kAppArgsSwitch[] = "appargs";        // backward-compatibility.
 
 const char kCmdLineExpectElevated[] = "expect-elevated";
 
+const char kCmdLineExpectDeElevated[] = "expect-de-elevated";
+
 const char kCmdLinePrefersUser[] = "prefers-user";
 
 // Path names.

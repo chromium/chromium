@@ -689,11 +689,10 @@ HRESULT RunDeElevated(const base::FilePath& file_path,
   if (!explorer_pid)
     return HRESULTFromLastError();
 
-  HANDLE explorer_process(
+  base::win::ScopedHandle explorer_process(
       ::OpenProcess(PROCESS_CREATE_PROCESS, FALSE, explorer_pid));
-  if (!explorer_process)
+  if (!explorer_process.is_valid())
     return HRESULTFromLastError();
-  ScopedKernelHANDLE explorer_process_closure(explorer_process);
 
   base::win::StartupInformation startup_info;
   if (!startup_info.InitializeProcThreadAttributeList(1))
@@ -701,7 +700,7 @@ HRESULT RunDeElevated(const base::FilePath& file_path,
 
   if (!startup_info.UpdateProcThreadAttribute(
           PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &explorer_process,
-          sizeof(explorer_process))) {
+          sizeof(HANDLE))) {
     return HRESULTFromLastError();
   }
 
@@ -720,7 +719,6 @@ HRESULT RunDeElevated(const base::FilePath& file_path,
   const DWORD pid = process.Pid();
   VLOG(1) << __func__ << ": Started process, PID: " << pid;
 
-  // Allow the spawned process to show windows in the foreground.
   ::AllowSetForegroundWindow(pid);
 
   int ret_val = 0;
