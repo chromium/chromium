@@ -58,7 +58,7 @@ class PaintPreviewRecorderRenderViewTest
       public ::testing::WithParamInterface<bool> {
  public:
   PaintPreviewRecorderRenderViewTest() {
-    std::vector<base::Feature> enabled;
+    std::vector<base::test::FeatureRef> enabled;
     // TODO(crbug/1022398): This is required to bypass a seemingly unrelated
     // DCHECK for |use_overlay_scrollbars_| in NativeThemeAura on ChromeOS when
     // painting scrollbars when first calling LoadHTML().
