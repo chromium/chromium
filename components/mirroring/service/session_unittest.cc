@@ -127,8 +127,8 @@ class SessionTest : public mojom::ResourceProvider,
 
   MOCK_METHOD0(OnInitDone, void());
 
-  // mojom::CastMessageHandler implementation. For outbound messages.
-  void Send(mojom::CastMessagePtr message) override {
+  // mojom::CastMessageChannel implementation (outbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override {
     EXPECT_TRUE(message->message_namespace == mojom::kWebRtcNamespace ||
                 message->message_namespace == mojom::kRemotingNamespace);
     absl::optional<base::Value> value =

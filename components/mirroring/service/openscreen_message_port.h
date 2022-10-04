@@ -39,11 +39,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenMessagePort final
                    const std::string& message) override;
 
  private:
-  // mojom::CastMessageChannel overrides.
-  // Receive a message from the Cast receiver over the Cast V2 channel.
-  // TODO(https://crbug.com/1359456): rename mojo method to something more
-  // intuitive, like "OnMessage."
-  void Send(mojom::CastMessagePtr message) override;
+  // mojom::CastMessageChannel implementation (inbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override;
 
   const base::StringPiece source_id_;
   const std::string destination_id_;

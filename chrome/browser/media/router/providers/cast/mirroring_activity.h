@@ -63,7 +63,7 @@ class MirroringActivity : public CastActivity,
   void LogErrorMessage(const std::string& message) override;
 
   // CastMessageChannel implementation
-  void Send(mirroring::mojom::CastMessagePtr message) override;
+  void OnMessage(mirroring::mojom::CastMessagePtr message) override;
 
   // CastActivity implementation
   void OnAppMessage(const cast::channel::CastMessage& message) override;

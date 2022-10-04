@@ -239,8 +239,8 @@ class CastMirroringServiceHostBrowserTest
   MOCK_METHOD1(LogInfoMessage, void(const std::string&));
   MOCK_METHOD1(LogErrorMessage, void(const std::string&));
 
-  // mojom::CastMessageChannel mocks.
-  MOCK_METHOD1(Send, void(mojom::CastMessagePtr));
+  // mojom::CastMessageChannel mock implementation (inbound messages).
+  MOCK_METHOD1(OnMessage, void(mojom::CastMessagePtr));
 
   // mojom::AudioStreamCreatorClient mocks.
   MOCK_METHOD0(OnAudioStreamCreated, void());

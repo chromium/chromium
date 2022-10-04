@@ -149,7 +149,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   ~MediaRemoterTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
-  MOCK_METHOD1(Send, void(mojom::CastMessagePtr));
+  // mojom::CastMessageChannel mock implementation (inbound messages).
+  MOCK_METHOD1(OnMessage, void(mojom::CastMessagePtr));
   MOCK_METHOD0(OnConnectToRemotingSource, void());
   MOCK_METHOD0(RequestRemotingStreaming, void());
   MOCK_METHOD0(RestartMirroringStreaming, void());

@@ -901,8 +901,8 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
   void LogInfoMessage(const std::string& message) override {}
   void LogErrorMessage(const std::string& message) override {}
 
-  // CastMessageChannel implementation
-  void Send(mirroring::mojom::CastMessagePtr message) override {
+  // CastMessageChannel implementation (inbound).
+  void OnMessage(mirroring::mojom::CastMessagePtr message) override {
     Json::CharReaderBuilder rb;
     auto reader = std::unique_ptr<Json::CharReader>(rb.newCharReader());
     Json::Value root;
@@ -987,7 +987,7 @@ class TestTabMirroringSession : public mirroring::mojom::SessionObserver,
 
     VLOG(1) << "Sending ANSWER";
     offer_message->json_format_data = ssb.str();
-    channel_to_service_->Send(std::move(offer_message));
+    channel_to_service_->OnMessage(std::move(offer_message));
   }
 
   mojo::Remote<mirroring::mojom::MirroringServiceHost> host_;

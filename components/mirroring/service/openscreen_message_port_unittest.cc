@@ -63,8 +63,8 @@ class OpenscreenMessagePortTest : public ::testing::Test,
   ~OpenscreenMessagePortTest() override { task_environment_.RunUntilIdle(); }
 
  protected:
-  // mojom::CastMessageHandler implementation. For outbound messages.
-  void Send(mojom::CastMessagePtr message) override {
+  // mojom::CastMessageChannel implementation (outbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override {
     EXPECT_EQ(message->message_namespace, kNamespace);
     absl::optional<base::Value> value =
         base::JSONReader::Read(message->json_format_data);
@@ -75,11 +75,11 @@ class OpenscreenMessagePortTest : public ::testing::Test,
   }
   MOCK_METHOD1(OnOutboundMessage, void(const std::string& message_type));
 
-  void SendMessage(const std::string& message_namespace,
-                   const std::string& json_format_data) {
+  void OnInboundMessage(const std::string& message_namespace,
+                        const std::string& json_format_data) {
     mojom::CastMessagePtr message =
         mojom::CastMessage::New(message_namespace, json_format_data);
-    inbound_channel_->Send(std::move(message));
+    inbound_channel_->OnMessage(std::move(message));
     task_environment_.RunUntilIdle();
   }
 
@@ -107,7 +107,7 @@ TEST_F(OpenscreenMessagePortTest, CanReceiveMessage) {
   constexpr char kMessage[] = R"({"type": "ANSWER"})";
   EXPECT_CALL(client(), OnMessage(kDestinationId, kNamespace, kMessage));
 
-  SendMessage(kNamespace, std::string(kMessage));
+  OnInboundMessage(kNamespace, std::string(kMessage));
   task_environment().RunUntilIdle();
 }
 

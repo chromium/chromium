@@ -168,8 +168,8 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
   MOCK_METHOD0(OnInitialized, void());
 
-  // mojom::CastMessageHandler overrides.
-  void Send(mojom::CastMessagePtr message) override {
+  // mojom::CastMessageChannel implementation (outbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override {
     EXPECT_TRUE(message->message_namespace == mojom::kWebRtcNamespace ||
                 message->message_namespace == mojom::kRemotingNamespace);
 
@@ -260,7 +260,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
     mojom::CastMessagePtr message = mojom::CastMessage::New(
         openscreen::cast::kCastWebrtcNamespace, message_string.value());
-    inbound_channel_->Send(std::move(message));
+    inbound_channel_->OnMessage(std::move(message));
   }
 
   OpenscreenSessionHost::AsyncInitializedCallback MakeOnInitializedCallback() {

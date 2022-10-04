@@ -69,7 +69,7 @@ MessageDispatcher::~MessageDispatcher() {
   subscriptions.clear();
 }
 
-void MessageDispatcher::Send(mojom::CastMessagePtr message) {
+void MessageDispatcher::OnMessage(mojom::CastMessagePtr message) {
   // TODO(crbug.com/1117673): Add MR-internals logging:
   // VLOG(2) << "Inbound message received: ns=" << message->message_namespace
   //         << ", data=" << message->json_format_data;
@@ -134,7 +134,7 @@ void MessageDispatcher::SendOutboundMessage(mojom::CastMessagePtr message) {
   // TODO(crbug.com/1117673): Add MR-internals logging:
   //   VLOG(2) << "Sending outbound message: ns=" << message->message_namespace
   //           << ", data=" << message->json_format_data;
-  outbound_channel_->Send(std::move(message));
+  outbound_channel_->OnMessage(std::move(message));
 }
 
 void MessageDispatcher::RequestReply(mojom::CastMessagePtr message,

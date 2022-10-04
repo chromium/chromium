@@ -275,7 +275,7 @@ void MirroringActivity::LogErrorMessage(const std::string& message) {
                     route_.media_source().id(), route_.presentation_id());
 }
 
-void MirroringActivity::Send(mirroring::mojom::CastMessagePtr message) {
+void MirroringActivity::OnMessage(mirroring::mojom::CastMessagePtr message) {
   DCHECK(message);
   DVLOG(2) << "Relaying message to receiver: " << message->json_format_data;
 
@@ -334,7 +334,7 @@ void MirroringActivity::OnAppMessage(
   mirroring::mojom::CastMessagePtr ptr = mirroring::mojom::CastMessage::New();
   ptr->message_namespace = message.namespace_();
   ptr->json_format_data = message.payload_utf8();
-  channel_to_service_->Send(std::move(ptr));
+  channel_to_service_->OnMessage(std::move(ptr));
 }
 
 void MirroringActivity::OnInternalMessage(
@@ -353,7 +353,7 @@ void MirroringActivity::OnInternalMessage(
         route().media_sink_id(), route().media_source().id(),
         route().presentation_id());
   }
-  channel_to_service_->Send(std::move(ptr));
+  channel_to_service_->OnMessage(std::move(ptr));
 }
 
 void MirroringActivity::CreateMediaController(

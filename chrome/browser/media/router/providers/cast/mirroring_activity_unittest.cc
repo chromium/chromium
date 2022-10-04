@@ -64,7 +64,7 @@ class MockMirroringServiceHost : public mirroring::mojom::MirroringServiceHost {
 
 class MockCastMessageChannel : public mirroring::mojom::CastMessageChannel {
  public:
-  MOCK_METHOD1(Send, void(mirroring::mojom::CastMessagePtr message));
+  MOCK_METHOD1(OnMessage, void(mirroring::mojom::CastMessagePtr message));
 };
 
 }  // namespace
@@ -270,7 +270,7 @@ TEST_F(MirroringActivityTest, SendWebRtc) {
             return cast_channel::Result::kOk;
           }));
 
-  activity_->Send(
+  activity_->OnMessage(
       mirroring::mojom::CastMessage::New("the_namespace", kPayload));
   RunUntilIdle();
 }
@@ -285,14 +285,14 @@ TEST_F(MirroringActivityTest, SendRemoting) {
         return cast_channel::Result::kOk;
       }));
 
-  activity_->Send(
+  activity_->OnMessage(
       mirroring::mojom::CastMessage::New("the_namespace", kPayload));
   RunUntilIdle();
 }
 
 TEST_F(MirroringActivityTest, OnAppMessageWrongNamespace) {
   MakeActivity();
-  EXPECT_CALL(*channel_to_service_, Send).Times(0);
+  EXPECT_CALL(*channel_to_service_, OnMessage).Times(0);
   cast::channel::CastMessage message;
   message.set_namespace_("wrong_namespace");
   message.set_destination_id(kDestinationId);
@@ -302,7 +302,7 @@ TEST_F(MirroringActivityTest, OnAppMessageWrongNamespace) {
 
 TEST_P(MirroringActivityTest, OnAppMessageWrongDestination) {
   MakeActivity();
-  EXPECT_CALL(*channel_to_service_, Send).Times(0);
+  EXPECT_CALL(*channel_to_service_, OnMessage).Times(0);
   cast::channel::CastMessage message;
   message.set_namespace_(GetParam());
   message.set_destination_id("someOtherDestination");
@@ -312,7 +312,7 @@ TEST_P(MirroringActivityTest, OnAppMessageWrongDestination) {
 
 TEST_P(MirroringActivityTest, OnAppMessageWrongSource) {
   MakeActivity();
-  EXPECT_CALL(*channel_to_service_, Send).Times(0);
+  EXPECT_CALL(*channel_to_service_, OnMessage).Times(0);
   cast::channel::CastMessage message;
   message.set_namespace_(GetParam());
   message.set_destination_id(kDestinationId);
@@ -336,7 +336,7 @@ TEST_P(MirroringActivityTest, OnAppMessage) {
 
   static constexpr char kPayload[] = R"({"foo": "bar"})";
 
-  EXPECT_CALL(*channel_to_service_, Send)
+  EXPECT_CALL(*channel_to_service_, OnMessage)
       .WillOnce([](mirroring::mojom::CastMessagePtr message) {
         EXPECT_EQ(GetParam(), message->message_namespace);
         EXPECT_EQ(kPayload, message->json_format_data);
@@ -367,7 +367,7 @@ TEST_F(MirroringActivityTest, OnInternalMessage) {
   static constexpr char kPayload[] = R"({"foo": "bar"})";
   static constexpr char kNamespace[] = "the_namespace";
 
-  EXPECT_CALL(*channel_to_service_, Send)
+  EXPECT_CALL(*channel_to_service_, OnMessage)
       .WillOnce([](mirroring::mojom::CastMessagePtr message) {
         EXPECT_EQ(kNamespace, message->message_namespace);
         EXPECT_THAT(message->json_format_data, IsJson(kPayload));

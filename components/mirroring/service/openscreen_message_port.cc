@@ -40,10 +40,10 @@ void OpenscreenMessagePort::PostMessage(
   auto message_mojom = mojom::CastMessage::New();
   message_mojom->message_namespace = message_namespace;
   message_mojom->json_format_data = message;
-  outbound_channel_->Send(std::move(message_mojom));
+  outbound_channel_->OnMessage(std::move(message_mojom));
 }
 
-void OpenscreenMessagePort::Send(mojom::CastMessagePtr message) {
+void OpenscreenMessagePort::OnMessage(mojom::CastMessagePtr message) {
   if (client_) {
     client_->OnMessage(destination_id_, message->message_namespace,
                        message->json_format_data);

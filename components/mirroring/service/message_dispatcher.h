@@ -64,8 +64,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MessageDispatcher final
  private:
   class RequestHolder;
 
-  // mojom::CastMessageChannel implementation. Handles inbound messages.
-  void Send(mojom::CastMessagePtr message) override;
+  // mojom::CastMessageChannel implementation (inbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override;
 
   // Takes care of sending outbound messages.
   const mojo::Remote<mojom::CastMessageChannel> outbound_channel_;

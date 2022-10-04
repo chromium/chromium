@@ -93,15 +93,15 @@ class MessageDispatcherTest : public mojom::CastMessageChannel,
   }
 
  protected:
-  // mojom::CastMessageChannel implementation. Handles outbound message.
-  void Send(mojom::CastMessagePtr message) override {
+  // mojom::CastMessageChannel implementation (outbound messages).
+  void OnMessage(mojom::CastMessagePtr message) override {
     last_outbound_message_.message_namespace = message->message_namespace;
     last_outbound_message_.json_format_data = message->json_format_data;
   }
 
   // Simulates receiving an inbound message from receiver.
-  void SendInboundMessage(const mojom::CastMessage& message) {
-    inbound_channel_->Send(message.Clone());
+  void OnInboundMessage(const mojom::CastMessage& message) {
+    inbound_channel_->OnMessage(message.Clone());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -137,7 +137,7 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   // subscriber processes the message.
   const CastMessage answer_message =
       CastMessage{mojom::kWebRtcNamespace, kValidAnswerResponse};
-  SendInboundMessage(answer_message);
+  OnInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
@@ -162,7 +162,7 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
       rpc_base64 + R"("})";
 
   const CastMessage rpc_message = CastMessage{mojom::kRemotingNamespace, rpc};
-  SendInboundMessage(rpc_message);
+  OnInboundMessage(rpc_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   ASSERT_TRUE(last_rpc_);
@@ -175,7 +175,7 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   // Unsubscribe from ANSWER messages, and when feeding-in an ANSWER message,
   // nothing should happen.
   message_dispatcher_->Unsubscribe(ResponseType::ANSWER);
-  SendInboundMessage(answer_message);
+  OnInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   // The answer should be ignored now that we are unsubscribed.
   EXPECT_FALSE(last_answer_response_);
@@ -185,7 +185,7 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
 
   // However, RPC messages should still be dispatched to the
   // remaining subscriber.
-  SendInboundMessage(rpc_message);
+  OnInboundMessage(rpc_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_TRUE(last_rpc_);
@@ -195,14 +195,14 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
   // Finally, unsubscribe from RPC messages, and when feeding-in
   // either an ANSWER or a RPC message, nothing should happen.
   message_dispatcher_->Unsubscribe(ResponseType::RPC);
-  SendInboundMessage(answer_message);
+  OnInboundMessage(answer_message);
 
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
   EXPECT_TRUE(last_error_message_.empty());
   last_error_message_.clear();
-  SendInboundMessage(rpc_message);
+  OnInboundMessage(rpc_message);
 
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
@@ -213,7 +213,7 @@ TEST_F(MessageDispatcherTest, DispatchMessageToSubscriber) {
 TEST_F(MessageDispatcherTest, IgnoreMalformedMessage) {
   const CastMessage message =
       CastMessage{mojom::kWebRtcNamespace, "MUAHAHAHAHAHAHAHA!"};
-  SendInboundMessage(message);
+  OnInboundMessage(message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
@@ -223,7 +223,7 @@ TEST_F(MessageDispatcherTest, IgnoreMalformedMessage) {
 TEST_F(MessageDispatcherTest, IgnoreMessageWithWrongNamespace) {
   const CastMessage answer_message =
       CastMessage{"Wrong_namespace", kValidAnswerResponse};
-  SendInboundMessage(answer_message);
+  OnInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
@@ -233,7 +233,7 @@ TEST_F(MessageDispatcherTest, IgnoreMessageWithWrongNamespace) {
 TEST_F(MessageDispatcherTest, IgnoreMessageWithNoSubscribers) {
   const CastMessage unexpected_message{mojom::kWebRtcNamespace,
                                        kValidCapabilitiesResponse};
-  SendInboundMessage(unexpected_message);
+  OnInboundMessage(unexpected_message);
   task_environment_.RunUntilIdle();
   // Messages with no subscribers are ignored with no error reported.
   EXPECT_FALSE(last_answer_response_);
@@ -260,7 +260,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
 
   const CastMessage wrong_answer_message{mojom::kWebRtcNamespace,
                                          kValidAnswerResponse};
-  SendInboundMessage(wrong_answer_message);
+  OnInboundMessage(wrong_answer_message);
   task_environment_.RunUntilIdle();
   // The answer message with mismatched sequence number is ignored.
   EXPECT_FALSE(last_answer_response_);
@@ -280,7 +280,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
 
   const CastMessage answer_message{mojom::kWebRtcNamespace,
                                    kAnswerWithCorrectSeqNum};
-  SendInboundMessage(answer_message);
+  OnInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
@@ -292,7 +292,7 @@ TEST_F(MessageDispatcherTest, RequestReply) {
   last_answer_response_.reset();
 
   // Expect that the callback for ANSWER message was already unsubscribed.
-  SendInboundMessage(answer_message);
+  OnInboundMessage(answer_message);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(last_answer_response_);
   EXPECT_FALSE(last_rpc_);
