@@ -59,21 +59,41 @@ TEST(TokenizedStringMatchTest, Match) {
     const char* expect;
   } kTestCases[] = {
       {"ScratchPad", "pad", "Scratch[Pad]"},
-      {"ScratchPad", "sp", "[S]cratch[P]ad"},
       {"Chess2", "che", "[Che]ss2"},
-      {"Chess2", "c2", "[C]hess[2]"},
-      {"Cut the rope", "cut ro", "[Cu]t [t]he [ro]pe"},
-      {"John Doe", "jdoe", "[J]ohn [Doe]"},
-      {"John Doe", "johnd", "[John D]oe"},
+      {"John Doe", "john d", "[John D]oe"},
+      {"Cut the rope", "cut ro", "[Cut] the [ro]pe"},
       {"Secure Shell", "she", "Secure [She]ll"},
       {"Netflix", "flix", "Net[flix]"},
+      {"John Doe", "johnd", "[John D]oe"},
+      {"John Doe", "doe john", "[John] [Doe]"},
+      {"John Doe", "doe joh", "[Joh]n [Doe]"},
   };
 
   TokenizedStringMatch match;
-  for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string text(base::UTF8ToUTF16(kTestCases[i].text));
-    EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(kTestCases[i].query), text));
-    EXPECT_EQ(kTestCases[i].expect, MatchHit(text, match));
+  for (auto& test_case : kTestCases) {
+    const std::u16string text(base::UTF8ToUTF16(test_case.text));
+    EXPECT_TRUE(match.Calculate(base::UTF8ToUTF16(test_case.query), text));
+    EXPECT_EQ(test_case.expect, MatchHit(text, match));
+  }
+}
+
+TEST(TokenizedStringMatchTest, AcronymMatchNotAllowed) {
+  struct {
+    const char* text;
+    const char* query;
+    const char* expect;
+  } kTestCases[] = {
+      {"ScratchPad", "sp", "ScratchPad"},
+      {"Chess2", "c2", "Chess2"},
+      {"John Doe", "jdoe", "John Doe"},
+      {"hello John Doe", "jdoe", "hello John Doe"},
+  };
+
+  TokenizedStringMatch match;
+  for (auto& test_case : kTestCases) {
+    const std::u16string text(base::UTF8ToUTF16(test_case.text));
+    EXPECT_FALSE(match.Calculate(base::UTF8ToUTF16(test_case.query), text));
+    EXPECT_EQ(test_case.expect, MatchHit(text, match));
   }
 }
 
@@ -89,13 +109,9 @@ TEST(TokenizedStringMatchTest, Relevance) {
       {"Google Chrome", "goo", "goog"},
       {"Google Chrome", "c", "ch"},
       {"Google Chrome", "ch", "chr"},
-      // Acronym match is better than something in the middle.
-      {"Google Chrome", "ch", "gc"},
-      // Prefix match is better than middle match and acronym match.
+      // Prefix match is better than middle match.
       {"Google Chrome", "ch", "go"},
-      {"Google Chrome", "gc", "go"},
       // Substring match has the lowest score.
-      {"Google Chrome", "oo", "gc"},
       {"Google Chrome", "oo", "go"},
       {"Google Chrome", "oo", "ch"},
   };

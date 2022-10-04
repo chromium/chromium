@@ -14,8 +14,15 @@
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace ash::string_matching {
+namespace {
+using prefix_matcher_constants::kIsFrontOfTokenCharScore;
+using prefix_matcher_constants::kIsPrefixCharScore;
+using prefix_matcher_constants::kIsWeakHitCharScore;
+using prefix_matcher_constants::kNoMatchScore;
+
 MatchInfo::MatchInfo() = default;
 MatchInfo::~MatchInfo() = default;
+}  // namespace
 
 // TODO(crbug.com/1336160): Replace PrefixMatcher with PrefixMatcherNew
 //
@@ -56,12 +63,19 @@ bool PrefixMatcherNew::Match() {
   SentencePrefixMatch(sentence_match_info);
   MatchInfo token_match_info;
   TokenPrefixMatch(token_match_info);
-  relevance_ =
-      std::max(sentence_match_info.relevance, token_match_info.relevance);
+
+  MatchInfo& better_match =
+      sentence_match_info.relevance >= token_match_info.relevance
+          ? sentence_match_info
+          : token_match_info;
+  relevance_ = better_match.relevance;
+  hits_ = better_match.hits;
   return relevance_ > 0.0;
 }
 
 void PrefixMatcherNew::SentencePrefixMatch(MatchInfo& sentence_match_info) {
+  // Since we are concatenating the tokens, we do not have whitespace
+  // separation, and so we have to be careful with index calculation later on.
   std::u16string query_sentence = base::StrCat(query_.tokens());
   std::u16string text_sentence = base::StrCat(text_.tokens());
 
@@ -87,23 +101,34 @@ void PrefixMatcherNew::SentencePrefixMatch(MatchInfo& sentence_match_info) {
       continue;
     }
 
-    // Update the relevance score and break the loop if the found match begins
-    // from the starting index of a token.
+    // Calculate the `relevance` score and `hits` and return if the found match
+    // begins from the starting index of a token.
     DCHECK(text_token_indexes.front() == matched_index);
-    if (matched_index == 0)
-      sentence_match_info.relevance =
-          constants::kIsPrefixCharScore * query_sentence.size();
-    else {
-      sentence_match_info.relevance =
-          constants::kIsWeakHitCharScore * query_sentence.size();
-      while (!text_token_indexes.empty() &&
-             text_token_indexes.front() <
-                 matched_index + query_sentence.size()) {
-        text_token_indexes.pop();
-        sentence_match_info.relevance += constants::kIsFrontOfTokenCharScore -
-                                         constants::kIsWeakHitCharScore;
-      }
+    size_t text_pos = text_.tokens().size() - text_token_indexes.size();
+    size_t text_sentence_end_pos = matched_index + query_sentence.size();
+
+    sentence_match_info.relevance = 0.0;
+    sentence_match_info.current_match.set_start(
+        text_.mappings()[text_pos].start());
+
+    while (!text_token_indexes.empty() &&
+           text_token_indexes.front() < text_sentence_end_pos) {
+      // Text size may be smaller than the token size as prefix matching is
+      // allowed for the last token.
+      size_t text_size =
+          std::min(text_.tokens()[text_pos].size(),
+                   text_sentence_end_pos - text_token_indexes.front());
+      sentence_match_info.relevance +=
+          matched_index == 0 ? kIsPrefixCharScore * text_size
+                             : kIsFrontOfTokenCharScore +
+                                   kIsWeakHitCharScore * (text_size - 1);
+      sentence_match_info.current_match.set_end(
+          text_.mappings()[text_pos].start() + text_size);
+
+      ++text_pos;
+      text_token_indexes.pop();
     }
+    sentence_match_info.hits.push_back(sentence_match_info.current_match);
     return;
   }
 }
@@ -155,30 +180,48 @@ void PrefixMatcherNew::TokenPrefixMatch(MatchInfo& token_match_info) {
       ++matched_num;
     }
 
-    if (matched_num == num_query_token)
+    if (matched_num == num_query_token) {
+      DCHECK(token_match_info.current_match.IsValid());
+      token_match_info.hits.push_back(token_match_info.current_match);
       return;
+    }
   }
-  token_match_info.relevance = constants::kNoMatchScore;
+  token_match_info.relevance = kNoMatchScore;
 }
 
 void PrefixMatcherNew::UpdateInfoForTokenPrefixMatch(
     size_t query_pos,
     size_t text_pos,
     MatchInfo& token_match_info) {
-  // TODO(crbug.com/1336160): Update the hits information. We concentrate on
-  // the correctness of the prefix matching and the relevance score in the
-  // first implement. The hits will be calculated and tested when prefix
-  // matcher is replaced in TokenizedStringMatch.
-  if (token_match_info.is_front &&
-      (query_pos != token_match_info.last_query_pos + 1 ||
-       text_pos != token_match_info.last_query_pos + 1)) {
+  const size_t hit_start_pos = text_.mappings()[text_pos].start();
+  const size_t hit_end_pos =
+      text_.mappings()[text_pos].start() + query_.tokens()[query_pos].size();
+
+  // Update the hits information.
+  if (query_pos != token_match_info.last_query_pos + 1 ||
+      text_pos != token_match_info.last_query_pos + 1) {
     token_match_info.is_front = false;
+
+    // When it's not continuous matching and we have a valid `current_match`,
+    // push it `hits` and start a new match.
+    if (token_match_info.current_match.IsValid()) {
+      token_match_info.hits.push_back(token_match_info.current_match);
+      token_match_info.current_match = gfx::Range::InvalidRange();
+    }
   }
+  // It's a continuous matching if the `current_match` is valid.
+  // Update only the end position if it's a continuous matching, and update both
+  // the start && end positions otherwise.
+  if (!token_match_info.current_match.IsValid())
+    token_match_info.current_match.set_start(hit_start_pos);
+  token_match_info.current_match.set_end(hit_end_pos);
+
+  // Update relevance score.
   token_match_info.relevance +=
       token_match_info.is_front
-          ? constants::kIsPrefixCharScore * query_.tokens().at(query_pos).size()
-          : constants::kIsFrontOfTokenCharScore +
-                constants::kIsWeakHitCharScore *
+          ? kIsPrefixCharScore * query_.tokens().at(query_pos).size()
+          : kIsFrontOfTokenCharScore +
+                kIsWeakHitCharScore *
                     (query_.tokens().at(query_pos).size() - 1);
   token_match_info.last_query_pos = query_pos;
   token_match_info.last_text_pos = text_pos;

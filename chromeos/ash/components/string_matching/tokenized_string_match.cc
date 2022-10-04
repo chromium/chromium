@@ -10,7 +10,7 @@
 
 #include "base/i18n/string_search.h"
 #include "base/strings/string_util.h"
-#include "chromeos/ash/components/string_matching/prefix_matcher.h"
+#include "chromeos/ash/components/string_matching/prefix_matcher_new.h"
 
 namespace ash::string_matching {
 
@@ -41,12 +41,12 @@ double TokenizedStringMatch::Calculate(const TokenizedString& query,
   const auto text_size = text_text.size();
   if (query_size > 0 && query_size == text_size &&
       base::EqualsCaseInsensitiveASCII(query_text, text_text)) {
-    hits_.push_back(gfx::Range(0, query_size));
+    hits_.emplace_back(0, query_size);
     relevance_ = 1.0;
     return true;
   }
 
-  PrefixMatcher matcher(query, text);
+  PrefixMatcherNew matcher(query, text);
   if (matcher.Match()) {
     relevance_ = matcher.relevance();
     hits_.assign(matcher.hits().begin(), matcher.hits().end());
@@ -60,8 +60,8 @@ double TokenizedStringMatch::Calculate(const TokenizedString& query,
             query.text(), text.text(), &substr_match_start,
             &substr_match_length)) {
       relevance_ = kIsSubstringMultiplier * substr_match_length;
-      hits_.push_back(gfx::Range(substr_match_start,
-                                 substr_match_start + substr_match_length));
+      hits_.emplace_back(substr_match_start,
+                         substr_match_start + substr_match_length);
     }
   }
 

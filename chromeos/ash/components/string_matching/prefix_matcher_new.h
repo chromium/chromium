@@ -5,20 +5,20 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_NEW_H_
 #define CHROMEOS_ASH_COMPONENTS_STRING_MATCHING_PREFIX_MATCHER_NEW_H_
 
-#include "base/notreached.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "ui/gfx/range/range.h"
 
 namespace ash::string_matching {
 
 // These are described in more detail in the .cc file.
-namespace constants {
+namespace prefix_matcher_constants {
 
 constexpr double kIsPrefixCharScore = 1.0;
 constexpr double kIsFrontOfTokenCharScore = 0.8;
 constexpr double kIsWeakHitCharScore = 0.6;
 constexpr double kNoMatchScore = 0.0;
 
-}  // namespace constants
+}  // namespace prefix_matcher_constants
 
 namespace {
 struct MatchInfo {
@@ -31,8 +31,10 @@ struct MatchInfo {
   MatchInfo(const MatchInfo&) = delete;
   MatchInfo& operator=(const MatchInfo&) = delete;
 
-  double relevance = constants::kNoMatchScore;
+  double relevance = prefix_matcher_constants::kNoMatchScore;
   Hits hits;
+
+  gfx::Range current_match = gfx::Range::InvalidRange();
   // The last query/text position that the relevance was updated.
   size_t last_query_pos = SIZE_MAX;
   size_t last_text_pos = SIZE_MAX;
@@ -59,13 +61,7 @@ class PrefixMatcherNew {
   bool Match();
 
   double relevance() const { return relevance_; }
-  // TODO(crbug.com/1336160): The hits_ has not yet been calculated. It will be
-  // implemented in the following CLs, and is not expected to be called at
-  // current stage.
-  const Hits& hits() const {
-    NOTREACHED();
-    return hits_;
-  }
+  const Hits& hits() const { return hits_; }
 
  private:
   // Stops on the first full sentence prefix match and updates the relevance
@@ -105,7 +101,9 @@ class PrefixMatcherNew {
   // last query token).
   void TokenPrefixMatch(MatchInfo& token_match_info);
 
-  // update the relevance score of token prefix based on the matched token.
+  // Update the relevance score of token prefix based on the matched token. This
+  // method can cope with full and partial token matches as it always update the
+  // `relevance` and `hits` according the query size.
   void UpdateInfoForTokenPrefixMatch(size_t query_pos,
                                      size_t text_pos,
                                      MatchInfo& token_match_info);
@@ -113,7 +111,7 @@ class PrefixMatcherNew {
   const TokenizedString& query_;
   const TokenizedString& text_;
 
-  double relevance_ = constants::kNoMatchScore;
+  double relevance_ = prefix_matcher_constants::kNoMatchScore;
   Hits hits_;
 };
 

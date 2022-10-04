@@ -11,10 +11,10 @@ namespace ash::string_matching {
 
 namespace {
 
-using constants::kIsFrontOfTokenCharScore;
-using constants::kIsPrefixCharScore;
-using constants::kIsWeakHitCharScore;
-using constants::kNoMatchScore;
+using prefix_matcher_constants::kIsFrontOfTokenCharScore;
+using prefix_matcher_constants::kIsPrefixCharScore;
+using prefix_matcher_constants::kIsWeakHitCharScore;
+using prefix_matcher_constants::kNoMatchScore;
 
 constexpr double kAbsError = 1e-5;
 
