@@ -161,16 +161,15 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
   if (specifics.page_transition().home_page()) {
     page_transition |= ui::PAGE_TRANSITION_HOME_PAGE;
   }
-  // Then add redirect markers as appropriate - first chain start/end markers.
-  // TODO(crbug.com/1364571): In case a redirect chain was split into multiple
-  // entities, adding start/end markers based on just the index *within this
-  // entity* may not be correct. We'd want to drop the start or end marker in
-  // case another entity should be appended to the front/end of this chain.
-  if (redirect_index == 0) {
+  // Then add redirect markers as appropriate.
+  // First, chain start/end markers. Note that these only apply to the
+  // first/last visit per entity, respectively.
+  if (redirect_index == 0 && !specifics.redirect_chain_start_incomplete()) {
     page_transition |= ui::PAGE_TRANSITION_CHAIN_START;
   }
   // No "else" - a visit can be both the start and end of a chain!
-  if (redirect_index == specifics.redirect_entries_size() - 1) {
+  if (redirect_index == specifics.redirect_entries_size() - 1 &&
+      !specifics.redirect_chain_end_incomplete()) {
     page_transition |= ui::PAGE_TRANSITION_CHAIN_END;
   }
   // Finally, add the redirect type (if any).
@@ -310,6 +309,17 @@ std::unique_ptr<syncer::EntityData> MakeEntityData(
       (first_visit.transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) != 0);
   history->mutable_page_transition()->set_home_page(
       (first_visit.transition & ui::PAGE_TRANSITION_HOME_PAGE) != 0);
+
+  // The chain_start/end markers are inverted in the proto.
+  history->set_redirect_chain_start_incomplete(
+      (first_visit.transition & ui::PAGE_TRANSITION_CHAIN_START) == 0);
+  // Exception: The chain *end* marker needs to be taken from the last visit!
+  history->set_redirect_chain_end_incomplete(
+      (last_visit.transition & ui::PAGE_TRANSITION_CHAIN_END) == 0);
+  // Note: Typically, chain_start_incomplete and chain_end_incomplete will both
+  // end up being false here. However, in some cases (notably, client
+  // redirects), a single redirect chain may be split up over multiple entities,
+  // in which case one (or even both) might be true.
 
   // Referring visit and opener visit are taken from the *first* visit in the
   // chain, since they only make sense for that one.

@@ -46,6 +46,9 @@ using testing::AllOf;
 using testing::Not;
 using testing::UnorderedElementsAre;
 
+const char kRedirectFromPath[] = "/redirect.html";
+const char kRedirectToPath[] = "/sync/simple.html";
+
 MATCHER_P(UrlIs, url, "") {
   if (arg.redirect_entries_size() != 1) {
     return false;
@@ -53,12 +56,32 @@ MATCHER_P(UrlIs, url, "") {
   return arg.redirect_entries(0).url() == url;
 }
 
+MATCHER_P2(UrlsAre, url1, url2, "") {
+  if (arg.redirect_entries_size() != 2) {
+    return false;
+  }
+  return arg.redirect_entries(0).url() == url1 &&
+         arg.redirect_entries(1).url() == url2;
+}
+
 MATCHER_P(CoreTransitionIs, transition, "") {
   return arg.page_transition().core_transition() == transition;
 }
 
+MATCHER(IsChainStart, "") {
+  return !arg.redirect_chain_start_incomplete();
+}
+
+MATCHER(IsChainEnd, "") {
+  return !arg.redirect_chain_end_incomplete();
+}
+
 MATCHER(HasReferringVisit, "") {
   return arg.originator_referring_visit_id() != 0;
+}
+
+MATCHER(HasOpenerVisit, "") {
+  return arg.originator_opener_visit_id() != 0;
 }
 
 MATCHER(HasReferrerURL, "") {
@@ -73,13 +96,19 @@ MATCHER(HasVisitDuration, "") {
   return arg.visit_duration_micros() > 0;
 }
 
+MATCHER(HasHttpResponseCode, "") {
+  return arg.http_response_code() > 0;
+}
+
 MATCHER(StandardFieldsArePopulated, "") {
   // Checks all fields that should never be empty/unset/default. Some fields can
   // be legitimately empty, or are set after an entity is first created.
   // May be legitimately empty:
-  //   redirect_entries.title, redirect_entries.redirect_type,
-  //   originator_referring_visit_id, originator_opener_visit_id,
-  //   root_task_id, parent_task_id
+  //   redirect_entries.title (may simply be empty)
+  //   redirect_entries.redirect_type (empty if it's not a redirect)
+  //   originator_referring_visit_id, originator_opener_visit_id (may not exist)
+  //   root_task_id, parent_task_id (not always set)
+  //   http_response_code (unset for replaced navigations)
   // Populated later:
   //   visit_duration_micros, page_language, password_state
   return arg.visit_time_windows_epoch_micros() > 0 &&
@@ -87,8 +116,7 @@ MATCHER(StandardFieldsArePopulated, "") {
          arg.redirect_entries_size() > 0 &&
          arg.redirect_entries(0).originator_visit_id() > 0 &&
          !arg.redirect_entries(0).url().empty() && arg.has_browser_type() &&
-         arg.window_id() > 0 && arg.tab_id() > 0 && arg.task_id() > 0 &&
-         arg.http_response_code() > 0;
+         arg.window_id() > 0 && arg.tab_id() > 0 && arg.task_id() > 0;
 }
 
 std::vector<sync_pb::HistorySpecifics> SyncEntitiesToHistorySpecifics(
@@ -160,6 +188,20 @@ class SingleClientHistorySyncTest : public SyncTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
+    // Set up a server redirect from `kRedirectFromPath` to `kRedirectToPath`.
+    embedded_test_server()->RegisterDefaultHandler(base::BindRepeating(
+        [](const net::test_server::HttpRequest& request)
+            -> std::unique_ptr<net::test_server::HttpResponse> {
+          if (request.relative_url != kRedirectFromPath) {
+            return nullptr;
+          }
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+          response->AddCustomHeader("Location", kRedirectToPath);
+          return response;
+        }));
+
     ASSERT_TRUE(embedded_test_server()->Start());
 
     SyncTest::SetUpOnMainThread();
@@ -208,7 +250,6 @@ class SingleClientHistorySyncTest : public SyncTest {
         fake_server_->GetSyncEntitiesByModelType(syncer::HISTORY));
   }
 
- private:
   content::WebContents* GetActiveWebContents() {
 #if BUILDFLAG(IS_ANDROID)
     return chrome_test_utils::GetActiveWebContents(this);
@@ -220,6 +261,7 @@ class SingleClientHistorySyncTest : public SyncTest {
 #endif
   }
 
+ private:
   base::test::ScopedFeatureList features_;
 };
 
@@ -283,11 +325,107 @@ IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsAllFields) {
   EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(
       AllOf(StandardFieldsArePopulated(), UrlIs(url1.spec()),
             CoreTransitionIs(sync_pb::SyncEnums_PageTransition_AUTO_BOOKMARK),
-            Not(HasReferringVisit()), Not(HasReferrerURL()),
-            HasVisitDuration()),
+            HasHttpResponseCode(), Not(HasReferringVisit()),
+            Not(HasReferrerURL()), HasVisitDuration()),
       AllOf(StandardFieldsArePopulated(), UrlIs(url2.spec()),
             CoreTransitionIs(sync_pb::SyncEnums_PageTransition_LINK),
-            HasReferringVisit(), ReferrerURLIs(url1.spec())))));
+            HasHttpResponseCode(), HasReferringVisit(),
+            ReferrerURLIs(url1.spec())))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsServerRedirect) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to a URL which will redirect to another URL via a server redirect
+  // i.e. an HTTP 3xx response (see SetUpOnMainThread()).
+  const GURL url_from =
+      embedded_test_server()->GetURL("www.host.com", kRedirectFromPath);
+  NavigateToURL(url_from, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+
+  const GURL url_to =
+      embedded_test_server()->GetURL("www.host.com", kRedirectToPath);
+
+  // The redirect chain should have been uploaded as a single entity (since
+  // server redirects within a chain all have the same visit_time).
+  EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(AllOf(
+      StandardFieldsArePopulated(), UrlsAre(url_from.spec(), url_to.spec()),
+      IsChainStart(), IsChainEnd(), Not(HasReferringVisit())))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsClientMetaRedirect) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to a URL which will redirect to another URL via an html <meta>
+  // tag.
+  const GURL url_from = embedded_test_server()->GetURL(
+      "www.host.com", "/sync/meta_redirect.html");
+  NavigateToURL(url_from, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+
+  const GURL url_to =
+      embedded_test_server()->GetURL("www.host.com", kRedirectToPath);
+
+  // The redirect chain should have been uploaded as two separate entities,
+  // since client redirects result in different visit_times. However, the
+  // chain_start and chain_end markers should indicate that these two entities
+  // belong to the same chain.
+  EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(
+      AllOf(StandardFieldsArePopulated(), UrlIs(url_from.spec()),
+            IsChainStart(), Not(IsChainEnd()), Not(HasReferringVisit())),
+      AllOf(StandardFieldsArePopulated(), UrlIs(url_to.spec()),
+            Not(IsChainStart()), IsChainEnd(), HasReferringVisit()))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest, UploadsClientJSRedirect) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to a page.
+  const GURL url1 =
+      embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
+  NavigateToURL(url1, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+
+  // The page sets window.location in JavaScript to redirect to a different URL.
+  const GURL url2 =
+      embedded_test_server()->GetURL("www.host2.com", "/sync/simple.html");
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      base::StringPrintf("window.location = '%s';", url2.spec().c_str())));
+
+  // This kind of "redirect" is not actually considered a redirect by the
+  // history backend, so two separate sync entities should have been uploaded,
+  // each its own complete redirect chain.
+  EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(
+      AllOf(StandardFieldsArePopulated(), UrlIs(url1.spec()), IsChainStart(),
+            IsChainEnd()),
+      AllOf(StandardFieldsArePopulated(), UrlIs(url2.spec()), IsChainStart(),
+            IsChainEnd()))));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientHistorySyncTest,
+                       UploadsReplaceStateNavigation) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Navigate to some page.
+  const GURL url1 =
+      embedded_test_server()->GetURL("www.host1.com", "/sync/simple.html");
+  NavigateToURL(url1, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+
+  // The page uses the JS history.replaceState API to update the URL.
+  const GURL url2 =
+      embedded_test_server()->GetURL("www.host1.com", "/replaced_history.html");
+  ASSERT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      base::StringPrintf("history.replaceState({}, 'page 2', '%s')",
+                         url2.spec().c_str())));
+
+  // This results in two visits with different visit_times, which thus gets
+  // mapped to two separate sync entities. There's no redirection link between
+  // the two, but since it was a same-document navigation, the first visit
+  // should be the opener of the second.
+  EXPECT_TRUE(WaitForHistory(UnorderedElementsAre(
+      AllOf(StandardFieldsArePopulated(), UrlIs(url1.spec()), IsChainStart(),
+            IsChainEnd()),
+      AllOf(StandardFieldsArePopulated(), UrlIs(url2.spec()), IsChainStart(),
+            IsChainEnd(), HasOpenerVisit()))));
 }
 
 }  // namespace

@@ -723,6 +723,8 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   sync_pb::HistorySpecifics history1 =
       processor()->GetEntities().at(storage_key1).specifics.history();
   ASSERT_EQ(history1.redirect_entries_size(), 2);
+  ASSERT_FALSE(history1.redirect_chain_start_incomplete());
+  ASSERT_FALSE(history1.redirect_chain_end_incomplete());
 
   // Now, the existing chain gets extended.
   // First, the PAGE_TRANSITION_CHAIN_END bit gets removed from the existing
@@ -775,10 +777,13 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   ASSERT_EQ(processor()->GetEntities().size(), 2u);
   ASSERT_EQ(processor()->GetEntities().count(storage_key1), 1u);
   ASSERT_EQ(processor()->GetEntities().count(storage_key2), 1u);
-  // The initial chain should be unmodified.
+  // The initial chain should not have the chain_end marker anymore, but be
+  // otherwise unmodified.
+  sync_pb::HistorySpecifics history1_expected = history1;
+  history1_expected.set_redirect_chain_end_incomplete(true);
   sync_pb::HistorySpecifics history1_updated =
       processor()->GetEntities().at(storage_key1).specifics.history();
-  EXPECT_EQ(*syncer::HistorySpecificsToValue(history1),
+  EXPECT_EQ(*syncer::HistorySpecificsToValue(history1_expected),
             *syncer::HistorySpecificsToValue(history1_updated));
   // The second chain should contain only the last two entries.
   sync_pb::HistorySpecifics history2 =
@@ -787,6 +792,8 @@ TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
   EXPECT_EQ(history2.redirect_entries(0).url(), url_row3.url());
   EXPECT_EQ(history2.redirect_entries(1).url(), url_row4.url());
   EXPECT_EQ(history2.originator_referring_visit_id(), visit_row2.visit_id);
+  EXPECT_TRUE(history2.redirect_chain_start_incomplete());
+  EXPECT_FALSE(history2.redirect_chain_end_incomplete());
 }
 
 TEST_F(HistorySyncBridgeTest, UntracksEntitiesAfterCommit) {

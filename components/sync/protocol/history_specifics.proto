@@ -46,6 +46,16 @@ message HistorySpecifics {
   // redirects, this has only one entry.
   repeated RedirectEntry redirect_entries = 3;
 
+  // Whether the redirect chain in this entity is the continuation of a prior
+  // chain, and whether a continuation of this chain exists, in other entities.
+  // These are effectively the inverse of the CHAIN_START/CHAIN_END page
+  // transition qualifiers in Chrome. They are typically both false, since the
+  // whole chain is included in `redirect_entries`, but in some cases (notably,
+  // client redirects) a redirect chain may be split up across multiple
+  // entities.
+  optional bool redirect_chain_start_incomplete = 19;
+  optional bool redirect_chain_end_incomplete = 20;
+
   message PageTransition {
     // The core transition type.
     optional SyncEnums.PageTransition core_transition = 1 [default = LINK];
