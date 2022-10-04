@@ -109,27 +109,25 @@ class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
     // used by this fake object. Instead just invoke host with 'translate.ready'
     // followed by 'translate.status'.
     base::Value translate_ready_dict(base::Value::Type::DICTIONARY);
-    translate_ready_dict.SetKey("command", base::Value("ready"));
+    translate_ready_dict.SetKey("command", base::Value("translate.ready"));
     translate_ready_dict.SetKey("errorCode", base::Value(0));
     translate_ready_dict.SetKey("loadTime", base::Value(0));
     translate_ready_dict.SetKey("readyTime", base::Value(0));
 
     std::vector<base::Value> translate_ready_params;
-    translate_ready_params.push_back(base::Value("TranslateMessage"));
     translate_ready_params.push_back(std::move(translate_ready_dict));
-    web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
+    web_frame_->CallJavaScriptFunction("message.invokeOnHost",
                                        translate_ready_params);
 
     base::Value translate_status_dict(base::Value::Type::DICTIONARY);
-    translate_status_dict.SetKey("command", base::Value("status"));
+    translate_status_dict.SetKey("command", base::Value("translate.status"));
     translate_status_dict.SetKey("errorCode", base::Value(0));
     translate_status_dict.SetKey("pageSourceLanguage", base::Value("fr"));
     translate_status_dict.SetKey("translationTime", base::Value(0));
 
     std::vector<base::Value> translate_status_params;
-    translate_status_params.push_back(base::Value("TranslateMessage"));
     translate_status_params.push_back(std::move(translate_status_dict));
-    web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
+    web_frame_->CallJavaScriptFunction("message.invokeOnHost",
                                        translate_status_params);
   }
 
@@ -149,6 +147,15 @@ class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
     web_frame_->ExecuteJavaScript(
         u"myButton = document.getElementById('translated-button');"
         u"myButton.remove();");
+  }
+
+  void HandleTranslateResponse(const std::string& url,
+                               int request_id,
+                               int response_code,
+                               const std::string status_text,
+                               const std::string& response_url,
+                               const std::string& response_text) override {
+    // no-op
   }
 };
 
@@ -260,11 +267,13 @@ class FakeJSTranslateWebFrameManagerFactory
 }
 
 + (void)setUpFakeJSTranslateManagerInCurrentTab {
-  translate::TranslateController* translate_controller =
-      translate::TranslateController::FromWebState(
-          chrome_test_util::GetCurrentWebState());
-  translate_controller->SetJsTranslateWebFrameManagerFactoryForTesting(
-      FakeJSTranslateWebFrameManagerFactory::GetInstance());
+  ChromeIOSTranslateClient* client = ChromeIOSTranslateClient::FromWebState(
+      chrome_test_util::GetCurrentWebState());
+  translate::IOSTranslateDriver* driver =
+      static_cast<translate::IOSTranslateDriver*>(client->GetTranslateDriver());
+  driver->translate_controller()
+      ->SetJsTranslateWebFrameManagerFactoryForTesting(
+          FakeJSTranslateWebFrameManagerFactory::GetInstance());
 }
 
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source

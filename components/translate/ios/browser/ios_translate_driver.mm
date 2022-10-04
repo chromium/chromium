@@ -75,9 +75,10 @@ IOSTranslateDriver::IOSTranslateDriver(
           web_state, language_detection_model,
           translate_manager_->translate_client()->GetPrefs());
 
-  TranslateController::CreateForWebState(
+  translate_controller_ = std::make_unique<TranslateController>(
       web_state, JSTranslateWebFrameManagerFactory::GetInstance());
-  TranslateController::FromWebState(web_state)->set_observer(this);
+
+  translate_controller_->set_observer(this);
 }
 
 IOSTranslateDriver::~IOSTranslateDriver() {
@@ -162,14 +163,13 @@ void IOSTranslateDriver::TranslatePage(int page_seq_no,
   source_language_ = source_lang;
   target_language_ = target_lang;
   pending_page_seq_no_ = page_seq_no;
-  TranslateController::FromWebState(web_state_)
-      ->InjectTranslateScript(translate_script);
+  translate_controller_->InjectTranslateScript(translate_script);
 }
 
 void IOSTranslateDriver::RevertTranslation(int page_seq_no) {
   if (page_seq_no != page_seq_no_)
     return;  // The user navigated away.
-  TranslateController::FromWebState(web_state_)->RevertTranslation();
+  translate_controller_->RevertTranslation();
 }
 
 bool IOSTranslateDriver::IsIncognito() {
@@ -257,8 +257,7 @@ void IOSTranslateDriver::OnTranslateScriptReady(TranslateErrors error_type,
   std::string source = (source_language_ != kUnknownLanguageCode)
                            ? source_language_
                            : kAutoDetectionLanguage;
-  TranslateController::FromWebState(web_state_)
-      ->StartTranslation(source_language_, target_language_);
+  translate_controller_->StartTranslation(source_language_, target_language_);
 }
 
 void IOSTranslateDriver::OnTranslateComplete(TranslateErrors error_type,

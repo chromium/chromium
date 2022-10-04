@@ -6,34 +6,44 @@
  * @fileoverview Translate script for iOS that is needed in addition to the
  * cross platform script translate.js.
  *
+ * TODO(crbug.com/659442): Enable checkTypes, checkVars errors for this file.
+ * @suppress {checkTypes, checkVars}
  */
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+// Requires functions from base.js
+
+/**
+ * Namespace for this module.
+ */
+__gCrWeb.translate = {};
+
+// Store message namespace object in a global __gCrWeb object referenced by a
+// string, so it does not get renamed by closure compiler during the
+// minification.
+__gCrWeb['translate'] = __gCrWeb.translate;
 
 /**
  * Defines function to install callbacks on cr.googleTranslate.
  * See translate_script.cc for usage.
  */
-function installCallbacks() {
+__gCrWeb.translate['installCallbacks'] = function() {
   /**
    * Sets a callback to inform host of the ready state of the translate element.
    */
   cr.googleTranslate.readyCallback = function() {
-    sendWebKitMessage('TranslateMessage', {
-      'command': 'ready',
-      'errorCode': cr.googleTranslate.errorCode,
-      'loadTime': cr.googleTranslate.loadTime,
-      'readyTime': cr.googleTranslate.readyTime,
-    });
+    __gCrWeb.message.invokeOnHost({
+        'command': 'translate.ready',
+        'errorCode': cr.googleTranslate.errorCode,
+        'loadTime': cr.googleTranslate.loadTime,
+        'readyTime': cr.googleTranslate.readyTime});
   };
 
   /**
    * Sets a callback to inform host of the result of translation.
    */
   cr.googleTranslate.resultCallback = function() {
-    sendWebKitMessage('TranslateMessage', {
-      'command': 'status',
+    __gCrWeb.message.invokeOnHost({
+      'command': 'translate.status',
       'errorCode': cr.googleTranslate.errorCode,
       'pageSourceLanguage': cr.googleTranslate.sourceLang,
       'translationTime': cr.googleTranslate.translationTime,
@@ -44,10 +54,11 @@ function installCallbacks() {
    * Sets a callback to inform host to download javascript.
    */
   cr.googleTranslate.loadJavascriptCallback = function(url) {
-    sendWebKitMessage(
-        'TranslateMessage', {'command': 'loadjavascript', 'url': url});
+    __gCrWeb.message.invokeOnHost({
+        'command': 'translate.loadjavascript',
+        'url': url});
   };
-}
+};
 
 /**
  * Redefine XMLHttpRequest's open to capture request configurations.
@@ -67,6 +78,12 @@ if (typeof XMLHttpRequest.prototype.realOpen === 'undefined') {
 }
 
 /**
+ * Translate XMLHttpRequests still outstanding.
+ * @type {Array<XMLHttpRequest>}
+ */
+__gCrWeb.translate['xhrs'] = [];
+
+/**
  * Redefine XMLHttpRequest's send to call into the browser if it matches the
  * predefined translate security origin.
  * Only redefines once because this script may be injected multiple times.
@@ -78,14 +95,13 @@ if (typeof XMLHttpRequest.prototype.realSend === 'undefined') {
     // the browser. Else, pass it through to the original implementation.
     // |securityOrigin| is predefined by translate_script.cc.
     if (this.savedUrl.startsWith(securityOrigin)) {
-      const length = gCrWeb.translate.xhrs.push(this);
-      sendWebKitMessage('TranslateMessage', {
-        'command': 'sendrequest',
-        'method': this.savedMethod,
-        'url': this.savedUrl,
-        'body': body,
-        'requestID': length - 1,
-      });
+      const length = __gCrWeb.translate['xhrs'].push(this);
+      __gCrWeb.message.invokeOnHost({
+          'command': 'translate.sendrequest',
+          'method': this.savedMethod,
+          'url': this.savedUrl,
+          'body': body,
+          'requestID': length - 1});
     } else {
       this.realSend(body);
     }
@@ -102,10 +118,10 @@ if (typeof XMLHttpRequest.prototype.realSend === 'undefined') {
  * @param {string} responseURL The url which the response was returned from.
  * @param {string} responseText The text received from the server.
  */
-function handleResponse(
+__gCrWeb.translate['handleResponse'] = function(
     url, requestID, status, statusText, responseURL, responseText) {
-  // Retrieve xhr object that's waiting for the response.
-  xhr = gCrWeb.translate.xhrs[requestID];
+  // Retrive xhr object that's waiting for the response.
+  xhr = __gCrWeb.translate['xhrs'][requestID];
 
   // Configure xhr as it would have been if it was sent.
   Object.defineProperties(xhr, {
@@ -120,19 +136,5 @@ function handleResponse(
   xhr.onreadystatechange();
 
   // Clean it up
-  delete gCrWeb.translate.xhrs[requestID];
-}
-
-// Mark: Public API
-
-/**
- * Translate XMLHttpRequests still outstanding.
- * @type {Array<XMLHttpRequest>}
- */
-const xhrs = [];
-
-gCrWeb.translate = {
-  installCallbacks,
-  handleResponse,
-  xhrs,
+  delete __gCrWeb.translate['xhrs'][requestID];
 };

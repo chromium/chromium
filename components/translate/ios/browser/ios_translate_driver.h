@@ -46,6 +46,9 @@ class IOSTranslateDriver
     return language_detection_controller_.get();
   }
 
+  TranslateController* translate_controller() {
+    return translate_controller_.get();
+  }
   void OnLanguageModelFileAvailabilityChanged(bool available);
 
   // web::WebStateObserver methods.
@@ -106,6 +109,7 @@ class IOSTranslateDriver
   web::WebState* web_state_ = nullptr;
 
   base::WeakPtr<TranslateManager> translate_manager_;
+  std::unique_ptr<TranslateController> translate_controller_;
   std::unique_ptr<LanguageDetectionController> language_detection_controller_;
 
   LanguageDetectionModelService* language_detection_model_service_ = nullptr;

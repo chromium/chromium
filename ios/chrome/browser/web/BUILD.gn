@@ -242,7 +242,6 @@ source_set("web_internal") {
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/translate/core/browser",
-    "//components/translate/ios/browser",
     "//components/variations",
     "//components/variations/field_trial_config",
     "//components/variations/service",
