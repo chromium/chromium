@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 
 #import "base/check_op.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
+#import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -76,6 +78,10 @@
   return promos_manager::Promo::PostRestoreSignInFullscreen;
 }
 
+- (void)promoWasDisplayed {
+  base::UmaHistogramBoolean(kIOSPostRestoreSigninDisplayedHistogram, true);
+}
+
 #pragma mark - StandardPromoAlertHandler
 
 - (void)standardPromoAlertDefaultAction {
@@ -83,7 +89,8 @@
 }
 
 - (void)standardPromoAlertCancelAction {
-  // TODO(crbug.com/1363893): Implement UMA metrics.
+  base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
+                                IOSPostRestoreSigninChoice::Dismiss);
 }
 
 #pragma mark - StandardPromoAlertProvider
@@ -153,7 +160,8 @@
 //
 // In both variations, the same dismiss functionality is desired.
 - (void)standardPromoDismissAction {
-  // TODO(crbug.com/1363893): Implement UMA metrics.
+  base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
+                                IOSPostRestoreSigninChoice::Dismiss);
 }
 
 #pragma mark - Internal
@@ -176,6 +184,9 @@
 
 - (void)showSignin {
   DCHECK(self.handler);
+
+  base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
+                                IOSPostRestoreSigninChoice::Continue);
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationReauthenticate

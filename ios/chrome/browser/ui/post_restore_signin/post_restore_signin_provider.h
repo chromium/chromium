@@ -19,6 +19,9 @@
 
 - (instancetype)init;
 
+// Delegate callback to tell the provider that the promo was displayed.
+- (void)promoWasDisplayed;
+
 // The handler is used to start the sign-in flow.
 @property(nonatomic, weak) id<PromosManagerCommands> handler;
 

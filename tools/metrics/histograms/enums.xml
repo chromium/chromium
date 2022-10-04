@@ -52525,6 +52525,11 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="Camera and Microphone permissions"/>
 </enum>
 
+<enum name="IOSPostRestoreSigninChoice">
+  <int value="0" label="Continue"/>
+  <int value="1" label="Dismiss"/>
+</enum>
+
 <enum name="IOSRepeatedExternalAppPromptResponse">
   <int value="0" label="Blocked">
     User selected to block the application for the current session.

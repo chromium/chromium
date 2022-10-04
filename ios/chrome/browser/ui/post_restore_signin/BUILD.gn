@@ -9,6 +9,8 @@ source_set("features") {
 
 source_set("post_restore_signin") {
   sources = [
+    "metrics.h",
+    "metrics.mm",
     "post_restore_signin_provider.h",
     "post_restore_signin_provider.mm",
     "post_restore_signin_view_controller.h",

@@ -1380,6 +1380,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.PostRestoreSignin.Choice"
+    enum="IOSPostRestoreSigninChoice" expires_after="2023-03-05">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Logs a user's choice when presented with the Post Restore Signin Promo.'
+  </summary>
+</histogram>
+
+<histogram name="IOS.PostRestoreSignin.Displayed" enum="Boolean"
+    expires_after="2023-03-05">
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Indicates whether the Post Restore Signin Promo was displayed.
+  </summary>
+</histogram>
+
 <histogram name="IOS.Process.ActivePrewarm" enum="Boolean"
     expires_after="2023-02-26">
   <owner>justincohen@google.com</owner>

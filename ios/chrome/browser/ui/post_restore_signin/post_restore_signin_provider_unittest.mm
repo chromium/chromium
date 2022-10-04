@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
+#import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -128,4 +130,34 @@ TEST_F(PostRestoreSignInProviderTest, cancelActionButtonText) {
 TEST_F(PostRestoreSignInProviderTest, viewController) {
   EnableFeatureVariationFullscreen();
   EXPECT_TRUE(provider_.viewController != nil);
+}
+
+TEST_F(PostRestoreSignInProviderTest, recordsChoiceDismissed) {
+  base::HistogramTester histogram_tester;
+
+  // Test the Alert version.
+  [provider_ standardPromoAlertCancelAction];
+  histogram_tester.ExpectBucketCount(kIOSPostRestoreSigninChoiceHistogram,
+                                     IOSPostRestoreSigninChoice::Dismiss, 1);
+
+  // Test the Fullscreen version.
+  [provider_ standardPromoDismissAction];
+  histogram_tester.ExpectBucketCount(kIOSPostRestoreSigninChoiceHistogram,
+                                     IOSPostRestoreSigninChoice::Dismiss, 2);
+}
+
+TEST_F(PostRestoreSignInProviderTest, recordsChoiceContinue) {
+  base::HistogramTester histogram_tester;
+  SetupMockHandler();
+  OCMStub([mock_handler_ showSignin:[OCMArg any]]);
+  [provider_ standardPromoAlertDefaultAction];
+  histogram_tester.ExpectBucketCount(kIOSPostRestoreSigninChoiceHistogram,
+                                     IOSPostRestoreSigninChoice::Continue, 1);
+}
+
+TEST_F(PostRestoreSignInProviderTest, recordsDisplayed) {
+  base::HistogramTester histogram_tester;
+  [provider_ promoWasDisplayed];
+  histogram_tester.ExpectBucketCount(kIOSPostRestoreSigninDisplayedHistogram,
+                                     true, 1);
 }
