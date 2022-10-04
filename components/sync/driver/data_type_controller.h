@@ -16,7 +16,6 @@
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/shutdown_reason.h"
-#include "components/sync/model/data_type_error_handler.h"
 
 namespace syncer {
 
