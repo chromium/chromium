@@ -7,12 +7,12 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/zx/eventpair.h>
 
+#include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/ozone/platform/flatland/flatland_connection.h"
 #include "ui/ozone/platform/flatland/flatland_gpu_host.h"
 #include "ui/ozone/platform/flatland/flatland_surface_factory.h"
@@ -118,6 +118,17 @@ void FlatlandSurface::Present(
     std::vector<gfx::GpuFenceHandle> release_fences,
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!logical_size_) {
+    pending_present_closures_.emplace_back(base::BindOnce(
+        &FlatlandSurface::Present, base::Unretained(this),
+        std::move(primary_plane_pixmap), std::move(overlays),
+        std::move(acquire_fences), std::move(release_fences),
+        std::move(completion_callback), std::move(presentation_callback)));
+    return;
+  }
+
   // Start a new frame by clearing all child transforms.
   ClearScene();
 
@@ -168,8 +179,6 @@ void FlatlandSurface::Present(
       "viz", "FlatlandSurface::Present", TRACE_ID_LOCAL(this),
       "primary_plane_image_id", primary_plane_image_id.value);
   child_transforms_[0] = primary_plane_transform_id_;
-  flatland_.flatland()->SetImageDestinationSize(primary_plane_image_id,
-                                                layout_info_.logical_size());
   flatland_.flatland()->SetContent(primary_plane_transform_id_,
                                    primary_plane_image_id);
   // TODO(crbug.com/1330950): We should set SRC blend mode when Chrome has a
@@ -181,6 +190,16 @@ void FlatlandSurface::Present(
   for (auto& child : child_transforms_) {
     flatland_.flatland()->AddChild(root_transform_id_, child.second);
   }
+
+  // Content sizes may not be equal to logical_size for this View if DPR is
+  // applied. Scale if necessary.
+  DCHECK_GT(logical_size_->width(), 0);
+  const auto primary_plane_size = primary_plane_pixmap->GetBufferSize();
+  const float scale =
+      static_cast<float>(primary_plane_size.width()) / logical_size_->width();
+  DCHECK_EQ(scale, static_cast<float>(primary_plane_size.height()) /
+                       logical_size_->height());
+  flatland_.flatland()->SetScale(root_transform_id_, {scale, scale});
 
   // Add to pending frame to track callbacks.
   pending_frames_.emplace_back(
@@ -224,13 +243,24 @@ mojo::PlatformHandle FlatlandSurface::CreateView() {
 
 void FlatlandSurface::OnGetLayout(fuchsia::ui::composition::LayoutInfo info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  layout_info_ = std::move(info);
+  DCHECK(!logical_size_ || pending_present_closures_.empty());
+
+  logical_size_ =
+      gfx::Size(info.logical_size().width, info.logical_size().height);
+
+  // Run |pending_present_closures_| that are waiting on |logical_size_|.
+  for (auto& closure : pending_present_closures_) {
+    std::move(closure).Run();
+  }
+  pending_present_closures_.clear();
 
   parent_viewport_watcher_->GetLayout(
       fit::bind_member(this, &FlatlandSurface::OnGetLayout));
 }
 
 void FlatlandSurface::RemoveBufferCollection(FlatlandPixmapId ids) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   auto iter = pixmap_ids_to_flatland_ids_.find(ids);
   DCHECK(iter != pixmap_ids_to_flatland_ids_.end());
   flatland_.flatland()->ReleaseImage(iter->second.image_id);
@@ -240,6 +270,7 @@ void FlatlandSurface::RemoveBufferCollection(FlatlandPixmapId ids) {
 }
 
 void FlatlandSurface::OnPresentComplete(zx_time_t actual_presentation_time) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END1("viz", "FlatlandSurface::PresentFrame",
                                   TRACE_ID_LOCAL(this), "image_id",
                                   pending_frames_.front().image_id.value);
@@ -259,6 +290,8 @@ void FlatlandSurface::OnPresentComplete(zx_time_t actual_presentation_time) {
 FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
     gfx::NativePixmap* pixmap,
     bool is_primary_plane) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   const auto& handle =
       static_cast<FlatlandSysmemNativePixmap*>(pixmap)->PeekHandle();
   DCHECK_EQ(handle.buffer_index, 0u);
@@ -304,6 +337,8 @@ FlatlandSurface::FlatlandIds FlatlandSurface::CreateOrGetFlatlandIds(
 }
 
 void FlatlandSurface::ClearScene() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   for (auto& child : child_transforms_) {
     flatland_.flatland()->RemoveChild(root_transform_id_, child.second);
   }

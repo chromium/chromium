@@ -14,13 +14,10 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size_f.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_transform.h"
 #include "ui/ozone/platform/flatland/flatland_connection.h"
 #include "ui/ozone/public/platform_window_surface.h"
 
@@ -124,8 +121,12 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
   // FlatlandConnection.
   base::flat_map<FlatlandPixmapId, FlatlandIds> pixmap_ids_to_flatland_ids_;
 
+  // Keeps the frames that are presented to Flatland that are waiting for the
+  // confirmations.
   base::circular_deque<PresentedFrame> pending_frames_;
 
+  // Keeps the release fences from the last present that we should signal when
+  // this class gets destroyed.
   std::vector<zx::event> release_fences_from_last_present_;
 
   // Flatland resources used for the primary plane, that is not an overlay.
@@ -139,7 +140,13 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
 
   fuchsia::ui::composition::ParentViewportWatcherPtr parent_viewport_watcher_;
   fuchsia::ui::composition::ChildViewWatcherPtr main_plane_view_watcher_;
-  fuchsia::ui::composition::LayoutInfo layout_info_;
+  absl::optional<gfx::Size> logical_size_;
+
+  // FlatlandSurface might receive a Present() call before OnGetLayout(),
+  // because the present loop is tied to the parent Flatland instance in
+  // FlatlandWindow. There is no |logical_size_| in that case, so we should hold
+  // onto the Present until receiving |logical_size_|.
+  std::vector<base::OnceClosure> pending_present_closures_;
 
   FlatlandSurfaceFactory* const flatland_surface_factory_;
   const gfx::AcceleratedWidget window_;

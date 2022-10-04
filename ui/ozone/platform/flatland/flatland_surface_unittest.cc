@@ -51,13 +51,17 @@ class FlatlandSurfaceTest : public ::testing::Test {
     EXPECT_CALL(mock_factory_, RemoveSurface(_));
     flatland_surface_ = std::make_unique<FlatlandSurface>(
         &mock_factory_, gfx::kNullAcceleratedWidget);
+    return flatland_surface_.get();
+  }
 
-    // Set layout info.
+  void SetLayoutInfo() {
     fuchsia::ui::composition::LayoutInfo layout_info;
     layout_info.set_logical_size({100, 100});
     flatland_surface_->OnGetLayout(std::move(layout_info));
+  }
 
-    return flatland_surface_.get();
+  size_t NumberOfPendingClosures() {
+    return flatland_surface_->pending_present_closures_.size();
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -94,6 +98,7 @@ TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
   fake_flatland_.SetPresentHandler(base::DoNothing());
 
   FlatlandSurface* surface = CreateFlatlandSurface();
+  SetLayoutInfo();
 
   auto buffer_collection_id = gfx::SysmemBufferCollectionId::Create();
   gfx::NativePixmapHandle handle;
@@ -115,6 +120,33 @@ TEST_F(FlatlandSurfaceTest, PresentPrimaryPlane) {
 
   // TODO(crbug.com/1307545): Extend with checks on Fake Flatland and Allocator
   // once they move into fuchsia SDK.
+}
+
+TEST_F(FlatlandSurfaceTest, PresentBeforeLayoutInfo) {
+  fake_flatland_.SetPresentHandler(base::DoNothing());
+
+  FlatlandSurface* surface = CreateFlatlandSurface();
+
+  auto buffer_collection_id = gfx::SysmemBufferCollectionId::Create();
+  gfx::NativePixmapHandle handle;
+  handle.buffer_collection_id = buffer_collection_id;
+  handle.buffer_index = 0;
+  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>(
+      buffer_collection_id);
+  collection->InitializeForTesting(gfx::BufferUsage::SCANOUT);
+  auto primary_plane_pixmap = base::MakeRefCounted<FlatlandSysmemNativePixmap>(
+      collection, std::move(handle), gfx::Size(1, 1));
+  surface->Present(
+      primary_plane_pixmap, std::vector<ui::OverlayPlane>(),
+      std::vector<gfx::GpuFenceHandle>(), std::vector<gfx::GpuFenceHandle>(),
+      base::BindOnce([](gfx::SwapCompletionResult result) {}),
+      base::BindOnce([](const gfx::PresentationFeedback& feedback) {}));
+
+  // There should be a one pending present.
+  EXPECT_EQ(1u, NumberOfPendingClosures());
+
+  SetLayoutInfo();
+  EXPECT_EQ(0u, NumberOfPendingClosures());
 }
 
 }  // namespace ui
