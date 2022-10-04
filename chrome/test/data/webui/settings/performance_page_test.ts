@@ -196,10 +196,22 @@ suite('PerformancePage', function() {
     const dialog = openAddDialog();
     dialog.fire(SUBMIT_EVENT, 'bar');
 
-    // tabDiscardExceptionsList.$.list._render();
     assertDeepEquals(
         ['foo', 'bar'], tabDiscardExceptionsList.$.list.items,
         'expected valid rule to be added to the end of the list');
+  });
+
+  test('testTabDiscardExceptionsListAddAfterMenuClick', function() {
+    setupExceptionListEntries(['foo']);
+    getExceptionListEntries()[0]!.$.button.click();
+    tabDiscardExceptionsList.$.addButton.click();
+    flush();
+
+    const dialog = getDialog();
+    assertTrue(!!dialog);
+    assertEquals(
+        '', dialog.$.input.value,
+        'add dialog should be opened instead of edit dialog');
   });
 
   test('testTabDiscardExceptionsListEdit', function() {
@@ -207,7 +219,6 @@ suite('PerformancePage', function() {
     const dialog = openEditDialog(getExceptionListEntries()[1]!);
     dialog.fire(SUBMIT_EVENT, 'baz');
 
-    // tabDiscardExceptionsList.$.list._render();
     assertDeepEquals(
         ['foo', 'baz'], tabDiscardExceptionsList.$.list.items,
         'expected valid rule to be added to the end of the list');

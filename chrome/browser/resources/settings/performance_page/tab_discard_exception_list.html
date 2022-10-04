@@ -48,7 +48,6 @@
 </cr-lazy-render>
 <template is="dom-if" if="[[showDialog_]]" restamp>
   <tab-discard-exception-dialog rule="[[selectedRule_]]"
-      on-cancel="onDialogCancel_" on-close="onDialogClose_"
-      on-submit="onDialogSubmit_">
+      on-close="onDialogClose_" on-submit="onDialogSubmit_">
   </tab-discard-exception-dialog>
 </template>

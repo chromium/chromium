@@ -94,6 +94,7 @@ export class TabDiscardExceptionListElement extends
   }
 
   private onAddClick_() {
+    this.selectedRule_ = '';
     this.showDialog_ = true;
   }
 
@@ -106,10 +107,6 @@ export class TabDiscardExceptionListElement extends
     assert(this.selectedRule_);
     this.showDialog_ = true;
     this.$.menu.get().close();
-  }
-
-  private onDialogCancel_() {
-    this.selectedRule_ = '';
   }
 
   private onDialogClose_() {
@@ -130,7 +127,6 @@ export class TabDiscardExceptionListElement extends
               TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_, newRule);
         }
       }
-      this.selectedRule_ = '';
       return;
     }
     // add dialog
@@ -139,7 +135,6 @@ export class TabDiscardExceptionListElement extends
 
   private onDeleteClick_() {
     this.deletePrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
-    this.selectedRule_ = '';
     this.$.menu.get().close();
   }
 
