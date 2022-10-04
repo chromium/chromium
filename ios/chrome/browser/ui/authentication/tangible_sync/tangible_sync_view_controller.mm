@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
+#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -36,10 +38,33 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
   self.avatarImage = self.primaryIdentityAvatarImage;
-  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_TITLE];
-  self.titleText = l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_TITLE);
-  [self.delegate addConsentStringID:IDS_IOS_TANGIBLE_SYNC_SUBTITLE];
-  self.subtitleText = l10n_util::GetNSString(IDS_IOS_TANGIBLE_SYNC_SUBTITLE);
+  int titleStringID = 0;
+  int subtitleStringID = 0;
+  switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
+      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
+      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      break;
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
+      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_SYNC;
+      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_BACK_UP;
+      break;
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
+      titleStringID = IDS_IOS_TANGIBLE_SYNC_TITLE_TURN_ON_SYNC;
+      subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_SYNC;
+      break;
+    case NewMobileIdentityConsistencyFRE::kTwoSteps:
+    case NewMobileIdentityConsistencyFRE::kUMADialog:
+    case NewMobileIdentityConsistencyFRE::kOld:
+      NOTREACHED();
+      break;
+  }
+  DCHECK_NE(0, titleStringID);
+  DCHECK_NE(0, subtitleStringID);
+  [self.delegate addConsentStringID:titleStringID];
+  self.titleText = l10n_util::GetNSString(titleStringID);
+  [self.delegate addConsentStringID:subtitleStringID];
+  self.subtitleText = l10n_util::GetNSString(subtitleStringID);
   _activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
   [self.delegate addConsentStringID:_activateSyncButtonID];
   self.primaryActionString = l10n_util::GetNSString(_activateSyncButtonID);

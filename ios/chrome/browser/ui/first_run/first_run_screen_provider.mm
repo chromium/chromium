@@ -24,7 +24,9 @@
       [screens addObject:@(kSignIn)];
       [screens addObject:@(kSync)];
       break;
-    case NewMobileIdentityConsistencyFRE::kTangibleSync:
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
       [screens addObject:@(kSignIn)];
       [screens addObject:@(kTangibleSync)];
       break;

@@ -72,8 +72,12 @@ constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>::Option
     kNewMobileIdentityConsistencyFREOptions[] = {
         {NewMobileIdentityConsistencyFRE::kUMADialog,
          kNewMobileIdentityConsistencyFREParamUMADialog},
-        {NewMobileIdentityConsistencyFRE::kTangibleSync,
-         kNewMobileIdentityConsistencyFREParamTangibleSync},
+        {NewMobileIdentityConsistencyFRE::kTangibleSyncA,
+         kNewMobileIdentityConsistencyFREParamTangibleSyncA},
+        {NewMobileIdentityConsistencyFRE::kTangibleSyncB,
+         kNewMobileIdentityConsistencyFREParamTangibleSyncB},
+        {NewMobileIdentityConsistencyFRE::kTangibleSyncC,
+         kNewMobileIdentityConsistencyFREParamTangibleSyncC},
         {NewMobileIdentityConsistencyFRE::kTwoSteps,
          kNewMobileIdentityConsistencyFREParamTwoSteps}};
 

@@ -33,7 +33,11 @@ enum class NewMobileIdentityConsistencyFRE {
   kUMADialog = 0,
   // New MICE FRE with tangible sync (welcome with sign-in + tangible sync
   // screens).
-  kTangibleSync,
+  // Strings in TangibleSyncViewController are set according to the A, B or C
+  // variants.
+  kTangibleSyncA,
+  kTangibleSyncB,
+  kTangibleSyncC,
   // New MICE FRE with 2 steps (welcome with sign-in + sync screens).
   kTwoSteps,
   // Old FRE.
