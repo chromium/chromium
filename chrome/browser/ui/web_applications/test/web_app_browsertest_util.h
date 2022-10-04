@@ -116,13 +116,6 @@ void CloseAndWait(Browser* browser);
 
 bool IsBrowserOpen(const Browser* test_browser);
 
-void UninstallWebApp(Profile* profile, const AppId& app_id);
-
-using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
-void UninstallWebAppWithCallback(Profile* profile,
-                                 const AppId& app_id,
-                                 UninstallWebAppCallback callback);
-
 // Helper class that lets you await one Browser added and one Browser removed
 // event. Optionally filters to a specific Browser with |filter|. Useful for
 // closing the web app window that appears after installation from page.

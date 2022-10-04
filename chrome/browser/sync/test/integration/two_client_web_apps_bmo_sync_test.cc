@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
@@ -329,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupSync());
 
   // Uninstall the app from one of the profiles.
-  UninstallWebApp(GetProfile(0), app_id);
+  test::UninstallWebApp(GetProfile(0), app_id);
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -422,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   EXPECT_TRUE(app->IsSynced());
 
   // Uninstall the web app on the sync profile.
-  UninstallWebApp(GetProfile(1), app_id);
+  test::UninstallWebApp(GetProfile(1), app_id);
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -539,7 +540,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   {
     WebAppTestUninstallObserver app_listener(GetProfile(1));
     app_listener.BeginListening();
-    UninstallWebApp(GetProfile(0), app_id);
+    test::UninstallWebApp(GetProfile(0), app_id);
     app_listener.Wait();
     EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
                 ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
@@ -558,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, MAYBE_UninstallSynced) {
   {
     WebAppTestUninstallObserver app_listener(GetProfile(1));
     app_listener.BeginListening();
-    UninstallWebApp(GetProfile(0), app_id);
+    test::UninstallWebApp(GetProfile(0), app_id);
     app_listener.Wait();
   }
 
@@ -587,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, UninstallDoesNotReinstall) {
   {
     WebAppTestUninstallObserver app_listener(GetProfile(0));
     app_listener.BeginListening();
-    UninstallWebApp(GetProfile(0), app_id);
+    test::UninstallWebApp(GetProfile(0), app_id);
     app_listener.Wait();
   }
   // Propagate the change to profile 1.

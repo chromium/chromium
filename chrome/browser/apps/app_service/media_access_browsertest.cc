@@ -407,7 +407,7 @@ class MediaAccessWebAppsTest : public web_app::WebAppControllerBrowserTest {
   void UninstallWebApp(const std::string& app_id) const {
     web_app::WebAppTestUninstallObserver app_listener(browser()->profile());
     app_listener.BeginListening();
-    web_app::UninstallWebApp(browser()->profile(), app_id);
+    web_app::test::UninstallWebApp(browser()->profile(), app_id);
     app_listener.Wait();
   }
 

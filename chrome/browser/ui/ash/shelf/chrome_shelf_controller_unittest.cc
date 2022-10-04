@@ -1157,12 +1157,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
                                                       : absl::optional<GURL>());
   }
 
-  void WaitForOnAppRemoved() {
-    base::RunLoop run_loop;
-    on_app_removed_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
   void WaitForOnAppUpdated(const std::map<std::string, int>& app_ids) {
     on_app_updated_app_ids_ = app_ids;
     base::RunLoop run_loop;
@@ -1171,18 +1165,14 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void RemoveWebApp(const char* web_app_id) {
-    web_app::UninstallWebApp(profile(), web_app_id);
-    WaitForOnAppRemoved();
+    web_app::test::UninstallWebApp(profile(), web_app_id);
+    web_app::AppReadinessWaiter(profile(), web_app_id,
+                                apps::Readiness::kUninstalledByUser)
+        .Await();
   }
 
   // apps::AppRegistryCache::Observer overrides:
   void OnAppUpdate(const apps::AppUpdate& update) override {
-    if (!apps_util::IsInstalled(update.Readiness()) &&
-        !on_app_removed_callback_.is_null()) {
-      base::SequencedTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, std::move(on_app_removed_callback_));
-    }
-
     if (!on_app_updated_callback_.is_null() &&
         apps_util::IsInstalled(update.Readiness())) {
       if (base::Contains(on_app_updated_app_ids_, update.AppId())) {
@@ -1244,7 +1234,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   apps::AppServiceTest app_service_test_;
-  base::OnceClosure on_app_removed_callback_;
   base::OnceClosure on_app_updated_callback_;
   std::map<std::string, int> on_app_updated_app_ids_;
 };

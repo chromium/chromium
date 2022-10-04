@@ -291,7 +291,7 @@ class AppNotificationsWebNotificationTest
   }
 
   void UninstallWebApp(const std::string& app_id) const {
-    web_app::UninstallWebApp(browser()->profile(), app_id);
+    web_app::test::UninstallWebApp(browser()->profile(), app_id);
   }
 
   GURL GetOrigin() const { return https_server_.GetURL("app.com", "/"); }

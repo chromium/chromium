@@ -400,31 +400,6 @@ bool IsBrowserOpen(const Browser* test_browser) {
   return false;
 }
 
-void UninstallWebApp(Profile* profile, const AppId& app_id) {
-  auto* provider = WebAppProvider::GetForTest(profile);
-  DCHECK(provider);
-  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
-  provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu, base::DoNothing());
-}
-
-void UninstallWebAppWithCallback(Profile* profile,
-                                 const AppId& app_id,
-                                 UninstallWebAppCallback callback) {
-  auto* provider = WebAppProvider::GetForTest(profile);
-  DCHECK(provider);
-  DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
-  provider->install_finalizer().UninstallWebApp(
-      app_id, webapps::WebappUninstallSource::kAppMenu,
-      base::BindOnce(
-          [](UninstallWebAppCallback callback,
-             webapps::UninstallResultCode code) {
-            std::move(callback).Run(code ==
-                                    webapps::UninstallResultCode::kSuccess);
-          },
-          std::move(callback)));
-}
-
 BrowserWaiter::BrowserWaiter(Browser* filter) : filter_(filter) {
   BrowserList::AddObserver(this);
 }

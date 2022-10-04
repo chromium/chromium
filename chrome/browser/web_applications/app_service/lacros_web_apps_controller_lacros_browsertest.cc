@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
@@ -132,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppList) {
   // Wait for item to exist in shelf.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/true);
 
-  web_app::UninstallWebApp(profile(), app_id);
+  web_app::test::UninstallWebApp(profile(), app_id);
 
   // Wait for item to stop existing in shelf.
   browser_test_util::WaitForShelfItem(app_id, /*exists=*/false);
