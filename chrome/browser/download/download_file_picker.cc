@@ -24,8 +24,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
-#include "chrome/browser/profiles/profile.h"
 #endif
 
 using download::DownloadItem;
@@ -96,10 +94,17 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
   }
 #endif
 
+  const GURL* caller =
+#if BUILDFLAG(IS_CHROMEOS)
+      &download_item_->GetURL();
+#else
+      nullptr;
+#endif
+
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
       suggested_path_, &file_type_info, 0, base::FilePath::StringType(),
-      owning_window, nullptr);
+      owning_window, /*params=*/nullptr, caller);
 }
 
 DownloadFilePicker::~DownloadFilePicker() {
