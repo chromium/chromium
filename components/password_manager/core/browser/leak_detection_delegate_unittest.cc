@@ -88,7 +88,7 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 class LeakDetectionDelegateTest : public testing::Test {
  public:
   explicit LeakDetectionDelegateTest(
-      const std::vector<base::Feature>& enabled_features) {
+      const std::vector<base::test::FeatureRef>& enabled_features) {
     features_.InitWithFeatures(enabled_features, {});
 
     auto mock_factory =
@@ -105,7 +105,7 @@ class LeakDetectionDelegateTest : public testing::Test {
   }
 
   LeakDetectionDelegateTest()
-      : LeakDetectionDelegateTest(std::vector<base::Feature>()) {}
+      : LeakDetectionDelegateTest(std::vector<base::test::FeatureRef>()) {}
 
   ~LeakDetectionDelegateTest() override = default;
 
