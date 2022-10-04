@@ -75,9 +75,9 @@ class DeviceTrustConnectorServiceFactoryParamTest
     : public DeviceTrustConnectorServiceFactoryBase,
       public ::testing::TestWithParam<bool> {
   void SetUp() override {
-    std::vector<base::Feature> enabled_features{
+    std::vector<base::test::FeatureRef> enabled_features{
         enterprise_connectors::kDeviceTrustConnectorEnabled};
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (GetParam()) {
       enabled_features.push_back(
