@@ -6,6 +6,8 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
+#include "third_party/blink/renderer/core/paint/old_cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
@@ -747,6 +749,40 @@ TEST_P(PaintLayerPainterTest, PaintPhasesUpdateOnBecomingNonSelfPainting) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(layer.IsSelfPaintingLayer());
   EXPECT_TRUE(html_layer.NeedsPaintPhaseDescendantOutlines());
+}
+
+TEST_P(PaintLayerPainterTest, PaintWithOverriddenCullRect) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="stacking" style="opacity: 0.5; height: 200px;">
+      <div id="absolute" style="position: absolute; height: 200px"></div>
+    </div>
+  )HTML");
+
+  auto& stacking = *GetPaintLayerByElementId("stacking");
+  auto& absolute = *GetPaintLayerByElementId("absolute");
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(stacking).Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(absolute).Rect());
+  EXPECT_EQ(kFullyPainted, stacking.PreviousPaintResult());
+  EXPECT_EQ(kFullyPainted, absolute.PreviousPaintResult());
+  {
+    OverriddenCullRectScope scope(stacking,
+                                  CullRect(gfx::Rect(0, 0, 100, 100)));
+    OverriddenOldCullRectScope old_scope(stacking,
+                                         CullRect(gfx::Rect(0, 0, 100, 100)));
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(stacking).Rect());
+    EXPECT_EQ(gfx::Rect(0, 0, 100, 100), GetCullRect(absolute).Rect());
+    PaintController controller(PaintController::kTransient);
+    GraphicsContext context(controller);
+    PaintLayerPainter(stacking).Paint(context);
+  }
+  UpdateAllLifecyclePhasesForTest();
+  // Should restore the original status after OverridingCullRectScope.
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(stacking).Rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect(absolute).Rect());
+  EXPECT_EQ(kFullyPainted, stacking.PreviousPaintResult());
+  EXPECT_EQ(kFullyPainted, absolute.PreviousPaintResult());
+  EXPECT_FALSE(stacking.SelfOrDescendantNeedsRepaint());
+  EXPECT_FALSE(absolute.SelfOrDescendantNeedsRepaint());
 }
 
 class PaintLayerPainterPaintedOutputInvisibleTest

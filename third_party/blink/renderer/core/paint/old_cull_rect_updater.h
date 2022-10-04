@@ -75,7 +75,7 @@ class CORE_EXPORT OldCullRectUpdater {
 // cull rect when leaving this scope.
 // TODO(crbug.com/1215251): Avoid repaint after the scope if the scope is used
 // to paint into a separate PaintController.
-class OverriddenOldCullRectScope {
+class CORE_EXPORT OverriddenOldCullRectScope {
   STACK_ALLOCATED();
 
  public:
