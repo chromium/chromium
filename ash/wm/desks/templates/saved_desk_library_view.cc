@@ -359,14 +359,14 @@ void SavedDeskLibraryView::AddOrUpdateEntries(
     const std::vector<const DeskTemplate*>& entries,
     const base::GUID& order_first_uuid,
     bool animate) {
-  SavedDesks grouped_entries = Group(entries);
-  if (desk_template_grid_view_) {
-    desk_template_grid_view_->AddOrUpdateEntries(grouped_entries.desk_templates,
+  SavedDesks grouped = Group(entries);
+  if (desk_template_grid_view_ && !grouped.desk_templates.empty()) {
+    desk_template_grid_view_->AddOrUpdateEntries(grouped.desk_templates,
                                                  order_first_uuid, animate);
   }
-  if (save_and_recall_grid_view_) {
-    save_and_recall_grid_view_->AddOrUpdateEntries(
-        grouped_entries.save_and_recall, order_first_uuid, animate);
+  if (save_and_recall_grid_view_ && !grouped.save_and_recall.empty()) {
+    save_and_recall_grid_view_->AddOrUpdateEntries(grouped.save_and_recall,
+                                                   order_first_uuid, animate);
   }
 
   Layout();

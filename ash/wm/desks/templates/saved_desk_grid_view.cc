@@ -98,18 +98,19 @@ void SavedDeskGridView::SortEntries(const base::GUID& order_first_uuid) {
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error_code));  // Use current ICU locale.
   DCHECK(U_SUCCESS(error_code));
+
   // If there is a uuid that is to be placed first, move that saved desk to the
   // front of the grid, and sort the rest of the entries after it.
+  auto rest = base::ranges::partition(
+      grid_items_,
+      [&order_first_uuid](const base::GUID& uuid) {
+        return uuid == order_first_uuid;
+      },
+      &SavedDeskItemView::uuid);
+
   std::sort(
-      grid_items_.begin(), grid_items_.end(),
-      [&collator, &order_first_uuid](const SavedDeskItemView* a,
-                                     const SavedDeskItemView* b) {
-        if (order_first_uuid.is_valid() && a->uuid() == order_first_uuid) {
-          return true;
-        }
-        if (order_first_uuid.is_valid() && b->uuid() == order_first_uuid) {
-          return false;
-        }
+      rest, grid_items_.end(),
+      [&collator](const SavedDeskItemView* a, const SavedDeskItemView* b) {
         return base::i18n::CompareString16WithCollator(
                    *collator, a->name_view()->GetAccessibleName(),
                    b->name_view()->GetAccessibleName()) < 0;
