@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_TOPLEVEL_WRAPPER_IMPL_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_XDG_TOPLEVEL_WRAPPER_IMPL_H_
 
+#include <xdg-shell-client-protocol.h>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -72,13 +73,19 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
                                 int32_t height,
                                 struct wl_array* states);
   static void CloseTopLevel(void* data, struct xdg_toplevel* xdg_toplevel);
+
+#if defined(XDG_TOPLEVEL_CONFIGURE_BOUNDS_SINCE_VERSION)
   static void ConfigureBounds(void* data,
                               struct xdg_toplevel* xdg_toplevel,
                               int32_t width,
                               int32_t height);
+#endif
+
+#if defined(XDG_TOPLEVEL_WM_CAPABILITIES_SINCE_VERSION)
   static void WmCapabilities(void* data,
                              struct xdg_toplevel* xdg_toplevel,
                              struct wl_array* capabilities);
+#endif
 
   // zxdg_decoration_listener
   static void ConfigureDecoration(
