@@ -1,4 +1,6 @@
 def main(request, response):
+  if not b"sec-fetch-dest" in request.headers or request.headers[b"sec-fetch-dest"] != b"webidentity":
+    return (500, [], "Missing Sec-Fetch-Dest header")
   config = request.server.config
   host = config.browser_host + ":" + str(config.ports["https"][0])
   return """

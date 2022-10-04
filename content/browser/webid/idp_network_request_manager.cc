@@ -768,6 +768,8 @@ IdpNetworkRequestManager::CreateUncredentialedResourceRequest(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
                                       kResponseBodyContentType);
+  resource_request->destination =
+      network::mojom::RequestDestination::kWebIdentity;
   AddCsrfHeader(resource_request.get());
   if (send_referrer) {
     resource_request->referrer = relying_party_origin_.GetURL();
@@ -810,6 +812,8 @@ IdpNetworkRequestManager::CreateCredentialedResourceRequest(
   // We use nullopt instead of target_origin because we want to send a
   // `Sec-Fetch-Site: none` header instead of `Sec-Fetch-Site: same-origin`.
   resource_request->request_initiator = absl::nullopt;
+  resource_request->destination =
+      network::mojom::RequestDestination::kWebIdentity;
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   if (send_referrer) {
