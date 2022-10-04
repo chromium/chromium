@@ -123,7 +123,7 @@ bool ArcSurveyService::LoadSurveyData(std::string survey_data) {
     VLOG(1) << "List of package names not found in the survey data.";
     return false;
   }
-  const base::Value::ConstListView items = list->GetListDeprecated();
+  const base::Value::List& items = list->GetList();
   if (items.empty()) {
     VLOG(1) << "List of package names is empty in the survey data.";
     return false;
