@@ -11,6 +11,7 @@ export class TestInternetPageBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'showCarrierAccountDetail',
+      'showPortalSignin',
       'showCellularSetupUI',
       'configureThirdPartyVpn',
       'addThirdPartyVpn',
@@ -22,6 +23,11 @@ export class TestInternetPageBrowserProxy extends TestBrowserProxy {
   /** @override */
   showCarrierAccountDetail(guid) {
     this.methodCalled('showCarrierAccountDetail');
+  }
+
+  /** @override */
+  showPortalSignin(guid) {
+    this.methodCalled('showPortalSignin', guid);
   }
 
   /** @override */

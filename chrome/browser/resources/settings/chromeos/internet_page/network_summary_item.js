@@ -27,6 +27,8 @@ import {GlobalPolicy, VpnType} from 'chrome://resources/mojo/chromeos/services/n
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
+
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -116,6 +118,13 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       /** @private {!GlobalPolicy|undefined} */
       globalPolicy: Object,
     };
+  }
+
+  constructor() {
+    super();
+
+    /** @private  {!InternetPageBrowserProxy} */
+    this.browserProxy_ = InternetPageBrowserProxyImpl.getInstance();
   }
 
   /*
@@ -532,6 +541,10 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
             });
         this.dispatchEvent(deviceEnabledToggledEvent);
       }
+    } else if (
+        this.isCaptivePortalUI2022Enabled_ &&
+        this.isPortalState_(this.activeNetworkState.portalState)) {
+      this.browserProxy_.showPortalSignin(this.activeNetworkState.guid);
     } else if (this.shouldShowSubpage_(
                    this.deviceState, this.networkStateList)) {
       const showNetworksEvent = new CustomEvent('show-networks', {
@@ -577,6 +590,12 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       // When device is disabled, tapping the item flips the enable toggle. So
       // the item is actionable only when the toggle is enabled.
       return this.enableToggleIsEnabled_(this.deviceState);
+    }
+
+    // Item is actionable if tapping should show the user to the portal signin.
+    if (this.isCaptivePortalUI2022Enabled_ &&
+        this.isPortalState_(this.activeNetworkState.portalState)) {
+      return true;
     }
 
     // Item is actionable if tapping should show either networks subpage or the

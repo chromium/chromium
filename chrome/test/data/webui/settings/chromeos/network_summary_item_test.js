@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/chromeos/os_settings.js';
-
+import {InternetPageBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
 import {InhibitReason} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.js';
 
 suite('NetworkSummaryItem', function() {
   /** @type {!NetworkSummaryItemElement|undefined} */
@@ -250,9 +251,16 @@ suite('NetworkSummaryItem', function() {
       });
 
   suite('Portal', function() {
+    /** @type {?TestInternetPageBrowserProxy} */
+    let browserProxy = null;
+
     const testName = 'test_name';
+    const testGuid = '0001';
 
     function initWithPortalState(flagEnabled, portalState) {
+      browserProxy = new TestInternetPageBrowserProxy();
+      netSummaryItem.browserProxy_ = browserProxy;
+
       netSummaryItem.setProperties({
         isCaptivePortalUI2022Enabled_: flagEnabled,
         deviceState: {
@@ -262,7 +270,7 @@ suite('NetworkSummaryItem', function() {
         },
         activeNetworkState: {
           connectionState: ConnectionStateType.kPortal,
-          guid: '0001',
+          guid: testGuid,
           type: NetworkType.kWiFi,
           typeState: {
             wifi: {
@@ -282,30 +290,56 @@ suite('NetworkSummaryItem', function() {
       flush();
     }
 
-    test('kPortal shows sign in', function() {
-      initWithPortalState(true /* flagEnabled */, PortalState.kPortal);
-      assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
-                     .classList.contains('warning-message'));
-      assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
-                      .classList.contains('network-state'));
-      assertEquals(
-          netSummaryItem.getNetworkStateText_(),
-          netSummaryItem.i18n('networkListItemSignIn'));
-      assertEquals(netSummaryItem.getTitleText_(), testName);
-    });
+    test(
+        'kPortal shows signin text and opens portal signin on click',
+        function() {
+          initWithPortalState(true /* flagEnabled */, PortalState.kPortal);
+          assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                         .classList.contains('warning-message'));
+          assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                          .classList.contains('network-state'));
+          assertEquals(
+              netSummaryItem.getNetworkStateText_(),
+              netSummaryItem.i18n('networkListItemSignIn'));
+          assertEquals(netSummaryItem.getTitleText_(), testName);
 
-    test('kProxyAuthRequired shows sign in', function() {
-      initWithPortalState(
-          true /* flagEnabled */, PortalState.kProxyAuthRequired);
-      assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
-                     .classList.contains('warning-message'));
-      assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
-                      .classList.contains('network-state'));
-      assertEquals(
-          netSummaryItem.getNetworkStateText_(),
-          netSummaryItem.i18n('networkListItemSignIn'));
-      assertEquals(netSummaryItem.getTitleText_(), testName);
-    });
+          // Verify clicking network summary item will open portal signin
+          const networkSummaryItemRow =
+              netSummaryItem.shadowRoot.querySelector('#networkSummaryItemRow');
+          assertTrue(!!networkSummaryItemRow);
+          networkSummaryItemRow.click();
+          return browserProxy.whenCalled('showPortalSignin')
+              .then(function(guid) {
+                assertEquals(browserProxy.getCallCount('showPortalSignin'), 1);
+                assertEquals(testGuid, guid);
+              });
+        });
+
+    test(
+        'kProxyAuthRequired shows signin text and opens portal signin on click',
+        function() {
+          initWithPortalState(
+              true /* flagEnabled */, PortalState.kProxyAuthRequired);
+          assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                         .classList.contains('warning-message'));
+          assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                          .classList.contains('network-state'));
+          assertEquals(
+              netSummaryItem.getNetworkStateText_(),
+              netSummaryItem.i18n('networkListItemSignIn'));
+          assertEquals(netSummaryItem.getTitleText_(), testName);
+
+          // Verify clicking network summary item will open portal signin
+          const networkSummaryItemRow =
+              netSummaryItem.shadowRoot.querySelector('#networkSummaryItemRow');
+          assertTrue(!!networkSummaryItemRow);
+          networkSummaryItemRow.click();
+          return browserProxy.whenCalled('showPortalSignin')
+              .then(function(guid) {
+                assertEquals(browserProxy.getCallCount('showPortalSignin'), 1);
+                assertEquals(testGuid, guid);
+              });
+        });
 
     test('kPortal does not show sign in when flag is disabled', function() {
       initWithPortalState(false /* flagEnabled */, PortalState.kPortal);
@@ -317,6 +351,13 @@ suite('NetworkSummaryItem', function() {
           netSummaryItem.getNetworkStateText_(),
           netSummaryItem.i18n('networkListItemSignIn'));
       assertNotEquals(netSummaryItem.getTitleText_(), testName);
+
+      // Verify clicking network summary item does not open portal signin
+      const networkSummaryItemRow =
+          netSummaryItem.shadowRoot.querySelector('#networkSummaryItemRow');
+      assertTrue(!!networkSummaryItemRow);
+      networkSummaryItemRow.click();
+      assertEquals(browserProxy.getCallCount('showPortalSignin'), 0);
     });
 
     test(
@@ -332,6 +373,12 @@ suite('NetworkSummaryItem', function() {
               netSummaryItem.getNetworkStateText_(),
               netSummaryItem.i18n('networkListItemSignIn'));
           assertNotEquals(netSummaryItem.getTitleText_(), testName);
+          // Verify clicking network summary item does not open portal signin
+          const networkSummaryItemRow =
+              netSummaryItem.shadowRoot.querySelector('#networkSummaryItemRow');
+          assertTrue(!!networkSummaryItemRow);
+          networkSummaryItemRow.click();
+          assertEquals(browserProxy.getCallCount('showPortalSignin'), 0);
         });
   });
 });
