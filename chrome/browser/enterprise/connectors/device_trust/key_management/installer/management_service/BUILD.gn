@@ -46,15 +46,12 @@ if (is_linux || is_win) {
 
     sources = [ "rotate_util.cc" ]
 
-    public_deps = [
-      "//base",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
-      "//components/version_info",
-    ]
+    public_deps = [ "//components/version_info:channel" ]
 
     deps = [
+      "//base",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core:constants",
-      "//chrome/common:channel_info",
+      "//chrome/browser/enterprise/connectors/device_trust/key_management/installer:elevated_rotation",
       "//third_party/abseil-cpp:absl",
       "//url",
     ]
