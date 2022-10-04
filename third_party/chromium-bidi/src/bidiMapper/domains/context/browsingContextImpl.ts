@@ -21,7 +21,7 @@ import { CdpClient } from '../../../cdp';
 import { IEventManager } from '../events/EventManager';
 import LoadEvent = BrowsingContext.LoadEvent;
 import { Deferred } from '../../utils/deferred';
-import { UnknownErrorResponse } from '../protocol/error';
+import { UnknownException } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { Realm, RealmType } from '../script/realm';
@@ -439,7 +439,7 @@ export class BrowsingContextImpl {
     });
 
     if (cdpNavigateResult.errorText) {
-      throw new UnknownErrorResponse(cdpNavigateResult.errorText);
+      throw new UnknownException(cdpNavigateResult.errorText);
     }
 
     if (

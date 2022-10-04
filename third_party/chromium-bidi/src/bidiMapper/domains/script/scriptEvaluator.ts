@@ -18,6 +18,7 @@
 import { Protocol } from 'devtools-protocol';
 import { CommonDataTypes, Script } from '../protocol/bidiProtocolTypes';
 import { Realm } from './realm';
+import { InvalidArgumentException } from '../protocol/error';
 
 export class ScriptEvaluator {
   // As `script.evaluate` wraps call into serialization script, `lineNumber`
@@ -103,13 +104,27 @@ export class ScriptEvaluator {
       ))
     );
 
-    const cdpCallFunctionResult = await realm.cdpClient.Runtime.callFunctionOn({
-      functionDeclaration: callFunctionAndSerializeScript,
-      awaitPromise,
-      arguments: thisAndArgumentsList, // this, arguments.
-      generateWebDriverValue: true,
-      executionContextId: realm.executionContextId,
-    });
+    let cdpCallFunctionResult: Protocol.Runtime.CallFunctionOnResponse;
+    try {
+      cdpCallFunctionResult = await realm.cdpClient.Runtime.callFunctionOn({
+        functionDeclaration: callFunctionAndSerializeScript,
+        awaitPromise,
+        arguments: thisAndArgumentsList, // this, arguments.
+        generateWebDriverValue: true,
+        executionContextId: realm.executionContextId,
+      });
+    } catch (e: any) {
+      // Heuristic to determine if the problem is in the argument.
+      // The check can bve done on the `deserialization` step, but this approach
+      // helps to save round-trips.
+      if (
+        e.code === -32000 &&
+        e.message === 'Could not find object with given id'
+      ) {
+        throw new InvalidArgumentException('Handle was not found.');
+      }
+      throw e;
+    }
 
     if (cdpCallFunctionResult.exceptionDetails) {
       // Serialize exception details.
@@ -123,7 +138,6 @@ export class ScriptEvaluator {
         realm: realm.realmId,
       };
     }
-
     return {
       result: await ScriptEvaluator.#cdpToBidiValue(
         cdpCallFunctionResult,

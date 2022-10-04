@@ -42,19 +42,19 @@ export class ErrorResponseClass implements Message.ErrorResult {
   }
 }
 
-export class UnknownErrorResponse extends ErrorResponseClass {
+export class UnknownException extends ErrorResponseClass {
   constructor(message: string, stacktrace?: string) {
     super('unknown error', message, stacktrace);
   }
 }
 
-export class UnknownCommandErrorResponse extends ErrorResponseClass {
+export class UnknownCommandException extends ErrorResponseClass {
   constructor(message: string, stacktrace?: string) {
     super('unknown command', message, stacktrace);
   }
 }
 
-export class InvalidArgumentErrorResponse extends ErrorResponseClass {
+export class InvalidArgumentException extends ErrorResponseClass {
   constructor(message: string, stacktrace?: string) {
     super('invalid argument', message, stacktrace);
   }

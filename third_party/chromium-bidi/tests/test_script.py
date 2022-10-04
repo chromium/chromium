@@ -751,3 +751,71 @@ async def test_scriptGetRealms(websocket, context_id):
                 "context": context_id
             }])
     }, result)
+
+
+@pytest.mark.asyncio
+async def test_disown_releasesObject(websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.evaluate",
+        "params": {
+            "expression": "({foo:'bar'})",
+            "target": {
+                "context": context_id,
+            },
+            "awaitPromise": True,
+            "resultOwnership": "root"}})
+    recursive_compare({
+        "result": {
+            "type": "object",
+            "value": any_value,
+            "handle": any_string},
+        "realm": any_string
+    }, result)
+
+    handle = result["result"]["handle"]
+
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(obj)=>{return obj;}",
+            "arguments": [{
+                "handle": handle
+            }],
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "none"}})
+
+    recursive_compare({
+        "result": {
+            "type": "object",
+            "value": any_value},
+        "realm": any_string
+    }, result)
+
+    result = await execute_command(websocket, {
+        "method": "script.disown",
+        "params": {
+            "handles": [handle],
+            "target": {"context": context_id}}})
+
+    recursive_compare({}, result)
+
+    await send_JSON_command(websocket, {
+        "id": 99,
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "(obj)=>{return obj;}",
+            "arguments": [{
+                "handle": handle
+            }],
+            "target": {"context": context_id},
+            "awaitPromise": True,
+            "resultOwnership": "none"}})
+
+    resp = await read_JSON_message(websocket)
+
+    recursive_compare({
+        "id": 99,
+        "error": "invalid argument",
+        "message": "Handle was not found."
+    }, resp)

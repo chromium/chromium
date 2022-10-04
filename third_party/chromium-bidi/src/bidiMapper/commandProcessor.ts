@@ -28,8 +28,8 @@ import { IBidiServer } from './utils/bidiServer';
 import { IEventManager } from './domains/events/EventManager';
 import {
   ErrorResponseClass,
-  UnknownCommandErrorResponse,
-  UnknownErrorResponse,
+  UnknownCommandException,
+  UnknownException,
 } from './domains/protocol/error';
 
 export class CommandProcessor {
@@ -141,6 +141,10 @@ export class CommandProcessor {
         return await this.#contextProcessor.process_script_evaluate(
           Script.parseEvaluateParams(commandData.params)
         );
+      case 'script.disown':
+        return await this.#contextProcessor.process_script_disown(
+          Script.parseDisownParams(commandData.params)
+        );
 
       case 'PROTO.browsingContext.findElement':
         return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
@@ -157,7 +161,7 @@ export class CommandProcessor {
         );
 
       default:
-        throw new UnknownCommandErrorResponse(
+        throw new UnknownCommandException(
           `Unknown command '${commandData.method}'.`
         );
     }
@@ -185,7 +189,7 @@ export class CommandProcessor {
         console.error(error);
 
         await this.#bidiServer.sendMessage(
-          new UnknownErrorResponse(error.message).toErrorResponse(command.id)
+          new UnknownException(error.message).toErrorResponse(command.id)
         );
       }
     }

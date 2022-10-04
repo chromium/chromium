@@ -1,6 +1,6 @@
 import { EventResponseClass } from './event';
 import { z as zod, ZodType } from 'zod';
-import { InvalidArgumentErrorResponse } from './error';
+import { InvalidArgumentException } from './error';
 import { log } from '../../../utils/log';
 
 const logParser = log('command parser');
@@ -25,7 +25,7 @@ function parseObject<T extends ZodType>(obj: unknown, schema: T): zod.infer<T> {
     )
     .join(' ');
 
-  throw new InvalidArgumentErrorResponse(errorMessage);
+  throw new InvalidArgumentException(errorMessage);
 }
 
 export namespace Message {
@@ -381,11 +381,13 @@ export namespace Script {
   export type Command =
     | EvaluateCommand
     | CallFunctionCommand
-    | GetRealmsCommand;
+    | GetRealmsCommand
+    | DisownCommand;
   export type CommandResult =
     | EvaluateResult
     | CallFunctionResult
-    | GetRealmsResult;
+    | GetRealmsResult
+    | DisownResult;
 
   export type Realm = string;
 
@@ -525,24 +527,40 @@ export namespace Script {
   //   ?awaitPromise: bool;
   //   ?resultOwnership: OwnershipModel;
   // }
-  const ScriptEvaluateParametersSchema = zod.object({
+  const EvaluateParametersSchema = zod.object({
     expression: zod.string(),
     awaitPromise: zod.boolean(),
     target: TargetSchema,
     resultOwnership: OwnershipModelSchema.optional(),
   });
 
-  export type EvaluateParameters = zod.infer<
-    typeof ScriptEvaluateParametersSchema
-  >;
+  export type EvaluateParameters = zod.infer<typeof EvaluateParametersSchema>;
 
   export function parseEvaluateParams(params: unknown): EvaluateParameters {
-    return parseObject(params, ScriptEvaluateParametersSchema);
+    return parseObject(params, EvaluateParametersSchema);
   }
 
   export type EvaluateResult = {
     result: ScriptResult;
   };
+
+  export type DisownCommand = {
+    method: 'script.disown';
+    params: EvaluateParameters;
+  };
+
+  const DisownParametersSchema = zod.object({
+    target: TargetSchema,
+    handles: zod.array(zod.string()),
+  });
+
+  export type DisownParameters = zod.infer<typeof DisownParametersSchema>;
+
+  export function parseDisownParams(params: unknown): DisownParameters {
+    return parseObject(params, DisownParametersSchema);
+  }
+
+  export type DisownResult = { result: {} };
 
   export type CallFunctionCommand = {
     method: 'script.callFunction';

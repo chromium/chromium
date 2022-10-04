@@ -228,6 +228,19 @@ export class Realm {
     );
   }
 
+  async disown(handle: string): Promise<void> {
+    try {
+      await this.#cdpClient.Runtime.releaseObject({ objectId: handle });
+    } catch (e: any) {
+      // Heuristic to determine if the problem is in the unknown handler.
+      // Ignore the error if so.
+      if (e.code === -32000 && e.message === 'Invalid remote object id') {
+        return;
+      }
+      throw e;
+    }
+  }
+
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
    * target's `globalThis`.

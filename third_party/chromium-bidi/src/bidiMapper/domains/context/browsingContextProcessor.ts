@@ -21,7 +21,7 @@ import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
-import { InvalidArgumentErrorResponse } from '../protocol/error';
+import { InvalidArgumentException } from '../protocol/error';
 import { BrowsingContextImpl } from './browsingContextImpl';
 import { Realm } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
@@ -251,6 +251,14 @@ export class BrowsingContextProcessor {
     );
   }
 
+  async process_script_disown(
+    params: Script.DisownParameters
+  ): Promise<Script.DisownResult> {
+    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    await Promise.all(params.handles.map(async (h) => await realm.disown(h)));
+    return { result: {} };
+  }
+
   async process_PROTO_browsingContext_findElement(
     params: BrowsingContext.PROTO.FindElementParameters
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
@@ -267,7 +275,7 @@ export class BrowsingContextProcessor {
       commandParams.context
     );
     if (context.parentId !== null) {
-      throw new InvalidArgumentErrorResponse(
+      throw new InvalidArgumentException(
         'Not a top-level browsing context cannot be closed.'
       );
     }
