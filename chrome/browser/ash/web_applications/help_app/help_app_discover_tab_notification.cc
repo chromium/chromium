@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -41,7 +41,7 @@ void HelpAppDiscoverTabNotification::Show() {
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&HelpAppDiscoverTabNotification::OnClick,
                                   weak_ptr_factory_.GetWeakPtr())),
-          vector_icons::kNotificationExploreIcon,
+          kNotificationHelpAppIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   SystemNotificationHelper::GetInstance()->Display(*notification);

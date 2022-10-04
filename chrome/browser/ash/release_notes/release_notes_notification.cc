@@ -8,6 +8,7 @@
 
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
@@ -19,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/notification_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -73,7 +73,7 @@ void ReleaseNotesNotification::ShowReleaseNotesNotification() {
           base::BindRepeating(
               &ReleaseNotesNotification::HandleClickShowNotification,
               weak_ptr_factory_.GetWeakPtr())),
-      vector_icons::kNotificationExploreIcon,
+      kNotificationHelpAppIcon,
       message_center::SystemNotificationWarningLevel::NORMAL);
   SystemNotificationHelper::GetInstance()->Display(
       *release_notes_available_notification_);

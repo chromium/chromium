@@ -90,7 +90,6 @@ aggregate_vector_icons("components_vector_icons") {
     "midi.icon",
     "midi_off.icon",
     "not_secure_warning.icon",
-    "notification_explore.icon",
     "notification_warning.icon",
     "notifications.icon",
     "notifications_off.icon",
