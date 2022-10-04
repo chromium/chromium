@@ -1235,7 +1235,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Non-owned pointer to the Widget's delegate. If a NULL delegate is supplied
   // to Init() a default WidgetDelegate is created.
-  raw_ptr<WidgetDelegate, DanglingUntriaged> widget_delegate_ = nullptr;
+  raw_ptr<WidgetDelegate> widget_delegate_ = nullptr;
 
   // The parent of this widget. This is the widget that associates with
   // the |params.parent| supplied to Init(). If no parent is given or the native

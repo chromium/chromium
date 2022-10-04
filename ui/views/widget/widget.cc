@@ -1455,8 +1455,10 @@ void Widget::OnNativeWidgetDestroyed() {
   for (WidgetObserver& observer : observers_)
     observer.OnWidgetDestroyed(this);
   widget_delegate_->can_delete_this_ = true;
-  widget_delegate_->DeleteDelegate();
-  widget_delegate_ = nullptr;
+  // `DeleteDelegate()` ends up destroying the object that `widget_delegate_`
+  // points to. Use `ExtractAsDangling()` to avoid having `widget_delegate_`
+  // briefly point to freed memory.
+  widget_delegate_.ExtractAsDangling()->DeleteDelegate();
   // TODO(pbos): Replace this with native_widget_ = nullptr; and nullptr
   // checking. This currently breaks on reentrant calls to CloseNow() that I'm
   // too scared to fix right now.
