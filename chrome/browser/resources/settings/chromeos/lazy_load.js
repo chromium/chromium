@@ -41,6 +41,7 @@ import './os_files_page/os_files_page.js';
 import './os_languages_page/input_method_options_page.js';
 import './os_languages_page/input_page.js';
 import './os_languages_page/os_edit_dictionary_page.js';
+import './os_languages_page/os_japanese_manage_user_dictionary_page.js';
 import './os_languages_page/os_languages_page_v2.js';
 import './os_languages_page/os_languages_section.js';
 import './os_languages_page/smart_inputs_page.js';

@@ -27,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":languages_types",
     ":os_add_languages_dialog",
     ":os_edit_dictionary_page",
+    ":os_japanese_manage_user_dictionary_page",
     ":os_languages_page_v2",
     ":os_languages_section",
     ":smart_inputs_page",
@@ -158,6 +159,7 @@ js_library("input_page") {
     ":input_method_util",
     ":languages_metrics_proxy",
     ":os_edit_dictionary_page",
+    ":os_japanese_manage_user_dictionary_page",
     "..:deep_linking_behavior",
     "..:os_route",
     "..:route_observer_behavior",
@@ -194,6 +196,14 @@ js_library("os_edit_dictionary_page") {
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
     "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
+}
+
+js_library("os_japanese_manage_user_dictionary_page") {
+  deps = [
+    "..:global_scroll_target_behavior",
+    "..:os_route",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

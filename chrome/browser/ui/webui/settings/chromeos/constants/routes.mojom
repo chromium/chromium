@@ -133,6 +133,7 @@ enum Subpage {
   kLanguages = 1204,
   kInput = 1205,
   kEditDictionary = 1206,
+  kJapaneseManageUserDictionary = 1207,
 
   // Files section.
   kNetworkFileShares = 1300,
@@ -256,6 +257,8 @@ const string kInputMethodOptionsSubpagePath = "osLanguages/inputMethodOptions";
 const string kLanguagesSubpagePath = "osLanguages/languages";
 const string kInputSubpagePath = "osLanguages/input";
 const string kEditDictionarySubpagePath = "osLanguages/editDictionary";
+const string kJapaneseManageUserDictionarySubpagePath =
+    "osLanguages/japaneseManageUserDictionary";
 
 // Files section.
 const string kFilesSectionPath = "files";

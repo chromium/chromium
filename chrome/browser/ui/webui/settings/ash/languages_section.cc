@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/languages_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -293,6 +294,10 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_MOBILE},
       {"inputMethodOptionsJapaneseKeymapStyleChromeOs",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CHROMEOS},
+      {"inputMethodOptionsJapaneseManageUserDictionary",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY},
+      {"inputMethodOptionsJapaneseManageUserDictionarySubtitle",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY_SUBTITLE},
       {"inputMethodOptionsPinyinChinesePunctuation",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_CHINESE_PUNCTUATION},
       {"inputMethodOptionsPinyinDefaultChinese",
@@ -448,6 +453,8 @@ void AddInputPageStringsV2(content::WebUIDataSource* html_source) {
       {"languagesDictionaryDownloadRetryDescription",
        IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_DESCRIPTION},
       {"editDictionaryLabel", IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL},
+      {"japaneseManageUserDictionaryLabel",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL},
       {"editDictionaryDescription",
        IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_DESCRIPTION},
       {"addDictionaryWordButtonLabel",
@@ -600,6 +607,13 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::Subpage::kEditDictionary, mojom::Subpage::kInput,
       mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
       mojom::kEditDictionarySubpagePath);
+
+  // Japanese Manage User Dictionary
+  generator->RegisterNestedSubpage(
+      IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL,
+      mojom::Subpage::kJapaneseManageUserDictionary, mojom::Subpage::kInput,
+      mojom::SearchResultIcon::kGlobe, mojom::SearchResultDefaultRank::kMedium,
+      mojom::kJapaneseManageUserDictionarySubpagePath);
 
   generator->RegisterNestedSetting(mojom::Setting::kAddLanguage,
                                    mojom::Subpage::kLanguages);

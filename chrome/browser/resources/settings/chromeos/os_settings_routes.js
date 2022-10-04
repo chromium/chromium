@@ -74,6 +74,7 @@ import {Route} from '../router.js';
  *   OS_ACCESSIBILITY: !Route,
  *   OS_LANGUAGES: !Route,
  *   OS_LANGUAGES_EDIT_DICTIONARY: !Route,
+ *   OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY: !Route,
  *   OS_LANGUAGES_INPUT: !Route,
  *   OS_LANGUAGES_INPUT_METHOD_OPTIONS: !Route,
  *   OS_LANGUAGES_LANGUAGES: !Route,

@@ -497,6 +497,9 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL" desc="Label for the section for users to add words that they don’t want get flagged by the spell check.">
     Customize spell check
   </message>
+  <message name="IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL" desc="Label for the section of the Japanese user settings which allows them to manage their custom dictionaries for Japaneses input. This is the string which appears at the top of the User dictionaries subpage.">
+    User dictionaries
+  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_DESCRIPTION" desc="Description for the section for users to add words that they don’t want get flagged by the spell check.">
     Add words you want spell check to skip
   </message>
@@ -582,7 +585,7 @@
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_SECTION_TITLE" desc="The label for the section in input method options page section title.">
     Section
   </message>
-  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH" desc="The label for the setting to toggle if the Japanese input method should automatically switch to using halfwidth.">
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
     Automatically switch to halfwidth
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SHIFT_KEY_MODE_STYLE" desc="The label for the setting to set the shift key mode style.">
@@ -737,6 +740,12 @@
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CHROMEOS" translateable="false">
     ChromeOS
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY" desc="Label on the settings page which if the user clicks on, will bring up the Japaneses dictionary management page. There are multiple dictionary which the user can modify.">
+    Manage user dictionaries
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_MANAGE_USER_DICTIONARY_SUBTITLE" desc="Subheading for the label on the settings page which if the user clicks on, will bring up the Japaneses dictionary management page. There are multiple dictionary which the user can modify.">
+    Add your own words to the user dictionaries in order to customize the conversion candidates.
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PINYIN_CHINESE_PUNCTUATION" desc="The label for the pinyin input method option for whether to output full-width or half-with punctuation.">
     Initial punctuation width is Full

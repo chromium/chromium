@@ -105,6 +105,7 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kLanguagesSubpagePath,
       chromeos::settings::mojom::kInputSubpagePath,
       chromeos::settings::mojom::kEditDictionarySubpagePath,
+      chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath,
 
       // Files section.
       chromeos::settings::mojom::kFilesSectionPath,

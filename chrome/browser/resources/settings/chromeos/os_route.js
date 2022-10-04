@@ -328,6 +328,10 @@ function createOSSettingsRoutes() {
   r.OS_LANGUAGES_EDIT_DICTIONARY = createSubpage(
       r.OS_LANGUAGES_INPUT, routesMojomWebui.EDIT_DICTIONARY_SUBPAGE_PATH,
       Subpage.kEditDictionary);
+  r.OS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY = createSubpage(
+      r.OS_LANGUAGES_INPUT,
+      routesMojomWebui.JAPANESE_MANAGE_USER_DICTIONARY_SUBPAGE_PATH,
+      Subpage.kJapaneseManageUserDictionary);
   r.OS_LANGUAGES_SMART_INPUTS = createSubpage(
       r.OS_LANGUAGES, routesMojomWebui.SMART_INPUTS_SUBPAGE_PATH,
       Subpage.kSmartInputs);
