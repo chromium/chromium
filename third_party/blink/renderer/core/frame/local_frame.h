@@ -43,7 +43,6 @@
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
@@ -605,15 +604,6 @@ class CORE_EXPORT LocalFrame final
   mojom::blink::BackForwardCacheControllerHost&
   GetBackForwardCacheControllerHostRemote();
 
-  // Sets back/forward cache NotRestoredReasons for this frame. Only set for
-  // outermost main frame.
-  void SetNotRestoredReasons(
-      mojom::blink::BackForwardCacheNotRestoredReasonsPtr);
-  const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
-  GetNotRestoredReasons();
-  // Returns if the saved NotRestoredReasons has any blocking reasons.
-  bool HasBlockingReasons();
-
   const AtomicString& GetReducedAcceptLanguage() const {
     return reduced_accept_language_;
   }
@@ -881,10 +871,6 @@ class CORE_EXPORT LocalFrame final
                                     String& clip_html,
                                     gfx::Rect& clip_rect);
 
-  // Helper function for |HasBlockingReasons()|.
-  bool HasBlockingReasonsHelper(
-      const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&);
-
 #if !BUILDFLAG(IS_ANDROID)
   void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;
   void MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
@@ -956,9 +942,6 @@ class CORE_EXPORT LocalFrame final
   InterfaceRegistry* const interface_registry_;
 
   mojom::blink::ViewportIntersectionState intersection_state_;
-
-  // Only set for outermost main frame.
-  mojom::blink::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons_;
 
   // Per-frame URLLoader factory.
   std::unique_ptr<WebURLLoaderFactory> url_loader_factory_;

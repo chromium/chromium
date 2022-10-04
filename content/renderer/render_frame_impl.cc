@@ -2756,7 +2756,13 @@ void RenderFrameImpl::CommitNavigationWithParams(
   if (commit_params->is_view_source)
     frame_->EnableViewSourceMode(true);
 
-  if (not_restored_reasons) {
+  if (IsBackForwardCacheEnabled() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kBackForwardCacheSendNotRestoredReasons) &&
+      IsMainFrame() &&
+      common_params->navigation_type ==
+          blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT) {
+    DCHECK(not_restored_reasons);
     // Save the Back/Forward Cache NotRestoredReasons struct to WebLocalFrame to
     // report for PerformanceNavigationTiming API.
     frame_->SetNotRestoredReasons(std::move(not_restored_reasons));

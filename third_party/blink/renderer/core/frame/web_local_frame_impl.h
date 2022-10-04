@@ -386,9 +386,6 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Returns if the current frame's NotRestoredReasons has any blocking reasons.
   bool HasBlockingReasons() override;
 
-  const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
-  GetNotRestoredReasons();
-
   void InitializeCoreFrame(
       Page&,
       FrameOwner*,
@@ -558,6 +555,10 @@ class CORE_EXPORT WebLocalFrameImpl final
   // Sets the local core frame and registers destruction observers.
   void SetCoreFrame(LocalFrame*);
 
+  // Helper function for |HasBlockingReasons()|.
+  bool HasBlockingReasonsHelper(
+      const mojom::BackForwardCacheNotRestoredReasonsPtr&);
+
   // Inherited from WebFrame, but intentionally hidden: it never makes sense
   // to call these on a WebLocalFrameImpl.
   bool IsWebLocalFrame() const override;
@@ -609,11 +610,6 @@ class CORE_EXPORT WebLocalFrameImpl final
       const StorageKey& storage_key,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
           network::mojom::blink::WebSandboxFlags::kNone);
-
-  // This function converts mojom::BackForwardCacheNotRestoredReasonsPtr to
-  // mojom::blink::BackForwardCacheNotRestoredReasonsPtr.
-  mojom::blink::BackForwardCacheNotRestoredReasonsPtr ConvertNotRestoredReasons(
-      const mojom::BackForwardCacheNotRestoredReasonsPtr& reasons_struct);
 
   WebLocalFrameClient* client_;
 

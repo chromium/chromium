@@ -594,8 +594,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   if (text_fragment_handler_)
     text_fragment_handler_->DidDetachDocumentOrFrame();
 
-  not_restored_reasons_.reset();
-
   DCHECK(!view_->IsAttached());
   Client()->WillBeDetached();
 
@@ -3315,41 +3313,5 @@ void LocalFrame::MaybeUpdateWindowControlsOverlayWithNewZoomLevel() {
   UpdateWindowControlsOverlay(window_controls_overlay_rect_in_dips_);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-void LocalFrame::SetNotRestoredReasons(
-    mojom::blink::BackForwardCacheNotRestoredReasonsPtr not_restored_reasons) {
-  // Back/forward cache is only enabled for outermost main frame.
-  DCHECK(IsOutermostMainFrame());
-  not_restored_reasons_ = mojo::Clone(not_restored_reasons);
-}
-
-const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
-LocalFrame::GetNotRestoredReasons() {
-  // Back/forward cache is only enabled for the outermost main frames, and the
-  // web exposed API returns non-null values only for the outermost main frames.
-  DCHECK(IsOutermostMainFrame());
-  return not_restored_reasons_;
-}
-
-bool LocalFrame::HasBlockingReasons() {
-  DCHECK(IsOutermostMainFrame());
-  if (!not_restored_reasons_)
-    return false;
-  return HasBlockingReasonsHelper(not_restored_reasons_);
-}
-
-bool LocalFrame::HasBlockingReasonsHelper(
-    const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& not_restored) {
-  if (not_restored->blocked)
-    return true;
-  if (not_restored->same_origin_details) {
-    for (const auto& child : not_restored->same_origin_details->children) {
-      if (HasBlockingReasonsHelper(child))
-        return true;
-    }
-    return false;
-  }
-  return false;
-}
 
 }  // namespace blink
