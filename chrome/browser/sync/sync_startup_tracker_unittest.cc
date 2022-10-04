@@ -58,8 +58,7 @@ TEST_F(SyncStartupTrackerTest, SyncAuthError) {
   sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
-  sync_service_.SetAuthError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   SyncStartupTracker tracker(&sync_service_, callback_.Get());
 }
@@ -89,8 +88,7 @@ TEST_F(SyncStartupTrackerTest, SyncDelayedAuthError) {
   sync_service_.SetDisableReasons(syncer::SyncService::DisableReasonSet());
   sync_service_.SetTransportState(
       syncer::SyncService::TransportState::INITIALIZING);
-  sync_service_.SetAuthError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
   EXPECT_CALL(callback_, Run(SyncStartupTracker::ServiceStartupState::kError));
   tracker.OnStateChanged(&sync_service_);
 }

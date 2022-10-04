@@ -63,8 +63,32 @@ void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
   has_sync_consent_ = has_sync_consent;
 }
 
-void TestSyncService::SetAuthError(const GoogleServiceAuthError& auth_error) {
-  auth_error_ = auth_error;
+void TestSyncService::SetPersistentAuthErrorOtherThanWebSignout() {
+  auth_error_ = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+          CREDENTIALS_REJECTED_BY_SERVER);
+  CHECK(auth_error_.IsPersistentError());
+}
+
+void TestSyncService::SetPersistentAuthErrorWithWebSignout() {
+  transport_state_ = TransportState::PAUSED;
+  auth_error_ = GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+          CREDENTIALS_REJECTED_BY_CLIENT);
+  CHECK(auth_error_.IsPersistentError());
+}
+
+void TestSyncService::SetTransientAuthError() {
+  auth_error_ =
+      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED);
+  CHECK(auth_error_.IsTransientError());
+}
+
+void TestSyncService::ClearAuthError() {
+  auth_error_ = GoogleServiceAuthError::AuthErrorNone();
+  if (transport_state_ == TransportState::PAUSED) {
+    transport_state_ = TransportState::ACTIVE;
+  }
 }
 
 void TestSyncService::SetFirstSetupComplete(bool first_setup_complete) {
@@ -187,6 +211,9 @@ ModelTypeSet TestSyncService::GetPreferredDataTypes() const {
 }
 
 ModelTypeSet TestSyncService::GetActiveDataTypes() const {
+  if (transport_state_ != TransportState::ACTIVE) {
+    return ModelTypeSet();
+  }
   return active_data_types_;
 }
 

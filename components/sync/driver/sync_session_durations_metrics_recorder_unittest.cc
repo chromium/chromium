@@ -45,20 +45,28 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
   }
 
   void SetInvalidCredentialsAuthError() {
-    GoogleServiceAuthError auth_error(
-        GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+    sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
+
+    const GoogleServiceAuthError auth_error = sync_service_.GetAuthError();
+    CHECK_EQ(auth_error.state(),
+             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
             signin::ConsentLevel::kSync),
         auth_error);
-    sync_service_.SetAuthError(auth_error);
+
+    // TODO(crbug.com/1156584): This below seems off since
+    // GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS doesn't actually lead to
+    // the PAUSED state.
     sync_service_.SetTransportState(SyncService::TransportState::PAUSED);
   }
 
   void ClearAuthError() {
     identity_test_env_.SetRefreshTokenForPrimaryAccount();
-    sync_service_.SetAuthError(GoogleServiceAuthError::AuthErrorNone());
-    sync_service_.SetTransportState(SyncService::TransportState::ACTIVE);
+    sync_service_.ClearAuthError();
+    ASSERT_EQ(sync_service_.GetTransportState(),
+              SyncService::TransportState::ACTIVE);
   }
 
   std::string GetSessionHistogramName(const std::string& histogram_suffix) {

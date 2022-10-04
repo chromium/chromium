@@ -37,7 +37,16 @@ class TestSyncService : public SyncService {
   void SetAccountInfo(const CoreAccountInfo& account_info);
   void SetHasSyncConsent(bool has_consent);
   void SetSetupInProgress(bool in_progress);
-  void SetAuthError(const GoogleServiceAuthError& auth_error);
+
+  // Setters to mimic common auth error scenarios. Note that these functions
+  // may change the transport state, as returned by GetTransportState().
+  // TODO(crbug.com/1156584): Unify the two below once all persistent auth
+  // errors are treated equally.
+  void SetPersistentAuthErrorOtherThanWebSignout();
+  void SetPersistentAuthErrorWithWebSignout();
+  void SetTransientAuthError();
+  void ClearAuthError();
+
   void SetFirstSetupComplete(bool first_setup_complete);
   // TODO(crbug.com/1356216): reconsider SetActiveDataTypes() use in tests. It
   // should set the active types from the user selected types; did not fail.

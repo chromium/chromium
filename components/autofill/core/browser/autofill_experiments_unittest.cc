@@ -105,8 +105,7 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_SupportedCountry) {
 }
 
 TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
-  sync_service_.SetAuthError(
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  sync_service_.SetPersistentAuthErrorOtherThanWebSignout();
   EXPECT_FALSE(IsCreditCardUploadEnabled(AutofillSyncSigninState::kSyncPaused));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",

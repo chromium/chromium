@@ -51,11 +51,6 @@ class MockSyncService : public syncer::TestSyncService {
     NotifyObserversOfStateChanged();
   }
 
-  void SetAuthError(GoogleServiceAuthError::State error_state) {
-    syncer::TestSyncService::SetAuthError(GoogleServiceAuthError(error_state));
-    NotifyObserversOfStateChanged();
-  }
-
   void Shutdown() override {
     for (auto& observer : observers_) {
       observer.OnSyncShutdown(this);

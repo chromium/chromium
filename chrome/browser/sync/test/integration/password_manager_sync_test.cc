@@ -18,6 +18,7 @@
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -32,9 +33,11 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/driver/sync_auth_util.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "content/public/browser/browser_context.h"
@@ -112,6 +115,8 @@ class PasswordManagerSyncTest : public SyncTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    SyncTest::SetUpCommandLine(command_line);
+
     // Make sure that fake Gaia pages served by the test server match the Gaia
     // URL (as specified by GaiaUrls::gaia_url()). Note that even though the
     // hostname is the same, it's necessary to override the port to the one used
@@ -892,5 +897,41 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
+  // Username hardcoded in SyncTest.
+  const std::string kExpectedUsername = "user@gmail.com";
+
+  ASSERT_TRUE(SetupSync());
+
+  EXPECT_TRUE(
+      password_manager::sync_util::IsPasswordSyncEnabled(GetSyncService(0)));
+  EXPECT_TRUE(
+      password_manager::sync_util::IsPasswordSyncActive(GetSyncService(0)));
+  EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
+                GetSyncService(0),
+                IdentityManagerFactory::GetForProfile(GetProfile(0))),
+            kExpectedUsername);
+
+  // Enter a persistent auth error state (web signout).
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_TRUE(syncer::IsWebSignout(GetSyncService(0)->GetAuthError()));
+
+  // Passwords are not sync-ing actively while sync is paused due to a web
+  // signout. Note that this is not the case for other persistent auth errors.
+  // TODO(crbug.com/1156584): Update comments when the logic gets unified for
+  // all persistent auth errors.
+  EXPECT_FALSE(
+      password_manager::sync_util::IsPasswordSyncActive(GetSyncService(0)));
+
+  // In the current implementation, these predicates return true even if sync is
+  // paused.
+  EXPECT_TRUE(
+      password_manager::sync_util::IsPasswordSyncEnabled(GetSyncService(0)));
+  EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
+                GetSyncService(0),
+                IdentityManagerFactory::GetForProfile(GetProfile(0))),
+            kExpectedUsername);
+}
 
 }  // namespace

@@ -151,27 +151,21 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
   // On a transient error, uploading goes back to INITIALIZING.
-  GoogleServiceAuthError transient_error(
-      GoogleServiceAuthError::CONNECTION_FAILED);
-  ASSERT_TRUE(transient_error.IsTransientError());
-  service.SetAuthError(transient_error);
+  service.SetTransientAuthError();
 
   EXPECT_EQ(UploadState::INITIALIZING,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
   // On a persistent error, uploading is not considered active anymore (even
   // though Sync may still be considered active).
-  GoogleServiceAuthError persistent_error(
-      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-  ASSERT_TRUE(persistent_error.IsPersistentError());
-  service.SetAuthError(persistent_error);
+  service.SetPersistentAuthErrorOtherThanWebSignout();
 
   EXPECT_EQ(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
 
   // Once the auth error is resolved (e.g. user re-authenticated), uploading is
   // active again.
-  service.SetAuthError(GoogleServiceAuthError(GoogleServiceAuthError::NONE));
+  service.ClearAuthError();
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
 
   EXPECT_EQ(UploadState::ACTIVE,

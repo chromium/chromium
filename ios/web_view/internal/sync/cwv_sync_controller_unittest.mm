@@ -218,7 +218,7 @@ TEST_F(CWVSyncControllerTest, DelegateDidFailWithError) {
                [error.userInfo[CWVSyncErrorIsTransientKey] boolValue];
       }]]);
   OCMExpect([delegate syncControllerDidUpdateState:sync_controller]);
-  sync_service_.SetAuthError(GoogleServiceAuthError::FromConnectionError(0));
+  sync_service_.SetTransientAuthError();
   sync_service_.FireStateChanged();
 
   [delegate verify];
