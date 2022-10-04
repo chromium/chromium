@@ -64,24 +64,14 @@
     </iron-a11y-keys>
     <iron-selector id="selector" selectable=".selectable" selected="0"
         selected-item="{{selectedBreadcrumb_}}">
-      <template is="dom-if" if="[[showBackButton_]]">
-        <cr-icon-button aria-label$="[[getBackButtonAriaLabel_()]]"
-            id="backButton"
-            class="icon-arrow-back selectable"
-            role="button"
-            on-click="onBackClick_">
-        </cr-icon-button>
-      </template>
-      <template is="dom-if" if="[[showHomeButton_()]]">
-        <cr-icon-button id="homeButton"
-            class="selectable"
-            role="link"
-            aria-label$="[[getHomeButtonAriaLabel_()]]"
-            iron-icon="personalization:home"
-            on-click="onHomeIconClick_">
-        </cr-icon-button>
-        <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
-      </template>
+      <cr-icon-button id="homeButton"
+          class="selectable"
+          role="link"
+          aria-label$="[[getHomeButtonAriaLabel_()]]"
+          iron-icon="personalization:home"
+          on-click="onHomeIconClick_">
+      </cr-icon-button>
+      <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
       <template is="dom-repeat" items="[[breadcrumbs_]]" as="breadcrumb">
         <template is="dom-if" if="[[index]]">
           <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>

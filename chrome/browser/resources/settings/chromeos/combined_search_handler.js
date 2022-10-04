@@ -42,9 +42,7 @@ export async function combinedSearch(
   const [settingsResponse, personalizationResponse] = await Promise.all([
     getSettingsSearchHandler().search(
         query, maxNumResults, parentResultBehavior),
-    loadTimeData.getBoolean('isPersonalizationHubEnabled') ?
-        getPersonalizationSearchHandler().search(query, maxNumResults) :
-        {results: []},
+    getPersonalizationSearchHandler().search(query, maxNumResults),
   ]);
   return {
     results: mergeResults(

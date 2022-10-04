@@ -23,7 +23,7 @@ import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector
 
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personalization_app.mojom-webui.js';
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
-import {isPathValid, isPersonalizationHubEnabled, Paths, PersonalizationRouter} from './personalization_router_element.js';
+import {isPathValid, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 import {inBetween, isNonEmptyArray, isNonEmptyString} from './utils.js';
 
@@ -222,15 +222,6 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
         break;
     }
     return breadcrumbs;
-  }
-
-  private computeShowBackButton_(): boolean {
-    // Do not show the back button if hub is enabled.
-    return !isPersonalizationHubEnabled() && this.path !== Paths.COLLECTIONS;
-  }
-
-  private showHomeButton_(): boolean {
-    return isPersonalizationHubEnabled();
   }
 
   private getBackButtonAriaLabel_(): string {

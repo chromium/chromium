@@ -25,9 +25,6 @@ function createPersonalizationPage() {
 
 suite('PersonalizationHandler', function() {
   suiteSetup(function() {
-    assertTrue(
-        loadTimeData.getBoolean('isPersonalizationHubEnabled'),
-        'this test only runs with PersonalizationHub enabled');
     testing.Test.disableAnimationsAndTransitions();
   });
 

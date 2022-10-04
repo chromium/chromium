@@ -47,8 +47,7 @@ export class WallpaperSubpage extends WithPersonalizationStore {
   }
 
   private onCurrentSelectedChanged_(value: CurrentWallpaper|null) {
-    if (value && value.type === WallpaperType.kPolicy &&
-        loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
+    if (value && value.type === WallpaperType.kPolicy) {
       PersonalizationRouter.reloadAtRoot();
     }
   }

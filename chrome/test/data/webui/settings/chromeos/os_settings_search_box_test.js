@@ -201,7 +201,6 @@ suite('OSSettingsSearchBox', () => {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
     setupSearchBox();
     Router.getInstance().navigateTo(routes.BASIC);
 
@@ -440,10 +439,6 @@ suite('OSSettingsSearchBox', () => {
   test(
       'Keypress Enter on personalization result opens personalization hub',
       async () => {
-        // Enable personalization hub feature.
-        loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-
         personalizationSearchHandler.setFakeResults(
             [fakePersonalizationResult('result', 'test')]);
         settingsSearchHandler.setFakeResults([]);
@@ -468,11 +463,6 @@ suite('OSSettingsSearchBox', () => {
   test(
       'Clicking on personalization result opens personalization hub',
       async () => {
-        // Enable personalization hub feature.
-        loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-        assertTrue(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-
-
         personalizationSearchHandler.setFakeResults(
             [fakePersonalizationResult('Wallpaper', 'test')]);
         await simulateSearch('fake query 1');
@@ -488,36 +478,6 @@ suite('OSSettingsSearchBox', () => {
         assertEquals(
             'chrome://personalization/test',
             await openWindowProxy.whenCalled('openURL'));
-      });
-
-  test(
-      'Clicking on settings personalization result causes route change' +
-          ' if personalization hub feature is disabled',
-      async () => {
-        // Disable personalization hub feature.
-        loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
-        assertFalse(loadTimeData.getBoolean('isPersonalizationHubEnabled'));
-
-        const result =
-            fakeSettingsResult('Wallpaper', 'personalization?settingId=500');
-        result.id.setting = settingMojomWebui.Setting.kOpenWallpaper;
-
-        settingsSearchHandler.setFakeResults([result]);
-        await simulateSearch('fake query 2');
-        await waitForListUpdate();
-
-        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
-        assertTrue(!!selectedOsRow);
-
-        // Clicking on the searchResultContainer of the row correctly changes
-        // the route and dropdown to close.
-        selectedOsRow.$.searchResultContainer.click();
-        assertFalse(dropDown.opened);
-        assertEquals(0, openWindowProxy.getCallCount('openURL'));
-        const router = Router.getInstance();
-        assertEquals(router.getQueryParameters().get('search'), 'fake query 2');
-        assertEquals(router.getCurrentRoute().path, '/personalization');
-        assertEquals(router.getQueryParameters().get('settingId'), '500');
       });
 
   test('Keypress Enter on row causes route change', async () => {
@@ -742,31 +702,6 @@ suite('OSSettingsSearchBox', () => {
     PolymerTest.clearBody();
     Router.getInstance().navigateTo(routes.KEYBOARD);
     assertEquals(field.root.activeElement, null);
-  });
-
-  test('No personalization search results when feature off', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
-
-    personalizationSearchHandler.setFakeResults(
-        [fakePersonalizationResult('bad')]);
-    settingsSearchHandler.setFakeResults([]);
-    await simulateSearch('query');
-    await waitForListUpdate();
-
-    assertEquals(0, resultList.items.length, 'no personalization result shown');
-
-    // Clear the search box.
-    await simulateSearch('');
-
-    settingsSearchHandler.setFakeResults([fakeSettingsResult('good')]);
-    await simulateSearch('query');
-    await waitForListUpdate();
-
-    assertEquals(1, resultList.items.length, 'one setting result shown');
-    assertEquals(
-        'good',
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        'text matches expected result');
   });
 
   test('search results sorted descending', async () => {

@@ -17,17 +17,7 @@ suite('PersonalizationRouterTest', function() {
     baseSetup();
   });
 
-  test('redirects if hub feature off on root page', async () => {
-    loadTimeData.overrideValues({'isPersonalizationHubEnabled': false});
-    const reloadCalledPromise = new Promise<void>((resolve) => {
-      PersonalizationRouter.reloadAtWallpaper = resolve;
-    });
-    initElement(PersonalizationRouter);
-    await reloadCalledPromise;
-  });
-
   test('will show ambient subpage if allowed', async () => {
-    loadTimeData.overrideValues({'isPersonalizationHubEnabled': true});
     loadTimeData.overrideValues({'isAmbientModeAllowed': true});
     const routerElement = initElement(PersonalizationRouter);
     PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
@@ -45,7 +35,6 @@ suite('PersonalizationRouterTest', function() {
   });
 
   test('will not show ambient subpage if disallowed', async () => {
-    loadTimeData.overrideValues({'isPersonalizationHubEnabled': true});
     loadTimeData.overrideValues({'isAmbientModeAllowed': false});
     const routerElement = initElement(PersonalizationRouter);
     PersonalizationRouter.instance().goToRoute(Paths.AMBIENT);
@@ -62,7 +51,6 @@ suite('PersonalizationRouterTest', function() {
   });
 
   test('returns to root page when wrong path is keyed in', async () => {
-    loadTimeData.overrideValues({'isPersonalizationHubEnabled': true});
     loadTimeData.overrideValues({'isAmbientModeAllowed': true});
     const routerElement = initElement(
         PersonalizationRouter, {path: '/wrongpath', queryParams: {}});

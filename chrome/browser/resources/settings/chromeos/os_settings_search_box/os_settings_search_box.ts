@@ -17,7 +17,6 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -238,14 +237,12 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
           this.searchRequestCount_);
     });
 
-    if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
-      // Observe changes to personalization search results.
-      this.personalizationSearchResultObserverReceiver_ =
-          new PersonalizationSearchResultsObserverReceiver(this);
-      getPersonalizationSearchHandler().addObserver(
-          this.personalizationSearchResultObserverReceiver_.$
-              .bindNewPipeAndPassRemote());
-    }
+    // Observe changes to personalization search results.
+    this.personalizationSearchResultObserverReceiver_ =
+        new PersonalizationSearchResultsObserverReceiver(this);
+    getPersonalizationSearchHandler().addObserver(
+        this.personalizationSearchResultObserverReceiver_.$
+            .bindNewPipeAndPassRemote());
 
     // Observe for availability changes of settings results.
     this.settingsSearchResultObserverReceiver_ =
@@ -258,12 +255,10 @@ class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    if (loadTimeData.getBoolean('isPersonalizationHubEnabled')) {
-      assert(
-          this.personalizationSearchResultObserverReceiver_,
-          'Personalization search observer should be initialized');
-      this.personalizationSearchResultObserverReceiver_.$.close();
-    }
+    assert(
+        this.personalizationSearchResultObserverReceiver_,
+        'Personalization search observer should be initialized');
+    this.personalizationSearchResultObserverReceiver_.$.close();
 
     assert(
         this.settingsSearchResultObserverReceiver_,

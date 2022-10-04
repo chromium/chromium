@@ -66,7 +66,6 @@ suite('PersonalizationBreadcrumbTest', function() {
   });
 
   test('show label when wallpaper subpage is loaded', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
     breadcrumbElement =
         initElement(PersonalizationBreadcrumb, {'path': Paths.COLLECTIONS});
 
@@ -92,8 +91,6 @@ suite('PersonalizationBreadcrumbTest', function() {
   });
 
   test('click home button goes back to root page', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-
     breadcrumbElement =
         initElement(PersonalizationBreadcrumb, {'path': Paths.COLLECTIONS});
     await waitAfterNextRender(breadcrumbElement);
@@ -120,19 +117,6 @@ suite('PersonalizationBreadcrumbTest', function() {
   });
 
   test('back button hidden if personalization hub feature is on', async () => {
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
-
-    breadcrumbElement = initElement(
-        PersonalizationBreadcrumb, {'path': Paths.COLLECTION_IMAGES});
-    await waitAfterNextRender(breadcrumbElement);
-
-    assertTrue(
-        !!breadcrumbElement!.shadowRoot!.getElementById('backButton'),
-        'back button should be visible');
-
-    // Recreate the element with the hub feature on.
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: true});
-    breadcrumbElement.remove();
     breadcrumbElement =
         initElement(PersonalizationBreadcrumb, {'path': Paths.COLLECTIONS});
     await waitAfterNextRender(breadcrumbElement);
@@ -420,19 +404,4 @@ suite('PersonalizationBreadcrumbTest', function() {
         assertEquals(Paths.AMBIENT, path);
         assertDeepEquals({}, queryParams);
       });
-
-  test('back button aria label is set', async () => {
-    // Back button is hidden when personalization hub is enabled.
-    loadTimeData.overrideValues({isPersonalizationHubEnabled: false});
-
-    breadcrumbElement = initElement(
-        PersonalizationBreadcrumb, {'path': Paths.COLLECTION_IMAGES});
-    await waitAfterNextRender(breadcrumbElement);
-
-    assertEquals(
-        'Back to Wallpaper',
-        breadcrumbElement.shadowRoot?.getElementById('backButton')
-            ?.getAttribute('aria-label'),
-        'back button aria label is set');
-  });
 });

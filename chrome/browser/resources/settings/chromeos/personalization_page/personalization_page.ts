@@ -15,8 +15,6 @@ import '../../settings_shared.css.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {loadTimeData} from '../../i18n_setup.js';
-
 import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from './personalization_hub_browser_proxy.js';
 import {getTemplate} from './personalization_page.html.js';
 
@@ -32,19 +30,6 @@ class SettingsPersonalizationPageElement extends
     return getTemplate();
   }
 
-  static get properties() {
-    return {
-      isPersonalizationHubEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isPersonalizationHubEnabled');
-        },
-        readOnly: true,
-      },
-    };
-  }
-
-  private isPersonalizationHubEnabled_: boolean;
   private personalizationHubBrowserProxy_: PersonalizationHubBrowserProxy;
 
   constructor() {

@@ -29,10 +29,6 @@ export enum Paths {
   USER = '/user',
 }
 
-export function isPersonalizationHubEnabled(): boolean {
-  return loadTimeData.getBoolean('isPersonalizationHubEnabled');
-}
-
 export function isAmbientModeAllowed(): boolean {
   return loadTimeData.getBoolean('isAmbientModeAllowed');
 }
@@ -108,12 +104,6 @@ export class PersonalizationRouter extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    // Force the user onto the wallpaper subpage if personalization hub feature
-    // is not enabled, and the user is not already on a wallpaper page.
-    if (!loadTimeData.getBoolean('isPersonalizationHubEnabled') &&
-        !this.shouldShowWallpaperSubpage_(this.path_)) {
-      PersonalizationRouter.reloadAtWallpaper();
-    }
   }
 
   get collectionId() {
@@ -148,21 +138,17 @@ export class PersonalizationRouter extends PolymerElement {
   }
 
   private shouldShowRootPage_(path: string|null): boolean {
-    if (!isPersonalizationHubEnabled()) {
-      return false;
-    }
-
     // If the ambient mode is not allowed, will not show Ambient/AmbientAlbums
     // subpages.
     return (path === Paths.ROOT) || (isAmbientPathNotAllowed(path));
   }
 
   private shouldShowAmbientSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && isAmbientPathAllowed(path);
+    return isAmbientPathAllowed(path);
   }
 
   private shouldShowUserSubpage_(path: string|null): boolean {
-    return isPersonalizationHubEnabled() && path === Paths.USER;
+    return path === Paths.USER;
   }
 
   private shouldShowWallpaperSubpage_(path: string|null): boolean {
