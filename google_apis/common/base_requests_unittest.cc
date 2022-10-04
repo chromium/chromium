@@ -156,13 +156,13 @@ class BaseRequestsTest : public testing::Test {
 TEST_F(BaseRequestsTest, ParseValidJson) {
   std::unique_ptr<base::Value> json(ParseJson(kValidJsonString));
 
-  base::DictionaryValue* root_dict = nullptr;
   ASSERT_TRUE(json);
-  ASSERT_TRUE(json->GetAsDictionary(&root_dict));
+  base::Value::Dict* root_dict = json->GetIfDict();
+  ASSERT_TRUE(root_dict);
 
-  int int_value = 0;
-  ASSERT_TRUE(root_dict->GetInteger("test", &int_value));
-  EXPECT_EQ(123, int_value);
+  absl::optional<int> int_value = root_dict->FindInt("test");
+  ASSERT_TRUE(int_value.has_value());
+  EXPECT_EQ(123, *int_value);
 }
 
 TEST_F(BaseRequestsTest, ParseInvalidJson) {
