@@ -26,7 +26,7 @@ class PdfToEmfConverter : public mojom::PdfToEmfConverter {
 
  private:
   // mojom::PdfToEmfConverter implementation.
-  void ConvertPage(uint32_t page_number, ConvertPageCallback callback) override;
+  void ConvertPage(uint32_t page_index, ConvertPageCallback callback) override;
 
   void SetPrintMode();
   void LoadPdf(base::ReadOnlySharedMemoryRegion pdf_region);

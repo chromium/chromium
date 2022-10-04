@@ -89,9 +89,9 @@ class PdfConverterImpl : public PdfConverter {
  private:
   class GetPageCallbackData {
    public:
-    GetPageCallbackData(uint32_t page_number,
+    GetPageCallbackData(uint32_t page_index,
                         PdfConverter::GetPageCallback callback)
-        : page_number_(page_number), callback_(callback) {}
+        : page_index_(page_index), callback_(callback) {}
 
     GetPageCallbackData(const GetPageCallbackData&) = delete;
     GetPageCallbackData& operator=(const GetPageCallbackData&) = delete;
@@ -101,24 +101,24 @@ class PdfConverterImpl : public PdfConverter {
     }
 
     GetPageCallbackData& operator=(GetPageCallbackData&& rhs) {
-      page_number_ = rhs.page_number_;
+      page_index_ = rhs.page_index_;
       callback_ = rhs.callback_;
       return *this;
     }
 
-    uint32_t page_number() const { return page_number_; }
+    uint32_t page_index() const { return page_index_; }
 
     PdfConverter::GetPageCallback callback() const { return callback_; }
 
    private:
-    uint32_t page_number_;
+    uint32_t page_index_;
 
     PdfConverter::GetPageCallback callback_;
   };
 
   void Initialize(scoped_refptr<base::RefCountedMemory> data);
 
-  void GetPage(uint32_t page_number,
+  void GetPage(uint32_t page_index,
                PdfConverter::GetPageCallback get_page_callback) override;
 
   void Stop();
@@ -255,20 +255,20 @@ void PdfConverterImpl::OnPageCount(
 }
 
 void PdfConverterImpl::GetPage(
-    uint32_t page_number,
+    uint32_t page_index,
     PdfConverter::GetPageCallback get_page_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(pdf_to_emf_converter_.is_bound());
 
   // Store callback before any OnFailed() call to make it called on failure.
-  get_page_callbacks_.push(GetPageCallbackData(page_number, get_page_callback));
+  get_page_callbacks_.push(GetPageCallbackData(page_index, get_page_callback));
 
   if (!pdf_to_emf_converter_)
     return OnFailed(std::string("No PdfToEmfConverter."));
 
   pdf_to_emf_converter_->ConvertPage(
-      page_number, base::BindOnce(&PdfConverterImpl::OnPageDone,
-                                  weak_ptr_factory_.GetWeakPtr()));
+      page_index, base::BindOnce(&PdfConverterImpl::OnPageDone,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PdfConverterImpl::OnPageDone(base::ReadOnlySharedMemoryRegion emf_region,
@@ -293,7 +293,7 @@ void PdfConverterImpl::OnPageDone(base::ReadOnlySharedMemoryRegion emf_region,
   }
 
   base::WeakPtr<PdfConverterImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
-  data.callback().Run(data.page_number(), scale_factor, std::move(metafile));
+  data.callback().Run(data.page_index(), scale_factor, std::move(metafile));
   // WARNING: the callback might have deleted `this`!
   if (!weak_this)
     return;

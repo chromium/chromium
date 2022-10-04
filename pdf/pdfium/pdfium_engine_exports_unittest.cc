@@ -66,9 +66,9 @@ TEST_F(PDFiumEngineExportsTest, GetPDFPageSizeByIndex) {
   int page_count;
   ASSERT_TRUE(GetPDFDocInfo(pdf_span, &page_count, nullptr));
   ASSERT_EQ(2, page_count);
-  for (int page_number = 0; page_number < page_count; ++page_number) {
+  for (int page_index = 0; page_index < page_count; ++page_index) {
     absl::optional<gfx::SizeF> page_size =
-        GetPDFPageSizeByIndex(pdf_span, page_number);
+        GetPDFPageSizeByIndex(pdf_span, page_index);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(200, 200), page_size.value());
   }
@@ -136,9 +136,9 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
   int page_count;
   ASSERT_TRUE(GetPDFDocInfo(output_pdf_span, &page_count, nullptr));
   ASSERT_EQ(2, page_count);
-  for (int page_number = 0; page_number < page_count; ++page_number) {
+  for (int page_index = 0; page_index < page_count; ++page_index) {
     absl::optional<gfx::SizeF> page_size =
-        GetPDFPageSizeByIndex(output_pdf_span, page_number);
+        GetPDFPageSizeByIndex(output_pdf_span, page_index);
     ASSERT_TRUE(page_size.has_value());
     EXPECT_EQ(gfx::SizeF(612, 792), page_size.value());
   }

@@ -243,7 +243,7 @@ std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
 #if BUILDFLAG(IS_WIN)
 bool PDFiumEngineExports::RenderPDFPageToDC(
     base::span<const uint8_t> pdf_buffer,
-    int page_number,
+    int page_index,
     const RenderingSettings& settings,
     HDC dc) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
@@ -251,7 +251,7 @@ bool PDFiumEngineExports::RenderPDFPageToDC(
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
     return false;
-  ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_number));
+  ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_index));
   if (!page)
     return false;
 
@@ -319,7 +319,7 @@ void PDFiumEngineExports::SetPDFUsePrintMode(int mode) {
 
 bool PDFiumEngineExports::RenderPDFPageToBitmap(
     base::span<const uint8_t> pdf_buffer,
-    int page_number,
+    int page_index,
     const RenderingSettings& settings,
     void* bitmap_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
@@ -327,7 +327,7 @@ bool PDFiumEngineExports::RenderPDFPageToBitmap(
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
   if (!doc)
     return false;
-  ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_number));
+  ScopedFPDFPage page(FPDF_LoadPage(doc.get(), page_index));
   if (!page)
     return false;
 
@@ -403,9 +403,9 @@ bool PDFiumEngineExports::GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
 
   if (max_page_width) {
     *max_page_width = 0;
-    for (int page_number = 0; page_number < page_count_local; page_number++) {
+    for (int page_index = 0; page_index < page_count_local; page_index++) {
       FS_SIZEF page_size;
-      if (FPDF_GetPageSizeByIndexF(doc.get(), page_number, &page_size) &&
+      if (FPDF_GetPageSizeByIndexF(doc.get(), page_index, &page_size) &&
           page_size.width > *max_page_width) {
         *max_page_width = page_size.width;
       }
@@ -457,7 +457,7 @@ base::Value PDFiumEngineExports::GetPDFStructTreeForPage(
 
 absl::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
-    int page_number) {
+    int page_index) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
       ScopedUnsupportedFeature::kNoEngine);
   ScopedFPDFDocument doc = LoadPdfData(pdf_buffer);
@@ -465,7 +465,7 @@ absl::optional<gfx::SizeF> PDFiumEngineExports::GetPDFPageSizeByIndex(
     return absl::nullopt;
 
   FS_SIZEF size;
-  if (!FPDF_GetPageSizeByIndexF(doc.get(), page_number, &size))
+  if (!FPDF_GetPageSizeByIndexF(doc.get(), page_index, &size))
     return absl::nullopt;
 
   return gfx::SizeF(size.width, size.height);

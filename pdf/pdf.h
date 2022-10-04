@@ -49,7 +49,7 @@ enum PrintingMode {
 
 // `pdf_buffer` is the buffer that contains the entire PDF document to be
 //     rendered.
-// `page_number` is the 0-based index of the page to be rendered.
+// `page_index` is the 0-based index of the page to be rendered.
 // `dc` is the device context to render into.
 // `dpi_x` and `dpi_y` is the resolution.
 // `bounds_origin_x`, `bounds_origin_y`, `bounds_width` and `bounds_height`
@@ -74,7 +74,7 @@ enum PrintingMode {
 // `use_color` specifies color or grayscale.
 // Returns false if the document or the page number are not valid.
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                       int page_number,
+                       int page_index,
                        HDC dc,
                        int dpi_x,
                        int dpi_y,
@@ -111,13 +111,12 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 // Gets the dimensions of a specific page in a document.
 // `pdf_buffer` is the buffer that contains the entire PDF document to be
 //     rendered.
-// `page_number` is the page number that the function will get the dimensions
-//     of.
+// `page_index` is the page number that the function will get the dimensions of.
 // Returns the size of the page in points, or nullopt if the document or the
 // page number are not valid.
 absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
-    int page_number);
+    int page_index);
 
 enum class RenderDeviceType {
   kDisplay,
@@ -141,14 +140,14 @@ struct RenderOptions {
 // Renders PDF page into 4-byte per pixel BGRA color bitmap.
 // `pdf_buffer` is the buffer that contains the entire PDF document to be
 //     rendered.
-// `page_number` is the 0-based index of the page to be rendered.
+// `page_index` is the 0-based index of the page to be rendered.
 // `bitmap_buffer` is the output buffer for bitmap.
 // `bitmap_size` is the size of the output bitmap.
 // `dpi` is the 2D resolution.
 // `options` is the options to render with.
 // Returns false if the document or the page number are not valid.
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                           int page_number,
+                           int page_index,
                            void* bitmap_buffer,
                            const gfx::Size& bitmap_size,
                            const gfx::Size& dpi,

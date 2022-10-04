@@ -46,7 +46,7 @@ std::vector<uint8_t> CreateFlattenedPdf(
 
 #if BUILDFLAG(IS_WIN)
 bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                       int page_number,
+                       int page_index,
                        HDC dc,
                        int dpi_x,
                        int dpi_y,
@@ -67,7 +67,7 @@ bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
       gfx::Rect(bounds_origin_x, bounds_origin_y, bounds_width, bounds_height),
       fit_to_bounds, stretch_to_bounds, keep_aspect_ratio, center_in_bounds,
       autorotate, use_color, /*render_for_printing=*/true);
-  return engine_exports->RenderPDFPageToDC(pdf_buffer, page_number, settings,
+  return engine_exports->RenderPDFPageToDC(pdf_buffer, page_index, settings,
                                            dc);
 }
 
@@ -99,15 +99,15 @@ base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
 
 absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
-    int page_number) {
+    int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
   chrome_pdf::PDFEngineExports* engine_exports =
       chrome_pdf::PDFEngineExports::Get();
-  return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_number);
+  return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
 }
 
 bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                           int page_number,
+                           int page_index,
                            void* bitmap_buffer,
                            const gfx::Size& bitmap_size,
                            const gfx::Size& dpi,
@@ -120,8 +120,8 @@ bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
       options.keep_aspect_ratio,
       /*center_in_bounds=*/true, options.autorotate, options.use_color,
       options.render_device_type == RenderDeviceType::kPrinter);
-  return engine_exports->RenderPDFPageToBitmap(pdf_buffer, page_number,
-                                               settings, bitmap_buffer);
+  return engine_exports->RenderPDFPageToBitmap(pdf_buffer, page_index, settings,
+                                               bitmap_buffer);
 }
 
 std::vector<uint8_t> ConvertPdfPagesToNupPdf(

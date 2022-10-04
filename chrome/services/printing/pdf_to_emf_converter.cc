@@ -72,7 +72,7 @@ void PdfToEmfConverter::LoadPdf(base::ReadOnlySharedMemoryRegion pdf_region) {
 }
 
 base::ReadOnlySharedMemoryRegion PdfToEmfConverter::RenderPdfPageToMetafile(
-    int page_number,
+    int page_index,
     bool postscript,
     float* scale_factor) {
   Emf metafile;
@@ -108,7 +108,7 @@ base::ReadOnlySharedMemoryRegion PdfToEmfConverter::RenderPdfPageToMetafile(
   base::ReadOnlySharedMemoryRegion invalid_emf_region;
   auto pdf_span = pdf_mapping_.GetMemoryAsSpan<const uint8_t>();
   if (!chrome_pdf::RenderPDFPageToDC(
-          pdf_span, page_number, metafile.context(),
+          pdf_span, page_index, metafile.context(),
           pdf_render_settings_.dpi.width(), pdf_render_settings_.dpi.height(),
           pdf_render_settings_.area.x() - offset_x,
           pdf_render_settings_.area.y() - offset_y,
@@ -132,11 +132,11 @@ base::ReadOnlySharedMemoryRegion PdfToEmfConverter::RenderPdfPageToMetafile(
   return std::move(region_mapping.region);
 }
 
-void PdfToEmfConverter::ConvertPage(uint32_t page_number,
+void PdfToEmfConverter::ConvertPage(uint32_t page_index,
                                     ConvertPageCallback callback) {
   static constexpr float kInvalidScaleFactor = 0;
   base::ReadOnlySharedMemoryRegion invalid_emf_region;
-  if (page_number >= total_page_count_) {
+  if (page_index >= total_page_count_) {
     std::move(callback).Run(std::move(invalid_emf_region), kInvalidScaleFactor);
     return;
   }
@@ -148,7 +148,7 @@ void PdfToEmfConverter::ConvertPage(uint32_t page_number,
       pdf_render_settings_.mode ==
           PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
   base::ReadOnlySharedMemoryRegion emf_region =
-      RenderPdfPageToMetafile(page_number, postscript, &scale_factor);
+      RenderPdfPageToMetafile(page_index, postscript, &scale_factor);
   std::move(callback).Run(std::move(emf_region), scale_factor);
 }
 

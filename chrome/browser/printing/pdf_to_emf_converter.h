@@ -19,7 +19,7 @@ class PdfConverter {
  public:
   using StartCallback = base::OnceCallback<void(uint32_t page_count)>;
   using GetPageCallback =
-      base::RepeatingCallback<void(uint32_t page_number,
+      base::RepeatingCallback<void(uint32_t page_index,
                                    float scale_factor,
                                    std::unique_ptr<MetafilePlayer> file)>;
   virtual ~PdfConverter();
@@ -31,11 +31,11 @@ class PdfConverter {
       const PdfRenderSettings& conversion_settings,
       StartCallback start_callback);
 
-  // Requests conversion of the page. `page_number` is 0-base page number in
+  // Requests conversion of the page. `page_index` is 0-base page index for the
   // PDF provided in Start() call.
-  // Calls `get_page_callback` after conversion. `emf` of callback in not NULL
-  // if conversion succeeded.
-  virtual void GetPage(uint32_t page_number,
+  // Calls `get_page_callback` after conversion. The `file` parameter in the
+  // callback is non-null if the conversion succeeded.
+  virtual void GetPage(uint32_t page_index,
                        GetPageCallback get_page_callback) = 0;
 };
 

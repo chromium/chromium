@@ -297,11 +297,7 @@ const std::string& PrintJob::source_id() const {
 class PrintJob::PdfConversionState {
  public:
   PdfConversionState(const gfx::Size& page_size, const gfx::Rect& content_area)
-      : page_count_(0),
-        current_page_(0),
-        pages_in_progress_(0),
-        page_size_(page_size),
-        content_area_(content_area) {}
+      : page_size_(page_size), content_area_(content_area) {}
 
   void Start(scoped_refptr<base::RefCountedMemory> data,
              const PdfRenderSettings& conversion_settings,
@@ -313,9 +309,9 @@ class PrintJob::PdfConversionState {
   void GetMorePages(PdfConverter::GetPageCallback get_page_callback) {
     const int kMaxNumberOfTempFilesPerDocument = 3;
     while (pages_in_progress_ < kMaxNumberOfTempFilesPerDocument &&
-           current_page_ < page_count_) {
+           current_page_index_ < page_count_) {
       ++pages_in_progress_;
-      converter_->GetPage(current_page_++, get_page_callback);
+      converter_->GetPage(current_page_index_++, get_page_callback);
     }
   }
 
@@ -323,7 +319,7 @@ class PrintJob::PdfConversionState {
     --pages_in_progress_;
     GetMorePages(get_page_callback);
     // Release converter if we don't need this any more.
-    if (!pages_in_progress_ && current_page_ >= page_count_)
+    if (!pages_in_progress_ && current_page_index_ >= page_count_)
       converter_.reset();
   }
 
@@ -332,11 +328,11 @@ class PrintJob::PdfConversionState {
   const gfx::Rect& content_area() const { return content_area_; }
 
  private:
-  uint32_t page_count_;
-  uint32_t current_page_;
-  int pages_in_progress_;
-  gfx::Size page_size_;
-  gfx::Rect content_area_;
+  uint32_t page_count_ = 0;
+  uint32_t current_page_index_ = 0;
+  int pages_in_progress_ = 0;
+  const gfx::Size page_size_;
+  const gfx::Rect content_area_;
   std::unique_ptr<PdfConverter> converter_;
 };
 

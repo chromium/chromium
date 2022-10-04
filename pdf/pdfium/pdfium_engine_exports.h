@@ -27,13 +27,13 @@ class PDFiumEngineExports : public PDFEngineExports {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_WIN)
   bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                         int page_number,
+                         int page_index,
                          const RenderingSettings& settings,
                          HDC dc) override;
   void SetPDFUsePrintMode(int mode) override;
 #endif  // BUILDFLAG(IS_WIN)
   bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                             int page_number,
+                             int page_index,
                              const RenderingSettings& settings,
                              void* bitmap_buffer) override;
   std::vector<uint8_t> ConvertPdfPagesToNupPdf(
@@ -55,7 +55,7 @@ class PDFiumEngineExports : public PDFEngineExports {
                                       int page_index) override;
   absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
       base::span<const uint8_t> pdf_buffer,
-      int page_number) override;
+      int page_index) override;
 };
 
 }  // namespace chrome_pdf
