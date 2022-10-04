@@ -228,23 +228,21 @@ void SetUserOptedInWalletSyncTransport(PrefService* prefs,
   base::Base64Encode(crypto::SHA256HashString(account_id.ToString()),
                      &account_hash);
 
-  DictionaryPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
+  ScopedDictPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
   int value = GetSyncTransportOptInBitFieldForAccount(prefs, account_hash);
 
   // If the user has opted in, set that bit while leaving the others intact.
   if (opted_in) {
-    update->SetKey(account_hash,
-                   base::Value(value | sync_transport_opt_in::kWallet));
+    update->Set(account_hash, value | sync_transport_opt_in::kWallet);
     return;
   }
 
   // Invert the mask in order to reset the Wallet bit while leaving the other
   // bits intact, or remove the key entirely if the Wallet was the only opt-in.
   if (value & ~sync_transport_opt_in::kWallet) {
-    update->SetKey(account_hash,
-                   base::Value(value & ~sync_transport_opt_in::kWallet));
+    update->Set(account_hash, value & ~sync_transport_opt_in::kWallet);
   } else {
-    update->RemoveKey(account_hash);
+    update->Remove(account_hash);
   }
 }
 
@@ -266,8 +264,7 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
 }
 
 void ClearSyncTransportOptIns(PrefService* prefs) {
-  DictionaryPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
-  update->DictClear();
+  prefs->SetDict(prefs::kAutofillSyncTransportOptIn, base::Value::Dict());
 }
 
 }  // namespace prefs
