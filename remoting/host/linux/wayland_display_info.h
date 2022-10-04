@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "third_party/wayland-protocols/src/unstable/xdg-output/xdg-output-unstable-v1-client-protocol.h"
+#include <xdg-output-unstable-v1-client-protocol.h>
 
 namespace remoting {
 

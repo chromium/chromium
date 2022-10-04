@@ -8,12 +8,13 @@
 #include <string>
 #include <vector>
 
+#include <xdg-output-unstable-v1-client-protocol.h>
+
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/linux/wayland_display_info.h"
-#include "third_party/wayland-protocols/src/unstable/xdg-output/xdg-output-unstable-v1-client-protocol.h"
 
 namespace remoting {
 
