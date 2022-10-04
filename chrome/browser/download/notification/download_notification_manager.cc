@@ -21,11 +21,11 @@ DownloadNotificationManager::~DownloadNotificationManager() {
 void DownloadNotificationManager::OnNewDownloadReady(
     download::DownloadItem* item) {
   // Lower the priority of all existing in-progress download notifications.
-  for (auto& item : items_) {
-    DownloadUIModel* model = item.second->GetDownload();
-    DownloadItemNotification* download_notification = item.second.get();
+  for (auto& it : items_) {
+    DownloadItemNotification* notification = it.second.get();
+    DownloadUIModel* model = notification->GetDownload();
     if (model->GetState() == download::DownloadItem::IN_PROGRESS)
-      download_notification->DisablePopup();
+      notification->DisablePopup();
   }
 
   auto model = std::make_unique<DownloadItemModel>(item);

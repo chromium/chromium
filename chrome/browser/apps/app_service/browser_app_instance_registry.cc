@@ -409,11 +409,11 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceAddedOrUpdated(
     }
   } else {
     auto id = update.id;
-    auto& instance = AddInstance(
+    auto& new_instance = AddInstance(
         lacros_app_instances_, id,
         std::make_unique<BrowserAppInstance>(std::move(update), window));
     for (auto& observer : observers_) {
-      observer.OnBrowserAppAdded(instance);
+      observer.OnBrowserAppAdded(new_instance);
     }
   }
 }

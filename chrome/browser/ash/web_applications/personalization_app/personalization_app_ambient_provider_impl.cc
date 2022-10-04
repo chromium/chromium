@@ -171,12 +171,12 @@ void PersonalizationAppAmbientProviderImpl::SetAlbumSelected(
     bool selected) {
   switch (topic_source) {
     case (ash::AmbientModeTopicSource::kGooglePhotos): {
-      ash::PersonalAlbum* personal_album = FindPersonalAlbumById(id);
-      if (!personal_album) {
+      ash::PersonalAlbum* target_personal_album = FindPersonalAlbumById(id);
+      if (!target_personal_album) {
         mojo::ReportBadMessage("Invalid album id.");
         return;
       }
-      personal_album->selected = selected;
+      target_personal_album->selected = selected;
 
       // For Google Photos, we will populate the |selected_album_ids| with IDs
       // of selected albums.

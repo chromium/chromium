@@ -1091,18 +1091,18 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         request.set_match_behavior(
             ::attestation::DeleteKeysRequest::MATCH_BEHAVIOR_PREFIX);
 
-        auto callback = base::BindOnce(
+        auto clear_platform_keys_callback = base::BindOnce(
             &ChromeBrowsingDataRemoverDelegate::OnClearPlatformKeys,
             weak_ptr_factory_.GetWeakPtr(),
             CreateTaskCompletionClosure(TracingDataType::kTpmAttestationKeys));
         ash::AttestationClient::Get()->DeleteKeys(
             request, base::BindOnce(
-                         [](decltype(callback) cb,
+                         [](decltype(clear_platform_keys_callback) cb,
                             const ::attestation::DeleteKeysReply& reply) {
                            std::move(cb).Run(reply.status() ==
                                              ::attestation::STATUS_SUCCESS);
                          },
-                         std::move(callback)));
+                         std::move(clear_platform_keys_callback)));
       }
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -197,12 +197,12 @@ TEST_F(ExternalCacheImplTest, Basic) {
   base::FilePath temp_dir(CreateTempDir());
   base::FilePath temp_file2 = temp_dir.Append("b.crx");
   CreateFile(temp_file2);
-  extensions::CRXFileInfo crx_info(temp_file2,
-                                   extensions::GetTestVerifierFormat());
-  crx_info.extension_id = kTestExtensionId2;
-  crx_info.expected_version = base::Version("2");
+  extensions::CRXFileInfo crx_info_v2(temp_file2,
+                                      extensions::GetTestVerifierFormat());
+  crx_info_v2.extension_id = kTestExtensionId2;
+  crx_info_v2.expected_version = base::Version("2");
   external_cache.OnExtensionDownloadFinished(
-      crx_info, true, GURL(),
+      crx_info_v2, true, GURL(),
       extensions::ExtensionDownloaderDelegate::PingResult(), std::set<int>(),
       extensions::ExtensionDownloaderDelegate::InstallCallback());
 
@@ -228,12 +228,12 @@ TEST_F(ExternalCacheImplTest, Basic) {
   base::FilePath temp_file4 = temp_dir.Append("d.crx");
   CreateFile(temp_file4);
   {
-    extensions::CRXFileInfo crx_info(temp_file4,
-                                     extensions::GetTestVerifierFormat());
-    crx_info.extension_id = kTestExtensionId4;
-    crx_info.expected_version = base::Version("4");
+    extensions::CRXFileInfo crx_info_v4(temp_file4,
+                                        extensions::GetTestVerifierFormat());
+    crx_info_v4.extension_id = kTestExtensionId4;
+    crx_info_v4.expected_version = base::Version("4");
     external_cache.OnExtensionDownloadFinished(
-        crx_info, true, GURL(),
+        crx_info_v4, true, GURL(),
         extensions::ExtensionDownloaderDelegate::PingResult(), std::set<int>(),
         extensions::ExtensionDownloaderDelegate::InstallCallback());
   }
