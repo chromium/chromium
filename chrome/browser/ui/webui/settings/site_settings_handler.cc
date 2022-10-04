@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1032,6 +1033,8 @@ void SiteSettingsHandler::HandleGetDefaultValueForContentType(
 void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
   AllowJavascript();
 
+  request_started_time_ = base::TimeTicks::Now();
+
   CHECK_EQ(1U, args.size());
   std::string callback_id = args[0].GetString();
 
@@ -1223,6 +1226,12 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
 
 void SiteSettingsHandler::OnStorageFetched() {
   AllowJavascript();
+
+  // Record how long does it take to fetch the storage and return complete
+  // information to the UI.
+  DCHECK(!request_started_time_.is_null());
+  base::UmaHistogramTimes("WebsiteSettings.GetAllSitesLoadTime",
+                          base::TimeTicks::Now() - request_started_time_);
   FireWebUIListener("onStorageListFetched",
                     PopulateCookiesAndUsageData(profile_));
 }
@@ -2020,6 +2029,7 @@ void SiteSettingsHandler::SetCookiesTreeModelForTesting(
     std::unique_ptr<CookiesTreeModel> cookies_tree_model) {
   cookies_tree_model_ = std::move(cookies_tree_model);
   tree_model_set_for_testing_ = true;
+  request_started_time_ = base::TimeTicks::Now();
 }
 
 void SiteSettingsHandler::ClearAllSitesMapForTesting() {
