@@ -172,10 +172,10 @@ class AccessContextAuditServiceTest : public testing::Test {
   scoped_refptr<base::UpdateableSequencedTaskRunner> task_runner_;
   std::vector<AccessContextAuditDatabase::AccessRecord> records_;
 
-  virtual std::vector<base::Feature> enabled_features() {
+  virtual std::vector<base::test::FeatureRef> enabled_features() {
     return {features::kClientStorageAccessContextAuditing};
   }
-  virtual std::vector<base::Feature> disabled_features() {
+  virtual std::vector<base::test::FeatureRef> disabled_features() {
     return {browsing_data::features::kEnableRemovingAllThirdPartyCookies};
   }
 };
@@ -878,11 +878,13 @@ class AccessContextAuditThirdPartyDataClearingTest
     EXPECT_TRUE(records[0].top_frame_origin.opaque());
   }
 
-  std::vector<base::Feature> enabled_features() override {
+  std::vector<base::test::FeatureRef> enabled_features() override {
     return {features::kClientStorageAccessContextAuditing,
             browsing_data::features::kEnableRemovingAllThirdPartyCookies};
   }
-  std::vector<base::Feature> disabled_features() override { return {}; }
+  std::vector<base::test::FeatureRef> disabled_features() override {
+    return {};
+  }
 };
 
 // Test that when we enable user controls to clear third-party data, we do not

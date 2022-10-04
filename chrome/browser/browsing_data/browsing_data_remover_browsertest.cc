@@ -117,7 +117,7 @@ class BrowsingDataRemoverBrowserTest
     : public BrowsingDataRemoverBrowserTestBase {
  public:
   BrowsingDataRemoverBrowserTest() {
-    std::vector<base::Feature> enabled_features = {};
+    std::vector<base::test::FeatureRef> enabled_features = {};
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
