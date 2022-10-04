@@ -22,8 +22,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 #include "chrome/updater/win/wrl_module_initializer.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace updater {
 
@@ -48,7 +48,6 @@ class ProxyImplBase {
  protected:
   explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
-    CHECK(absl::holds_alternative<HRESULT>(interface_));
     WRLModuleInitializer::Get();
   }
 
@@ -58,8 +57,7 @@ class ProxyImplBase {
     task_runner_->PostTask(FROM_HERE, std::move(task));
   }
 
-  absl::variant<HRESULT, Microsoft::WRL::ComPtr<Interface>> CreateInterface()
-      const {
+  HResultOr<Microsoft::WRL::ComPtr<Interface>> CreateInterface() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ::Sleep(kCreateUpdaterInstanceDelayMs);
 
@@ -68,7 +66,7 @@ class ProxyImplBase {
                                     CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
     if (FAILED(hr)) {
       VLOG(2) << "Failed to instantiate the update server: " << std::hex << hr;
-      return hr;
+      return base::unexpected(hr);
     }
 
     Microsoft::WRL::ComPtr<Interface> server_interface;
@@ -82,26 +80,23 @@ class ProxyImplBase {
 
   HRESULT hresult() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(absl::holds_alternative<HRESULT>(interface_));
-    return absl::get<HRESULT>(interface_);
+    CHECK(!interface_.has_value());
+    return interface_.error();
   }
 
   Microsoft::WRL::ComPtr<Interface> get_interface() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(
-        absl::holds_alternative<Microsoft::WRL::ComPtr<Interface>>(interface_));
-    return absl::get<Microsoft::WRL::ComPtr<Interface>>(interface_);
+    CHECK(interface_.has_value());
+    return interface_.value();
   }
 
   bool ConnectToServer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (absl::holds_alternative<Microsoft::WRL::ComPtr<Interface>>(
-            interface_)) {
+    if (interface_.has_value()) {
       return true;
     }
     interface_ = CreateInterface();
-    return absl::holds_alternative<Microsoft::WRL::ComPtr<Interface>>(
-        interface_);
+    return interface_.has_value();
   }
 
   // Bound to the `task_runner_` sequence.
@@ -119,7 +114,8 @@ class ProxyImplBase {
   const UpdaterScope scope_;
 
   // Interface owned by the STA. It must be created and released by the STA.
-  absl::variant<HRESULT, Microsoft::WRL::ComPtr<Interface>> interface_;
+  HResultOr<Microsoft::WRL::ComPtr<Interface>> interface_ =
+      base::unexpected(S_OK);
 };
 
 }  // namespace updater
