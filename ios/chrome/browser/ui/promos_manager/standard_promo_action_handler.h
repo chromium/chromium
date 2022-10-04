@@ -14,6 +14,10 @@
 
 @optional
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Button-based actions. (Invoked via a button press.)
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 // The "Dismiss" button was touched.
 - (void)standardPromoDismissAction;
 
@@ -25,6 +29,18 @@
 
 // The "Tertiary Action" was touched.
 - (void)standardPromoTertiaryAction;
+
+// - - - - - - - - - - - - - - - - - - - - - - - -
+// Gesture-based actions. (Invoked via a gesture.)
+// - - - - - - - - - - - - - - - - - - - - - - - -
+
+// Important: If `standardPromoDismissSwipe` is not implemented, but
+// `standardPromoDismissAction` is, `standardPromoDismissAction` will be called
+// for both `standardPromoDismissAction` and `standardPromoDismissSwipe`.
+// However, if both `standardPromoDismissAction` and `standardPromoDismissSwipe`
+// are implemented, they will be called separately at their respective points of
+// invocation.
+- (void)standardPromoDismissSwipe;
 
 @end
 

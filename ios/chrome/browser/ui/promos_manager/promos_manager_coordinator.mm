@@ -381,8 +381,6 @@
                  respondsToSelector:@selector(standardPromoDismissAction)]) {
     [self.banneredProvider standardPromoDismissAction];
     [self dismissViewControllers];
-  } else {
-    NOTREACHED();
   }
 }
 
@@ -390,7 +388,18 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self confirmationAlertDismissAction];
+  DCHECK(self.provider || self.banneredProvider);
+
+  if ([self.provider respondsToSelector:@selector(standardPromoDismissSwipe)]) {
+    [self.provider standardPromoDismissSwipe];
+    [self dismissViewControllers];
+  } else if ([self.banneredProvider
+                 respondsToSelector:@selector(standardPromoDismissSwipe)]) {
+    [self.banneredProvider standardPromoDismissSwipe];
+    [self dismissViewControllers];
+  } else {
+    [self confirmationAlertDismissAction];
+  }
 }
 
 #pragma mark - Private

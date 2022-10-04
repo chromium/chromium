@@ -101,5 +101,39 @@ TEST_F(PromosManagerCoordinatorTest,
   [banneredProvider verify];
 }
 
+// Tests standardPromoDismissSwipe is called when a viewController is
+// dismissed via swipe.
+TEST_F(PromosManagerCoordinatorTest, ViewControllerDismissesViaSwipe) {
+  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
+
+  CreatePromosManagerCoordinator();
+
+  id provider = OCMProtocolMock(@protocol(StandardPromoViewProvider));
+  coordinator_.provider = provider;
+
+  OCMExpect([provider standardPromoDismissSwipe]);
+
+  [coordinator_ presentationControllerDidDismiss:nil];
+
+  [provider verify];
+}
+
+// Tests standardPromoDismissSwipe is called when a banneredViewController is
+// dismissed via swipe.
+TEST_F(PromosManagerCoordinatorTest, BanneredViewControllerDismissesViaSwipe) {
+  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
+
+  CreatePromosManagerCoordinator();
+
+  id banneredProvider = OCMProtocolMock(@protocol(BanneredPromoViewProvider));
+  coordinator_.banneredProvider = banneredProvider;
+
+  OCMExpect([banneredProvider standardPromoDismissSwipe]);
+
+  [coordinator_ presentationControllerDidDismiss:nil];
+
+  [banneredProvider verify];
+}
+
 // TODO(crbug.com/1370763): Add unit tests for promoWasDisplayed being
 // called when promo is displayed.

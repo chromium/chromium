@@ -30,7 +30,8 @@
 @property(nonatomic, strong) PromoStyleViewController* banneredViewController;
 
 // UIAdaptivePresentationControllerDelegate.
-- (void)presentationControllerDidDismiss;
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController;
 
 // ConfirmationAlertActionHandler.
 - (void)confirmationAlertDismissAction;
