@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_util.h"
@@ -19,8 +18,6 @@
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "device/fido/authenticator_data.h"
-#include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
@@ -178,6 +175,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
         expected_mechanisms;
     Step expected_first_step;
+    bool conditional_ui = false;
   } kTests[] = {
       // If there's only a single mechanism, it should activate.
       {mc, {usb}, {}, {}, {t(usb)}, usb_ui},
@@ -240,6 +238,11 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       // the "Add phone" option.
       {mc, {cable}, {has_winapi}, {}, {winapi}, plat_ui},
       {ga, {cable}, {has_winapi}, {}, {winapi}, plat_ui},
+
+      // If this is a Conditional UI request, don't offer the platform
+      // authenticator.
+      {ga, {usb, internal}, {}, {}, {t(usb)}, usb_ui, true},
+      {ga, {usb, internal, cable}, {}, {"a"}, {p("a"), t(usb), add}, mss, true},
   };
 
   unsigned test_num = 0;
@@ -273,7 +276,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       transports_info.win_native_api_authenticator_id = "some_authenticator_id";
     }
 
-    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+    AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
 
     absl::optional<bool> has_v2_cable_extension;
     if (base::Contains(test.params,
@@ -299,11 +302,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     }
 
     model.StartFlow(
-        std::move(transports_info),
-        /*is_conditional_mediation=*/false,
+        std::move(transports_info), test.conditional_ui,
         /*prefer_native_api=*/
         base::Contains(test.params,
                        TransportAvailabilityParam::kPreferNativeAPI));
+    if (test.conditional_ui) {
+      EXPECT_EQ(model.current_step(), Step::kConditionalMediation);
+      model.TransitionToModalWebAuthnRequest();
+    }
     EXPECT_EQ(test.expected_first_step, model.current_step());
 
     std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
@@ -360,7 +366,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
 
 TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   model.AddObserver(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnStepTransition());
@@ -432,7 +438,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
     transports_info.is_off_the_record_context =
         test.profile == Profile::INCOGNITO;
 
-    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+    AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
 
     std::array<uint8_t, device::kP256X962Length> public_key = {0};
     std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones(
@@ -496,7 +502,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, AwaitingAcknowledgement) {
 
   for (const auto& test_case : kTestCases) {
     testing::StrictMock<MockDialogModelObserver> mock_observer;
-    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+    AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
     model.AddObserver(&mock_observer);
 
     TransportAvailabilityInfo transports_info;
@@ -540,7 +546,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterAlreadyPowered) {
     transports_info.is_ble_powered = true;
 
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+    AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
@@ -569,7 +575,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, BleAdapterNeedToBeManuallyPowered) {
 
     testing::NiceMock<MockDialogModelObserver> mock_observer;
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+    AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
     model.AddObserver(&mock_observer);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
@@ -611,7 +617,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
     transports_info.is_ble_powered = false;
 
     BluetoothAdapterPowerOnCallbackReceiver power_receiver;
-    AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+    AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
     model.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     model.set_cable_transport_info(true, {}, base::DoNothing(), absl::nullopt);
     model.StartFlow(std::move(transports_info),
@@ -642,7 +648,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
       AuthenticatorTransport::kUsbHumanInterfaceDevice};
 
   int num_called = 0;
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
       &num_called));
@@ -686,7 +692,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   transports_info.win_native_api_authenticator_id = kWinAuthenticatorId;
 
   std::vector<std::string> dispatched_authenticator_ids;
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   model.SetRequestCallback(base::BindRepeating(
       [](std::vector<std::string>* ids, const std::string& authenticator_id) {
         ids->push_back(authenticator_id);
@@ -704,7 +710,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 
 TEST_F(AuthenticatorRequestDialogModelTest,
        ConditionalUINoRecognizedCredential) {
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
 
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindRepeating(
@@ -738,7 +744,7 @@ TEST_F(AuthenticatorRequestDialogModelTest,
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindRepeating(
       [](int* i, std::vector<uint8_t> credential_id) {
@@ -787,7 +793,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
 // it.
 TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUICancelRequest) {
   testing::StrictMock<MockDialogModelObserver> mock_observer;
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   model.AddObserver(&mock_observer);
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"internal", AuthenticatorTransport::kInternal));
@@ -846,7 +852,7 @@ class AuthenticatorRequestDialogModelPreselectCredentialTest
 
 TEST_F(AuthenticatorRequestDialogModelPreselectCredentialTest,
        PreSelectWithEmptyAllowList) {
-  AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
+  AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
   int preselect_num_called = 0;
   model.SetAccountPreselectedCallback(base::BindLambdaForTesting(
       [&preselect_num_called](std::vector<uint8_t> credential_id) {

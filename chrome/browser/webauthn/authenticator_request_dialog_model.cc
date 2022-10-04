@@ -219,10 +219,6 @@ void AuthenticatorRequestDialogModel::StartOver() {
   for (auto& observer : observers_)
     observer.OnStartOver();
 
-  if (use_conditional_mediation_) {
-    StartConditionalMediationRequest();
-    return;
-  }
   current_mechanism_.reset();
   current_step_ = Step::kNotStarted;
   SetCurrentStep(Step::kMechanismSelection);
@@ -460,7 +456,10 @@ void AuthenticatorRequestDialogModel::ShowCable() {
 void AuthenticatorRequestDialogModel::Cancel() {
   if (use_conditional_mediation_) {
     // Conditional UI requests are never cancelled, they restart silently.
-    StartOver();
+    ResetEphemeralState();
+    for (auto& observer : observers_)
+      observer.OnStartOver();
+    StartConditionalMediationRequest();
     return;
   }
 
@@ -550,7 +549,7 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
-    StartOver();
+    Cancel();
     return;
   }
   SetCurrentStep(Step::kErrorInternalUnrecognized);
@@ -562,7 +561,7 @@ bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
-    StartOver();
+    Cancel();
     return true;
   }
 
@@ -1096,14 +1095,19 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
       (transport_availability_.has_platform_authenticator_credential ==
            device::FidoRequestHandlerBase::RecognizedCredential::
                kHasRecognizedCredential ||
-       show_create_passkey_step)) {
+       show_create_passkey_step) &&
+      !use_conditional_mediation_) {
     priority_transport = AuthenticatorTransport::kInternal;
   }
 
   std::vector<AuthenticatorTransport> transports_to_list_if_active = {
       AuthenticatorTransport::kUsbHumanInterfaceDevice,
-      AuthenticatorTransport::kInternal,
   };
+
+  if (!use_conditional_mediation_) {
+    // Conditional requests offer platform credentials through the autofill UI.
+    transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
+  }
 
   const auto kCable = AuthenticatorTransport::kHybrid;
   bool include_add_phone_option = false;
