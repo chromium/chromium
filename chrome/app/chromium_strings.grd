@@ -1579,19 +1579,40 @@ Permissions you've already given to websites and apps may apply to this account.
       </if>
       <!-- High Efficiency Chip strings -->
       <if expr="not is_android">
-        <message name="IDS_HIGH_EFFICIENCY_DIALOG_TITLE" desc="Title text for a dialog describing that the Memory Saver setting is enabled">
-          Memory Saver made Chromium faster
-        </message>
+        <if expr="use_titlecase">
+          <message name="IDS_HIGH_EFFICIENCY_DIALOG_TITLE" desc="In Title Case: Title text for a dialog describing that the Memory Saver setting is enabled">
+            Memory Saver Made Chromium Faster
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_HIGH_EFFICIENCY_DIALOG_TITLE" desc="Title text for a dialog describing that the Memory Saver setting is enabled">
+            Memory Saver made Chromium faster
+          </message>
+        </if>
       </if>
 
       <!-- High Efficiency IPH strings -->
       <if expr="not is_android">
-        <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE" desc="The title for the high efficiency info mode in-product promo bubble.">
-          Memory Saver made Chromium faster
-        </message>
-        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE" desc="The title for the high efficiency mode in-product promo bubble">
-          Make Chromium faster
-        </message>
+        <if expr="use_titlecase">
+          <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE" desc="In Title Case: The title for the high efficiency info mode in-product promo bubble.">
+            Memory Saver Made Chromium Faster
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE" desc="The title for the high efficiency info mode in-product promo bubble.">
+            Memory Saver made Chromium faster
+          </message>
+        </if>
+        <if expr="use_titlecase">
+          <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE" desc="In Title Case: The title for the high efficiency mode in-product promo bubble">
+            Make Chromium Faster
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE" desc="The title for the high efficiency mode in-product promo bubble">
+            Make Chromium faster
+          </message>
+        </if>
       </if>
     </messages>
   </release>
