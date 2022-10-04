@@ -32,9 +32,9 @@ BrowserStateInfoCache::BrowserStateInfoCache(
     const base::FilePath& user_data_dir)
     : prefs_(prefs), user_data_dir_(user_data_dir) {
   // Populate the cache
-  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
-  base::Value* cache = update.Get();
-  for (const auto it : cache->DictItems()) {
+  const base::Value::Dict& cache =
+      prefs_->GetDict(prefs::kBrowserStateInfoCache);
+  for (const auto it : cache) {
     AddBrowserStateCacheKey(it.first);
   }
 }
@@ -46,13 +46,13 @@ void BrowserStateInfoCache::AddBrowserState(
     const std::string& gaia_id,
     const std::u16string& user_name) {
   std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
-  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
-  base::Value* cache = update.Get();
+  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  base::Value::Dict& cache = update.Get();
 
-  base::Value info(base::Value::Type::DICTIONARY);
-  info.SetStringKey(kGAIAIdKey, gaia_id);
-  info.SetStringKey(kUserNameKey, user_name);
-  cache->SetKey(key, std::move(info));
+  base::Value::Dict info;
+  info.Set(kGAIAIdKey, gaia_id);
+  info.Set(kUserNameKey, user_name);
+  cache.Set(key, std::move(info));
   AddBrowserStateCacheKey(key);
 
   for (auto& observer : observer_list_)
@@ -77,10 +77,10 @@ void BrowserStateInfoCache::RemoveBrowserState(
     NOTREACHED();
     return;
   }
-  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
-  base::Value* cache = update.Get();
+  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  base::Value::Dict& cache = update.Get();
   std::string key = CacheKeyFromBrowserStatePath(browser_state_path);
-  cache->RemoveKey(key);
+  cache.Remove(key);
   sorted_keys_.erase(base::ranges::find(sorted_keys_, key));
 
   for (auto& observer : observer_list_)
@@ -183,8 +183,8 @@ const base::Value::Dict* BrowserStateInfoCache::GetInfoForBrowserStateAtIndex(
 void BrowserStateInfoCache::SetInfoForBrowserStateAtIndex(
     size_t index,
     base::Value::Dict info) {
-  DictionaryPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
-  update->GetDict().Set(sorted_keys_[index], std::move(info));
+  ScopedDictPrefUpdate update(prefs_, prefs::kBrowserStateInfoCache);
+  update->Set(sorted_keys_[index], std::move(info));
 }
 
 std::string BrowserStateInfoCache::CacheKeyFromBrowserStatePath(

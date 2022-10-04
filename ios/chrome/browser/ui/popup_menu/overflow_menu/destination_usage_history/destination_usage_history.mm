@@ -245,9 +245,9 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 
   int numClicks = history.FindIntByDottedPath(path).value_or(0) + 1;
 
-  DictionaryPrefUpdate update(self.prefService,
+  ScopedDictPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
-  update->SetIntPath(path, numClicks);
+  update->SetByDottedPath(path, numClicks);
 
   // User's very first time using Smart Sorting.
   if (history.size() == 0)
@@ -257,10 +257,10 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   // ahead of time so overflow menu presentation needn't run ranking algorithm
   // each time it presents.
   const base::Value::List* currentRanking = [self fetchCurrentRanking];
-  const base::Value::List newRanking =
+  base::Value::List newRanking =
       [self calculateNewRanking:currentRanking
           numAboveFoldDestinations:numAboveFoldDestinations];
-  update->SetKey(kRankingKey, base::Value(newRanking.Clone()));
+  update->Set(kRankingKey, std::move(newRanking));
 }
 
 #pragma mark - Private
@@ -274,7 +274,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   int defaultNumClicks =
       (kInitialBufferNumClicks - 1) * (kDampening - 1.0) * 100.0;
   std::string today = base::NumberToString(TodaysDay());
-  DictionaryPrefUpdate update(self.prefService,
+  ScopedDictPrefUpdate update(self.prefService,
                               prefs::kOverflowMenuDestinationUsageHistory);
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
@@ -282,7 +282,7 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   for (overflow_menu::Destination destination : kDefaultRanking) {
     const std::string path =
         today + "." + overflow_menu::StringNameForDestination(destination);
-    update->SetIntPath(
+    update->SetByDottedPath(
         path, history.FindIntByDottedPath(path).value_or(0) + defaultNumClicks);
   }
 }
