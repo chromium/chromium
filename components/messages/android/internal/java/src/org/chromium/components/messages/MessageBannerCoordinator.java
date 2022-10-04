@@ -95,6 +95,7 @@ class MessageBannerCoordinator {
      * @return The animator which shows the message view.
      */
     Animator show(@Position int fromIndex, @Position int toIndex) {
+        mView.dismissSecondaryMenuIfShown();
         return mMediator.show(fromIndex, toIndex, () -> {
             if (toIndex != Position.FRONT) {
                 setOnTouchRunnable(null);
@@ -119,6 +120,7 @@ class MessageBannerCoordinator {
      * @return The animator which hides the message view.
      */
     Animator hide(boolean animate, Runnable messageHidden) {
+        mView.dismissSecondaryMenuIfShown();
         mTimer.cancelTimer();
         // Skip animation if animation has been globally disabled.
         // Otherwise, child animator's listener's onEnd will be called immediately after onStart,

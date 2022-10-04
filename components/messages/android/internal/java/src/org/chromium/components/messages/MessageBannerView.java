@@ -217,6 +217,10 @@ public class MessageBannerView extends BoundedLinearLayout {
         mOnTitleChanged = runnable;
     }
 
+    void dismissSecondaryMenuIfShown() {
+        mSecondaryButton.dismiss();
+    }
+
     void enableLargeIcon(boolean enabled) {
         int smallSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size);
         int largeSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size_large);
