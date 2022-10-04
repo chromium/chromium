@@ -14051,7 +14051,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TouchScreen.MissedTOUCHEVENTF_UP" enum="BooleanHit"
-    expires_after="2022-08-14">
+    expires_after="2023-10-03">
   <owner>girard@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -14059,6 +14059,8 @@ should be kept until we use this API.  -->
     previously generated a TOUCHEVENTF_DOWN, and has not since generated a
     TOUCHEVENTF_UP). Chromium generates a simulated event to maintain
     consistency/correctness. Only recorded on Windows.
+
+    Warning: This histogram was expired after M95, and resurrected in M108.
 
     This workaround will be removed once usage drops off. See
     https://crbug.com/811273 for details.
