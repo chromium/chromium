@@ -107,8 +107,12 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 #pragma mark - Accessors
 
 - (BOOL)allButtonsHidden {
-  return self.keyboardButton.hidden && self.addressButtonHidden &&
-         self.creditCardButtonHidden && self.passwordButtonHidden;
+  BOOL manualFillButtonsHidden = self.addressButtonHidden &&
+                                 self.creditCardButtonHidden &&
+                                 self.passwordButtonHidden;
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+             ? manualFillButtonsHidden
+             : self.keyboardButton.hidden && manualFillButtonsHidden;
 }
 
 - (void)setAddressButtonHidden:(BOOL)addressButtonHidden {
