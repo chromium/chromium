@@ -85,7 +85,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -121,7 +121,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -141,7 +141,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -182,7 +182,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -201,7 +201,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -239,7 +239,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -258,7 +258,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {
@@ -323,7 +323,7 @@ TEST_F(AggregatableReportSchedulerTest,
 
     storage_context_.GetStorage()
         .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-        .WithArgs(base::Time::Max())
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
         .Then(base::BindLambdaForTesting(
             [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
                             requests_and_ids) {

@@ -542,19 +542,24 @@ AggregationServiceStorageSql::NextReportTimeAfterImpl(
 
 std::vector<AggregationServiceStorage::RequestAndId>
 AggregationServiceStorageSql::GetRequestsReportingOnOrBefore(
-    base::Time not_after_time) {
+    base::Time not_after_time,
+    absl::optional<int> limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!limit.has_value() || limit.value() > 0);
 
   if (!EnsureDatabaseOpen(DbCreationPolicy::kFailIfAbsent))
     return {};
 
   static constexpr char kGetRequestsSql[] =
       "SELECT request_id,report_time,request_proto FROM report_requests "
-      "WHERE report_time<=? ORDER BY report_time";
+      "WHERE report_time<=? ORDER BY report_time LIMIT ?";
 
   sql::Statement get_requests_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kGetRequestsSql));
   get_requests_statement.BindTime(0, not_after_time);
+  // Negative number indicates no limit.
+  // See https://www.sqlite.org/lang_select.html.
+  get_requests_statement.BindInt(1, limit.value_or(-1));
 
   // Partial results are not returned in case of any error.
   // TODO(crbug.com/1340046): Limit the total number of results that can be

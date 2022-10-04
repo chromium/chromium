@@ -71,11 +71,14 @@ class AggregationServiceStorage {
       base::Time strictly_after_time) = 0;
 
   // Returns requests with report times on or before `not_after_time`. The
-  // returned requests are ordered by report time.
+  // returned requests are ordered by report time. `limit` limits the number of
+  // requests to return and cannot have a non-positive value; use
+  // `absl::nullopt` for no limit.
   // TODO(crbug.com/1340046): Limit the number of in-progress reports kept in
   // memory at the same time.
   virtual std::vector<RequestAndId> GetRequestsReportingOnOrBefore(
-      base::Time not_after_time) = 0;
+      base::Time not_after_time,
+      absl::optional<int> limit = absl::nullopt) = 0;
 
   // Returns the requests with the given IDs. Empty vector is returned if `ids`
   // is empty.

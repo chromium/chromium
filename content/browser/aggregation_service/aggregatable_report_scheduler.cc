@@ -104,7 +104,7 @@ void AggregatableReportScheduler::TimerDelegate::OnReportingTimeReached(
     base::Time now) {
   storage_context_->GetStorage()
       .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-      .WithArgs(now)
+      .WithArgs(now, /*limit=*/absl::nullopt)
       .Then(base::BindOnce(&AggregatableReportScheduler::TimerDelegate::
                                OnRequestsReturnedFromStorage,
                            weak_ptr_factory_.GetWeakPtr()));

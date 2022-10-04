@@ -74,7 +74,9 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   absl::optional<base::Time> NextReportTimeAfter(
       base::Time strictly_after_time) override;
   std::vector<AggregationServiceStorage::RequestAndId>
-  GetRequestsReportingOnOrBefore(base::Time not_after_time) override;
+  GetRequestsReportingOnOrBefore(
+      base::Time not_after_time,
+      absl::optional<int> limit = absl::nullopt) override;
   std::vector<AggregationServiceStorage::RequestAndId> GetRequests(
       const std::vector<AggregationServiceStorage::RequestId>& ids) override;
   absl::optional<base::Time> AdjustOfflineReportTimes(

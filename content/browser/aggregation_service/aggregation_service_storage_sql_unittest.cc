@@ -585,6 +585,26 @@ TEST_F(AggregationServiceStorageSqlTest,
   }
 }
 
+TEST_F(AggregationServiceStorageSqlTest,
+       GetRequestsReportingOnOrBefore_ReturnValuesAlignWithLimit) {
+  OpenDatabase();
+
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+  storage_->StoreRequest(aggregation_service::CreateExampleRequest());
+
+  // IDs autoincrement from 1.
+  EXPECT_THAT(
+      storage_->GetRequestsReportingOnOrBefore(
+          /*not_after_time=*/base::Time::Max(), /*limit=*/2),
+      ElementsAre(RequestIdIs(RequestId(1)), RequestIdIs(RequestId(2))));
+
+  EXPECT_THAT(storage_->GetRequestsReportingOnOrBefore(
+                  /*not_after_time=*/base::Time::Max()),
+              ElementsAre(RequestIdIs(RequestId(1)), RequestIdIs(RequestId(2)),
+                          RequestIdIs(RequestId(3))));
+}
+
 TEST_F(AggregationServiceStorageSqlTest, GetRequests_ReturnValuesAlignWithIds) {
   OpenDatabase();
 

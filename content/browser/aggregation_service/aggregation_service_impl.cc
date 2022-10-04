@@ -254,8 +254,10 @@ void AggregationServiceImpl::AssembleAndSendReports(
 void AggregationServiceImpl::GetPendingReportRequestsForWebUI(
     base::OnceCallback<
         void(std::vector<AggregationServiceStorage::RequestAndId>)> callback) {
+  // Enforce the limit on the number of reports shown in the WebUI to prevent
+  // the page from consuming too much memory.
   storage_.AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
-      .WithArgs(/*not_after_time=*/base::Time::Max())
+      .WithArgs(/*not_after_time=*/base::Time::Max(), /*limit=*/1000)
       .Then(std::move(callback));
 }
 
