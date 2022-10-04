@@ -29037,6 +29037,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Default to a numeric keyboard for password input',
+        },
+        {
+          'value': False,
+          'caption': 'Default to a standard keyboard for password input',
+        },
+      ],
       'example_value': True,
       'id': 638,
       'caption': '''Show numeric keyboard for password''',
@@ -29269,6 +29279,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to send phone numbers from Chrome to their Android device',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to send phone numbers from Chrome to their Android device',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 645,
       'caption': '''Enable the Click to Call Feature''',
@@ -29559,6 +29584,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow print job history to be deleted',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow print job history to be deleted',
+        },
+      ],
       'default': True,
       'example_value': False,
       'id': 720,
@@ -29639,6 +29674,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow websites to check if the user has payment methods saved',
+        },
+        {
+          'value': False,
+          'caption': 'Always tell websites that no payment methods are saved',
+        },
+      ],
       'example_value': True,
       'id': 651,
       'caption': '''Allow websites to query for available payment methods.''',
@@ -29860,6 +29905,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow sites to prompt the user to share a video stream of their screen',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow sites to prompt the user to share a video stream of their screen',
+        },
+      ],
       'default': True,
       'example_value': False,
       'id': 666,
@@ -30081,7 +30136,21 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
-      'default':None,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always enable the privacy screen on the sign-in screen',
+        },
+        {
+          'value': False,
+          'caption': 'Always disable the privacy screen on the sign-in screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': True,
       'id': 676,
       'caption': '''Set the state of privacy screen on the login screen''',
@@ -30108,6 +30177,20 @@ If this policy is left unset, the privacy screen is disabled initially, but rema
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always enable the privacy screen',
+        },
+        {
+          'value': False,
+          'caption': 'Always disable the privacy screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
       'default': None,
       'example_value': True,
       'id': 677,
@@ -30293,6 +30376,16 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Users enrolled in the Advanced Protection program will receive extra protections',
+        },
+        {
+          'value': False,
+          'caption': 'Users enrolled in the Advanced Protection program will only receive standard consumer protections',
+        },
+      ],
       'default': True,
       'example_value': True,
       'id': 685,
@@ -30311,6 +30404,16 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow sites to scroll to specific text fragments via URL',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow sites to scroll to specific text fragments via URL',
+        },
+      ],
       'default': True,
       'example_value': False,
       'id': 687,
@@ -30332,6 +30435,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show the display password button on the login and lock screen',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show the display password button on the login and lock screen',
+        },
+      ],
       'example_value': False,
       'default_for_enterprise_users': False,
       'id': 701,
@@ -30404,12 +30517,26 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'per_profile': False,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force throttling of background JavaScript timers',
+        },
+        {
+          'value': False,
+          'caption': 'Force no throttling of background JavaScript timers',
+        },
+        {
+          'value': None,
+          'caption': 'Allow throttling of background JavaScript timers to be controlled by Chrome logic and configured by users',
+        },
+      ],
       'default': None,
       'example_value': True,
       'id': 713,
       'caption': '''Control the <ph name="PRODUCT_NAME">IntensiveWakeUpThrottling</ph> feature.''',
       'tags': [],
-      'desc': '''When enabled the <ph name="PRODUCT_NAME">IntensiveWakeUpThrottling</ph> feature causes Javascript timers in background tabs to be aggressively throttled and coalesced, running no more than once per minute after a page has been backgrounded for 5 minutes or more.
+      'desc': '''When enabled the <ph name="PRODUCT_NAME">IntensiveWakeUpThrottling</ph> feature causes JavaScript timers in background tabs to be aggressively throttled and coalesced, running no more than once per minute after a page has been backgrounded for 5 minutes or more.
 
           This is a web standards compliant feature, but it may break functionality
           on some websites by causing certain actions to be delayed by up to a
@@ -30478,6 +30605,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable PIN auto-submit on the lock and login screen',
+        },
+        {
+          'value': False,
+          'caption': 'Disable PIN auto-submit on the lock and login screen',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 718,
@@ -30503,6 +30640,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable emoji suggestions when users type',
+        },
+        {
+          'value': False,
+          'caption': 'Disable emoji suggestions when users type',
+        },
+      ],
       'example_value': False,
       'default_for_enterprise_users': False,
       'id': 721,
@@ -30606,6 +30753,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable suggested content',
+        },
+        {
+          'value': False,
+          'caption': 'Disable suggested content',
+        },
+      ],
       'example_value': False,
       'default_for_enterprise_users': False,
       'id': 726,
@@ -30629,6 +30786,20 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Display the full URL',
+        },
+        {
+          'value': False,
+          'caption': 'Display the default URL',
+        },
+        {
+          'value': None,
+          'caption': 'Display the default URL, allow users to switch to the full URL',
+        },
+      ],
       'default': None,
       'example_value': False,
       'default_for_enterprise_users': False,
@@ -30652,6 +30823,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show warnings and disable autofill on insecure forms',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show warnings or disable autofill on insecure forms',
+        },
+      ],
       'default': True,
       'example_value': True,
       'id': 748,
@@ -31134,6 +31315,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow parents to add supervised accounts',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow parents to add supervised accounts',
+        },
+      ],
       'default': False,
       'example_value': False,
       'id': 789,
