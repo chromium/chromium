@@ -1059,7 +1059,12 @@ TestLauncher::TestLauncher(TestLauncherDelegate* launcher_delegate,
 
 TestLauncher::~TestLauncher() {
   if (base::ThreadPoolInstance::Get()) {
+    // Clear the ThreadPoolInstance entirely to make it clear to final cleanup
+    // phases that they are happening in a single-threaded phase. Assertions in
+    // code like ~ScopedFeatureList are unhappy otherwise (crbug.com/1359095).
     base::ThreadPoolInstance::Get()->Shutdown();
+    base::ThreadPoolInstance::Get()->JoinForTesting();
+    base::ThreadPoolInstance::Set(nullptr);
   }
 }
 
