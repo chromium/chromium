@@ -1248,9 +1248,10 @@ TEST_P(SurfaceTest, ScaledSurfaceQuad) {
     // To get 32,32 -> 160,160 into the correct position it must be translated
     // backwards and scaled 0.5x in Y, then everything is scaled by the scale
     // factor.
-    auto expected_transform = gfx::Transform::Affine(
-        1.0f * device_scale_factor(), 0.0f, 0.0f, 0.5f * device_scale_factor(),
-        -32.0f * device_scale_factor(), -32.0f * device_scale_factor() * 0.5f);
+    auto expected_transform =
+        gfx::Transform::MakeScale(1.0f * device_scale_factor(),
+                                  0.5f * device_scale_factor()) *
+        gfx::Transform::MakeTranslation(-32.0f, -32.0f);
 
     // When possible exo will represent the transform completely in the |rect|.
     // This leaves the |quad_to_target_transform| transform as Identity.

@@ -205,7 +205,7 @@ TEST(XFormTest, Equality) {
 
 // This test is to make it easier to understand the order of operations.
 TEST(XFormTest, PrePostOperations) {
-  auto m1 = Transform::Affine(1, 2, 3, 4, 5, 6);
+  auto m1 = Transform::AffineForTesting(1, 2, 3, 4, 5, 6);
   auto m2 = m1;
   m1.Translate(10, 20);
   m2.PreConcat(Transform::MakeTranslation(10, 20));
@@ -1412,7 +1412,8 @@ TEST(XFormTest, verifyConstructorFor16Elements) {
 }
 
 TEST(XFormTest, verifyConstructorFor2dElements) {
-  Transform transform = Transform::Affine(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
+  Transform transform =
+      Transform::AffineForTesting(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 
   EXPECT_ROW1_EQ(1.0f, 2.0f, 0.0f, 5.0f, transform);
   EXPECT_ROW2_EQ(3.0f, 4.0f, 0.0f, 6.0f, transform);
@@ -2780,13 +2781,13 @@ TEST(XFormTest, TransformRRectF) {
   EXPECT_TRUE(translation.TransformRRectF(&rrect));
   EXPECT_EQ(expected.ToString(), rrect.ToString());
 
-  Transform rotation_90_Clock = Transform::RotationAboutZAxisSinCos(1, 0);
+  auto rotation_90_clock = Transform::Make90degRotation();
 
   rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),
                  gfx::RoundedCornersF(1.f, 2.f, 3.f, 4.f));
   expected = RRectF(gfx::RectF(-25.f, 0, 25.f, 20.f),
                     gfx::RoundedCornersF(4.f, 1.f, 2.f, 3.f));
-  EXPECT_TRUE(rotation_90_Clock.TransformRRectF(&rrect));
+  EXPECT_TRUE(rotation_90_clock.TransformRRectF(&rrect));
   EXPECT_EQ(expected.ToString(), rrect.ToString());
 
   Transform rotation_90_unrounded;
@@ -2890,19 +2891,25 @@ TEST(XFormTest, TransformVector4) {
   EXPECT_EQ(244.75f, v[3]);
 }
 
-TEST(XFormTest, RotationSinCos) {
-  EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(1, 0, 0, -1, 0),
-                      Transform::RotationAboutXAxisSinCos(-1, 0));
-  EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(1, 0, 0, 0, 1),
-                      Transform::RotationAboutXAxisSinCos(0, 1));
-  EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(0, 1, 0, -1, 0),
-                      Transform::RotationAboutYAxisSinCos(-1, 0));
-  EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(0, 1, 0, 0, 1),
-                      Transform::RotationAboutYAxisSinCos(0, 1));
-  EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(0, 0, 1, -1, 0),
-                      Transform::RotationAboutZAxisSinCos(-1, 0));
-  EXPECT_TRANSFORM_EQ(Transform::RotationUnitSinCos(0, 0, 1, 0, 1),
-                      Transform::RotationAboutZAxisSinCos(0, 1));
+TEST(XFormTest, Make90NRotation) {
+  auto t1 = Transform::Make90degRotation();
+  EXPECT_EQ(gfx::PointF(-50, 100), t1.MapPoint(gfx::PointF(100, 50)));
+
+  auto t2 = Transform::Make180degRotation();
+  EXPECT_EQ(Transform::MakeScale(-1), t2);
+  EXPECT_EQ(gfx::PointF(-100, -50), t2.MapPoint(gfx::PointF(100, 50)));
+
+  auto t3 = Transform::Make270degRotation();
+  EXPECT_EQ(gfx::PointF(50, -100), t3.MapPoint(gfx::PointF(100, 50)));
+
+  auto t4 = t1 * t1;
+  EXPECT_EQ(t2, t4);
+  t4.PreConcat(t1);
+  EXPECT_EQ(t3, t4);
+  t4.PreConcat(t1);
+  EXPECT_TRUE(t4.IsIdentity());
+  t2.PreConcat(t2);
+  EXPECT_TRUE(t2.IsIdentity());
 }
 
 TEST(XFormTest, MapPoint) {
@@ -2971,7 +2978,8 @@ TEST(XFormTest, PreConcatAxisTransform2d) {
                                16, 17);
   auto axis = AxisTransform2d::FromScaleAndTranslation(Vector2dF(10, 20),
                                                        Vector2dF(100, 200));
-  auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
+  auto axis_full =
+      Transform::MakeTranslation(100, 200) * Transform::MakeScale(10, 20);
   auto t1 = t;
   t.PreConcat(axis);
   t1.PreConcat(axis_full);
@@ -2983,7 +2991,8 @@ TEST(XFormTest, PostConcatAxisTransform2d) {
                                16, 17);
   auto axis = AxisTransform2d::FromScaleAndTranslation(Vector2dF(10, 20),
                                                        Vector2dF(100, 200));
-  auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
+  auto axis_full =
+      Transform::MakeTranslation(100, 200) * Transform::MakeScale(10, 20);
   auto t1 = t;
   t.PostConcat(axis);
   t1.PostConcat(axis_full);

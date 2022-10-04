@@ -41,11 +41,11 @@ bool MassageRotationIfMultipleOfNinetyDegrees(gfx::Transform* rotation,
   if (n == 0) {
     rotation->MakeIdentity();
   } else if (n == 1) {
-    *rotation = gfx::Transform::RotationAboutZAxisSinCos(1, 0);
+    *rotation = gfx::Transform::Make90degRotation();
   } else if (n == 2) {
-    *rotation = gfx::Transform::RotationAboutZAxisSinCos(0, -1);
+    *rotation = gfx::Transform::Make180degRotation();
   } else if (n == 3) {
-    *rotation = gfx::Transform::RotationAboutZAxisSinCos(-1, 0);
+    *rotation = gfx::Transform::Make270degRotation();
   }
   return true;
 }

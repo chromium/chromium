@@ -83,17 +83,32 @@ void Transform::GetColMajorF(float a[16]) const {
 
 void Transform::RotateAboutXAxis(double degrees) {
   double radians = gfx::DegToRad(degrees);
-  PreConcat(RotationAboutXAxisSinCos(std::sin(radians), std::cos(radians)));
+  double sin_angle = std::sin(radians);
+  double cos_angle = std::cos(radians);
+  Transform t(kSkipInitialization);
+  t.matrix_.setRotateAboutXAxisSinCos(SkDoubleToScalar(sin_angle),
+                                      SkDoubleToScalar(cos_angle));
+  PreConcat(t);
 }
 
 void Transform::RotateAboutYAxis(double degrees) {
   double radians = gfx::DegToRad(degrees);
-  PreConcat(RotationAboutYAxisSinCos(std::sin(radians), std::cos(radians)));
+  double sin_angle = std::sin(radians);
+  double cos_angle = std::cos(radians);
+  Transform t(kSkipInitialization);
+  t.matrix_.setRotateAboutYAxisSinCos(SkDoubleToScalar(sin_angle),
+                                      SkDoubleToScalar(cos_angle));
+  PreConcat(t);
 }
 
 void Transform::RotateAboutZAxis(double degrees) {
   double radians = gfx::DegToRad(degrees);
-  PreConcat(RotationAboutZAxisSinCos(std::sin(radians), std::cos(radians)));
+  double sin_angle = std::sin(radians);
+  double cos_angle = std::cos(radians);
+  Transform t(kSkipInitialization);
+  t.matrix_.setRotateAboutZAxisSinCos(SkDoubleToScalar(sin_angle),
+                                      SkDoubleToScalar(cos_angle));
+  PreConcat(t);
 }
 
 void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
@@ -110,47 +125,13 @@ void Transform::RotateAbout(const Vector3dF& axis, double degrees) {
     z *= scale;
   }
   double radians = gfx::DegToRad(degrees);
-  PreConcat(RotationUnitSinCos(x, y, z, std::sin(radians), std::cos(radians)));
-}
-
-// static
-Transform Transform::RotationUnitSinCos(double x,
-                                        double y,
-                                        double z,
-                                        double sin_angle,
-                                        double cos_angle) {
+  double sin_angle = std::sin(radians);
+  double cos_angle = std::cos(radians);
   Transform t(kSkipInitialization);
   t.matrix_.setRotateUnitSinCos(
       SkDoubleToScalar(x), SkDoubleToScalar(y), SkDoubleToScalar(z),
       SkDoubleToScalar(sin_angle), SkDoubleToScalar(cos_angle));
-  return t;
-}
-
-// static
-Transform Transform::RotationAboutXAxisSinCos(double sin_angle,
-                                              double cos_angle) {
-  Transform t(kSkipInitialization);
-  t.matrix_.setRotateAboutXAxisSinCos(SkDoubleToScalar(sin_angle),
-                                      SkDoubleToScalar(cos_angle));
-  return t;
-}
-
-// static
-Transform Transform::RotationAboutYAxisSinCos(double sin_angle,
-                                              double cos_angle) {
-  Transform t(kSkipInitialization);
-  t.matrix_.setRotateAboutYAxisSinCos(SkDoubleToScalar(sin_angle),
-                                      SkDoubleToScalar(cos_angle));
-  return t;
-}
-
-// static
-Transform Transform::RotationAboutZAxisSinCos(double sin_angle,
-                                              double cos_angle) {
-  Transform t(kSkipInitialization);
-  t.matrix_.setRotateAboutZAxisSinCos(SkDoubleToScalar(sin_angle),
-                                      SkDoubleToScalar(cos_angle));
-  return t;
+  PreConcat(t);
 }
 
 double Transform::Determinant() const {

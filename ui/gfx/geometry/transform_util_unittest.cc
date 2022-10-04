@@ -222,13 +222,12 @@ double ComputeDecompRecompError(const Transform& transform) {
 
 TEST(TransformUtilTest, RoundTripTest) {
   // rotateZ(90deg)
-  EXPECT_APPROX_EQ(
-      0, ComputeDecompRecompError(Transform::Affine(0, 1, -1, 0, 0, 0)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::Make90degRotation()));
 
   // rotateZ(180deg)
   // Edge case where w = 0.
-  EXPECT_APPROX_EQ(
-      0, ComputeDecompRecompError(Transform::Affine(-1, 0, 0, -1, 0, 0)));
+  EXPECT_APPROX_EQ(0,
+                   ComputeDecompRecompError(Transform::Make180degRotation()));
 
   // rotateX(90deg) rotateY(90deg) rotateZ(90deg)
   // [1  0   0][ 0 0 1][0 -1 0]   [0 0 1][0 -1 0]   [0  0 1]
@@ -241,14 +240,13 @@ TEST(TransformUtilTest, RoundTripTest) {
   // Quaternion matrices with 0 off-diagonal elements, and negative trace.
   // Stress tests handling of degenerate cases in computing quaternions.
   // Validates fix for https://crbug.com/647554.
-  EXPECT_APPROX_EQ(
-      0, ComputeDecompRecompError(Transform::Affine(1, 1, 1, 0, 0, 0)));
   EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
-                          -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
-                          1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
-  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::RowMajor(
-                          1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1)));
+                          1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::MakeScale(-1, 1)));
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(Transform::MakeScale(1, -1)));
+  Transform flip_z;
+  flip_z.Scale3d(1, 1, -1);
+  EXPECT_APPROX_EQ(0, ComputeDecompRecompError(flip_z));
 }
 
 TEST(TransformUtilTest, Transform2D) {
@@ -260,58 +258,61 @@ TEST(TransformUtilTest, Transform2D) {
   // to needlessly shrink and grow as they transform through scale = 0 along
   // multiple axes.  2D transformation matrices should follow the 2D spec
   // regarding matrix decomposition.
-  DecomposedTransform decompFlipX;
-  DecomposeTransform(&decompFlipX, Transform::Affine(-1, 0, 0, 1, 0, 0));
-  EXPECT_APPROX_EQ(-1, decompFlipX.scale[0]);
-  EXPECT_APPROX_EQ(1, decompFlipX.scale[1]);
-  EXPECT_APPROX_EQ(1, decompFlipX.scale[2]);
-  EXPECT_APPROX_EQ(0, decompFlipX.quaternion.z());
-  EXPECT_APPROX_EQ(1, decompFlipX.quaternion.w());
+  DecomposedTransform decomp_flip_x;
+  DecomposeTransform(&decomp_flip_x, Transform::MakeScale(-1, 1));
+  EXPECT_APPROX_EQ(-1, decomp_flip_x.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_flip_x.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_flip_x.scale[2]);
+  EXPECT_APPROX_EQ(0, decomp_flip_x.quaternion.z());
+  EXPECT_APPROX_EQ(1, decomp_flip_x.quaternion.w());
 
-  DecomposedTransform decompFlipY;
-  DecomposeTransform(&decompFlipY, Transform::Affine(1, 0, 0, -1, 0, 0));
-  EXPECT_APPROX_EQ(1, decompFlipY.scale[0]);
-  EXPECT_APPROX_EQ(-1, decompFlipY.scale[1]);
-  EXPECT_APPROX_EQ(1, decompFlipY.scale[2]);
-  EXPECT_APPROX_EQ(0, decompFlipY.quaternion.z());
-  EXPECT_APPROX_EQ(1, decompFlipY.quaternion.w());
+  DecomposedTransform decomp_flip_y;
+  DecomposeTransform(&decomp_flip_y, Transform::MakeScale(1, -1));
+  EXPECT_APPROX_EQ(1, decomp_flip_y.scale[0]);
+  EXPECT_APPROX_EQ(-1, decomp_flip_y.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_flip_y.scale[2]);
+  EXPECT_APPROX_EQ(0, decomp_flip_y.quaternion.z());
+  EXPECT_APPROX_EQ(1, decomp_flip_y.quaternion.w());
 
-  DecomposedTransform decompR180;
-  DecomposeTransform(&decompR180, Transform::Affine(-1, 0, 0, -1, 0, 0));
-  EXPECT_APPROX_EQ(1, decompR180.scale[0]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[2]);
-  EXPECT_APPROX_EQ(1, decompR180.quaternion.z());
-  EXPECT_APPROX_EQ(0, decompR180.quaternion.w());
+  DecomposedTransform decomp_rotate_180;
+  DecomposeTransform(&decomp_rotate_180, Transform::Make180degRotation());
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.scale[2]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_180.quaternion.z());
+  EXPECT_APPROX_EQ(0, decomp_rotate_180.quaternion.w());
 
-  DecomposedTransform decompR90;
-  DecomposeTransform(&decompR180, Transform::Affine(0, -1, 1, 0, 0, 0));
-  EXPECT_APPROX_EQ(1, decompR180.scale[0]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR180.scale[2]);
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR180.quaternion.z());
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR180.quaternion.w());
+  DecomposedTransform decomp_rotate_90;
+  DecomposeTransform(&decomp_rotate_90, Transform::Make90degRotation());
+  EXPECT_APPROX_EQ(1, decomp_rotate_90.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_90.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_rotate_90.scale[2]);
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_rotate_90.quaternion.z());
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_rotate_90.quaternion.w());
 
-  DecomposedTransform decompR90Translate;
-  DecomposeTransform(&decompR90Translate,
-                     Transform::Affine(0, -1, 1, 0, -1, 1));
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[0]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[2]);
-  EXPECT_APPROX_EQ(-1, decompR90Translate.translate[0]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.translate[1]);
-  EXPECT_APPROX_EQ(0, decompR90Translate.translate[2]);
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR90Translate.quaternion.z());
-  EXPECT_APPROX_EQ(1 / sqrt(2), decompR90Translate.quaternion.w());
+  DecomposedTransform decomp_translate_rotate_90;
+  DecomposeTransform(
+      &decomp_translate_rotate_90,
+      Transform::MakeTranslation(-1, 1) * Transform::Make90degRotation());
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.scale[0]);
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.scale[2]);
+  EXPECT_APPROX_EQ(-1, decomp_translate_rotate_90.translate[0]);
+  EXPECT_APPROX_EQ(1, decomp_translate_rotate_90.translate[1]);
+  EXPECT_APPROX_EQ(0, decomp_translate_rotate_90.translate[2]);
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_translate_rotate_90.quaternion.z());
+  EXPECT_APPROX_EQ(1 / sqrt(2), decomp_translate_rotate_90.quaternion.w());
 
-  DecomposedTransform decompSkewRotate;
-  DecomposeTransform(&decompR90Translate, Transform::Affine(1, 1, 1, 0, 0, 0));
-  EXPECT_APPROX_EQ(sqrt(2), decompR90Translate.scale[0]);
-  EXPECT_APPROX_EQ(-1 / sqrt(2), decompR90Translate.scale[1]);
-  EXPECT_APPROX_EQ(1, decompR90Translate.scale[2]);
-  EXPECT_APPROX_EQ(-1, decompR90Translate.skew[0]);
-  EXPECT_APPROX_EQ(sin(base::kPiDouble / 8), decompR90Translate.quaternion.z());
-  EXPECT_APPROX_EQ(cos(base::kPiDouble / 8), decompR90Translate.quaternion.w());
+  DecomposedTransform decomp_skew_rotate;
+  DecomposeTransform(
+      &decomp_skew_rotate,
+      Transform::RowMajor(1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1));
+  EXPECT_APPROX_EQ(sqrt(2), decomp_skew_rotate.scale[0]);
+  EXPECT_APPROX_EQ(-1 / sqrt(2), decomp_skew_rotate.scale[1]);
+  EXPECT_APPROX_EQ(1, decomp_skew_rotate.scale[2]);
+  EXPECT_APPROX_EQ(-1, decomp_skew_rotate.skew[0]);
+  EXPECT_APPROX_EQ(sin(base::kPiDouble / 8), decomp_skew_rotate.quaternion.z());
+  EXPECT_APPROX_EQ(cos(base::kPiDouble / 8), decomp_skew_rotate.quaternion.w());
 }
 
 TEST(TransformUtilTest, TransformBetweenRects) {

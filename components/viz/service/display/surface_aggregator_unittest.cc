@@ -6877,7 +6877,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, DamageRectWithClippedChildSurface) {
   { auto aggregated_frame = AggregateFrame(root_surface_id_); }
 
   // Parameters used for damage rect testing
-  auto transform = gfx::Transform::Affine(0.5, 0, 0, 0.5, 20, 0);
+  auto transform = gfx::Transform::MakeTranslation(20, 0) *
+                   gfx::Transform::MakeScale(0.5, 0.5);
   gfx::Rect clip_rect = gfx::Rect(30, 30, 40, 40);
 
   // Clipping is off
@@ -7069,7 +7070,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, OverlayOccludingDamageRect) {
 
   // Original video quad (0, 0, 100, 100) x this video_transform matrix ==
   // (10, 0, 80, 80).
-  auto video_transform = gfx::Transform::Affine(0.8f, 0, 0, 0.8f, 10.0f, 0);
+  auto video_transform = gfx::Transform::MakeTranslation(10.f, 0) *
+                         gfx::Transform::MakeScale(0.8f);
 
   // root surface quads
   std::vector<Quad> root_surface_quads = {

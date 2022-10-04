@@ -87,18 +87,16 @@ class GEOMETRY_SKIA_EXPORT Transform {
                      r0c3, r1c3, r2c3, r3c3);  // col 3
   }
 
-  // Creates a transform from explicit 2d elements. All other matrix elements
-  // remain the same as the corresponding elements of an identity matrix.
-  static Transform Affine(SkScalar r0c0,
-                          SkScalar r0c1,
-                          SkScalar r1c0,
-                          SkScalar r1c1,
-                          SkScalar x_translation,
-                          SkScalar y_translation) {
-    return ColMajor(r0c0, r1c0, 0, 0,                     // col 0
-                    r0c1, r1c1, 0, 0,                     // col 1
-                    0, 0, 1, 0,                           // col 2
-                    x_translation, y_translation, 0, 1);  // col 3
+  // TODO(crbug.com/1359528): This is temporary for unit tests to create an
+  // arbitrary affine transform with values without specific meanings, before
+  // the order of parameters of Affine() is fixed.
+  static Transform AffineForTesting(SkScalar v0,
+                                    SkScalar v1,
+                                    SkScalar v2,
+                                    SkScalar v3,
+                                    SkScalar v4,
+                                    SkScalar v5) {
+    return Affine(v0, v1, v2, v3, v4, v5);
   }
 
   // Constructs a transform corresponding to the given quaternion.
@@ -113,6 +111,10 @@ class GEOMETRY_SKIA_EXPORT Transform {
   static Transform MakeScale(SkScalar sx, SkScalar sy) {
     return Affine(sx, 0, 0, sy, 0, 0);
   }
+  // Accurately rotate by 90, 180 or 270 degrees about the z axis.
+  static Transform Make90degRotation() { return Affine(0, -1, 1, 0, 0, 0); }
+  static Transform Make180degRotation() { return Affine(-1, 0, 0, -1, 0, 0); }
+  static Transform Make270degRotation() { return Affine(0, 1, -1, 0, 0, 0); }
 
   bool operator==(const Transform& rhs) const { return matrix_ == rhs.matrix_; }
   bool operator!=(const Transform& rhs) const { return matrix_ != rhs.matrix_; }
@@ -365,21 +367,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // DecomposedTransform.
   bool Blend(const Transform& from, double progress);
 
-  // Returns a transform that rotates about the specified unit-length axis
-  // vector, by an angle specified by its sin() and cos(). This does not attempt
-  // to verify that axis(x, y, z).length() == 1 or that the sin, cos values are
-  // correct.
-  static Transform RotationUnitSinCos(double x,
-                                      double y,
-                                      double z,
-                                      double sin_angle,
-                                      double cos_angle);
-
-  // Special case for x, y or z axis of the above function.
-  static Transform RotationAboutXAxisSinCos(double sin_angle, double cos_angle);
-  static Transform RotationAboutYAxisSinCos(double sin_angle, double cos_angle);
-  static Transform RotationAboutZAxisSinCos(double sin_angle, double cos_angle);
-
   double Determinant() const;
 
   void RoundTranslationComponents();
@@ -417,6 +404,24 @@ class GEOMETRY_SKIA_EXPORT Transform {
             SkScalar r1c3,
             SkScalar r2c3,
             SkScalar r3c3);
+
+  // TODO(crbug.com/1359528): This is temporarily private before the order of
+  // the parameters is fixed. The current order is weird, not conforming to the
+  // normal order of (a, b, c, d, e, f) which is
+  // (r0c0, r1c0, r0c1, r1c1, r0c3, r1c3).
+  // Creates a transform from explicit 2d elements. All other matrix elements
+  // remain the same as the corresponding elements of an identity matrix.
+  static Transform Affine(SkScalar r0c0,
+                          SkScalar r0c1,
+                          SkScalar r1c0,
+                          SkScalar r1c1,
+                          SkScalar x_translation,
+                          SkScalar y_translation) {
+    return ColMajor(r0c0, r1c0, 0, 0,                     // col 0
+                    r0c1, r1c1, 0, 0,                     // col 1
+                    0, 0, 1, 0,                           // col 2
+                    x_translation, y_translation, 0, 1);  // col 3
+  }
 
   // Initialize with the concatenation of lhs * rhs.
   Transform(const Transform& lhs, const Transform& rhs)

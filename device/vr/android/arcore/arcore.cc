@@ -20,9 +20,10 @@ gfx::Transform ArCore::GetCameraUvFromScreenUvTransform() const {
   // bottom left as used for textures.
   // The post-multiplied matrix is performing a mapping: (x, y) -> (x, 1 - y).
   //
-  return MatrixFromTransformedPoints(
-             TransformDisplayUvCoords(kInputCoordinatesForTransform)) *
-         gfx::Transform::Affine(1, 0, 0, -1, 0, 1);
+  gfx::Transform transform = GetDepthUvFromScreenUvTransform();
+  transform.Translate(0, 1);
+  transform.Scale(1, -1);
+  return transform;
 }
 
 gfx::Transform ArCore::GetDepthUvFromScreenUvTransform() const {

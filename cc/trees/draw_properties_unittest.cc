@@ -2374,8 +2374,7 @@ TEST_F(DrawPropertiesTest,
   child->SetDrawsContent(true);
 
   // Case 1: a truly degenerate matrix
-  auto uninvertible_matrix =
-      gfx::Transform::Affine(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  auto uninvertible_matrix = gfx::Transform::MakeScale(0.0);
   ASSERT_FALSE(uninvertible_matrix.IsInvertible());
 
   CopyProperties(root, child);
@@ -2460,8 +2459,7 @@ TEST_F(DrawPropertiesTest, ClipExpanderWithUninvertibleTransform) {
   child->SetBounds(gfx::Size(50, 50));
   child->SetDrawsContent(true);
 
-  auto uninvertible_matrix =
-      gfx::Transform::Affine(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  auto uninvertible_matrix = gfx::Transform::MakeScale(0.0);
   ASSERT_FALSE(uninvertible_matrix.IsInvertible());
 
   CopyProperties(root, child);

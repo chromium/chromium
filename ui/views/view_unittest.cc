@@ -1379,11 +1379,11 @@ void TestView::OnDidSchedulePaint(const gfx::Rect& rect) {
 namespace {
 
 gfx::Transform RotationCounterclockwise() {
-  return gfx::Transform::RotationAboutZAxisSinCos(-1, 0);
+  return gfx::Transform::Make270degRotation();
 }
 
 gfx::Transform RotationClockwise() {
-  return gfx::Transform::RotationAboutZAxisSinCos(1, 0);
+  return gfx::Transform::Make90degRotation();
 }
 
 }  // namespace
