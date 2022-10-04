@@ -721,16 +721,8 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
 }
 
 // Original track becomes unblocked for cropping after clone is GCed 1/3.
-// Flaky on Mac crbug.com/1353349
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected \
-  DISABLED_CanCropOriginalTrackAfterCloneIsGarbageCollected
-#else
-#define MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected \
-  CanCropOriginalTrackAfterCloneIsGarbageCollected
-#endif
 IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
-                       MAYBE_CanCropOriginalTrackAfterCloneIsGarbageCollected) {
+                       CanCropOriginalTrackAfterCloneIsGarbageCollected) {
   ManualSetUp();
 
   ASSERT_TRUE(CloneTrack());
@@ -742,17 +734,8 @@ IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
 }
 
 // Original track becomes unblocked for cropping after clone is GCed 2/3.
-// Flaky on Mac crbug.com/1353349
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CanRecropOriginalTrackAfterCloneIsGarbageCollected \
-  DISABLED_CanRecropOriginalTrackAfterCloneIsGarbageCollected
-#else
-#define MAYBE_CanRecropOriginalTrackAfterCloneIsGarbageCollected \
-  CanRecropOriginalTrackAfterCloneIsGarbageCollected
-#endif
-IN_PROC_BROWSER_TEST_F(
-    RegionCaptureClonesBrowserTest,
-    MAYBE_CanRecropOriginalTrackAfterCloneIsGarbageCollected) {
+IN_PROC_BROWSER_TEST_F(RegionCaptureClonesBrowserTest,
+                       CanRecropOriginalTrackAfterCloneIsGarbageCollected) {
   ManualSetUp();
 
   ASSERT_TRUE(CropTo(kCropTarget0, Frame::kTopLevelDocument, Track::kOriginal));
