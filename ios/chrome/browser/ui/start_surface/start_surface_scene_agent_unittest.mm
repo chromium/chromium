@@ -130,7 +130,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 // foreground to a background state.
 TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
   base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> enabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
@@ -156,7 +156,7 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTP) {
 // is kept after moving to the background state.
 TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
   base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> enabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
@@ -182,7 +182,7 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPTabs) {
 // the active WebState after a background.
 TEST_F(StartSurfaceSceneAgentTest, KeepNTPAsActiveTab) {
   base::test::ScopedFeatureList scoped_feature_list;
-  std::vector<base::Feature> enabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.push_back(kRemoveExcessNTPs);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});

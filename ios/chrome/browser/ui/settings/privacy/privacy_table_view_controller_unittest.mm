@@ -68,9 +68,9 @@ struct PrivacyTableViewControllerTestConfig {
 // proper initialization of the feature list before all of its own attributes.
 class WithScopedFeatureList {
  protected:
-  WithScopedFeatureList(
-      std::pair<std::vector<base::Feature>, std::vector<base::Feature>> const&
-          enabled_disabled_features) {
+  WithScopedFeatureList(std::pair<std::vector<base::test::FeatureRef>,
+                                  std::vector<base::test::FeatureRef>> const&
+                            enabled_disabled_features) {
     feature_list_.InitWithFeatures(enabled_disabled_features.first,
                                    enabled_disabled_features.second);
   }
@@ -86,9 +86,11 @@ class PrivacyTableViewControllerTest
   PrivacyTableViewControllerTest()
       : WithScopedFeatureList(EnabledDisabledFeatures()) {}
 
-  std::pair<std::vector<base::Feature>, std::vector<base::Feature>>
+  std::pair<std::vector<base::test::FeatureRef>,
+            std::vector<base::test::FeatureRef>>
   EnabledDisabledFeatures() const {
-    std::pair<std::vector<base::Feature>, std::vector<base::Feature>>
+    std::pair<std::vector<base::test::FeatureRef>,
+              std::vector<base::test::FeatureRef>>
         enabledDisabledFeatures;
 
     // Explicitly enable/disable Enhanced Protection flag.

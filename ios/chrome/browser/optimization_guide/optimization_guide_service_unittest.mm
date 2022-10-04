@@ -87,7 +87,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterBrowserStatePrefs(testing_prefs->registry());
 
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(
         optimization_guide::features::kOptimizationHints);
     enabled_features.push_back(

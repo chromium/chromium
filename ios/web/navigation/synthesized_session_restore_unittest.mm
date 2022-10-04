@@ -45,10 +45,10 @@ void CreateTestNavigationItems(
 class SynthesizedSessionRestoreTest : public web::WebTest {
  protected:
   SynthesizedSessionRestoreTest() {
-    std::vector<base::Feature> enabled;
+    std::vector<base::test::FeatureRef> enabled;
     enabled.push_back(features::kSynthesizedRestoreSession);
 
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }
 
