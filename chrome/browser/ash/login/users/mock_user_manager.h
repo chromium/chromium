@@ -82,8 +82,8 @@ class MockUserManager : public ChromeUserManager {
                           const user_manager::User*,
                           bool));
   MOCK_CONST_METHOD1(AsyncRemoveCryptohome, void(const AccountId&));
-  MOCK_CONST_METHOD3(GetPlatformKnownUserId,
-                     bool(const std::string&, const std::string&, AccountId*));
+  MOCK_CONST_METHOD2(GetPlatformKnownUserId,
+                     bool(const std::string&, AccountId*));
   MOCK_CONST_METHOD0(GetGuestAccountId, const AccountId&());
   MOCK_CONST_METHOD0(IsFirstExecAfterBoot, bool(void));
   MOCK_CONST_METHOD1(IsGuestAccountId, bool(const AccountId&));

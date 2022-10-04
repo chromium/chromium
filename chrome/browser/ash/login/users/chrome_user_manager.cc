@@ -59,7 +59,6 @@ void ChromeUserManager::UpdateLoginState(const user_manager::User* active_user,
 
 bool ChromeUserManager::GetPlatformKnownUserId(
     const std::string& user_email,
-    const std::string& gaia_id,
     AccountId* out_account_id) const {
   if (user_email == user_manager::kStubUserEmail) {
     *out_account_id = user_manager::StubAccountId();

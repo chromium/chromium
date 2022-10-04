@@ -298,14 +298,8 @@ namespace known_user {
 // KnownUser::GetKnownAccountIds instead.
 std::vector<AccountId> USER_MANAGER_EXPORT GetKnownAccountIds();
 
-// This call forms full account id of a known user by email and (optionally)
-// gaia_id.
-// This is a temporary call while migrating to AccountId.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::GetAccountId
-// instead.
-AccountId USER_MANAGER_EXPORT GetAccountId(const std::string& user_email,
-                                           const std::string& id,
-                                           const AccountType& account_type);
+AccountId USER_MANAGER_EXPORT
+GetPlatformKnownAccountId(const std::string& user_email);
 
 }  // namespace known_user
 }  // namespace user_manager

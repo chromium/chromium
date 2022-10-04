@@ -561,8 +561,9 @@ void UserManagerBase::ParseUserList(const base::Value::List& users_list,
       continue;
     }
 
-    const AccountId account_id = known_user::GetAccountId(
-        *email, std::string() /* id */, AccountType::UNKNOWN);
+    const AccountId account_id =
+        KnownUser(GetLocalState())
+            .GetAccountId(*email, std::string() /* id */, AccountType::UNKNOWN);
 
     if (existing_users.find(account_id) != existing_users.end() ||
         !users_set->insert(account_id).second) {

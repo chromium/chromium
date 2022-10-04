@@ -369,7 +369,6 @@ void FakeUserManager::UpdateLoginState(const User* active_user,
                                        bool is_current_user_owner) const {}
 
 bool FakeUserManager::GetPlatformKnownUserId(const std::string& user_email,
-                                             const std::string& gaia_id,
                                              AccountId* out_account_id) const {
   if (user_email == kStubUserEmail) {
     *out_account_id = StubAccountId();

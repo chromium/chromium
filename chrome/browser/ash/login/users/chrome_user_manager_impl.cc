@@ -630,7 +630,8 @@ void ChromeUserManagerImpl::OwnershipStatusChanged() {
 }
 
 void ChromeUserManagerImpl::OnPolicyUpdated(const std::string& user_id) {
-  const AccountId account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(GetLocalState());
+  const AccountId account_id = known_user.GetAccountId(
       user_id, std::string() /* id */, AccountType::UNKNOWN);
   const user_manager::User* user = FindUser(account_id);
   if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
@@ -752,7 +753,8 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
 
   std::string owner_email;
   cros_settings_->GetString(kDeviceOwner, &owner_email);
-  const AccountId owner_account_id = user_manager::known_user::GetAccountId(
+  user_manager::KnownUser known_user(GetLocalState());
+  const AccountId owner_account_id = known_user.GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   SetOwnerId(owner_account_id);
 
