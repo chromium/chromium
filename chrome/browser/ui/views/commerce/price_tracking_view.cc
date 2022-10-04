@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
+
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,6 +91,9 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
                           kProductImageSize -
                           toggle_button_->GetPreferredSize().width();
   body_label_->SizeToFit(label_width);
+
+  base::RecordAction(base::UserMetricsAction(
+      "Commerce.PriceTracking.BookmarkDialogPriceTrackViewShown"));
 }
 
 PriceTrackingView::~PriceTrackingView() = default;
@@ -105,6 +110,14 @@ std::u16string PriceTrackingView::GetToggleAccessibleName() {
 
 void PriceTrackingView::OnToggleButtonPressed(const GURL url) {
   is_price_track_enabled_ = !is_price_track_enabled_;
+  if (is_price_track_enabled_) {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.BookmarkDialogPriceTrackViewTrackedPrice"));
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice"));
+  }
+
   toggle_button_->SetAccessibleName(GetToggleAccessibleName());
   UpdatePriceTrackingState(url);
 }

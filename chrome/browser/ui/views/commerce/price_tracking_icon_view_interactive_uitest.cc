@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -30,6 +31,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -104,6 +106,7 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
   }
 
  protected:
+  base::UserActionTester user_action_tester_;
   raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
 
  private:
@@ -201,6 +204,65 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
                omnibox::kPriceTrackingEnabledFilledIcon.name);
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       RecordOmniboxChipClicked) {
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChipClicked"),
+            0);
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+  ClickPriceTrackingIconView();
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChipClicked"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       RecordOmniboxChipTracked) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChip.Tracked"),
+            0);
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+  ClickPriceTrackingIconView();
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChip.Tracked"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       NoRecordOmniboxChipTracked_ForTrackedProduct) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChip.Tracked"),
+            0);
+  auto* icon_view = GetChip();
+  SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/true);
+  ClickPriceTrackingIconView();
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChip.Tracked"),
+            0);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewInteractiveTest,
+                       NoRecordOmniboxChipTracked_ForFUEFlow) {
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChip.Tracked"),
+            0);
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+  ClickPriceTrackingIconView();
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChip.Tracked"),
+            0);
 }
 
 class PriceTrackingBubbleInteractiveTest
@@ -301,4 +363,120 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                omnibox::kPriceTrackingDisabledIcon.name);
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       RecordFirstRunBubbleShown) {
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.FirstRunBubbleShown"),
+            0);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  ClickPriceTrackingIconView();
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.FirstRunBubbleShown"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       RecordFirstRunBubblTrackedPrice) {
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.FirstRunBubbleTrackedPrice"),
+            0);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  bubble->Accept();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.FirstRunBubbleTrackedPrice"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       RecordFirstRunBubbleDismissed) {
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.FirstRunBubbleDismissed"),
+            0);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  bubble->Cancel();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.FirstRunBubbleDismissed"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       RecordConfirmationShown) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.ConfirmationShown"),
+            0);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  ClickPriceTrackingIconView();
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.ConfirmationShown"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       RecordConfirmationUntracked) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.Confirmation.Untrack"),
+            0);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  bubble->Cancel();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.Confirmation.Untrack"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
+                       RecordEditedBookmarkFolderFromOmniboxBubble) {
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kShouldShowPriceTrackFUEBubble, false);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
+            0);
+
+  auto* icon_view = GetChip();
+  icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
+
+  ClickPriceTrackingIconView();
+  auto* bubble =
+      static_cast<PriceTrackingBubbleDialogView*>(icon_view->GetBubble());
+  EXPECT_TRUE(bubble);
+  bubble->GetBodyLabelForTesting()->ClickFirstLinkForTesting();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.EditedBookmarkFolderFromOmniboxBubble"),
+            1);
 }

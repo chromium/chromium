@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -125,6 +126,9 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     EXPECT_EQ(price_tracking_View_->body_label_->GetText(), expected_message);
   }
 
+ protected:
+  base::UserActionTester user_action_tester_;
+
  private:
   views::UniqueWidgetPtr anchor_widget_;
   raw_ptr<PriceTrackingView> price_tracking_View_;
@@ -182,4 +186,38 @@ TEST_F(PriceTrackingViewTest, ToggleFailed) {
   VerifyToggleState(initial_enabled);
   VerifyBodyMessage(l10n_util::GetStringUTF16(
       IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_DESCRIPTION));
+}
+
+TEST_F(PriceTrackingViewTest, ToggleRecordTracked) {
+  SetUpDependencies();
+
+  const bool initial_enabled = false;
+  CreateViewAndShow(initial_enabled);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount(
+          "Commerce.PriceTracking.BookmarkDialogPriceTrackViewTrackedPrice"),
+      0);
+  ClickToggle();
+
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount(
+          "Commerce.PriceTracking.BookmarkDialogPriceTrackViewTrackedPrice"),
+      1);
+}
+
+TEST_F(PriceTrackingViewTest, ToggleRecordUntracked) {
+  SetUpDependencies();
+
+  const bool initial_enabled = true;
+  CreateViewAndShow(initial_enabled);
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount(
+          "Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice"),
+      0);
+  ClickToggle();
+
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount(
+          "Commerce.PriceTracking.BookmarkDialogPriceTrackViewUntrackedPrice"),
+      1);
 }

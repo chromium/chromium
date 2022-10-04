@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,12 +64,15 @@ void PriceTrackingIconView::OnExecuting(
   const gfx::Image& product_image = tab_helper->GetProductImage();
   DCHECK(!product_image.IsEmpty());
 
+  base::RecordAction(
+      base::UserMetricsAction("Commerce.PriceTracking.OmniboxChipClicked"));
+
   if (ShouldShowFirstUseExperienceBubble()) {
     bubble_coordinator_.Show(
         GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
         ui::ImageModel::FromImage(product_image),
         base::BindOnce(&PriceTrackingIconView::EnablePriceTracking,
-                       base::Unretained(this)),
+                       weak_ptr_factory_.GetWeakPtr()),
         PriceTrackingBubbleDialogView::Type::TYPE_FIRST_USE_EXPERIENCE);
   } else {
     EnablePriceTracking(/*enable=*/true);
@@ -76,7 +80,7 @@ void PriceTrackingIconView::OnExecuting(
         GetWebContents(), profile_, GetWebContents()->GetLastCommittedURL(),
         ui::ImageModel::FromImage(product_image),
         base::BindOnce(&PriceTrackingIconView::EnablePriceTracking,
-                       base::Unretained(this)),
+                       weak_ptr_factory_.GetWeakPtr()),
         PriceTrackingBubbleDialogView::Type::TYPE_NORMAL);
   }
 }
@@ -104,8 +108,13 @@ bool PriceTrackingIconView::ShouldShow() {
 
 void PriceTrackingIconView::UpdateImpl() {
   bool should_show = ShouldShow();
+
   if (should_show) {
     SetVisualState(IsPriceTracking());
+    if (!GetVisible()) {
+      base::RecordAction(
+          base::UserMetricsAction("Commerce.PriceTracking.OmniboxChipShown"));
+    }
   }
   SetVisible(should_show);
 }
@@ -137,6 +146,8 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     if (chrome::GetURLAndTitleToBookmark(GetWebContents(), &url, &title)) {
       bookmarks::AddIfNotBookmarked(model, url, title);
     }
+    base::RecordAction(
+        base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));
   }
 
   const bookmarks::BookmarkNode* node =

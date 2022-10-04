@@ -47,10 +47,11 @@ class PriceTrackingBubbleDialogView : public LocationBarBubbleDelegateView {
 
  private:
   void ShowBookmarkEditor();
+  void OnAccepted(OnTrackPriceCallback on_track_price_callback);
+  void OnCanceled(OnTrackPriceCallback on_track_price_callback);
 
   const raw_ptr<Profile> profile_;
   const GURL url_;
-  OnTrackPriceCallback action_callback_;
   const Type type_;
   raw_ptr<views::StyledLabel> body_label_;
 
