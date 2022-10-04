@@ -578,8 +578,8 @@ bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {
   // one is in flight for the current site.
   return WebappsUtils::IsWebApkInstalled(web_contents()->GetBrowserContext(),
                                          manifest().start_url) ||
-         WebappsClient::Get()->IsInstallationInProgress(web_contents(),
-                                                        manifest_url_);
+         WebappsClient::Get()->IsInstallationInProgress(
+             web_contents(), manifest_url_, manifest_id_);
 }
 
 void AppBannerManagerAndroid::ShowAmbientBadge() {

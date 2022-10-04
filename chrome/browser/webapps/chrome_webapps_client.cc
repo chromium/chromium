@@ -92,9 +92,10 @@ AppBannerManager* ChromeWebappsClient::GetAppBannerManager(
 #if BUILDFLAG(IS_ANDROID)
 bool ChromeWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
-    const GURL& manifest_url) {
+    const GURL& manifest_url,
+    const GURL& manifest_id) {
   return WebApkInstallService::Get(web_contents->GetBrowserContext())
-      ->IsInstallInProgress(manifest_url);
+      ->IsInstallInProgress(manifest_url, manifest_id);
 }
 
 bool ChromeWebappsClient::CanShowAppBanners(

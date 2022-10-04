@@ -43,7 +43,7 @@ public class WebApkInstallService {
     /** Displays a notification when a WebAPK is successfully installed. */
     @CalledByNative
     @VisibleForTesting
-    static void showInstalledNotification(String webApkPackage, String manifestUrl,
+    static void showInstalledNotification(String webApkPackage, String notificationId,
             String shortName, String url, Bitmap icon, boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
         Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(webApkPackage, url, false
@@ -55,7 +55,7 @@ public class WebApkInstallService {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
 
-        showNotification(manifestUrl, shortName, url, icon,
+        showNotification(notificationId, shortName, url, icon,
                 context.getResources().getString(R.string.notification_webapk_installed),
                 clickPendingIntent, true /* isCompleted */);
     }
@@ -63,14 +63,15 @@ public class WebApkInstallService {
     /** Display a notification when an install starts. */
     @CalledByNative
     @VisibleForTesting
-    static void showInstallInProgressNotification(
-            String manifestUrl, String shortName, String url, Bitmap icon, boolean isIconMaskable) {
+    static void showInstallInProgressNotification(String notificationId, String shortName,
+            String url, Bitmap icon, boolean isIconMaskable) {
         String message = ContextUtils.getApplicationContext().getResources().getString(
                 R.string.notification_webapk_install_in_progress, shortName);
         if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
-        showNotification(manifestUrl, shortName, url, icon, message, null, false /* isCompleted */);
+        showNotification(
+                notificationId, shortName, url, icon, message, null, false /* isCompleted */);
         WebappsUtils.showToast(message);
     }
 

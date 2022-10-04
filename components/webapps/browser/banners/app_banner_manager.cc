@@ -358,6 +358,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
 
   manifest_url_ = data.manifest_url;
   manifest_ = data.manifest.Clone();
+  manifest_id_ = blink::GetIdFromManifest(manifest());
 
   PerformInstallableChecks();
 }

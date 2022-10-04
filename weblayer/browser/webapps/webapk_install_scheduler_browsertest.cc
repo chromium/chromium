@@ -178,7 +178,7 @@ class WebApkInstallSchedulerTest : public WebLayerBrowserTest {
 
   net::EmbeddedTestServer test_server_;
 
-  void OnInstallFinished(GURL manifest_url) {}
+  void OnInstallFinished(GURL manifest_url, GURL manifest_id) {}
 };
 
 // Test building the WebAPK-proto is succeeding.

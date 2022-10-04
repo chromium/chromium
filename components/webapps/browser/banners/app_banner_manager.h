@@ -356,6 +356,9 @@ class AppBannerManager : public content::WebContentsObserver,
   // The URL of the manifest.
   GURL manifest_url_;
 
+  // The manifest id.
+  GURL manifest_id_;
+
   // The URL of the primary icon.
   GURL primary_icon_url_;
 

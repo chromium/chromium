@@ -103,7 +103,7 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
 
   scope = manifest.scope;
 
-  manifest_id = GetManifestId(manifest);
+  manifest_id = blink::GetIdFromManifest(manifest);
 
   // Set the display based on the manifest value, if any.
   if (manifest.display != DisplayMode::kUndefined)
@@ -219,18 +219,6 @@ void ShortcutInfo::UpdateBestSplashIcon(
 
 void ShortcutInfo::UpdateSource(const Source new_source) {
   source = new_source;
-}
-
-// static
-GURL ShortcutInfo::GetManifestId(const blink::mojom::Manifest& manifest) {
-  if (manifest.id.has_value()) {
-    // Generate the formatted id by <start_url_origin>/<manifest_id>.
-    GURL manifest_id(manifest.start_url.DeprecatedGetOriginAsURL().spec() +
-                     base::UTF16ToUTF8(manifest.id.value()));
-    DCHECK(manifest_id.is_valid());
-    return manifest_id;
-  }
-  return manifest.start_url;
 }
 
 }  // namespace webapps

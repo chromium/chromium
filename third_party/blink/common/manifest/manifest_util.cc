@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
@@ -146,6 +147,17 @@ absl::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
   if (base::EqualsCaseInsensitiveASCII(client_mode, "focus-existing"))
     return ClientMode::kFocusExisting;
   return absl::nullopt;
+}
+
+GURL GetIdFromManifest(const mojom::Manifest& manifest) {
+  if (manifest.id.has_value()) {
+    // Generate the formatted id by <start_url_origin>/<manifest_id>.
+    GURL manifest_id(manifest.start_url.DeprecatedGetOriginAsURL().spec() +
+                     base::UTF16ToUTF8(manifest.id.value()));
+    DCHECK(manifest_id.is_valid());
+    return manifest_id;
+  }
+  return manifest.start_url;
 }
 
 }  // namespace blink
