@@ -1863,6 +1863,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
             size, buffer_format, buffer_usage, gpu::kNullSurfaceHandle,
             nullptr);
         if (gpu_memory_buffer) {
+          gpu_memory_buffer->SetColorSpace(color_space_);
           back_buffer_mailbox = sii->CreateSharedImage(
               gpu_memory_buffer.get(), gpu_memory_buffer_manager, color_space_,
               origin, kPremul_SkAlphaType, usage | additional_usage_flags);
