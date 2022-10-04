@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/accelerators/accelerator_table.h"
 #include "ash/accelerators/debug_commands.h"
 #include "ash/constants/ash_features.h"
@@ -13,6 +14,9 @@
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
 
@@ -199,15 +203,21 @@ bool AshAcceleratorConfiguration::IsDeprecated(
 }
 
 void AshAcceleratorConfiguration::AddLayoutInfo(const AcceleratorData& data) {
-  // TODO(jimmyxgong): This a basic stub implementation, replace with real
-  // implementation.
+  DCHECK(kAcceleratorLayouts.contains(data.action));
+  const AcceleratorLayoutDetails& layout_details =
+      kAcceleratorLayouts.at(data.action);
+
   mojom::AcceleratorLayoutInfoPtr layout_info =
       mojom::AcceleratorLayoutInfo::New();
-  layout_info->category = mojom::AcceleratorCategory::kSystem;
-  layout_info->sub_category = mojom::AcceleratorSubcategory::kGeneral;
+  layout_info->category = layout_details.category;
+  layout_info->sub_category = layout_details.sub_category;
   // TODO(jimmyxgong): Create a mapping between action_id and description.
-  layout_info->description = u"Stub description";
-  layout_info->style = mojom::AcceleratorLayoutStyle::kDefault;
+  const std::string stub_description =
+      base::StrCat({"action: ", base::NumberToString(data.action),
+                    " : keycode: ", base::NumberToString(data.keycode),
+                    " : modifiers: ", base::NumberToString(data.modifiers)});
+  layout_info->description = base::UTF8ToUTF16(stub_description);
+  layout_info->style = layout_details.layout_style;
   layout_info->source = mojom::AcceleratorSource::kAsh;
   layout_info->action = static_cast<uint32_t>(data.action);
 

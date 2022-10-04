@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/public/cpp/accelerators.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/ui_base_features.h"
@@ -59,6 +60,25 @@ std::vector<ash::AcceleratorInfo> GetDeprecatedAcceleratorInfos(
     }
   }
   return deprecated_infos;
+}
+
+// Validates that the passed in layouts have matching accelerator layouts in
+// `kAcceleratorLayouts`. If this throws an expectation error it means that
+// the there is a inconsistency between the layouts in `kAcceleratorLayouts` and
+// the data provided by `AshAcceleratorConfiguration`.
+void ValidateAcceleratorLayouts(
+    const std::vector<ash::mojom::AcceleratorLayoutInfoPtr>& actual_layouts) {
+  for (const auto& actual : actual_layouts) {
+    EXPECT_TRUE(ash::kAcceleratorLayouts.contains(actual->action));
+
+    const ash::AcceleratorLayoutDetails& expected =
+        ash::kAcceleratorLayouts.at(actual->action);
+
+    EXPECT_EQ(expected.category, actual->category);
+    EXPECT_EQ(expected.sub_category, actual->sub_category);
+    EXPECT_EQ(expected.layout_style, actual->style);
+    EXPECT_EQ(ash::mojom::AcceleratorSource::kAsh, actual->source);
+  }
 }
 
 }  // namespace
@@ -159,4 +179,16 @@ TEST_F(AshAcceleratorConfigurationTest, DeprecatedAccelerators) {
                                            ui::EF_COMMAND_DOWN);
   EXPECT_FALSE(config_->IsDeprecated(active_accelerator));
 }
+
+TEST_F(AshAcceleratorConfigurationTest, ValidateAllAcceleratorLayouts) {
+  // Initialize with all default accelerators.
+  config_->Initialize();
+  const std::vector<mojom::AcceleratorLayoutInfoPtr>& actual_layouts =
+      config_->GetAcceleratorLayoutInfos();
+
+  // Verify that all default accelerators have the correctly mapped layout
+  // details.
+  ValidateAcceleratorLayouts(actual_layouts);
+}
+
 }  // namespace ash
