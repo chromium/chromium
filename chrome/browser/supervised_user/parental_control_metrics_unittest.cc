@@ -154,10 +154,10 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Blocks `kExampleHost0`.
   {
-    DictionaryPrefUpdate hosts_update(GetPrefs(),
+    ScopedDictPrefUpdate hosts_update(GetPrefs(),
                                       prefs::kSupervisedUserManualHosts);
-    base::Value* hosts = hosts_update.Get();
-    hosts->SetBoolKey(kExampleHost0, false);
+    base::Value::Dict& hosts = hosts_update.Get();
+    hosts.Set(kExampleHost0, false);
   }
 
   histogram_tester_.ExpectBucketCount(
@@ -174,10 +174,10 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Approves `kExampleHost0`.
   {
-    DictionaryPrefUpdate hosts_update(GetPrefs(),
+    ScopedDictPrefUpdate hosts_update(GetPrefs(),
                                       prefs::kSupervisedUserManualHosts);
-    base::Value* hosts = hosts_update.Get();
-    hosts->SetBoolKey(kExampleHost0, true);
+    base::Value::Dict& hosts = hosts_update.Get();
+    hosts.Set(kExampleHost0, true);
   }
 
   histogram_tester_.ExpectBucketCount(
@@ -194,10 +194,10 @@ TEST_F(ParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Blocks `kExampleURL1`.
   {
-    DictionaryPrefUpdate urls_update(GetPrefs(),
+    ScopedDictPrefUpdate urls_update(GetPrefs(),
                                      prefs::kSupervisedUserManualURLs);
-    base::Value* urls = urls_update.Get();
-    urls->SetBoolKey(kExampleURL1, false);
+    base::Value::Dict& urls = urls_update.Get();
+    urls.Set(kExampleURL1, false);
   }
 
   histogram_tester_.ExpectBucketCount(
