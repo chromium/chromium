@@ -107,6 +107,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/common/features/feature_channel.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -502,11 +503,11 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
   // WebContents.
   WaitForGaiaPageLoad();
 
-  content::WebContents* gaia_frame_web_contents =
-      signin::GetAuthFrameWebContents(GetLoginUI()->GetWebContents(),
-                                      gaia_frame_parent_);
+  extensions::WebViewGuest* gaia_guest = signin::GetAuthWebViewGuest(
+      GetLoginUI()->GetWebContents(), gaia_frame_parent_);
+  ASSERT_TRUE(gaia_guest);
   content::NavigationController* gaia_frame_navigation_controller =
-      &(gaia_frame_web_contents->GetController());
+      &gaia_guest->GetController();
 
   // Start observing before initiating SAML sign-in.
   content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());

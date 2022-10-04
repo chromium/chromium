@@ -1950,11 +1950,12 @@ class WebviewProxyAuthLoginTest : public WebviewLoginTest {
     // Only care for notifications originating from the frame which is
     // displaying gaia.
     content::WebContents* main_web_contents = GetLoginUI()->GetWebContents();
-    content::WebContents* gaia_frame_web_contents =
-        signin::GetAuthFrameWebContents(main_web_contents, gaia_frame_parent_);
+    content::RenderFrameHost* gaia_rfh =
+        signin::GetAuthFrame(main_web_contents, gaia_frame_parent_);
     LoginHandler* login_handler =
         content::Details<LoginNotificationDetails>(details)->handler();
-    if (login_handler->web_contents() != gaia_frame_web_contents)
+    if (login_handler->web_contents() !=
+        content::WebContents::FromRenderFrameHost(gaia_rfh))
       return false;
 
     gaia_frame_login_handler_ = login_handler;

@@ -4,56 +4,36 @@
 
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 
-#include <set>
-
-#include "base/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace {
-
-bool AddWebContentsToSet(std::set<content::WebContents*>* frame_set,
-                         const std::string& web_view_name,
-                         content::WebContents* web_contents) {
-  auto* web_view = extensions::WebViewGuest::FromWebContents(web_contents);
-  if (web_view && web_view->name() == web_view_name)
-    frame_set->insert(web_contents);
-  return false;
-}
-
-}  // namespace
 
 namespace signin {
 
 content::RenderFrameHost* GetAuthFrame(content::WebContents* web_contents,
                                        const std::string& parent_frame_name) {
-  content::WebContents* auth_web_contents =
-      GetAuthFrameWebContents(web_contents, parent_frame_name);
-  return auth_web_contents ? auth_web_contents->GetPrimaryMainFrame() : nullptr;
+  content::RenderFrameHost* frame = nullptr;
+  web_contents->ForEachRenderFrameHostWithAction(
+      [&frame, &parent_frame_name](content::RenderFrameHost* rfh) {
+        auto* web_view = extensions::WebViewGuest::FromRenderFrameHost(rfh);
+        if (web_view && web_view->name() == parent_frame_name) {
+          DCHECK_EQ(web_view->GetGuestMainFrame(), rfh);
+          frame = rfh;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return frame;
 }
 
-content::WebContents* GetAuthFrameWebContents(
+extensions::WebViewGuest* GetAuthWebViewGuest(
     content::WebContents* web_contents,
     const std::string& parent_frame_name) {
-  std::set<content::WebContents*> frame_set;
-  auto* manager = guest_view::GuestViewManager::FromBrowserContext(
-      web_contents->GetBrowserContext());
-  if (manager) {
-    manager->ForEachGuest(web_contents,
-                          base::BindRepeating(&AddWebContentsToSet, &frame_set,
-                                              parent_frame_name));
-  }
-  DCHECK_GE(1U, frame_set.size());
-  if (!frame_set.empty())
-    return *frame_set.begin();
-
-  return nullptr;
+  return extensions::WebViewGuest::FromRenderFrameHost(
+      GetAuthFrame(web_contents, parent_frame_name));
 }
 
 Browser* GetDesktopBrowser(content::WebUI* web_ui) {

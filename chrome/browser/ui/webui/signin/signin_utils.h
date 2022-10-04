@@ -18,6 +18,10 @@ class WebContents;
 class WebUI;
 }
 
+namespace extensions {
+class WebViewGuest;
+}
+
 namespace signin {
 
 // User choice when signing in.
@@ -39,7 +43,7 @@ using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
 content::RenderFrameHost* GetAuthFrame(content::WebContents* web_contents,
                                        const std::string& parent_frame_name);
 
-content::WebContents* GetAuthFrameWebContents(
+extensions::WebViewGuest* GetAuthWebViewGuest(
     content::WebContents* web_contents,
     const std::string& parent_frame_name);
 
