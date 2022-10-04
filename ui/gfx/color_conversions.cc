@@ -29,10 +29,16 @@ skcms_Matrix3x3* getXYDZ50toXYZD65matrix() {
   return &adapt_d50_to_d65;
 }
 
-skcms_Matrix3x3* getXYZD50tosSRGBLinearMatrix() {
+skcms_Matrix3x3* getXYZD50toSRGBLinearMatrix() {
   static skcms_Matrix3x3 xyzd50_to_srgb_linear;
   skcms_Matrix3x3_invert(&SkNamedGamut::kSRGB, &xyzd50_to_srgb_linear);
   return &xyzd50_to_srgb_linear;
+}
+
+skcms_Matrix3x3* getkXYZD65tosRGBMatrix() {
+  static skcms_Matrix3x3 adapt_XYZD65_to_srgb = skcms_Matrix3x3_concat(
+      getXYZD50toSRGBLinearMatrix(), getXYDZ65toXYZD50matrix());
+  return &adapt_XYZD65_to_srgb;
 }
 
 skcms_Matrix3x3* getProPhotoRGBtoXYZD50Matrix() {
@@ -41,10 +47,22 @@ skcms_Matrix3x3* getProPhotoRGBtoXYZD50Matrix() {
   return &lin_proPhoto_to_XYZ_D50;
 }
 
-skcms_Matrix3x3* getkXYZD65tosRGBMatrix() {
-  static skcms_Matrix3x3 adapt_XYZD65_to_srgb = skcms_Matrix3x3_concat(
-      getXYZD50tosSRGBLinearMatrix(), getXYDZ65toXYZD50matrix());
-  return &adapt_XYZD65_to_srgb;
+skcms_Matrix3x3* getXYZD50toDisplayP3Matrix() {
+  static skcms_Matrix3x3 xyzd50_to_DisplayP3;
+  skcms_Matrix3x3_invert(&SkNamedGamut::kDisplayP3, &xyzd50_to_DisplayP3);
+  return &xyzd50_to_DisplayP3;
+}
+
+skcms_Matrix3x3* getXYZD50toAdobeRGBMatrix() {
+  static skcms_Matrix3x3 xyzd50_to_kAdobeRGB;
+  skcms_Matrix3x3_invert(&SkNamedGamut::kAdobeRGB, &xyzd50_to_kAdobeRGB);
+  return &xyzd50_to_kAdobeRGB;
+}
+
+skcms_Matrix3x3* getXYZD50toRec2020Matrix() {
+  static skcms_Matrix3x3 xyzd50_to_Rec2020;
+  skcms_Matrix3x3_invert(&SkNamedGamut::kRec2020, &xyzd50_to_Rec2020);
+  return &xyzd50_to_Rec2020;
 }
 
 float LabInverseTransferFunction(float t) {
@@ -111,6 +129,21 @@ std::tuple<float, float, float> ApplyTransferFnAdobeRGB(float r,
       skcms_TransferFunction_eval(&SkNamedTransferFn::k2Dot2, b));
 }
 
+skcms_TransferFunction* getAdobeRGBInverseTrfn() {
+  static skcms_TransferFunction AdobeRGB_inverse;
+  skcms_TransferFunction_invert(&SkNamedTransferFn::k2Dot2, &AdobeRGB_inverse);
+  return &AdobeRGB_inverse;
+}
+
+std::tuple<float, float, float> ApplyInverseTransferFnAdobeRGB(float r,
+                                                               float g,
+                                                               float b) {
+  return std::make_tuple(
+      skcms_TransferFunction_eval(getAdobeRGBInverseTrfn(), r),
+      skcms_TransferFunction_eval(getAdobeRGBInverseTrfn(), g),
+      skcms_TransferFunction_eval(getAdobeRGBInverseTrfn(), b));
+}
+
 std::tuple<float, float, float> ApplyTransferFnRec2020(float r,
                                                        float g,
                                                        float b) {
@@ -118,6 +151,21 @@ std::tuple<float, float, float> ApplyTransferFnRec2020(float r,
       skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, r),
       skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, g),
       skcms_TransferFunction_eval(&SkNamedTransferFn::kRec2020, b));
+}
+
+skcms_TransferFunction* getRec2020nverseTrfn() {
+  static skcms_TransferFunction Rec2020_inverse;
+  skcms_TransferFunction_invert(&SkNamedTransferFn::kRec2020, &Rec2020_inverse);
+  return &Rec2020_inverse;
+}
+
+std::tuple<float, float, float> ApplyInverseTransferFnRec2020(float r,
+                                                              float g,
+                                                              float b) {
+  return std::make_tuple(
+      skcms_TransferFunction_eval(getRec2020nverseTrfn(), r),
+      skcms_TransferFunction_eval(getRec2020nverseTrfn(), g),
+      skcms_TransferFunction_eval(getRec2020nverseTrfn(), b));
 }
 }  // namespace
 
@@ -202,7 +250,7 @@ std::tuple<float, float, float> XYZD65tosRGBLinear(float x, float y, float z) {
 std::tuple<float, float, float> XYZD50tosRGBLinear(float x, float y, float z) {
   skcms_Vector3 xyz_input{{x, y, z}};
   skcms_Vector3 rgb_result =
-      skcms_Matrix3x3_apply(getXYZD50tosSRGBLinearMatrix(), &xyz_input);
+      skcms_Matrix3x3_apply(getXYZD50toSRGBLinearMatrix(), &xyz_input);
   return std::make_tuple(rgb_result.vals[0], rgb_result.vals[1],
                          rgb_result.vals[2]);
 }
@@ -225,6 +273,14 @@ std::tuple<float, float, float> DisplayP3ToXYZD50(float r, float g, float b) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> XYZD50ToDisplayP3(float x, float y, float z) {
+  skcms_Vector3 xyz_input{{x, y, z}};
+  skcms_Vector3 rgb_output =
+      skcms_Matrix3x3_apply(getXYZD50toDisplayP3Matrix(), &xyz_input);
+  return ApplyInverseTransferFnsRGB(rgb_output.vals[0], rgb_output.vals[1],
+                                    rgb_output.vals[2]);
+}
+
 std::tuple<float, float, float> AdobeRGBToXYZD50(float r, float g, float b) {
   auto [r_, g_, b_] = ApplyTransferFnAdobeRGB(r, g, b);
   skcms_Vector3 rgb_input{{r_, g_, b_}};
@@ -234,6 +290,14 @@ std::tuple<float, float, float> AdobeRGBToXYZD50(float r, float g, float b) {
                          xyz_output.vals[2]);
 }
 
+std::tuple<float, float, float> XYZD50ToAdobeRGB(float x, float y, float z) {
+  skcms_Vector3 xyz_input{{x, y, z}};
+  skcms_Vector3 rgb_output =
+      skcms_Matrix3x3_apply(getXYZD50toAdobeRGBMatrix(), &xyz_input);
+  return ApplyInverseTransferFnAdobeRGB(rgb_output.vals[0], rgb_output.vals[1],
+                                        rgb_output.vals[2]);
+}
+
 std::tuple<float, float, float> Rec2020ToXYZD50(float r, float g, float b) {
   auto [r_, g_, b_] = ApplyTransferFnRec2020(r, g, b);
   skcms_Vector3 rgb_input{{r_, g_, b_}};
@@ -241,6 +305,14 @@ std::tuple<float, float, float> Rec2020ToXYZD50(float r, float g, float b) {
       skcms_Matrix3x3_apply(&SkNamedGamut::kRec2020, &rgb_input);
   return std::make_tuple(xyz_output.vals[0], xyz_output.vals[1],
                          xyz_output.vals[2]);
+}
+
+std::tuple<float, float, float> XYZD50ToRec2020(float x, float y, float z) {
+  skcms_Vector3 xyz_input{{x, y, z}};
+  skcms_Vector3 rgb_output =
+      skcms_Matrix3x3_apply(getXYZD50toRec2020Matrix(), &xyz_input);
+  return ApplyInverseTransferFnRec2020(rgb_output.vals[0], rgb_output.vals[1],
+                                       rgb_output.vals[2]);
 }
 
 SkColor4f SRGBLinearToSkColor4f(float r, float g, float b, float alpha) {

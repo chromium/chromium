@@ -539,6 +539,47 @@ TEST(ColorConversions, DisplayP3ToXYZD50) {
   }
 }
 
+TEST(ColorConversions, XYZD50ToDisplayP3) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9642956660812443f, 1.0000000361162846f, 0.8251045485672053f},
+       {0.9999999999999999f, 0.9999999999999997f,
+        0.9999999999999999f}},  // white
+      {{0.3851514688337912f, 0.7168870538238823f, 0.09708128566574631f},
+       {0.45840159019103005f, 0.9852645833250543f,
+        0.29829470783345835f}},  // lime
+      {{0.1763053229982614f, 0.10171766135467991f, 0.024020600356509242f},
+       {0.5957181607237907f, 0.2055939145569215f,
+        0.18695695018247227f}},  // brown
+      {{0.1250143560558979f, 0.0611129099463755f, 0.15715146562446167f},
+       {0.4584004101072638f, 0.07977226603250179f,
+        0.4847907338567859f}},  // purple
+      {{0.7245316165924385f, 0.6365774485679174f, 0.4915583325045292f},
+       {0.962148711796773f, 0.7628803605364196f,
+        0.7971503318758075f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_x, input_y, input_z] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    auto [output_r, output_g, output_b] =
+        XYZD50ToDisplayP3(input_x, input_y, input_z);
+    EXPECT_NEAR(output_r, expected_r, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+    EXPECT_NEAR(output_g, expected_g, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+    EXPECT_NEAR(output_b, expected_b, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+  }
+}
+
 TEST(ColorConversions, DisplayP3ToSkColor4f) {
   // Color conversions obtained from
   // https://colorjs.io/apps/convert/?color=purple&precision=4
@@ -616,6 +657,42 @@ TEST(ColorConversions, ProPhotoToXYZD50) {
   }
 }
 
+TEST(ColorConversions, ProPhotoToSkColor4f) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=pink&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9999999886663737f, 1.0000000327777285f, 0.9999999636791804f},
+       {1.0f, 1.0f, 1.0f}},  // white
+      {{0.5402807890930262f, 0.9275948938161531f, 0.30456598218387576f},
+       {0.0f, 1.0f, 0.0f}},  // lime
+      {{0.4202512875251534f, 0.20537448341387265f, 0.14018716364460992f},
+       {0.6470588235294118f, 0.16470588235294117f,
+        0.16470588235294117f}},  // brown
+      {{0.3415199027593793f, 0.13530888280806527f, 0.3980101298732242f},
+       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
+      {{0.8755612852965058f, 0.7357597566543541f, 0.7499575746802042f},
+       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    SkColor4f color = ProPhotoToSkColor4f(input_r, input_g, input_b, 1.0f);
+    EXPECT_NEAR(color.fR, expected_r, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fG, expected_g, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+    EXPECT_NEAR(color.fB, expected_b, 0.01f)
+        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
+        << ' ' << color.fG << ' ' << color.fB;
+  }
+}
+
 TEST(ColorConversions, AdobeRGBToXYZD50) {
   // Color conversions obtained from
   // https://colorjs.io/apps/convert/?color=purple&precision=4
@@ -657,39 +734,42 @@ TEST(ColorConversions, AdobeRGBToXYZD50) {
   }
 }
 
-TEST(ColorConversions, ProPhotoToSkColor4f) {
+TEST(ColorConversions, XYZD50ToAdobeRGB) {
   // Color conversions obtained from
-  // https://colorjs.io/apps/convert/?color=pink&precision=4
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
   ColorTest colors_tests[] = {
       {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
-      {{0.9999999886663737f, 1.0000000327777285f, 0.9999999636791804f},
-       {1.0f, 1.0f, 1.0f}},  // white
-      {{0.5402807890930262f, 0.9275948938161531f, 0.30456598218387576f},
-       {0.0f, 1.0f, 0.0f}},  // lime
-      {{0.4202512875251534f, 0.20537448341387265f, 0.14018716364460992f},
-       {0.6470588235294118f, 0.16470588235294117f,
-        0.16470588235294117f}},  // brown
-      {{0.3415199027593793f, 0.13530888280806527f, 0.3980101298732242f},
-       {0.5019607843137255f, 0.0f, 0.5019607843137255f}},  // purple
-      {{0.8755612852965058f, 0.7357597566543541f, 0.7499575746802042f},
-       {1.0f, 0.7529411764705882f, 0.796078431372549f}}};  // pink
+      {{0.9642956660812443f, 1.0000000361162846f, 0.8251045485672053f},
+       {1.0000000000000002f, 0.9999999999999999f, 1.f}},  // white
+      {{0.3851514688337912f, 0.7168870538238823f, 0.09708128566574631f},
+       {0.564972265988564f, 0.9999999999999999f,
+        0.23442379872902916f}},  // lime
+      {{0.1763053229982614f, 0.10171766135467991f, 0.024020600356509242f},
+       {0.5565979160264471f, 0.18045907254050694f,
+        0.18045907254050705f}},  // brown
+      {{0.1250143560558979f, 0.0611129099463755f, 0.15715146562446167f},
+       {0.4275929819700999f, 0.0f, 0.4885886519419426f}},  // purple
+      {{0.7245316165924385f, 0.6365774485679174f, 0.4915583325045292f},
+       {0.9363244100721754f, 0.7473920857106169f,
+        0.7893042668092753f}}};  // pink
 
   for (auto& color_pair : colors_tests) {
-    auto [input_r, input_g, input_b] = color_pair.input;
+    auto [input_x, input_y, input_z] = color_pair.input;
     auto [expected_r, expected_g, expected_b] = color_pair.expected;
-    SkColor4f color = ProPhotoToSkColor4f(input_r, input_g, input_b, 1.0f);
-    EXPECT_NEAR(color.fR, expected_r, 0.01f)
-        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
-        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
-        << ' ' << color.fG << ' ' << color.fB;
-    EXPECT_NEAR(color.fG, expected_g, 0.01f)
-        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
-        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
-        << ' ' << color.fG << ' ' << color.fB;
-    EXPECT_NEAR(color.fB, expected_b, 0.01f)
-        << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_r
-        << ' ' << expected_g << ' ' << expected_b << " produced " << color.fR
-        << ' ' << color.fG << ' ' << color.fB;
+    auto [output_r, output_g, output_b] =
+        XYZD50ToAdobeRGB(input_x, input_y, input_z);
+    EXPECT_NEAR(output_r, expected_r, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+    EXPECT_NEAR(output_g, expected_g, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+    EXPECT_NEAR(output_b, expected_b, 0.01f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
   }
 }
 
@@ -767,6 +847,45 @@ TEST(ColorConversions, Rec2020ToXYZD50) {
         << input_r << ' ' << input_g << ' ' << input_b << " to " << expected_x
         << ' ' << expected_y << ' ' << expected_z << " produced " << output_x
         << ' ' << output_y << ' ' << output_z;
+  }
+}
+
+TEST(ColorConversions, XYZD50ToRec2020) {
+  // Color conversions obtained from
+  // https://colorjs.io/apps/convert/?color=purple&precision=4
+  ColorTest colors_tests[] = {
+      {{0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}},  // black
+      {{0.9642956660812443f, 1.0000000361162846f, 0.8251045485672053f},
+       {1.0000000000000002f, 1.f, 1.f}},  // white
+      {{0.3851514688337912f, 0.7168870538238823f, 0.09708128566574631f},
+       {0.5675424725933591f, 0.959278677099374f, 0.2689692617052188f}},  // lime
+      {{0.1763053229982614f, 0.10171766135467991f, 0.024020600356509242f},
+       {0.4841434514625542f, 0.17985588424119636f,
+        0.12395667053434403f}},  // brown
+      {{0.1250143560558979f, 0.0611129099463755f, 0.15715146562446167f},
+       {0.36142160262090384f, 0.0781562275109019f,
+        0.429742223818931f}},  // purple
+      {{0.7245316165924385f, 0.6365774485679174f, 0.4915583325045292f},
+       {0.9098509851821579f, 0.747938726996672f,
+        0.7726929727190115f}}};  // pink
+
+  for (auto& color_pair : colors_tests) {
+    auto [input_x, input_y, input_z] = color_pair.input;
+    auto [expected_r, expected_g, expected_b] = color_pair.expected;
+    auto [output_r, output_g, output_b] =
+        XYZD50ToRec2020(input_x, input_y, input_z);
+    EXPECT_NEAR(output_r, expected_r, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+    EXPECT_NEAR(output_g, expected_g, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
+    EXPECT_NEAR(output_b, expected_b, 0.001f)
+        << input_x << ' ' << input_y << ' ' << input_z << " to " << expected_r
+        << ' ' << expected_g << ' ' << expected_b << " produced " << output_r
+        << ' ' << output_g << ' ' << output_b;
   }
 }
 

@@ -29,6 +29,11 @@ GFX_EXPORT std::tuple<float, float, float> DisplayP3ToXYZD50(float r,
                                                              float b);
 
 // Method exposed for testing purposes.
+GFX_EXPORT std::tuple<float, float, float> XYZD50ToDisplayP3(float x,
+                                                             float y,
+                                                             float z);
+
+// Method exposed for testing purposes.
 GFX_EXPORT std::tuple<float, float, float> ProPhotoToXYZD50(float r,
                                                             float g,
                                                             float b);
@@ -39,9 +44,19 @@ GFX_EXPORT std::tuple<float, float, float> AdobeRGBToXYZD50(float r,
                                                             float b);
 
 // Method exposed for testing purposes.
+GFX_EXPORT std::tuple<float, float, float> XYZD50ToAdobeRGB(float x,
+                                                            float y,
+                                                            float z);
+
+// Method exposed for testing purposes.
 GFX_EXPORT std::tuple<float, float, float> Rec2020ToXYZD50(float r,
                                                            float g,
                                                            float b);
+
+// Method exposed for testing purposes.
+GFX_EXPORT std::tuple<float, float, float> XYZD50ToRec2020(float x,
+                                                           float y,
+                                                           float z);
 
 // Method exposed for testing purposes.
 GFX_EXPORT std::tuple<float, float, float> XYZD50toD65(float x,
