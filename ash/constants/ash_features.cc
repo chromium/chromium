@@ -2888,11 +2888,6 @@ bool IsSimLockPolicyEnabled() {
   return base::FeatureList::IsEnabled(kSimLockPolicy);
 }
 
-// TODO(crbug.com/1249845): Remove this function.
-bool IsSyncSettingsCategorizationEnabled() {
-  return true;
-}
-
 bool IsSystemTrayShadowEnabled() {
   return base::FeatureList::IsEnabled(kSystemTrayShadow);
 }
