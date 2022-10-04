@@ -11,3 +11,16 @@ import {Manager} from './manager.js';
 initialize(new Manager(new ClientRenderer()));
 const tabBox = document.querySelector('cr-tab-box');
 tabBox.hidden = false;
+
+const _TabIndicies = {
+  '#players': 0,
+  '#audio': 1,
+  '#video-capture': 2,
+  '#audio-focus': 3,
+  '#cdms': 4,
+};
+
+const tabHash = window.location.hash.toLowerCase();
+if (tabHash in _TabIndicies) {
+  tabBox.setAttribute('selected-index', _TabIndicies[tabHash]);
+}
