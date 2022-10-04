@@ -2060,10 +2060,6 @@ int PrintRenderFrameHelper::GetFitToPageScaleFactor(
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
-bool PrintRenderFrameHelper::IsPrintingEnabled() const {
-  return is_printing_enabled_;
-}
-
 void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
   if (node.IsNull() || !node.GetDocument().GetFrame()) {
     // This can occur when the context menu refers to an invalid WebNode.

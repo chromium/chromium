@@ -150,8 +150,6 @@ class PrintRenderFrameHelper
   // printing is build-in. This method is used by CEF.
   static void DisablePreview();
 
-  bool IsPrintingEnabled() const;
-
   void PrintNode(const blink::WebNode& node);
 
   // Get the scale factor. Returns |input_scale_factor| if it is valid and
