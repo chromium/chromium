@@ -21,27 +21,25 @@ using ::testing::UnorderedElementsAre;
 class KeywordClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    base::flat_map<std::string, optimization_guide::EntityMetadata>
-        entity_metadata_map;
     optimization_guide::EntityMetadata github_md;
     github_md.human_readable_name = "readable-github";
     github_md.human_readable_aliases = {"git hub", "github llc"};
     github_md.collections = {"/collection/computer", "/collection/programming"};
-    entity_metadata_map["github"] = github_md;
+    entity_metadata_map_["github"] = github_md;
     optimization_guide::EntityMetadata other_md;
     other_md.human_readable_name = "readable-otherentity";
-    entity_metadata_map["otherentity"] = other_md;
+    entity_metadata_map_["otherentity"] = other_md;
     optimization_guide::EntityMetadata baz_md;
     baz_md.human_readable_name = "baz";
-    entity_metadata_map["baz"] = baz_md;
+    entity_metadata_map_["baz"] = baz_md;
     optimization_guide::EntityMetadata search_md;
     search_md.human_readable_name = "search";
-    entity_metadata_map["search"] = search_md;
+    entity_metadata_map_["search"] = search_md;
     optimization_guide::EntityMetadata noisy_md;
     noisy_md.human_readable_name = "readable-onlyinnoisyvisit";
-    entity_metadata_map["onlyinnoisyvisit"] = noisy_md;
+    entity_metadata_map_["onlyinnoisyvisit"] = noisy_md;
     cluster_finalizer_ =
-        std::make_unique<KeywordClusterFinalizer>(entity_metadata_map);
+        std::make_unique<KeywordClusterFinalizer>(&entity_metadata_map_);
 
     config_.keyword_filter_on_noisy_visits = false;
     config_.keyword_filter_on_entity_aliases = false;
@@ -59,6 +57,8 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
 
  private:
   Config config_;
+  base::flat_map<std::string, optimization_guide::EntityMetadata>
+      entity_metadata_map_;
   std::unique_ptr<KeywordClusterFinalizer> cluster_finalizer_;
   base::test::TaskEnvironment task_environment_;
 };

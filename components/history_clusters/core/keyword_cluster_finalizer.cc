@@ -109,9 +109,9 @@ void KeepTopKeywords(
 }  // namespace
 
 KeywordClusterFinalizer::KeywordClusterFinalizer(
-    const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+    base::flat_map<std::string, optimization_guide::EntityMetadata>*
         entity_metadata_map)
-    : entity_metadata_map_(entity_metadata_map) {}
+    : entity_metadata_map_(*entity_metadata_map) {}
 KeywordClusterFinalizer::~KeywordClusterFinalizer() = default;
 
 void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
@@ -126,8 +126,8 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
 
     for (const auto& entity :
          visit.annotated_visit.content_annotations.model_annotations.entities) {
-      auto entity_metadata_it = entity_metadata_map_.find(entity.id);
-      if (entity_metadata_it == entity_metadata_map_.end()) {
+      auto entity_metadata_it = entity_metadata_map_->find(entity.id);
+      if (entity_metadata_it == entity_metadata_map_->end()) {
         continue;
       }
       const auto& entity_metadata = entity_metadata_it->second;

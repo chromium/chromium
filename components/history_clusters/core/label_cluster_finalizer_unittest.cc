@@ -20,20 +20,18 @@ using ::testing::UnorderedElementsAre;
 class LabelClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    base::flat_map<std::string, optimization_guide::EntityMetadata>
-        entity_metadata_map;
     optimization_guide::EntityMetadata md1;
     md1.human_readable_name = "doesntmatter";
-    entity_metadata_map["someotherentity"] = md1;
+    entity_metadata_map_["someotherentity"] = md1;
     optimization_guide::EntityMetadata md2;
     md2.human_readable_name = "doesntmatter";
-    entity_metadata_map["highscoringentitybutlowvisitscore"] = md2;
+    entity_metadata_map_["highscoringentitybutlowvisitscore"] = md2;
     optimization_guide::EntityMetadata label_md;
     label_md.human_readable_name = "chosenlabel";
-    entity_metadata_map["baz"] = label_md;
+    entity_metadata_map_["baz"] = label_md;
 
     cluster_finalizer_ =
-        std::make_unique<LabelClusterFinalizer>(entity_metadata_map);
+        std::make_unique<LabelClusterFinalizer>(&entity_metadata_map_);
   }
 
   void TearDown() override { cluster_finalizer_.reset(); }
@@ -43,6 +41,8 @@ class LabelClusterFinalizerTest : public ::testing::Test {
   }
 
  private:
+  base::flat_map<std::string, optimization_guide::EntityMetadata>
+      entity_metadata_map_;
   std::unique_ptr<LabelClusterFinalizer> cluster_finalizer_;
   base::test::TaskEnvironment task_environment_;
 };

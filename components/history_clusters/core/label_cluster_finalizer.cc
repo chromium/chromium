@@ -21,9 +21,9 @@
 namespace history_clusters {
 
 LabelClusterFinalizer::LabelClusterFinalizer(
-    const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+    base::flat_map<std::string, optimization_guide::EntityMetadata>*
         entity_metadata_map)
-    : entity_metadata_map_(entity_metadata_map) {}
+    : entity_metadata_map_(*entity_metadata_map) {}
 LabelClusterFinalizer::~LabelClusterFinalizer() = default;
 
 void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
@@ -57,8 +57,8 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
                               ? it->second + (entity.weight * visit.score)
                               : entity.weight * visit.score;
         if (new_score > max_label_score) {
-          auto entity_metadata_it = entity_metadata_map_.find(entity.id);
-          if (entity_metadata_it == entity_metadata_map_.end()) {
+          auto entity_metadata_it = entity_metadata_map_->find(entity.id);
+          if (entity_metadata_it == entity_metadata_map_->end()) {
             continue;
           }
           max_label_score = new_score;

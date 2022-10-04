@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "components/history_clusters/core/cluster_processor.h"
 
 namespace optimization_guide {
@@ -21,7 +22,7 @@ namespace history_clusters {
 class ContentAnnotationsClusterProcessor : public ClusterProcessor {
  public:
   explicit ContentAnnotationsClusterProcessor(
-      const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+      base::flat_map<std::string, optimization_guide::EntityMetadata>*
           entity_id_to_entity_metadata_map);
   ~ContentAnnotationsClusterProcessor() override;
 
@@ -36,7 +37,9 @@ class ContentAnnotationsClusterProcessor : public ClusterProcessor {
       const history::Cluster& cluster);
 
   // The map from entity ID to entity metadata.
-  base::flat_map<std::string, optimization_guide::EntityMetadata>
+  //
+  // Not owned. Guaranteed to outlive `this` and be non-null.
+  const raw_ref<base::flat_map<std::string, optimization_guide::EntityMetadata>>
       entity_id_to_entity_metadata_map_;
 };
 

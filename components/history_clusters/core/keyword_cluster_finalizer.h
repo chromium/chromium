@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "components/history_clusters/core/cluster_finalizer.h"
 
 namespace optimization_guide {
@@ -20,7 +21,7 @@ namespace history_clusters {
 class KeywordClusterFinalizer : public ClusterFinalizer {
  public:
   explicit KeywordClusterFinalizer(
-      const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+      base::flat_map<std::string, optimization_guide::EntityMetadata>*
           entity_metadata_map);
   ~KeywordClusterFinalizer() override;
 
@@ -28,9 +29,10 @@ class KeywordClusterFinalizer : public ClusterFinalizer {
   void FinalizeCluster(history::Cluster& cluster) override;
 
  private:
-  // A map from human readable entity name to the metadata associated with that
-  // entity name.
-  const base::flat_map<std::string, optimization_guide::EntityMetadata>
+  // A map from entity id to the metadata associated with it.
+  //
+  // Not owned. Guaranteed to outlive `this` and be non-null.
+  const raw_ref<base::flat_map<std::string, optimization_guide::EntityMetadata>>
       entity_metadata_map_;
 };
 

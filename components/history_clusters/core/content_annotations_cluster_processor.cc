@@ -111,9 +111,9 @@ float CalculateSimilarityScore(
 }  // namespace
 
 ContentAnnotationsClusterProcessor::ContentAnnotationsClusterProcessor(
-    const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+    base::flat_map<std::string, optimization_guide::EntityMetadata>*
         entity_id_to_entity_metadata_map)
-    : entity_id_to_entity_metadata_map_(entity_id_to_entity_metadata_map) {}
+    : entity_id_to_entity_metadata_map_(*entity_id_to_entity_metadata_map) {}
 ContentAnnotationsClusterProcessor::~ContentAnnotationsClusterProcessor() =
     default;
 
@@ -164,8 +164,8 @@ ContentAnnotationsClusterProcessor::CreateOccurrenceMapForCluster(
     for (const auto& entity :
          visit.annotated_visit.content_annotations.model_annotations.entities) {
       auto entity_metadata_it =
-          entity_id_to_entity_metadata_map_.find(entity.id);
-      if (entity_metadata_it == entity_id_to_entity_metadata_map_.end()) {
+          entity_id_to_entity_metadata_map_->find(entity.id);
+      if (entity_metadata_it == entity_id_to_entity_metadata_map_->end()) {
         continue;
       }
       auto& entity_metadata = entity_metadata_it->second;
