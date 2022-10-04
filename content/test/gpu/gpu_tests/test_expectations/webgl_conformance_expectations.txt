@@ -528,6 +528,8 @@ crbug.com/982294 [ win debug passthrough nvidia ] conformance/uniforms/uniform-s
 
 crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
 crbug.com/1364333 [ win debug angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+[ win angle-swiftshader passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+[ win angle-swiftshader passthrough ] conformance/renderbuffers/framebuffer-object-attachment.html [ Slow ]
 
 ####################
 # Mac failures     #
@@ -610,6 +612,8 @@ crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/fun
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/glsl/functions/glsl-function-faceforward.html [ Failure ]
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/mod/mod_001_to_008.html [ Failure ]
 crbug.com/1271688 [ linux angle-vulkan passthrough nvidia ] conformance/ogles/GL/pow/pow_017_to_024.html [ Failure ]
+
+[ linux angle-swiftshader passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 ####################
 # Android failures #
