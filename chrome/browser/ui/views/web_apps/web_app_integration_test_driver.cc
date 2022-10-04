@@ -1999,6 +1999,15 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckBrowserNavigation(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__))
+    return;
+  ASSERT_TRUE(browser());
+  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  EXPECT_EQ(url, GetUrlForSite(site));
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::CheckBrowserNavigationIsAppSettings(
     Site site) {
 #if !BUILDFLAG(IS_CHROMEOS)

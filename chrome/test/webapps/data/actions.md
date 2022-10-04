@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 133) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 135) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -90,6 +90,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_app_in_list_icon_correct | Site |  | 75 | Implemented | Find the app in the app list (on desktop, this is chrome://apps, and on ChromeOS, this is the app drawer). Check that the icon for the given app in the app list is correct. | P2 (fetch icon using web request for chrome://app-icon/<app-id>/<icon-size>) |
 | check_theme_color | Site |  | 76 | Not Implemented | Asserts that the theme color of the given app window is correct. | P3 |
 | # Misc UX |
+| check_browser_navigation | Site |  | 134 | Implemented | Check the current browser navigation is the given site |  |
 | check_browser_navigation_is_app_settings | Site |  | 109 | Implemented | Check the current browser navigation is chrome://app-settings/<app-id> | phillis@ |
 | check_create_shortcut_not_shown |  |  | 85 | WIP | Check that the "Create Shortcut" menu option (3-dot->"More Tools"->"Create Shortcut) is greyed out |  |
 | check_create_shortcut_shown |  |  | 86 | WIP | Check that the "Create Shortcut" menu option (3-dot->"More Tools"->"Create Shortcut) is shown |  |

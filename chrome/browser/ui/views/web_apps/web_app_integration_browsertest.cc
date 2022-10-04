@@ -158,6 +158,17 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, RicherInstallModal) {
   helper_.CheckAppInListWindowed(Site::kScreenshots);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigation) {
+  helper_.CreateShortcut(Site::kStandalone, WindowOptions::kBrowser);
+  helper_.CheckBrowserNavigation(Site::kStandalone);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
+  helper_.CreateShortcut(Site::kStandaloneNestedA, WindowOptions::kBrowser);
+  EXPECT_NONFATAL_FAILURE(helper_.CheckBrowserNavigation(Site::kStandalone),
+                          "webapps_integration/standalone/foo/basic.html");
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(
