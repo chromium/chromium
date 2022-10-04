@@ -94,8 +94,9 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
       GetPrefUpdater()->GetMediaSinkInternalValueBySinkId("cast:<1234>"));
 }
 
+// TODO(crbug/1370898): The test is flaky on Network Service Linux.
 IN_PROC_BROWSER_TEST_F(AccessCodeCastSinkServiceBrowserTest,
-                       InstantExpiration) {
+                       DISABLED_InstantExpiration) {
   // This test is run after an instant expiration device was successfully
   // added to the browser. Upon restart it should not exists in prefs nor should
   // it be added to the media router.
