@@ -90,7 +90,7 @@ void ClientHeadless::Start(
 }
 
 bool ClientHeadless::IsRunning() const {
-  // TODO(b/201964911): Use the runtime manager to check whether a controller is
+  // TODO(b/249979875): Use the runtime manager to check whether a controller is
   // running across all clients.
   return controller_ != nullptr;
 }
@@ -124,7 +124,7 @@ ClientContextProto::ScreenOrientation ClientHeadless::GetScreenOrientation()
 
 void ClientHeadless::FetchPaymentsClientToken(
     base::OnceCallback<void(const std::string&)> callback) {
-  // TODO(b/201964911): support payments client.
+  NOTIMPLEMENTED() << "Payments client is not implemented for headless.";
   std::move(callback).Run("");
 }
 

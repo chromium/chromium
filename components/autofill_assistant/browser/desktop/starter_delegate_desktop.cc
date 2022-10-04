@@ -130,7 +130,7 @@ void StarterDelegateDesktop::StartScriptDefaultUi(
 }
 
 bool StarterDelegateDesktop::IsRegularScriptRunning() const {
-  // TODO(b/201964911): rework how we check for running scripts.
+  // TODO(b/249979875): rework how we check for running scripts.
   return false;
 }
 

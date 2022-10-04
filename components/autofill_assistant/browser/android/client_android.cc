@@ -559,7 +559,7 @@ ClientAndroid::GetPasswordChangeSuccessTracker() const {
 }
 
 std::string ClientAndroid::GetLocale() const {
-  // TODO(b/201964911): use dependencies instead.
+  // TODO(b/249978747): use dependencies instead.
   return base::android::GetDefaultLocaleString();
 }
 
