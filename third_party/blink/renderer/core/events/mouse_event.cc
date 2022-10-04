@@ -387,13 +387,13 @@ DispatchEventResult MouseEvent::DispatchEvent(EventDispatcher& dispatcher) {
   bool send_to_disabled_form_controls =
       RuntimeEnabledFeatures::SendMouseEventsDisabledFormControlsEnabled();
 
+  if (!isTrusted())
+    return dispatcher.Dispatch();
+
   if (send_to_disabled_form_controls && is_click &&
       GetEventPath().DisabledFormControlExistsInPath()) {
     return DispatchEventResult::kCanceledBeforeDispatch;
   }
-
-  if (!isTrusted())
-    return dispatcher.Dispatch();
 
   if (!send_to_disabled_form_controls &&
       IsDisabledFormControl(&dispatcher.GetNode())) {

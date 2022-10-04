@@ -16,8 +16,7 @@
                 target.onclick = t.unreached_func("click should not fire on disabled element");
                 document.body.onclick = t.unreached_func("click should not fire on event path");
                 target.click();
-                target.dispatchEvent(new MouseEvent('click', {capture: true, bubbles: true}));
-            }, 'Click should not fire');
+            }, 'element.click() should not fire a click event.');
 
             for (let eventName of eventList) {
                 test((t) => {

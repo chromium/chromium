@@ -3935,9 +3935,6 @@ crbug.com/1289222 external/wpt/css/cssom-view/scroll-behavior-smooth-navigation.
 crbug.com/809935 external/wpt/css/css-fonts/variations/font-style-interpolation.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-ui/text-overflow-011.html [ Crash Failure Pass ]
 
-# <input disabled> does not fire click events after dispatchEvent
-crbug.com/1115661 external/wpt/dom/events/Event-dispatch-click.html [ Timeout ]
-
 crbug.com/1088280 [ Mac ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 crbug.com/1088280 [ Win ] external/wpt/dom/events/scrolling/scrollend-event-for-user-scroll.html [ Failure Timeout ]
 
