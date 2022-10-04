@@ -64,24 +64,23 @@ const char kSimpleType[] = "SIMPLE";
 const char kAnimatedType[] = "ANIMATED";
 const char kInteractiveType[] = "INTERACTIVE";
 
-bool GetTimeValue(const base::DictionaryValue& dict,
+bool GetTimeValue(const base::Value::Dict& dict,
                   const std::string& key,
                   base::Time* time) {
-  std::string str;
+  const std::string* str = dict.FindString(key);
   int64_t internal_time_value;
-  if (dict.GetString(key, &str) &&
-      base::StringToInt64(str, &internal_time_value)) {
+  if (str && base::StringToInt64(*str, &internal_time_value)) {
     *time = base::Time::FromInternalValue(internal_time_value);
     return true;
   }
   return false;
 }
 
-void SetTimeValue(base::DictionaryValue& dict,
+void SetTimeValue(base::Value::Dict& dict,
                   const std::string& key,
                   const base::Time& time) {
   int64_t internal_time_value = time.ToInternalValue();
-  dict.SetStringKey(key, base::NumberToString(internal_time_value));
+  dict.Set(key, base::NumberToString(internal_time_value));
 }
 
 LogoType LogoTypeFromString(base::StringPiece type) {
@@ -215,33 +214,35 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
     int* logo_num_bytes,
     int* dark_logo_num_bytes) {
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(str);
-  base::DictionaryValue* dict;
-  if (!value || !value->GetAsDictionary(&dict))
+  if (!value)
+    return nullptr;
+  const base::Value::Dict* dict = value->GetIfDict();
+  if (!dict)
     return nullptr;
 
   // These helpers replace the deprecated analogous methods on
   // base::DictionaryValue, so as to maintain the early exit behavior in the if
   // predicate below.
   auto get_string = [dict](const char* key, std::string* ret) -> bool {
-    const std::string* v = dict->FindStringKey(key);
+    const std::string* v = dict->FindString(key);
     if (v)
       *ret = *v;
     return v != nullptr;
   };
   auto get_boolean = [dict](const char* key, bool* ret) -> bool {
-    absl::optional<bool> v = dict->FindBoolKey(key);
+    absl::optional<bool> v = dict->FindBool(key);
     if (v.has_value())
       *ret = v.value();
     return v.has_value();
   };
   auto get_integer = [dict](const char* key, int* ret) -> bool {
-    absl::optional<int> v = dict->FindIntKey(key);
+    absl::optional<int> v = dict->FindInt(key);
     if (v.has_value())
       *ret = v.value();
     return v.has_value();
   };
   auto get_double = [dict](const char* key, double* ret) -> bool {
-    absl::optional<double> v = dict->FindDoubleKey(key);
+    absl::optional<double> v = dict->FindDouble(key);
     if (v.has_value())
       *ret = v.value();
     return v.has_value();
@@ -319,44 +320,42 @@ void LogoCache::LogoMetadataToString(const LogoMetadata& metadata,
                                      int num_bytes,
                                      int dark_num_bytes,
                                      std::string* str) {
-  base::DictionaryValue dict;
-  dict.SetStringKey(kSourceUrlKey, metadata.source_url.spec());
-  dict.SetStringKey(kFingerprintKey, metadata.fingerprint);
-  dict.SetStringKey(kTypeKey, LogoTypeToString(metadata.type));
-  dict.SetStringKey(kOnClickURLKey, metadata.on_click_url.spec());
-  dict.SetStringKey(kFullPageURLKey, metadata.full_page_url.spec());
-  dict.SetStringKey(kAltTextKey, metadata.alt_text);
-  dict.SetStringKey(kAnimatedUrlKey, metadata.animated_url.spec());
-  dict.SetStringKey(kDarkAnimatedUrlKey, metadata.dark_animated_url.spec());
-  dict.SetStringKey(kLogUrlKey, metadata.log_url.spec());
-  dict.SetStringKey(kDarkLogUrlKey, metadata.dark_log_url.spec());
-  dict.SetStringKey(kCtaLogUrlKey, metadata.cta_log_url.spec());
-  dict.SetStringKey(kDarkCtaLogUrlKey, metadata.dark_cta_log_url.spec());
-  dict.SetStringKey(kShortLinkKey, metadata.short_link.spec());
-  dict.SetStringKey(kMimeTypeKey, metadata.mime_type);
-  dict.SetStringKey(kDarkMimeTypeKey, metadata.dark_mime_type);
-  dict.SetBoolKey(kCanShowAfterExpirationKey,
-                  metadata.can_show_after_expiration);
-  dict.SetIntKey(kNumBytesKey, num_bytes);
-  dict.SetIntKey(kDarkNumBytesKey, dark_num_bytes);
-  dict.SetIntKey(kShareButtonX, metadata.share_button_x);
-  dict.SetIntKey(kShareButtonY, metadata.share_button_y);
-  dict.SetDoubleKey(kShareButtonOpacity, metadata.share_button_opacity);
-  dict.SetStringKey(kShareButtonIcon, metadata.share_button_icon);
-  dict.SetStringKey(kShareButtonBg, metadata.share_button_bg);
-  dict.SetIntKey(kDarkShareButtonX, metadata.dark_share_button_x);
-  dict.SetIntKey(kDarkShareButtonY, metadata.dark_share_button_y);
-  dict.SetDoubleKey(kDarkShareButtonOpacity,
-                    metadata.dark_share_button_opacity);
-  dict.SetStringKey(kDarkShareButtonIcon, metadata.dark_share_button_icon);
-  dict.SetStringKey(kDarkShareButtonBg, metadata.dark_share_button_bg);
-  dict.SetIntKey(kWidthPx, metadata.width_px);
-  dict.SetIntKey(kHeightPx, metadata.height_px);
-  dict.SetIntKey(kDarkWidthPx, metadata.dark_width_px);
-  dict.SetIntKey(kDarkHeightPx, metadata.dark_height_px);
-  dict.SetIntKey(kIframeWidthPx, metadata.iframe_width_px);
-  dict.SetIntKey(kIframeHeightPx, metadata.iframe_height_px);
-  dict.SetStringKey(kDarkBackgroundColorKey, metadata.dark_background_color);
+  base::Value::Dict dict;
+  dict.Set(kSourceUrlKey, metadata.source_url.spec());
+  dict.Set(kFingerprintKey, metadata.fingerprint);
+  dict.Set(kTypeKey, LogoTypeToString(metadata.type));
+  dict.Set(kOnClickURLKey, metadata.on_click_url.spec());
+  dict.Set(kFullPageURLKey, metadata.full_page_url.spec());
+  dict.Set(kAltTextKey, metadata.alt_text);
+  dict.Set(kAnimatedUrlKey, metadata.animated_url.spec());
+  dict.Set(kDarkAnimatedUrlKey, metadata.dark_animated_url.spec());
+  dict.Set(kLogUrlKey, metadata.log_url.spec());
+  dict.Set(kDarkLogUrlKey, metadata.dark_log_url.spec());
+  dict.Set(kCtaLogUrlKey, metadata.cta_log_url.spec());
+  dict.Set(kDarkCtaLogUrlKey, metadata.dark_cta_log_url.spec());
+  dict.Set(kShortLinkKey, metadata.short_link.spec());
+  dict.Set(kMimeTypeKey, metadata.mime_type);
+  dict.Set(kDarkMimeTypeKey, metadata.dark_mime_type);
+  dict.Set(kCanShowAfterExpirationKey, metadata.can_show_after_expiration);
+  dict.Set(kNumBytesKey, num_bytes);
+  dict.Set(kDarkNumBytesKey, dark_num_bytes);
+  dict.Set(kShareButtonX, metadata.share_button_x);
+  dict.Set(kShareButtonY, metadata.share_button_y);
+  dict.Set(kShareButtonOpacity, metadata.share_button_opacity);
+  dict.Set(kShareButtonIcon, metadata.share_button_icon);
+  dict.Set(kShareButtonBg, metadata.share_button_bg);
+  dict.Set(kDarkShareButtonX, metadata.dark_share_button_x);
+  dict.Set(kDarkShareButtonY, metadata.dark_share_button_y);
+  dict.Set(kDarkShareButtonOpacity, metadata.dark_share_button_opacity);
+  dict.Set(kDarkShareButtonIcon, metadata.dark_share_button_icon);
+  dict.Set(kDarkShareButtonBg, metadata.dark_share_button_bg);
+  dict.Set(kWidthPx, metadata.width_px);
+  dict.Set(kHeightPx, metadata.height_px);
+  dict.Set(kDarkWidthPx, metadata.dark_width_px);
+  dict.Set(kDarkHeightPx, metadata.dark_height_px);
+  dict.Set(kIframeWidthPx, metadata.iframe_width_px);
+  dict.Set(kIframeHeightPx, metadata.iframe_height_px);
+  dict.Set(kDarkBackgroundColorKey, metadata.dark_background_color);
   SetTimeValue(dict, kExpirationTimeKey, metadata.expiration_time);
   base::JSONWriter::Write(dict, str);
 }
