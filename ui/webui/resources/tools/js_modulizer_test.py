@@ -25,8 +25,7 @@ class JsModulizerTest(unittest.TestCase):
     with open (os.path.join(self._out_folder, file_name), 'rb') as f:
       return f.read()
 
-  def _run_test_(self, js_file, js_file_expected, namespace_rewrites=None,
-                 preserve_offsets=False):
+  def _run_test_(self, js_file, js_file_expected, namespace_rewrites=None):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
     args = [
@@ -36,9 +35,6 @@ class JsModulizerTest(unittest.TestCase):
     ]
     if namespace_rewrites:
       args += ['--namespace_rewrites'] + namespace_rewrites
-
-    if preserve_offsets:
-      args += ['--preserve_offsets', ['True']]
 
     js_modulizer.main(args)
 
@@ -63,10 +59,6 @@ class JsModulizerTest(unittest.TestCase):
 
   def testSuccess_NonAscii(self):
     self._run_test_('non_ascii.js', 'non_ascii_expected.js')
-
-  def testSuccess_WithPreserveOffsets(self):
-    self._run_test_('with_preserve_offsets.js',
-                    'with_preserve_offsets_expected.js', preserve_offsets=True)
 
 
 if __name__ == '__main__':

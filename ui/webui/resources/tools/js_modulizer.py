@@ -32,14 +32,6 @@
 #     For example "cr.foo.Bar|Bar" will replace all occurrences of "cr.foo.Bar"
 #     with "Bar". This flag works identically with the one in
 #     polymer_modulizer.gni.
-#
-#   preserve_offsets:
-#     If present, uses regular expressions for the import and export
-#     replacements that contain the same number of characters in the input
-#     and output. This is used to support code coverage tools that map the
-#     original source files to evaluate coverage and need the character
-#     offsets to lines of code to remain constant.
-#
 
 import argparse
 import io
@@ -71,7 +63,7 @@ def _rewrite_namespaces(string, namespace_rewrites):
   return string
 
 
-def ProcessFile(filename, out_folder, namespace_rewrites, preserve_offsets):
+def ProcessFile(filename, out_folder, namespace_rewrites):
   # Gather indices of lines to be removed.
   indices_to_remove = []
 
@@ -111,14 +103,8 @@ def ProcessFile(filename, out_folder, namespace_rewrites, preserve_offsets):
         ignore_remaining_lines = True
         continue
 
-      # TODO(crbug.com/1030998): Remove this option when File Manager gets rid
-      # of its non JS-module code.
-      if preserve_offsets:
-        line = line.replace(EXPORT_LINE_REGEX, '/*   */export')
-        line = line.replace(IMPORT_LINE_REGEX, '/**/import')
-      else:
-        line = line.replace(EXPORT_LINE_REGEX, 'export')
-        line = line.replace(IMPORT_LINE_REGEX, 'import')
+      line = line.replace(EXPORT_LINE_REGEX, 'export')
+      line = line.replace(IMPORT_LINE_REGEX, 'import')
       line = _rewrite_namespaces(line, namespace_rewrites)
       lines[i] = line
 
@@ -147,7 +133,6 @@ def main(argv):
   parser.add_argument('--in_folder', required=True)
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--namespace_rewrites', required=False, nargs="*")
-  parser.add_argument('--preserve_offsets', required=False)
   args = parser.parse_args(argv)
 
   # Extract namespace rewrites from arguments.
@@ -157,16 +142,11 @@ def main(argv):
       before, after = r.split('|')
       namespace_rewrites[before] = after
 
-  preserve_offsets = False
-  if args.preserve_offsets:
-    preserve_offsets = True
-
   in_folder = os.path.normpath(os.path.join(_CWD, args.in_folder))
   out_folder = os.path.normpath(os.path.join(_CWD, args.out_folder))
 
   for f in args.input_files:
-    ProcessFile(os.path.join(in_folder, f), out_folder, namespace_rewrites,
-                preserve_offsets)
+    ProcessFile(os.path.join(in_folder, f), out_folder, namespace_rewrites)
 
 
 if __name__ == '__main__':
