@@ -1027,8 +1027,12 @@ void InterceptionJob::ApplyModificationsToRequest(
 
   // Note this redirect is not visible to the page by design. If they want a
   // visible redirect they can mock a response with a 302.
-  if (modifications->modified_url.isJust())
-    request->url = GURL(modifications->modified_url.fromJust());
+  if (modifications->modified_url.isJust()) {
+    DCHECK_EQ(url_chain_.back(), request->url);
+    const GURL new_url(modifications->modified_url.fromJust());
+    request->url = new_url;
+    url_chain_.back() = new_url;
+  }
 
   if (modifications->modified_method.isJust())
     request->method = modifications->modified_method.fromJust();
