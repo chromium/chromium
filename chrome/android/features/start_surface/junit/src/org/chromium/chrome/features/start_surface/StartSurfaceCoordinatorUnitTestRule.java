@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ActivityLifecycleDispatcherImpl;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
@@ -114,6 +115,9 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
 
     private Activity mActivity;
     private StartSurfaceCoordinator mCoordinator;
+
+    private final OneshotSupplierImpl<IncognitoReauthController>
+            mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
 
     private static class MockTabModelFilterProvider extends TabModelFilterProvider {
         public MockTabModelFilterProvider(Activity activity) {
@@ -268,6 +272,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
         OmniboxStub omniboxStub = Mockito.mock(OmniboxStub.class);
         when(omniboxStub.getVoiceRecognitionHandler()).thenReturn(voiceRecognitionHandler);
         when(voiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
+        mIncognitoReauthControllerSupplier.set(Mockito.mock(IncognitoReauthController.class));
 
         mCoordinator = new StartSurfaceCoordinator(mActivity, scrimCoordinator,
                 Mockito.mock(BottomSheetController.class), new OneshotSupplierImpl<>(),
@@ -282,7 +287,7 @@ public class StartSurfaceCoordinatorUnitTestRule implements TestRule {
                 Mockito.mock(MenuOrKeyboardActionController.class),
                 new MultiWindowModeStateDispatcherImpl(mActivity), new DummyJankTracker(),
                 new ObservableSupplierImpl<>(), new CrowButtonDelegateImpl(),
-                new BackPressManager());
+                new BackPressManager(), mIncognitoReauthControllerSupplier);
 
         Assert.assertFalse(LibraryLoader.getInstance().isLoaded());
         when(mLibraryLoader.isInitialized()).thenReturn(true);

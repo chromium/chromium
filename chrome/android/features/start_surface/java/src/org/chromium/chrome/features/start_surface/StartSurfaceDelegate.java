@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -102,6 +104,8 @@ public class StartSurfaceDelegate {
      * @param toolbarSupplier Supplies the {@link Toolbar}.
      * @param crowButtonDelegate The {@link CrowButtonDelegate} to handle Crow click events.
      * @param backPressManager {@link BackPressManager} to handle back press gesture.
+     * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
+     *         to detect pending re-auth when tab switcher is shown.
      * @return the {@link StartSurface}
      */
     public static StartSurface createStartSurface(@NonNull Activity activity,
@@ -124,7 +128,8 @@ public class StartSurfaceDelegate {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull JankTracker jankTracker, @NonNull Supplier<Toolbar> toolbarSupplier,
-            @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager) {
+            @NonNull CrowButtonDelegate crowButtonDelegate, BackPressManager backPressManager,
+            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier) {
         return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
                 startSurfaceOneshotSupplier, parentTabSupplier, hadWarmStart, windowAndroid,
                 containerView, dynamicResourceLoaderSupplier, tabModelSelector,
@@ -132,6 +137,6 @@ public class StartSurfaceDelegate {
                 tabContentManager, modalDialogManager, chromeActivityNativeDelegate,
                 activityLifecycleDispatcher, tabCreatorManager, menuOrKeyboardActionController,
                 multiWindowModeStateDispatcher, jankTracker, toolbarSupplier, crowButtonDelegate,
-                backPressManager);
+                backPressManager, incognitoReauthControllerSupplier);
     }
 }

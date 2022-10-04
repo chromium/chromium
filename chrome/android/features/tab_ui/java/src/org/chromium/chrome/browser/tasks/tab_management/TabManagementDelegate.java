@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -90,6 +91,8 @@ public interface TabManagementDelegate {
      * @param dynamicResourceLoaderSupplier Supplies the current {@link DynamicResourceLoader}.
      * @param snackbarManager Manages the snackbar.
      * @param modalDialogManager Manages modal dialogs.
+     * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
+     *         to detect pending re-auth when tab switcher is shown.
      * @return The {@link TabSwitcher}.
      */
     TabSwitcher createGridTabSwitcher(@NonNull Activity activity,
@@ -105,7 +108,8 @@ public interface TabManagementDelegate {
             @NonNull ScrimCoordinator scrimCoordinator, @NonNull ViewGroup rootView,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
             @NonNull SnackbarManager snackbarManager,
-            @NonNull ModalDialogManager modalDialogManager);
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in carousel.

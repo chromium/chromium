@@ -769,7 +769,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* chromeActivityNativeDelegate= */ this, getLifecycleDispatcher(),
                 getTabCreatorManagerSupplier().get(), getMenuOrKeyboardActionController(),
                 getMultiWindowModeStateDispatcher(), mJankTracker, getToolbarManager()::getToolbar,
-                new CrowButtonDelegateImpl(), mBackPressManager);
+                new CrowButtonDelegateImpl(), mBackPressManager,
+                mRootUiCoordinator.getIncognitoReauthControllerSupplier());
     }
 
     private void createGridTabSwitcher(
@@ -782,7 +783,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 mRootUiCoordinator.getScrimCoordinator(),
                 /* rootView= */ tabSwitcherContainer,
                 compositorViewHolder::getDynamicResourceLoader, getSnackbarManager(),
-                getModalDialogManager()));
+                getModalDialogManager(),
+                mRootUiCoordinator.getIncognitoReauthControllerSupplier()));
     }
 
     private void setupCompositorContentPostNative() {

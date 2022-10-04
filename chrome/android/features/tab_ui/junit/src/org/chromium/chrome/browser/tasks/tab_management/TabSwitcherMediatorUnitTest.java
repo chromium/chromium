@@ -46,12 +46,14 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -102,6 +104,9 @@ public class TabSwitcherMediatorUnitTest {
     private static final int TAB3_ID = 123;
     private static final int TAB4_ID = 357;
 
+    private final OneshotSupplierImpl<IncognitoReauthController>
+            mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
+
     @Mock
     TabSwitcherMediator.ResetHandler mResetHandler;
     @Mock
@@ -138,6 +143,8 @@ public class TabSwitcherMediatorUnitTest {
     MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock
     PriceMessageService mPriceMessageService;
+    @Mock
+    IncognitoReauthController mIncognitoReauthController;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -215,13 +222,13 @@ public class TabSwitcherMediatorUnitTest {
         doReturn(new ObservableSupplierImpl<Boolean>())
                 .when(mTabGridDialogController)
                 .getHandleBackPressChangedSupplier();
-
+        mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
         mModel = new PropertyModel(TabListContainerProperties.ALL_KEYS);
         mModel.addObserver(mPropertyObserver);
         mMediator = new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.GRID);
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier);
 
         mMediator.initWithNative(controller, null);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
@@ -890,14 +897,14 @@ public class TabSwitcherMediatorUnitTest {
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.GRID);
+                TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier);
         assertEquals(16, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
 
         mModel.set(TabListContainerProperties.BOTTOM_PADDING, 0);
         new TabSwitcherMediator(mContext, mResetHandler, mModel, mTabModelSelector,
                 mBrowserControlsStateProvider, mCompositorViewHolder, null, mMessageItemsController,
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
-                TabListCoordinator.TabListMode.STRIP);
+                TabListCoordinator.TabListMode.STRIP, mIncognitoReauthControllerSupplier);
         assertEquals(0, mModel.get(TabListContainerProperties.BOTTOM_PADDING));
     }
 

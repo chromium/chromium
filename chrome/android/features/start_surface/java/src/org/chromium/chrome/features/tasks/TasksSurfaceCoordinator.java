@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
@@ -100,7 +101,9 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
-            @NonNull ViewGroup rootView) {
+            @NonNull ViewGroup rootView,
+            @Nullable OneshotSupplier<IncognitoReauthController>
+                    incognitoReauthControllerSupplier) {
         mActivity = activity;
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
         mView.initialize(activityLifecycleDispatcher,
@@ -123,12 +126,15 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     multiWindowModeStateDispatcher, scrimCoordinator, rootView,
                     dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
         } else if (tabSwitcherType == TabSwitcherType.GRID) {
+            assert incognitoReauthControllerSupplier
+                    != null : "Valid Incognito re-auth controller supplier needed to create GTS.";
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createGridTabSwitcher(activity,
                     activityLifecycleDispatcher, tabModelSelector, tabContentManager,
                     browserControlsStateProvider, tabCreatorManager, menuOrKeyboardActionController,
                     mView.getBodyViewContainer(), shareDelegateSupplier,
                     multiWindowModeStateDispatcher, scrimCoordinator, rootView,
-                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager);
+                    dynamicResourceLoaderSupplier, snackbarManager, modalDialogManager,
+                    incognitoReauthControllerSupplier);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             mTabSwitcher = new SingleTabSwitcherCoordinator(
                     activity, mView.getCarouselTabSwitcherContainer(), tabModelSelector);

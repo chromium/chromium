@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
@@ -35,11 +36,13 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -118,6 +121,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
 
+    private CallbackController mCallbackController;
     private Integer mSoftCleanupDelayMsForTesting;
     private Integer mCleanupDelayMsForTesting;
     private TabGridDialogMediator.DialogController mTabGridDialogController;
@@ -126,6 +130,12 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private TabSwitcher.OnTabSelectingListener mOnTabSelectingListener;
     private PriceMessageService mPriceMessageService;
     private boolean mIsOnHomepage;
+
+    /**
+     * This allows to check if re-auth is pending when tab switcher is shown in Incognito mode.
+     * If so, we clear the Incognito tab lists until the re-auth is successful.
+     */
+    private @Nullable IncognitoReauthController mIncognitoReauthController;
 
     /**
      * A custom view that can be supplied by clients to be shown inside the tab grid.
@@ -261,13 +271,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
      * @param multiWindowModeStateDispatcher The {@link MultiWindowModeStateDispatcher} to observe
      *         for multi-window related changes.
      * @param mode One of the {@link TabListMode}.
+     * @param incognitoReauthControllerSupplier {@link OneshotSupplier<IncognitoReauthController>}
+     *         to detect pending re-auth when tab switcher is shown.
      */
     TabSwitcherMediator(Context context, ResetHandler resetHandler,
             PropertyModel containerViewModel, TabModelSelector tabModelSelector,
             BrowserControlsStateProvider browserControlsStateProvider, ViewGroup containerView,
             TabContentManager tabContentManager, MessageItemsController messageItemsController,
             PriceWelcomeMessageController priceWelcomeMessageController,
-            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher, @TabListMode int mode) {
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher, @TabListMode int mode,
+            @Nullable OneshotSupplier<IncognitoReauthController>
+                    incognitoReauthControllerSupplier) {
         mResetHandler = resetHandler;
         mContainerViewModel = containerViewModel;
         mTabModelSelector = tabModelSelector;
@@ -275,6 +289,14 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
         mMode = mode;
         mContext = context;
+
+        if (incognitoReauthControllerSupplier != null) {
+            mCallbackController = new CallbackController();
+            incognitoReauthControllerSupplier.onAvailable(
+                    mCallbackController.makeCancelable((incognitoReauthController) -> {
+                        mIncognitoReauthController = incognitoReauthController;
+                    }));
+        }
 
         mTabModelSelectorObserver = new TabModelSelectorObserver() {
             @Override
@@ -988,6 +1010,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             mTabGridDialogController.getHandleBackPressChangedSupplier().removeObserver(
                     this::notifyBackPressStateChanged);
         }
+
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+        }
+
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
         mTabModelSelector.getTabModelFilterProvider().removeTabModelFilterObserver(
