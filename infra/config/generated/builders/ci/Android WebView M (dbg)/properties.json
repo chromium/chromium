@@ -101,8 +101,5 @@
     ]
   },
   "builder_group": "chromium.android",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "android"
-  ]
+  "recipe": "chromium"
 }

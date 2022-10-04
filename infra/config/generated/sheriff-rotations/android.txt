@@ -1,5 +1,4 @@
 ci/Android ASAN (dbg)
-ci/Android WebView M (dbg)
 ci/Android WebView N (dbg)
 ci/Android WebView O (dbg)
 ci/Android WebView P (dbg)
@@ -12,15 +11,10 @@ ci/Android x86 Builder (dbg)
 ci/Cast Android (dbg)
 ci/Deterministic Android
 ci/Deterministic Android (dbg)
-ci/Marshmallow 64 bit Tester
-ci/Marshmallow Tablet Tester
 ci/Nougat Phone Tester
 ci/android-10-arm64-rel
 ci/android-androidx-packager
-ci/android-arm64-proguard-rel
-ci/android-bfcache-rel
 ci/android-binary-size-generator
-ci/android-marshmallow-x86-rel-non-cq
 ci/android-nougat-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel

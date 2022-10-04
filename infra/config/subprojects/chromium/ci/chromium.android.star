@@ -108,6 +108,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -569,6 +570,7 @@ ci.thin_tester(
     ),
     cq_mirrors_console_view = "mirrors",
     triggered_by = ["ci/Android arm64 Builder (dbg)"],
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -604,6 +606,7 @@ ci.thin_tester(
     # tests in parallel, hence the high timeout.
     execution_timeout = 15 * time.hour,
     triggered_by = ["ci/Android arm Builder (dbg)"],
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
@@ -775,6 +778,7 @@ ci.builder(
     goma_backend = goma.backend.RBE_PROD,
     goma_jobs = goma.jobs.MANY_JOBS_FOR_CI,
     reclient_instance = None,
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -806,6 +810,7 @@ ci.builder(
         category = "bfcache",
         short_name = "bfc",
     ),
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
@@ -1304,6 +1309,7 @@ ci.builder(
         category = "builder_tester|x86",
         short_name = "M_non-cq",
     ),
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.builder(
