@@ -40,13 +40,6 @@ enum class HermesResponseStatus {
   kMaxValue = kErrorSendHttpsFailure
 };
 
-// Hermes codes returned that are possibly a result of user error.
-constexpr std::array<HermesResponseStatus, 4> kHermesUserErrorCodes = {
-    HermesResponseStatus::kErrorMalformedResponse,
-    HermesResponseStatus::kErrorAlreadyDisabled,
-    HermesResponseStatus::kErrorAlreadyEnabled,
-    HermesResponseStatus::kErrorInvalidActivationCode};
-
 // Callback that receives only a HermesResponseStatus.
 using HermesResponseCallback =
     base::OnceCallback<void(HermesResponseStatus status)>;
