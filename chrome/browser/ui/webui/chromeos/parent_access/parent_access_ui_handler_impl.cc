@@ -80,6 +80,11 @@ void ParentAccessUIHandlerImpl::GetParentAccessParams(
   return;
 }
 
+const kids::platform::parentaccess::client::proto::ParentAccessToken*
+ParentAccessUIHandlerImpl::GetParentAccessTokenForTest() {
+  return parent_access_token_.get();
+}
+
 void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
     const std::string& encoded_parent_access_callback_proto,
     OnParentAccessCallbackReceivedCallback callback) {
@@ -113,10 +118,19 @@ void ParentAccessUIHandlerImpl::OnParentAccessCallbackReceived(
   switch (parent_access_callback.callback_case()) {
     case kids::platform::parentaccess::client::proto::ParentAccessCallback::
         CallbackCase::kOnParentVerified:
-
       message->type = parent_access_ui::mojom::ParentAccessServerMessageType::
           kParentVerified;
 
+      if (parent_access_callback.on_parent_verified()
+              .verification_proof_case() ==
+          kids::platform::parentaccess::client::proto::OnParentVerified::
+              VerificationProofCase::kParentAccessToken) {
+        DCHECK(!parent_access_token_);
+        parent_access_token_ = std::make_unique<
+            kids::platform::parentaccess::client::proto::ParentAccessToken>();
+        parent_access_token_->CopyFrom(
+            parent_access_callback.on_parent_verified().parent_access_token());
+      }
       std::move(callback).Run(std::move(message));
       break;
     default:

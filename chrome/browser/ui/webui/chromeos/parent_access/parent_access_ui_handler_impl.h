@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_callback.pb.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -50,6 +51,10 @@ class ParentAccessUIHandlerImpl
       OnParentAccessCallbackReceivedCallback callback) override;
   void GetParentAccessParams(GetParentAccessParamsCallback callback) override;
 
+  // Returns nullptr if the parent was not verified.
+  const kids::platform::parentaccess::client::proto::ParentAccessToken*
+  GetParentAccessTokenForTest();
+
  private:
   void OnAccessTokenFetchComplete(GetOAuthTokenCallback callback,
                                   GoogleServiceAuthError error,
@@ -60,6 +65,11 @@ class ParentAccessUIHandlerImpl
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
 
   mojo::Receiver<parent_access_ui::mojom::ParentAccessUIHandler> receiver_;
+
+  // The Parent Access Token.  Only set if the parent was verified.
+  std::unique_ptr<
+      kids::platform::parentaccess::client::proto::ParentAccessToken>
+      parent_access_token_;
 
   base::WeakPtrFactory<ParentAccessUIHandlerImpl> weak_ptr_factory_{this};
 };

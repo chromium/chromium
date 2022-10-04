@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui_handler_impl.h"
 
 #include "base/base64.h"
@@ -118,6 +120,14 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
       }));
 }
 
+MATCHER_P(EqualsProto,
+          message,
+          "Match a proto Message equal to the matcher's argument.") {
+  std::string expected_serialized = message.SerializeAsString();
+  std::string actual_serialized = arg.SerializeAsString();
+  return expected_serialized == actual_serialized;
+}
+
 // Verifies that the ParentVerified status is handled correctly.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        ParentVerifiedParsed) {
@@ -154,17 +164,25 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   base::Base64Encode(parent_access_callback.SerializeAsString(),
                      &encoded_parent_access_callback);
 
+  base::RunLoop run_loop;
   handler->OnParentAccessCallbackReceived(
       encoded_parent_access_callback,
       base::BindOnce(
-          [](parent_access_ui::mojom::ParentAccessServerMessagePtr message)
+          [](base::OnceClosure quit_closure,
+             parent_access_ui::mojom::ParentAccessServerMessagePtr message)
               -> void {
             // Verify the Parent Verified callback is parsed.
-            // TODO(b/241166361): Verify token value and expire time.
             EXPECT_EQ(parent_access_ui::mojom::ParentAccessServerMessageType::
                           kParentVerified,
                       message->type);
-          }));
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  // Verify the Parent Access Token was stored.
+  EXPECT_THAT(*pat, EqualsProto(*(handler->GetParentAccessTokenForTest())));
 }
 
 // Verifies that the ConsentDeclined status is ignored.
