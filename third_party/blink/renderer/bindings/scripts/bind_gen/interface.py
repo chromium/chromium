@@ -37,6 +37,7 @@ from .codegen_accumulator import CodeGenAccumulator
 from .codegen_context import CodeGenContext
 from .codegen_expr import CodeGenExpr
 from .codegen_expr import expr_from_exposure
+from .codegen_expr import expr_not
 from .codegen_expr import expr_or
 from .codegen_format import format_template as _format
 from .codegen_utils import component_export
@@ -2087,6 +2088,20 @@ def make_constructor_function_def(cg_context, function_name):
     body = func_def.body
 
     if len(cg_context.constructor_group) == 1:
+        # The constructor callback is installed with
+        # v8::FunctionTemplate::SetCallHandler, where no way to control the
+        # installation context-by-context. So, we check the exposure and may
+        # throw a TypeError if not exposed. For the case of multiple overloads,
+        # the overload resolution is already exposure sensitive.
+        if cg_context.constructor.exposure.is_context_dependent():
+            body.append(
+                CxxUnlikelyIfNode(cond=expr_not(
+                    expr_from_exposure(cg_context.constructor.exposure)),
+                                  body=[
+                                      T("${exception_state}.ThrowTypeError("
+                                        "\"Illegal constructor\");"),
+                                      T("return;"),
+                                  ]))
         body.append(make_constructor_entry(cg_context))
         body.append(EmptyNode())
 
@@ -5750,7 +5765,8 @@ def make_install_interface_template(cg_context, function_name, class_name,
             FormatNode("${interface_function_template}->SetLength({});",
                        entry.ctor_func_length),
         ]
-        if not entry.exposure_conditional.is_always_true:
+        if not (entry.exposure_conditional.is_always_true
+                or entry.is_context_dependent):
             nodes = [
                 CxxUnlikelyIfNode(cond=entry.exposure_conditional, body=nodes),
             ]
