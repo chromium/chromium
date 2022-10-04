@@ -22,10 +22,11 @@
 namespace base {
 namespace test {
 
+// A reference to a base::Feature and field trial params that should be force
+// enabled and overwritten for test purposes.
 struct FeatureRefAndParams {
-  // TODO(https://crbug.com/1370851): Add ABSL_ATTRIBUTE_LIFETIME_BOUND here to
-  // match FeatureRef below.
-  FeatureRefAndParams(const Feature& feature, const FieldTrialParams& params);
+  FeatureRefAndParams(const Feature& feature ABSL_ATTRIBUTE_LIFETIME_BOUND,
+                      const FieldTrialParams& params);
   ~FeatureRefAndParams();
 
   FeatureRefAndParams(const FeatureRefAndParams& other);
