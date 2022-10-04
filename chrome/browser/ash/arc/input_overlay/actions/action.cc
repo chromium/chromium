@@ -206,6 +206,22 @@ bool Action::ParseFromJson(const base::Value& value) {
   return true;
 }
 
+void Action::OverwriteFromProto(const ActionProto& proto) {
+  if (proto.has_input_element()) {
+    auto input_element = InputElement::ConvertFromProto(proto.input_element());
+    DCHECK(input_element);
+    if (input_element)
+      current_input_ = std::move(input_element);
+  }
+  if (beta_ && !proto.positions().empty()) {
+    auto position = Position::ConvertFromProto(proto.positions()[0]);
+    DCHECK(position);
+    if (position)
+      current_positions_[0] = *position;
+    position.reset();
+  }
+}
+
 bool IsInputBound(const InputElement& input_element) {
   return input_element.input_sources() != InputSource::IS_NONE;
 }

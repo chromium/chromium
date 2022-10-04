@@ -114,10 +114,6 @@ class TouchInjector : public ui::EventRewriter {
   // DisplayMode::kView).
   void OnInputBindingChange(Action* target_action,
                             std::unique_ptr<InputElement> input_element);
-  // Change position bindings. Only supports changing the first position for
-  // now.
-  void OnPositionBingingChange(Action* target_action,
-                               std::unique_ptr<Position> position);
   // Apply pending binding as current binding, but don't save into the storage.
   void OnApplyPendingBinding();
   // Save customized input binding/pending binding as current binding and go

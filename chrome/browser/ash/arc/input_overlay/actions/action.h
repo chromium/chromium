@@ -66,6 +66,7 @@ class Action {
   virtual ~Action();
 
   virtual bool ParseFromJson(const base::Value& value);
+  void OverwriteFromProto(const ActionProto& proto);
   // 1. Return true & non-empty touch_events:
   //    Call SendEventFinally to send simulated touch event.
   // 2. Return true & empty touch_events:

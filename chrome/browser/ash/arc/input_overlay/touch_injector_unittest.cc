@@ -823,8 +823,7 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   auto new_pos = std::make_unique<Position>(PositionType::kDefault);
   new_pos->Normalize(gfx::Point(20, 20), gfx::RectF(100, 100));
   auto expected_pos = *new_pos;
-  injector_->OnPositionBingingChange(&*injector_->actions()[0],
-                                     std::move(new_pos));
+  injector_->actions()[0]->PrepareToBindPosition(std::move(new_pos));
   injector_->OnApplyPendingBinding();
   auto proto = ConvertToProto();
   // Check whether the actions[1] with new input binding is converted to proto

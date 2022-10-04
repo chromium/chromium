@@ -213,12 +213,6 @@ void TouchInjector::OnInputBindingChange(
   target_action->PrepareToBindInput(std::move(input_element));
 }
 
-void TouchInjector::OnPositionBingingChange(
-    Action* target_action,
-    std::unique_ptr<Position> position) {
-  target_action->PrepareToBindPosition(std::move(position));
-}
-
 void TouchInjector::OnApplyPendingBinding() {
   for (auto& action : actions_)
     action->BindPending();
@@ -254,20 +248,8 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
     if (!action)
       return;
 
-    if (action_proto.has_input_element()) {
-      auto input_element =
-          InputElement::ConvertFromProto(action_proto.input_element());
-      DCHECK(input_element);
-      OnInputBindingChange(action, std::move(input_element));
-    }
-
-    if (beta_ && !action_proto.positions().empty()) {
-      auto position = Position::ConvertFromProto(action_proto.positions()[0]);
-      DCHECK(position);
-      OnPositionBingingChange(action, std::move(position));
-    }
+    action->OverwriteFromProto(action_proto);
   }
-  OnApplyPendingBinding();
 }
 
 void TouchInjector::OnInputMenuViewRemoved() {
