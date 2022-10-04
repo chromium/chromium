@@ -348,9 +348,6 @@ class TranslateManager {
   // Sequence number of the current page.
   int page_seq_no_;
 
-  // Preference name for the Accept-Languages HTTP header.
-  std::string accept_languages_pref_name_;
-
   raw_ptr<TranslateClient> translate_client_;        // Weak.
   raw_ptr<TranslateDriver> translate_driver_;        // Weak.
   raw_ptr<TranslateRanker> translate_ranker_;        // Weak.
