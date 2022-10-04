@@ -283,9 +283,9 @@ public class FREMobileIdentityConsistencyFieldTrial {
                 initializationFlowControlPercent = 10;
                 break;
             case Channel.STABLE:
-                enabledPercent = 10;
-                disabledPercent = 10;
-                oldFreWithUmaDialogPercent = 10;
+                enabledPercent = 30;
+                disabledPercent = 30;
+                oldFreWithUmaDialogPercent = 30;
                 initializationFlowNewPercent = 1;
                 initializationFlowOldPercent = 1;
                 initializationFlowControlPercent = 1;
