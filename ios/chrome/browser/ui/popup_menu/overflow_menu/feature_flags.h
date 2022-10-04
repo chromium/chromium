@@ -13,9 +13,6 @@ BASE_DECLARE_FEATURE(kNewOverflowMenu);
 // Feature to add a Clear Browsing Data action to the new overflow menu.
 BASE_DECLARE_FEATURE(kNewOverflowMenuCBDAction);
 
-// Feature to use simple icons for new overflow menu destinations.
-BASE_DECLARE_FEATURE(kNewOverflowMenuSimpleDestinationIcons);
-
 // Feature to enable smart sorting the new overflow menu.
 BASE_DECLARE_FEATURE(kSmartSortingNewOverflowMenu);
 
@@ -33,9 +30,6 @@ bool IsNewOverflowMenuCBDActionEnabled();
 
 // Whether or not the NewOverflowMenuReorderSettings feature is enabled.
 bool IsNewOverflowMenuReorderSettingsEnabled();
-
-// Whether or not the NewOverflowMenuSimpleDestinationIcons feature is enabled.
-bool IsNewOverflowMenuSimpleDestinationIconsEnabled();
 
 // Whether the new Google Password Manager branding is enabled.
 bool IsPasswordManagerBrandingUpdateEnabled();

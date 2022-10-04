@@ -431,10 +431,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Bookmarks destination.
-    NSString* bookmarksIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_bookmarks_simple"
-            : @"overflow_menu_destination_bookmarks";
+    NSString* bookmarksIconName = @"overflow_menu_destination_bookmarks_simple";
     self.bookmarksDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
                           destination:overflow_menu::Destination::Bookmarks
@@ -458,10 +455,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Downloads destination.
-    NSString* downloadsIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_downloads_simple"
-            : @"overflow_menu_destination_downloads";
+    NSString* downloadsIconName = @"overflow_menu_destination_downloads_simple";
     self.downloadsDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
                           destination:overflow_menu::Destination::Downloads
@@ -485,10 +479,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     }];
   } else {
     // History destination.
-    NSString* historyIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_history_simple"
-            : @"overflow_menu_destination_history";
+    NSString* historyIconName = @"overflow_menu_destination_history_simple";
     self.historyDestination =
         [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
                                 destination:overflow_menu::Destination::History
@@ -519,11 +510,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
                               : IDS_IOS_TOOLS_MENU_PASSWORDS;
     NSString* passwordIconImageName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_passwords_simple"
-            : (IsPasswordManagerBrandingUpdateEnabled()
-                   ? @"overflow_menu_destination_passwords_rebrand"
-                   : @"overflow_menu_destination_passwords");
+        @"overflow_menu_destination_passwords_simple";
     self.passwordsDestination = [self
         createOverflowMenuDestination:passwordTitleID
                           destination:overflow_menu::Destination::Passwords
@@ -548,9 +535,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   } else {
     // Reading List destination.
     NSString* readingListIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_reading_list_simple"
-            : @"overflow_menu_destination_reading_list";
+        @"overflow_menu_destination_reading_list_simple";
     self.readingListDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
                           destination:overflow_menu::Destination::ReadingList
@@ -575,9 +560,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   } else {
     // Recent Tabs destination.
     NSString* recentTabsIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_recent_tabs_simple"
-            : @"overflow_menu_destination_recent_tabs";
+        @"overflow_menu_destination_recent_tabs_simple";
     self.recentTabsDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
                           destination:overflow_menu::Destination::RecentTabs
@@ -601,10 +584,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     }];
   } else {
     // Settings destination.
-    NSString* settingsIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_settings_simple"
-            : @"overflow_menu_destination_settings";
+    NSString* settingsIconName = @"overflow_menu_destination_settings_simple";
     self.settingsDestination =
         [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
                                 destination:overflow_menu::Destination::Settings
@@ -628,10 +608,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     }];
   } else {
     // Site Info destination.
-    NSString* siteInfoIconName =
-        IsNewOverflowMenuSimpleDestinationIconsEnabled()
-            ? @"overflow_menu_destination_site_info_simple"
-            : @"overflow_menu_destination_site_info";
+    NSString* siteInfoIconName = @"overflow_menu_destination_site_info_simple";
     self.siteInfoDestination =
         [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
                                 destination:overflow_menu::Destination::SiteInfo

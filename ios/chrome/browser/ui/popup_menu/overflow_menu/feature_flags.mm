@@ -18,10 +18,6 @@ BASE_FEATURE(kNewOverflowMenuCBDAction,
              "NewOverflowMenuCBDAction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewOverflowMenuSimpleDestinationIcons,
-             "NewOverflowMenuSimpleDestinationIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSmartSortingNewOverflowMenu,
              "kSmartSortingNewOverflowMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -46,11 +42,6 @@ bool IsNewOverflowMenuEnabled() {
 bool IsNewOverflowMenuCBDActionEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kNewOverflowMenuCBDAction);
-}
-
-bool IsNewOverflowMenuSimpleDestinationIconsEnabled() {
-  return IsNewOverflowMenuEnabled() &&
-         base::FeatureList::IsEnabled(kNewOverflowMenuSimpleDestinationIcons);
 }
 
 bool IsPasswordManagerBrandingUpdateEnabled() {
