@@ -54,31 +54,31 @@ struct WeakMoveOnly {
 
 TEST(Unexpected, ValueConstructor) {
   constexpr unexpected<int> unex(42);
-  static_assert(unex.value() == 42);
+  static_assert(unex.error() == 42);
 }
 
 TEST(Unexpected, DefaultConstructor) {
   constexpr unexpected<int> unex(absl::in_place);
-  static_assert(unex.value() == 0);
+  static_assert(unex.error() == 0);
 }
 
 TEST(Unexpected, InPlaceConstructor) {
   constexpr unexpected<std::pair<int, double>> unex(absl::in_place, 42, 3.14);
-  static_assert(unex.value() == std::pair(42, 3.14));
+  static_assert(unex.error() == std::pair(42, 3.14));
 }
 
 TEST(Unexpected, InPlaceListConstructor) {
   unexpected<std::vector<int>> unex(absl::in_place, {1, 2, 3});
-  EXPECT_EQ(unex.value(), std::vector({1, 2, 3}));
+  EXPECT_EQ(unex.error(), std::vector({1, 2, 3}));
 }
 
-TEST(Unexpected, ValueIsQualified) {
+TEST(Unexpected, ErrorIsQualified) {
   using Unex = unexpected<int>;
-  static_assert(std::is_same_v<decltype(std::declval<Unex&>().value()), int&>);
-  static_assert(std::is_same_v<decltype(std::declval<const Unex&>().value()),
+  static_assert(std::is_same_v<decltype(std::declval<Unex&>().error()), int&>);
+  static_assert(std::is_same_v<decltype(std::declval<const Unex&>().error()),
                                const int&>);
-  static_assert(std::is_same_v<decltype(std::declval<Unex>().value()), int&&>);
-  static_assert(std::is_same_v<decltype(std::declval<const Unex>().value()),
+  static_assert(std::is_same_v<decltype(std::declval<Unex>().error()), int&&>);
+  static_assert(std::is_same_v<decltype(std::declval<const Unex>().error()),
                                const int&&>);
 }
 
@@ -87,8 +87,8 @@ TEST(Unexpected, MemberSwap) {
   unexpected u2(123);
   u1.swap(u2);
 
-  EXPECT_EQ(u1.value(), 123);
-  EXPECT_EQ(u2.value(), 42);
+  EXPECT_EQ(u1.error(), 123);
+  EXPECT_EQ(u2.error(), 42);
 }
 
 TEST(Unexpected, EqualityOperators) {
@@ -101,8 +101,8 @@ TEST(Unexpected, FreeSwap) {
   unexpected u2(123);
   swap(u1, u2);
 
-  EXPECT_EQ(u1.value(), 123);
-  EXPECT_EQ(u2.value(), 42);
+  EXPECT_EQ(u1.error(), 123);
+  EXPECT_EQ(u2.error(), 42);
 }
 
 TEST(Expected, Triviality) {
