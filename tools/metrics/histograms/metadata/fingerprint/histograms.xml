@@ -265,16 +265,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Fingerprint.Updater.{Outcome}" enum="FingerprintUpdaterReason"
+<histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
     expires_after="2023-04-05">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
-  <summary>Tracks the fingerprint firmware updater's {Outcome}.</summary>
-  <token key="Outcome">
-    <variant name="Reason" summary="reason(s) for re-flashing"/>
-    <variant name="Status" summary="overall status"/>
-  </token>
+  <summary>
+    Tracks the fingerprint firmware updater's reason(s) for re-flashing.
+  </summary>
+</histogram>
+
+<histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
+    expires_after="2023-04-05">
+  <owner>tomhughes@chromium.org</owner>
+  <owner>hesling@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>Tracks the fingerprint firmware updater's overall status.</summary>
 </histogram>
 
 <histogram name="Fingerprint.Updater.{Outcome}.Duration.Overall" units="ms"
