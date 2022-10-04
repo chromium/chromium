@@ -435,7 +435,7 @@ void HistoryClustersHandler::RemoveVisits(
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
     std::vector<mojom::URLVisitPtr> visits) {
-  const auto* browser = chrome::FindTabbedBrowser(profile_, false);
+  auto* browser = chrome::FindTabbedBrowser(profile_, false);
   if (!browser) {
     return;
   }
@@ -451,18 +451,11 @@ void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
   auto* model = browser->tab_strip_model();
   std::vector<int> tab_indices;
   tab_indices.reserve(visits.size());
-  auto* opener = web_contents_.get();
   for (const auto& visit_ptr : visits) {
-    auto* opened_web_contents = opener->OpenURL(
+    auto* opened_web_contents = browser->OpenURL(
         content::OpenURLParams(visit_ptr->normalized_url, content::Referrer(),
                                WindowOpenDisposition::NEW_BACKGROUND_TAB,
                                ui::PAGE_TRANSITION_AUTO_BOOKMARK, false));
-
-    // The url may have opened a new window or clobbered the current one.
-    // Replace `opener` to be sure. `opened_web_contents` may be null in tests.
-    if (opened_web_contents) {
-      opener = opened_web_contents;
-    }
 
     // Only add those tabs to a new group that actually opened in this browser.
     const int tab_index = model->GetIndexOfWebContents(opened_web_contents);

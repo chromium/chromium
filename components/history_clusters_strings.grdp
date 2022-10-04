@@ -6,6 +6,12 @@
   <message name="IDS_HISTORY_CLUSTERS_ACTION_MENU_DESCRIPTION" desc="Text used to identify the history clusters drop-down menu for screen readers">
     Actions
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_CONFIRM_BUTTON" desc="Text for the button used to confirm the dialog asking if they would like to proceed with deletion.">
+    Remove
+  </message>
+  <message name="IDS_HISTORY_CLUSTERS_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history clusters page">
+    Are you sure you want to delete these pages from your history?
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL" desc="A label for the menu item to turn off the Journeys feature, which collects different search and browsing activities related to a single topic into a single place, and organizes them by topic. See glossary entry for meaning of 'Journeys'."
     formatter_data="android_java">
     Turn off Journeys
@@ -61,11 +67,14 @@
   <message name="IDS_HISTORY_CLUSTERS_REMOVE_ITEM_TOAST" desc="Confirmation message shown after user successfully removes one history item from the item's drop-down menu.">
     Item removed
   </message>
+  <message name="IDS_HISTORY_CLUSTERS_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history cluster items">
+    Remove selected items
+  </message>
   <message name="IDS_HISTORY_CLUSTERS_SAVED_IN_TABGROUP_LABEL" desc="A label indicating whether a history item was added to a tab group.">
     Saved in tab group
   </message>
   <message name="IDS_HISTORY_CLUSTERS_SEARCH_PROMPT" desc="A placeholder for the search bar in the side panel.">
-    Search History
+    Search Journeys
   </message>
   <message name="IDS_HISTORY_CLUSTERS_COPY_LINK" desc="Label of the item in drop-down menu that allows the user to copy a link.">
     Copy Link Address

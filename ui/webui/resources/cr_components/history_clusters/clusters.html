@@ -6,6 +6,10 @@
     overflow-y: auto;
   }
 
+  :host([in-side-panel_]) cr-dialog::part(dialog) {
+    max-width: fit-content;
+  }
+
   #clusters {
     margin: 0 auto;
     max-width: var(--cluster-max-width);
