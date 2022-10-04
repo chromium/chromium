@@ -1238,11 +1238,11 @@ BASE_FEATURE(kWebAssemblyCodeProtectionPku,
         // defined(ARCH_CPU_X86_64)
 
 // Enable WebAssembly stack switching.
-#if defined(ARCH_CPU_X86_64)
+#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 BASE_FEATURE(kEnableExperimentalWebAssemblyStackSwitching,
              "WebAssemblyExperimentalStackSwitching",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // defined(ARCH_CPU_X86_64)
+#endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 
 // Enable WebAssembly dynamic tiering (only tier up hot functions).
 BASE_FEATURE(kWebAssemblyDynamicTiering,

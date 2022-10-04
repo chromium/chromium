@@ -164,12 +164,12 @@ RenderProcessImpl::RenderProcessImpl()
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 
-#if defined(ARCH_CPU_X86_64)
+#if defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
   SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
                      "--experimental-wasm-type-reflection");
   SetV8FlagIfFeature(features::kEnableExperimentalWebAssemblyStackSwitching,
                      "--experimental-wasm-stack-switching");
-#endif  // defined(ARCH_CPU_X86_64)
+#endif  // defined(ARCH_CPU_X86_64) || defined(ARCH_CPU_ARM64)
 
   SetV8FlagIfFeature(features::kWebAssemblyLazyCompilation,
                      "--wasm-lazy-compilation");
