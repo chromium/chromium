@@ -124,6 +124,7 @@ void TabletModeFloatWindowResizer::RevertDrag() {
 }
 
 void TabletModeFloatWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {
+  DCHECK(window_state_->IsFloated());
   const ui::GestureEventDetails& details = event->details();
   bool left, up;
   if (event->type() == ui::ET_SCROLL_FLING_START) {

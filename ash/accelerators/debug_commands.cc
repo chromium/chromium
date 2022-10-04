@@ -198,21 +198,17 @@ void HandleTriggerHUDDisplay() {
   hud_display::HUDDisplayView::Toggle();
 }
 
-void HandleFloatFling(AcceleratorAction action) {
-  aura::Window* window = window_util::GetActiveWindow();
-  DCHECK(window);
-
-  auto* window_state = WindowState::Get(window);
-  if (!window_state)
-    return;
-
+void HandleTuckFloatedWindow(AcceleratorAction action) {
+  // Find the active floated window.
   auto* float_controller = Shell::Get()->float_controller();
+  auto* floated_window = float_controller->FindFloatedWindowOfDesk(
+      DesksController::Get()->GetTargetActiveDesk());
 
-  if (!window_state->IsFloated())
-    float_controller->ToggleFloat(window);
+  DCHECK(floated_window);
 
   float_controller->OnFlingOrSwipeForTablet(
-      window, /*left=*/action == DEBUG_FLOAT_FLING_LEFT, /*up=*/true);
+      floated_window,
+      /*left=*/action == DEBUG_TUCK_FLOATED_WINDOW_LEFT, /*up=*/true);
 }
 
 }  // namespace
@@ -231,6 +227,14 @@ bool CanToggleFloatingWindow() {
     return false;
 
   return window_util::GetActiveWindow() != nullptr;
+}
+
+bool CanTuckFloatedWindow() {
+  if (!chromeos::wm::features::IsFloatWindowEnabled())
+    return false;
+
+  return Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
+      DesksController::Get()->GetTargetActiveDesk());
 }
 
 bool DebugAcceleratorsEnabled() {
@@ -300,9 +304,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     case DEBUG_TOGGLE_HUD_DISPLAY:
       HandleTriggerHUDDisplay();
       break;
-    case DEBUG_FLOAT_FLING_LEFT:
-    case DEBUG_FLOAT_FLING_RIGHT:
-      HandleFloatFling(action);
+    case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
+    case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
+      HandleTuckFloatedWindow(action);
       break;
     default:
       break;

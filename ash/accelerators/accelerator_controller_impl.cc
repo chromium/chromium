@@ -710,9 +710,10 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TOGGLE_RESIZE_LOCK_MENU:
       return accelerators::CanToggleResizeLockMenu();
     case TOGGLE_FLOATING:
-    case DEBUG_FLOAT_FLING_LEFT:
-    case DEBUG_FLOAT_FLING_RIGHT:
       return debug::CanToggleFloatingWindow();
+    case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
+    case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
+      return debug::CanTuckFloatedWindow();
 
     // The following are always enabled.
     case BRIGHTNESS_DOWN:
@@ -1196,8 +1197,8 @@ void AcceleratorControllerImpl::PerformAction(
       base::RecordAction(UserMetricsAction("Accel_Toggle_Docked_Magnifier"));
       accelerators::ToggleDockedMagnifier();
       break;
-    case DEBUG_FLOAT_FLING_LEFT:
-    case DEBUG_FLOAT_FLING_RIGHT:
+    case DEBUG_TUCK_FLOATED_WINDOW_LEFT:
+    case DEBUG_TUCK_FLOATED_WINDOW_RIGHT:
       debug::PerformDebugActionIfEnabled(action);
       break;
     case TOGGLE_FLOATING:
