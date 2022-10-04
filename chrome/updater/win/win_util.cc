@@ -42,6 +42,8 @@
 #include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/scoped_process_information.h"
+#include "base/win/startup_information.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -673,6 +675,60 @@ HResultOr<DWORD> ShellExecuteAndWait(const base::FilePath& file_path,
 HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
                              const std::wstring& parameters) {
   return ShellExecuteAndWait(file_path, parameters, L"runas");
+}
+
+HRESULT RunDeElevated(const base::FilePath& file_path,
+                      const std::wstring& parameters,
+                      DWORD* exit_code) {
+  HWND hwnd = ::GetShellWindow();
+  if (!hwnd)
+    return HRESULTFromLastError();
+
+  DWORD explorer_pid = 0;
+  ::GetWindowThreadProcessId(hwnd, &explorer_pid);
+  if (!explorer_pid)
+    return HRESULTFromLastError();
+
+  HANDLE explorer_process(
+      ::OpenProcess(PROCESS_CREATE_PROCESS, FALSE, explorer_pid));
+  if (!explorer_process)
+    return HRESULTFromLastError();
+  ScopedKernelHANDLE explorer_process_closure(explorer_process);
+
+  base::win::StartupInformation startup_info;
+  if (!startup_info.InitializeProcThreadAttributeList(1))
+    return HRESULTFromLastError();
+
+  if (!startup_info.UpdateProcThreadAttribute(
+          PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, &explorer_process,
+          sizeof(explorer_process))) {
+    return HRESULTFromLastError();
+  }
+
+  PROCESS_INFORMATION process_info = {};
+  if (!::CreateProcess(file_path.value().c_str(),
+                       std::wstring(parameters).data(), nullptr, nullptr, TRUE,
+                       EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr,
+                       startup_info.startup_info(), &process_info)) {
+    HRESULT hr = HRESULTFromLastError();
+    LOG(ERROR) << "::CreateProcess() failed, " << std::hex << hr;
+    return hr;
+  }
+  base::win::ScopedProcessInformation process_information(process_info);
+
+  const base::Process process(process_information.TakeProcessHandle());
+  const DWORD pid = process.Pid();
+  VLOG(1) << __func__ << ": Started process, PID: " << pid;
+
+  // Allow the spawned process to show windows in the foreground.
+  ::AllowSetForegroundWindow(pid);
+
+  int ret_val = 0;
+  if (!process.WaitForExit(&ret_val))
+    return HRESULTFromLastError();
+
+  *exit_code = ret_val;
+  return S_OK;
 }
 
 absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope) {

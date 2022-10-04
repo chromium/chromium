@@ -131,6 +131,18 @@ TEST(WinUtil, RunElevated) {
   EXPECT_EQ(result.value(), DWORD{0});
 }
 
+TEST(WinUtil, RunDeElevated) {
+  if (!::IsUserAnAdmin() || !IsUACOn())
+    return;
+
+  DWORD exit_code = 0;
+  const base::CommandLine test_process_cmd_line =
+      GetTestProcessCommandLine(GetTestScope());
+  EXPECT_HRESULT_SUCCEEDED(
+      RunDeElevated(test_process_cmd_line.GetProgram(),
+                    test_process_cmd_line.GetArgumentsString(), &exit_code));
+}
+
 TEST(WinUtil, GetOSVersion) {
   absl::optional<OSVERSIONINFOEX> rtl_os_version = GetOSVersion();
   ASSERT_NE(rtl_os_version, absl::nullopt);

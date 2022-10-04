@@ -284,6 +284,30 @@ ProcessExitResult HandleRunElevated(const base::CommandLine& command_line) {
                                  result.error());
 }
 
+ProcessExitResult HandleRunDeElevated(const base::CommandLine& command_line) {
+  DCHECK(::IsUserAnAdmin());
+
+  if (command_line.HasSwitch(kCmdLineExpectDeElevated)) {
+    VLOG(1) << __func__ << "Unexpected de-elevation loop! "
+            << command_line.GetCommandLineString();
+    return ProcessExitResult(UNABLE_TO_DE_ELEVATE_METAINSTALLER);
+  }
+
+  // Deelevate the metainstaller.
+  DWORD exit_code = 0;
+  HRESULT hr = RunDeElevated(
+      command_line.GetProgram(),
+      [&command_line]() {
+        base::CommandLine de_elevate_command_line = command_line;
+        de_elevate_command_line.AppendSwitch(kCmdLineExpectDeElevated);
+        return de_elevate_command_line.GetArgumentsString();
+      }(),
+      &exit_code);
+  return SUCCEEDED(hr)
+             ? ProcessExitResult(exit_code)
+             : ProcessExitResult(RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS, hr);
+}
+
 ProcessExitResult WMain(HMODULE module) {
   CHECK(EnableSecureDllLoading());
   EnableProcessHeapMetadataProtection();
@@ -298,26 +322,29 @@ ProcessExitResult WMain(HMODULE module) {
   if (args_result.exit_code != SUCCESS_EXIT_CODE)
     return args_result;
 
-  if (!::IsUserAnAdmin()) {
-    const base::CommandLine command_line =
-        base::CommandLine::FromString(::GetCommandLineW());
-    if (GetUpdaterScopeForCommandLine(command_line) == UpdaterScope::kSystem) {
-      ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
-      if (run_elevated_result.exit_code !=
-              RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS ||
-          !IsPrefersForCommandLine(command_line)) {
-        return run_elevated_result;
-      }
+  const base::CommandLine command_line =
+      base::CommandLine::FromString(::GetCommandLineW());
+  const UpdaterScope scope = GetUpdaterScopeForCommandLine(command_line);
 
-      // "needsadmin=prefers" case: Could not elevate. So fall through to
-      // install as a per-user app.
-      if (!cmd_line_args.append(L" --") ||
-          !cmd_line_args.append(
-              base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
-        return ProcessExitResult(COMMAND_STRING_OVERFLOW);
-      }
+  if (!::IsUserAnAdmin() && scope == UpdaterScope::kSystem) {
+    ProcessExitResult run_elevated_result = HandleRunElevated(command_line);
+    if (run_elevated_result.exit_code !=
+            RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS ||
+        !IsPrefersForCommandLine(command_line)) {
+      return run_elevated_result;
+    }
+
+    // "needsadmin=prefers" case: Could not elevate. So fall through to
+    // install as a per-user app.
+    if (!cmd_line_args.append(L" --") ||
+        !cmd_line_args.append(
+            base::SysUTF8ToWide(kCmdLinePrefersUser).c_str())) {
+      return ProcessExitResult(COMMAND_STRING_OVERFLOW);
     }
   }
+
+  if (::IsUserAnAdmin() && scope == UpdaterScope::kUser && IsUACOn())
+    return HandleRunDeElevated(command_line);
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 

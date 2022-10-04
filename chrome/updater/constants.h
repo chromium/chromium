@@ -185,6 +185,12 @@ extern const char kAppArgsSwitch[];
 // to install on a standard user account with UAC disabled.
 extern const char kCmdLineExpectElevated[];
 
+// The "expect-de-elevated" switch indicates that updater setup should be
+// running de-elevated (at medium integrity). This switch is needed to avoid
+// running into a loop trying (but failing repeatedly) to de-elevate updater
+// setup when attempting to install as a standard user account with UAC enabled.
+constexpr char kCmdLineExpectDeElevated[] = "expect-de-elevated";
+
 // The "prefers-user" switch indicates that updater setup could not elevate, and
 // is now trying to install the app per-user.
 extern const char kCmdLinePrefersUser[];
