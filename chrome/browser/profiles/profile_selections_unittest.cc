@@ -181,8 +181,8 @@ class ProfileSelectionsTestWithParams
     // Profiles can be created with the experiment activated.
     bool activate_system_experiment = std::get<2>(GetParam());
     bool activate_guest_experiment = std::get<3>(GetParam());
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     activate_system_experiment
         ? enabled_features.push_back(kSystemProfileSelectionDefaultNone)
         : disabled_features.push_back(kSystemProfileSelectionDefaultNone);
