@@ -291,6 +291,9 @@ tast_disabled_tests_from_chrome_all = [
   "lacros.Basic",
   "lacros.ShelfLaunch",
   "lacros.AppLauncherLaunch",
+  "lacros.AudioPinnedStream.play",
+  "mlservice.WebHandwritingRecognitionNotSupported.lacros",
+  "platform.PerfettoChromeConsumer.lacros",
 ]
 
 # To create filters to be used on specific builders add them like this:
