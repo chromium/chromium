@@ -468,6 +468,11 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     LayoutText* layout_text,
     const NGInlineNodeData* previous_data) {
+  // https://linear.app/replay/issue/RUN-480
+  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #1 Start %d %u",
+                       recordreplay::PointerId(layout_text),
+                       layout_text->GetText().length());
+
   // If the LayoutText element hasn't changed, reuse the existing items.
   if (previous_data && layout_text->HasValidInlineItems()) {
     if (AppendTextReusing(*previous_data, layout_text)) {
@@ -491,6 +496,11 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     const String& string,
     LayoutText* layout_object) {
   DCHECK(layout_object);
+
+  // https://linear.app/replay/issue/RUN-480
+  recordreplay::Assert("NGInlineItemsBuilderTemplate::AppendText #2 Start %d %u",
+                       recordreplay::PointerId(layout_object),
+                       string.length());
 
   if (string.IsEmpty()) {
     AppendEmptyTextItem(layout_object);
