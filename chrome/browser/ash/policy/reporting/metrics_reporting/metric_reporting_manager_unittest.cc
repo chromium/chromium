@@ -205,8 +205,8 @@ const MetricReportingSettingData displays_telemetry_settings = {
 
 struct MetricReportingManagerTestCase {
   std::string test_name;
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   bool is_affiliated;
   MetricReportingSettingData setting_data;
   int expected_count_before_login;

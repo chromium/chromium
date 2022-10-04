@@ -36,7 +36,7 @@ namespace policy {
 class UserCloudPolicyManagerTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<std::vector<base::Feature>,
+          std::tuple<std::vector<base::test::FeatureRef>,
                      ash::LoggedInUserMixin::LogInType>> {
  public:
   UserCloudPolicyManagerTest(const UserCloudPolicyManagerTest&) = delete;
@@ -53,7 +53,7 @@ class UserCloudPolicyManagerTest
 
     scoped_feature_list_.InitWithFeatures(
         std::get<0>(GetParam()) /* enabled_features */,
-        std::vector<base::Feature>() /* disabled_features */);
+        std::vector<base::test::FeatureRef>() /* disabled_features */);
   }
 
   ~UserCloudPolicyManagerTest() override = default;
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
                 logged_in_user_mixin_.GetAccountId()));
 }
 
-const std::vector<base::Feature> feature_lists[] = {
+const std::vector<base::test::FeatureRef> feature_lists[] = {
     {},
     {features::kDMServerOAuthForChildUser}};
 

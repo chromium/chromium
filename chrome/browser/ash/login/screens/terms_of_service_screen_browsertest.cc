@@ -406,9 +406,9 @@ class ManagedUserTosScreenTest : public ManagedUserTosScreenTestBase,
                                  public ::testing::WithParamInterface<bool> {
  public:
   ManagedUserTosScreenTest() {
-    auto enabled_features =
-        std::vector<base::Feature>{features::kManagedTermsOfService};
-    auto disabled_features = std::vector<base::Feature>{};
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kManagedTermsOfService};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     if (GetParam()) {
       enabled_features.push_back(features::kUseAuthsessionAuthentication);

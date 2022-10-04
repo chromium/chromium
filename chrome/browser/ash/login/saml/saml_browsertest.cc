@@ -384,8 +384,8 @@ class SamlTestWithFeatures
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SamlTestWithFeatures() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (std::get<0>(GetParam())) {
       enabled_features.push_back(features::kUseAuthsessionAuthentication);
     } else {
@@ -423,8 +423,8 @@ class ImprovedScrapingTestBase
 ImprovedScrapingTestBase::ImprovedScrapingTestBase() = default;
 
 void ImprovedScrapingTestBase::SetFeatures(bool enable_improved_scraping) {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
   if (std::get<0>(GetParam())) {
     enabled_features.push_back(features::kUseAuthsessionAuthentication);
   } else {
@@ -2135,8 +2135,8 @@ class SAMLDeviceTrustTest
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SAMLDeviceTrustTest() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (std::get<0>(GetParam())) {
       enabled_features.push_back(
           enterprise_connectors::kDeviceTrustConnectorEnabled);

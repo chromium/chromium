@@ -87,8 +87,8 @@ class FeatureAsParameterInterface
  public:
   // Constructor with optional features that are not being parameterized.
   FeatureAsParameterInterface(
-      std::vector<base::Feature> always_enabled_features = {},
-      std::vector<base::Feature> always_disabled_features = {});
+      std::vector<base::test::FeatureRef> always_enabled_features = {},
+      std::vector<base::test::FeatureRef> always_disabled_features = {});
 
   // Provides a description of the test case for GTest.
   // Pattern: _With_FeatureA_Enabled_With_FeatureB_Disabled_...
@@ -118,11 +118,11 @@ class FeatureAsParameterInterface
 
 template <size_t N>
 FeatureAsParameterInterface<N>::FeatureAsParameterInterface(
-    std::vector<base::Feature> always_enabled_features,
-    std::vector<base::Feature> always_disabled_features) {
+    std::vector<base::test::FeatureRef> always_enabled_features,
+    std::vector<base::test::FeatureRef> always_disabled_features) {
   // Initialize the vectors with the features that are not being parameterized
   // and should be always enabled/disabled.
-  std::vector<base::Feature> enabled_features(always_enabled_features),
+  std::vector<base::test::FeatureRef> enabled_features(always_enabled_features),
       disabled_features(always_disabled_features);
 
   const FeatureStateArray<N> feature_state_array = InterfaceType::GetParam();

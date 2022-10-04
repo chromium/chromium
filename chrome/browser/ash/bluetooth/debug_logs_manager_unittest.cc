@@ -55,8 +55,8 @@ class DebugLogsManagerTest : public testing::Test {
   void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
 
   void InitFeatures() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (is_debug_toggle_flag_enabled_) {
       enabled_features.push_back(

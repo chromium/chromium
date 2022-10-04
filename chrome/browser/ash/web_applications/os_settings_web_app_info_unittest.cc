@@ -21,8 +21,8 @@ class OSSettingsSystemAppDelegateTest
                      /*settings_app_theme_change_animation_enabled=*/bool>> {
  public:
   OSSettingsSystemAppDelegateTest() : delegate_(/*profile=*/nullptr) {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
 
     (IsDarkLightModeEnabled() ? enabled : disabled)
         .push_back(chromeos::features::kDarkLightMode);

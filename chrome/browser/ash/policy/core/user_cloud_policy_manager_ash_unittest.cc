@@ -116,7 +116,7 @@ constexpr char kDeviceId[] = "id987";
 // UserCloudPolicyManagerAsh test class that can be used with different
 // feature flags.
 class UserCloudPolicyManagerAshTest
-    : public testing::TestWithParam<std::vector<base::Feature>> {
+    : public testing::TestWithParam<std::vector<base::test::FeatureRef>> {
  public:
   UserCloudPolicyManagerAshTest(const UserCloudPolicyManagerAshTest&) = delete;
   UserCloudPolicyManagerAshTest& operator=(
@@ -158,7 +158,7 @@ class UserCloudPolicyManagerAshTest
 
     scoped_feature_list_.InitWithFeatures(
         GetParam() /* enabled_features */,
-        std::vector<base::Feature>() /* disabled_features */);
+        std::vector<base::test::FeatureRef>() /* disabled_features */);
 
     // The initialization path that blocks on the initial policy fetch requires
     // a signin Profile to use its URLRequestContext.
@@ -471,8 +471,8 @@ class UserCloudPolicyManagerAshTest
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserCloudPolicyManagerAshTest,
-    testing::Values(std::vector<base::Feature>(),
-                    std::vector<base::Feature>{
+    testing::Values(std::vector<base::test::FeatureRef>(),
+                    std::vector<base::test::FeatureRef>{
                         features::kDMServerOAuthForChildUser}));
 
 TEST_P(UserCloudPolicyManagerAshTest, BlockingFirstFetch) {
@@ -1188,7 +1188,7 @@ class UserCloudPolicyManagerAshChildTest
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserCloudPolicyManagerAshChildTest,
-    testing::Values(std::vector<base::Feature>{
+    testing::Values(std::vector<base::test::FeatureRef>{
         features::kDMServerOAuthForChildUser}));
 
 TEST_P(UserCloudPolicyManagerAshChildTest, RefreshFetchDoesNotBlock) {

@@ -594,8 +594,8 @@ class OobeEndToEndTestSetupMixin : public InProcessBrowserTestMixin {
              params_.hide_shelf_controls_in_tablet_mode,
              params_.is_oobe_remove_shutdown_button_enabled,
              params_.arc_state) = parameters;
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (params_.hide_shelf_controls_in_tablet_mode) {
       enabled_features.push_back(features::kHideShelfControlsInTabletMode);
     } else {

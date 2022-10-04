@@ -225,8 +225,8 @@ class PersonalizationAppWallpaperProviderImplTest
   PersonalizationAppWallpaperProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    std::vector<base::Feature> disabled_features;
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
 
     // Conditionally enable/disable Google Photos integration based on test
     // parameterization.
