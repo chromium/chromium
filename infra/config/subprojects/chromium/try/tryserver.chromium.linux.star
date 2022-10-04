@@ -178,6 +178,7 @@ try_.builder(
         "ci/linux-gcc-rel",
     ],
     goma_backend = None,
+    os = os.LINUX_FOCAL,
 )
 
 try_.builder(
