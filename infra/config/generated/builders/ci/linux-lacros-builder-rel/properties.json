@@ -83,10 +83,6 @@
         {
           "builder": "linux-lacros-rel",
           "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-lacros-rel-orchestrator",
-          "group": "tryserver.chromium.chromiumos"
         }
       ]
     }

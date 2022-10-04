@@ -294,25 +294,8 @@ try_.builder(
     ],
 )
 
-try_.builder(
-    name = "linux-lacros-rel",
-    mirrors = [
-        "ci/linux-lacros-builder-rel",
-        "ci/linux-lacros-tester-rel",
-    ],
-    branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
-    check_for_flakiness = True,
-    cores = 16,
-    ssd = True,
-    goma_jobs = goma.jobs.J300,
-    main_list_view = "try",
-    tryjob = try_.job(),
-)
-
-# TODO (crbug.com/1287228): Remove when orchestrator is confirmed to work
 try_.orchestrator_builder(
-    name = "linux-lacros-rel-orchestrator",
+    name = "linux-lacros-rel",
     mirrors = [
         "ci/linux-lacros-builder-rel",
         "ci/linux-lacros-tester-rel",
@@ -321,6 +304,7 @@ try_.orchestrator_builder(
     compilator = "linux-lacros-rel-compilator",
     check_for_flakiness = True,
     main_list_view = "try",
+    tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
     },
