@@ -1757,7 +1757,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupServiceAvailable"
-    enum="BooleanAvailable" expires_after="2023-01-29">
+    enum="BooleanAvailable" expires_after="2023-04-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1769,7 +1769,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupSuccessful" enum="BooleanSuccess"
-    expires_after="2023-01-29">
+    expires_after="2023-04-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1810,7 +1810,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.LocalMatch.Result"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-01-29">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2023-04-02">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
