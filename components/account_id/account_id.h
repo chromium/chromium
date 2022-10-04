@@ -65,6 +65,9 @@ class AccountId {
 
   void SetUserEmail(const std::string& email);
 
+  static AccountId FromNonCanonicalEmail(const std::string& email,
+                                         const std::string& gaia_id,
+                                         const AccountType& account_type);
   // This method is to be used during transition period only.
   // AccountId with UNKNOWN AccountType;
   static AccountId FromUserEmail(const std::string& user_email);

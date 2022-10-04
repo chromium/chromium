@@ -41,7 +41,7 @@ AccountId::AccountId(const std::string& id,
                      const std::string& user_email,
                      const AccountType& account_type)
     : id_(id), user_email_(user_email), account_type_(account_type) {
-  DCHECK(user_email == gaia::CanonicalizeEmail(user_email));
+  DCHECK_EQ(user_email, gaia::CanonicalizeEmail(user_email));
   DCHECK(account_type != AccountType::UNKNOWN || id.empty());
   DCHECK(account_type != AccountType::ACTIVE_DIRECTORY || !id.empty());
   // Fail if e-mail looks similar to GaiaIdKey.
@@ -159,6 +159,15 @@ void AccountId::SetUserEmail(const std::string& email) {
   DCHECK(email == gaia::CanonicalizeEmail(email));
   DCHECK(!email.empty());
   user_email_ = email;
+}
+
+// static
+AccountId AccountId::FromNonCanonicalEmail(const std::string& email,
+                                           const std::string& gaia_id,
+                                           const AccountType& account_type) {
+  DCHECK(!email.empty());
+  return AccountId(gaia_id, gaia::CanonicalizeEmail(gaia::SanitizeEmail(email)),
+                   account_type);
 }
 
 // static
