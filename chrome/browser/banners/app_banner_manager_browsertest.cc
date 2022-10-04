@@ -806,7 +806,7 @@ class AppBannerManagerBrowserTestWithChromeBFCache
   }
 
  private:
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> disabled_features_;
   std::map<base::Feature,
            std::map<std::string, std::string>,
            FeatureOperatorOverload>
