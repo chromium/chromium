@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -310,6 +311,54 @@ DOMHighResTimeStamp PerformanceNavigationTiming::duration() const {
   return loadEventEnd();
 }
 
+ScriptValue PerformanceNavigationTiming::notRestoredReasons(
+    ScriptState* script_state) const {
+  DocumentLoader* loader = GetDocumentLoader();
+  if (!loader || !loader->GetFrame()->IsOutermostMainFrame())
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+
+  // TODO(crbug.com/1370954): Save NotRestoredReasons in Document instead of
+  // Frame.
+  return NotRestoredReasonsBuilder(script_state,
+                                   loader->GetFrame()->GetNotRestoredReasons());
+}
+
+ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
+    ScriptState* script_state,
+    const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const {
+  if (!reasons)
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  V8ObjectBuilder builder(script_state);
+  builder.AddBoolean("blocked", reasons->blocked);
+  builder.AddString("url", AtomicString(reasons->same_origin_details
+                                            ? reasons->same_origin_details->url
+                                            : ""));
+  builder.AddString("src", AtomicString(reasons->same_origin_details
+                                            ? reasons->same_origin_details->src
+                                            : ""));
+  builder.AddString("id", AtomicString(reasons->same_origin_details
+                                           ? reasons->same_origin_details->id
+                                           : ""));
+  builder.AddString("name",
+                    AtomicString(reasons->same_origin_details
+                                     ? reasons->same_origin_details->name
+                                     : ""));
+  Vector<AtomicString> reason_strings;
+  Vector<v8::Local<v8::Value>> children_result;
+  if (reasons->same_origin_details) {
+    for (const auto& reason : reasons->same_origin_details->reasons) {
+      reason_strings.push_back(reason);
+    }
+    for (const auto& child : reasons->same_origin_details->children) {
+      children_result.push_back(
+          NotRestoredReasonsBuilder(script_state, child).V8Value());
+    }
+  }
+  builder.Add("reasons", reason_strings);
+  builder.Add("children", children_result);
+  return builder.GetScriptValue();
+}
+
 void PerformanceNavigationTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceResourceTiming::BuildJSONValue(builder);
@@ -329,6 +378,12 @@ void PerformanceNavigationTiming::BuildJSONValue(
     builder.AddNumber(
         "activationStart",
         PerformanceNavigationTimingActivationStart::activationStart(*this));
+  }
+
+  if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    builder.Add("notRestoredReasons",
+                notRestoredReasons(builder.GetScriptState()));
   }
 }
 }  // namespace blink
