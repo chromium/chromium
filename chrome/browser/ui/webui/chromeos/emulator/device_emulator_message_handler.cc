@@ -399,7 +399,7 @@ void DeviceEmulatorMessageHandler::UpdateTimeToFull(
 void DeviceEmulatorMessageHandler::UpdatePowerSources(
     const base::Value::List& args) {
   CHECK(!args.empty() && args[0].is_list());
-  base::Value::ConstListView sources = args[0].GetListDeprecated();
+  const base::Value::List& sources = args[0].GetList();
 
   power_manager::PowerSupplyProperties props =
       *fake_power_manager_client_->GetLastStatus();
