@@ -708,6 +708,9 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
   // WifiConfiguration object.
   std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
   std::unique_ptr<base::DictionaryValue> wifi_dict(new base::DictionaryValue);
+  std::unique_ptr<base::DictionaryValue> ipconfig_dict(
+      new base::DictionaryValue);
+  std::unique_ptr<base::DictionaryValue> proxy_dict(new base::DictionaryValue);
 
   if (!cfg->hexssid.has_value() || !cfg->details) {
     NET_LOG(ERROR)
@@ -726,6 +729,7 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
 
   properties->SetKey(onc::network_config::kType,
                      base::Value(onc::network_config::kWiFi));
+  // StaticIPConfig dictionary
   wifi_dict->SetKey(onc::wifi::kHexSSID, base::Value(cfg->hexssid.value()));
   wifi_dict->SetKey(onc::wifi::kAutoConnect, base::Value(details->autoconnect));
   if (cfg->security.empty()) {
@@ -738,8 +742,81 @@ void ArcNetHostImpl::CreateNetwork(mojom::WifiConfigurationPtr cfg,
                         base::Value(details->passphrase.value()));
     }
   }
+  wifi_dict->SetKey(onc::wifi::kBSSID, base::Value(cfg->bssid));
   properties->SetKey(onc::network_config::kWiFi,
                      base::Value::FromUniquePtrValue(std::move(wifi_dict)));
+
+  // Set up static IPv4 config.
+  if (cfg->dns_servers.has_value()) {
+    ipconfig_dict->SetKey(onc::ipconfig::kNameServers,
+                          TranslateStringListToValue(cfg->dns_servers.value()));
+    properties->SetKey(onc::network_config::kNameServersConfigType,
+                       base::Value(onc::network_config::kIPConfigTypeStatic));
+  }
+
+  if (cfg->domains.has_value()) {
+    ipconfig_dict->SetKey(onc::ipconfig::kSearchDomains,
+                          TranslateStringListToValue(cfg->domains.value()));
+  }
+
+  // Static IPv4 address, static IPv4 address of the gateway and
+  // prefix length are made sure to be all valid or all empty on
+  // ARC side so we only need to check one of them.
+  if (cfg->static_ipv4_config && cfg->static_ipv4_config->ipv4_addr) {
+    ipconfig_dict->SetKey(onc::ipconfig::kType,
+                          base::Value(onc::ipconfig::kIPv4));
+    properties->SetKey(onc::network_config::kIPAddressConfigType,
+                       base::Value(onc::network_config::kIPConfigTypeStatic));
+    ipconfig_dict->SetKey(
+        onc::ipconfig::kIPAddress,
+        base::Value(cfg->static_ipv4_config->ipv4_addr.value()));
+    ipconfig_dict->SetKey(
+        onc::ipconfig::kGateway,
+        base::Value(cfg->static_ipv4_config->gateway_ipv4_addr.value()));
+    ipconfig_dict->SetKey(onc::ipconfig::kRoutingPrefix,
+                          base::Value(cfg->static_ipv4_config->prefix_length));
+  }
+  // Set up proxy info. If proxy auto discovery pac url is available,
+  // we set up proxy auto discovery pac url, otherwise we set up
+  // host, port and exclusion list.
+  if (cfg->http_proxy) {
+    if (cfg->http_proxy->get_pac_url_proxy()) {
+      proxy_dict->SetKey(onc::proxy::kType, base::Value(onc::proxy::kPAC));
+      proxy_dict->SetKey(
+          onc::proxy::kPAC,
+          base::Value(cfg->http_proxy->get_pac_url_proxy()->pac_url.spec()));
+    } else {
+      std::unique_ptr<base::DictionaryValue> manual(new base::DictionaryValue);
+      manual->SetKey(onc::proxy::kHost,
+                     base::Value(cfg->http_proxy->get_manual_proxy()->host));
+      manual->SetKey(onc::proxy::kPort,
+                     base::Value(cfg->http_proxy->get_manual_proxy()->port));
+      manual->SetKey(onc::proxy::kExcludeDomains,
+                     TranslateStringListToValue(std::move(
+                         cfg->http_proxy->get_manual_proxy()->exclusion_list)));
+      proxy_dict->SetKey(onc::proxy::kType, base::Value(onc::proxy::kManual));
+      proxy_dict->SetKey(onc::proxy::kManual,
+                         base::Value::FromUniquePtrValue(std::move(manual)));
+    }
+  }
+
+  // Set up meteredness based on meteredOverride config from mojom.
+  if (cfg->metered_override == arc::mojom::MeteredOverride::kMetered) {
+    properties->SetKey(onc::network_config::kMetered, base::Value(true));
+  } else if (cfg->metered_override ==
+             arc::mojom::MeteredOverride::kNotmetered) {
+    properties->SetKey(onc::network_config::kMetered, base::Value(false));
+  }
+
+  if (!ipconfig_dict->DictEmpty()) {
+    properties->SetKey(
+        onc::network_config::kStaticIPConfig,
+        base::Value::FromUniquePtrValue(std::move(ipconfig_dict)));
+  }
+  if (!proxy_dict->DictEmpty()) {
+    properties->SetKey(onc::network_config::kProxySettings,
+                       base::Value::FromUniquePtrValue(std::move(proxy_dict)));
+  }
 
   std::string user_id_hash = chromeos::LoginState::Get()->primary_user_hash();
   // TODO(crbug.com/730593): Remove SplitOnceCallback() by updating
@@ -942,7 +1019,6 @@ ArcNetHostImpl::TranslateVpnConfigurationToOnc(
   top_dict->SetKey(onc::network_config::kType,
                    base::Value(onc::network_config::kVPN));
 
-  // StaticIPConfig dictionary
   top_dict->SetKey(onc::network_config::kIPAddressConfigType,
                    base::Value(onc::network_config::kIPConfigTypeStatic));
   top_dict->SetKey(onc::network_config::kNameServersConfigType,
