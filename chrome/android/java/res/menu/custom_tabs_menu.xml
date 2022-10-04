@@ -27,6 +27,9 @@ found in the LICENSE file.
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>
+        <item android:id="@+id/divider_line_id"
+            android:title="@null"
+            android:orderInCategory="2"/>
         <item android:id="@+id/share_row_menu_id"
             android:title="@null"
             android:orderInCategory="2">

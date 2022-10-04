@@ -22,16 +22,6 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsSession;
 import androidx.test.filters.SmallTest;
 
-import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
@@ -48,7 +38,6 @@ import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTab
 import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -60,6 +49,15 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeoutException;
 
@@ -70,6 +68,7 @@ import java.util.concurrent.TimeoutException;
 public class CustomTabActivityAppMenuTest {
     private static final int MAX_MENU_CUSTOM_ITEMS = 5;
     private static final int NUM_CHROME_MENU_ITEMS = 5;
+    private static final int NUM_CHROME_MENU_ITEMS_WITH_DIVIDER = 6;
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_MENU_TITLE = "testMenuTitle";
 
@@ -90,9 +89,6 @@ public class CustomTabActivityAppMenuTest {
     public RuleChain mRuleChain = RuleChain.emptyRuleChain()
                                           .around(mCustomTabActivityTestRule)
                                           .around(mModuleOverridesRule);
-
-    @Rule
-    public final ScreenShooter mScreenShooter = new ScreenShooter();
 
     private String mTestPage;
 
@@ -147,7 +143,7 @@ public class CustomTabActivityAppMenuTest {
         openAppMenuAndAssertMenuShown();
         ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
                 mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS;
+        final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS_WITH_DIVIDER;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
         assertEquals(expectedMenuSize, menuItemsModelList.size());
@@ -173,7 +169,34 @@ public class CustomTabActivityAppMenuTest {
         Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.share_row_menu_id));
 
-        mScreenShooter.shoot("Testtttt");
+        // Assert the divider line is displayed in the correct position.
+        int dividerLine = AppMenuTestSupport.findIndexOfMenuItemById(
+                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
+        int expectedPos = numMenuEntries + 1; // Add 1 to account for app menu icon row.
+        Assert.assertEquals("Divider line at incorrect index.", expectedPos, dividerLine);
+    }
+
+    @Test
+    @SmallTest
+    public void testAppMenuNoCustomEntries() throws Exception {
+        Intent intent = createMinimalCustomTabIntent();
+        int numMenuEntries = 0;
+        CustomTabsIntentTestUtils.addMenuEntriesToIntent(intent, numMenuEntries, TEST_MENU_TITLE);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+
+        openAppMenuAndAssertMenuShown();
+        ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
+                mCustomTabActivityTestRule.getAppMenuCoordinator());
+        final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS;
+
+        Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
+        assertEquals(expectedMenuSize, menuItemsModelList.size());
+
+        // Assert the divider line is not displayed.
+        int dividerLine = AppMenuTestSupport.findIndexOfMenuItemById(
+                mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
+        int expectedPos = -1; // No custom menu entries, not expecting a divider line.
+        Assert.assertEquals("Divider present when it shouldn't be.", expectedPos, dividerLine);
     }
 
     /**
@@ -332,7 +355,7 @@ public class CustomTabActivityAppMenuTest {
         openAppMenuAndAssertMenuShown();
         ModelList menuItemsModelList = AppMenuTestSupport.getMenuModelList(
                 mCustomTabActivityTestRule.getAppMenuCoordinator());
-        final int expectedMenuSize = MAX_MENU_CUSTOM_ITEMS + NUM_CHROME_MENU_ITEMS;
+        final int expectedMenuSize = MAX_MENU_CUSTOM_ITEMS + NUM_CHROME_MENU_ITEMS_WITH_DIVIDER;
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
         assertEquals(expectedMenuSize, menuItemsModelList.size());
     }

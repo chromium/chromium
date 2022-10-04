@@ -51,7 +51,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -280,7 +279,8 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
     public void testDividerLineMenuItem() throws IOException {
-        int firstDividerLineIndex = findIndexOfMenuItemById(R.id.divider_line_id);
+        int firstDividerLineIndex = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
         Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
         mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
     }
@@ -296,8 +296,8 @@ public class TabbedAppMenuTest {
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         Assert.assertFalse("Default to request mobile site.", isRequestDesktopSite);
 
-        int requestDesktopSiteIndex =
-                findIndexOfMenuItemById(R.id.request_desktop_site_row_menu_id);
+        int requestDesktopSiteIndex = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.request_desktop_site_row_menu_id);
         Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
 
         Callable<Boolean> isVisible = () -> {
@@ -351,8 +351,8 @@ public class TabbedAppMenuTest {
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         Assert.assertFalse("Default to request mobile site.", isRequestDesktopSite);
 
-        int requestDesktopSiteIndex =
-                findIndexOfMenuItemById(R.id.request_desktop_site_row_menu_id);
+        int requestDesktopSiteIndex = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.request_desktop_site_row_menu_id);
         Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
 
         Callable<Boolean> isVisible = () -> {
@@ -401,7 +401,8 @@ public class TabbedAppMenuTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_in_app_menu/true"})
     public void testAddBookmarkMenuItem() throws IOException {
-        int addBookmark = findIndexOfMenuItemById(R.id.add_bookmark_menu_id);
+        int addBookmark = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.add_bookmark_menu_id);
         Assert.assertNotEquals("No add bookmark found.", -1, addBookmark);
     }
 
@@ -425,7 +426,8 @@ public class TabbedAppMenuTest {
                 R.color.default_icon_color_accent1_tint_list,
                 bookmarkStarPropertyModel.get(AppMenuItemProperties.ICON_COLOR_RES));
 
-        int editBookmarkMenuItemIndex = findIndexOfMenuItemById(R.id.edit_bookmark_menu_id);
+        int editBookmarkMenuItemIndex = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.edit_bookmark_menu_id);
         Assert.assertNotEquals("No add bookmark menu item found.", -1, editBookmarkMenuItemIndex);
         mRenderTestRule.render(
                 getListView().getChildAt(editBookmarkMenuItemIndex), "edit_bookmark_list_item");
@@ -447,7 +449,8 @@ public class TabbedAppMenuTest {
         showAppMenuAndAssertMenuShown();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        int addToReadingList = findIndexOfMenuItemById(R.id.add_to_reading_list_menu_id);
+        int addToReadingList = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.add_to_reading_list_menu_id);
         Assert.assertNotEquals("No add reading list item found.", -1, addToReadingList);
     }
 
@@ -472,7 +475,8 @@ public class TabbedAppMenuTest {
                 R.color.default_icon_color_accent1_tint_list,
                 deleteReadingListPropertyModel.get(AppMenuItemProperties.ICON_COLOR_RES));
 
-        int deleteFromReadingList = findIndexOfMenuItemById(R.id.delete_from_reading_list_menu_id);
+        int deleteFromReadingList = AppMenuTestSupport.findIndexOfMenuItemById(
+                mActivityTestRule.getAppMenuCoordinator(), R.id.delete_from_reading_list_menu_id);
         Assert.assertNotEquals("No delete reading list item found.", -1, deleteFromReadingList);
         mRenderTestRule.render(
                 getListView().getChildAt(deleteFromReadingList), "delete_reading_list_menu_item");
@@ -541,25 +545,5 @@ public class TabbedAppMenuTest {
 
     private ListView getListView() {
         return AppMenuTestSupport.getListView(mActivityTestRule.getAppMenuCoordinator());
-    }
-
-    private void selectMenuItem(int id) {
-        CriteriaHelper.pollUiThread(
-                () -> { mActivityTestRule.getActivity().onMenuOrKeyboardAction(id, true); });
-    }
-
-    private int findIndexOfMenuItemById(int id) {
-        ModelList menuModelList =
-                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        if (menuModelList == null) return -1;
-
-        for (int i = 0; i < menuModelList.size(); i++) {
-            PropertyModel model = menuModelList.get(i).model;
-            if (model.get(AppMenuItemProperties.MENU_ITEM_ID) == id) {
-                return i;
-            }
-        }
-
-        return -1;
     }
 }

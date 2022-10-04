@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * A custom binder used to bind the divider line in app menu.
  */
-class DividerLineMenuItemViewBinder implements CustomViewBinder {
+public class DividerLineMenuItemViewBinder implements CustomViewBinder {
     private static final int DIVIDER_LINE_ITEM_VIEW_TYPE = 0;
 
     @Override

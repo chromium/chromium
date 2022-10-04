@@ -23,7 +23,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
+import org.chromium.chrome.browser.app.appmenu.DividerLineMenuItemViewBinder;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -38,7 +40,7 @@ import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +95,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
     @Override
     public @Nullable List<CustomViewBinder> getCustomViewBinders() {
-        return Collections.EMPTY_LIST;
+        List<CustomViewBinder> customViewBinders = new ArrayList<>();
+        customViewBinders.add(new DividerLineMenuItemViewBinder());
+        return customViewBinders;
     }
 
     @Override
@@ -212,6 +216,10 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 MenuItem item = menu.add(0, i, 1, mMenuEntries.get(i));
                 mTitleToItemIdMap.put(mMenuEntries.get(i), item.getItemId());
                 mItemIdToIndexMap.put(item.getItemId(), i);
+            }
+
+            if (mMenuEntries.size() == 0) {
+                menu.removeItem(R.id.divider_line_id);
             }
 
             updateRequestDesktopSiteMenuItem(
