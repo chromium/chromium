@@ -79,19 +79,6 @@ constexpr int kMaxItemsPerFolderPage = AppListFolderView::kMaxFolderColumns *
                                        AppListFolderView::kMaxPagedFolderRows;
 
 // Constants used for for testing app list layout in fullscreen state:
-
-// The total height of search box and suggestion chips views, including the
-// vertical margin between them.
-constexpr int kSearchBoxAndSuggestionChipsHeightDefault =
-    48 /* search box height */ +
-    16 /* margin between search box and suggestion chips */ +
-    32 /* suggestion chips container height */;
-
-constexpr int kSearchBoxAndSuggestionChipsHeightDense =
-    40 /* search box height */ +
-    16 /* margin between search box and suggestion chips */ +
-    32 /* suggestion chips container height */;
-
 // The app list grid vertical inset - the height of the view fadeout area.
 constexpr int kGridVerticalInset = 16;
 
@@ -100,9 +87,6 @@ constexpr int kGridVerticalMargin = 8;
 
 // The horizontal spacing between apps grid view and the page switcher.
 constexpr int kPageSwitcherSpacing = 8;
-
-// The maximum allowed margin between items in apps item grid.
-constexpr int kMaxItemMargin = 96;
 
 // The min margins for contents within the fullscreen productivity launcher.
 constexpr int kMinProductivityLauncherMargin = 24;
@@ -185,11 +169,6 @@ void AddRecentApps(int num_apps) {
 int GridItemSizeWithMargins(int grid_size, int item_size, int item_count) {
   int margin = (grid_size - item_size * item_count) / (2 * (item_count - 1));
   return item_size + 2 * margin;
-}
-
-// Calculates the apps item grid size with maximum allowed margin between items.
-int GetItemGridSizeWithMaxItemMargins(int item_size, int item_count) {
-  return item_size * item_count + (item_count - 1) * kMaxItemMargin;
 }
 
 template <class T>
@@ -537,83 +516,6 @@ class AppListViewTest : public views::ViewsTestBase {
     }
   }
 
-  // Verifies fullscreen apps container bounds and layout.
-  void VerifyAppsContainerLayout(const gfx::Size& container_size,
-                                 int column_count,
-                                 int row_count,
-                                 int expected_horizontal_margin,
-                                 int expected_vertical_margin,
-                                 int expected_item_size) {
-    const int kExpectedGridWidth =
-        container_size.width() - 2 * expected_horizontal_margin;
-
-    const int search_box_and_suggestion_chip_height =
-        container_size.height() < 600 + ShelfSize()
-            ? kSearchBoxAndSuggestionChipsHeightDense
-            : kSearchBoxAndSuggestionChipsHeightDefault;
-
-    const int kExpectedGridTop = expected_vertical_margin +
-                                 search_box_and_suggestion_chip_height +
-                                 kGridVerticalMargin;
-    const int kExpectedGridHeight =
-        container_size.height() - kExpectedGridTop -
-        (expected_vertical_margin - kGridVerticalInset) - ShelfSize();
-
-    EXPECT_EQ(gfx::Rect(0, 0, kExpectedGridWidth, kExpectedGridHeight),
-              apps_grid_view()->bounds());
-    EXPECT_EQ(gfx::Rect(expected_horizontal_margin, kExpectedGridTop,
-                        kExpectedGridWidth, kExpectedGridHeight),
-              scrollable_container()->bounds());
-    EXPECT_EQ(gfx::Rect(kExpectedGridWidth + expected_horizontal_margin +
-                            kPageSwitcherSpacing,
-                        kExpectedGridTop,
-                        2 * PageSwitcher::kMaxButtonRadiusForRootGrid,
-                        kExpectedGridHeight),
-              page_switcher_view()->bounds());
-
-    // Horizontal offset between app list item views.
-    const int kHorizontalOffset = GridItemSizeWithMargins(
-        kExpectedGridWidth, expected_item_size, column_count);
-
-    // Verify expected bounds for the first row:
-    for (int i = 0; i < column_count; ++i) {
-      EXPECT_EQ(gfx::Rect(i * kHorizontalOffset, kGridVerticalInset,
-                          expected_item_size, expected_item_size),
-                test_api_->GetItemTileRectAtVisualIndex(0, i))
-          << "Item " << i << " bounds";
-    }
-
-    // Vertical offset between app list item views.
-    const int kVerticalOffset =
-        GridItemSizeWithMargins(kExpectedGridHeight - 2 * kGridVerticalInset,
-                                expected_item_size, row_count);
-
-    // Verify expected bounds for the first column:
-    for (int j = 1; j < row_count; ++j) {
-      EXPECT_EQ(gfx::Rect(0, kGridVerticalInset + j * kVerticalOffset,
-                          expected_item_size, expected_item_size),
-                test_api_->GetItemTileRectAtVisualIndex(0, j * column_count))
-          << "Item " << j * column_count << " bounds";
-    }
-
-    // The last item in the page (bottom right):
-    EXPECT_EQ(gfx::Rect((column_count - 1) * kHorizontalOffset,
-                        kGridVerticalInset + (row_count - 1) * kVerticalOffset,
-                        expected_item_size, expected_item_size),
-              test_api_->GetItemTileRectAtVisualIndex(0, 19));
-
-    // Verify that search box top is at the expected apps container vertical
-    // margin, both in apps, and search results state.
-    std::vector<ash::AppListState> available_app_list_states = {
-        ash::AppListState::kStateApps, ash::AppListState::kStateSearchResults};
-    for (auto app_list_state : available_app_list_states) {
-      const gfx::Rect search_box_bounds =
-          contents_view()->GetSearchBoxBounds(app_list_state);
-      EXPECT_EQ(expected_vertical_margin, search_box_bounds.y())
-          << "App list state: " << static_cast<int>(app_list_state);
-    }
-  }
-
   // Sets animation durations to zero.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
@@ -701,13 +603,6 @@ class ProductivityLauncherAppListViewLayoutTest
     delegate_->GetTestModel()->PopulateApps(kInitialItems);
     Show();
   }
-};
-
-class LegacyLauncherAppListViewLayoutTest
-    : public AppListViewScalableLayoutTest {
- public:
-  LegacyLauncherAppListViewLayoutTest()
-      : AppListViewScalableLayoutTest(/*enable_productivity_launcher=*/false) {}
 };
 
 // Tests of focus, optionally parameterized by RTL.
@@ -3031,233 +2926,6 @@ TEST_F(ProductivityLauncherAppListViewLayoutTest,
   VerifyAppsContainerLayoutForProductivityLauncher(
       updated_window_size, /*row_count=*/3, expected_horizontal_margin,
       expected_updated_item_size, /*has_recent_apps=*/true);
-}
-
-// Tests fullscreen apps grid sizing and layout for small screens (width < 960)
-// in landscape layout.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutForSmallLandscapeScreen) {
-  const gfx::Size window_size = gfx::Size(800, 600);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(
-      window_size, 5 /*column_count*/, 4 /*row_count*/,
-      window_size.width() / 12 /*expected_horizontal_margin*/,
-      expected_vertical_margin, 80 /*expected_item_size*/);
-}
-
-// Tests fullscreen apps grid sizing and layout for small screens (width < 600)
-// in portrait layout.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutForSmallPortraitScreen) {
-  const gfx::Size window_size = gfx::Size(500, 800);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(window_size, 4 /*column_count*/, 5 /*row_count*/,
-                            56 /*expected_horizontal_margin*/,
-                            expected_vertical_margin,
-                            80 /*expected_item_size*/);
-}
-
-// Tests fullscreen apps grid sizing and layout for medium sized screens
-// (width < 1200) in lanscape layout.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutForMediumLandscapeScreen) {
-  const gfx::Size window_size = gfx::Size(960, 800);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  // Horizontal margin should be set so apps grid doesn't go over the max size.
-  const int expected_horizontal_margin =
-      (window_size.width() - GetItemGridSizeWithMaxItemMargins(88, 5)) / 2;
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(window_size, 5 /*column_count*/, 4 /*row_count*/,
-                            expected_horizontal_margin,
-                            expected_vertical_margin,
-                            88 /*expected_item_size*/);
-}
-
-// Tests fullscreen apps grid sizing and layout for medium sized screens
-// (width < 768) in portrait layout.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutForMediumPortraitScreen) {
-  const gfx::Size window_size = gfx::Size(700, 800);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(
-      window_size, 4 /*column_count*/, 5 /*row_count*/,
-      window_size.width() / 12 /*expected_horizontal_margin*/,
-      expected_vertical_margin, 88 /*expected_item_size*/);
-}
-
-// Tests fullscreen apps grid sizing and layout for large screens
-// (width >= 1200) in landscape layout.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutForLargeLandscapeScreen) {
-  const gfx::Size window_size = gfx::Size(1200, 960);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  // Horizontal margin should be set so apps grid doesn't go over the max size.
-  const int expected_horizontal_margin =
-      (window_size.width() - GetItemGridSizeWithMaxItemMargins(120, 5)) / 2;
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(window_size, 5 /*column_count*/, 4 /*row_count*/,
-                            expected_horizontal_margin,
-                            expected_vertical_margin,
-                            120 /*expected_item_size*/);
-}
-
-// Tests fullscreen apps grid sizing and layout for large screens (width >= 768)
-// in portrait layout.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutForLargePortraitScreen) {
-  const gfx::Size window_size = gfx::Size(800, 1200);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(
-      window_size, 4 /*column_count*/, 5 /*row_count*/,
-      window_size.width() / 12 /*expected_horizontal_margin*/,
-      expected_vertical_margin, 120 /*expected_item_size*/);
-}
-
-// Tests that apps grid horizontal margin have minimum that ensures the page
-// switcher view can fit next to the apps grid.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       EnsurePageSwitcherFitsAppsGridMargin) {
-  const gfx::Size window_size = gfx::Size(440, 800);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize()) / 16;
-  // The horizontal margin is selected so the page switcher fits the margin
-  // space (note that 440 / 12, which is how the margin is normally calculated
-  // is smaller than the width required by page switcher).
-  VerifyAppsContainerLayout(window_size, 4 /*column_count*/, 5 /*row_count*/,
-                            56 /*expected_horizontal_margin*/,
-                            expected_vertical_margin,
-                            80 /*expected_item_size*/);
-}
-
-// Verifies that the vertical spacing between items in apps grid has an upper
-// limit, and that the apps grid is centered in the available space if item
-// spacing hits that limit.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       VerticalAppsGridItemSpacingIsBounded) {
-  const gfx::Size window_size = gfx::Size(960, 1600);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  // Horizontal margin should be set so apps grid doesn't go over the max size.
-  const int expected_horizontal_margin =
-      (window_size.width() - GetItemGridSizeWithMaxItemMargins(120, 4)) / 2;
-  const int expected_vertical_margin =
-      (window_size.height() - ShelfSize() - kGridVerticalInset -
-       kSearchBoxAndSuggestionChipsHeightDefault - kGridVerticalMargin -
-       GetItemGridSizeWithMaxItemMargins(120, 5)) /
-      2;
-  VerifyAppsContainerLayout(window_size, 4 /*column_count*/, 5 /*row_count*/,
-                            expected_horizontal_margin,
-                            expected_vertical_margin,
-                            120 /*expected_item_size*/);
-}
-
-// Verifies that the vertical apps container margin is big enough to fit the
-// apps grid fadeout area.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       VerticalAppsContainerMarginFitFadeoutArea) {
-  const gfx::Size window_size(650, 536);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  // The horizontal margin is selected so the page switcher fits the margin
-  // space (note that 650 / 12, which is how the margin is normally calculated
-  // is smaller than the width required by page switcher).
-  VerifyAppsContainerLayout(
-      window_size, 5 /*column_count*/, 4 /*row_count*/,
-      56 /*expected_horizontal_margin*/,
-      kGridVerticalInset + kGridVerticalMargin /*expected_vertical_margin*/,
-      80 /*expected_item_size*/);
-}
-
-// Tests fullscreen apps grid sizing and layout gets updated to correct bounds
-// when app list config changes.
-TEST_F(LegacyLauncherAppListViewLayoutTest,
-       AppListViewLayoutAfterConfigChange) {
-  const gfx::Size window_size = gfx::Size(500, 800);
-  gfx::NativeView parent = GetContext();
-  parent->SetBounds(gfx::Rect(window_size));
-
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  int expected_vertical_margin = (window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(window_size, 4 /*column_count*/, 5 /*row_count*/,
-                            56 /*expected_horizontal_margin*/,
-                            expected_vertical_margin,
-                            80 /*expected_item_size*/);
-
-  const gfx::Size updated_window_size = gfx::Size(800, 1200);
-  parent->SetBounds(gfx::Rect(updated_window_size));
-  view_->OnParentWindowBoundsChanged();
-
-  expected_vertical_margin = (updated_window_size.height() - ShelfSize()) / 16;
-  VerifyAppsContainerLayout(
-      updated_window_size, 4 /*column_count*/, 5 /*row_count*/,
-      updated_window_size.width() / 12 /*expected_horizontal_margin*/,
-      expected_vertical_margin, 120 /*expected_item_size*/);
 }
 
 // Tests that page switching in folder doesn't record AppListPageSwitcherSource
