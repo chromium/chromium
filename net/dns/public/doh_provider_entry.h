@@ -65,7 +65,7 @@ struct NET_EXPORT DohProviderEntry {
   };
 
   std::string provider;
-  base::Feature feature;
+  const base::Feature& feature;
   // A provider_id_for_histogram is required for entries that are intended to
   // be visible in the UI.
   absl::optional<DohProviderIdForHistogram> provider_id_for_histogram;
@@ -85,7 +85,7 @@ struct NET_EXPORT DohProviderEntry {
 
   static DohProviderEntry ConstructForTesting(
       std::string provider,
-      base::Feature&& feature,
+      const base::Feature* feature,
       absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> ip_strs,
       std::set<std::string> dns_over_tls_hostnames,
@@ -109,7 +109,7 @@ struct NET_EXPORT DohProviderEntry {
       std::string provider,
       // Disallow implicit copying of the `feature` parameter because there
       // cannot be more than one `base::Feature` for a given feature name.
-      base::Feature&& feature,
+      const base::Feature* feature,
       absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
       std::set<base::StringPiece> ip_strs,
       std::set<std::string> dns_over_tls_hostnames,

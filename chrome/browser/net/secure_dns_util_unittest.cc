@@ -95,10 +95,12 @@ TEST(SecureDnsUtil, MakeProbeRunner) {
   EXPECT_EQ(doh_config, overrides.dns_over_https_config);
 }
 
+BASE_FEATURE(kDohProviderFeatureForProvider_Global1,
+             "DohProviderFeatureForProvider_Global1",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderGlobal1 = net::DohProviderEntry::ConstructForTesting(
     "Provider_Global1",
-    base::Feature("DohProviderFeatureForProvider_Global1",
-                  base::FEATURE_ENABLED_BY_DEFAULT),
+    &kDohProviderFeatureForProvider_Global1,
     net::DohProviderIdForHistogram{-1},
     /*ip_strs=*/{},
     /*dns_over_tls_hostnames=*/{},
@@ -107,10 +109,12 @@ const auto kProviderGlobal1 = net::DohProviderEntry::ConstructForTesting(
     /*privacy_policy=*/"https://global1.provider/privacy_policy/",
     /*display_globally=*/true,
     /*display_countries=*/{});
+BASE_FEATURE(kDohProviderFeatureForProvider_NoDisplay,
+             "DohProviderFeatureForProvider_NoDisplay",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderNoDisplay = net::DohProviderEntry::ConstructForTesting(
     "Provider_NoDisplay",
-    base::Feature("DohProviderFeatureForProvider_NoDisplay",
-                  base::FEATURE_ENABLED_BY_DEFAULT),
+    &kDohProviderFeatureForProvider_NoDisplay,
     net::DohProviderIdForHistogram{-2},
     /*ip_strs=*/{},
     /*dns_over_tls_hostnames=*/{},
@@ -119,10 +123,12 @@ const auto kProviderNoDisplay = net::DohProviderEntry::ConstructForTesting(
     /*privacy_policy=*/"https://nodisplay.provider/privacy_policy/",
     /*display_globally=*/false,
     /* display_countries */ {});
+BASE_FEATURE(kDohProviderFeatureForProvider_EE_FR,
+             "DohProviderFeatureForProvider_EE_FR",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const auto kProviderEeFrDisabled = net::DohProviderEntry::ConstructForTesting(
     "Provider_EE_FR",
-    base::Feature("DohProviderFeatureForProvider_EE_FR",
-                  base::FEATURE_DISABLED_BY_DEFAULT),
+    &kDohProviderFeatureForProvider_EE_FR,
     net::DohProviderIdForHistogram{-3},
     /*ip_strs=*/{},
     /*dns_over_tls_hostnames=*/{},
@@ -131,10 +137,12 @@ const auto kProviderEeFrDisabled = net::DohProviderEntry::ConstructForTesting(
     /*privacy_policy=*/"https://ee.fr.provider/privacy_policy/",
     /*display_globally=*/false,
     /*display_countries=*/{"EE", "FR"});
+BASE_FEATURE(kDohProviderFeatureForProvider_FR,
+             "DohProviderFeatureForProvider_FR",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderFr = net::DohProviderEntry::ConstructForTesting(
-    "Provider_FR",
-    base::Feature("DohProviderFeatureForProvider_FR",
-                  base::FEATURE_ENABLED_BY_DEFAULT),
+    "provider_FR",
+    &kDohProviderFeatureForProvider_FR,
     net::DohProviderIdForHistogram{-4},
     /*ip_strs=*/{},
     /*dns_over_tls_hostnames=*/{},
@@ -143,10 +151,12 @@ const auto kProviderFr = net::DohProviderEntry::ConstructForTesting(
     /*privacy_policy=*/"https://fr.provider/privacy_policy/",
     /*display_globally=*/false,
     /*display_countries=*/{"FR"});
+BASE_FEATURE(kDohProviderFeatureForProvider_Global2,
+             "DohProviderFeatureForProvider_Global2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderGlobal2 = net::DohProviderEntry::ConstructForTesting(
     "Provider_Global2",
-    base::Feature("DohProviderFeatureForProvider_Global2",
-                  base::FEATURE_ENABLED_BY_DEFAULT),
+    &kDohProviderFeatureForProvider_Global2,
     net::DohProviderIdForHistogram{-5},
     /*ip_strs=*/{},
     /*dns_over_tls_hostnames=*/{},
@@ -155,11 +165,13 @@ const auto kProviderGlobal2 = net::DohProviderEntry::ConstructForTesting(
     /*privacy_policy=*/"https://global2.provider/privacy_policy/",
     /*display_globally=*/true,
     /*display_countries=*/{});
+BASE_FEATURE(kDohProviderFeatureForProvider_Global3,
+             "DohProviderFeatureForProvider_Global3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const auto kProviderGlobal3Disabled =
     net::DohProviderEntry::ConstructForTesting(
         "Provider_Global3",
-        base::Feature("DohProviderFeatureForProvider_Global3",
-                      base::FEATURE_DISABLED_BY_DEFAULT),
+        &kDohProviderFeatureForProvider_Global3,
         net::DohProviderIdForHistogram{-6},
         /*ip_strs=*/{},
         /*dns_over_tls_hostnames=*/{},

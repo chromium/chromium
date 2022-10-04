@@ -37,6 +37,12 @@ DnsOverHttpsServerConfig ParseValidDohTemplate(std::string server_template) {
 
 }  // namespace
 
+#define MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(feature_name, feature_state) \
+  ([]() {                                                                  \
+    static BASE_FEATURE(k##feature_name, #feature_name, feature_state);    \
+    return &k##feature_name;                                               \
+  })()
+
 // static
 const DohProviderEntry::List& DohProviderEntry::GetList() {
   // See /net/docs/adding_doh_providers.md for instructions on modifying this
@@ -46,20 +52,21 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   // DohProviderId histogram suffix list in
   // tools/metrics/histograms/metadata/histogram_suffixes_list.xml.
   static const base::NoDestructor<DohProviderEntry::List> providers{{
-      new DohProviderEntry("AlekBergNl",
-                           base::Feature{"DohProviderAlekBergNl",
-                                         base::FEATURE_ENABLED_BY_DEFAULT},
-                           DohProviderIdForHistogram::kAlekBergNl,
-                           /*ip_strs=*/{}, /*dns_over_tls_hostnames=*/{},
-                           "https://dnsnl.alekberg.net/dns-query{?dns}",
-                           /*ui_name=*/"alekberg.net (NL)",
-                           /*privacy_policy=*/"https://alekberg.net/privacy",
-                           /*display_globally=*/false,
-                           /*display_countries=*/{"NL"}, LoggingLevel::kNormal),
+      new DohProviderEntry(
+          "AlekBergNl",
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderAlekBergNl, base::FEATURE_ENABLED_BY_DEFAULT),
+          DohProviderIdForHistogram::kAlekBergNl,
+          /*ip_strs=*/{}, /*dns_over_tls_hostnames=*/{},
+          "https://dnsnl.alekberg.net/dns-query{?dns}",
+          /*ui_name=*/"alekberg.net (NL)",
+          /*privacy_policy=*/"https://alekberg.net/privacy",
+          /*display_globally=*/false,
+          /*display_countries=*/{"NL"}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "CleanBrowsingAdult",
-          base::Feature{"DohProviderCleanBrowsingAdult",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderCleanBrowsingAdult, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"185.228.168.10", "185.228.169.11", "2a0d:2a00:1::1",
            "2a0d:2a00:2::1"},
@@ -70,8 +77,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "CleanBrowsingFamily",
-          base::Feature{"DohProviderCleanBrowsingFamily",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderCleanBrowsingFamily, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kCleanBrowsingFamily,
           {"185.228.168.168", "185.228.169.168",
            "2a0d:2a00:1::", "2a0d:2a00:2::"},
@@ -83,8 +90,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "CleanBrowsingSecure",
-          base::Feature{"DohProviderCleanBrowsingSecure",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderCleanBrowsingSecure, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"185.228.168.9", "185.228.169.9", "2a0d:2a00:1::2",
            "2a0d:2a00:2::2"},
@@ -94,8 +101,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*display_countries=*/{}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "Cloudflare",
-          base::Feature{"DohProviderCloudflare",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderCloudflare, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kCloudflare,
           {"1.1.1.1", "1.0.0.1", "2606:4700:4700::1111",
            "2606:4700:4700::1001"},
@@ -109,7 +116,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kExtra),
       new DohProviderEntry(
           "Comcast",
-          base::Feature{"DohProviderComcast", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderComcast, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"75.75.75.75", "75.75.76.76", "2001:558:feed::1",
            "2001:558:feed::2"},
@@ -119,7 +127,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*display_countries=*/{}, LoggingLevel::kExtra),
       new DohProviderEntry(
           "Cox",
-          base::Feature{"DohProviderCox", base::FEATURE_DISABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderCox, base::FEATURE_DISABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"68.105.28.11", "68.105.28.12", "2001:578:3f::30"},
           /*dns_over_tls_hostnames=*/{"dot.cox.net"},
@@ -129,7 +138,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "Cznic",
-          base::Feature{"DohProviderCznic", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderCznic, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kCznic,
           {"185.43.135.1", "193.17.47.1", "2001:148f:fffe::1",
            "2001:148f:ffff::1"},
@@ -140,7 +150,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "Dnssb",
-          base::Feature{"DohProviderDnssb", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderDnssb, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kDnsSb,
           {"185.222.222.222", "45.11.45.11", "2a09::", "2a11::"},
           /*dns_over_tls_hostnames=*/{"dns.sb"},
@@ -150,7 +161,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "Google",
-          base::Feature{"DohProviderGoogle", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderGoogle, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kGoogle,
           {"8.8.8.8", "8.8.4.4", "2001:4860:4860::8888",
            "2001:4860:4860::8844"},
@@ -162,19 +174,21 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*privacy_policy=*/"privacy",
           /*display_globally=*/true, /*display_countries=*/{},
           LoggingLevel::kExtra),
-      new DohProviderEntry("GoogleDns64",
-                           base::Feature{"DohProviderGoogleDns64",
-                                         base::FEATURE_ENABLED_BY_DEFAULT},
-                           /*provider_id_for_histogram=*/absl::nullopt,
-                           {"2001:4860:4860::64", "2001:4860:4860::6464"},
-                           /*dns_over_tls_hostnames=*/{"dns64.dns.google"},
-                           "https://dns64.dns.google/dns-query{?dns}",
-                           /*ui_name=*/"", /*privacy_policy=*/"",
-                           /*display_globally=*/false,
-                           /*display_countries=*/{}, LoggingLevel::kNormal),
+      new DohProviderEntry(
+          "GoogleDns64",
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderGoogleDns64, base::FEATURE_ENABLED_BY_DEFAULT),
+          /*provider_id_for_histogram=*/absl::nullopt,
+          {"2001:4860:4860::64", "2001:4860:4860::6464"},
+          /*dns_over_tls_hostnames=*/{"dns64.dns.google"},
+          "https://dns64.dns.google/dns-query{?dns}",
+          /*ui_name=*/"", /*privacy_policy=*/"",
+          /*display_globally=*/false,
+          /*display_countries=*/{}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "Iij",
-          base::Feature{"DohProviderIij", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderIij, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kIij, /*ip_strs=*/{},
           /*dns_over_tls_hostnames=*/{}, "https://public.dns.iij.jp/dns-query",
           /*ui_name=*/"IIJ (Public DNS)",
@@ -183,7 +197,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "NextDns",
-          base::Feature{"DohProviderNextDns", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderNextDns, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kNextDns, /*ip_strs=*/{},
           /*dns_over_tls_hostnames=*/{}, "https://chromium.dns.nextdns.io",
           /*ui_name=*/"NextDNS",
@@ -192,7 +207,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "OpenDNS",
-          base::Feature{"DohProviderOpenDNS", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderOpenDNS, base::FEATURE_ENABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kOpenDns,
           {"208.67.222.222", "208.67.220.220", "2620:119:35::35",
            "2620:119:53::53"},
@@ -204,8 +220,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           LoggingLevel::kNormal),
       new DohProviderEntry(
           "OpenDNSFamily",
-          base::Feature{"DohProviderOpenDNSFamily",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderOpenDNSFamily, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"208.67.222.123", "208.67.220.123", "2620:119:35::123",
            "2620:119:53::123"},
@@ -215,8 +231,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*display_countries=*/{}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "Quad9Cdn",
-          base::Feature{"DohProviderQuad9Cdn",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderQuad9Cdn, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"9.9.9.11", "149.112.112.11", "2620:fe::11", "2620:fe::fe:11"},
           /*dns_over_tls_hostnames=*/{"dns11.quad9.net"},
@@ -225,8 +241,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*display_countries=*/{}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "Quad9Insecure",
-          base::Feature{"DohProviderQuad9Insecure",
-                        base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderQuad9Insecure, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"9.9.9.10", "149.112.112.10", "2620:fe::10", "2620:fe::fe:10"},
           /*dns_over_tls_hostnames=*/{"dns10.quad9.net"},
@@ -235,8 +251,8 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*display_countries=*/{}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "Quad9Secure",
-          base::Feature{"DohProviderQuad9Secure",
-                        base::FEATURE_DISABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderQuad9Secure, base::FEATURE_DISABLED_BY_DEFAULT),
           DohProviderIdForHistogram::kQuad9Secure,
           {"9.9.9.9", "149.112.112.112", "2620:fe::fe", "2620:fe::9"},
           /*dns_over_tls_hostnames=*/{"dns.quad9.net", "dns9.quad9.net"},
@@ -244,42 +260,46 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           /*privacy_policy=*/"https://www.quad9.net/home/privacy/",
           /*display_globally=*/true, /*display_countries=*/{},
           LoggingLevel::kExtra),
-      new DohProviderEntry("Quickline",
-                           base::Feature{"DohProviderQuickline",
-                                         base::FEATURE_ENABLED_BY_DEFAULT},
-                           /*provider_id_for_histogram=*/absl::nullopt,
-                           {"212.60.61.246", "212.60.63.246",
-                            "2001:1a88:10:ffff::1", "2001:1a88:10:ffff::2"},
-                           /*dns_over_tls_hostnames=*/{"dot.quickline.ch"},
-                           "https://doh.quickline.ch/dns-query{?dns}",
-                           /*ui_name=*/"", /*privacy_policy=*/"",
-                           /*display_globally=*/false,
-                           /*display_countries=*/{}, LoggingLevel::kNormal),
-      new DohProviderEntry("Spectrum1",
-                           base::Feature{"DohProviderSpectrum1",
-                                         base::FEATURE_ENABLED_BY_DEFAULT},
-                           /*provider_id_for_histogram=*/absl::nullopt,
-                           {"209.18.47.61", "209.18.47.62",
-                            "2001:1998:0f00:0001::1", "2001:1998:0f00:0002::1"},
-                           /*dns_over_tls_hostnames=*/{},
-                           "https://doh-01.spectrum.com/dns-query{?dns}",
-                           /*ui_name=*/"", /*privacy_policy=*/"",
-                           /*display_globally=*/false,
-                           /*display_countries=*/{}, LoggingLevel::kNormal),
-      new DohProviderEntry("Spectrum2",
-                           base::Feature{"DohProviderSpectrum2",
-                                         base::FEATURE_ENABLED_BY_DEFAULT},
-                           /*provider_id_for_histogram=*/absl::nullopt,
-                           {"209.18.47.61", "209.18.47.62",
-                            "2001:1998:0f00:0001::1", "2001:1998:0f00:0002::1"},
-                           /*dns_over_tls_hostnames=*/{},
-                           "https://doh-02.spectrum.com/dns-query{?dns}",
-                           /*ui_name=*/"", /*privacy_policy=*/"",
-                           /*display_globally=*/false,
-                           /*display_countries=*/{}, LoggingLevel::kNormal),
+      new DohProviderEntry(
+          "Quickline",
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderQuickline, base::FEATURE_ENABLED_BY_DEFAULT),
+          /*provider_id_for_histogram=*/absl::nullopt,
+          {"212.60.61.246", "212.60.63.246", "2001:1a88:10:ffff::1",
+           "2001:1a88:10:ffff::2"},
+          /*dns_over_tls_hostnames=*/{"dot.quickline.ch"},
+          "https://doh.quickline.ch/dns-query{?dns}",
+          /*ui_name=*/"", /*privacy_policy=*/"",
+          /*display_globally=*/false,
+          /*display_countries=*/{}, LoggingLevel::kNormal),
+      new DohProviderEntry(
+          "Spectrum1",
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderSpectrum1, base::FEATURE_ENABLED_BY_DEFAULT),
+          /*provider_id_for_histogram=*/absl::nullopt,
+          {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
+           "2001:1998:0f00:0002::1"},
+          /*dns_over_tls_hostnames=*/{},
+          "https://doh-01.spectrum.com/dns-query{?dns}",
+          /*ui_name=*/"", /*privacy_policy=*/"",
+          /*display_globally=*/false,
+          /*display_countries=*/{}, LoggingLevel::kNormal),
+      new DohProviderEntry(
+          "Spectrum2",
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderSpectrum2, base::FEATURE_ENABLED_BY_DEFAULT),
+          /*provider_id_for_histogram=*/absl::nullopt,
+          {"209.18.47.61", "209.18.47.62", "2001:1998:0f00:0001::1",
+           "2001:1998:0f00:0002::1"},
+          /*dns_over_tls_hostnames=*/{},
+          "https://doh-02.spectrum.com/dns-query{?dns}",
+          /*ui_name=*/"", /*privacy_policy=*/"",
+          /*display_globally=*/false,
+          /*display_countries=*/{}, LoggingLevel::kNormal),
       new DohProviderEntry(
           "Switch",
-          base::Feature{"DohProviderSwitch", base::FEATURE_ENABLED_BY_DEFAULT},
+          MAKE_BASE_FEATURE_WITH_STATIC_STORAGE(
+              DohProviderSwitch, base::FEATURE_ENABLED_BY_DEFAULT),
           /*provider_id_for_histogram=*/absl::nullopt,
           {"130.59.31.251", "130.59.31.248", "2001:620:0:ff::2",
            "2001:620:0:ff::3"},
@@ -291,10 +311,12 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
   return *providers;
 }
 
+#undef MAKE_BASE_FEATURE_WITH_STATIC_STORAGE
+
 // static
 DohProviderEntry DohProviderEntry::ConstructForTesting(
     std::string provider,
-    base::Feature&& feature,
+    const base::Feature* feature,
     absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
     std::set<base::StringPiece> ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
@@ -304,17 +326,17 @@ DohProviderEntry DohProviderEntry::ConstructForTesting(
     bool display_globally,
     std::set<std::string> display_countries,
     LoggingLevel logging_level) {
-  return DohProviderEntry(
-      provider, std::move(feature), provider_id_for_histogram, ip_strs,
-      dns_over_tls_hostnames, dns_over_https_template, ui_name, privacy_policy,
-      display_globally, display_countries, logging_level);
+  return DohProviderEntry(provider, feature, provider_id_for_histogram, ip_strs,
+                          dns_over_tls_hostnames, dns_over_https_template,
+                          ui_name, privacy_policy, display_globally,
+                          display_countries, logging_level);
 }
 
 DohProviderEntry::~DohProviderEntry() = default;
 
 DohProviderEntry::DohProviderEntry(
     std::string provider,
-    base::Feature&& feature,
+    const base::Feature* feature,
     absl::optional<DohProviderIdForHistogram> provider_id_for_histogram,
     std::set<base::StringPiece> ip_strs,
     std::set<std::string> dns_over_tls_hostnames,
@@ -325,7 +347,7 @@ DohProviderEntry::DohProviderEntry(
     std::set<std::string> display_countries,
     LoggingLevel logging_level)
     : provider(std::move(provider)),
-      feature(std::move(feature)),
+      feature(*feature),
       provider_id_for_histogram(std::move(provider_id_for_histogram)),
       ip_addresses(ParseIPs(ip_strs)),
       dns_over_tls_hostnames(std::move(dns_over_tls_hostnames)),

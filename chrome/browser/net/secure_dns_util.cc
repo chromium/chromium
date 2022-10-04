@@ -107,8 +107,9 @@ net::DohProviderEntry::List SelectEnabledProviders(
     const net::DohProviderEntry::List& providers) {
   net::DohProviderEntry::List enabled_providers;
   base::ranges::copy_if(providers, std::back_inserter(enabled_providers),
-                        &base::FeatureList::IsEnabled,
-                        &net::DohProviderEntry::feature);
+                        [](const auto* entry) {
+                          return base::FeatureList::IsEnabled(entry->feature);
+                        });
   return enabled_providers;
 }
 
