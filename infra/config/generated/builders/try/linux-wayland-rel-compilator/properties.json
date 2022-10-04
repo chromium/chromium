@@ -6,12 +6,12 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-lacros-builder-rel",
+              "builder": "Linux Builder (Wayland)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
-              "builder_group": "chromium.chromiumos",
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -19,26 +19,26 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_arch": "intel",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "chromeos"
+                  "use_clang_coverage",
+                  "enable_reclient"
                 ],
-                "config": "chromium_no_telemetry_dependencies"
+                "config": "chromium"
               }
             }
           },
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-lacros-tester-rel",
+              "builder": "Linux Tests (Wayland)",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-chromiumos-archive",
-              "builder_group": "chromium.chromiumos",
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.linux",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -46,19 +46,18 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
-                "target_arch": "intel",
                 "target_bits": 64
               },
               "legacy_gclient_config": {
                 "apply_configs": [
                   "use_clang_coverage",
-                  "chromeos"
+                  "enable_reclient"
                 ],
-                "config": "chromium_no_telemetry_dependencies"
+                "config": "chromium"
               },
               "parent": {
                 "bucket": "ci",
-                "builder": "linux-lacros-builder-rel",
+                "builder": "Linux Builder (Wayland)",
                 "project": "chromium"
               }
             }
@@ -68,32 +67,32 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-lacros-builder-rel",
+          "builder": "Linux Builder (Wayland)",
           "project": "chromium"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "linux-lacros-tester-rel",
+          "builder": "Linux Tests (Wayland)",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-lacros-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-lacros-rel-orchestrator",
-          "group": "tryserver.chromium.chromiumos"
-        }
-      ]
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
   },
+  "$build/goma": {
+    "enable_ats": true,
+    "jobs": 150,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
   "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 150,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -103,9 +102,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium/compilator"
 }

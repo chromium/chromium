@@ -106,6 +106,29 @@ try_.builder(
     tryjob = try_.job(),
 )
 
+try_.orchestrator_builder(
+    name = "lacros-amd64-generic-rel-orchestrator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+    ],
+    compilator = "lacros-amd64-generic-rel-compilator",
+    main_list_view = "try",
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
+    use_orchestrator_pool = True,
+)
+
+try_.compilator_builder(
+    name = "lacros-amd64-generic-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    # TODO (crbug.com/1287228): Set correct values once bots are set up
+    ssd = None,
+    cores = None,
+)
+
 try_.builder(
     name = "lacros-amd64-generic-rel-skylab-fyi",
     branch_selector = branches.STANDARD_MILESTONE,
@@ -285,6 +308,33 @@ try_.builder(
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(),
+)
+
+# TODO (crbug.com/1287228): Remove when orchestrator is confirmed to work
+try_.orchestrator_builder(
+    name = "linux-lacros-rel-orchestrator",
+    mirrors = [
+        "ci/linux-lacros-builder-rel",
+        "ci/linux-lacros-tester-rel",
+    ],
+    branch_selector = branches.STANDARD_MILESTONE,
+    compilator = "linux-lacros-rel-compilator",
+    check_for_flakiness = True,
+    main_list_view = "try",
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
+    use_orchestrator_pool = True,
+)
+
+try_.compilator_builder(
+    name = "linux-lacros-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    goma_jobs = goma.jobs.J300,
+    # TODO (crbug.com/1287228): Set correct values once bots are set up
+    ssd = None,
+    cores = None,
 )
 
 try_.builder(

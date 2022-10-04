@@ -78,23 +78,18 @@
           "builder": "linux-lacros-tester-rel",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-lacros-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-lacros-rel-orchestrator",
-          "group": "tryserver.chromium.chromiumos"
-        }
       ]
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics"
+  "$build/flakiness": {
+    "check_for_flakiness": true
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "jobs": 300,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -103,9 +98,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.chromiumos",
+  "recipe": "chromium/compilator"
 }

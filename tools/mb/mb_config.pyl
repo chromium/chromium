@@ -1093,6 +1093,8 @@
       'gpu-fyi-try-chromeos-octopus-exp': 'gpu_tests_chromeos_octopus_release_trybot',
       'gpu-fyi-try-chromeos-zork-exp': 'gpu_tests_chromeos_zork_release_trybot',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
+      # TODO (crbug.com/1287228): Remove when orchestrator is verified
+      'lacros-amd64-generic-rel-orchestrator': 'chromeos_amd64-generic_lacros_rel_dchecks',
       'lacros-amd64-generic-rel-skylab-fyi': 'chromeos_amd64-generic_lacros_rel_fyi',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks',
@@ -1107,6 +1109,8 @@
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
       'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
+      # TODO (crbug.com/1287228): Remove when orchestrator is verified
+      'linux-lacros-rel-orchestrator': 'lacros_on_linux_release_trybot',
       'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_trybot',
     },
 
@@ -1207,6 +1211,8 @@
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-viz-rel': 'release_trybot',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
+      # TODO (crbug.com/1287228): Remove when orchestrator is verified
+      'linux-wayland-rel-orchestrator': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
       'linux-webkit-msan-rel': 'msan_release_bot',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot',

@@ -187,6 +187,18 @@
       "use_goma": true
     }
   },
+  "lacros-amd64-generic-rel-orchestrator": {
+    "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
+    "gn_args": {
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": true,
+      "is_chromeos_device": true,
+      "is_debug": false,
+      "ozone_platform_headless": true,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "lacros-amd64-generic-rel-skylab-fyi": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {
@@ -362,6 +374,18 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
+      "use_goma": true
+    }
+  },
+  "linux-lacros-rel-orchestrator": {
+    "gn_args": {
+      "also_build_ash_chrome": true,
+      "chromeos_is_browser_only": true,
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "target_os": "chromeos",
       "use_goma": true
     }
   },
