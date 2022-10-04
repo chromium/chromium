@@ -12,13 +12,44 @@
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace base {
 namespace test {
+
+struct FeatureRefAndParams {
+  // TODO(https://crbug.com/1370851): Add ABSL_ATTRIBUTE_LIFETIME_BOUND here to
+  // match FeatureRef below.
+  FeatureRefAndParams(const Feature& feature, const FieldTrialParams& params);
+  ~FeatureRefAndParams();
+
+  FeatureRefAndParams(const FeatureRefAndParams& other);
+
+  const Feature& feature;
+  const FieldTrialParams params;
+};
+
+// A lightweight wrapper for a reference to a base::Feature. Allows lists of
+// features to be enabled/disabled to be easily passed without actually copying
+// the underlying base::Feature. Actual C++ references do not work well for this
+// purpose, as vectors of references are disallowed.
+class FeatureRef {
+ public:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  FeatureRef(const Feature& feature ABSL_ATTRIBUTE_LIFETIME_BOUND)
+      : feature_(feature) {}
+
+  const Feature& operator*() const { return *feature_; }
+  const Feature* operator->() const { return &*feature_; }
+
+ private:
+  raw_ref<const Feature> feature_;
+};
 
 // ScopedFeatureList resets the global FeatureList instance to a new empty
 // instance and restores the original instance upon destruction. When using the
@@ -46,6 +77,12 @@ class ScopedFeatureList final {
   struct Features;
   struct FeatureWithStudyGroup;
 
+  // TODO(https://crbug.com/1370851): Temporary "alias" to allow incremental
+  // migration.
+  struct FeatureAndParams : public ::base::test::FeatureRefAndParams {
+    using ::base::test::FeatureRefAndParams::FeatureRefAndParams;
+  };
+
   // Constructs the instance in a non-initialized state.
   ScopedFeatureList();
 
@@ -56,16 +93,6 @@ class ScopedFeatureList final {
   ScopedFeatureList& operator=(const ScopedFeatureList&) = delete;
 
   ~ScopedFeatureList();
-
-  struct FeatureAndParams {
-    FeatureAndParams(const Feature& feature, const FieldTrialParams& params);
-    ~FeatureAndParams();
-
-    FeatureAndParams(const FeatureAndParams& other);
-
-    const Feature& feature;
-    const FieldTrialParams params;
-  };
 
   // Resets the instance to a non-initialized state.
   void Reset();
@@ -110,8 +137,13 @@ class ScopedFeatureList final {
   // continue to apply, unless they conflict with the overrides passed into this
   // method. This is important for testing potentially unexpected feature
   // interactions.
+  void InitWithFeatures(const std::vector<FeatureRef>& enabled_features,
+                        const std::vector<FeatureRef>& disabled_features);
+  // TODO(https://crbug.com/1370572): Remove these temporary forwarding helpers.
   void InitWithFeatures(const std::vector<Feature>& enabled_features,
                         const std::vector<Feature>& disabled_features);
+  void InitWithFeatures(std::initializer_list<Feature> enabled_features,
+                        std::initializer_list<Feature> disabled_features);
 
   // Initializes and registers a FeatureList instance based on the current
   // FeatureList and overridden with single enabled feature.
@@ -133,7 +165,14 @@ class ScopedFeatureList final {
   // currently one.
   void InitWithFeaturesAndParameters(
       const std::vector<FeatureAndParams>& enabled_features,
+      const std::vector<FeatureRef>& disabled_features);
+  // TODO(https://crbug.com/1370572): Remove these temporary forwarding helpers.
+  void InitWithFeaturesAndParameters(
+      const std::vector<FeatureAndParams>& enabled_features,
       const std::vector<Feature>& disabled_features);
+  void InitWithFeaturesAndParameters(
+      const std::vector<FeatureAndParams>& enabled_features,
+      std::initializer_list<Feature> disabled_features);
 
   // Initializes and registers a FeatureList instance based on the current
   // FeatureList and overridden with single disabled feature.
@@ -156,9 +195,9 @@ class ScopedFeatureList final {
   // |enabled_feature_and_params|, but not both (i.e. one of these must be
   // empty).
   void InitWithFeaturesImpl(
-      const std::vector<Feature>& enabled_features,
+      const std::vector<FeatureRef>& enabled_features,
       const std::vector<FeatureAndParams>& enabled_features_and_params,
-      const std::vector<Feature>& disabled_features,
+      const std::vector<FeatureRef>& disabled_features,
       bool keep_existing_states = true);
 
   // Initializes and registers a FeatureList instance based on the current

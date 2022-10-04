@@ -123,7 +123,8 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
          {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
         {
-          {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary}, {}
+            features::kWebAppsCrosapi,
+            chromeos::features::kLacrosPrimary,
         }
 #else
         {}
