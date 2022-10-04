@@ -258,14 +258,6 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
     current_url_suggested_times_ = 1;
   }
 
-  // If the omnibox is not empty, add a default match.
-  // This match will be opened when the user presses "Enter".
-  if (!input.text().empty()) {
-    AutocompleteMatch verbatim_match = VerbatimMatchForURL(
-        this, client_, input, input.current_url(), input.current_title(), -1);
-    matches_.push_back(verbatim_match);
-  }
-
   RecordCreatingClipboardSuggestionMetrics(current_url_suggested_times_,
                                            matches_.empty(), match.type,
                                            clipboard_contents_age);
