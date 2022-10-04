@@ -47,7 +47,7 @@ std::set<std::string> ParseFlagsFromCommandLine(
     return flags;
   }
 
-  for (const auto& flag : flags_list.value().GetListDeprecated()) {
+  for (const auto& flag : flags_list.value().GetList()) {
     if (!flag.is_string()) {
       LOG(WARNING) << "Invalid entry in encoded feature flags";
       continue;
