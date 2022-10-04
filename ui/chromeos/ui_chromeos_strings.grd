@@ -1395,6 +1395,9 @@
       <message name="IDS_CHROMEOS_NETWORK_ERROR_WEP_NOT_SUPPORTED" desc="Network error details in notifications: WEP_NOT_SUPPORTED. Error when a connect attempt fails because WEP networks are not supported.">
         WEP networks are not supported
       </message>
+      <message name="IDS_NETWORK_NETWORK_TO_MANY_STAS_ERROR" desc="Network error details in notifications: TO_MANY_STAS. Error when a connect attempt fails.">
+        This network is busy. Try again later.
+      </message>
       <message name="IDS_NETWORK_UNRECOGNIZED_ERROR" desc="Unrecognized Network error text">
         Unrecognized error: <ph name="desc">$1<ex>ShillErrorString</ex></ph>
       </message>
