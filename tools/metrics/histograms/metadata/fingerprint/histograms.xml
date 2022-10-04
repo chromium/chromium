@@ -130,6 +130,12 @@ chromium-metrics-reviews@google.com.
   <owner>cros-lurs@google.com</owner>
   <summary>
     Counts the number of fingerprint attempts until successful screen unlock.
+
+    A count of 0 means that the user unlocked the screen on the first attempt.
+    The maximum number of unlock attempts is governed by kMaximumUnlockAttempts,
+    such that this value must be less than the max.
+
+    This is related to Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess.
   </summary>
 </histogram>
 
@@ -196,6 +202,12 @@ chromium-metrics-reviews@google.com.
     unlock. Recent attempts are defined as happening within 3 seconds from each
     others. The goal is to count intentional attempt to unlock the device and
     exclude incidental touches of the fingerprint sensor.
+
+    A count of 0 means that the user unlocked the screen on the first attempt.
+    The maximum number of unlock attempts is governed by kMaximumUnlockAttempts,
+    such that this value must be less than the max.
+
+    This is related to Fingerprint.Unlock.AttemptsCountBeforeSuccess.
   </summary>
 </histogram>
 
