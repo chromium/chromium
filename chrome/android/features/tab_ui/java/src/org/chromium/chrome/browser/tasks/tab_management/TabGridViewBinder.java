@@ -456,7 +456,6 @@ class TabGridViewBinder {
     private static void updateColor(
             ViewLookupCachingFrameLayout rootView, boolean isIncognito, boolean isSelected) {
         View cardView = rootView.fastFindViewById(R.id.card_view);
-        View dividerView = rootView.fastFindViewById(R.id.divider_view);
         TextView titleView = (TextView) rootView.fastFindViewById(R.id.tab_title);
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) rootView.fastFindViewById(R.id.tab_thumbnail);
@@ -467,9 +466,6 @@ class TabGridViewBinder {
         final @ColorInt int backgroundColor = TabUiThemeProvider.getCardViewBackgroundColor(
                 cardView.getContext(), isIncognito, isSelected);
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
-
-        dividerView.setBackgroundColor(
-                TabUiThemeProvider.getDividerColor(dividerView.getContext(), isIncognito));
 
         titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));

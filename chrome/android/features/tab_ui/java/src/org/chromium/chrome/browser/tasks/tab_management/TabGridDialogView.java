@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -719,10 +718,6 @@ public class TabGridDialogView extends FrameLayout {
                 ((ImageView) (view.findViewById(R.id.action_button))).getDrawable());
         ApiCompatibilityUtils.setImageTintList(actionButton,
                 ImageViewCompat.getImageTintList((view.findViewById(R.id.action_button))));
-
-        View dividerView = mAnimationCardView.findViewById(R.id.divider_view);
-        dividerView.setBackgroundColor(
-                ((ColorDrawable) view.findViewById(R.id.divider_view).getBackground()).getColor());
 
         mAnimationCardView.findViewById(R.id.background_view).setBackground(null);
     }

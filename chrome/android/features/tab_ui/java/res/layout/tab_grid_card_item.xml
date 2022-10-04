@@ -87,12 +87,6 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:visibility="gone"/>
-            <View
-                android:id="@+id/divider_view"
-                style="@style/HorizontalDivider"
-                android:layout_below="@id/tab_title"
-                android:visibility="gone"
-                android:background="@macro/divider_line_bg_color"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"
                 android:layout_width="wrap_content"

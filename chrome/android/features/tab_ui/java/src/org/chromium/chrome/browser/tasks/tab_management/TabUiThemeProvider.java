@@ -194,19 +194,6 @@ public class TabUiThemeProvider {
     }
 
     /**
-     * Returns the divider color for tab grid card based on the incognito mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The divider color for tab grid card.
-     */
-    @ColorInt
-    public static int getDividerColor(Context context, boolean isIncognito) {
-        return isIncognito ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
-                           : SemanticColorUtils.getTabGridCardDividerTintColor(context);
-    }
-
-    /**
      * Returns the thumbnail placeholder color resource id based on the incognito mode.
      *
      * @param isIncognito Whether the color is used for incognito mode.
