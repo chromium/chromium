@@ -32,6 +32,7 @@
 
 // clang-format off
 #include <hb.h>
+#include <hb-cplusplus.hh>
 #include <hb-ot.h>
 // clang-format on
 
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/platform/resolution_units.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPoint.h"
@@ -203,7 +203,7 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
   const hb_codepoint_t kInvalidCodepoint = static_cast<hb_codepoint_t>(-1);
   hb_codepoint_t space = kInvalidCodepoint;
 
-  HbScoped<hb_set_t> glyphs(hb_set_create());
+  hb::unique_ptr<hb_set_t> glyphs(hb_set_create());
 
   // Check whether computing is needed and compute for gpos/gsub.
   if (features & kKerning &&
@@ -391,8 +391,8 @@ static hb_blob_t* HarfBuzzSkiaGetTable(hb_face_t* face,
 }
 
 // TODO(yosin): We should move |CreateFace()| to "harfbuzz_font_cache.cc".
-static HbScoped<hb_face_t> CreateFace(FontPlatformData* platform_data) {
-  HbScoped<hb_face_t> face;
+static hb::unique_ptr<hb_face_t> CreateFace(FontPlatformData* platform_data) {
+  hb::unique_ptr<hb_face_t> face;
 
   sk_sp<SkTypeface> typeface = sk_ref_sp(platform_data->Typeface());
   CHECK(typeface);
@@ -402,8 +402,8 @@ static HbScoped<hb_face_t> CreateFace(FontPlatformData* platform_data) {
 
   // Fallback to table copies if there is no in-memory access.
   if (!face) {
-    face.reset(hb_face_create_for_tables(HarfBuzzSkiaGetTable, typeface.get(),
-                                         nullptr));
+    face = hb::unique_ptr<hb_face_t>(hb_face_create_for_tables(
+        HarfBuzzSkiaGetTable, typeface.get(), nullptr));
   }
 
   DCHECK(face);
@@ -415,7 +415,7 @@ static HbScoped<hb_face_t> CreateFace(FontPlatformData* platform_data) {
 static scoped_refptr<HarfBuzzFontData> CreateHarfBuzzFontData(
     hb_face_t* face,
     SkTypeface* typeface) {
-  HbScoped<hb_font_t> ot_font(hb_font_create(face));
+  hb::unique_ptr<hb_font_t> ot_font(hb_font_create(face));
   hb_ot_font_set_funcs(ot_font.get());
 
   int axis_count = typeface->getVariationDesignPosition(nullptr, 0);
@@ -445,7 +445,7 @@ scoped_refptr<HarfBuzzFontData> HarfBuzzFontCache::GetOrCreateFontData(
     FontPlatformData* platform_data) {
   const auto& result = font_map_.insert(platform_data->UniqueID(), nullptr);
   if (result.is_new_entry) {
-    HbScoped<hb_face_t> face = CreateFace(platform_data);
+    hb::unique_ptr<hb_face_t> face = CreateFace(platform_data);
     result.stored_value->value =
         CreateHarfBuzzFontData(face.get(), platform_data->Typeface());
   }

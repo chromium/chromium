@@ -37,7 +37,6 @@ source_set("common") {
     "//components/crash/core/common:crash_key_lib",
     "//skia",
     "//third_party:freetype_harfbuzz",
-    "//third_party/harfbuzz-ng:hb_scoped_util",
     "//ui/gfx/geometry",
     "//url",
   ]

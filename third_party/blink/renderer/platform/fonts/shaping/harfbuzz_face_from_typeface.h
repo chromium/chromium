@@ -8,9 +8,8 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
-
 #include <hb.h>
+#include <hb-cplusplus.hh>
 
 namespace blink {
 
@@ -25,7 +24,7 @@ namespace blink {
 // from copying all font tables on Mac into newly allocated memory, causing a
 // potentially quite large allocations (in the megabytes range). See the
 // implementation of SkTypeface_Mac::onOpenStream.
-PLATFORM_EXPORT HbScoped<hb_face_t> HbFaceFromSkTypeface(
+PLATFORM_EXPORT hb::unique_ptr<hb_face_t> HbFaceFromSkTypeface(
     sk_sp<SkTypeface> typeface);
 }  // namespace blink
 

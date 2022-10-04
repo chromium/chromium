@@ -7,6 +7,7 @@
 // clang-format off
 #include <hb.h>
 #include <hb-subset.h>
+#include <hb-cplusplus.hh>
 // clang-format on
 
 #include <memory>
@@ -17,7 +18,6 @@
 #include "base/callback.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/crash/core/common/crash_key.h"
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -45,11 +45,11 @@ sk_sp<SkData> StreamToData(std::unique_ptr<SkStreamAsset> stream) {
 }
 
 // Converts SkData to a hb_blob_t.
-HbScoped<hb_blob_t> MakeBlob(sk_sp<SkData> data) {
+hb::unique_ptr<hb_blob_t> MakeBlob(sk_sp<SkData> data) {
   if (!data ||
       !base::IsValueInRangeForNumericType<unsigned int, size_t>(data->size()))
-    return nullptr;
-  return HbScoped<hb_blob_t>(
+    return hb::unique_ptr<hb_blob_t>(nullptr);
+  return hb::unique_ptr<hb_blob_t>(
       hb_blob_create(static_cast<const char*>(data->data()),
                      static_cast<unsigned int>(data->size()),
                      HB_MEMORY_MODE_READONLY, nullptr, nullptr));
@@ -72,8 +72,9 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
                                                   family_name.c_str());
   int ttc_index = 0;
   sk_sp<SkData> data = StreamToData(typeface->openStream(&ttc_index));
-  HbScoped<hb_face_t> face(hb_face_create(MakeBlob(data).get(), ttc_index));
-  HbScoped<hb_subset_input_t> input(hb_subset_input_create_or_fail());
+  hb::unique_ptr<hb_face_t> face(
+      hb_face_create(MakeBlob(data).get(), ttc_index));
+  hb::unique_ptr<hb_subset_input_t> input(hb_subset_input_create_or_fail());
   if (!face || !input) {
     return nullptr;
   }
@@ -102,14 +103,16 @@ sk_sp<SkData> SubsetFont(SkTypeface* typeface, const GlyphUsage& usage) {
   hb_set_add(skip_subset, HB_TAG('G', 'S', 'U', 'B'));
   hb_set_add(skip_subset, HB_TAG('G', 'P', 'O', 'S'));
 
-  HbScoped<hb_face_t> subset_face(hb_subset_or_fail(face.get(), input.get()));
+  hb::unique_ptr<hb_face_t> subset_face(
+      hb_subset_or_fail(face.get(), input.get()));
   if (!subset_face) {
     return nullptr;
   }
   // Store the correct collection index for the subsetted font.
   const int final_ttc_index = hb_face_get_index(subset_face.get());
 
-  HbScoped<hb_blob_t> subset_blob(hb_face_reference_blob(subset_face.get()));
+  hb::unique_ptr<hb_blob_t> subset_blob(
+      hb_face_reference_blob(subset_face.get()));
   if (!subset_blob) {
     return nullptr;
   }

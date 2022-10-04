@@ -38,9 +38,9 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 #include <hb.h>
+#include <hb-cplusplus.hh>
 
 namespace blink {
 

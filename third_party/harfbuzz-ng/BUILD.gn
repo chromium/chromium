@@ -41,6 +41,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-blob.h",
       "src/src/hb-buffer.h",
       "src/src/hb-common.h",
+      "src/src/hb-cplusplus.hh",
       "src/src/hb-deprecated.h",
       "src/src/hb-face.h",
       "src/src/hb-font.h",
@@ -409,15 +410,9 @@ if (use_system_harfbuzz) {
   }
 }
 
-source_set("hb_scoped_util") {
-  sources = [ "utils/hb_scoped.h" ]
-  deps = [ "//third_party:freetype_harfbuzz" ]
-}
-
 fuzzer_test("hb_shape_fuzzer") {
   sources = [ "fuzz/hb_shape_fuzzer.cc" ]
   deps = [
-    ":hb_scoped_util",
     "//base",
     "//third_party:freetype_harfbuzz",
   ]
@@ -427,7 +422,6 @@ fuzzer_test("hb_shape_fuzzer") {
 fuzzer_test("hb_subset_fuzzer") {
   sources = [ "fuzz/hb_subset_fuzzer.cc" ]
   deps = [
-    ":hb_scoped_util",
     "//base",
     "//third_party:freetype_harfbuzz",
   ]

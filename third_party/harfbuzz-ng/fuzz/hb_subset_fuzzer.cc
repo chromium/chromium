@@ -9,12 +9,12 @@
 // clang-format off
 #include <hb.h>
 #include <hb-subset.h>
+#include <hb-cplusplus.hh>
 // clang-format on
 
 #include <iterator>
 
 #include "base/check.h"
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 namespace {
 
@@ -28,7 +28,7 @@ void TrySubset(hb_face_t* face,
       | ((flags & (1 << 0)) ? HB_SUBSET_FLAGS_NO_HINTING : 0)    //
       | ((flags & (1 << 2)) ? HB_SUBSET_FLAGS_RETAIN_GIDS : 0);  //
 
-  HbScoped<hb_subset_input_t> input(hb_subset_input_create_or_fail());
+  hb::unique_ptr<hb_subset_input_t> input(hb_subset_input_create_or_fail());
   hb_subset_input_set_flags(input.get(), input_set_flags);
   hb_set_t* codepoints = hb_subset_input_unicode_set(input.get());
 
@@ -45,12 +45,12 @@ void TrySubset(hb_face_t* face,
     hb_set_add(codepoints, text[i]);
   }
 
-  HbScoped<hb_face_t> result(hb_subset_or_fail(face, input.get()));
+  hb::unique_ptr<hb_face_t> result(hb_subset_or_fail(face, input.get()));
   if (!result) {
     // Subset failed, so nothing to check.
     return;
   }
-  HbScoped<hb_blob_t> blob(hb_face_reference_blob(result.get()));
+  hb::unique_ptr<hb_blob_t> blob(hb_face_reference_blob(result.get()));
   uint32_t length;
   const char* data = hb_blob_get_data(blob.get(), &length);
 
@@ -74,13 +74,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   const char* data_ptr = reinterpret_cast<const char*>(data);
-  HbScoped<hb_blob_t> blob(hb_blob_create(
+  hb::unique_ptr<hb_blob_t> blob(hb_blob_create(
       data_ptr, size, HB_MEMORY_MODE_READONLY, nullptr, nullptr));
-  HbScoped<hb_face_t> face(hb_face_create(blob.get(), 0));
+  hb::unique_ptr<hb_face_t> face(hb_face_create(blob.get(), 0));
 
   // Test hb_set API
   {
-    HbScoped<hb_set_t> output(hb_set_create());
+    hb::unique_ptr<hb_set_t> output(hb_set_create());
     hb_face_collect_unicodes(face.get(), output.get());
   }
 

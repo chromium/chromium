@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
-#include "third_party/harfbuzz-ng/utils/hb_scoped.h"
 
 namespace blink {
 
