@@ -320,7 +320,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
     return main_runner_;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner() {
+  scoped_refptr<base::SingleThreadTaskRunner> compositor_gpu_task_runner() {
     return compositor_gpu_thread() ? compositor_gpu_thread()->task_runner()
                                    : main_runner_;
   }

@@ -262,7 +262,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
-  GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
+  GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindOnce(
       [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
          gpu::Mailbox mailbox) {
         // Error case: device client id doesn't exist.
@@ -348,7 +348,9 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
       },
       GetDecoder(), reservation, mailbox));
 
-  GetGpuServiceHolder()->gpu_thread_task_runner()->RunsTasksInCurrentSequence();
+  GetGpuServiceHolder()
+      ->gpu_main_thread_task_runner()
+      ->RunsTasksInCurrentSequence();
 }
 
 // Test that AssociateMailbox with a bad mailbox produces an error texture.
@@ -362,7 +364,7 @@ TEST_P(WebGPUMailboxTest, AssociateMailboxCmdBadMailboxMakesErrorTexture) {
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
-  GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
+  GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindOnce(
       [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
          gpu::Mailbox mailbox) {
         // Error case: invalid mailbox
@@ -396,7 +398,7 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
 
   webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(device_.Get());
 
-  GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
+  GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindOnce(
       [](webgpu::WebGPUDecoder* decoder, webgpu::ReservedTexture reservation,
          gpu::Mailbox mailbox) {
         // Associate a mailbox so we can later dissociate it.
@@ -440,7 +442,9 @@ TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
       },
       GetDecoder(), reservation, mailbox));
 
-  GetGpuServiceHolder()->gpu_thread_task_runner()->RunsTasksInCurrentSequence();
+  GetGpuServiceHolder()
+      ->gpu_main_thread_task_runner()
+      ->RunsTasksInCurrentSequence();
 }
 
 // Test that Associate and Dissociate mailbox may be used after the device is
@@ -1167,7 +1171,7 @@ TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
   auto CreateAndMakeGLContextCurrent =
       [&](scoped_refptr<gl::GLContext>* gl_context_out,
           scoped_refptr<gl::GLSurface>* gl_surface_out) {
-        GetGpuServiceHolder()->ScheduleGpuTask(base::BindOnce(
+        GetGpuServiceHolder()->ScheduleGpuMainTask(base::BindOnce(
             [](scoped_refptr<gl::GLContext>* gl_context_out,
                scoped_refptr<gl::GLSurface>* gl_surface_out) {
               auto gl_surface = gl::init::CreateOffscreenGLSurface(
@@ -1183,7 +1187,7 @@ TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
             },
             gl_context_out, gl_surface_out));
         GetGpuServiceHolder()
-            ->gpu_thread_task_runner()
+            ->gpu_main_thread_task_runner()
             ->RunsTasksInCurrentSequence();
       };
 
@@ -1230,7 +1234,7 @@ TEST_P(WebGPUMailboxTest, AssociateDissociateMailboxWhenNotCurrent) {
   WaitForCompletion(device_);
 
   // Delete the GL contexts on the GPU thread.
-  GetGpuServiceHolder()->ScheduleGpuTask(
+  GetGpuServiceHolder()->ScheduleGpuMainTask(
       base::BindOnce([](scoped_refptr<gl::GLContext> gl_context1,
                         scoped_refptr<gl::GLContext> gl_context2,
                         scoped_refptr<gl::GLSurface> gl_surface1,

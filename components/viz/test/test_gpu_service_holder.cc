@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
@@ -172,7 +173,7 @@ TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides::
 
 TestGpuServiceHolder::TestGpuServiceHolder(
     const gpu::GpuPreferences& gpu_preferences)
-    : gpu_thread_("GPUMainThread"), io_thread_("GPUIOThread") {
+    : gpu_main_thread_("GPUMainThread"), io_thread_("GPUIOThread") {
   if (g_disallow_feature_list_overrides) {
     disallow_feature_overrides_.emplace(
         "FeatureList overrides must happen before the GPU service thread has "
@@ -186,15 +187,15 @@ TestGpuServiceHolder::TestGpuServiceHolder(
                                                .message_pump_type_for_gpu;
 #endif
 
-  CHECK(gpu_thread_.StartWithOptions(std::move(gpu_thread_options)));
-  CHECK(io_thread_.Start());
+    CHECK(gpu_main_thread_.StartWithOptions(std::move(gpu_thread_options)));
+    CHECK(io_thread_.Start());
 
-  base::WaitableEvent completion;
-  gpu_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TestGpuServiceHolder::InitializeOnGpuThread,
-                     base::Unretained(this), gpu_preferences, &completion));
-  completion.Wait();
+    base::WaitableEvent completion;
+    gpu_main_thread_.task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TestGpuServiceHolder::InitializeOnGpuThread,
+                       base::Unretained(this), gpu_preferences, &completion));
+    completion.Wait();
 
 #if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   if (auto* gpu_platform_support_host =
@@ -216,11 +217,20 @@ TestGpuServiceHolder::~TestGpuServiceHolder() {
 #endif
 
   // Ensure members created on GPU thread are destroyed there too.
-  gpu_thread_.task_runner()->PostTask(
+  gpu_main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TestGpuServiceHolder::DeleteOnGpuThread,
                                 base::Unretained(this)));
-  gpu_thread_.Stop();
+  gpu_main_thread_.Stop();
   io_thread_.Stop();
+}
+
+scoped_refptr<gpu::SharedContextState>
+TestGpuServiceHolder::GetCompositorGpuThreadSharedContextState() {
+  if (gpu_service_->compositor_gpu_thread()) {
+    return gpu_service_->compositor_gpu_thread()->GetSharedContextState();
+  }
+
+  return GetSharedContextState();
 }
 
 scoped_refptr<gpu::SharedContextState>
@@ -232,15 +242,23 @@ scoped_refptr<gl::GLShareGroup> TestGpuServiceHolder::GetShareGroup() {
   return gpu_service_->share_group();
 }
 
-void TestGpuServiceHolder::ScheduleGpuTask(base::OnceClosure callback) {
-  DCHECK(gpu_task_sequence_);
-  gpu_task_sequence_->ScheduleTask(std::move(callback), {});
+void TestGpuServiceHolder::ScheduleGpuMainTask(base::OnceClosure callback) {
+  DCHECK(gpu_main_task_sequence_);
+  gpu_main_task_sequence_->ScheduleTask(std::move(callback), {});
+}
+
+void TestGpuServiceHolder::ScheduleCompositorGpuTask(
+    base::OnceClosure callback) {
+  if (compositor_gpu_task_sequence_)
+    compositor_gpu_task_sequence_->ScheduleTask(std::move(callback), {});
+  else
+    ScheduleGpuMainTask(std::move(callback));
 }
 
 void TestGpuServiceHolder::InitializeOnGpuThread(
     const gpu::GpuPreferences& gpu_preferences,
     base::WaitableEvent* completion) {
-  DCHECK(gpu_thread_.task_runner()->BelongsToCurrentThread());
+  DCHECK(gpu_main_thread_.task_runner()->BelongsToCurrentThread());
 
 #if defined(USE_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   ui::OzonePlatform::GetInstance()->AddInterfaces(&binders_);
@@ -270,9 +288,6 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
       /*needs_more_info=*/nullptr);
   gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;
-
-  // Disable DrDC in viz unittests. https://crbug.com/1367780
-  gpu_feature_info.enabled_gpu_driver_bug_workarounds.push_back(DISABLE_DRDC);
 
   // On MacOS, the default texture target for native GpuMemoryBuffers is
   // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
@@ -314,8 +329,8 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
       /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
       /*scheduler=*/nullptr, /*shutdown_event=*/nullptr);
 
-  task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
-      this, gpu_thread_.task_runner(), gpu_service_->GetGpuScheduler(),
+  main_task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
+      this, gpu_main_thread_.task_runner(), gpu_service_->GetGpuScheduler(),
       gpu_service_->sync_point_manager(), gpu_service_->mailbox_manager(),
       gpu_service_->gpu_channel_manager()
           ->default_offscreen_surface()
@@ -326,18 +341,25 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
       gpu_service_->gpu_channel_manager()->program_cache());
 
   // TODO(weiliangc): Since SkiaOutputSurface should not depend on command
-  // buffer, the |gpu_task_sequence_| should be coming from
+  // buffer, the |gpu_main_task_sequence_| should be coming from
   // SkiaOutputSurfaceDependency. SkiaOutputSurfaceDependency cannot be
   // initialized here because the it will not have correct client thread set up
   // when unit tests are running in parallel.
-  gpu_task_sequence_ = task_executor_->CreateSequence();
+  gpu_main_task_sequence_ = main_task_executor_->CreateSequence();
+
+  if (gpu_service_->compositor_gpu_thread()) {
+    compositor_gpu_task_sequence_ = std::make_unique<gpu::SchedulerSequence>(
+        gpu_service_->GetGpuScheduler(),
+        gpu_service_->compositor_gpu_task_runner());
+  }
 
   completion->Signal();
 }
 
 void TestGpuServiceHolder::DeleteOnGpuThread() {
-  task_executor_.reset();
-  gpu_task_sequence_.reset();
+  main_task_executor_.reset();
+  gpu_main_task_sequence_.reset();
+  compositor_gpu_task_sequence_.reset();
   gpu_service_.reset();
 }
 
@@ -348,7 +370,7 @@ void TestGpuServiceHolder::BindInterface(
   // The interfaces must be bound on the gpu to ensure the mojo calls happen
   // on the correct sequence (same happens when the browser runs with a real
   // gpu service).
-  gpu_thread_.task_runner()->PostTask(
+  gpu_main_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&TestGpuServiceHolder::BindInterfaceOnGpuThread,
                                 base::Unretained(this), interface_name,
                                 std::move(interface_pipe)));

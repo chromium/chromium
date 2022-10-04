@@ -34,7 +34,7 @@ std::unique_ptr<gpu::SingleTaskSequence>
 SkiaOutputSurfaceDependencyImpl::CreateSequence() {
   return std::make_unique<gpu::SchedulerSequence>(
       gpu_service_impl_->GetGpuScheduler(),
-      gpu_service_impl_->gpu_task_runner());
+      gpu_service_impl_->compositor_gpu_task_runner());
 }
 
 gpu::SharedImageManager*
@@ -117,12 +117,12 @@ scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(
 
 base::ScopedClosureRunner SkiaOutputSurfaceDependencyImpl::CacheGLSurface(
     gl::GLSurface* surface) {
-  gpu_service_impl_->gpu_task_runner()->PostTask(
+  gpu_service_impl_->compositor_gpu_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&gl::GLSurface::AddRef, base::Unretained(surface)));
 
   auto release_callback = base::BindPostTask(
-      gpu_service_impl_->gpu_task_runner(),
+      gpu_service_impl_->compositor_gpu_task_runner(),
       base::BindOnce(&gl::GLSurface::Release, base::Unretained(surface)));
 
   return base::ScopedClosureRunner(std::move(release_callback));
@@ -140,7 +140,7 @@ void SkiaOutputSurfaceDependencyImpl::ScheduleGrContextCleanup() {
 void SkiaOutputSurfaceDependencyImpl::ScheduleDelayedGPUTaskFromGPUThread(
     base::OnceClosure task) {
   constexpr base::TimeDelta kDelayForDelayedWork = base::Milliseconds(2);
-  gpu_service_impl_->gpu_task_runner()->PostDelayedTask(
+  gpu_service_impl_->compositor_gpu_task_runner()->PostDelayedTask(
       FROM_HERE, std::move(task), kDelayForDelayedWork);
 }
 

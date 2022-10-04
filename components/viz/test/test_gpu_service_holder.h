@@ -99,8 +99,8 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
 
   ~TestGpuServiceHolder() override;
 
-  scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner() {
-    return gpu_thread_.task_runner();
+  scoped_refptr<base::SingleThreadTaskRunner> gpu_main_thread_task_runner() {
+    return gpu_main_thread_.task_runner();
   }
 
   // Most of |gpu_service_| is not safe to use off of the GPU thread, be careful
@@ -108,10 +108,11 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   GpuServiceImpl* gpu_service() { return gpu_service_.get(); }
 
   gpu::CommandBufferTaskExecutor* task_executor() {
-    return task_executor_.get();
+    return main_task_executor_.get();
   }
 
-  void ScheduleGpuTask(base::OnceClosure callback);
+  void ScheduleGpuMainTask(base::OnceClosure callback);
+  void ScheduleCompositorGpuTask(base::OnceClosure callback);
 
   bool is_vulkan_enabled() {
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -120,6 +121,9 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
     return false;
 #endif
   }
+
+  scoped_refptr<gpu::SharedContextState>
+  GetCompositorGpuThreadSharedContextState();
 
   // gpu::GpuInProcessThreadServiceDelegate implementation:
   scoped_refptr<gpu::SharedContextState> GetSharedContextState() override;
@@ -141,14 +145,15 @@ class TestGpuServiceHolder : public gpu::GpuInProcessThreadServiceDelegate {
   absl::optional<base::FeatureList::ScopedDisallowOverrides>
       disallow_feature_overrides_;
 
-  base::Thread gpu_thread_;
+  base::Thread gpu_main_thread_;
   base::Thread io_thread_;
 
   // These should only be created and deleted on the gpu thread.
   std::unique_ptr<GpuServiceImpl> gpu_service_;
-  std::unique_ptr<gpu::CommandBufferTaskExecutor> task_executor_;
+  std::unique_ptr<gpu::CommandBufferTaskExecutor> main_task_executor_;
   // This is used to schedule gpu tasks in sequence.
-  std::unique_ptr<gpu::SingleTaskSequence> gpu_task_sequence_;
+  std::unique_ptr<gpu::SingleTaskSequence> gpu_main_task_sequence_;
+  std::unique_ptr<gpu::SingleTaskSequence> compositor_gpu_task_sequence_;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> vulkan_implementation_;
 #endif

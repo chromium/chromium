@@ -1639,7 +1639,7 @@ class OopTextBlobPixelTest
 
     // Draw the expected image to a GPU accelerated SkCanvas. This must be done
     // from the GPU thread so wait until that is done here.
-    gpu_service->gpu_thread_task_runner()->PostTask(
+    gpu_service->gpu_main_thread_task_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(&OopTextBlobPixelTest::DrawExpectedOnGpuThread,
                        base::Unretained(this), image_size, std::ref(bitmap),

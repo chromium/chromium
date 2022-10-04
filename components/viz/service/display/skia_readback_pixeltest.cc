@@ -156,14 +156,17 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
                         SkBitmap& out_chroma_planes) {
   base::WaitableEvent wait;
 
-  gpu_service_holder->ScheduleGpuTask(base::BindLambdaForTesting(
+  // Some shared image implementations don't allow concurrent read/write to
+  // a same image. At this point, compositor GPU thread might be reading the
+  // image so it's better we issue the readback on the compositor GPU thread to
+  // avoid contention.
+  gpu_service_holder->ScheduleCompositorGpuTask(base::BindLambdaForTesting(
       [&out_luma_plane, &out_chroma_planes, &result, &wait, &texture_size]() {
         auto* shared_image_manager = TestGpuServiceHolder::GetInstance()
                                          ->gpu_service()
                                          ->shared_image_manager();
         auto* context_state = TestGpuServiceHolder::GetInstance()
-                                  ->gpu_service()
-                                  ->GetContextState()
+                                  ->GetCompositorGpuThreadSharedContextState()
                                   .get();
 
         ReadbackTextureOnGpuThread(shared_image_manager, context_state,

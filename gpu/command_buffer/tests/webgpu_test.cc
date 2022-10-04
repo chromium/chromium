@@ -174,7 +174,7 @@ webgpu::WebGPUDecoder* WebGPUTest::GetDecoder() const {
 
 void WebGPUTest::RunPendingTasks() {
   context_->GetTaskRunner()->RunPendingTasks();
-  gpu_service_holder_->ScheduleGpuTask(base::BindOnce(
+  gpu_service_holder_->ScheduleGpuMainTask(base::BindOnce(
       [](webgpu::WebGPUDecoder* decoder) {
         if (decoder->HasPollingWork()) {
           decoder->PerformPollingWork();
@@ -210,7 +210,7 @@ void WebGPUTest::PollUntilIdle() {
   }
   webgpu()->FlushCommands();
   base::WaitableEvent wait;
-  gpu_service_holder_->ScheduleGpuTask(
+  gpu_service_holder_->ScheduleGpuMainTask(
       base::BindLambdaForTesting([&wait, decoder = GetDecoder()]() {
         while (decoder->HasPollingWork()) {
           base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
