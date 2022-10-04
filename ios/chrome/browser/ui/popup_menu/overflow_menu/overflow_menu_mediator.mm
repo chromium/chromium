@@ -431,11 +431,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Bookmarks destination.
-    NSString* bookmarksIconName = @"overflow_menu_destination_bookmarks_simple";
     self.bookmarksDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_BOOKMARKS
                           destination:overflow_menu::Destination::Bookmarks
-                            imageName:bookmarksIconName
+                            imageName:@"overflow_menu_destination_bookmarks"
                       accessibilityID:kToolsMenuBookmarksId
                               handler:^{
                                 [weakSelf openBookmarks];
@@ -455,11 +454,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Downloads destination.
-    NSString* downloadsIconName = @"overflow_menu_destination_downloads_simple";
     self.downloadsDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_DOWNLOADS
                           destination:overflow_menu::Destination::Downloads
-                            imageName:downloadsIconName
+                            imageName:@"overflow_menu_destination_downloads"
                       accessibilityID:kToolsMenuDownloadsId
                               handler:^{
                                 [weakSelf openDownloads];
@@ -479,11 +477,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     }];
   } else {
     // History destination.
-    NSString* historyIconName = @"overflow_menu_destination_history_simple";
     self.historyDestination =
         [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_HISTORY
                                 destination:overflow_menu::Destination::History
-                                  imageName:historyIconName
+                                  imageName:@"overflow_menu_destination_history"
                             accessibilityID:kToolsMenuHistoryId
                                     handler:^{
                                       [weakSelf openHistory];
@@ -509,12 +506,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     int passwordTitleID = IsPasswordManagerBrandingUpdateEnabled()
                               ? IDS_IOS_TOOLS_MENU_PASSWORD_MANAGER
                               : IDS_IOS_TOOLS_MENU_PASSWORDS;
-    NSString* passwordIconImageName =
-        @"overflow_menu_destination_passwords_simple";
     self.passwordsDestination = [self
         createOverflowMenuDestination:passwordTitleID
                           destination:overflow_menu::Destination::Passwords
-                            imageName:passwordIconImageName
+                            imageName:@"overflow_menu_destination_passwords"
                       accessibilityID:kToolsMenuPasswordsId
                               handler:^{
                                 [weakSelf openPasswords];
@@ -534,12 +529,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Reading List destination.
-    NSString* readingListIconName =
-        @"overflow_menu_destination_reading_list_simple";
     self.readingListDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_READING_LIST
                           destination:overflow_menu::Destination::ReadingList
-                            imageName:readingListIconName
+                            imageName:@"overflow_menu_destination_reading_list"
                       accessibilityID:kToolsMenuReadingListId
                               handler:^{
                                 [weakSelf openReadingList];
@@ -559,12 +552,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                               }];
   } else {
     // Recent Tabs destination.
-    NSString* recentTabsIconName =
-        @"overflow_menu_destination_recent_tabs_simple";
     self.recentTabsDestination = [self
         createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_RECENT_TABS
                           destination:overflow_menu::Destination::RecentTabs
-                            imageName:recentTabsIconName
+                            imageName:@"overflow_menu_destination_recent_tabs"
                       accessibilityID:kToolsMenuOtherDevicesId
                               handler:^{
                                 [weakSelf openRecentTabs];
@@ -584,15 +575,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     }];
   } else {
     // Settings destination.
-    NSString* settingsIconName = @"overflow_menu_destination_settings_simple";
-    self.settingsDestination =
-        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
-                                destination:overflow_menu::Destination::Settings
-                                  imageName:settingsIconName
-                            accessibilityID:kToolsMenuSettingsId
-                                    handler:^{
-                                      [weakSelf openSettings];
-                                    }];
+    self.settingsDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SETTINGS
+                          destination:overflow_menu::Destination::Settings
+                            imageName:@"overflow_menu_destination_settings"
+                      accessibilityID:kToolsMenuSettingsId
+                              handler:^{
+                                [weakSelf openSettings];
+                              }];
   }
 
   if (UseSymbols()) {
@@ -608,15 +598,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                     }];
   } else {
     // Site Info destination.
-    NSString* siteInfoIconName = @"overflow_menu_destination_site_info_simple";
-    self.siteInfoDestination =
-        [self createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
-                                destination:overflow_menu::Destination::SiteInfo
-                                  imageName:siteInfoIconName
-                            accessibilityID:kToolsMenuSiteInformation
-                                    handler:^{
-                                      [weakSelf openSiteInformation];
-                                    }];
+    self.siteInfoDestination = [self
+        createOverflowMenuDestination:IDS_IOS_TOOLS_MENU_SITE_INFORMATION
+                          destination:overflow_menu::Destination::SiteInfo
+                            imageName:@"overflow_menu_destination_site_info"
+                      accessibilityID:kToolsMenuSiteInformation
+                              handler:^{
+                                [weakSelf openSiteInformation];
+                              }];
   }
 
   [self logTranslateAvailability];

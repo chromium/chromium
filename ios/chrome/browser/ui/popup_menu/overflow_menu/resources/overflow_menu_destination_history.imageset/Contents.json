@@ -2,12 +2,12 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "overflow_menu_destination_reading_list_simple@2x.png",
+      "filename" : "overflow_menu_destination_history@2x.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "overflow_menu_destination_reading_list_simple@3x.png",
+      "filename" : "overflow_menu_destination_history@3x.png",
       "scale" : "3x"
     },
     {
@@ -18,7 +18,7 @@
         }
       ],
       "idiom" : "universal",
-      "filename" : "overflow_menu_destination_reading_list_simple_dark@2x.png",
+      "filename" : "overflow_menu_destination_history_dark@2x.png",
       "scale" : "2x"
     },
     {
@@ -29,7 +29,7 @@
         }
       ],
       "idiom" : "universal",
-      "filename" : "overflow_menu_destination_reading_list_simple_dark@3x.png",
+      "filename" : "overflow_menu_destination_history_dark@3x.png",
       "scale" : "3x"
     }
   ],

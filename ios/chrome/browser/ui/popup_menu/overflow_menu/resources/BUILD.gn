@@ -168,83 +168,83 @@ imageset("overflow_menu_action_unfollow") {
   ]
 }
 
-imageset("overflow_menu_destination_bookmarks_simple") {
+imageset("overflow_menu_destination_bookmarks") {
   sources = [
-    "overflow_menu_destination_bookmarks_simple.imageset/Contents.json",
-    "overflow_menu_destination_bookmarks_simple.imageset/overflow_menu_destination_bookmarks_simple@2x.png",
-    "overflow_menu_destination_bookmarks_simple.imageset/overflow_menu_destination_bookmarks_simple@3x.png",
-    "overflow_menu_destination_bookmarks_simple.imageset/overflow_menu_destination_bookmarks_simple_dark@2x.png",
-    "overflow_menu_destination_bookmarks_simple.imageset/overflow_menu_destination_bookmarks_simple_dark@3x.png",
+    "overflow_menu_destination_bookmarks.imageset/Contents.json",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks@2x.png",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks@3x.png",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks_dark@2x.png",
+    "overflow_menu_destination_bookmarks.imageset/overflow_menu_destination_bookmarks_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_downloads_simple") {
+imageset("overflow_menu_destination_downloads") {
   sources = [
-    "overflow_menu_destination_downloads_simple.imageset/Contents.json",
-    "overflow_menu_destination_downloads_simple.imageset/overflow_menu_destination_downloads_simple@2x.png",
-    "overflow_menu_destination_downloads_simple.imageset/overflow_menu_destination_downloads_simple@3x.png",
-    "overflow_menu_destination_downloads_simple.imageset/overflow_menu_destination_downloads_simple_dark@2x.png",
-    "overflow_menu_destination_downloads_simple.imageset/overflow_menu_destination_downloads_simple_dark@3x.png",
+    "overflow_menu_destination_downloads.imageset/Contents.json",
+    "overflow_menu_destination_downloads.imageset/overflow_menu_destination_downloads@2x.png",
+    "overflow_menu_destination_downloads.imageset/overflow_menu_destination_downloads@3x.png",
+    "overflow_menu_destination_downloads.imageset/overflow_menu_destination_downloads_dark@2x.png",
+    "overflow_menu_destination_downloads.imageset/overflow_menu_destination_downloads_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_history_simple") {
+imageset("overflow_menu_destination_history") {
   sources = [
-    "overflow_menu_destination_history_simple.imageset/Contents.json",
-    "overflow_menu_destination_history_simple.imageset/overflow_menu_destination_history_simple@2x.png",
-    "overflow_menu_destination_history_simple.imageset/overflow_menu_destination_history_simple@3x.png",
-    "overflow_menu_destination_history_simple.imageset/overflow_menu_destination_history_simple_dark@2x.png",
-    "overflow_menu_destination_history_simple.imageset/overflow_menu_destination_history_simple_dark@3x.png",
+    "overflow_menu_destination_history.imageset/Contents.json",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history@2x.png",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history@3x.png",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history_dark@2x.png",
+    "overflow_menu_destination_history.imageset/overflow_menu_destination_history_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_passwords_simple") {
+imageset("overflow_menu_destination_passwords") {
   sources = [
-    "overflow_menu_destination_passwords_simple.imageset/Contents.json",
-    "overflow_menu_destination_passwords_simple.imageset/overflow_menu_destination_passwords_simple@2x.png",
-    "overflow_menu_destination_passwords_simple.imageset/overflow_menu_destination_passwords_simple@3x.png",
-    "overflow_menu_destination_passwords_simple.imageset/overflow_menu_destination_passwords_simple_dark@2x.png",
-    "overflow_menu_destination_passwords_simple.imageset/overflow_menu_destination_passwords_simple_dark@3x.png",
+    "overflow_menu_destination_passwords.imageset/Contents.json",
+    "overflow_menu_destination_passwords.imageset/overflow_menu_destination_passwords@2x.png",
+    "overflow_menu_destination_passwords.imageset/overflow_menu_destination_passwords@3x.png",
+    "overflow_menu_destination_passwords.imageset/overflow_menu_destination_passwords_dark@2x.png",
+    "overflow_menu_destination_passwords.imageset/overflow_menu_destination_passwords_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_reading_list_simple") {
+imageset("overflow_menu_destination_reading_list") {
   sources = [
-    "overflow_menu_destination_reading_list_simple.imageset/Contents.json",
-    "overflow_menu_destination_reading_list_simple.imageset/overflow_menu_destination_reading_list_simple@2x.png",
-    "overflow_menu_destination_reading_list_simple.imageset/overflow_menu_destination_reading_list_simple@3x.png",
-    "overflow_menu_destination_reading_list_simple.imageset/overflow_menu_destination_reading_list_simple_dark@2x.png",
-    "overflow_menu_destination_reading_list_simple.imageset/overflow_menu_destination_reading_list_simple_dark@3x.png",
+    "overflow_menu_destination_reading_list.imageset/Contents.json",
+    "overflow_menu_destination_reading_list.imageset/overflow_menu_destination_reading_list@2x.png",
+    "overflow_menu_destination_reading_list.imageset/overflow_menu_destination_reading_list@3x.png",
+    "overflow_menu_destination_reading_list.imageset/overflow_menu_destination_reading_list_dark@2x.png",
+    "overflow_menu_destination_reading_list.imageset/overflow_menu_destination_reading_list_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_recent_tabs_simple") {
+imageset("overflow_menu_destination_recent_tabs") {
   sources = [
-    "overflow_menu_destination_recent_tabs_simple.imageset/Contents.json",
-    "overflow_menu_destination_recent_tabs_simple.imageset/overflow_menu_destination_recent_tabs_simple@2x.png",
-    "overflow_menu_destination_recent_tabs_simple.imageset/overflow_menu_destination_recent_tabs_simple@3x.png",
-    "overflow_menu_destination_recent_tabs_simple.imageset/overflow_menu_destination_recent_tabs_simple_dark@2x.png",
-    "overflow_menu_destination_recent_tabs_simple.imageset/overflow_menu_destination_recent_tabs_simple_dark@3x.png",
+    "overflow_menu_destination_recent_tabs.imageset/Contents.json",
+    "overflow_menu_destination_recent_tabs.imageset/overflow_menu_destination_recent_tabs@2x.png",
+    "overflow_menu_destination_recent_tabs.imageset/overflow_menu_destination_recent_tabs@3x.png",
+    "overflow_menu_destination_recent_tabs.imageset/overflow_menu_destination_recent_tabs_dark@2x.png",
+    "overflow_menu_destination_recent_tabs.imageset/overflow_menu_destination_recent_tabs_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_settings_simple") {
+imageset("overflow_menu_destination_settings") {
   sources = [
-    "overflow_menu_destination_settings_simple.imageset/Contents.json",
-    "overflow_menu_destination_settings_simple.imageset/overflow_menu_destination_settings_simple@2x.png",
-    "overflow_menu_destination_settings_simple.imageset/overflow_menu_destination_settings_simple@3x.png",
-    "overflow_menu_destination_settings_simple.imageset/overflow_menu_destination_settings_simple_dark@2x.png",
-    "overflow_menu_destination_settings_simple.imageset/overflow_menu_destination_settings_simple_dark@3x.png",
+    "overflow_menu_destination_settings.imageset/Contents.json",
+    "overflow_menu_destination_settings.imageset/overflow_menu_destination_settings@2x.png",
+    "overflow_menu_destination_settings.imageset/overflow_menu_destination_settings@3x.png",
+    "overflow_menu_destination_settings.imageset/overflow_menu_destination_settings_dark@2x.png",
+    "overflow_menu_destination_settings.imageset/overflow_menu_destination_settings_dark@3x.png",
   ]
 }
 
-imageset("overflow_menu_destination_site_info_simple") {
+imageset("overflow_menu_destination_site_info") {
   sources = [
-    "overflow_menu_destination_site_info_simple.imageset/Contents.json",
-    "overflow_menu_destination_site_info_simple.imageset/overflow_menu_destination_site_info_simple@2x.png",
-    "overflow_menu_destination_site_info_simple.imageset/overflow_menu_destination_site_info_simple@3x.png",
-    "overflow_menu_destination_site_info_simple.imageset/overflow_menu_destination_site_info_simple_dark@2x.png",
-    "overflow_menu_destination_site_info_simple.imageset/overflow_menu_destination_site_info_simple_dark@3x.png",
+    "overflow_menu_destination_site_info.imageset/Contents.json",
+    "overflow_menu_destination_site_info.imageset/overflow_menu_destination_site_info@2x.png",
+    "overflow_menu_destination_site_info.imageset/overflow_menu_destination_site_info@3x.png",
+    "overflow_menu_destination_site_info.imageset/overflow_menu_destination_site_info_dark@2x.png",
+    "overflow_menu_destination_site_info.imageset/overflow_menu_destination_site_info_dark@3x.png",
   ]
 }
 
