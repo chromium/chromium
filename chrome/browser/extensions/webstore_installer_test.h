@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "url/gurl.h"
@@ -16,14 +15,8 @@ namespace base {
 class CommandLine;
 }
 
-namespace contents {
-class WebContents;
-}
-
-namespace net {
-namespace test_server {
+namespace net::test_server {
 struct HttpRequest;
-}
 }
 
 class WebstoreInstallerTest : public extensions::ExtensionBrowserTest {
@@ -45,22 +38,6 @@ class WebstoreInstallerTest : public extensions::ExtensionBrowserTest {
  protected:
   GURL GenerateTestServerUrl(const std::string& domain,
                              const std::string& page_filename);
-
-  void RunTest(const std::string& test_function_name);
-
-  void RunTest(content::WebContents* web_contents,
-               const std::string& test_function_name);
-
-  // Passes |i| to |test_function_name|, and expects that function to
-  // return one of "FAILED", "KEEPGOING" or "DONE". KEEPGOING should be
-  // returned if more tests remain to be run and the current test succeeded,
-  // FAILED is returned when a test fails, and DONE is returned by the last
-  // test if it succeeds.
-  // This methods returns true iff there are more tests that need to be run.
-  bool RunIndexedTest(const std::string& test_function_name, int i);
-
-  // Runs a test without waiting for any results from the renderer.
-  void RunTestAsync(const std::string& test_function_name);
 
   // Can be overridden to inspect requests to the embedded test server.
   virtual void ProcessServerRequest(

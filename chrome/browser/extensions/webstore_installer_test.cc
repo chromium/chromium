@@ -6,38 +6,14 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/extensions/webstore_standalone_installer.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/test_switches.h"
-#include "content/public/browser/notification_registrar.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
-#include "url/gurl.h"
-
-using content::WebContents;
-using extensions::Extension;
-using extensions::TabHelper;
-using extensions::WebstoreStandaloneInstaller;
 
 using net::test_server::HttpRequest;
 
@@ -99,48 +75,6 @@ GURL WebstoreInstallerTest::GenerateTestServerUrl(
   GURL::Replacements replace_host;
   replace_host.SetHostStr(domain);
   return page_url.ReplaceComponents(replace_host);
-}
-
-void WebstoreInstallerTest::RunTest(WebContents* web_contents,
-                                    const std::string& test_function_name) {
-  bool result = false;
-  std::string script = base::StringPrintf(
-      "%s('%s')", test_function_name.c_str(),
-      test_gallery_url_.c_str());
-  ASSERT_TRUE(
-      content::ExecuteScriptAndExtractBool(web_contents, script, &result));
-  EXPECT_TRUE(result);
-}
-
-void WebstoreInstallerTest::RunTest(const std::string& test_function_name) {
-  RunTest(browser()->tab_strip_model()->GetActiveWebContents(),
-          test_function_name);
-}
-
-bool WebstoreInstallerTest::RunIndexedTest(
-    const std::string& test_function_name,
-    int i) {
-  std::string result = "FAILED";
-  std::string script = base::StringPrintf("%s('%s', %d)",
-      test_function_name.c_str(), test_gallery_url_.c_str(), i);
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      script,
-      &result));
-  EXPECT_TRUE(result != "FAILED");
-  return result == "KEEPGOING";
-}
-
-void WebstoreInstallerTest::RunTestAsync(
-    const std::string& test_function_name) {
-  std::string script = base::StringPrintf(
-      "%s('%s')", test_function_name.c_str(), test_gallery_url_.c_str());
-  browser()
-      ->tab_strip_model()
-      ->GetActiveWebContents()
-      ->GetPrimaryMainFrame()
-      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(script),
-                                                 base::NullCallback());
 }
 
 void WebstoreInstallerTest::ProcessServerRequest(const HttpRequest& request) {}
