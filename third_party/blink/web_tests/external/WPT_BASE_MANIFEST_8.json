@@ -129155,6 +129155,35 @@
       ]
      ],
      "gradient": {
+      "css-color-4-colors-default-to-oklab-gradient.html": [
+       "c34521cbf2a7109bac0ddf34d7a8de439ab36fe8",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/oklab-gradient-expected.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             24000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "gradient-eval-001.html": [
        "98a9d9234588e5de74a66c09d638d1448814e3fd",
        [
@@ -129409,6 +129438,151 @@
             [
              0,
              10000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "legacy-color-gradient.html": [
+       "8fe3ca83d8718fb622f3870c5fa10ee04b0c0862",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/srgb-gradient-expected.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             24000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "oklab-gradient.html": [
+       "b520cbef126876113ac61cb29d912ba304004af1",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/oklab-gradient-expected.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             24000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "srgb-gradient.html": [
+       "e27c637e22ebb12778d6036aac814e0f9c197dbd",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/srgb-gradient-expected.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             24000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "srgb-linear-gradient.html": [
+       "fa2dd1a7a325668213643b4a09268017ec160060",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/srgb-linear-gradient-expected.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             24000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "xyz-gradient.html": [
+       "fc7c9c470b97210e6074cd2d660a9c82cd661d82",
+       [
+        null,
+        [
+         [
+          "/css/css-images/gradient/xyz-gradient-expected.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             1,
+             2
+            ],
+            [
+             0,
+             24000
             ]
            ]
           ]
@@ -283093,7 +283267,25 @@
       "gradient-eval-009-ref.html": [
        "b4a36ff6d0e43b38d670472dd56a0eb44b31ea2c",
        []
-      ]
+      ],
+      "resources": {
+       "oklab-gradient.png": [
+        "9e52fd9b84ba9f16cdfba6fa1df67f17521c2ff5",
+        []
+       ],
+       "srgb-gradient.png": [
+        "1fc6660919a637c684be84236af5f1cf4bc07eaf",
+        []
+       ],
+       "srgb-linear-gradient.png": [
+        "e379a5df3e1b290befdde5d655ff9741839277fa",
+        []
+       ],
+       "xyz-gradient.png": [
+        "eb3ab7893663b01cac643f82da54405ce1bd541a",
+        []
+       ]
+      }
      },
      "gradient-border-box-ref.html": [
       "5b219cea6c20ba46ebba7d7bb890af3923d90a54",
@@ -333861,10 +334053,6 @@
     "historical-expected.txt": [
      "404b6a774fdba6fddf2b11f22b9fcfea15d4e18f",
      []
-    ],
-    "idlharness.window-expected.txt": [
-     "6cf7ce601efc1e30fcabe6b03e047c8394f4fa71",
-     []
     ]
    },
    "mediacapture-image": {
@@ -338940,7 +339128,7 @@
       []
      ],
      "resource-loaders.js": [
-      "92e57d0bde870864ac01730cca4d708ccea010cc",
+      "8bc1a77134cedc8db55cd4c2390ebf1da53d2db4",
       []
      ],
      "resource-timing-content-length.py": [
@@ -392012,6 +392200,27 @@
         {}
        ]
       ],
+      "flex-align-baseline-overflow-001.html": [
+       "382112ed210b8563c73a4449847754ced0221cbb",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-overflow-002.html": [
+       "d136159246b8801eb4e991396ad2806962add399",
+       [
+        null,
+        {}
+       ]
+      ],
+      "flex-align-baseline-overflow-003.html": [
+       "37d9ea26fde3fc1ac4418ed7e3ac54d52e3f629e",
+       [
+        null,
+        {}
+       ]
+      ],
       "flex-align-baseline-table-001.html": [
        "b90f840b10acaaac3af7adf4d91a1d3c30762019",
        [
@@ -395102,6 +395311,27 @@
         {}
        ]
       ],
+      "grid-align-baseline-overflow-001.html": [
+       "66f9eb1bcf059676465689f39cceffe43565ca84",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-overflow-002.html": [
+       "b74dbf750be9bf2fbb9a1d964cd96b7c6ccc454b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-align-baseline-overflow-003.html": [
+       "569dd1ae37381f17ebe90381ad1826d82f196418",
+       [
+        null,
+        {}
+       ]
+      ],
       "grid-align-baseline-table-001.html": [
        "0cafef6ecca8fa1ce98c3ad69b9c4feb7c0569c7",
        [
@@ -397877,7 +398107,7 @@
        ]
       ],
       "grid-shorthand.html": [
-       "91995608dd9eda5cd8d99abe3454cd67e52e405b",
+       "9293d27631f4b3ea89c7015a73de322617890747",
        [
         null,
         {}
@@ -460393,6 +460623,13 @@
         }
        ]
       ],
+      "defaultstatus.html": [
+       "f683f130cd4a30c76514f3a3ea54d4feef5f90cb",
+       [
+        null,
+        {}
+       ]
+      ],
       "document-attribute.window.js": [
        "f13acdb8a3261410c0f3100fea49f1ba110ea9ab",
        [
@@ -512389,7 +512626,7 @@
      ]
     ],
     "idlharness.window.js": [
-     "c58e63ff12acefc73fc3cfa2f35836778696c827",
+     "970f3cd5c623261f0d5acc4e5fb14dfa2f732883",
      [
       "mediacapture-fromelement/idlharness.window.html",
       {
@@ -610173,6 +610410,36 @@
      }
     },
     "css-images": {
+     "gradient": {
+      "oklab-gradient-expected.html": [
+       "ca2232e38096157847a2430e721f9eb73cf68185",
+       [
+        null,
+        {}
+       ]
+      ],
+      "srgb-gradient-expected.html": [
+       "49a402d68e668d924fbec150b367ba2188a67592",
+       [
+        null,
+        {}
+       ]
+      ],
+      "srgb-linear-gradient-expected.html": [
+       "b3984d7432d50e7235048ddb5396b5d1cae8c9af",
+       [
+        null,
+        {}
+       ]
+      ],
+      "xyz-gradient-expected.html": [
+       "0411ccff8c1be3e8d475b23900856c6d2a746504",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "image-fit-001.xht": [
       "169d55c0f2e9bf93fd9851f7fb43eb4493d14b39",
       [
