@@ -192,17 +192,11 @@ template("fuchsia_package_installer") {
                                  "package_deps",
                                ])
   }
-  if (!defined(data_deps)) {
-    data_deps = []
-  }
   fuchsia_run_script_with_packages(target_name) {
     forward_variables_from(invoker,
                            "*",
-                           [
-                             "runner_script",
-                             "executable_args",
-                           ])
-
+                           TESTONLY_AND_VISIBILITY + [ "executable_args" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     executable = rebase_path("//build/fuchsia/deploy_to_pkg_repo.py")
     output_name_format = "deploy_%package%"
     include_fuchsia_build_dir = true
@@ -217,14 +211,13 @@ template("fuchsia_test_runner") {
 
   fuchsia_run_script_with_packages(_run_target) {
     forward_variables_from(invoker,
-                           [
-                             "data",
-                             "data_deps",
-                             "package",
-                             "package_name",
-                             "package_deps",
-                           ])
-    testonly = true
+                           TESTONLY_AND_VISIBILITY + [
+                                 "data",
+                                 "data_deps",
+                                 "package",
+                                 "package_name",
+                                 "package_deps",
+                               ])
 
     if (use_cfv2_script) {
       _test_runner_py = "//build/fuchsia/test/run_test.py"
@@ -306,15 +299,13 @@ template("fuchsia_test_runner") {
       package_name = invoker.package_name_override
     }
   }
-
   fuchsia_package_installer(_install_target) {
     forward_variables_from(invoker,
                            TESTONLY_AND_VISIBILITY + [
                                  "package",
                                  "package_name",
+                                 "package_deps",
                                ])
-    testonly = invoker.testonly
-    include_fuchsia_build_dir = true
   }
 }
 
