@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash {
 
@@ -61,9 +60,9 @@ void ManagedCellularPrefHandler::AddIccidSmdpPair(
 
   NET_LOG(EVENT) << "Adding iccid smdp pair to device pref, iccid: " << iccid
                  << ", smdp: " << smdp_address;
-  ::prefs::ScopedDictionaryPrefUpdate update(
-      device_prefs_, prefs::kManagedCellularIccidSmdpPair);
-  update->SetString(iccid, smdp_address);
+  ScopedDictPrefUpdate update(device_prefs_,
+                              prefs::kManagedCellularIccidSmdpPair);
+  update->SetByDottedPath(iccid, smdp_address);
   network_state_handler_->SyncStubCellularNetworks();
   NotifyManagedCellularPrefChanged();
 }
@@ -79,9 +78,9 @@ void ManagedCellularPrefHandler::RemovePairWithIccid(const std::string& iccid) {
 
   NET_LOG(EVENT) << "Removing iccid smdp pair from device pref, iccid: "
                  << iccid;
-  ::prefs::ScopedDictionaryPrefUpdate update(
-      device_prefs_, prefs::kManagedCellularIccidSmdpPair);
-  update->Remove(iccid);
+  ScopedDictPrefUpdate update(device_prefs_,
+                              prefs::kManagedCellularIccidSmdpPair);
+  update->RemoveByDottedPath(iccid);
   network_state_handler_->SyncStubCellularNetworks();
   NotifyManagedCellularPrefChanged();
 }
