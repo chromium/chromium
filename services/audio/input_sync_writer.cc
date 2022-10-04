@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -91,28 +92,32 @@ InputSyncWriter::~InputSyncWriter() {
   // - Percentage of data written to fifo (and not to shared memory).
   // - Percentage of data dropped (fifo reached max size or socket buffer full).
   // - Glitch yes/no (at least 1 drop).
-  //
+
+  // The amount of data that has either been dropped or successfully written.
+  // This number does not include data that is in the fifo, which we do not know
+  // if it would have been dropped or successfully written.
+  size_t total_processed_data_count =
+      dropped_data_count_ + successful_write_count_;
+
+  DCHECK_LE(trailing_shared_memory_full_count_, shared_memory_full_count_);
+  DCHECK_LE(trailing_shared_memory_full_count_, write_count_);
+  DCHECK_LE(trailing_dropped_data_count_, dropped_data_count_);
+  DCHECK_LE(trailing_dropped_data_count_, total_processed_data_count);
+
   // Subtract 'trailing' counts that will happen if the renderer process was
   // killed or e.g. the page refreshed while the input device was open etc.
   // This trims off the end of both the error and write counts so that we
-  // preserve the proportion of counts before the teardown period. We pick
-  // the largest trailing count as the time we consider that the trailing errors
-  // begun, and subract that from the total write count.
-  DCHECK_LE(trailing_write_to_fifo_count_, write_to_fifo_count_);
-  DCHECK_LE(trailing_write_to_fifo_count_, write_count_);
-  DCHECK_LE(trailing_write_error_count_, write_error_count_);
-  DCHECK_LE(trailing_write_error_count_, write_count_);
+  // preserve the proportion of counts before the teardown period.
+  shared_memory_full_count_ -= trailing_shared_memory_full_count_;
+  write_count_ -= trailing_shared_memory_full_count_;
+  dropped_data_count_ -= trailing_dropped_data_count_;
+  total_processed_data_count -= trailing_dropped_data_count_;
 
-  write_to_fifo_count_ -= trailing_write_to_fifo_count_;
-  write_error_count_ -= trailing_write_error_count_;
-  write_count_ -=
-      std::max(trailing_write_to_fifo_count_, trailing_write_error_count_);
-
-  if (write_count_ == 0)
+  if (write_count_ == 0 || total_processed_data_count == 0)
     return;
 
   base::UmaHistogramEnumeration("Media.AudioCapturerAudioGlitches",
-                                write_error_count_ == 0
+                                dropped_data_count_ == 0
                                     ? AudioGlitchResult::kNoGlitches
                                     : AudioGlitchResult::kGlitches);
 
@@ -128,16 +133,16 @@ InputSyncWriter::~InputSyncWriter() {
       write_count_ < kShortStreamMaxCallbackCount ? "Short" : "Long";
 
   int missed_deadline =
-      std::ceil(kPermilleScaling * static_cast<double>(write_to_fifo_count_) /
-                write_count_);
+      std::ceil(kPermilleScaling *
+                static_cast<double>(shared_memory_full_count_) / write_count_);
 
   base::UmaHistogramCustomCounts(
       "Media.AudioCapturerMissedReadDeadline2." + suffix,
       std::min(missed_deadline, kHistogramRange), 0, kHistogramRange + 1, 100);
 
   int dropped_data =
-      std::ceil(kPermilleScaling * static_cast<double>(write_error_count_) /
-                write_count_);
+      std::ceil(kPermilleScaling * static_cast<double>(dropped_data_count_) /
+                total_processed_data_count);
 
   base::UmaHistogramCustomCounts("Media.AudioCapturerDroppedData2." + suffix,
                                  std::min(dropped_data, kHistogramRange), 0,
@@ -145,7 +150,7 @@ InputSyncWriter::~InputSyncWriter() {
 
   std::string log_string = base::StringPrintf(
       "AISW: number of detected audio glitches: %" PRIuS " out of %" PRIuS,
-      write_error_count_, write_count_);
+      dropped_data_count_, total_processed_data_count);
   log_callback_.Run(log_string);
 }
 
@@ -213,37 +218,61 @@ void InputSyncWriter::Write(const media::AudioBus* data,
     }
   }
 
-  bool write_error = !WriteDataFromFifoToSharedMemory();
+  // If there is data in the fifo, write as much of it to shared memory as
+  // possible.
+  if (!overflow_data_.empty()) {
+    const size_t segment_count = audio_buses_.size();
+    auto data_it = overflow_data_.begin();
+
+    while (data_it != overflow_data_.end() &&
+           number_of_filled_segments_ < segment_count) {
+      // Write parameters to shared memory.
+      if (WriteDataToCurrentSegment(*data_it->audio_bus_, data_it->volume_,
+                                    data_it->key_pressed_,
+                                    data_it->capture_time_)) {
+        ++successful_write_count_;
+        trailing_shared_memory_full_count_ = 0;
+        trailing_dropped_data_count_ = 0;
+      } else {
+        // This happens only if writing to the socket buffer fails, which should
+        // be rare.
+        ++dropped_data_count_;
+        ++trailing_dropped_data_count_;
+      }
+      ++data_it;
+    }
+
+    // Erase all copied data from fifo.
+    overflow_data_.erase(overflow_data_.begin(), data_it);
+
+    if (overflow_data_.empty()) {
+      static const char* message = "AISW: Fifo emptied.";
+      log_callback_.Run(message);
+    }
+  }
 
   // Write the current data to the shared memory if there is room, otherwise
   // put it in the fifo.
   if (number_of_filled_segments_ < audio_buses_.size()) {
-    WriteParametersToCurrentSegment(volume, key_pressed, capture_time);
-
-    // Copy data into shared memory using pre-allocated audio buses.
-    data->CopyTo(audio_buses_[current_segment_id_].get());
-
-    if (!SignalDataWrittenAndUpdateCounters())
-      write_error = true;
-
-    trailing_write_to_fifo_count_ = 0;
+    DCHECK(overflow_data_.empty());
+    if (WriteDataToCurrentSegment(*data, volume, key_pressed, capture_time)) {
+      ++successful_write_count_;
+      trailing_shared_memory_full_count_ = 0;
+      trailing_dropped_data_count_ = 0;
+    } else {
+      // This happens only if writing to the socket buffer fails, which should
+      // be rare.
+      ++dropped_data_count_;
+      ++trailing_dropped_data_count_;
+    }
   } else {
-    if (!PushDataToFifo(data, volume, key_pressed, capture_time))
-      write_error = true;
+    if (!PushDataToFifo(*data, volume, key_pressed, capture_time)) {
+      ++dropped_data_count_;
+      ++trailing_dropped_data_count_;
+    }
 
-    ++write_to_fifo_count_;
-    ++trailing_write_to_fifo_count_;
-  }
-
-  // Increase write error counts if error, or reset the trailing error counter
-  // if all write operations went well (no data dropped).
-  if (write_error) {
-    ++write_error_count_;
-    ++trailing_write_error_count_;
-    TRACE_EVENT_INSTANT0("audio", "InputSyncWriter write error",
-                         TRACE_EVENT_SCOPE_THREAD);
-  } else {
-    trailing_write_error_count_ = 0;
+    ++shared_memory_full_count_;
+    ++trailing_shared_memory_full_count_;
   }
 }
 
@@ -279,23 +308,24 @@ void InputSyncWriter::CheckTimeSinceLastWrite() {
 #endif
 }
 
-bool InputSyncWriter::PushDataToFifo(const media::AudioBus* data,
+bool InputSyncWriter::PushDataToFifo(const media::AudioBus& data,
                                      double volume,
                                      bool key_pressed,
                                      base::TimeTicks capture_time) {
   TRACE_EVENT1("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
                (capture_time - base::TimeTicks()).InMillisecondsF());
   if (overflow_data_.size() == kMaxOverflowBusesSize) {
-    // We use |write_error_count_| for capping number of log messages.
-    // |write_error_count_| also includes socket Send() errors, but those should
-    // be rare.
-    TRACE_EVENT_INSTANT0("audio", "InputSyncWriter::PushDataToFifo - overflow",
-                         TRACE_EVENT_SCOPE_THREAD);
-    if (write_error_count_ <= 50 && write_error_count_ % 10 == 0) {
+    // We use |dropped_data_count_| for capping number of log messages.
+    // |dropped_data_count_| also includes socket Send() errors, but those
+    // should be rare.
+    TRACE_EVENT_INSTANT0(
+        "audio", "InputSyncWriter::PushDataToFifo - overflow - dropped data",
+        TRACE_EVENT_SCOPE_THREAD);
+    if (dropped_data_count_ <= 50 && dropped_data_count_ % 10 == 0) {
       static const char* error_message = "AISW: No room in fifo.";
       LOG(WARNING) << error_message;
       log_callback_.Run(error_message);
-      if (write_error_count_ == 50) {
+      if (dropped_data_count_ == 50) {
         static const char* cap_error_message =
             "AISW: Log cap reached, suppressing further fifo overflow logs.";
         LOG(WARNING) << cap_error_message;
@@ -312,56 +342,20 @@ bool InputSyncWriter::PushDataToFifo(const media::AudioBus* data,
 
   // Push data to fifo.
   std::unique_ptr<media::AudioBus> audio_bus =
-      media::AudioBus::Create(data->channels(), data->frames());
-  data->CopyTo(audio_bus.get());
+      media::AudioBus::Create(data.channels(), data.frames());
+  data.CopyTo(audio_bus.get());
   overflow_data_.emplace_back(volume, key_pressed, capture_time,
                               std::move(audio_bus));
   DCHECK_LE(overflow_data_.size(), static_cast<size_t>(kMaxOverflowBusesSize));
-
   return true;
 }
 
-bool InputSyncWriter::WriteDataFromFifoToSharedMemory() {
-  TRACE_EVENT0("audio", "InputSyncWriter::WriteDataFromFifoToSharedMemory");
-  if (overflow_data_.empty())
-    return true;
-
-  const size_t segment_count = audio_buses_.size();
-  bool write_error = false;
-  auto data_it = overflow_data_.begin();
-
-  while (data_it != overflow_data_.end() &&
-         number_of_filled_segments_ < segment_count) {
-    // Write parameters to shared memory.
-    WriteParametersToCurrentSegment(data_it->volume_, data_it->key_pressed_,
-                                    data_it->capture_time_);
-
-    // Copy data from the fifo into shared memory using pre-allocated audio
-    // buses.
-    data_it->audio_bus_->CopyTo(audio_buses_[current_segment_id_].get());
-
-    if (!SignalDataWrittenAndUpdateCounters())
-      write_error = true;
-
-    ++data_it;
-  }
-
-  // Erase all copied data from fifo.
-  overflow_data_.erase(overflow_data_.begin(), data_it);
-
-  if (overflow_data_.empty()) {
-    static const char* message = "AISW: Fifo emptied.";
-    log_callback_.Run(message);
-  }
-
-  return !write_error;
-}
-
-void InputSyncWriter::WriteParametersToCurrentSegment(
-    double volume,
-    bool key_pressed,
-    base::TimeTicks capture_time) {
-  TRACE_EVENT1("audio", "WriteParametersToCurrentSegment", "capture time (ms)",
+bool InputSyncWriter::WriteDataToCurrentSegment(const media::AudioBus& data,
+                                                double volume,
+                                                bool key_pressed,
+                                                base::TimeTicks capture_time) {
+  CHECK(number_of_filled_segments_ < audio_buses_.size());
+  TRACE_EVENT1("audio", "WriteDataToCurrentSegment", "capture time (ms)",
                (capture_time - base::TimeTicks()).InMillisecondsF());
   uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
   CHECK_LT(current_segment_id_, audio_buses_.size());
@@ -373,6 +367,11 @@ void InputSyncWriter::WriteParametersToCurrentSegment(
   buffer->params.capture_time_us =
       (capture_time - base::TimeTicks()).InMicroseconds();
   buffer->params.id = next_buffer_id_;
+
+  // Copy data into shared memory using pre-allocated audio buses.
+  data.CopyTo(audio_buses_[current_segment_id_].get());
+
+  return SignalDataWrittenAndUpdateCounters();
 }
 
 bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
@@ -385,13 +384,13 @@ bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
       static const char* error_message = "AISW: No room in socket buffer.";
       PLOG(WARNING) << error_message;
       log_callback_.Run(error_message);
-      TRACE_EVENT_INSTANT0("audio", "InputSyncWriter: No room in socket buffer",
-                           TRACE_EVENT_SCOPE_THREAD);
+      TRACE_EVENT_INSTANT0(
+          "audio", "InputSyncWriter: No room in socket buffer - dropped data",
+          TRACE_EVENT_SCOPE_THREAD);
     }
     return false;
-  } else {
-    had_socket_error_ = false;
   }
+  had_socket_error_ = false;
 
   if (++current_segment_id_ >= audio_buses_.size())
     current_segment_id_ = 0;
