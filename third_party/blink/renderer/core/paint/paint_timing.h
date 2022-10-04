@@ -105,10 +105,10 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return request_animation_frames_after_back_forward_cache_restore_;
   }
 
-  // Rreturns the first time that 'contentful' content was
-  //  painted in the current document after a hard navigation (and ignoring soft
-  //  navigations). For instance, the first time that text or image content was
-  //  painted after the user landed on the page.
+  // Returns the first time that 'contentful' content was painted in the current
+  // document after a hard navigation (and ignoring soft navigations). For
+  // instance, the first time that text or image content was painted after the
+  // user landed on the page.
   base::TimeTicks FirstContentfulPaintIgnoringSoftNavigations() const {
     return first_contentful_paint_presentation_ignoring_soft_navigations_;
   }
