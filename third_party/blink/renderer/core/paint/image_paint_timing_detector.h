@@ -162,6 +162,7 @@ class CORE_EXPORT ImageRecordsManager {
       unsigned last_queued_frame_index);
 
   void ClearImagesQueuedForPaintTime();
+  void Clear();
 
   void Trace(Visitor* visitor) const;
 
@@ -286,8 +287,12 @@ class CORE_EXPORT ImagePaintTimingDetector final
   bool IsRecordingLargestImagePaint() const {
     return recording_largest_image_paint_;
   }
-  void SetRecordingLargestImagePaint(bool value) {
-    recording_largest_image_paint_ = value;
+  void StopRecordingLargestImagePaint() {
+    recording_largest_image_paint_ = false;
+  }
+  void RestartRecordingLargestImagePaint() {
+    recording_largest_image_paint_ = true;
+    records_manager_.Clear();
   }
 
   void Trace(Visitor*) const;

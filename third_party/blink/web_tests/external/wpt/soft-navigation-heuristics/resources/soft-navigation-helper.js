@@ -24,8 +24,12 @@ const test_soft_navigation = (add_content, button, push_state, clicks,
     validate_paint_entries("first-contentful-paint");
     validate_paint_entries("first-paint");
     const post_click_lcp = await get_lcp_entries();
-    assert_greater_than(post_click_lcp.length, pre_click_lcp.length, "Soft navigation should have triggered at least an LCP entry");
-
+    assert_greater_than(post_click_lcp.length, pre_click_lcp.length,
+      "Soft navigation should have triggered at least an LCP entry");
+    assert_not_equals(post_click_lcp[post_click_lcp.length - 1].size,
+      pre_click_lcp[pre_click_lcp.length - 1].size,
+      "Soft navigation LCP element should not have identical size to the hard "
+      + "navigation LCP element");
    }, test_name);
 }
 

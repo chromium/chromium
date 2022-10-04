@@ -80,6 +80,12 @@ class CORE_EXPORT LargestTextPaintManager final
     return std::move(largest_ignored_text_);
   }
 
+  void Clear() {
+    count_candidates_ = 0;
+    largest_text_.Clear();
+    largest_ignored_text_.Clear();
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -131,7 +137,8 @@ class CORE_EXPORT TextPaintTimingDetector final
                             const PropertyTreeStateOrAlias&);
   void OnPaintFinished();
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
-  void SetRecordingLargestTextPaint(bool);
+  void StopRecordingLargestTextPaint();
+  void RestartRecordingLargestTextPaint();
   void ResetCallbackManager(PaintTimingCallbackManager* manager) {
     callback_manager_ = manager;
   }

@@ -63,9 +63,11 @@ void LargestTextPaintManager::ReportCandidateToTrace(
 }
 
 TextRecord* LargestTextPaintManager::UpdateCandidate() {
-  const base::TimeTicks time =
-      largest_text_ ? largest_text_->paint_time : base::TimeTicks();
-  const uint64_t size = largest_text_ ? largest_text_->first_size : 0;
+  if (!largest_text_) {
+    return nullptr;
+  }
+  const base::TimeTicks time = largest_text_->paint_time;
+  const uint64_t size = largest_text_->first_size;
   DCHECK(paint_timing_detector_);
   bool changed =
       paint_timing_detector_->NotifyIfChangedLargestTextPaint(time, size);
@@ -177,8 +179,14 @@ void TextPaintTimingDetector::RecordAggregatedText(
   }
 }
 
-void TextPaintTimingDetector::SetRecordingLargestTextPaint(bool recording) {
-  recording_largest_text_paint_ = recording;
+void TextPaintTimingDetector::StopRecordingLargestTextPaint() {
+  recording_largest_text_paint_ = false;
+}
+
+void TextPaintTimingDetector::RestartRecordingLargestTextPaint() {
+  recording_largest_text_paint_ = true;
+  texts_queued_for_paint_time_.clear();
+  ltp_manager_->Clear();
 }
 
 void TextPaintTimingDetector::ReportLargestIgnoredText() {

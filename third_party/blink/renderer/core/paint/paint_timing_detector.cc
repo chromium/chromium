@@ -195,11 +195,11 @@ void PaintTimingDetector::OnInputOrScroll() {
   // TextPaintTimingDetector is used for both Largest Contentful Paint and for
   // Element Timing. Therefore, here we only want to stop recording Largest
   // Contentful Paint.
-  text_paint_timing_detector_->SetRecordingLargestTextPaint(false);
+  text_paint_timing_detector_->StopRecordingLargestTextPaint();
   // ImagePaintTimingDetector is currently only being used for
   // LargestContentfulPaint.
   image_paint_timing_detector_->StopRecordEntries();
-  image_paint_timing_detector_->SetRecordingLargestImagePaint(false);
+  image_paint_timing_detector_->StopRecordingLargestImagePaint();
   largest_contentful_paint_calculator_ = nullptr;
 
   DCHECK_EQ(first_input_or_scroll_notified_timestamp_, base::TimeTicks());
@@ -234,8 +234,8 @@ bool PaintTimingDetector::NeedToNotifyInputOrScroll() const {
 }
 
 void PaintTimingDetector::StartRecordingLCP() {
-  text_paint_timing_detector_->SetRecordingLargestTextPaint(true);
-  image_paint_timing_detector_->SetRecordingLargestImagePaint(true);
+  text_paint_timing_detector_->RestartRecordingLargestTextPaint();
+  image_paint_timing_detector_->RestartRecordingLargestImagePaint();
   first_input_or_scroll_notified_timestamp_ = base::TimeTicks();
 }
 

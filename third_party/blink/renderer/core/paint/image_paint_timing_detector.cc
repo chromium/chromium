@@ -563,6 +563,16 @@ void ImageRecordsManager::ClearImagesQueuedForPaintTime() {
   images_queued_for_paint_time_.clear();
 }
 
+void ImageRecordsManager::Clear() {
+  largest_painted_image_.reset();
+  images_queued_for_paint_time_.clear();
+  size_ordered_set_.clear();
+  recorded_images_.clear();
+  pending_images_.clear();
+  image_finished_times_.clear();
+  largest_ignored_image_.reset();
+}
+
 void ImageRecordsManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
 }
