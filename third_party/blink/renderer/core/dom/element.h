@@ -193,6 +193,12 @@ enum class HidePopupIndependence {
   kHideUnrelated,
 };
 
+enum class PopUpAncestorType {
+  kDefault,
+  kNewPopUp,
+  kInclusive,
+};
+
 typedef HeapVector<Member<Attr>> AttrNodeList;
 
 typedef HashMap<AtomicString, SpecificTrustedType> AttrNameToTrustedType;
@@ -600,8 +606,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void HidePopUpInternal(HidePopupFocusBehavior focus_behavior,
                          HidePopupForcingLevel forcing_level);
   void PopupHideFinishIfNeeded();
-  static const Element* NearestOpenAncestralPopup(const Node& node,
-                                                  bool inclusive = false);
+  static const Element* NearestOpenAncestralPopup(const Node&,
+                                                  PopUpAncestorType);
   // Retrieves the element pointed to by this element's 'anchor' content
   // attribute, if that element exists, and if this element is a pop-up.
   Element* anchorElement() const;

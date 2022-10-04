@@ -2532,7 +2532,8 @@ void Element::showPopUp(ExceptionState& exception_state) {
             HidePopupForcingLevel::kHideAfterAnimations);
       }
       // Then hide open pop-ups that aren't ancestors of this hint.
-      if (const Element* hint_ancestor = NearestOpenAncestralPopup(*this)) {
+      if (const Element* hint_ancestor =
+              NearestOpenAncestralPopup(*this, PopUpAncestorType::kNewPopUp)) {
         HideAllPopupsUntil(hint_ancestor, document,
                            HidePopupFocusBehavior::kNone,
                            HidePopupForcingLevel::kHideAfterAnimations,
@@ -2543,7 +2544,8 @@ void Element::showPopUp(ExceptionState& exception_state) {
       // stack, and hide any hint pop-ups. Because this pop-up isn't yet in the
       // stack, we call NearestOpenAncestralPopup to find this pop-up's
       // ancestor, if any.
-      const Element* auto_ancestor = NearestOpenAncestralPopup(*this);
+      const Element* auto_ancestor =
+          NearestOpenAncestralPopup(*this, PopUpAncestorType::kNewPopUp);
       HideAllPopupsUntil(auto_ancestor, document, HidePopupFocusBehavior::kNone,
                          HidePopupForcingLevel::kHideAfterAnimations,
                          HidePopupIndependence::kHideUnrelated);
@@ -2636,7 +2638,8 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
       // If there is a hint showing that is a descendant of something on the
       // stack, then the hint should be hidden before that ancestor is hidden,
       // regardless of popup_independence.
-      hint_ancestor = NearestOpenAncestralPopup(*document.PopupHintShowing());
+      hint_ancestor = NearestOpenAncestralPopup(*document.PopupHintShowing(),
+                                                PopUpAncestorType::kDefault);
       if (!hint_ancestor &&
           popup_independence == HidePopupIndependence::kHideUnrelated) {
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
@@ -2947,8 +2950,9 @@ const Element* NearestOpenAncestralPopupRecursive(
 // pop-up found during the tree-walk is included in the search. If it is false,
 // the |node| parameter must be a pop-up, and the highest pop-up *below* that
 // starting pop- up will be returned.
-const Element* Element::NearestOpenAncestralPopup(const Node& node,
-                                                  bool inclusive) {
+const Element* Element::NearestOpenAncestralPopup(
+    const Node& node,
+    PopUpAncestorType ancestor_type) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
       node.GetDocument().GetExecutionContext()));
   // popup_positions is a map from all showing (or about-to-show) pop-ups to
@@ -2971,20 +2975,18 @@ const Element* Element::NearestOpenAncestralPopup(const Node& node,
     }
   }
   auto* element = DynamicTo<Element>(node);
-  bool new_element =
-      element && element->HasPopupAttribute() && !element->popupOpen();
-  if (new_element) {
-    DCHECK(!inclusive);
+  if (ancestor_type == PopUpAncestorType::kNewPopUp) {
+    DCHECK(element && element->HasPopupAttribute() && !element->popupOpen());
     popup_positions.Set(element, indx++);
   }
   // upper_bound is one above the maximum pop-up stack height to accept. It is
   // typically the position of the provided element.
   int upper_bound =
       popup_positions.Contains(element) ? popup_positions.at(element) : INT_MAX;
-  if (hint_showing && new_element) {
+  if (hint_showing && ancestor_type == PopUpAncestorType::kNewPopUp) {
     upper_bound = popup_positions.at(hint_showing);  // Do not include the hint
   }
-  if (inclusive) {
+  if (ancestor_type == PopUpAncestorType::kInclusive) {
     // For inclusive mode, we need to walk up the tree until we find an open
     // pop-up, or an invoker for an open pop-up, and then modify the upper bound
     // to include the highest such pop-up found, if any.
@@ -3032,7 +3034,7 @@ void Element::HandlePopupLightDismiss(const Event& event) {
   const AtomicString& event_type = event.type();
   if (event_type == event_type_names::kMousedown) {
     document.SetPopUpMousedownTarget(
-        NearestOpenAncestralPopup(*target_node, /*inclusive*/ true));
+        NearestOpenAncestralPopup(*target_node, PopUpAncestorType::kInclusive));
   } else if (event_type == event_type_names::kMouseup) {
     // Hide everything up to the clicked element. We do this on mouseup,
     // rather than mousedown or click, primarily for accessibility concerns.
@@ -3043,7 +3045,7 @@ void Element::HandlePopupLightDismiss(const Event& event) {
     // mouse-drag on a pop-up, and finishes off the pop-up (to highlight text),
     // the ancestral pop-up is stored in mousedown and compared here.
     auto* ancestor_pop_up =
-        NearestOpenAncestralPopup(*target_node, /*inclusive*/ true);
+        NearestOpenAncestralPopup(*target_node, PopUpAncestorType::kInclusive);
     bool same_target = ancestor_pop_up == document.PopUpMousedownTarget();
     document.SetPopUpMousedownTarget(nullptr);
     if (same_target) {
@@ -6209,10 +6211,11 @@ void Element::DispatchFocusEvent(Element* old_focused_element,
       document.TopmostPopupAutoOrHint()) {
     // If there's a pop-up showing, and we focus an element, hide all pop-ups
     // outside the that element's pop-up tree, including unrelated pop-ups.
-    HideAllPopupsUntil(NearestOpenAncestralPopup(*this, /*inclusive*/ true),
-                       document, HidePopupFocusBehavior::kNone,
-                       HidePopupForcingLevel::kHideAfterAnimations,
-                       HidePopupIndependence::kHideUnrelated);
+    HideAllPopupsUntil(
+        NearestOpenAncestralPopup(*this, PopUpAncestorType::kInclusive),
+        document, HidePopupFocusBehavior::kNone,
+        HidePopupForcingLevel::kHideAfterAnimations,
+        HidePopupIndependence::kHideUnrelated);
   }
 }
 
