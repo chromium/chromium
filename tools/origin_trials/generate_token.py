@@ -145,7 +145,7 @@ def ParseArgs():
   parser = argparse.ArgumentParser(
       description="Generate tokens for enabling experimental features")
   parser.add_argument("--version",
-                      help="Token version to use. Currently only version 2"
+                      help="Token version to use. Currently only version 2 "
                       "and version 3 are supported.",
                       default='3',
                       type=VersionFromArg)
