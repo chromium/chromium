@@ -8,6 +8,7 @@
 
 #include "ash/shell.h"
 #include "base/containers/contains.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
@@ -399,6 +400,11 @@ void WebsiteMetrics::OnWebContentsUpdated(content::WebContents* web_contents) {
   // contents::WebContentsObserver::PrimaryPageChanged(), set the visible url as
   // default value for the ukm key url.
   webcontents_to_ukm_key_[web_contents] = web_contents->GetVisibleURL();
+
+  if (web_contents->GetVisibleURL().is_empty()) {
+    return;
+  }
+
   auto it = window_to_web_contents_.find(window);
   bool is_activated = wm::IsActiveWindow(window) &&
                       it != window_to_web_contents_.end() &&
@@ -590,6 +596,15 @@ void WebsiteMetrics::EmitUkm(const GURL& url,
                              bool is_from_last_login) {
   auto source_id = ukm::UkmRecorder::GetSourceIdForWebsiteUrl(
       base::PassKey<WebsiteMetrics>(), url);
+  if (url.is_empty() || ukm::SourceIdObj::FromInt64(source_id).GetType() !=
+                            ukm::SourceIdType::DESKTOP_WEB_APP_ID) {
+    LOG(ERROR) << "WebsiteMetrics::EmitUkm url is " << url.spec()
+               << ", source id type is "
+               << (int)ukm::SourceIdObj::FromInt64(source_id).GetType();
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   if (source_id != ukm::kInvalidSourceId) {
     ukm::builders::ChromeOS_WebsiteUsageTime builder(source_id);
     builder.SetDuration(usage_time)
