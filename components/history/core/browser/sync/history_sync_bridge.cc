@@ -162,6 +162,10 @@ VisitRow MakeVisitRow(const sync_pb::HistorySpecifics& specifics,
     page_transition |= ui::PAGE_TRANSITION_HOME_PAGE;
   }
   // Then add redirect markers as appropriate - first chain start/end markers.
+  // TODO(crbug.com/1364571): In case a redirect chain was split into multiple
+  // entities, adding start/end markers based on just the index *within this
+  // entity* may not be correct. We'd want to drop the start or end marker in
+  // case another entity should be appended to the front/end of this chain.
   if (redirect_index == 0) {
     page_transition |= ui::PAGE_TRANSITION_CHAIN_START;
   }
@@ -549,9 +553,21 @@ void HistorySyncBridge::GetData(StorageKeyList storage_keys,
       continue;
     }
 
-    std::unique_ptr<syncer::EntityData> entity_data =
+    std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
         QueryRedirectChainAndMakeEntityData(final_visit);
-    if (!entity_data) {
+    // Typically, `entity_data_list` will have exactly one entry. In some error
+    // cases (corrupted DB), it may be empty, and in some cases the redirect
+    // chain may have been split into multiple entities. In that case, the last
+    // entity should be the one corresponding to the `key`.
+    if (entity_data_list.empty()) {
+      continue;
+    }
+    std::unique_ptr<syncer::EntityData> entity_data =
+        std::move(entity_data_list.back());
+    // The last entity's visit time should almost always match the desired one,
+    // but again, in some rare DB error cases it may not.
+    if (entity_data->specifics.history().visit_time_windows_epoch_micros() !=
+        visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds()) {
       continue;
     }
     batch->Put(key, std::move(entity_data));
@@ -644,16 +660,17 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
     return;
   }
 
-  std::unique_ptr<syncer::EntityData> entity_data =
+  std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
       QueryRedirectChainAndMakeEntityData(visit_row);
-  if (!entity_data) {
-    return;
-  }
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
-  change_processor()->Put(GetStorageKeyFromVisitRow(visit_row),
-                          std::move(entity_data), metadata_change_list.get());
+
+  for (auto& entity_data : entity_data_list) {
+    std::string storage_key = GetStorageKey(*entity_data);
+    change_processor()->Put(storage_key, std::move(entity_data),
+                            metadata_change_list.get());
+  }
 
   // `metadata_change_list` must have been created via
   // CreateMetadataChangeList(), so downcasting is safe.
@@ -740,16 +757,17 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row) {
     return;
   }
 
-  std::unique_ptr<syncer::EntityData> entity_data =
+  std::vector<std::unique_ptr<syncer::EntityData>> entity_data_list =
       QueryRedirectChainAndMakeEntityData(visit_row);
-  if (!entity_data) {
-    return;
-  }
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
-  change_processor()->Put(GetStorageKeyFromVisitRow(visit_row),
-                          std::move(entity_data), metadata_change_list.get());
+
+  for (auto& entity_data : entity_data_list) {
+    std::string storage_key = GetStorageKey(*entity_data);
+    change_processor()->Put(storage_key, std::move(entity_data),
+                            metadata_change_list.get());
+  }
 
   // `metadata_change_list` must have been created via
   // CreateMetadataChangeList(), so downcasting is safe.
@@ -807,7 +825,7 @@ void HistorySyncBridge::LoadMetadata() {
   change_processor()->ModelReadyToSync(std::move(batch));
 }
 
-std::unique_ptr<syncer::EntityData>
+std::vector<std::unique_ptr<syncer::EntityData>>
 HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
     const VisitRow& final_visit) {
   // Query the redirect chain that ended in this visit.
@@ -816,26 +834,53 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
   if (redirect_visits.empty()) {
     // This can happen if there's invalid data in the DB (e.g. broken referrer
     // "links").
-    return nullptr;
+    return {};
   }
   DCHECK_EQ(redirect_visits.back().visit_id, final_visit.visit_id);
 
-  std::vector<AnnotatedVisit> annotated_visits =
-      history_backend_->ToAnnotatedVisits(redirect_visits);
-  if (annotated_visits.empty()) {
-    // Again, this can happen if there's invalid data in the DB.
-    return nullptr;
+  // Typically, all visits in a redirect chain have the same timestamp. However,
+  // in some cases, a redirect chain may be extended retroactively (with visits
+  // with a different timestamp). In that case, split the chain into multiple
+  // subchains, which will become separate Sync entities.
+  std::vector<std::unique_ptr<syncer::EntityData>> entities;
+  auto subchain_begin = redirect_visits.begin();
+  while (subchain_begin != redirect_visits.end()) {
+    // `subchain_begin` points to the beginning of the current subchain.
+    base::Time chain_time = subchain_begin->visit_time;
+    auto subchain_end = subchain_begin + 1;
+    while (subchain_end != redirect_visits.end() &&
+           subchain_end->visit_time == chain_time) {
+      ++subchain_end;
+    }
+    // Now `subchain_end` points just beyond the end of the current subchain
+    // (i.e. first entry with a different timestamp or `redirect_visits.end()`).
+
+    // Grab the current subchain.
+    std::vector<VisitRow> subchain_visits(
+        std::make_move_iterator(subchain_begin),
+        std::make_move_iterator(subchain_end));
+
+    // Make `subchain_begin` point to the beginning of the *next* subchain, for
+    // the next iteration.
+    subchain_begin = subchain_end;
+
+    // Convert the current subchain into a SyncEntity.
+    std::vector<AnnotatedVisit> annotated_visits =
+        history_backend_->ToAnnotatedVisits(subchain_visits);
+    if (annotated_visits.empty()) {
+      // Again, this can happen if there's invalid data in the DB. In that case,
+      // skip this subchain but still try to handle any others.
+      continue;
+    }
+    GURL referrer_url =
+        GetURLForVisit(annotated_visits.front().visit_row.referring_visit);
+    std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
+        annotated_visits.back().url_row.url());
+    // Note: `favicon_urls` may legitimately be empty, that's fine.
+    entities.push_back(MakeEntityData(GetLocalCacheGuid(), annotated_visits,
+                                      referrer_url, favicon_urls));
   }
-
-  GURL referrer_url =
-      GetURLForVisit(annotated_visits.front().visit_row.referring_visit);
-
-  std::vector<GURL> favicon_urls = history_backend_->GetFaviconURLsForURL(
-      annotated_visits.back().url_row.url());
-  // Note: `favicon_urls` may legitimately be empty, that's fine.
-
-  return MakeEntityData(GetLocalCacheGuid(), annotated_visits, referrer_url,
-                        favicon_urls);
+  return entities;
 }
 
 GURL HistorySyncBridge::GetURLForVisit(VisitID visit_id) {

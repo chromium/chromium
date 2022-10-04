@@ -20,6 +20,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/history_specifics.pb.h"
+#include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/test/forwarding_model_type_change_processor.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -250,6 +251,8 @@ class HistorySyncBridgeTest : public testing::Test {
   FakeModelTypeChangeProcessor* processor() { return &fake_processor_; }
   HistorySyncBridge* bridge() { return bridge_.get(); }
 
+  void AdvanceClock() { task_environment_.FastForwardBy(base::Seconds(1)); }
+
   std::pair<URLRow, VisitRow> AddVisitToBackendAndAdvanceClock(
       const GURL& url,
       ui::PageTransition transition,
@@ -257,7 +260,7 @@ class HistorySyncBridgeTest : public testing::Test {
     // After grabbing the visit time, advance the mock time so that the next
     // visit will get a unique time.
     base::Time visit_time = base::Time::Now();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    AdvanceClock();
 
     URLRow url_row;
     const URLRow* existing_url_row = backend()->FindURLRow(url);
@@ -626,21 +629,23 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
   visit_row1.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
       ui::PAGE_TRANSITION_CLIENT_REDIRECT);
-  VisitID visit_id1 = backend()->AddVisit(visit_row1);
+  visit_row1.visit_id = backend()->AddVisit(visit_row1);
+
   VisitRow visit_row2;
-  visit_row2.referring_visit = visit_id1;
+  visit_row2.referring_visit = visit_row1.visit_id;
   visit_row2.url_id = url_id2;
   visit_row2.visit_time = visit_time;
   visit_row2.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_SERVER_REDIRECT);
-  VisitID visit_id2 = backend()->AddVisit(visit_row2);
+  visit_row2.visit_id = backend()->AddVisit(visit_row2);
+
   VisitRow visit_row3;
-  visit_row3.referring_visit = visit_id2;
+  visit_row3.referring_visit = visit_row2.visit_id;
   visit_row3.url_id = url_id3;
   visit_row3.visit_time = visit_time;
   visit_row3.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
-  backend()->AddVisit(visit_row3);
+  visit_row3.visit_id = backend()->AddVisit(visit_row3);
 
   // Notify the bridge about all of the visits.
   bridge()->OnURLVisited(
@@ -650,7 +655,7 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
   bridge()->OnURLVisited(
       /*history_backend=*/nullptr, url_row3, visit_row3);
 
-  // The whole chain should have resulting in a single entity being Put().
+  // The whole chain should have resulted in a single entity being Put().
   const std::string storage_key =
       HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time);
   EXPECT_EQ(processor()->GetEntities().size(), 1u);
@@ -672,6 +677,116 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
       syncer::FromSyncPageTransition(
           history.page_transition().core_transition()),
       ui::PAGE_TRANSITION_LINK));
+}
+
+TEST_F(HistorySyncBridgeTest, SplitsRedirectChainWithDifferentTimestamps) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Create a redirect chain with 2 entries.
+  URLRow url_row1(GURL("https://url1.com"));
+  URLID url_id1 = backend()->AddURL(url_row1);
+  url_row1.set_id(url_id1);
+  URLRow url_row2(GURL("https://url2.com"));
+  URLID url_id2 = backend()->AddURL(url_row2);
+  url_row2.set_id(url_id2);
+
+  const base::Time visit_time_chain1 = base::Time::Now();
+
+  VisitRow visit_row1;
+  visit_row1.url_id = url_id1;
+  visit_row1.visit_time = visit_time_chain1;
+  visit_row1.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_SERVER_REDIRECT);
+  visit_row1.visit_id = backend()->AddVisit(visit_row1);
+
+  VisitRow visit_row2;
+  visit_row2.referring_visit = visit_row1.visit_id;
+  visit_row2.url_id = url_id2;
+  visit_row2.visit_time = visit_time_chain1;
+  visit_row2.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row2.visit_id = backend()->AddVisit(visit_row2);
+
+  // Notify the bridge about the visits.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // The chain should have resulted in an entity being Put().
+  const std::string storage_key1 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time_chain1);
+  ASSERT_EQ(processor()->GetEntities().size(), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key1), 1u);
+  sync_pb::HistorySpecifics history1 =
+      processor()->GetEntities().at(storage_key1).specifics.history();
+  ASSERT_EQ(history1.redirect_entries_size(), 2);
+
+  // Now, the existing chain gets extended.
+  // First, the PAGE_TRANSITION_CHAIN_END bit gets removed from the existing
+  // visit.
+  visit_row2.transition = ui::PAGE_TRANSITION_LINK;
+  ASSERT_TRUE(backend()->UpdateVisit(visit_row2));
+  // The bridge gets notified about the updated visit, but this should have no
+  // effect since it's not a chain end anymore.
+  bridge()->OnVisitUpdated(visit_row2);
+
+  // Two more visits get appended to the chain.
+  URLRow url_row3(GURL("https://url3.com"));
+  URLID url_id3 = backend()->AddURL(url_row3);
+  url_row3.set_id(url_id3);
+  URLRow url_row4(GURL("https://url4.com"));
+  URLID url_id4 = backend()->AddURL(url_row4);
+  url_row4.set_id(url_id4);
+
+  AdvanceClock();
+  const base::Time visit_time_chain2 = base::Time::Now();
+
+  VisitRow visit_row3;
+  // Link to the previous chain!
+  visit_row3.referring_visit = visit_row2.visit_id;
+  visit_row3.url_id = url_id3;
+  visit_row3.visit_time = visit_time_chain2;
+  // Note: No PAGE_TRANSITION_CHAIN_START.
+  visit_row3.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CLIENT_REDIRECT);
+  visit_row3.visit_id = backend()->AddVisit(visit_row3);
+
+  VisitRow visit_row4;
+  visit_row4.referring_visit = visit_row3.visit_id;
+  visit_row4.url_id = url_id4;
+  visit_row4.visit_time = visit_time_chain2;
+  visit_row4.transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row4.visit_id = backend()->AddVisit(visit_row4);
+
+  // Notify the bridge about the new visits.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row3, visit_row3);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row4, visit_row4);
+
+  // Now, there should be two entities: The one from the initial chain, and a
+  // separate one for the later addition.
+  const std::string storage_key2 =
+      HistorySyncMetadataDatabase::StorageKeyFromVisitTime(visit_time_chain2);
+  ASSERT_EQ(processor()->GetEntities().size(), 2u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key1), 1u);
+  ASSERT_EQ(processor()->GetEntities().count(storage_key2), 1u);
+  // The initial chain should be unmodified.
+  sync_pb::HistorySpecifics history1_updated =
+      processor()->GetEntities().at(storage_key1).specifics.history();
+  EXPECT_EQ(*syncer::HistorySpecificsToValue(history1),
+            *syncer::HistorySpecificsToValue(history1_updated));
+  // The second chain should contain only the last two entries.
+  sync_pb::HistorySpecifics history2 =
+      processor()->GetEntities().at(storage_key2).specifics.history();
+  ASSERT_EQ(history2.redirect_entries_size(), 2);
+  EXPECT_EQ(history2.redirect_entries(0).url(), url_row3.url());
+  EXPECT_EQ(history2.redirect_entries(1).url(), url_row4.url());
+  EXPECT_EQ(history2.originator_referring_visit_id(), visit_row2.visit_id);
 }
 
 TEST_F(HistorySyncBridgeTest, UntracksEntitiesAfterCommit) {

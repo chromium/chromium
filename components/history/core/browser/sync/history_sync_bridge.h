@@ -84,10 +84,12 @@ class HistorySyncBridge : public syncer::ModelTypeSyncBridge,
   void LoadMetadata();
 
   // Queries the redirect chain ending in `final_visit` from the HistoryBackend,
-  // and creates the corresponding EntityData. May return null in case of
+  // and creates the corresponding EntityData(s). Typically returns a single
+  // EntityData, but in some cases the redirect chain may have to be split up
+  // into multiple entities. May return no entities at all in case of
   // HistoryBackend failure (e.g. corrupted DB).
-  std::unique_ptr<syncer::EntityData> QueryRedirectChainAndMakeEntityData(
-      const VisitRow& final_visit);
+  std::vector<std::unique_ptr<syncer::EntityData>>
+  QueryRedirectChainAndMakeEntityData(const VisitRow& final_visit);
 
   GURL GetURLForVisit(VisitID visit_id);
 

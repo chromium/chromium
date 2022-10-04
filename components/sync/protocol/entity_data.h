@@ -91,7 +91,7 @@ struct EntityData {
   bool is_deleted() const { return specifics.ByteSize() == 0; }
 
   // Dumps all info into a DictionaryValue and returns it.
-  base::Value::Dict ToDictionaryValue();
+  base::Value::Dict ToDictionaryValue() const;
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
