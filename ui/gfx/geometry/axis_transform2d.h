@@ -22,9 +22,11 @@ class GEOMETRY_EXPORT AxisTransform2d {
   constexpr AxisTransform2d() = default;
   constexpr AxisTransform2d(float scale, const Vector2dF& translation)
       : scale_(scale, scale), translation_(translation) {}
-  constexpr AxisTransform2d(const Vector2dF& scale,
-                            const Vector2dF& translation)
-      : scale_(scale), translation_(translation) {}
+  static constexpr AxisTransform2d FromScaleAndTranslation(
+      const Vector2dF& scale,
+      const Vector2dF& translation) {
+    return AxisTransform2d(scale, translation);
+  }
 
   bool operator==(const AxisTransform2d& other) const {
     return scale_ == other.scale_ && translation_ == other.translation_;
@@ -85,6 +87,10 @@ class GEOMETRY_EXPORT AxisTransform2d {
   std::string ToString() const;
 
  private:
+  constexpr AxisTransform2d(const Vector2dF& scale,
+                            const Vector2dF& translation)
+      : scale_(scale), translation_(translation) {}
+
   // Scale is applied before translation, i.e.
   // this->Transform(p) == scale_ * p + translation_
   Vector2dF scale_{1.f, 1.f};

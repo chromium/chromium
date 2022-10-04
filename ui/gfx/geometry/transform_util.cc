@@ -596,16 +596,16 @@ AxisTransform2d OrthoProjectionTransform(float left,
   if (!delta_x || !delta_y)
     return AxisTransform2d();
 
-  return AxisTransform2d(/*scale=*/Vector2dF(2.0f / delta_x, 2.0f / delta_y),
-                         /*translation=*/Vector2dF(-(right + left) / delta_x,
-                                                   -(top + bottom) / delta_y));
+  return AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(2.0f / delta_x, 2.0f / delta_y),
+      Vector2dF(-(right + left) / delta_x, -(top + bottom) / delta_y));
 }
 
 AxisTransform2d WindowTransform(int x, int y, int width, int height) {
   // Map from ([-1, -1] to [1, 1]) -> ([x, y] to [x + width, y + height]).
-  return AxisTransform2d(
-      /*scale=*/Vector2dF(width * 0.5f, height * 0.5f),
-      /*translation=*/Vector2dF(x + width * 0.5f, y + height * 0.5f));
+  return AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(width * 0.5f, height * 0.5f),
+      Vector2dF(x + width * 0.5f, y + height * 0.5f));
 }
 
 static inline bool NearlyZero(double value) {

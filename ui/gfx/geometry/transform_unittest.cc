@@ -2969,7 +2969,8 @@ TEST(XFormTest, InverseMapPoint) {
 TEST(XFormTest, PreConcatAxisTransform2d) {
   auto t = Transform::RowMajor(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                                16, 17);
-  AxisTransform2d axis(Vector2dF(10, 20), Vector2dF(100, 200));
+  auto axis = AxisTransform2d::FromScaleAndTranslation(Vector2dF(10, 20),
+                                                       Vector2dF(100, 200));
   auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
   auto t1 = t;
   t.PreConcat(axis);
@@ -2980,7 +2981,8 @@ TEST(XFormTest, PreConcatAxisTransform2d) {
 TEST(XFormTest, PostConcatAxisTransform2d) {
   auto t = Transform::RowMajor(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                                16, 17);
-  AxisTransform2d axis(Vector2dF(10, 20), Vector2dF(100, 200));
+  auto axis = AxisTransform2d::FromScaleAndTranslation(Vector2dF(10, 20),
+                                                       Vector2dF(100, 200));
   auto axis_full = Transform::Affine(10, 0, 0, 20, 100, 200);
   auto t1 = t;
   t.PostConcat(axis);
