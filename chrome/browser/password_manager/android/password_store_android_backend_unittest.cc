@@ -395,6 +395,39 @@ TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsPSL) {
       DurationMetricName("FillMatchingLoginsAsync"), kTestLatencyDelta, 1);
 }
 
+TEST_F(PasswordStoreAndroidBackendTest, FillMatchingLoginsGooglePSLMatch) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+
+  const JobId kFirstJobId{1337};
+  EXPECT_CALL(*bridge(), GetLoginsForSignonRealm).WillOnce(Return(kFirstJobId));
+
+  std::string TestURL1("https://google.com");
+
+  std::vector<PasswordFormDigest> forms;
+  forms.push_back(PasswordFormDigest(PasswordForm::Scheme::kHtml, TestURL1,
+                                     GURL(TestURL1)));
+  backend().FillMatchingLoginsAsync(mock_reply.Get(), /*include_psl=*/true,
+                                    forms);
+
+  // Imitate login retrieval.
+  PasswordForm exact_match = CreateTestLogin(
+      kTestUsername, kTestPassword, "https://google.com/", kTestDateCreated);
+  PasswordForm psl_match =
+      CreateTestLogin(kTestUsername, kTestPassword,
+                      "https://accounts.google.com/", kTestDateCreated);
+
+  // Retrieving logins for the last form should trigger the final callback.
+  LoginsResult expected_logins;
+  expected_logins.push_back(std::make_unique<PasswordForm>(exact_match));
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_logins)));
+
+  consumer().OnCompleteWithLogins(kFirstJobId, {exact_match, psl_match});
+  RunUntilIdle();
+}
+
 TEST_F(PasswordStoreAndroidBackendTest, CallsBridgeForAutofillableLogins) {
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
