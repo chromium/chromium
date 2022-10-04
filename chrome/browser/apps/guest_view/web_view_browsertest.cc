@@ -6454,7 +6454,7 @@ class WebViewFencedFrameTest
     bool should_enable_site_isolation_for_guests = std::get<0>(GetParam());
     bool should_enable_process_isolation_for_fenced_frames =
         std::get<1>(GetParam());
-    std::vector<base::Feature> enabled_features, disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
 
     if (should_enable_site_isolation_for_guests) {
       enabled_features.push_back(features::kSiteIsolationForGuests);
