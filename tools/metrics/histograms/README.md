@@ -252,6 +252,13 @@ by the `AboutFlagsHistogramTest` unit test.
 
 To add a new entry:
 
+1. After adding flags
+   to [about_flags.cc](../../../chrome/browser/about_flags.cc),
+   run `generate_flag_enums.py --feature <your awesome feature>` or
+   simply `generate_flag_enums.py` (slower).
+
+You can alternatively follow these steps:
+
 1. Edit [enums.xml](./enums.xml), adding the feature to the `LoginCustomFlags`
    enum section, with any unique value (just make one up, although whatever it
    is needs to appear in sorted order; `pretty_print.py` can do this for you).

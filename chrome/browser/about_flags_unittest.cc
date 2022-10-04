@@ -289,8 +289,9 @@ TEST_F(AboutFlagsHistogramTest, CheckHistograms) {
                 enum_entry->first == flag)
         << "tools/metrics/histograms/enums.xml enum LoginCustomFlags doesn't "
            "contain switch '"
-        << flag << "' (value=" << uma_id
-        << " expected). Consider adding entry:\n"
+        << flag << "' (value=" << uma_id << " expected). Consider running:\n"
+        << "  tools/metrics/histograms/generate_flag_enums.py --feature "
+        << flag.substr(0, flag.find(":")) << "\nOr manually adding the entry:\n"
         << "  " << GetHistogramEnumEntryText(flag, uma_id);
   }
 }

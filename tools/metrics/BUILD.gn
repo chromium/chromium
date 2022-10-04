@@ -84,6 +84,8 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/extract_histograms_test.py",
     "//tools/metrics/histograms/generate_expired_histograms_array.py",
     "//tools/metrics/histograms/generate_expired_histograms_array_unittest.py",
+    "//tools/metrics/histograms/generate_flag_enums.py",
+    "//tools/metrics/histograms/generate_flag_enums_test.py",
     "//tools/metrics/histograms/histogram_ownership.py",
     "//tools/metrics/histograms/histograms.xml",
     "//tools/metrics/histograms/histogram_configuration_model.py",
