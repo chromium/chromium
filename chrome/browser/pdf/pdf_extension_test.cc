@@ -388,9 +388,13 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   }
 
   // Hooks to set up feature flags.
-  virtual std::vector<base::Feature> GetEnabledFeatures() const { return {}; }
+  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
+    return {};
+  }
 
-  virtual std::vector<base::Feature> GetDisabledFeatures() const { return {}; }
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
+    return {};
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -399,7 +403,7 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
 
 class PDFExtensionTestWithPartialLoading : public PDFExtensionTest {
  protected:
-  std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kPdfIncrementalLoading);
     enabled.push_back(chrome_pdf::features::kPdfPartialLoading);
@@ -1360,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
 
 class PDFExtensionWebUICodeCacheJSTest : public PDFExtensionJSTest {
  protected:
-  std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
     enabled.push_back(features::kWebUICodeCache);
     return enabled;
@@ -2107,7 +2111,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PrintButton) {
 
 class PDFExtensionRegionSearchTest : public PDFExtensionTest {
  protected:
-  std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back(lens::features::kLensStandalone);
     return enabled;
@@ -3929,7 +3933,7 @@ class PDFExtensionAccessibilityTextExtractionTest : public PDFExtensionTest {
   }
 
  protected:
-  std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
@@ -4142,7 +4146,7 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
  protected:
-  std::vector<base::Feature> GetEnabledFeatures() const override {
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
     auto enabled = PDFExtensionTest::GetEnabledFeatures();
     enabled.push_back(chrome_pdf::features::kAccessiblePDFForm);
     return enabled;
