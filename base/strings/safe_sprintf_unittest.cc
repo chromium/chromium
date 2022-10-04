@@ -12,6 +12,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -482,7 +483,14 @@ class ScopedSafeSPrintfSSizeMaxSetter {
 
 }  // anonymous namespace
 
-TEST(SafeSPrintfTest, Truncation) {
+// TODO(crbug.com/1369007): Fails when OOB protection is turned on.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    BUILDFLAG(ENABLE_MTE_CHECKED_PTR_SUPPORT)
+#define MAYBE_Truncation DISABLED_Truncation
+#else
+#define MAYBE_Truncation Truncation
+#endif
+TEST(SafeSPrintfTest, MAYBE_Truncation) {
   // We use PrintLongString() to print a complex long string and then
   // truncate to all possible lengths. This ends up exercising a lot of
   // different code paths in SafeSPrintf() and IToASCII(), as truncation can
