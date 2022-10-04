@@ -107,7 +107,7 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
 
     case base::Value::Type::LIST: {
       descriptor = [NSAppleEventDescriptor listDescriptor];
-      for (const auto& item : value->GetListDeprecated()) {
+      for (const auto& item : value->GetList()) {
         AppendValueToListDescriptor(descriptor, item);
       }
       break;
