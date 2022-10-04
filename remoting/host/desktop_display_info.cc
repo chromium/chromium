@@ -4,10 +4,12 @@
 
 #include "remoting/host/desktop_display_info.h"
 
+#include "base/check.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/logging.h"
 #include "remoting/proto/control.pb.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
 
@@ -187,7 +189,13 @@ std::unique_ptr<protocol::VideoLayout> DesktopDisplayInfo::GetVideoLayoutProto()
     track->set_screen_id(display.id);
     HOST_LOG << "   Display: " << display.x << "," << display.y << " "
              << display.width << "x" << display.height << " @ " << display.dpi
-             << ", id=" << display.id;
+             << ", id=" << display.id << ", primary=" << display.is_default;
+    if (display.is_default) {
+      if (layout->has_primary_screen_id()) {
+        LOG(WARNING) << "Multiple primary displays found";
+      }
+      layout->set_primary_screen_id(display.id);
+    }
   }
   return layout;
 }

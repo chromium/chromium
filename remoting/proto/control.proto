@@ -116,7 +116,7 @@ message VideoTrackLayout {
   optional int32 x_dpi = 6;
   optional int32 y_dpi = 7;
 
-  // TODO(yuweih): Add bpp and is_default to the message.
+  // TODO(yuweih): Add bpp to the message.
 }
 
 message VideoLayout {
@@ -126,6 +126,13 @@ message VideoLayout {
   // True if this display configuration supports capturing the entire desktop.
   // Absent in client-to-host messages.
   optional bool supports_full_desktop_capture = 2;
+
+  // Screen ID of the display to be associated with the main window on the
+  // client. Optional. If not set, the client will choose a sensible display to
+  // be associated with the main window.
+  //
+  // This field is ignored in client-to-host messages.
+  optional int64 primary_screen_id = 3;
 }
 
 message SelectDesktopDisplayRequest {

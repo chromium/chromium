@@ -1014,6 +1014,9 @@ void ClientSession::OnDesktopDisplayChanged(
   // Generate and send VideoLayout message.
   protocol::VideoLayout layout;
   layout.set_supports_full_desktop_capture(can_capture_full_desktop_);
+  if (displays->has_primary_screen_id()) {
+    layout.set_primary_screen_id(displays->primary_screen_id());
+  }
   protocol::VideoTrackLayout* video_track;
 
   // For single-stream clients, the first layout must be the current webrtc
