@@ -1025,6 +1025,8 @@ component("ash") {
     "style/scoped_light_mode_as_default.cc",
     "style/style_util.cc",
     "style/style_util.h",
+    "style/style_viewer/system_ui_components_grid_view.cc",
+    "style/style_viewer/system_ui_components_grid_view.h",
     "style/system_shadow.cc",
     "style/system_shadow.h",
     "style/system_shadow_on_nine_patch_layer.cc",
