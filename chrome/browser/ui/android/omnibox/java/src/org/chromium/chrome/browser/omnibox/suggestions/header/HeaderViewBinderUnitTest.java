@@ -41,7 +41,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
- * Tests for {@link BaseSuggestionViewProcessor}.
+ * Tests for {@link HeaderViewBinder}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HeaderViewBinderUnitTest {

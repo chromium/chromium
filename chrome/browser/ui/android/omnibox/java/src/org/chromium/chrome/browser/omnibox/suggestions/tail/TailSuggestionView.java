@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.omnibox.R;
 /** Container view for omnibox tail suggestions. */
 public class TailSuggestionView extends TextView {
     private AlignmentManager mAlignmentManager;
-    private TextView mTextLine2;
     private int mFullTextWidth;
     private int mQueryTextWidth;
 
