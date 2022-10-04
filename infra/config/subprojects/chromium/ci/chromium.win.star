@@ -348,7 +348,4 @@ ci.builder(
     ),
     executable = "recipe:swarming/deterministic_build",
     execution_timeout = 12 * time.hour,
-
-    # TODO(https://crbug.com/1362440): remove this and use default value.
-    omit_python2 = False,
 )
