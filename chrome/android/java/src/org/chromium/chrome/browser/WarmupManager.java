@@ -171,7 +171,7 @@ public class WarmupManager {
             // exceptions to monitor any spikes or stacks that point to Chrome code.
             Throwable throwable = new Throwable(
                     "This is not a crash. See https://crbug.com/1259276 for details.", e);
-            ChromePureJavaExceptionReporter.postReportJavaException(throwable);
+            ChromePureJavaExceptionReporter.reportJavaException(throwable);
             return null;
         }
     }

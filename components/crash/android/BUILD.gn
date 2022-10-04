@@ -27,6 +27,7 @@ android_library("java") {
     "//build/android:build_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -35,6 +36,7 @@ android_library("java") {
     "java/src/org/chromium/components/crash/CustomAssertionHandler.java",
     "java/src/org/chromium/components/crash/LogcatCrashExtractor.java",
     "java/src/org/chromium/components/crash/MinidumpLogcatPrepender.java",
+    "java/src/org/chromium/components/crash/NativeAndJavaSmartExceptionReporter.java",
     "java/src/org/chromium/components/crash/PureJavaExceptionReporter.java",
   ]
   sources += _jni_sources

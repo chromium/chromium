@@ -14,8 +14,6 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PiiElider;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.MainDex;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.version_info.VersionInfo;
@@ -81,17 +79,6 @@ public abstract class PureJavaExceptionReporter
             flushToFile();
             uploadReport();
         }
-    }
-
-    /**
-     * Report an exception on a background thread.
-     *
-     * This is used for silent exception reporting.
-     */
-    @Override
-    public void postCreateAndUploadReport(Throwable javaException) {
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> createAndUploadReport(javaException));
     }
 
     private void addPairedString(String messageType, String messageData) {

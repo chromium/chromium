@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.crash;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.MainDex;
 import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.components.crash.NativeAndJavaSmartExceptionReporter;
 import org.chromium.components.crash.PureJavaExceptionReporter;
 
 import java.io.File;
@@ -45,24 +46,18 @@ public class ChromePureJavaExceptionReporter extends PureJavaExceptionReporter {
         return FILE_PREFIX;
     }
 
-    /**
-     * Report and upload the device info and stack trace as if it was a crash. Runs synchronously
-     * and results in I/O on the main thread.
-     *
-     * @param javaException The exception to report.
-     */
-    public static void reportJavaException(Throwable javaException) {
+    private static void reportPureJavaException(Throwable exception) {
         ChromePureJavaExceptionReporter reporter = new ChromePureJavaExceptionReporter();
-        reporter.createAndUploadReport(javaException);
+        reporter.createAndUploadReport(exception);
     }
 
     /**
-     * Posts a task to report and upload the device info and stack trace as if it was a crash.
+     * Asynchronously report and upload the stack trace as if it was a crash.
      *
-     * @param javaException The exception to report.
+     * @param exception The exception to report.
      */
-    public static void postReportJavaException(Throwable javaException) {
-        ChromePureJavaExceptionReporter reporter = new ChromePureJavaExceptionReporter();
-        reporter.postCreateAndUploadReport(javaException);
+    public static void reportJavaException(Throwable exception) {
+        NativeAndJavaSmartExceptionReporter.postUploadReport(
+                exception, ChromePureJavaExceptionReporter::reportPureJavaException);
     }
 }

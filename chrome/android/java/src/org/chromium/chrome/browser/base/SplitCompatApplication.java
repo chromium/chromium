@@ -227,7 +227,7 @@ public class SplitCompatApplication extends Application {
                 }
             };
             PureJavaExceptionHandler.installHandler(factory);
-            CustomAssertionHandler.installHandler(factory);
+            CustomAssertionHandler.installPreNativeHandler(factory);
         }
 
         TraceEvent.end(ATTACH_BASE_CONTEXT_EVENT);

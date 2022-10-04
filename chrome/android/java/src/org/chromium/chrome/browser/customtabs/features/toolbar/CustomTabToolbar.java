@@ -892,7 +892,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             -> {},
                     this, new NoOpkeyboardVisibilityDelegate(),
                     locationBarDataProvider.isIncognito(),
-                    ChromePureJavaExceptionReporter::postReportJavaException);
+                    ChromePureJavaExceptionReporter::reportJavaException);
             updateColors();
             updateSecurityIcon();
             updateProgressBarColors();

@@ -97,8 +97,8 @@ public class WebViewApkApplication extends Application {
             PathUtils.setPrivateDataDirectorySuffix("webview", "WebView");
             CommandLineUtil.initCommandLine();
 
-            PureJavaExceptionHandler.installHandler(() -> new AwPureJavaExceptionReporter());
-            CustomAssertionHandler.installHandler(() -> new AwPureJavaExceptionReporter());
+            PureJavaExceptionHandler.installHandler(AwPureJavaExceptionReporter::new);
+            CustomAssertionHandler.installPreNativeHandler(AwPureJavaExceptionReporter::new);
 
             // TODO(crbug.com/1182693): Do set up a native UMA recorder once we support recording
             // metrics from native nonembedded code.
