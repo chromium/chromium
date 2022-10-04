@@ -42,9 +42,6 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
         extension_id_(extension_id),
         is_anonymous_(is_anonymous),
         registry_(registry),
-        capture_state_(tab_capture::TAB_CAPTURE_STATE_NONE),
-        is_verified_(false),
-        is_fullscreened_(false),
         render_process_id_(
             target_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
         render_frame_id_(
@@ -108,9 +105,9 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   const std::string extension_id_;
   const bool is_anonymous_;
   const raw_ptr<TabCaptureRegistry> registry_;
-  TabCaptureState capture_state_;
-  bool is_verified_;
-  bool is_fullscreened_;
+  TabCaptureState capture_state_ = tab_capture::TAB_CAPTURE_STATE_NONE;
+  bool is_verified_ = false;
+  bool is_fullscreened_ = false;
 
   // These reference the originally targetted RenderFrameHost by its ID.  The
   // RenderFrameHost may have gone away long before a LiveRequest closes, but
