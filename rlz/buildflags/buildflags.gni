@@ -9,4 +9,9 @@ import("//build/config/chromeos/ui_mode.gni")
 # rlz codes for searches but do not use the library.
 enable_rlz_support = is_win || is_apple || is_chromeos_ash
 
-enable_rlz = is_chrome_branded && enable_rlz_support
+declare_args() {
+  enable_rlz = is_chrome_branded && enable_rlz_support
+}
+
+assert(!enable_rlz || enable_rlz_support,
+       "RLZ is only supported on Windows, Apple and ChromeOS Ash.")
