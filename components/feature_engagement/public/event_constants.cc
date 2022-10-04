@@ -51,6 +51,8 @@ const char kBatterySaverDialogShown[] = "battery_saver_info_shown";
 
 const char kHighEfficiencyDialogShown[] = "high_efficiency_info_shown";
 
+const char kPerformanceMenuItemActivated[] = "performance_activated";
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

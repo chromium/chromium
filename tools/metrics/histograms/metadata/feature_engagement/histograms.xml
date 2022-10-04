@@ -175,6 +175,8 @@ chromium-metrics-reviews@google.com.
       summary="passwords account storage"/>
   <variant name="IPH_PasswordSuggestions"
       summary="the Autofill password suggestions on iOS"/>
+  <variant name="IPH_PerformanceNewBadge"
+      summary="New badge shows next to performance item on the app menu"/>
   <variant name="IPH_PreviewsOmniboxUI"
       summary="the Previews UI in the Android Omnibox"/>
   <variant name="IPH_PriceDropNTP"

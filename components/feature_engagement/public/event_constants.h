@@ -82,6 +82,9 @@ extern const char kBatterySaverDialogShown[];
 // The user has opened the high efficiency page action chip
 extern const char kHighEfficiencyDialogShown[];
 
+// The user clicked on the performance menu item
+extern const char kPerformanceMenuItemActivated[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

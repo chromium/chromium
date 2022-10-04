@@ -61,6 +61,7 @@
 #include "components/dom_distiller/content/browser/uma_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -398,6 +399,11 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (error) {
     error->ExecuteMenuItem(browser_);
     return;
+  }
+
+  if (command_id == IDC_PERFORMANCE) {
+    browser()->window()->NotifyFeatureEngagementEvent(
+        feature_engagement::events::kPerformanceMenuItemActivated);
   }
 
   LogMenuMetrics(command_id);

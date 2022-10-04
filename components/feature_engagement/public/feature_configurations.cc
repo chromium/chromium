@@ -168,6 +168,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPerformanceNewBadgeFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    // Show the new badge max 20 times within a year
+    config->trigger = EventConfig("performance_new_badge_shown",
+                                  Comparator(LESS_THAN, 20), 360, 360);
+
+    // Badge stops showing after the user uses it 3 times
+    config->used = EventConfig("performance_activated",
+                               Comparator(LESS_THAN, 3), 360, 360);
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
