@@ -3649,7 +3649,26 @@ TEST_F(FeedApiTest, FeedCloseRefresh_RequestType) {
             network_.query_request_sent->feed_request().feed_query().reason());
   EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
 }
+TEST_F(FeedApiTest, ChannelFeed_AttachMultiple) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
 
+  TestChannelSurface channel_surface_a(stream_.get(), "A");
+  TestChannelSurface channel_surface_b(stream_.get(), "B");
+
+  WaitForIdleTaskQueue();
+
+  channel_surface_b.Detach();
+
+  WaitForModelToAutoUnload();
+  WaitForIdleTaskQueue();
+
+  EXPECT_TRUE(stream_->GetModel(StreamType(StreamKind::kChannel, "A")));
+  EXPECT_FALSE(stream_->GetModel(StreamType(StreamKind::kChannel, "B")));
+  EXPECT_TRUE(
+      stream_->GetStreamPresentForTest(StreamType(StreamKind::kChannel, "A")));
+  EXPECT_FALSE(
+      stream_->GetStreamPresentForTest(StreamType(StreamKind::kChannel, "B")));
+}
 // Keep instantiations at the bottom.
 INSTANTIATE_TEST_SUITE_P(FeedApiTest,
                          FeedStreamTestForAllStreamTypes,

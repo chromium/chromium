@@ -1229,10 +1229,17 @@ void FeedStream::UnloadModel(const StreamType& stream_type) {
   // Note: This should only be called from a running Task, as some tasks assume
   // the model remains loaded.
   Stream* stream = FindStream(stream_type);
-  if (!stream || !stream->model)
+  if (!stream)
     return;
-  stream->surface_updater->SetModel(nullptr);
-  stream->model.reset();
+
+  if (stream->model) {
+    stream->surface_updater->SetModel(nullptr);
+    stream->model.reset();
+  }
+  // If this is a channel stream remove it from streams_ as well
+  if (stream_type.IsChannelFeed()) {
+    streams_.erase(stream_type);
+  }
 }
 
 void FeedStream::UnloadModels() {

@@ -333,6 +333,10 @@ class FeedStream : public FeedApi,
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  bool GetStreamPresentForTest(StreamType stream_type) {
+    return FindStream(stream_type) != nullptr;
+  }
+
  private:
   using UnreadContentNotifier = feed_stream::UnreadContentNotifier;
 
