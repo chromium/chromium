@@ -7,13 +7,14 @@
 
 #include <memory>
 #include <set>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "ui/aura/aura_export.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event_target.h"
 #include "ui/events/types/event_type.h"
@@ -45,12 +46,10 @@ class WindowOcclusionTracker;
 class WindowTreeHost;
 
 // A singleton object that tracks general state within Aura.
-class AURA_EXPORT Env : public ui::EventTarget,
-                        public base::SupportsUserData {
+class AURA_EXPORT Env : public ui::EventTarget {
  public:
   Env(const Env&) = delete;
   Env& operator=(const Env&) = delete;
-
   ~Env() override;
 
   // Creates a new Env instance.
@@ -141,6 +140,13 @@ class AURA_EXPORT Env : public ui::EventTarget,
   void RemoveEventObserver(ui::EventObserver* observer);
   void NotifyEventObservers(const ui::Event& event);
 
+  client::CursorShapeClient* cursor_shape_client() {
+    return cursor_shape_client_;
+  }
+  void set_cursor_shape_client(client::CursorShapeClient* cursor_shape_client) {
+    cursor_shape_client_ = cursor_shape_client;
+  }
+
   const std::vector<aura::WindowTreeHost*>& window_tree_hosts() const {
     return window_tree_hosts_;
   }
@@ -209,6 +215,8 @@ class AURA_EXPORT Env : public ui::EventTarget,
   std::unique_ptr<WindowOcclusionTracker> window_occlusion_tracker_;
 
   std::vector<aura::WindowTreeHost*> window_tree_hosts_;
+
+  client::CursorShapeClient* cursor_shape_client_ = nullptr;
 };
 
 }  // namespace aura

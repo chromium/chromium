@@ -4,9 +4,12 @@
 
 #include "content/shell/browser/shell_platform_data_aura.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/default_capture_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/layout_manager.h"
@@ -18,6 +21,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+#include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/default_activation_client.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -111,9 +115,17 @@ ShellPlatformDataAura::ShellPlatformDataAura(const gfx::Size& initial_size) {
       std::make_unique<aura::client::DefaultCaptureClient>(host_->window());
   window_parenting_client_ =
       std::make_unique<aura::test::TestWindowParentingClient>(host_->window());
+
+  // TODO(https://crbug.com/1336055): this is needed for
+  // mouse_cursor_overlay_controller_browsertest.cc on cast_shell_linux as
+  // currently, when is_castos = true, the views toolkit isn't used.
+  cursor_shape_client_ = std::make_unique<wm::CursorLoader>();
+  aura::client::SetCursorShapeClient(cursor_shape_client_.get());
 }
 
-ShellPlatformDataAura::~ShellPlatformDataAura() = default;
+ShellPlatformDataAura::~ShellPlatformDataAura() {
+  aura::client::SetCursorShapeClient(nullptr);
+}
 
 void ShellPlatformDataAura::ShowWindow() {
   host_->Show();

@@ -4,9 +4,8 @@
 
 #include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 
-#include <utility>
-
 #include "base/trace_event/trace_event.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -14,9 +13,13 @@
 
 namespace views {
 
-DesktopNativeCursorManager::DesktopNativeCursorManager() = default;
+DesktopNativeCursorManager::DesktopNativeCursorManager() {
+  aura::client::SetCursorShapeClient(&cursor_loader_);
+}
 
-DesktopNativeCursorManager::~DesktopNativeCursorManager() = default;
+DesktopNativeCursorManager::~DesktopNativeCursorManager() {
+  aura::client::SetCursorShapeClient(nullptr);
+}
 
 void DesktopNativeCursorManager::AddHost(aura::WindowTreeHost* host) {
   hosts_.insert(host);

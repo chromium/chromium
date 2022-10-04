@@ -12,11 +12,12 @@
 
 namespace aura {
 namespace client {
+class CursorShapeClient;
 class DefaultCaptureClient;
 class FocusClient;
 class WindowParentingClient;
-}
-}
+}  // namespace client
+}  // namespace aura
 
 #if defined(USE_OZONE)
 namespace display {
@@ -53,6 +54,7 @@ class ShellPlatformDataAura {
   std::unique_ptr<aura::client::FocusClient> focus_client_;
   std::unique_ptr<aura::client::DefaultCaptureClient> capture_client_;
   std::unique_ptr<aura::client::WindowParentingClient> window_parenting_client_;
+  std::unique_ptr<aura::client::CursorShapeClient> cursor_shape_client_;
 };
 
 }  // namespace content

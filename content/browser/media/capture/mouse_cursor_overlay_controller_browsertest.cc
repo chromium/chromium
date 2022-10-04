@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -18,7 +19,13 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/aura/client/cursor_shape_client.h"
+#include "ui/wm/core/cursor_loader.h"  // nogncheck
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace content {
+
 namespace {
 
 class FakeOverlay final : public MouseCursorOverlayController::Overlay {
@@ -61,6 +68,14 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
 
   void SetUpOnMainThread() final {
     ContentBrowserTest::SetUpOnMainThread();
+
+    // On Ash content browsertests, ash::Shell isn't initialized and thus
+    // neither NativeCursorManagerAsh, the owner of CursorLoader.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    cursor_loader_ = std::make_unique<wm::CursorLoader>();
+    aura::client::SetCursorShapeClient(cursor_loader_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     controller_.SetTargetView(shell()->web_contents()->GetNativeView());
     controller_.DisconnectFromToolkitForTesting();
     base::RunLoop().RunUntilIdle();
@@ -176,6 +191,10 @@ class MouseCursorOverlayControllerBrowserTest : public ContentBrowserTest {
   }
 
   MouseCursorOverlayController controller_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<wm::CursorLoader> cursor_loader_;
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,

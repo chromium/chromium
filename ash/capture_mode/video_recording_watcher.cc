@@ -26,21 +26,24 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#include "ui/wm/core/cursor_lookup.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
@@ -777,19 +780,23 @@ void VideoRecordingWatcher::UpdateCursorOverlayNow(
   const gfx::NativeCursor cursor = GetCurrentCursor();
   DCHECK_NE(cursor.type(), ui::mojom::CursorType::kNull);
 
-  const float cursor_image_scale_factor = cursor.image_scale_factor();
-  const SkBitmap cursor_image = wm::GetCursorBitmap(cursor);
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (!cursor_data)
+    return;
+
+  const SkBitmap& cursor_image = cursor_data->bitmaps[0];
+  if (cursor_image.drawsNothing()) {
+    last_cursor_ = gfx::NativeCursor();
+    HideCursorOverlay();
+    return;
+  }
+
   const gfx::RectF cursor_overlay_bounds = GetCursorOverlayBounds(
-      window_being_recorded_, location, wm::GetCursorHotspot(cursor),
-      cursor_image_scale_factor, cursor_image);
+      window_being_recorded_, location, cursor_data->hotspot,
+      cursor.image_scale_factor(), cursor_image);
 
   if (cursor != last_cursor_) {
-    if (cursor_image.drawsNothing()) {
-      last_cursor_ = gfx::NativeCursor();
-      HideCursorOverlay();
-      return;
-    }
-
     last_cursor_ = cursor;
     last_cursor_overlay_bounds_ = cursor_overlay_bounds;
     cursor_capture_overlay_remote_->SetImageAndBounds(

@@ -8,6 +8,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
@@ -18,6 +19,7 @@
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
 namespace ash {
+
 namespace {
 
 void SetCursorOnAllRootWindows(gfx::NativeCursor cursor) {
@@ -55,9 +57,13 @@ void NotifyMouseEventsEnableStateChange(bool enabled) {
 }  // namespace
 
 NativeCursorManagerAsh::NativeCursorManagerAsh()
-    : native_cursor_enabled_(true) {}
+    : native_cursor_enabled_(true) {
+  aura::client::SetCursorShapeClient(&cursor_loader_);
+}
 
-NativeCursorManagerAsh::~NativeCursorManagerAsh() = default;
+NativeCursorManagerAsh::~NativeCursorManagerAsh() {
+  aura::client::SetCursorShapeClient(nullptr);
+}
 
 void NativeCursorManagerAsh::SetNativeCursorEnabled(bool enabled) {
   native_cursor_enabled_ = enabled;

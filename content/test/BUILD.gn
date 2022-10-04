@@ -1751,6 +1751,10 @@ test("content_browsertests") {
       if (use_aura && !is_castos) {
         sources += [ "../browser/media/capture/aura_window_video_capture_device_browsertest.cc" ]
       }
+
+      if (is_chromeos_ash) {
+        deps += [ "//ui/wm" ]
+      }
     }
   }
 

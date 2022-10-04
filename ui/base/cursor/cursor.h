@@ -5,6 +5,8 @@
 #ifndef UI_BASE_CURSOR_CURSOR_H_
 #define UI_BASE_CURSOR_CURSOR_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -13,6 +15,20 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace ui {
+
+struct COMPONENT_EXPORT(UI_BASE_CURSOR) CursorData {
+ public:
+  CursorData();
+  CursorData(std::vector<SkBitmap> bitmaps, gfx::Point hotspot);
+  CursorData(const CursorData&);
+  ~CursorData();
+
+  // `bitmaps` contains at least 1 element. Animated cursors (e.g.
+  // `CursorType::kWait`, `CursorType::kProgress`) are represented as a list
+  // of images, so a bigger number is expected.
+  std::vector<SkBitmap> bitmaps;
+  gfx::Point hotspot;
+};
 
 // Ref-counted cursor that supports both default and custom cursors.
 class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {

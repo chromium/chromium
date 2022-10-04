@@ -10,6 +10,8 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -80,6 +82,18 @@ void CursorLoader::SetPlatformCursor(ui::Cursor* cursor) {
     return;
   cursor->set_image_scale_factor(scale());
   cursor->SetPlatformCursor(CursorFromType(cursor->type()));
+}
+
+absl::optional<ui::CursorData> CursorLoader::GetCursorData(
+    const ui::Cursor& cursor) const {
+  CursorType type = cursor.type();
+  if (type == CursorType::kNone)
+    return ui::CursorData();
+
+  if (type == CursorType::kCustom)
+    return ui::CursorData({cursor.custom_bitmap()}, cursor.custom_hotspot());
+
+  return ui::CursorData({GetDefaultBitmap(cursor)}, GetDefaultHotspot(cursor));
 }
 
 void CursorLoader::LoadImageCursor(CursorType type,

@@ -4,10 +4,25 @@
 
 #include "ui/base/cursor/cursor.h"
 
+#include <utility>
+
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/skia_util.h"
 
 namespace ui {
+
+CursorData::CursorData() : bitmaps({SkBitmap()}) {}
+
+CursorData::CursorData(std::vector<SkBitmap> bitmaps, gfx::Point hotspot)
+    : bitmaps(std::move(bitmaps)), hotspot(std::move(hotspot)) {
+  DCHECK_GT(this->bitmaps.size(), 0u);
+}
+
+CursorData::CursorData(const CursorData& cursor_data) = default;
+
+CursorData::~CursorData() = default;
 
 Cursor::Cursor() = default;
 

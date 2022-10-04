@@ -24,8 +24,6 @@ component("wm") {
     "core/coordinate_conversion.h",
     "core/cursor_loader.cc",
     "core/cursor_loader.h",
-    "core/cursor_lookup.cc",
-    "core/cursor_lookup.h",
     "core/cursor_manager.cc",
     "core/cursor_manager.h",
     "core/cursor_util.cc",

@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/cursor_size.h"
@@ -27,7 +28,9 @@ class PlatformCursor;
 
 namespace wm {
 
-class COMPONENT_EXPORT(UI_WM) CursorLoader : public ui::CursorFactoryObserver {
+class COMPONENT_EXPORT(UI_WM) CursorLoader
+    : public aura::client::CursorShapeClient,
+      public ui::CursorFactoryObserver {
  public:
   explicit CursorLoader(bool use_platform_cursors = true);
   CursorLoader(const CursorLoader&) = delete;
@@ -53,6 +56,10 @@ class COMPONENT_EXPORT(UI_WM) CursorLoader : public ui::CursorFactoryObserver {
 
   // Sets the platform cursor based on the type of |cursor|.
   void SetPlatformCursor(ui::Cursor* cursor);
+
+  // aura::client::CursorShapeClient:
+  absl::optional<ui::CursorData> GetCursorData(
+      const ui::Cursor& cursor) const override;
 
  private:
   // Resets the cursor cache.

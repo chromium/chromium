@@ -84,13 +84,16 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/capture_client_observer.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/compositor/compositor.h"
@@ -4952,7 +4955,26 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayHidesWhenOutOfBounds) {
   EXPECT_TRUE(fake_overlay()->IsHidden());
 }
 
-TEST_F(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHidden) {
+namespace {
+
+// A CursorShapeClient that always fails to return cursor data.
+class FakeCursorShapeClient : public aura::client::CursorShapeClient {
+ public:
+  FakeCursorShapeClient() = default;
+  FakeCursorShapeClient(const FakeCursorShapeClient&) = delete;
+  FakeCursorShapeClient& operator=(const FakeCursorShapeClient&) = delete;
+  ~FakeCursorShapeClient() override = default;
+
+  // aura::client::CursorShapeClient:
+  absl::optional<ui::CursorData> GetCursorData(
+      const ui::Cursor& cursor) const override {
+    return absl::nullopt;
+  }
+};
+
+}  // namespace
+
+TEST_F(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHiddenOrFails) {
   StartRecordingAndSetupFakeOverlay(CaptureModeSource::kWindow);
   EXPECT_FALSE(fake_overlay()->IsHidden());
 
@@ -4990,6 +5012,17 @@ TEST_F(CaptureModeCursorOverlayTest, OverlayWhenCursorIsHidden) {
   FlushOverlay();
   EXPECT_FALSE(fake_overlay()->IsHidden());
   EXPECT_NE(fake_overlay()->last_bounds(), gfx::RectF());
+
+  // Set a fake cursor shape client so that retrieving the cursor data fails.
+  // The overlay shouldn't change.
+  FakeCursorShapeClient cursor_shape_client;
+  aura::client::SetCursorShapeClient(&cursor_shape_client);
+  last_bounds = fake_overlay()->last_bounds();
+  generator->MoveMouseBy(10, 10);
+  generator->ClickLeftButton();
+  FlushOverlay();
+  EXPECT_FALSE(fake_overlay()->IsHidden());
+  EXPECT_EQ(fake_overlay()->last_bounds(), last_bounds);
 }
 
 // Verifies that the cursor overlay bounds calculation takes into account the

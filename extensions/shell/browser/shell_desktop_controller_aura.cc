@@ -17,6 +17,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/shell/browser/shell_app_window_client.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
@@ -52,6 +53,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
+
 namespace {
 
 // A class that bridges the gap between CursorManager and Aura. It borrows
@@ -60,12 +62,16 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
  public:
   explicit ShellNativeCursorManager(
       ShellDesktopControllerAura* desktop_controller)
-      : desktop_controller_(desktop_controller) {}
+      : desktop_controller_(desktop_controller) {
+    aura::client::SetCursorShapeClient(&cursor_loader_);
+  }
 
   ShellNativeCursorManager(const ShellNativeCursorManager&) = delete;
   ShellNativeCursorManager& operator=(const ShellNativeCursorManager&) = delete;
 
-  ~ShellNativeCursorManager() override {}
+  ~ShellNativeCursorManager() override {
+    aura::client::SetCursorShapeClient(nullptr);
+  }
 
   // wm::NativeCursorManager overrides.
   void SetDisplay(const display::Display& display,

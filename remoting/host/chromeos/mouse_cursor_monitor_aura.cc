@@ -11,12 +11,16 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "remoting/host/chromeos/skia_bitmap_desktop_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/wm/core/cursor_lookup.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace {
 
@@ -72,19 +76,22 @@ void MouseCursorMonitorAura::NotifyCursorChanged(const ui::Cursor& cursor) {
     return;
   }
 
-  std::unique_ptr<SkBitmap> cursor_bitmap =
-      std::make_unique<SkBitmap>(wm::GetCursorBitmap(cursor));
-  gfx::Point cursor_hotspot = wm::GetCursorHotspot(cursor);
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (!cursor_data) {
+    LOG(ERROR) << "Failed to load bitmap for cursor type: " << cursor.type();
+    return;
+  }
 
-  if (cursor_bitmap->isNull()) {
-    LOG(ERROR) << "Failed to load bitmap for cursor type:"
-               << static_cast<int>(cursor.type());
+  const SkBitmap& cursor_bitmap = cursor_data->bitmaps[0];
+  if (cursor_bitmap.drawsNothing()) {
     callback_->OnMouseCursor(CreateEmptyMouseCursor());
     return;
   }
 
-  std::unique_ptr<webrtc::DesktopFrame> image(
-      SkiaBitmapDesktopFrame::Create(std::move(cursor_bitmap)));
+  const gfx::Point& cursor_hotspot = cursor_data->hotspot;
+  std::unique_ptr<webrtc::DesktopFrame> image(SkiaBitmapDesktopFrame::Create(
+      std::make_unique<SkBitmap>(cursor_bitmap)));
   std::unique_ptr<webrtc::MouseCursor> cursor_shape(new webrtc::MouseCursor(
       image.release(),
       webrtc::DesktopVector(cursor_hotspot.x(), cursor_hotspot.y())));

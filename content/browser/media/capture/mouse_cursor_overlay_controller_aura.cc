@@ -5,13 +5,16 @@
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
-#include "ui/wm/core/cursor_lookup.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace content {
@@ -172,10 +175,12 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
     return gfx::RectF();
 
   const gfx::Size& window_size = window->bounds().size();
-  if (window_size.IsEmpty() || !window->GetRootWindow())
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (window_size.IsEmpty() || !window->GetRootWindow() || !cursor_data)
     return gfx::RectF();
 
-  const SkBitmap& bitmap = wm::GetCursorBitmap(cursor);
+  const SkBitmap& bitmap = cursor_data->bitmaps[0];
   const float scale_factor = cursor.image_scale_factor();
   DCHECK_GT(scale_factor, 0.0f);
 
@@ -184,8 +189,8 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
       gfx::SizeF(bitmap.width(), bitmap.height()), 1.0f / scale_factor);
 
   // Compute the hotspot in terms of DIP coordinates.
-  const gfx::PointF hotspot = gfx::ScalePoint(
-      gfx::PointF(wm::GetCursorHotspot(cursor)), 1.0f / scale_factor);
+  const gfx::PointF hotspot =
+      gfx::ScalePoint(gfx::PointF(cursor_data->hotspot), 1.0f / scale_factor);
 
   // Finally, put it all together: Scale the absolute bounds of the
   // overlay by the window size to produce relative coordinates.
@@ -207,7 +212,12 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 // static
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
-  return wm::GetCursorBitmap(cursor);
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (!cursor_data)
+    return SkBitmap();
+
+  return cursor_data->bitmaps[0];
 }
 
 }  // namespace content
