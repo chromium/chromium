@@ -296,8 +296,8 @@ namespace enterprise.reportingPrivate {
 
     // Hive as given in the corresponding <code>GetSettingsOptions</code>
     // request.
-    [platforms = ("win")]
-    RegistryHive hive;
+    // Present on Windows only.
+    RegistryHive? hive;
 
     // Value indicating whether the specific resource could be found or not.
     PresenceValue presence;
