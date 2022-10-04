@@ -143,20 +143,4 @@ TEST_F(ArcGhostWindowViewTest, FixupMessageTest) {
             l10n_util::GetStringUTF16(IDS_ARC_GHOST_WINDOW_APP_FIXUP_MESSAGE));
 }
 
-TEST_F(ArcGhostWindowViewTest, SetTypeTest) {
-  const int kDiameter = 24;
-  const uint32_t kThemeColor = SK_ColorWHITE;
-  const std::string kAppId = "test_app";
-  InstallApp(kAppId);
-
-  CreateView(arc::GhostWindowType::kFullRestore, kDiameter, kThemeColor);
-  EXPECT_EQ(view()->message_label_, nullptr);
-
-  view()->SetType(arc::GhostWindowType::kFixup);
-  EXPECT_NE(view()->message_label_, nullptr);
-
-  view()->SetType(arc::GhostWindowType::kAppLaunch);
-  EXPECT_EQ(view()->message_label_, nullptr);
-}
-
 }  // namespace ash::full_restore
