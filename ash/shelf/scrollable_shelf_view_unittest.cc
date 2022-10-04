@@ -300,18 +300,11 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterDisplayRotationShortToLong) {
 }
 
 // TODO(crbug.com/1366645): Enable when the bug is fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_CorrectUIAfterDisplayRotationLongToShort \
-  DISABLED_CorrectUIAfterDisplayRotationLongToShort
-#else
-#define MAYBE_CorrectUIAfterDisplayRotationLongToShort \
-  CorrectUIAfterDisplayRotationLongToShort
-#endif
 // Verifies that the display rotation from the long side to the short side
 // should not break the scrollable shelf's UI behavior
 // (https://crbug.com/1000764).
 TEST_P(ScrollableShelfViewRTLTest,
-       MAYBE_CorrectUIAfterDisplayRotationLongToShort) {
+       DISABLED_CorrectUIAfterDisplayRotationLongToShort) {
   // Changes the display setting in order that the display's width is greater
   // than the height.
   UpdateDisplay("600x300");
