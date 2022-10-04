@@ -426,6 +426,11 @@ let kRTCIceCandidateStats = new RTCStats(null, {
   priority: 'number',
   url: 'string',
   deleted: 'boolean',
+  foundation: 'string',
+  relatedAddress:  'string',
+  relatedPort: 'number',
+  usernameFragment: 'string',
+  tcpType: 'string',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'local-candidate', kRTCIceCandidateStats);
