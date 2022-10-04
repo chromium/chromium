@@ -213,7 +213,7 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   MarkFirstContentfulPaintAndClearPresentationPromise();
   SimulateNetworkStable();
   EXPECT_GE(GetPaintTiming().FirstMeaningfulPaint(),
-            GetPaintTiming().FirstContentfulPaint());
+            GetPaintTiming().FirstContentfulPaintIgnoringSoftNavigations());
 }
 
 TEST_F(FirstMeaningfulPaintDetectorTest,
@@ -286,7 +286,7 @@ TEST_F(FirstMeaningfulPaintDetectorTest,
   ClearFirstContentfulPaintPresentationPromise();
   EXPECT_GT(GetPaintTiming().FirstMeaningfulPaint(), base::TimeTicks());
   EXPECT_EQ(GetPaintTiming().FirstMeaningfulPaint(),
-            GetPaintTiming().FirstContentfulPaint());
+            GetPaintTiming().FirstContentfulPaintIgnoringSoftNavigations());
 }
 
 TEST_F(

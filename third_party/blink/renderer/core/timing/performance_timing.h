@@ -109,7 +109,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // The timings after the page is restored from back-forward cache.
   BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
   // The time the first paint operation was performed.
-  uint64_t FirstPaint() const;
+  uint64_t FirstPaintForUKM() const;
   // The time the first paint operation for image was performed.
   uint64_t FirstImagePaint() const;
   // The first 'contentful' paint as full-resolution monotonic time. This is
@@ -121,10 +121,10 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
       const;
   // The time of the first 'contentful' paint. A contentful paint is a paint
   // that includes content of some kind (for example, text or image content).
-  uint64_t FirstContentfulPaint() const;
+  uint64_t FirstContentfulPaintIgnoringSoftNavigations() const;
   // The first 'contentful' paint as full-resolution monotonic time. Intended to
   // be used for correlation with other events internal to blink.
-  base::TimeTicks FirstContentfulPaintAsMonotonicTime() const;
+  base::TimeTicks FirstContentfulPaintAsMonotonicTimeForUKM() const;
   // The time of the first 'meaningful' paint, A meaningful paint is a paint
   // where the page's primary content is visible.
   uint64_t FirstMeaningfulPaint() const;

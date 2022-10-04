@@ -4063,7 +4063,7 @@ void Document::SetParsingState(ParsingState parsing_state) {
       form_controller_->ScheduleRestore();
     if (auto* ds_controller = DeferredShapingController::From(*this)) {
       PaintTiming& timing = PaintTiming::From(*this);
-      if (!timing.FirstContentfulPaint().is_null())
+      if (!timing.FirstContentfulPaintIgnoringSoftNavigations().is_null())
         ds_controller->ReshapeAllDeferred(ReshapeReason::kDomContentLoaded);
     }
   }

@@ -70,7 +70,7 @@ void OverlayInterstitialAdDetector::MaybeFireDetection(
 
   // Skip any measurement before the FCP.
   if (PaintTiming::From(*outermost_main_frame->GetDocument())
-          .FirstContentfulPaint()
+          .FirstContentfulPaintIgnoringSoftNavigations()
           .is_null()) {
     return;
   }

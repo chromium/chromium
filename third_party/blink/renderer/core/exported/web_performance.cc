@@ -172,7 +172,7 @@ double WebPerformance::LoadEventEnd() const {
 }
 
 double WebPerformance::FirstPaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstPaint());
+  return MillisecondsToSeconds(private_->timing()->FirstPaintForUKM());
 }
 
 double WebPerformance::FirstImagePaint() const {
@@ -180,11 +180,12 @@ double WebPerformance::FirstImagePaint() const {
 }
 
 double WebPerformance::FirstContentfulPaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstContentfulPaint());
+  return MillisecondsToSeconds(
+      private_->timing()->FirstContentfulPaintIgnoringSoftNavigations());
 }
 
 base::TimeTicks WebPerformance::FirstContentfulPaintAsMonotonicTime() const {
-  return private_->timing()->FirstContentfulPaintAsMonotonicTime();
+  return private_->timing()->FirstContentfulPaintAsMonotonicTimeForUKM();
 }
 
 base::TimeTicks

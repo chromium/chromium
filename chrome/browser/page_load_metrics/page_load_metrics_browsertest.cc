@@ -85,6 +85,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -2852,33 +2853,63 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForClick) {
       {url, embedded_test_server()->GetURL("/title1.html")});
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, SoftNavigation) {
-  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
-  content::SetupCrossSiteRedirector(embedded_test_server());
-  ASSERT_TRUE(embedded_test_server()->Start());
+class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  void TestSoftNavigation() {
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    content::SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
 
-  auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-  waiter->AddPageExpectation(TimingField::kLoadEvent);
-  waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
-  GURL url =
-      embedded_test_server()->GetURL("/page_load_metrics/soft_navigation.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  waiter->Wait();
+    auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
+    waiter->AddPageExpectation(TimingField::kLoadEvent);
+    waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+    GURL url = embedded_test_server()->GetURL(
+        "/page_load_metrics/soft_navigation.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    waiter->Wait();
 
-  waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
-  content::SimulateMouseClickAt(
-      browser()->tab_strip_model()->GetActiveWebContents(), 0,
-      blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
-  waiter->Wait();
+    waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
+    content::SimulateMouseClickAt(
+        browser()->tab_strip_model()->GetActiveWebContents(), 0,
+        blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
 
-  // Force navigation to another page, which should force logging of histograms
-  // persisted at the end of the page load lifetime.
-  NavigateToUntrackedUrl();
+    waiter->Wait();
 
-  VerifyNavigationMetrics({url});
-  int64_t value = GetUKMPageLoadMetric(PageLoad::kSoftNavigationCountName);
-  ASSERT_EQ(value, 1);
+    // Force navigation to another page, which should force logging of
+    // histograms persisted at the end of the page load lifetime.
+    NavigateToUntrackedUrl();
+
+    VerifyNavigationMetrics({url});
+    int64_t value = GetUKMPageLoadMetric(PageLoad::kSoftNavigationCountName);
+    ASSERT_EQ(value, 1);
+  }
+};
+
+class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
+    : public SoftNavigationBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PageLoadMetricsBrowserTest::SetUpCommandLine(command_line);
+    features_list_.InitWithFeatures({blink::features::kSoftNavigationHeuristics,
+                                     blink::features::kNavigationId},
+                                    {});
+  }
+
+ private:
+  base::test::ScopedFeatureList features_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
+  TestSoftNavigation();
+}
+IN_PROC_BROWSER_TEST_F(
+    SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
+    SoftNavigation) {
+  TestSoftNavigation();
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForOmniboxMatch) {

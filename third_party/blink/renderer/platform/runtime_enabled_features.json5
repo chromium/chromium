@@ -1728,6 +1728,7 @@
     {
       name: "NavigationId",
       status: "experimental",
+      base_feature: "NavigationId",
     },
     {
       name: "NavigatorContentUtils",
@@ -2431,6 +2432,7 @@
       name: "SoftNavigationHeuristics",
       status: "experimental",
       depends_on: ["NavigationId"],
+      base_feature: "SoftNavigationHeuristics",
     },
     // An origin trial feature name is required for this, even though it's
     // actually enabled by the more specific trial. Having these as separate

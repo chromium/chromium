@@ -371,12 +371,12 @@ PerformanceTiming::BackForwardCacheRestore() const {
   return restore_timings;
 }
 
-uint64_t PerformanceTiming::FirstPaint() const {
+uint64_t PerformanceTiming::FirstPaintForUKM() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
     return 0;
 
-  return MonotonicTimeToIntegerMilliseconds(timing->FirstPaint());
+  return MonotonicTimeToIntegerMilliseconds(timing->FirstPaintForUKM());
 }
 
 uint64_t PerformanceTiming::FirstImagePaint() const {
@@ -387,12 +387,14 @@ uint64_t PerformanceTiming::FirstImagePaint() const {
   return MonotonicTimeToIntegerMilliseconds(timing->FirstImagePaint());
 }
 
-uint64_t PerformanceTiming::FirstContentfulPaint() const {
+uint64_t PerformanceTiming::FirstContentfulPaintIgnoringSoftNavigations()
+    const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
     return 0;
 
-  return MonotonicTimeToIntegerMilliseconds(timing->FirstContentfulPaint());
+  return MonotonicTimeToIntegerMilliseconds(
+      timing->FirstContentfulPaintIgnoringSoftNavigations());
 }
 
 base::TimeTicks
@@ -405,12 +407,13 @@ PerformanceTiming::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
   return timing->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
 }
 
-base::TimeTicks PerformanceTiming::FirstContentfulPaintAsMonotonicTime() const {
+base::TimeTicks PerformanceTiming::FirstContentfulPaintAsMonotonicTimeForUKM()
+    const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
     return base::TimeTicks();
 
-  return timing->FirstContentfulPaint();
+  return timing->FirstContentfulPaintIgnoringSoftNavigations();
 }
 
 uint64_t PerformanceTiming::FirstMeaningfulPaint() const {

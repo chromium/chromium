@@ -86,9 +86,12 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // given paint event has not yet occurred. See the comments for
   // monotonicallyIncreasingTime in wtf/Time.h for additional details.
 
-  // FirstPaint returns the first time that anything was painted for the
-  // current document.
-  base::TimeTicks FirstPaint() const { return first_paint_presentation_; }
+  // Returns the first time that anything was painted for the
+  // current document after a hard navigation. This is not considering soft
+  // navigations.
+  base::TimeTicks FirstPaintForUKM() const {
+    return first_paint_presentation_for_ukm_;
+  }
 
   // Times when the first paint happens after the page is restored from the
   // back-forward cache. If the element value is zero time tick, the first paint
@@ -102,11 +105,12 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return request_animation_frames_after_back_forward_cache_restore_;
   }
 
-  // FirstContentfulPaint returns the first time that 'contentful' content was
-  // painted. For instance, the first time that text or image content was
-  // painted.
-  base::TimeTicks FirstContentfulPaint() const {
-    return first_contentful_paint_presentation_;
+  // Rreturns the first time that 'contentful' content was
+  //  painted in the current document after a hard navigation (and ignoring soft
+  //  navigations). For instance, the first time that text or image content was
+  //  painted after the user landed on the page.
+  base::TimeTicks FirstContentfulPaintIgnoringSoftNavigations() const {
+    return first_contentful_paint_presentation_ignoring_soft_navigations_;
   }
 
   base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
@@ -222,6 +226,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // once we confirm the deltas and discrepancies look reasonable.
   base::TimeTicks first_paint_;
   base::TimeTicks first_paint_presentation_;
+  // First paint timestamp that doesn't update after soft navigations, and only
+  // used for UKM reporting.
+  base::TimeTicks first_paint_presentation_for_ukm_;
   WTF::Vector<base::TimeTicks>
       first_paints_after_back_forward_cache_restore_presentation_;
   WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
@@ -230,6 +237,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_image_paint_presentation_;
   base::TimeTicks first_contentful_paint_;
   base::TimeTicks first_contentful_paint_presentation_;
+  // FCP timestamp that does not update after soft navigations.
+  base::TimeTicks
+      first_contentful_paint_presentation_ignoring_soft_navigations_;
   base::TimeTicks first_meaningful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_candidate_;
   base::TimeTicks first_eligible_to_paint_;

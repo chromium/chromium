@@ -319,6 +319,9 @@ void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
 void PaintTiming::SetFirstPaintPresentation(base::TimeTicks stamp) {
   DCHECK(first_paint_presentation_.is_null());
   first_paint_presentation_ = stamp;
+  if (first_paint_presentation_for_ukm_.is_null()) {
+    first_paint_presentation_for_ukm_ = stamp;
+  }
   probe::PaintTiming(GetSupplementable(), "firstPaint",
                      first_paint_presentation_.since_origin().InSecondsF());
   WindowPerformance* performance = GetPerformanceInstance(GetFrame());
@@ -333,6 +336,10 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
                                       "GlobalFirstContentfulPaint",
                                       TRACE_EVENT_SCOPE_GLOBAL, stamp);
   first_contentful_paint_presentation_ = stamp;
+  if (first_contentful_paint_presentation_ignoring_soft_navigations_
+          .is_null()) {
+    first_contentful_paint_presentation_ignoring_soft_navigations_ = stamp;
+  }
   probe::PaintTiming(
       GetSupplementable(), "firstContentfulPaint",
       first_contentful_paint_presentation_.since_origin().InSecondsF());
