@@ -250,9 +250,9 @@ TEST_F(SystemExtensionsPersistentStorageTest, CorruptId) {
 
   // Add a System Extension with a corrupted id.
   {
-    DictionaryPrefUpdate update(profile()->GetPrefs(),
+    ScopedDictPrefUpdate update(profile()->GetPrefs(),
                                 kPersistedSystemExtensions);
-    base::Value::Dict& persisted_system_extensions_map = update->GetDict();
+    base::Value::Dict& persisted_system_extensions_map = update.Get();
 
     base::Value::Dict corrupted_system_extension;
     corrupted_system_extension.Set("manifest", first_test_manifest().Clone());
@@ -287,10 +287,10 @@ TEST_F(SystemExtensionsPersistentStorageTest, NoManifest) {
 
   // Add a System Extension with no manifest.
   {
-    DictionaryPrefUpdate update(profile()->GetPrefs(),
+    ScopedDictPrefUpdate update(profile()->GetPrefs(),
                                 kPersistedSystemExtensions);
 
-    base::Value::Dict& persisted_system_extensions_map = update->GetDict();
+    base::Value::Dict& persisted_system_extensions_map = update.Get();
     persisted_system_extensions_map.Set(kFirstIdStr, base::Value::Dict());
   }
 

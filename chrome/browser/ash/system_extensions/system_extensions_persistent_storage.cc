@@ -35,9 +35,9 @@ SystemExtensionsPersistentStorage::~SystemExtensionsPersistentStorage() =
 
 void SystemExtensionsPersistentStorage::Add(
     const SystemExtension& system_extension) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kPersistedSystemExtensions);
-  base::Value::Dict& persisted_system_extensions_map = update->GetDict();
+  base::Value::Dict& persisted_system_extensions_map = update.Get();
 
   base::Value::Dict persisted_system_extension;
   persisted_system_extension.Set(kSystemExtensionManifest,
@@ -50,9 +50,9 @@ void SystemExtensionsPersistentStorage::Add(
 
 void SystemExtensionsPersistentStorage::Remove(
     const SystemExtensionId& system_extension_id) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kPersistedSystemExtensions);
-  update->GetDict().Remove(SystemExtension::IdToString(system_extension_id));
+  update->Remove(SystemExtension::IdToString(system_extension_id));
 }
 
 absl::optional<SystemExtensionPersistedInfo>

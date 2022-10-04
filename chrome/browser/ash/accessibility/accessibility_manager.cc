@@ -1017,9 +1017,9 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
         // If the SODA language isn't installed yet, update the preference to
         // ensure the nudge gets shown for this locale when installation
         // completes.
-        DictionaryPrefUpdate update(
+        ScopedDictPrefUpdate update(
             pref_service, prefs::kAccessibilityDictationLocaleOfflineNudge);
-        update.Get()->SetBoolKey(dictation_locale, false);
+        update->Set(dictation_locale, false);
       }
     }
     // This shouldn't depend on offline nudge in case SODA was uninstalled out
@@ -1064,9 +1064,9 @@ void AccessibilityManager::ShowDictationLanguageUpgradedNudge(
   // for this particular locale.
   AccessibilityController::Get()->ShowDictationLanguageUpgradedNudge(
       dictation_locale, g_browser_process->GetApplicationLocale());
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kAccessibilityDictationLocaleOfflineNudge);
-  update.Get()->SetBoolKey(dictation_locale, true);
+  update->Set(dictation_locale, true);
 }
 
 void AccessibilityManager::SetFocusHighlightEnabled(bool enabled) {
@@ -2001,14 +2001,14 @@ void AccessibilityManager::SetCaretBoundsObserverForTest(
 void AccessibilityManager::SetSwitchAccessKeysForTest(
     const std::set<int>& action_keys,
     const std::string& pref_name) {
-  DictionaryPrefUpdate pref_update(profile_->GetPrefs(), pref_name);
-  base::Value devices(base::Value::Type::LIST);
+  ScopedDictPrefUpdate pref_update(profile_->GetPrefs(), pref_name);
+  base::Value::List devices;
   devices.Append(kSwitchAccessInternalDevice);
   devices.Append(kSwitchAccessUsbDevice);
   devices.Append(kSwitchAccessBluetoothDevice);
   for (int key : action_keys) {
     const std::string& key_str = base::NumberToString(key);
-    pref_update->SetPath(key_str, devices.Clone());
+    pref_update->SetByDottedPath(key_str, devices.Clone());
   }
 
   profile_->GetPrefs()->CommitPendingWrite();

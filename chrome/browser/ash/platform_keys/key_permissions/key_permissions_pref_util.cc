@@ -68,12 +68,12 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
-  DictionaryPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
+  ScopedDictPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
 
-  base::Value new_pref_entry(base::Value::Type::DICTIONARY);
-  new_pref_entry.SetStringKey(kPrefKeyUsage, kPrefKeyUsageCorporate);
+  base::Value::Dict new_pref_entry;
+  new_pref_entry.Set(kPrefKeyUsage, kPrefKeyUsageCorporate);
 
-  update->SetKey(public_key_spki_der_b64, std::move(new_pref_entry));
+  update->Set(public_key_spki_der_b64, std::move(new_pref_entry));
 }
 
 }  // namespace internal
