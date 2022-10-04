@@ -218,6 +218,20 @@ TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClick) {
   SimulateButtonClick(container->children()[0]);
 }
 
+TEST_F(PasswordChangeRunViewTest, CreateBasePromptAndClickClearsFocusTimer) {
+  auto mock_timer = std::make_unique<base::MockOneShotTimer>();
+  base::MockOneShotTimer* timer_ptr = mock_timer.get();
+  view()->SetFocusOnButtonTimerForTest(std::move(mock_timer));
+  std::vector<PromptChoice> choices = CreatePromptChoices();
+
+  view()->ShowBasePrompt(kDescription, choices);
+  EXPECT_TRUE(timer_ptr->IsRunning());
+
+  view()->ClearPrompt();
+  // Clearing the prompt stops the timer.
+  EXPECT_FALSE(timer_ptr->IsRunning());
+}
+
 TEST_F(PasswordChangeRunViewTest, CreateBasePromptWithoutButton) {
   // Show a prompt with no choices.
   view()->ShowBasePrompt({});

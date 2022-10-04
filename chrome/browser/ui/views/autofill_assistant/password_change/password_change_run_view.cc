@@ -434,6 +434,7 @@ void PasswordChangeRunView::OnShowCompletionScreen() {
 
 void PasswordChangeRunView::ClearPrompt() {
   DCHECK(body_);
+  focus_on_button_timer_->Stop();
   body_->RemoveAllChildViews();
   password_change_run_progress_->ResumeIconAnimation();
 }
