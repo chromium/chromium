@@ -32,6 +32,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_apps_utils.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/prefs_migration_uma.h"
@@ -125,25 +126,6 @@ const char kDefaultPinnedAppsKey[] = "default";
 const char kLacrosChromeAppPrefix[] = "Default###";
 
 bool skip_pinned_apps_from_sync_for_test = false;
-
-bool IsAppIdArcPackage(const std::string& app_id) {
-  return app_id.find('.') != app_id.npos;
-}
-
-std::vector<std::string> GetActivitiesForPackage(
-    const std::string& package,
-    const std::vector<std::string>& all_arc_app_ids,
-    const ArcAppListPrefs& app_list_pref) {
-  std::vector<std::string> activities;
-  for (const std::string& app_id : all_arc_app_ids) {
-    const std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-        app_list_pref.GetApp(app_id);
-    if (app_info->package_name == package) {
-      activities.push_back(app_info->activity);
-    }
-  }
-  return activities;
-}
 
 std::vector<ash::ShelfID> AppIdsToShelfIDs(
     const std::vector<std::string>& app_ids) {
@@ -273,14 +255,7 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
       continue;
     }
 
-    // If the provided entry is a valid GURL, append its spec instead of the raw
-    // entry.
-    if (const GURL policy_entry_gurl{*policy_entry};
-        policy_entry_gurl.is_valid()) {
-      policy_entries.push_back(policy_entry_gurl.spec());
-    } else {
-      policy_entries.push_back(*policy_entry);
-    }
+    policy_entries.push_back(apps_util::TransformRawPolicyId(*policy_entry));
   }
 
   if (policy_entries.empty()) {
@@ -288,49 +263,14 @@ std::vector<std::string> ChromeShelfPrefs::GetAppsPinnedByPolicy(
   }
 
   std::vector<std::string> results;
-  // App Service is absent in some cases e.g. Arc++ Kiosk Mode.
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-          helper->profile())) {
-    // Rely only on app service data.
-
-    auto* app_service_proxy =
-        apps::AppServiceProxyFactory::GetForProfile(helper->profile());
-    for (const auto& policy_entry : policy_entries) {
-      app_service_proxy->AppRegistryCache().ForEachApp(
-          [&policy_entry, &results](const apps::AppUpdate& update) {
-            // If any of the app policy_ids match the provided list,
-            // append app_id and return.
-            if (base::Contains(update.PolicyIds(), policy_entry)) {
-              results.push_back(update.AppId());
-            }
-          });
-    }
-  } else {
-    // Obtain here all ids of ARC apps because it takes linear time, and getting
-    // them in the loop below would lead to quadratic complexity.
-
-    const ArcAppListPrefs* const arc_app_list_pref =
-        helper->GetArcAppListPrefs();
-    const std::vector<std::string> all_arc_app_ids(
-        arc_app_list_pref ? arc_app_list_pref->GetAppIds()
-                          : std::vector<std::string>());
-
-    for (const auto& policy_entry : policy_entries) {
-      // Handle Chrome App ids
-      if (crx_file::id_util::IdIsValid(policy_entry)) {
-        results.emplace_back(policy_entry);
-        continue;
-      }
-
-      // Handle Arc++ App ids
-      if (arc_app_list_pref && IsAppIdArcPackage(policy_entry)) {
-        // We are dealing with package name, not with 32 characters ID.
-        const std::vector<std::string> activities = GetActivitiesForPackage(
-            policy_entry, all_arc_app_ids, *arc_app_list_pref);
-        for (const auto& activity : activities) {
-          results.push_back(ArcAppListPrefs::GetAppId(policy_entry, activity));
-        }
-      }
+  for (const auto& policy_entry : policy_entries) {
+    absl::optional<std::string> app_id =
+        apps_util::GetAppIdFromPolicyId(helper->profile(), policy_entry);
+    if (app_id) {
+      results.push_back(std::move(*app_id));
+    } else {
+      LOG(ERROR) << "No matching app found for |policy_entry| = "
+                 << policy_entry;
     }
   }
 

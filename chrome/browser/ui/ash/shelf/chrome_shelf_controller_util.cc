@@ -10,6 +10,7 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -37,60 +38,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 
-namespace {
-
-// The PinnedLauncherApps policy allows specifying three types of identifiers:
-// Chrome App Ids, Android App package names, and Web App install URLs. This
-// method returns the value(s) that would have been used in the policy to pin an
-// app with |app_id|.
-//
-// Web App Example:
-// Admin installs a Web App using "https://foo.example" as the install URL.
-// Chrome generates an app id based on the URL e.g. "abc123". Calling
-// GetPolicyValueFromAppId() with "abc123" will return {"https://foo.example"},
-// which is the values that might be specified in the PinnedLauncherApps policy
-// to pin this Web App.
-//
-// Arc++ Example:
-// Admin installs an Android App with package name "com.example.foo". Chrome
-// generates an app id based on the package e.g. "123abc". Calling
-// GetPolicyValueFromAppId() with "123abc" will return {"com.example.foo"},
-// which is the value that would be specified in the PinnedLauncherApps policy
-// to pin this Android App.
-//
-// Chrome App Example:
-// Admin installs a Chrome App with "aaa111" as its app id. Calling
-// GetPolicyValueFromAppId() with "aaa111" will return {"aaa111"}, which is the
-// value that would be specified in the PinnedLauncherApps policy to pin this
-// Chrome App.
-std::vector<std::string> GetPolicyIdsFromAppId(const std::string& app_id,
-                                               Profile* profile) {
-  // App Service is absent in some cases e.g. Arc++ Kiosk Mode.
-  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
-    std::vector<std::string> policy_ids;
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->AppRegistryCache()
-        .ForOneApp(app_id, [&policy_ids](const apps::AppUpdate& update) {
-          policy_ids = update.PolicyIds();
-        });
-    return policy_ids;
-  } else {
-    // Handle Arc++ ids
-    const ArcAppListPrefs* const arc_prefs = ArcAppListPrefs::Get(profile);
-    if (arc_prefs) {
-      std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
-          arc_prefs->GetApp(app_id);
-      if (app_info)
-        return {app_info->package_name};
-    }
-
-    // Handle Chrome App ids
-    return {app_id};
-  }
-}
-
-}  // namespace
-
 const extensions::Extension* GetExtensionForAppID(const std::string& app_id,
                                                   Profile* profile) {
   return extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
@@ -110,11 +57,15 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;
 
-  const std::vector<std::string> policy_ids =
-      GetPolicyIdsFromAppId(app_id, profile);
+  const absl::optional<std::vector<std::string>> policy_ids =
+      apps_util::GetPolicyIdsFromAppId(profile, app_id);
+
+  if (!policy_ids || policy_ids->empty()) {
+    return AppListControllerDelegate::PIN_EDITABLE;
+  }
 
   if (ash::DemoSession::Get() &&
-      base::ranges::none_of(policy_ids, [](const auto& policy_id) {
+      base::ranges::none_of(*policy_ids, [](const auto& policy_id) {
         return ash::DemoSession::Get()->ShouldShowAndroidOrChromeAppInShelf(
             policy_id);
       })) {
@@ -133,17 +84,8 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
     if (!policy_entry)
       return AppListControllerDelegate::PIN_EDITABLE;
 
-    // If the provided entry is a valid GURL, take its spec instead of a raw
-    // entry.
-    std::string normalized_policy_entry;
-    if (const GURL policy_entry_gurl{*policy_entry};
-        policy_entry_gurl.is_valid()) {
-      normalized_policy_entry = policy_entry_gurl.spec();
-    } else {
-      normalized_policy_entry = *policy_entry;
-    }
-
-    if (base::Contains(policy_ids, normalized_policy_entry)) {
+    if (base::Contains(*policy_ids,
+                       apps_util::TransformRawPolicyId(*policy_entry))) {
       return AppListControllerDelegate::PIN_FIXED;
     }
   }
