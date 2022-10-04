@@ -16,9 +16,12 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/ui/post_restore_signin/features.h"
-#import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
+#import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+internal.h"
+#import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -62,63 +65,40 @@ void PromosManagerCoordinatorTest::CreatePrefs() {
       prefs::kIosPromosManagerSingleDisplayActivePromos);
 }
 
-// Tests the initializer correctly creates a PromosManagerMediator.
-TEST_F(PromosManagerCoordinatorTest, InitCreatesMediator) {
-  scoped_feature_list_.InitWithFeatures(
-      {kFullscreenPromosManager,
-       post_restore_signin::features::kIOSNewPostRestoreExperience},
-      {});
-  CreatePromosManagerCoordinator();
-
-  EXPECT_NE(coordinator_.mediator, nil);
-}
-
-// Tests the initializer does not create a PromosManagerMediator, because there
-// are no promos registered with the coordinator.
-TEST_F(PromosManagerCoordinatorTest, InitDoesNotCreatesMediator) {
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
-  CreatePromosManagerCoordinator();
-
-  EXPECT_EQ(coordinator_.mediator, nil);
-}
-
-// Tests dismissViewControllers is called when a banneredViewController's
-// secondary button is pressed, and the banneredProvider implements
-// standardPromoDismissAction.
-TEST_F(PromosManagerCoordinatorTest,
-       BanneredViewControllerDismissesUsingSecondaryButton) {
-  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
-
-  PromosManagerCoordinator* mockCoordinator =
-      OCMClassMock([PromosManagerCoordinator class]);
-  mockCoordinator.banneredViewController =
-      OCMClassMock([PostRestoreSignInProvider class]);
-
-  OCMStub([mockCoordinator dismissViewControllers])
-      .andDo(^(NSInvocation* invocation) {
-        SUCCEED();
-      });
-
-  [mockCoordinator.banneredViewController.delegate didTapSecondaryActionButton];
-}
-
-// Tests dismissViewControllers is called when a viewController's dismiss button
-// is pressed, and the provider implements standardPromoDismissAction.
+// Tests a provider's standardPromoDismissAction is called when a
+// viewController's dismiss button is pressed.
 TEST_F(PromosManagerCoordinatorTest,
        ViewControllerDismissesUsingDismissButton) {
   scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
 
-  PromosManagerCoordinator* mockCoordinator =
-      OCMClassMock([PromosManagerCoordinator class]);
-  mockCoordinator.viewController =
-      OCMClassMock([PostRestoreSignInProvider class]);
+  CreatePromosManagerCoordinator();
 
-  OCMStub([mockCoordinator dismissViewControllers])
-      .andDo(^(NSInvocation* invocation) {
-        SUCCEED();
-      });
+  id provider = OCMProtocolMock(@protocol(StandardPromoViewProvider));
+  coordinator_.provider = provider;
 
-  [mockCoordinator confirmationAlertDismissAction];
+  OCMExpect([provider standardPromoDismissAction]);
+
+  [coordinator_ confirmationAlertDismissAction];
+
+  [provider verify];
+}
+
+// Tests a banneredProvider's standardPromoDismissAction is called when a
+// banneredViewController's dismiss button is pressed.
+TEST_F(PromosManagerCoordinatorTest,
+       BanneredViewControllerDismissesUsingSecondaryButton) {
+  scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
+
+  CreatePromosManagerCoordinator();
+
+  id banneredProvider = OCMProtocolMock(@protocol(BanneredPromoViewProvider));
+  coordinator_.banneredProvider = banneredProvider;
+
+  OCMExpect([banneredProvider standardPromoDismissAction]);
+
+  [coordinator_ confirmationAlertDismissAction];
+
+  [banneredProvider verify];
 }
 
 // TODO(crbug.com/1370763): Add unit tests for promoWasDisplayed being

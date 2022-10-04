@@ -82,6 +82,7 @@ source_set("unit_tests") {
     "promos_manager_coordinator_unittest.mm",
   ]
   deps = [
+    ":promos",
     ":promos_manager",
     "//base",
     "//base/test:test_support",
@@ -92,8 +93,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:promos_manager",
-    "//ios/chrome/browser/ui/post_restore_signin",
-    "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
