@@ -22,8 +22,8 @@ class CUPTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   void InitCupFeatures(bool enableSigning, bool enableVerifying) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (enableSigning) {
       enabled_features.push_back(

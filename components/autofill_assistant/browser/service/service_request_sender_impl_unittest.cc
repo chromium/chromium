@@ -73,8 +73,8 @@ class ServiceRequestSenderImplTest : public testing::Test {
   absl::optional<URLLoaderCompletionStatus> completion_status_ = absl::nullopt;
 
   void InitCupFeatures(bool enableSigning, bool enableVerifying) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (enableSigning) {
       enabled_features.push_back(autofill_assistant::features::
