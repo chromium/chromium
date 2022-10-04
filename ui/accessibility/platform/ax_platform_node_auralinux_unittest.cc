@@ -1029,8 +1029,9 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActionsNoActions) {
 
   gint number_of_actions = atk_action_get_n_actions(ATK_ACTION(root_obj));
 
-  // The only action exposed would be the context menu action.
-  EXPECT_EQ(1, number_of_actions);
+  // In absence of any other actions, we would expose the default and the
+  // context menu actions.
+  EXPECT_EQ(2, number_of_actions);
 
   g_object_unref(root_obj);
 }
