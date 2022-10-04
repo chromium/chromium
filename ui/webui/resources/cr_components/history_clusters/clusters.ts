@@ -294,6 +294,13 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   }
 
   /**
+   * Returns whether the given index corresponds to the last cluster.
+   */
+  private isLastCluster_(index: number): boolean {
+    return index === this.result_.clusters.length - 1;
+  }
+
+  /**
    * Returns a promise that resolves when the browser is idle.
    */
   private onBrowserIdle_(): Promise<void> {

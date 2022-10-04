@@ -17,10 +17,18 @@
     padding: var(--first-cluster-padding-top) var(--cluster-padding-horizontal) 0;
   }
 
- :host([in-side-panel_]) #clusters {
+  :host([in-side-panel_]) #clusters {
     min-width: 0;
     padding: 8px 0 0;
- }
+  }
+
+  :host([in-side-panel_]) history-cluster {
+    border-bottom: 4px solid var(--cr-separator-color);
+  }
+
+  :host([in-side-panel_]) history-cluster[is-last] {
+    border-bottom: none;
+  }
 
   #placeholder {
     align-items: center;
@@ -52,7 +60,8 @@
   <template>
     <history-cluster cluster="[[item]]" index="[[index]]"
         query="[[result_.query]]" tabindex$="[[tabIndex]]"
-        on-remove-cluster="onRemoveCluster_">
+        on-remove-cluster="onRemoveCluster_" is-first$="[[!index]]"
+        is-last$="[[isLastCluster_(index, result_.clusters.*)]]">
     </history-cluster>
   </template>
 </iron-list>

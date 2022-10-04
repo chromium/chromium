@@ -8,7 +8,12 @@
   }
 
   :host([in-side-panel_]) {
-    padding-bottom: 8px;
+    padding-bottom: 0;
+    padding-top: 8px;
+  }
+
+  :host([in-side-panel_][is-first]) {
+    padding-top: 0;
   }
 
   :host-context(.focus-outline-visible):host(:focus) #container {
@@ -21,12 +26,8 @@
     margin-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel_]) #container {
-    border-bottom: 3px solid var(--cr-separator-color);
-  }
-
   :host([in-side-panel_]) #container url-visit:last-of-type {
-    padding-bottom: 8px;
+    margin-bottom: 8px;
   }
 
   /* We need an inner container div to apply spacing between clusters. This is
