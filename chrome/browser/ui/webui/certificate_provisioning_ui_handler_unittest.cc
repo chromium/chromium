@@ -94,7 +94,7 @@ void FormatDictRecurse(base::Value* value,
     return;
   }
   if (value->is_list()) {
-    for (base::Value& child : value->GetListDeprecated())
+    for (base::Value& child : value->GetList())
       FormatDictRecurse(&child, messages);
     return;
   }
@@ -122,7 +122,7 @@ base::Value FormatJsonDict(const base::StringPiece input,
 // |profile_id|.
 base::Value GetByProfileId(const base::Value& all_processes,
                            const std::string& profile_id) {
-  for (const base::Value& process : all_processes.GetListDeprecated()) {
+  for (const base::Value& process : all_processes.GetList()) {
     if (profile_id == *process.GetDict().FindString("certProfileId"))
       return process.Clone();
   }
@@ -183,7 +183,7 @@ class CertificateProvisioningUiHandlerTest : public ::testing::Test {
     if (!out_profile_ids)
       return;
     out_profile_ids->clear();
-    for (const base::Value& process : out_all_processes->GetListDeprecated()) {
+    for (const base::Value& process : out_all_processes->GetList()) {
       const std::string* profile_id =
           process.GetDict().FindString("certProfileId");
       ASSERT_TRUE(profile_id);
@@ -227,7 +227,7 @@ TEST_F(CertificateProvisioningUiHandlerTest, NoProcesses) {
   base::Value all_processes;
   ASSERT_NO_FATAL_FAILURE(RefreshCertProvisioningProcesses(
       &all_processes, /*out_profile_ids=*/nullptr));
-  EXPECT_TRUE(all_processes.GetListDeprecated().empty());
+  EXPECT_TRUE(all_processes.GetList().empty());
 }
 
 TEST_F(CertificateProvisioningUiHandlerTest, HasOneProcess) {
