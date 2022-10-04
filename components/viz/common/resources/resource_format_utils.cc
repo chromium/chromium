@@ -82,13 +82,6 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
   return kN32_SkColorType;
 }
 
-// TODO (hitawala): Add support for multiplanar formats.
-SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
-                                               SharedImageFormat format) {
-  return ResourceFormatToClosestSkColorType(gpu_compositing,
-                                            format.resource_format());
-}
-
 ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
   switch (color_type) {
     case kARGB_4444_SkColorType:
@@ -657,6 +650,76 @@ wgpu::TextureFormat ToDawnFormat(ResourceFormat format) {
 
 WGPUTextureFormat ToWGPUFormat(ResourceFormat format) {
   return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
+}
+
+// TODO (hitawala): Add support for multiplanar formats.
+SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
+                                               SharedImageFormat format) {
+  return ResourceFormatToClosestSkColorType(gpu_compositing,
+                                            format.resource_format());
+}
+
+int BitsPerPixel(SharedImageFormat format) {
+  return BitsPerPixel(format.resource_format());
+}
+
+bool HasAlpha(SharedImageFormat format) {
+  return HasAlpha(format.resource_format());
+}
+
+const char* ResourceFormatToString(SharedImageFormat format) {
+  return ResourceFormatToString(format.resource_format());
+}
+
+unsigned int GLDataType(SharedImageFormat format) {
+  return GLDataType(format.resource_format());
+}
+
+unsigned int GLDataFormat(SharedImageFormat format) {
+  return GLDataFormat(format.resource_format());
+}
+
+unsigned int GLInternalFormat(SharedImageFormat format) {
+  return GLInternalFormat(format.resource_format());
+}
+
+gfx::BufferFormat BufferFormat(SharedImageFormat format) {
+  return BufferFormat(format.resource_format());
+}
+
+bool IsResourceFormatCompressed(SharedImageFormat format) {
+  return IsResourceFormatCompressed(format.resource_format());
+}
+
+unsigned int TextureStorageFormat(SharedImageFormat format,
+                                  bool use_angle_rgbx_format) {
+  return TextureStorageFormat(format.resource_format(), use_angle_rgbx_format);
+}
+
+bool IsGpuMemoryBufferFormatSupported(SharedImageFormat format) {
+  return IsGpuMemoryBufferFormatSupported(format.resource_format());
+}
+
+bool GLSupportsFormat(SharedImageFormat format) {
+  return GLSupportsFormat(format.resource_format());
+}
+
+#if BUILDFLAG(ENABLE_VULKAN)
+bool HasVkFormat(SharedImageFormat format) {
+  return HasVkFormat(format.resource_format());
+}
+
+VkFormat ToVkFormat(SharedImageFormat format) {
+  return ToVkFormat(format.resource_format());
+}
+#endif
+
+wgpu::TextureFormat ToDawnFormat(SharedImageFormat format) {
+  return ToDawnFormat(format.resource_format());
+}
+
+WGPUTextureFormat ToWGPUFormat(SharedImageFormat format) {
+  return ToWGPUFormat(format.resource_format());
 }
 
 }  // namespace viz

@@ -34,4 +34,8 @@ unsigned int ToMTLPixelFormat(ResourceFormat format) {
   return static_cast<unsigned int>(mtl_pixel_format);
 }
 
+unsigned int ToMTLPixelFormat(SharedImageFormat format) {
+  return ToMTLPixelFormat(format.resource_format());
+}
+
 }  // namespace viz
