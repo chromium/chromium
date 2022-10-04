@@ -119,6 +119,8 @@ _BLOCK_LIST_TEST_NAMES = [
     'v8.runtime_stats.top_25',  # Fails in Windows, crbug.com/1043048
     'wasmpspdfkit',  # Fails in Chrome OS, crbug.com/1191938
     'memory.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1277277
+    'desktop_ui' if sys.platform == 'darwin' else None,  # crbug.com/1370958
+    'power.desktop' if sys.platform == 'darwin' else None,  # crbug.com/1370958
 ]
 
 
