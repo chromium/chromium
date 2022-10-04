@@ -27,10 +27,6 @@ generate_grd("build_grdp") {
   resource_path_rewrites = [ "../../chromeos/login/saml_with_password_attributes.xml|saml_with_password_attributes.xml" ]
 
   # Add the core files from c/b/r/gaia_auth_host as well.
-  deps = [
-    "//chrome/browser/resources/gaia_auth_host:preprocess_src",
-  ]
-  manifest_files = [
-    "$root_gen_dir/chrome/browser/resources/gaia_auth_host/gaia_auth_host_existing_manifest.json",
-  ]
+  deps = [ "//chrome/browser/resources/gaia_auth_host:preprocess_src" ]
+  manifest_files = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/gaia_auth_host_existing_manifest.json" ]
 }

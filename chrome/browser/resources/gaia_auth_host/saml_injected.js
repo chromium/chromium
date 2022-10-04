@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {Channel} from './channel.js';
-import {WebviewScrollShadowsHelper, WebviewScrollShadowsHelperConstructor} from './scroll_helper_injected.js';
 import {PostMessageChannel} from './post_message_channel.js';
+import {WebviewScrollShadowsHelper, WebviewScrollShadowsHelperConstructor} from './scroll_helper_injected.js';
 
 /**
  * @fileoverview

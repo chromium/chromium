@@ -18,17 +18,15 @@ manifest_existing_files = "gaia_auth_host_existing_manifest.json"
 generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   deps = [
-    ":preprocess_src",
     ":build_injected_grdp",
+    ":preprocess_src",
   ]
 
   # Resources are expected to be registered with paths like:
   # gaia_auth_host/resource_name.js
   resource_path_prefix = "gaia_auth_host"
 
-  manifest_files = [
-    "$target_gen_dir/$manifest_existing_files",
-  ]
+  manifest_files = [ "$target_gen_dir/$manifest_existing_files" ]
 
   grdp_files = [ "$target_gen_dir/injected_resources.grdp" ]
 }
@@ -41,9 +39,7 @@ generate_grd("build_injected_grdp") {
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
 
-  input_files = [
-    "saml_injected.rollup.js",
-  ]
+  input_files = [ "saml_injected.rollup.js" ]
 
   deps = [ ":build_injected_scripts" ]
 }
@@ -181,8 +177,8 @@ copy("saml_injected_copy") {
   sources = [
     "channel.js",
     "post_message_channel.js",
-    "scroll_helper_injected.js",
     "saml_injected.js",
+    "scroll_helper_injected.js",
   ]
   outputs = [ stage_folder + "/{{source_file_part}}" ]
 }
@@ -192,12 +188,8 @@ copy("saml_injected_copy") {
 optimize_webui("build_injected_scripts") {
   host = "about:blank"
   input = rebase_path(stage_folder, root_build_dir)
-  js_module_in_files = [
-    "saml_injected.js",
-  ]
-  js_out_files = [
-    "saml_injected.rollup.js",
-  ]
+  js_module_in_files = [ "saml_injected.js" ]
+  js_out_files = [ "saml_injected.rollup.js" ]
 
-  deps = [":saml_injected_copy"]
+  deps = [ ":saml_injected_copy" ]
 }

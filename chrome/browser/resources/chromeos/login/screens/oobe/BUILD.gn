@@ -23,10 +23,13 @@ group("polymer3_elements") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-    "js_module_root=" + rebase_path("//chrome/browser/resources/gaia_auth_host/", root_build_dir),
-    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
-  ]
+  closure_flags =
+      default_closure_args + mojom_js_args + [
+        "js_module_root=" +
+            rebase_path("//chrome/browser/resources/gaia_auth_host/",
+                        root_build_dir),
+        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
+      ]
   deps = [
     ":auto_enrollment_check",
     ":demo_preferences.m",
