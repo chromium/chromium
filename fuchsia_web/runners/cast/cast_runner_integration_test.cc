@@ -1192,30 +1192,6 @@ TEST_F(CastRunnerIntegrationTest, DataReset_Service) {
   component.ExpectControllerDisconnectWithStatus(ZX_ERR_PEER_CLOSED);
 }
 
-// Verifies that CastRunner offers a chromium.cast.DataReset component, that
-// provides the DataReset service.
-TEST_F(CastRunnerIntegrationTest, DataReset_component) {
-  TestCastComponent component(cast_runner());
-  constexpr char kDataResetComponentName[] = "cast:chromium.cast.DataReset";
-  component.StartCastComponent(kDataResetComponentName);
-
-  base::RunLoop loop;
-  auto data_reset = component.component_services_client()
-                        ->Connect<chromium::cast::DataReset>();
-  data_reset.set_error_handler([quit_loop = loop.QuitClosure()](zx_status_t) {
-    quit_loop.Run();
-    ADD_FAILURE();
-  });
-  bool succeeded = false;
-  data_reset->DeletePersistentData([&succeeded, &loop](bool result) {
-    succeeded = result;
-    loop.Quit();
-  });
-  loop.Run();
-
-  EXPECT_TRUE(succeeded);
-}
-
 class CastRunnerFrameHostIntegrationTest : public CastRunnerIntegrationTest {
  public:
   CastRunnerFrameHostIntegrationTest()

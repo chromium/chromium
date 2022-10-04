@@ -97,9 +97,6 @@ const uint16_t kEphemeralRemoteDebuggingPort = 0;
 // Application URL for the pseudo-component providing fuchsia.web.FrameHost.
 constexpr char kFrameHostComponentName[] = "cast:fuchsia.web.FrameHost";
 
-// Application URL for the pseudo-component providing chromium.cast.DataReset.
-constexpr char kDataResetComponentName[] = "cast:chromium.cast.DataReset";
-
 // Subdirectory used to stage persistent directories to be deleted upon next
 // startup.
 const char kStagedForDeletionSubdirectory[] = "staged_for_deletion";
@@ -262,46 +259,6 @@ class FrameHostComponent final : public fuchsia::sys::ComponentController {
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
 
   base::WeakPtrFactory<const sys::ServiceDirectory> weak_incoming_services_;
-};
-
-// TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
-// used to route chromium.cast.DataReset capabilities cleanly.
-class DataResetComponent final : public fuchsia::sys::ComponentController {
- public:
-  // Creates a DataResetComponent with lifetime managed by |controller_request|.
-  static void Start(chromium::cast::DataReset* data_reset_impl,
-                    std::unique_ptr<base::StartupContext> startup_context,
-                    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                        controller_request) {
-    new DataResetComponent(data_reset_impl, std::move(startup_context),
-                           std::move(controller_request));
-  }
-
- private:
-  DataResetComponent(chromium::cast::DataReset* data_reset_impl,
-                     std::unique_ptr<base::StartupContext> startup_context,
-                     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-                         controller_request)
-      : startup_context_(std::move(startup_context)),
-        data_reset_handler_binding_(startup_context_->outgoing(),
-                                    data_reset_impl) {
-    startup_context_->ServeOutgoingDirectory();
-    controller_binding_.Bind(std::move(controller_request));
-    controller_binding_.set_error_handler([this](zx_status_t) { Kill(); });
-  }
-  ~DataResetComponent() override = default;
-
-  // fuchsia::sys::ComponentController interface.
-  void Kill() override { delete this; }
-  void Detach() override {
-    controller_binding_.Close(ZX_ERR_NOT_SUPPORTED);
-    delete this;
-  }
-
-  std::unique_ptr<base::StartupContext> startup_context_;
-  const base::ScopedServiceBinding<chromium::cast::DataReset>
-      data_reset_handler_binding_;
-  fidl::Binding<fuchsia::sys::ComponentController> controller_binding_{this};
 };
 
 }  // namespace
@@ -754,18 +711,6 @@ void CastRunner::StartComponentInternal(
         FrameHostComponent::StartAndReturnIncomingServiceDirectory(
             std::move(startup_context), std::move(controller_request),
             main_context_->GetFrameHostRequestHandler());
-    return;
-  }
-
-  // TODO(crbug.com/1120914): Remove this once Component Framework v2 can be
-  // used to route chromium.cast.DataReset capabilities cleanly.
-  if (url.spec() == kDataResetComponentName) {
-    // DataResetComponents are self-owned, so may outlive |this|. However,
-    // |this| is only touched when processing DataReset protocol requests.
-    // Since |this| is only deleted during component shutdown, no protocol
-    // requests will be processed after deletion.
-    DataResetComponent::Start(this, std::move(startup_context),
-                              std::move(controller_request));
     return;
   }
 
