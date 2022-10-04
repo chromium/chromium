@@ -23,7 +23,7 @@ CryptohomeMixin::~CryptohomeMixin() = default;
 
 void CryptohomeMixin::MarkUserAsExisting(const AccountId& user) {
   auto account_id = cryptohome::CreateAccountIdentifierFromAccountId(user);
-  if (FakeUserDataAuthClient::TestApi::Get() != nullptr) {
+  if (FakeUserDataAuthClient::TestApi::Get()) {
     FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(
         std::move(account_id));
   } else {

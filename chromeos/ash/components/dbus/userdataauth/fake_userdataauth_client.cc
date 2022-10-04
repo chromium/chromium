@@ -317,56 +317,42 @@ class ReplyOnReturn {
 
 }  // namespace
 
-// Allocate space for test api instance
-base::raw_ptr<FakeUserDataAuthClient::TestApi>
-    FakeUserDataAuthClient::TestApi::instance_;
-
-FakeUserDataAuthClient::TestApi::TestApi(
-    base::raw_ptr<FakeUserDataAuthClient> client) {
-  DCHECK(client != nullptr);
-  client_ = client;
-}
-
 // static
 FakeUserDataAuthClient::TestApi* FakeUserDataAuthClient::TestApi::Get() {
-  if (instance_) {
-    return instance_;
-  }
-
   // TestApi assumes that the FakeUserDataAuthClient singleton is initialized.
   if (FakeUserDataAuthClient::Get() == nullptr) {
     return nullptr;
   }
 
-  instance_ = new TestApi(FakeUserDataAuthClient::Get());
-  return instance_;
+  static TestApi instance;
+  return &instance;
 }
 
 void FakeUserDataAuthClient::TestApi::SetServiceIsAvailable(bool is_available) {
-  service_is_available_ = is_available;
+  g_instance->service_is_available_ = is_available;
   if (!is_available)
     return;
-  client_->RunPendingWaitForServiceToBeAvailableCallbacks();
+  g_instance->RunPendingWaitForServiceToBeAvailableCallbacks();
 }
 
 void FakeUserDataAuthClient::TestApi::ReportServiceIsNotAvailable() {
-  DCHECK(!service_is_available_);
-  service_reported_not_available_ = true;
-  client_->RunPendingWaitForServiceToBeAvailableCallbacks();
+  DCHECK(!g_instance->service_is_available_);
+  g_instance->service_reported_not_available_ = true;
+  g_instance->RunPendingWaitForServiceToBeAvailableCallbacks();
 }
 
 void FakeUserDataAuthClient::TestApi::SetHomeEncryptionMethod(
     const cryptohome::AccountIdentifier& cryptohome_id,
     HomeEncryptionMethod method) {
-  auto user_it = client_->users_.find(cryptohome_id);
-  if (user_it == std::end(client_->users_)) {
+  auto user_it = g_instance->users_.find(cryptohome_id);
+  if (user_it == std::end(g_instance->users_)) {
     LOG(ERROR) << "User does not exist: " << cryptohome_id.account_id();
     // TODO(crbug.com/1334538): Some existing tests rely on us creating the
     // user here, but new tests shouldn't. Eventually this should crash.
     user_it =
-        client_->users_.insert({cryptohome_id, UserCryptohomeState()}).first;
+        g_instance->users_.insert({cryptohome_id, UserCryptohomeState()}).first;
   }
-  DCHECK(user_it != std::end(client_->users_));
+  DCHECK(user_it != std::end(g_instance->users_));
   UserCryptohomeState& user_state = user_it->second;
   user_state.home_encryption_method = method;
 }
@@ -375,8 +361,8 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
     const cryptohome::AccountIdentifier& account_id,
     const std::string& label,
     bool locked) {
-  auto user_it = client_->users_.find(account_id);
-  CHECK(user_it != client_->users_.end())
+  auto user_it = g_instance->users_.find(account_id);
+  CHECK(user_it != g_instance->users_.end())
       << "User does not exist: " << account_id.account_id();
   UserCryptohomeState& user_state = user_it->second;
 
@@ -394,14 +380,14 @@ void FakeUserDataAuthClient::TestApi::SetPinLocked(
 void FakeUserDataAuthClient::TestApi::AddExistingUser(
     const cryptohome::AccountIdentifier& account_id) {
   const auto [user_it, was_inserted] =
-      client_->users_.insert({std::move(account_id), UserCryptohomeState()});
+      g_instance->users_.insert({std::move(account_id), UserCryptohomeState()});
   if (!was_inserted) {
     LOG(WARNING) << "User already exists: " << user_it->first.account_id();
     return;
   }
 
   const absl::optional<base::FilePath> profile_dir =
-      client_->GetUserProfileDir(user_it->first);
+      g_instance->GetUserProfileDir(user_it->first);
   if (!profile_dir) {
     LOG(WARNING) << "User data directory has not been set, will not create "
                     "user profile directory";
@@ -415,17 +401,17 @@ void FakeUserDataAuthClient::TestApi::AddExistingUser(
 absl::optional<base::FilePath>
 FakeUserDataAuthClient::TestApi::GetUserProfileDir(
     const cryptohome::AccountIdentifier& account_id) const {
-  return client_->GetUserProfileDir(account_id);
+  return g_instance->GetUserProfileDir(account_id);
 }
 
 void FakeUserDataAuthClient::TestApi::AddKey(
     const cryptohome::AccountIdentifier& account_id,
     const cryptohome::Key& key) {
-  const auto user_it = client_->users_.find(account_id);
-  CHECK(user_it != std::end(client_->users_)) << "User doesn't exist";
+  const auto user_it = g_instance->users_.find(account_id);
+  CHECK(user_it != std::end(g_instance->users_)) << "User doesn't exist";
   UserCryptohomeState& user_state = user_it->second;
   const auto [factor_it, was_inserted] = user_state.auth_factors.insert(
-      KeyToFakeAuthFactor(key, TestApi::Get()->enable_auth_check_));
+      KeyToFakeAuthFactor(key, g_instance->enable_auth_check_));
   CHECK(was_inserted) << "Factor already exists";
 }
 
@@ -492,7 +478,7 @@ void FakeUserDataAuthClient::Mount(
   // TODO(crbug.com/1334538): We should get rid of mount_create_required_
   // and instead check whether the user exists or not here. Tests would then
   // need to set up a user (or not).
-  if (TestApi::Get()->mount_create_required_ && !request.has_create()) {
+  if (mount_create_required_ && !request.has_create()) {
     reply.set_error(::user_data_auth::CryptohomeErrorCode::
                         CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND);
     return;
@@ -551,8 +537,8 @@ void FakeUserDataAuthClient::Mount(
     CHECK_EQ(1, create_req.keys().size())
         << "UserDataAuth::Mount called with `create` that does not contain "
            "precisely one key";
-    user_state.auth_factors.insert(KeyToFakeAuthFactor(
-        create_req.keys()[0], TestApi::Get()->enable_auth_check_));
+    user_state.auth_factors.insert(
+        KeyToFakeAuthFactor(create_req.keys()[0], enable_auth_check_));
   }
 
   const bool is_ecryptfs =
@@ -710,7 +696,7 @@ void FakeUserDataAuthClient::AddKey(
   UserCryptohomeState& user_state = user_it->second;
 
   auto [new_label, new_factor] =
-      KeyToFakeAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
+      KeyToFakeAuthFactor(new_key, enable_auth_check_);
   CHECK(clobber_if_exists || !user_state.auth_factors.contains(new_label))
       << "Key exists, will not clobber: " << new_label;
   user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
@@ -781,7 +767,7 @@ void FakeUserDataAuthClient::MigrateKey(
     new_key.mutable_data()->set_label(matched_factor_label);
   new_key.set_secret(request.secret());
   const auto [new_label, new_factor] =
-      KeyToFakeAuthFactor(new_key, TestApi::Get()->enable_auth_check_);
+      KeyToFakeAuthFactor(new_key, enable_auth_check_);
   DCHECK_EQ(new_label, matched_factor_label);
   user_state.auth_factors[matched_factor_label] = new_factor;
 }
@@ -808,7 +794,7 @@ void FakeUserDataAuthClient::StartMigrateToDircrypto(
 
   dircrypto_migration_progress_ = 0;
 
-  if (TestApi::Get()->run_default_dircrypto_migration_) {
+  if (run_default_dircrypto_migration_) {
     dircrypto_migration_progress_timer_.Start(
         FROM_HERE, base::Milliseconds(kDircryptoMigrationUpdateIntervalMs),
         this, &FakeUserDataAuthClient::OnDircryptoMigrationProgressUpdated);
@@ -842,7 +828,7 @@ void FakeUserDataAuthClient::GetSupportedKeyPolicies(
     GetSupportedKeyPoliciesCallback callback) {
   ::user_data_auth::GetSupportedKeyPoliciesReply reply;
   reply.set_low_entropy_credentials_supported(
-      TestApi::Get()->supports_low_entropy_credentials_);
+      supports_low_entropy_credentials_);
   ReturnProtobufMethodCallback(reply, std::move(callback));
 }
 void FakeUserDataAuthClient::GetAccountDiskUsage(
@@ -1256,8 +1242,7 @@ void FakeUserDataAuthClient::AddAuthFactor(
   UserCryptohomeState& user_state = user_it->second;
 
   auto [new_label, new_factor] = AuthFactorWithInputToFakeAuthFactor(
-      request.auth_factor(), request.auth_input(),
-      TestApi::Get()->enable_auth_check_);
+      request.auth_factor(), request.auth_input(), enable_auth_check_);
   CHECK(!user_state.auth_factors.contains(new_label))
       << "Key exists, will not clobber: " << new_label;
   user_state.auth_factors[std::move(new_label)] = std::move(new_factor);
@@ -1310,7 +1295,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
           [&](const PasswordFactor& password_factor) {
             const auto& password_input = auth_input.password_input();
 
-            if (TestApi::Get()->enable_auth_check_ &&
+            if (enable_auth_check_ &&
                 password_input.secret() != password_factor.password) {
               reply.set_error(
                   ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
@@ -1320,15 +1305,7 @@ void FakeUserDataAuthClient::AuthenticateAuthFactor(
           [&](const PinFactor& pin_factor) {
             const auto& pin_input = auth_input.pin_input();
 
-            if (pin_factor.locked) {
-              LOG(ERROR) << "PIN is locked";
-              reply.set_error(
-                  ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
-              return;
-            }
-
-            if (TestApi::Get()->enable_auth_check_ &&
-                pin_input.secret() != pin_factor.pin) {
+            if (enable_auth_check_ && pin_input.secret() != pin_factor.pin) {
               reply.set_error(
                   ::user_data_auth::CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED);
               return;
@@ -1389,8 +1366,7 @@ void FakeUserDataAuthClient::UpdateAuthFactor(
 
   // Update the fake auth factor according to the new secret.
   auto [new_label, new_factor] = AuthFactorWithInputToFakeAuthFactor(
-      request.auth_factor(), request.auth_input(),
-      TestApi::Get()->enable_auth_check_);
+      request.auth_factor(), request.auth_input(), enable_auth_check_);
   CHECK_EQ(new_label, request.auth_factor_label());
   CHECK(user_state.auth_factors.contains(new_label))
       << "Key does not exist: " << new_label;
@@ -1460,11 +1436,9 @@ void FakeUserDataAuthClient::GetAuthSessionStatus(
 
 void FakeUserDataAuthClient::WaitForServiceToBeAvailable(
     chromeos::WaitForServiceToBeAvailableCallback callback) {
-  if (TestApi::Get()->service_is_available_ ||
-      TestApi::Get()->service_reported_not_available_) {
+  if (service_is_available_ || service_reported_not_available_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  TestApi::Get()->service_is_available_));
+        FROM_HERE, base::BindOnce(std::move(callback), service_is_available_));
   } else {
     pending_wait_for_service_to_be_available_callbacks_.push_back(
         std::move(callback));
@@ -1485,7 +1459,7 @@ FakeUserDataAuthClient::AuthenticateViaAuthFactors(
     const std::string& secret,
     bool wildcard_allowed,
     std::string* matched_factor_label) const {
-  if (!TestApi::Get()->enable_auth_check_)
+  if (!enable_auth_check_)
     return AuthResult::kAuthSuccess;
 
   const auto user_it = users_.find(account_id);

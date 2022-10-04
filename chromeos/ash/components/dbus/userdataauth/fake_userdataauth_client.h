@@ -29,16 +29,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     kEcryptfs,
   };
 
+  // The TestAPI of FakeUserDataAuth. Prefer to use `ash::CryptohomeMixin`,
+  // which exposes all the methods here and some additional ones.
   class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) TestApi {
    public:
-    ~TestApi() = default;
-
-    // Not copyable or movable.
-    TestApi(const TestApi&) = delete;
-    TestApi& operator=(const TestApi&) = delete;
-    TestApi(TestApi&&) = delete;
-    TestApi& operator=(TestApi&&) = delete;
-
+    // Legacy method for tests that do not use `CryptohomeMixin`.
     static TestApi* Get();
 
     // Sets whether dircrypto migration update should be run automatically.
@@ -46,19 +41,20 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // progress updates on its own - a test that sets this will have to call
     // NotifyDircryptoMigrationProgress() for the progress to update.
     void set_run_default_dircrypto_migration(bool value) {
-      run_default_dircrypto_migration_ = value;
+      FakeUserDataAuthClient::Get()->run_default_dircrypto_migration_ = value;
     }
 
     // If set, next call to GetSupportedKeyPolicies() will tell caller that low
     // entropy credentials are supported.
     void set_supports_low_entropy_credentials(bool supports) {
-      supports_low_entropy_credentials_ = supports;
+      FakeUserDataAuthClient::Get()->supports_low_entropy_credentials_ =
+          supports;
     }
 
     // If enable_auth_check is true, then authentication requests actually check
     // the key.
     void set_enable_auth_check(bool enable_auth_check) {
-      enable_auth_check_ = enable_auth_check;
+      FakeUserDataAuthClient::Get()->enable_auth_check_ = enable_auth_check;
     }
 
     // Sets whether the Mount() call should fail when the |create| field is not
@@ -66,7 +62,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // This allows to simulate the behavior during the new user profile
     // creation.
     void set_mount_create_required(bool mount_create_required) {
-      mount_create_required_ = mount_create_required;
+      FakeUserDataAuthClient::Get()->mount_create_required_ =
+          mount_create_required;
     }
 
     // Changes the behavior of WaitForServiceToBeAvailable(). This method runs
@@ -104,38 +101,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     // already exist).
     void AddKey(const cryptohome::AccountIdentifier& account_id,
                 const cryptohome::Key& key);
-
-   private:
-    friend class FakeUserDataAuthClient;
-
-    explicit TestApi(base::raw_ptr<FakeUserDataAuthClient> client);
-
-    // The singleton instance
-    static base::raw_ptr<FakeUserDataAuthClient::TestApi> instance_;
-
-    // Do we run the dircrypto migration, as in, emit signals, when
-    // StartMigrateToDircrypto() is called?
-    bool run_default_dircrypto_migration_ = true;
-
-    // If low entropy credentials are supported for the key. This is the value
-    // that GetSupportedKeyPolicies() returns.
-    bool supports_low_entropy_credentials_ = false;
-
-    // If true, authentication requests actually check the key.
-    bool enable_auth_check_ = false;
-
-    // If true, fails if |create| field is not provided
-    bool mount_create_required_ = false;
-
-    // If set, we tell callers that service is available.
-    bool service_is_available_ = true;
-
-    // If set, WaitForServiceToBeAvailable will run the callback, even if
-    // service is not available (instead of adding the callback to pending
-    // callback list).
-    bool service_reported_not_available_ = false;
-
-    base::raw_ptr<FakeUserDataAuthClient> client_;
   };
 
   // Represents the ongoing AuthSessions.
@@ -431,6 +396,28 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
+
+  // Do we run the dircrypto migration, as in, emit signals, when
+  // StartMigrateToDircrypto() is called?
+  bool run_default_dircrypto_migration_ = true;
+
+  // If low entropy credentials are supported for the key. This is the value
+  // that GetSupportedKeyPolicies() returns.
+  bool supports_low_entropy_credentials_ = false;
+
+  // If true, authentication requests actually check the key.
+  bool enable_auth_check_ = false;
+
+  // If true, fails if |create| field is not provided
+  bool mount_create_required_ = false;
+
+  // If set, we tell callers that service is available.
+  bool service_is_available_ = true;
+
+  // If set, WaitForServiceToBeAvailable will run the callback, even if
+  // service is not available (instead of adding the callback to pending
+  // callback list).
+  bool service_reported_not_available_ = false;
 };
 
 }  // namespace ash
