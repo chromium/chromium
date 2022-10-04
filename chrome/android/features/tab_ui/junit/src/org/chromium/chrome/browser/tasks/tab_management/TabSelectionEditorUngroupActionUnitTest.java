@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -61,7 +62,7 @@ public class TabSelectionEditorUngroupActionUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mAction = TabSelectionEditorUngroupAction.createAction(
+        mAction = TabSelectionEditorUngroupAction.createAction(RuntimeEnvironment.application,
                 ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
         mTabModel = spy(new MockTabModel(false, null));
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
@@ -75,14 +76,15 @@ public class TabSelectionEditorUngroupActionUnitTest {
     public void testInherentActionProperties() {
         Assert.assertEquals(R.id.tab_selection_editor_ungroup_menu_item,
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
-        Assert.assertEquals(R.string.tab_grid_dialog_selection_mode_remove,
+        Assert.assertEquals(R.string.tab_selection_editor_ungroup_tabs,
                 mAction.getPropertyModel().get(
                         TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
-        Assert.assertEquals(R.plurals.accessibility_tab_selection_dialog_remove_button,
+        Assert.assertEquals(R.plurals.accessibility_tab_selection_editor_ungroup_tabs,
                 mAction.getPropertyModel()
                         .get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());
-        Assert.assertNull(mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+        Assert.assertNotNull(
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
     }
 
     @Test

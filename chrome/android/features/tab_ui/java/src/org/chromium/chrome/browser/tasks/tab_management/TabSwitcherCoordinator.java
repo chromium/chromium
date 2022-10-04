@@ -530,9 +530,9 @@ public class TabSwitcherCoordinator
                     ShowMode.IF_ROOM, ButtonType.ICON_AND_TEXT, IconPosition.END,
                     mTabModelSelector.getCurrentModel().isIncognito()));
             mTabSelectionEditorActions.add(TabSelectionEditorCloseAction.createAction(
-                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+                    mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(
-                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+                    mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(
                     TabSelectionEditorShareAction.createAction(mActivity, ShowMode.MENU_ONLY,
                             ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));

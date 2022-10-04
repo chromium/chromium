@@ -247,10 +247,11 @@
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR" desc="Accessibility string for Tab Selection Editor view. This string is announced when the Tab Selection Editor is shown to screen.">
         Multi-select mode
       </message>
-      <message name="IDS_TAB_SELECTION_EDITOR_SELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome selects all the tabs shown in the editor.">
+      <!-- Tab Selection Editor V2 strings -->
+      <message name="IDS_TAB_SELECTION_EDITOR_SELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome selects all the tabs shown in the editor. [CHAR_LIMIT=27]">
         Select all
       </message>
-      <message name="IDS_TAB_SELECTION_EDITOR_DESELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome deselects all the tabs shown in the editor.">
+      <message name="IDS_TAB_SELECTION_EDITOR_DESELECT_ALL" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome deselects all the tabs shown in the editor. [CHAR_LIMIT=27]">
         Deselect all
       </message>
       <message name="IDS_TAB_SELECTION_EDITOR_SHARE_TABS_ACTION_BUTTON" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome shares all currently selected tabs shown in the editor. [CHAR_LIMIT=27]">
@@ -260,6 +261,39 @@
         {TABS_COUNT, plural,
           =1 {Share <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
           other {Share <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_TABS_COUNT" desc="The text for the selection counter shown in the Tab Selection Editor Toolbar. This shows the number of selected tabs including those within selected groups.">
+        {TABS_COUNT, plural,
+          =1 {<ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> tab}
+          other {<ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_GROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Group' is a verb. When the user taps the menu item, Chrome creates a new group that contains the selected tabs. [CHAR_LIMIT=27]">
+        Group tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_GROUP_TABS" desc="The accessibility text to read when the 'Group tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be grouped together.">
+        {TABS_COUNT, plural,
+          =1 {Group <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Group <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Ungroup' is a verb. When the user taps the menu item, Chrome removes the selected tabs from the group. [CHAR_LIMIT=27]">
+        Ungroup tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="The accessibility text to read when the 'Ungroup tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be ungroup.">
+        {TABS_COUNT, plural,
+          =1 {Ungroup <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Ungroup <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
+        }
+      </message>
+      <message name="IDS_TAB_SELECTION_EDITOR_CLOSE_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Close' is a verb. When the user taps the menu item, Chrome closes the selected tabs. [CHAR_LIMIT=27]">
+        Close tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_CLOSE_TABS" desc="The accessibility text to read when the 'Close tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be closed.">
+        {TABS_COUNT, plural,
+          =1 {Close <ph name="TABS_COUNT_ONE">%1$d<ex>1</ex></ph> selected tab}
+          other {Close <ph name="TABS_COUNT_MANY">%1$d<ex>8</ex></ph> selected tabs}
         }
       </message>
 

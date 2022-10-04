@@ -7,7 +7,10 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.PluralsRes;
@@ -17,6 +20,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
+import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +30,10 @@ import java.util.List;
  */
 class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
+    private Context mContext;
     private Button mActionButton;
+    private ChromeImageButton mMenuButton;
+    private TabSelectionEditorActionViewLayout mActionViewLayout;
     private Integer mActionButtonDescriptionResourceId;
     @ColorInt
     private int mBackgroundColor;
@@ -43,6 +50,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
 
     public TabSelectionEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     @Override
@@ -50,8 +58,23 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         super.onFinishInflate();
 
         showNavigationButton();
+        mActionViewLayout =
+                (TabSelectionEditorActionViewLayout) findViewById(R.id.action_view_layout);
         mActionButton = (Button) findViewById(R.id.action_button);
+        mMenuButton = (ChromeImageButton) findViewById(R.id.list_menu_button);
         mNumberRollView.setStringForZero(R.string.tab_selection_editor_toolbar_select_tabs);
+
+        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
+            mNumberRollView.setString(R.plurals.tab_selection_editor_tabs_count);
+        }
+
+        // Move the number roll view into a LinearLayout to manage spacing.
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT, 0.0f);
+        params.gravity = Gravity.CENTER_VERTICAL;
+        ((ViewGroup) mNumberRollView.getParent()).removeView(mNumberRollView);
+        mActionViewLayout.addView(mNumberRollView, 0, params);
     }
 
     private void showNavigationButton() {
@@ -107,6 +130,13 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     /**
+     * @return the action view layout.
+     */
+    public TabSelectionEditorActionViewLayout getActionViewLayout() {
+        return mActionViewLayout;
+    }
+
+    /**
      * Sets a {@link android.view.View.OnClickListener} to respond to {@code mActionButton} clicking
      * event.
      * @param listener The listener to set.
@@ -123,6 +153,7 @@ class TabSelectionEditorToolbar extends SelectableListToolbar<Integer> {
         mActionButton.setTextColor(tint);
         TintedDrawable navigation = (TintedDrawable) getNavigationIcon();
         navigation.setTint(tint);
+        mMenuButton.setImageTintList(tint);
     }
 
     /**

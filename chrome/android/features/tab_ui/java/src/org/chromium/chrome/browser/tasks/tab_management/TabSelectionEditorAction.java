@@ -132,7 +132,7 @@ public abstract class TabSelectionEditorAction {
         assert iconPosition >= IconPosition.START && iconPosition < IconPosition.NUM_ENTRIES;
 
         mModel =
-                new PropertyModel.Builder(TabSelectionEditorActionProperties.ALL_KEYS)
+                new PropertyModel.Builder(TabSelectionEditorActionProperties.ACTION_KEYS)
                         .with(TabSelectionEditorActionProperties.MENU_ITEM_ID, menuItemId)
                         .with(TabSelectionEditorActionProperties.SHOW_MODE, showMode)
                         .with(TabSelectionEditorActionProperties.BUTTON_TYPE, buttonType)

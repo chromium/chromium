@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -63,7 +64,7 @@ public class TabSelectionEditorCloseActionUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mAction = TabSelectionEditorCloseAction.createAction(
+        mAction = TabSelectionEditorCloseAction.createAction(RuntimeEnvironment.application,
                 ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
         mTabModel = spy(new MockTabModel(false, null));
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
@@ -80,14 +81,15 @@ public class TabSelectionEditorCloseActionUnitTest {
     public void testInherentActionProperties() {
         Assert.assertEquals(R.id.tab_selection_editor_close_menu_item,
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
-        Assert.assertEquals(R.string.tab_suggestion_close_tab_action_button,
+        Assert.assertEquals(R.string.tab_selection_editor_close_tabs,
                 mAction.getPropertyModel().get(
                         TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
-        Assert.assertEquals(R.plurals.accessibility_tab_suggestion_close_tab_action_button,
+        Assert.assertEquals(R.plurals.accessibility_tab_selection_editor_close_tabs,
                 mAction.getPropertyModel()
                         .get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());
-        Assert.assertNull(mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
+        Assert.assertNotNull(
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ICON));
     }
 
     @Test

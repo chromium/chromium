@@ -10,8 +10,8 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:drawablePadding="@dimen/tab_selection_editor_action_view_padding"
     android:id="@+id/tab_selection_editor_action_view"
-    android:visibility="gone"
-    android:gravity="center"
     android:enabled="false"
     style="@style/TextButton.OnAccent1"/>

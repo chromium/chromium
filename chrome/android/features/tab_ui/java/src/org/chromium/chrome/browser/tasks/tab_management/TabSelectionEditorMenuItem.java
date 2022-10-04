@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
-import androidx.core.view.MenuItemCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.Callback;
@@ -21,28 +20,35 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 
 import java.util.List;
 
 /**
- * View holder for a {@link MenuItem} with an optional {@code mActionView} to show in a toolbar.
+ * Holds the {@code mActionView} and {@link ListItem} for an item in the {@link
+ * TabSelectionEditorMenu}.
  */
 public class TabSelectionEditorMenuItem {
     private Context mContext;
-    private MenuItem mMenuItem;
 
+    private int mMenuId;
+    private ListItem mListItem;
     private Button mActionView;
+    private boolean mShowText;
+    private boolean mShowIcon;
+    private boolean mEnabled;
+    private boolean mActionViewShowing;
+    private ColorStateList mIconTint;
 
     private Runnable mOnClickRunnable;
     private Callback<List<Integer>> mOnSelectionStateChange;
 
     /**
      * @param context for loading resources.
-     * @param menuItem the {@link MenuItem} this view owns.
      */
-    TabSelectionEditorMenuItem(Context context, MenuItem menuItem) {
+    TabSelectionEditorMenuItem(Context context, ListItem listItem) {
         mContext = context;
-        mMenuItem = menuItem;
+        mListItem = listItem;
     }
 
     /**
@@ -51,32 +57,37 @@ public class TabSelectionEditorMenuItem {
      * @param buttonType the button layout of the action view.
      */
     public void initActionView(@ShowMode int showMode, @ButtonType int buttonType) {
-        final boolean showText =
-                buttonType == ButtonType.TEXT || buttonType == ButtonType.ICON_AND_TEXT;
-        final boolean showIcon =
-                buttonType == ButtonType.ICON || buttonType == ButtonType.ICON_AND_TEXT;
+        mShowText = buttonType == ButtonType.TEXT || buttonType == ButtonType.ICON_AND_TEXT;
+        mShowIcon = buttonType == ButtonType.ICON || buttonType == ButtonType.ICON_AND_TEXT;
 
-        if (!showText && !showIcon) {
-            // Force menu mode if the button has no content.
-            showMode = ShowMode.MENU_ONLY;
-        }
+        if ((!mShowText && !mShowIcon) || showMode == ShowMode.MENU_ONLY) return;
 
-        mMenuItem.setShowAsAction(getShowAsAction(showMode));
-        if (showMode == ShowMode.MENU_ONLY) return;
-
-        // TODO(ckitagawa): Work with UX on padding/margins/style.
         mActionView = (Button) LayoutInflater.from(mContext).inflate(
                 R.layout.tab_selection_editor_action_view, null);
-        mActionView.setId(mMenuItem.getItemId());
-        // Default visibility is GONE.
-        mMenuItem.setActionView(mActionView);
+        mActionView.setId(mListItem.model.get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
+        if (mShowIcon && !mShowText) {
+            mActionView.setCompoundDrawablePadding(0);
+        }
+    }
+
+    public View getActionView() {
+        return mActionView;
+    }
+
+    public ListItem getListItem() {
+        return mListItem;
     }
 
     public void setTitleResourceId(int titleResourceId) {
-        mMenuItem.setTitle(titleResourceId);
+        mListItem.model.set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId);
         if (mActionView != null) {
-            mActionView.setText(titleResourceId);
-            mActionView.setVisibility(View.VISIBLE);
+            if (mShowText) {
+                mActionView.setText(titleResourceId);
+            } else {
+                mActionView.setText("");
+                mActionView.setMinWidth(0);
+                mActionView.setMinimumWidth(0);
+            }
         }
     }
 
@@ -92,7 +103,8 @@ public class TabSelectionEditorMenuItem {
             contentDescription = mContext.getResources().getQuantityString(
                     contentDescriptionResourceId, itemCount, itemCount);
         }
-        MenuItemCompat.setContentDescription(mMenuItem, contentDescription);
+        mListItem.model.set(
+                TabSelectionEditorActionProperties.CONTENT_DESCRIPTION, contentDescription);
         if (mActionView != null) {
             mActionView.setContentDescription(contentDescription);
         }
@@ -104,26 +116,24 @@ public class TabSelectionEditorMenuItem {
      * @param icon to display in the menu item or action view.
      */
     public void setIcon(@IconPosition int iconPosition, Drawable icon) {
-        mMenuItem.setIcon(icon);
-        if (mActionView != null) {
-            // TODO(ckitagawa): Determine whether to require actions to define bounds or just use
-            // the intrinsic ones.
+        mListItem.model.set(TabSelectionEditorActionProperties.ICON, icon);
+        if (mActionView != null && mShowIcon) {
             TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(mActionView,
                     iconPosition == IconPosition.START ? icon : null, null,
                     iconPosition == IconPosition.END ? icon : null, null);
-            mActionView.setVisibility(View.VISIBLE);
         }
     }
 
     public void setEnabled(boolean enabled) {
-        mMenuItem.setEnabled(enabled);
+        mEnabled = enabled;
+        mListItem.model.set(TabSelectionEditorActionProperties.ENABLED, enabled);
         if (mActionView != null) {
             mActionView.setEnabled(enabled);
         }
     }
 
     public void setTextTint(ColorStateList colorStateList) {
-        // MenuItem text color is handled by the theme.
+        // mListItem uses the default text tint.
         if (mActionView != null) {
             mActionView.setTextColor(colorStateList);
         }
@@ -135,9 +145,19 @@ public class TabSelectionEditorMenuItem {
         // not overridden.
         if (colorStateList == null) return;
 
-        MenuItemCompat.setIconTintList(mMenuItem, colorStateList);
-        if (mActionView != null) {
+        // mListItem uses the default icon tint whenever shown. Cache the tint to restore it when
+        // the action view shown state is toggled.
+        mIconTint = colorStateList;
+        if (mActionView != null && mActionViewShowing) {
             TextViewCompat.setCompoundDrawableTintList(mActionView, colorStateList);
+        }
+    }
+
+    public void setActionViewShowing(boolean actionViewShowing) {
+        mActionViewShowing = actionViewShowing;
+        if (mActionViewShowing) {
+            // Ensure the drawable has the correct tint.
+            setIconTint(mIconTint);
         }
     }
 
@@ -155,8 +175,12 @@ public class TabSelectionEditorMenuItem {
     /**
      * Handler for click events on the menu item or action view.
      */
-    public void onClick() {
+    public boolean onClick() {
+        if (!mEnabled) return false;
+
         mOnClickRunnable.run();
+
+        return true;
     }
 
     /**

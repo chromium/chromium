@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 
 import androidx.annotation.IntDef;
@@ -101,7 +100,6 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
         if (mActionState == selectionState) return;
 
         mActionState = selectionState;
-        final boolean allTabsSelected = mActionState == ActionState.DESELECT_ALL;
         LayerDrawable layers =
                 (LayerDrawable) getPropertyModel().get(TabSelectionEditorActionProperties.ICON);
 
@@ -113,7 +111,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
                             mContext.getResources().getInteger(R.integer.list_item_level_default));
             layers.getDrawable(BACKGROUND)
                     .setTint(TabUiThemeProvider.getSelectionActionIconBackgroundColor(
-                            mContext, isIncognito, allTabsSelected));
+                            mContext, isIncognito));
 
             layers.getDrawable(CHECKMARK).setAlpha(0);
             layers.getDrawable(CHECKMARK).setTint(Color.TRANSPARENT);
@@ -125,7 +123,7 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
                             mContext.getResources().getInteger(R.integer.list_item_level_selected));
             layers.getDrawable(BACKGROUND)
                     .setTint(TabUiThemeProvider.getSelectionActionIconBackgroundColor(
-                            mContext, isIncognito, allTabsSelected));
+                            mContext, isIncognito));
 
             layers.getDrawable(CHECKMARK).setAlpha(255);
             layers.getDrawable(CHECKMARK).setTint(
@@ -140,11 +138,8 @@ public class TabSelectionEditorSelectionAction extends TabSelectionEditorAction 
     private static Drawable buildDrawable(Context context) {
         Drawable[] drawables = new Drawable[2];
 
-        Drawable selectionListIcon = ResourcesCompat.getDrawable(context.getResources(),
+        drawables[BACKGROUND] = ResourcesCompat.getDrawable(context.getResources(),
                 R.drawable.tab_grid_selection_list_icon, context.getTheme());
-        drawables[BACKGROUND] = new InsetDrawable(selectionListIcon,
-                (int) context.getResources().getDimension(
-                        R.dimen.selection_tab_grid_toggle_button_inset));
 
         drawables[CHECKMARK] = AnimatedVectorDrawableCompat.create(
                 context, R.drawable.ic_check_googblue_20dp_animated);

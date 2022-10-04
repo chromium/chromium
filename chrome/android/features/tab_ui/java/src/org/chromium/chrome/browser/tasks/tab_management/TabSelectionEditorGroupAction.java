@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -19,21 +24,22 @@ import java.util.List;
 public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
     /**
      * Create an action for grouping tabs.
+     * @param context for loading resources.
      * @param showMode whether to show an action view.
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
      */
-    public static TabSelectionEditorAction createAction(
-            @ShowMode int showMode, @ButtonType int buttonType, @IconPosition int iconPosition) {
-        // TODO(ckitagawa): Load drawable and pass to constructor.
-        return new TabSelectionEditorGroupAction(showMode, buttonType, iconPosition);
+    public static TabSelectionEditorAction createAction(Context context, @ShowMode int showMode,
+            @ButtonType int buttonType, @IconPosition int iconPosition) {
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_widgets);
+        return new TabSelectionEditorGroupAction(showMode, buttonType, iconPosition, drawable);
     }
 
-    private TabSelectionEditorGroupAction(
-            @ShowMode int showMode, @ButtonType int buttonType, @IconPosition int iconPosition) {
+    private TabSelectionEditorGroupAction(@ShowMode int showMode, @ButtonType int buttonType,
+            @IconPosition int iconPosition, Drawable drawable) {
         super(R.id.tab_selection_editor_group_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_group,
-                R.plurals.accessibility_tab_selection_editor_group_button, null);
+                R.string.tab_selection_editor_group_tabs,
+                R.plurals.accessibility_tab_selection_editor_group_tabs, drawable);
     }
 
     @Override

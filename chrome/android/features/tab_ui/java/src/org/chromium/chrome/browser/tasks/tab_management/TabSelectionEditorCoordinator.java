@@ -190,6 +190,9 @@ class TabSelectionEditorCoordinator {
             // initialized.
             assert LibraryLoader.getInstance().isInitialized();
             mTabListCoordinator.initWithNative(null);
+            if (thumbnailProvider instanceof MultiThumbnailCardProvider) {
+                ((MultiThumbnailCardProvider) thumbnailProvider).initWithNative();
+            }
 
             mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
                     new LayoutViewBuilder(R.layout.divider_preference),

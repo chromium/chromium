@@ -504,9 +504,9 @@ public class TabGridDialogMediator
                     ButtonType.ICON_AND_TEXT, IconPosition.END,
                     mTabModelSelector.getCurrentModel().isIncognito()));
             actions.add(TabSelectionEditorCloseAction.createAction(
-                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+                    mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             actions.add(TabSelectionEditorUngroupAction.createAction(
-                    ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+                    mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             actions.add(TabSelectionEditorShareAction.createAction(mContext, ShowMode.MENU_ONLY,
                     ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));
             mTabSelectionEditorControllerSupplier.get().configureToolbarWithMenuItems(

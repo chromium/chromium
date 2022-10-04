@@ -221,6 +221,9 @@ class TabSelectionEditorMediator
             @Nullable TabSelectionEditorActionProvider actionProvider,
             int actionButtonEnablingThreshold,
             @Nullable TabSelectionEditorNavigationProvider navigationProvider) {
+        if (mActionListModel != null) {
+            mActionListModel.clear();
+        }
         if (actionButtonText != null) {
             mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_TEXT, actionButtonText);
         }
@@ -251,10 +254,8 @@ class TabSelectionEditorMediator
         assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_SELECTION_EDITOR_V2);
         if (mActionListModel == null) {
             mActionListModel = new PropertyListModel<>();
-            mTabSelectionEditorMenu =
-                    new TabSelectionEditorMenu(mContext, mTabSelectionEditorToolbar.getMenu());
-            mTabSelectionEditorToolbar.setOnMenuItemClickListener(
-                    mTabSelectionEditorMenu::onMenuItemClick);
+            mTabSelectionEditorMenu = new TabSelectionEditorMenu(
+                    mContext, mTabSelectionEditorToolbar.getActionViewLayout());
             mSelectionDelegate.addObserver(mTabSelectionEditorMenu);
             mActionChangeProcessor = new ListModelChangeProcessor(
                     mActionListModel, mTabSelectionEditorMenu, new TabSelectionEditorMenuAdapter());
