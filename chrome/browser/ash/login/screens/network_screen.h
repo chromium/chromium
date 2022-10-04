@@ -29,15 +29,9 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   using TView = NetworkScreenView;
 
   enum class Result {
-    CONNECTED_REGULAR,
-    CONNECTED_DEMO,
-    CONNECTED_REGULAR_CONSOLIDATED_CONSENT,
-    BACK_REGULAR,
-    BACK_DEMO,
-    BACK_OS_INSTALL,
+    CONNECTED,
+    BACK,
     NOT_APPLICABLE,
-    NOT_APPLICABLE_CONSOLIDATED_CONSENT,
-    NOT_APPLICABLE_CONNECTED_DEMO,
   };
 
   static std::string GetResultString(Result result);

@@ -1346,7 +1346,7 @@ void WizardController::SkipToLoginForTesting() {
   if (!chromeos::features::IsOobeConsolidatedConsentEnabled())
     StartupUtils::MarkEulaAccepted();
 
-  PerformPostEulaActions();
+  PerformPostNetworkScreenActions();
   OnDeviceDisabledChecked(false /* device_disabled */);
 }
 
@@ -1420,42 +1420,67 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
 void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
 }
 
+// The network screen is part of 3 different flows:
+// * Regular Flow: Welcome Screen -> Network Screen -> Update Screen.
+// * Demo Flow: Welcome Screen -> Network Screen -> Demo Preferences Screen.
+// * OS Install Flow: OS Trial Screen -> Network Screen -> Update Screen.
 void WizardController::OnNetworkScreenExit(NetworkScreen::Result result) {
   OnScreenExit(NetworkScreenView::kScreenId,
                NetworkScreen::GetResultString(result));
 
+  // Demo mode flow.
+  if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
+    switch (result) {
+      case NetworkScreen::Result::CONNECTED:
+      case NetworkScreen::Result::NOT_APPLICABLE:
+        demo_setup_controller_->set_demo_config(
+            DemoSession::DemoModeConfig::kOnline);
+        ShowDemoModePreferencesScreen();
+        break;
+      case NetworkScreen::Result::BACK:
+        demo_setup_controller_.reset();
+        ShowWelcomeScreen();
+        break;
+    }
+    return;
+  }
+
+  // OS Install flow.
+  bool is_consolidated_consent_enabled =
+      chromeos::features::IsOobeConsolidatedConsentEnabled();
+  if (switches::IsOsInstallAllowed()) {
+    switch (result) {
+      case NetworkScreen::Result::CONNECTED:
+      case NetworkScreen::Result::NOT_APPLICABLE:
+        if (is_consolidated_consent_enabled) {
+          MaybeTakeTPMOwnership();
+          PerformPostNetworkScreenActions();
+          InitiateOOBEUpdate();
+        } else {
+          ShowEulaScreen();
+        }
+        break;
+      case NetworkScreen::Result::BACK:
+        ShowOsTrialScreen();
+        break;
+    }
+    return;
+  }
+
+  // Regular flow.
   switch (result) {
-    case NetworkScreen::Result::CONNECTED_REGULAR:
+    case NetworkScreen::Result::CONNECTED:
     case NetworkScreen::Result::NOT_APPLICABLE:
-      DCHECK(!demo_setup_controller_);
-      ShowEulaScreen();
+      if (is_consolidated_consent_enabled) {
+        MaybeTakeTPMOwnership();
+        PerformPostNetworkScreenActions();
+        InitiateOOBEUpdate();
+      } else {
+        ShowEulaScreen();
+      }
       break;
-    case NetworkScreen::Result::CONNECTED_DEMO:
-    case NetworkScreen::Result::NOT_APPLICABLE_CONNECTED_DEMO:
-      DCHECK(demo_setup_controller_);
-      demo_setup_controller_->set_demo_config(
-          DemoSession::DemoModeConfig::kOnline);
-      ShowDemoModePreferencesScreen();
-      break;
-    case NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
-    case NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
-      DCHECK(!demo_setup_controller_);
-      MaybeTakeTPMOwnership();
-      PerformPostEulaActions();
-      InitiateOOBEUpdate();
-      break;
-    case NetworkScreen::Result::BACK_DEMO:
-      DCHECK(demo_setup_controller_);
-      demo_setup_controller_.reset();
+    case NetworkScreen::Result::BACK:
       ShowWelcomeScreen();
-      break;
-    case NetworkScreen::Result::BACK_REGULAR:
-      DCHECK(!demo_setup_controller_);
-      ShowWelcomeScreen();
-      break;
-    case NetworkScreen::Result::BACK_OS_INSTALL:
-      DCHECK(!demo_setup_controller_);
-      ShowOsTrialScreen();
       break;
   }
 }
@@ -1502,7 +1527,7 @@ void WizardController::OnEulaAccepted(bool usage_statistics_reporting_enabled) {
     AdvanceToScreen(HWDataCollectionView::kScreenId);
     return;
   }
-  PerformPostEulaActions();
+  PerformPostNetworkScreenActions();
 
   if (arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
     ShowArcTermsOfServiceScreen();
@@ -1676,7 +1701,7 @@ void WizardController::OnDemoPreferencesScreenExit(
       demo_setup_controller_->set_demo_config(
           DemoSession::DemoModeConfig::kOnline);
       MaybeTakeTPMOwnership();
-      PerformPostEulaActions();
+      PerformPostNetworkScreenActions();
       InitiateOOBEUpdate();
       break;
     case DemoPreferencesScreen::Result::CANCELED:
@@ -2023,13 +2048,12 @@ void WizardController::StartTimezoneResolve() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void WizardController::PerformPostEulaActions() {
+void WizardController::PerformPostNetworkScreenActions() {
   StartNetworkTimezoneResolve();
   DelayNetworkCall(base::Milliseconds(kDefaultNetworkRetryDelayMS),
                    ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
 
-  // Now that EULA has been accepted (for official builds), enable portal check.
   // ChromiumOS builds would go though this code path too.
   GetAutoEnrollmentController()->Start();
   network_portal_detector::GetInstance()->Enable();

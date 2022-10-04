@@ -32,17 +32,11 @@ constexpr char kUserActionContinueButtonClicked[] = "continue";
 // static
 std::string NetworkScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::CONNECTED_REGULAR:
-    case Result::CONNECTED_DEMO:
-    case Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
+    case Result::CONNECTED:
       return "Connected";
-    case Result::BACK_REGULAR:
-    case Result::BACK_DEMO:
-    case Result::BACK_OS_INSTALL:
+    case Result::BACK:
       return "Back";
     case Result::NOT_APPLICABLE:
-    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
-    case Result::NOT_APPLICABLE_CONNECTED_DEMO:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -130,14 +124,7 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
 }
 
 void NetworkScreen::NotifyOnConnection() {
-  if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
-    exit_callback_.Run(Result::CONNECTED_DEMO);
-  } else {
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-      exit_callback_.Run(Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
-    else
-      exit_callback_.Run(Result::CONNECTED_REGULAR);
-  }
+  exit_callback_.Run(Result::CONNECTED);
 }
 
 void NetworkScreen::OnConnectionTimeout() {
@@ -202,12 +189,7 @@ void NetworkScreen::OnBackButtonClicked() {
   if (view_)
     view_->ClearErrors();
 
-  if (DemoSetupController::IsOobeDemoSetupFlowInProgress())
-    exit_callback_.Run(Result::BACK_DEMO);
-  else if (switches::IsOsInstallAllowed())
-    exit_callback_.Run(Result::BACK_OS_INSTALL);
-  else
-    exit_callback_.Run(Result::BACK_REGULAR);
+  exit_callback_.Run(Result::BACK);
 }
 
 void NetworkScreen::OnContinueButtonClicked() {
@@ -239,22 +221,10 @@ bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
 
   if (is_hidden()) {
     // Screen not shown yet: skipping it.
-    if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
-      exit_callback_.Run(Result::NOT_APPLICABLE_CONNECTED_DEMO);
-    } else {
-      if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-        exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
-      } else {
-        exit_callback_.Run(Result::NOT_APPLICABLE);
-      }
-    }
+    exit_callback_.Run(Result::NOT_APPLICABLE);
   } else {
     // Screen already shown: automatically continuing.
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-      exit_callback_.Run(Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
-    } else {
-      exit_callback_.Run(Result::CONNECTED_REGULAR);
-    }
+    exit_callback_.Run(Result::CONNECTED);
   }
 
   return true;

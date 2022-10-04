@@ -88,14 +88,7 @@ TEST_F(NetworkScreenUnitTest, ContinuesAutomatically) {
   EXPECT_EQ(1, network_screen_->continue_attempts_);
 
   ASSERT_TRUE(last_screen_result_.has_value());
-
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-    EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT,
-              last_screen_result_.value());
-  } else {
-    EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
-              last_screen_result_.value());
-  }
+  EXPECT_EQ(NetworkScreen::Result::CONNECTED, last_screen_result_.value());
 }
 
 TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
@@ -114,13 +107,7 @@ TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
   ASSERT_EQ(1, network_screen_->continue_attempts_);
 
   ASSERT_TRUE(last_screen_result_.has_value());
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-    EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT,
-              last_screen_result_.value());
-  } else {
-    EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
-              last_screen_result_.value());
-  }
+  EXPECT_EQ(NetworkScreen::Result::CONNECTED, last_screen_result_.value());
 
   // Stop waiting for another network, net1.
   network_screen_->StopWaitingForConnection(u"net1");

@@ -397,9 +397,11 @@ class WizardController : public OobeUI::Observer {
   // Retrieve filtered OOBE configuration and apply relevant values.
   void UpdateOobeConfiguration();
 
-  // Actions that should be done right after EULA is accepted,
-  // before update check.
-  void PerformPostEulaActions();
+  // Actions that should be done right after Network Screen if
+  // OobeConsolidatedConsent is enabled, and should be done right after EULA is
+  // accepted if OobeConsolidatedConsent is disabled. These actions should be
+  // done before the update check.
+  void PerformPostNetworkScreenActions();
 
   // Actions that should be done right after update stage is finished.
   void PerformOOBECompletedActions();

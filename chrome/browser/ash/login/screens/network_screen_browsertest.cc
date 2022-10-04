@@ -81,14 +81,7 @@ class NetworkScreenTest : public OobeBaseTest {
     network_screen->OnContinueButtonClicked();
     base::RunLoop().RunUntilIdle();
 
-    ASSERT_TRUE(last_screen_result_.has_value());
-    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
-      EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT,
-                last_screen_result_.value());
-    } else {
-      EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
-                last_screen_result_.value());
-    }
+    CheckResult(NetworkScreen::Result::CONNECTED);
   }
 
   void SetDefaultNetworkStateHelperExpectations() {
@@ -208,10 +201,7 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, HandsOffCanConnect_Skipped) {
   network_screen()->UpdateStatus();
 
   WaitForScreenExit();
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-    CheckResult(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
-  else
-    CheckResult(NetworkScreen::Result::CONNECTED_REGULAR);
+  CheckResult(NetworkScreen::Result::CONNECTED);
 }
 
 // The network screen should NOT be skipped if the connection times out, even if
@@ -248,10 +238,7 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, EthernetConnection_Skipped) {
   ShowNetworkScreen();
   WaitForScreenExit();
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-    CheckResult(NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
-  else
-    CheckResult(NetworkScreen::Result::NOT_APPLICABLE);
+  CheckResult(NetworkScreen::Result::NOT_APPLICABLE);
 
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Network-selection.Connected", 0);
@@ -288,10 +275,7 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, DelayedEthernetConnection_Skipped) {
   network_screen()->UpdateStatus();
   WaitForScreenExit();
 
-  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
-    CheckResult(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
-  else
-    CheckResult(NetworkScreen::Result::CONNECTED_REGULAR);
+  CheckResult(NetworkScreen::Result::CONNECTED);
 
   // Showing screen again to test skip doesn't work now.
   ShowNetworkScreen();
