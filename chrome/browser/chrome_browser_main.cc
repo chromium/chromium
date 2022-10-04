@@ -551,10 +551,10 @@ ChromeBrowserMainParts::ProfileInitManager::~ProfileInitManager() = default;
 
 void ChromeBrowserMainParts::ProfileInitManager::OnProfileAdded(
     Profile* profile) {
-  if (profile->IsSystemProfile()) {
-    // Ignore the system profile that is used for displaying the profile picker.
-    // `CallPostProfileInit()` should be called only for profiles that are used
-    // for browsing.
+  if (profile->IsSystemProfile() || profile->IsGuestSession()) {
+    // Ignore the system profile that is used for displaying the profile picker,
+    // and the "parent" guest profile. `CallPostProfileInit()` should be called
+    // only for profiles that are used for browsing.
     return;
   }
 
