@@ -145,6 +145,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Counts the number of times that the fingerprint match successfully vs.
     rejected.
+
+    This is recorded in the same location as Fingerprint.Unlock.Result. When the
+    Fingerprint.Unlock.Result is success, AuthSuccessful reports true, otherwise
+    AuthSuccessful reports false.
   </summary>
 </histogram>
 
