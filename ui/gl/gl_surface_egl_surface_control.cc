@@ -21,7 +21,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
-#include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gl {

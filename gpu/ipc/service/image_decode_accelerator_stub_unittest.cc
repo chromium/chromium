@@ -77,7 +77,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image_stub.h"
 #include "url/gurl.h"
 
 using testing::InSequence;
@@ -226,9 +225,8 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
     pending_decodes_.pop();
     if (success) {
       // We give out a dummy GpuMemoryBufferHandle as the result: since we mock
-      // the ImageFactory and the gl::GLImage in these tests, the only
-      // requirement is that the NativePixmapHandle has the right number of
-      // planes.
+      // the SharedImage backing in these tests, the only requirement is that
+      // the NativePixmapHandle has the right number of planes.
       auto decode_result = std::make_unique<DecodeResult>();
       decode_result->handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
       for (size_t plane = 0; plane < gfx::NumberOfPlanesForLinearBufferFormat(
