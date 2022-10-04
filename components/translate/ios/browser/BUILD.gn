@@ -9,8 +9,10 @@ source_set("browser") {
   sources = [
     "ios_translate_driver.h",
     "ios_translate_driver.mm",
-    "js_translate_manager.h",
-    "js_translate_manager.mm",
+    "js_translate_web_frame_manager.h",
+    "js_translate_web_frame_manager.mm",
+    "js_translate_web_frame_manager_factory.h",
+    "js_translate_web_frame_manager_factory.mm",
     "language_detection_controller.h",
     "language_detection_controller.mm",
     "language_detection_model_service.h",
@@ -53,7 +55,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "js_translate_manager_unittest.mm",
+    "js_translate_web_frame_manager_unittest.mm",
     "string_clipping_util_unittest.cc",
     "translate_controller_unittest.mm",
   ]
@@ -64,6 +66,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/language/ios/browser",
     "//components/resources",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test:test_fixture",
     "//testing/gtest",

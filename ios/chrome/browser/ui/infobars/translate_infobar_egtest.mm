@@ -105,7 +105,7 @@ const char kFrenchPageWithLinkPath[] = "/frenchpagewithlink/";
 const char kFrenchPageNoTranslateContent[] = "/frenchpagenotranslatecontent/";
 const char kFrenchPageNoTranslateValue[] = "/frenchpagenotranslatevalue/";
 const char kTranslateScriptPath[] = "/translatescript/";
-const char kTranslateScript[] = "Fake Translate Script";
+const char kTranslateScript[] = "Fake_Translate_Script";
 
 // Body text for /languagepath/.
 const char kLanguagePathText[] = "Some text here.";

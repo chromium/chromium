@@ -15,7 +15,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/translate/core/common/translate_util.h"
-#import "components/translate/ios/browser/js_translate_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/navigation/navigation_context.h"
@@ -70,13 +71,13 @@ absl::optional<TranslateErrors> FindTranslateErrorsKey(const base::Value& value,
 
 }  // anonymous namespace
 
-TranslateController::TranslateController(web::WebState* web_state,
-                                         JsTranslateManager* manager)
+TranslateController::TranslateController(
+    web::WebState* web_state,
+    JSTranslateWebFrameManagerFactory* js_manager_factory)
     : web_state_(web_state),
       observer_(nullptr),
-      js_manager_(manager),
+      js_manager_factory_(js_manager_factory),
       weak_method_factory_(this) {
-  DCHECK(js_manager_);
   DCHECK(web_state_);
   web_state_->AddObserver(this);
   subscription_ = web_state_->AddScriptCommandCallback(
@@ -95,21 +96,35 @@ TranslateController::~TranslateController() {
 
 void TranslateController::InjectTranslateScript(
     const std::string& translate_script) {
-  [js_manager_ injectWithTranslateScript:translate_script];
+  if (!main_web_frame_) {
+    return;
+  }
+
+  js_manager_factory_->FromWebFrame(main_web_frame_)
+      ->InjectTranslateScript(translate_script);
 }
 
 void TranslateController::RevertTranslation() {
-  [js_manager_ revertTranslation];
+  if (!main_web_frame_) {
+    return;
+  }
+
+  js_manager_factory_->FromWebFrame(main_web_frame_)->RevertTranslation();
 }
 
 void TranslateController::StartTranslation(const std::string& source_language,
                                            const std::string& target_language) {
-  [js_manager_ startTranslationFrom:source_language to:target_language];
+  if (!main_web_frame_) {
+    return;
+  }
+
+  js_manager_factory_->FromWebFrame(main_web_frame_)
+      ->StartTranslation(source_language, target_language);
 }
 
-void TranslateController::SetJsTranslateManagerForTesting(
-    JsTranslateManager* manager) {
-  js_manager_ = manager;
+void TranslateController::SetJsTranslateWebFrameManagerFactoryForTesting(
+    JSTranslateWebFrameManagerFactory* manager) {
+  js_manager_factory_ = manager;
 }
 
 bool TranslateController::OnJavascriptCommandReceived(
@@ -251,8 +266,8 @@ bool TranslateController::OnTranslateSendRequest(const base::Value& command) {
 
 void TranslateController::OnScriptFetchComplete(
     std::unique_ptr<std::string> response_body) {
-  if (response_body) {
-    web_state_->ExecuteJavaScript(base::UTF8ToUTF16(*response_body));
+  if (main_web_frame_ && response_body) {
+    main_web_frame_->ExecuteJavaScript(base::UTF8ToUTF16(*response_body));
   }
   script_fetcher_.reset();
 }
@@ -262,6 +277,10 @@ void TranslateController::OnRequestFetchComplete(
     std::string url,
     int request_id,
     std::unique_ptr<std::string> response_body) {
+  if (!main_web_frame_) {
+    return;
+  }
+
   const std::unique_ptr<network::SimpleURLLoader>& url_loader = *it;
 
   int response_code = 0;
@@ -287,22 +306,37 @@ void TranslateController::OnRequestFetchComplete(
                          &escaped_response_text);
 
   std::string final_url = url_loader->GetFinalURL().spec();
-  [js_manager_ handleTranslateResponseWithURL:url
-                                    requestID:request_id
-                                 responseCode:response_code
-                                   statusText:status_text
-                                  responseURL:final_url
-                                 responseText:escaped_response_text];
-
+  js_manager_factory_->FromWebFrame(main_web_frame_)
+      ->HandleTranslateResponse(url, request_id, response_code, status_text,
+                                final_url, escaped_response_text);
   request_fetchers_.erase(it);
 }
 
 // web::WebStateObserver implementation.
 
+void TranslateController::WebFrameDidBecomeAvailable(web::WebState* web_state,
+                                                     web::WebFrame* web_frame) {
+  DCHECK_EQ(web_state_, web_state);
+  if (web_frame->IsMainFrame()) {
+    js_manager_factory_->CreateForWebFrame(web_frame);
+    main_web_frame_ = web_frame;
+  }
+}
+
+void TranslateController::WebFrameWillBecomeUnavailable(
+    web::WebState* web_state,
+    web::WebFrame* web_frame) {
+  DCHECK_EQ(web_state_, web_state);
+  if (web_frame == main_web_frame_) {
+    main_web_frame_ = nullptr;
+  }
+}
+
 void TranslateController::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+  main_web_frame_ = nullptr;
 
   request_fetchers_.clear();
   script_fetcher_.reset();

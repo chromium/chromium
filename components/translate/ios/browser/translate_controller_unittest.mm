@@ -7,7 +7,8 @@
 #include <memory>
 
 #include "base/values.h"
-#import "components/translate/ios/browser/js_translate_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -20,7 +21,7 @@
 #error "This file requires ARC support."
 #endif
 
-#pragma mark - FakeJSTranslateManager
+#pragma mark - FakeJSTranslateWebFrameManager
 
 namespace {
 
@@ -46,35 +47,62 @@ struct HandleTranslateResponseParams {
   std::string response_text;
 };
 
+class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
+ public:
+  FakeJSTranslateWebFrameManager(web::WebFrame* web_frame)
+      : JSTranslateWebFrameManager(web_frame) {}
+  ~FakeJSTranslateWebFrameManager() override = default;
+
+  void HandleTranslateResponse(const std::string& url,
+                               int request_id,
+                               int response_code,
+                               const std::string status_text,
+                               const std::string& response_url,
+                               const std::string& response_text) override {
+    last_handle_response_params_ =
+        std::make_unique<HandleTranslateResponseParams>(
+            url, request_id, response_code, status_text, response_url,
+            response_text);
+  }
+
+  HandleTranslateResponseParams* GetLastHandleResponseParams() {
+    return last_handle_response_params_.get();
+  }
+
+ private:
+  std::unique_ptr<HandleTranslateResponseParams> last_handle_response_params_;
+};
+
+class FakeJSTranslateWebFrameManagerFactory
+    : public JSTranslateWebFrameManagerFactory {
+ public:
+  FakeJSTranslateWebFrameManagerFactory() {}
+  ~FakeJSTranslateWebFrameManagerFactory() {}
+
+  static FakeJSTranslateWebFrameManagerFactory* GetInstance() {
+    static base::NoDestructor<FakeJSTranslateWebFrameManagerFactory> instance;
+    return instance.get();
+  }
+
+  FakeJSTranslateWebFrameManager* FromWebFrame(
+      web::WebFrame* web_frame) override {
+    if (managers_.find(web_frame->GetFrameId()) == managers_.end()) {
+      managers_[web_frame->GetFrameId()] =
+          std::make_unique<FakeJSTranslateWebFrameManager>(web_frame);
+    }
+    return managers_[web_frame->GetFrameId()].get();
+  }
+
+  void CreateForWebFrame(web::WebFrame* web_frame) override {
+    // no-op, managers are created lazily in FromWebState
+  }
+
+ private:
+  std::map<std::string, std::unique_ptr<FakeJSTranslateWebFrameManager>>
+      managers_;
+};
+
 }  // namespace
-
-// Fake translate manager to store parameters passed to
-// |handleTranslateResponseWithURL:...|
-@interface FakeJSTranslateManager : JsTranslateManager
-
-@property(readonly) HandleTranslateResponseParams* lastHandleResponseParams;
-
-@end
-
-@implementation FakeJSTranslateManager {
-  std::unique_ptr<HandleTranslateResponseParams> _lastHandleResponseParams;
-}
-
-- (HandleTranslateResponseParams*)lastHandleResponseParams {
-  return _lastHandleResponseParams.get();
-}
-
-- (void)handleTranslateResponseWithURL:(const std::string&)URL
-                             requestID:(int)requestID
-                          responseCode:(int)responseCode
-                            statusText:(const std::string&)statusText
-                           responseURL:(const std::string&)responseURL
-                          responseText:(const std::string&)responseText {
-  _lastHandleResponseParams = std::make_unique<HandleTranslateResponseParams>(
-      URL, requestID, responseCode, statusText, responseURL, responseText);
-}
-
-@end
 
 namespace translate {
 
@@ -97,10 +125,8 @@ class TranslateControllerTest : public PlatformTest,
         on_script_ready_called_(false),
         on_translate_complete_called_(false) {
     fake_web_state_->SetBrowserState(fake_browser_state_.get());
-    fake_js_translate_manager_ =
-        [[FakeJSTranslateManager alloc] initWithWebState:fake_web_state_.get()];
     translate_controller_ = std::make_unique<TranslateController>(
-        fake_web_state_.get(), fake_js_translate_manager_);
+        fake_web_state_.get(), &fake_translate_factory_);
     translate_controller_->set_observer(this);
   }
 
@@ -128,7 +154,7 @@ class TranslateControllerTest : public PlatformTest,
   std::unique_ptr<web::FakeBrowserState> fake_browser_state_;
   std::unique_ptr<web::FakeWebFrame> fake_main_frame_;
   std::unique_ptr<web::FakeWebFrame> fake_iframe_;
-  FakeJSTranslateManager* fake_js_translate_manager_;
+  FakeJSTranslateWebFrameManagerFactory fake_translate_factory_;
   std::unique_ptr<TranslateController> translate_controller_;
   TranslateErrors error_type_;
   double ready_time_;
@@ -278,6 +304,8 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadURL) {
 // Tests that OnTranslateSendRequest() called with a bad method will eventually
 // cause the request to fail.
 TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
+  fake_web_state_->OnWebFrameDidBecomeAvailable(fake_main_frame_.get());
+
   base::Value::Dict command;
   command.Set("command", "translate.sendrequest");
   command.Set("method", "POST\r\nHost: other.example.com");
@@ -293,7 +321,8 @@ TEST_F(TranslateControllerTest, OnTranslateSendRequestWithBadMethod) {
   task_environment_.RunUntilIdle();
 
   HandleTranslateResponseParams* last_params =
-      fake_js_translate_manager_.lastHandleResponseParams;
+      fake_translate_factory_.FromWebFrame(fake_main_frame_.get())
+          ->GetLastHandleResponseParams();
   ASSERT_TRUE(last_params);
   EXPECT_EQ("https://translate.googleapis.com/translate?key=abcd",
             last_params->URL);

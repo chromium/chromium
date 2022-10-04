@@ -1,19 +1,18 @@
-// Copyright 2013 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/translate/ios/browser/js_translate_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager.h"
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-
 #include "base/check.h"
+#import "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "ios/web/public/web_state.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,30 +41,22 @@ NSString* GetPageScript(NSString* script_file_name) {
 
 }  // namespace
 
-@interface JsTranslateManager ()
-@property(nonatomic) web::WebState* web_state;
-@property(nonatomic) bool injected;
-@end
-
-@implementation JsTranslateManager
-
-- (instancetype)initWithWebState:(web::WebState*)web_state {
-  self = [super init];
-  if (self) {
-    _web_state = web_state;
-    _injected = false;
-  }
-  return self;
+JSTranslateWebFrameManager::JSTranslateWebFrameManager(web::WebFrame* web_frame)
+    : web_frame_(web_frame) {
+  DCHECK(web_frame);
 }
 
-- (void)injectWithTranslateScript:(const std::string&)translate_script {
+JSTranslateWebFrameManager::~JSTranslateWebFrameManager() {}
+
+void JSTranslateWebFrameManager::InjectTranslateScript(
+    const std::string& translate_script) {
   // Prepend translate_ios.js
   NSString* translate_ios = GetPageScript(@"translate_ios");
   NSString* script = [translate_ios
       stringByAppendingString:base::SysUTF8ToNSString(translate_script)];
 
   // Reset translate state if previously injected.
-  if (_injected) {
+  if (injected_) {
     NSString* resetScript = @"try {"
                              "  cr.googleTranslate.revert();"
                              "} catch (e) {"
@@ -73,40 +64,38 @@ NSString* GetPageScript(NSString* script_file_name) {
     script = [resetScript stringByAppendingString:script];
   }
 
-  _injected = true;
-
-  _web_state->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+  injected_ = true;
+  web_frame_->ExecuteJavaScript(base::SysNSStringToUTF16(script));
 }
 
-- (void)startTranslationFrom:(const std::string&)source
-                          to:(const std::string&)target {
+void JSTranslateWebFrameManager::StartTranslation(const std::string& source,
+                                                  const std::string& target) {
   std::string script =
       base::StringPrintf("cr.googleTranslate.translate('%s','%s')",
                          source.c_str(), target.c_str());
-  _web_state->ExecuteJavaScript(base::UTF8ToUTF16(script));
+  web_frame_->ExecuteJavaScript(base::UTF8ToUTF16(script));
 }
 
-- (void)revertTranslation {
-  if (!_injected)
+void JSTranslateWebFrameManager::RevertTranslation() {
+  if (!injected_)
     return;
 
-  _web_state->ExecuteJavaScript(u"cr.googleTranslate.revert()");
+  web_frame_->ExecuteJavaScript(u"cr.googleTranslate.revert()");
 }
 
-- (void)handleTranslateResponseWithURL:(const std::string&)URL
-                             requestID:(int)requestID
-                          responseCode:(int)responseCode
-                            statusText:(const std::string&)statusText
-                           responseURL:(const std::string&)responseURL
-                          responseText:(const std::string&)responseText {
-  DCHECK(_injected);
+void JSTranslateWebFrameManager::HandleTranslateResponse(
+    const std::string& url,
+    int request_id,
+    int response_code,
+    const std::string status_text,
+    const std::string& response_url,
+    const std::string& response_text) {
+  DCHECK(injected_);
 
   // Return the response details to function defined in translate_ios.js.
   std::string script = base::StringPrintf(
       "__gCrWeb.translate.handleResponse('%s', %d, %d, '%s', '%s', '%s')",
-      URL.c_str(), requestID, responseCode, statusText.c_str(),
-      responseURL.c_str(), responseText.c_str());
-  _web_state->ExecuteJavaScript(base::UTF8ToUTF16(script));
+      url.c_str(), request_id, response_code, status_text.c_str(),
+      response_url.c_str(), response_text.c_str());
+  web_frame_->ExecuteJavaScript(base::UTF8ToUTF16(script));
 }
-
-@end

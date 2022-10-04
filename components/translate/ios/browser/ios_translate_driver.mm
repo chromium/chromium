@@ -19,7 +19,7 @@
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
-#import "components/translate/ios/browser/js_translate_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
 #import "components/translate/ios/browser/language_detection_controller.h"
 #include "components/translate/ios/browser/language_detection_model_service.h"
 #import "components/translate/ios/browser/translate_controller.h"
@@ -75,11 +75,8 @@ IOSTranslateDriver::IOSTranslateDriver(
           web_state, language_detection_model,
           translate_manager_->translate_client()->GetPrefs());
 
-  // Create the translate controller.
-  JsTranslateManager* js_translate_manager =
-      [[JsTranslateManager alloc] initWithWebState:web_state];
-  translate_controller_ =
-      std::make_unique<TranslateController>(web_state, js_translate_manager);
+  translate_controller_ = std::make_unique<TranslateController>(
+      web_state, JSTranslateWebFrameManagerFactory::GetInstance());
 
   translate_controller_->set_observer(this);
 }

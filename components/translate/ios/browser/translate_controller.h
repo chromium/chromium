@@ -17,8 +17,8 @@
 #include "ios/web/public/web_state_observer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-@class JsTranslateManager;
 class GURL;
+class JSTranslateWebFrameManagerFactory;
 
 namespace web {
 class NavigationContext;
@@ -46,7 +46,8 @@ class TranslateController : public web::WebStateObserver {
                                      double translation_time) = 0;
   };
 
-  TranslateController(web::WebState* web_state, JsTranslateManager* manager);
+  TranslateController(web::WebState* web_state,
+                      JSTranslateWebFrameManagerFactory* js_manager_factory);
 
   TranslateController(const TranslateController&) = delete;
   TranslateController& operator=(const TranslateController&) = delete;
@@ -67,9 +68,10 @@ class TranslateController : public web::WebStateObserver {
   void StartTranslation(const std::string& source_language,
                         const std::string& target_language);
 
-  // Changes the JsTranslateManager used by this TranslateController.
-  // Only used for testing.
-  void SetJsTranslateManagerForTesting(JsTranslateManager* manager);
+  // Changes the JSTranslateWebFrameManagerFactory used by this
+  // TranslateController. Only used for testing.
+  void SetJsTranslateWebFrameManagerFactoryForTesting(
+      JSTranslateWebFrameManagerFactory* manager);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
@@ -112,6 +114,10 @@ class TranslateController : public web::WebStateObserver {
       std::unique_ptr<std::string> response_body);
 
   // web::WebStateObserver implementation:
+  void WebFrameDidBecomeAvailable(web::WebState* web_state,
+                                  web::WebFrame* web_frame) override;
+  void WebFrameWillBecomeUnavailable(web::WebState* web_state,
+                                     web::WebFrame* web_frame) override;
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
@@ -119,6 +125,9 @@ class TranslateController : public web::WebStateObserver {
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
+
+  // The current main web frame of `web_state_`, if one exists.
+  web::WebFrame* main_web_frame_ = nullptr;
 
   // Used to fetch translate requests. There may be multiple requests in flight.
   std::set<std::unique_ptr<network::SimpleURLLoader>> request_fetchers_;
@@ -129,7 +138,7 @@ class TranslateController : public web::WebStateObserver {
   base::CallbackListSubscription subscription_;
 
   Observer* observer_;
-  __strong JsTranslateManager* js_manager_;
+  JSTranslateWebFrameManagerFactory* js_manager_factory_;
   base::WeakPtrFactory<TranslateController> weak_method_factory_;
 };
 
