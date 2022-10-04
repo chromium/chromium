@@ -7,7 +7,7 @@
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
-#include "ui/display/types/display_constants.h"
+#include "ui/display/screen.h"
 
 namespace arc {
 
@@ -28,7 +28,7 @@ void ArcPredictorAppLaunchHandler::AddPendingApp(
   // and user cannot launch another instance of the same app by click icon. But
   // from code side it still can launch the same app by calling this function.
   int arc_session_id = -1;
-  int64_t display_id = display::kDefaultDisplayId;
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   if (window_info) {
     arc_session_id = window_info->window_id;
     // Default invalid display id in WindowInfo struct.

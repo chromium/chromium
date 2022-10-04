@@ -56,6 +56,12 @@ bool IsArcGhostWindowEnabled() {
 }
 
 absl::optional<double> GetDisplayScaleFactor(int64_t display_id) {
+  // The `kDefaultDisplayId` should not be a valid parameter. Here replace it to
+  // primary display id to keep it as the same semantics with Android, since the
+  // ARC app window will not be shown on chromium default display (placeholder
+  // display when no display connected).
+  if (display_id == display::kDefaultDisplayId)
+    display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::Display display;
   if (display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
                                                             &display)) {
