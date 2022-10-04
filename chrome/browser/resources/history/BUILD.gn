@@ -10,7 +10,6 @@ build_webui("build") {
 
   static_files = [
     "history.html",
-    "images/journeys.svg",
     "images/list.svg",
     "images/sign_in_promo_dark.svg",
     "images/sign_in_promo.svg",

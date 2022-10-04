@@ -211,7 +211,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
       tabsIcons_: {
         type: Array,
-        value: () => ['images/list.svg', 'images/journeys.svg'],
+        value: () =>
+            ['images/list.svg', 'chrome://resources/images/icon_journeys.svg'],
       },
 
       tabsNames_: {
