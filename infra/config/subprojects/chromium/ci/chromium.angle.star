@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/builders.star", "goma", "reclient", "sheriff_rotations", "xcode")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/ci.star", "ci")
@@ -56,6 +57,7 @@ ci.thin_tester(
         short_name = "arm64",
     ),
     triggered_by = ["android-angle-chromium-arm64-builder"],
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.gpu.linux_builder(

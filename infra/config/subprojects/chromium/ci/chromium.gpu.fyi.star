@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.gpu.fyi builder group."""
 
+load("//lib/args.star", "args")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
@@ -140,6 +141,7 @@ ci.thin_tester(
         short_name = "N5X",
     ),
     triggered_by = ["GPU FYI Android arm64 Builder"],
+    sheriff_rotations = args.ignore_default(None),
 )
 
 ci.thin_tester(
