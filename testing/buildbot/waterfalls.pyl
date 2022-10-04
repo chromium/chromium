@@ -3565,15 +3565,6 @@
           'gtest_tests': 'linux_chromeos_gtests',
         },
       },
-      'linux-chromeos-js-code-coverage': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-bionic',
-        ],
-        'test_suites': {
-          'gtest_tests': 'js_code_coverage_browser_tests'
-        },
-      },
       'linux-code-coverage': {
         'mixins': [
           'isolate_profile_data',
@@ -3605,6 +3596,16 @@
       'linux-headless-shell-rel': {
         'test_suites': {
           'gtest_tests': 'headless_browser_gtests',
+        },
+      },
+
+      'linux-js-code-coverage': {
+        'mixins': [
+          'isolate_profile_data',
+          'linux-bionic',
+        ],
+        'test_suites': {
+          'gtest_tests': 'js_code_coverage_browser_tests'
         },
       },
       'linux-lacros-code-coverage': {

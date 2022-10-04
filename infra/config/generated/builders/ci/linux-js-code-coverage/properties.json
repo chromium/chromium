@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-chromeos-js-code-coverage",
+              "builder": "linux-js-code-coverage",
               "project": "chromium"
             },
             "builder_spec": {
@@ -23,9 +23,6 @@
                 "target_bits": 64
               },
               "legacy_gclient_config": {
-                "apply_configs": [
-                  "chromeos"
-                ],
                 "config": "chromium"
               }
             }
@@ -35,7 +32,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-chromeos-js-code-coverage",
+          "builder": "linux-js-code-coverage",
           "project": "chromium"
         }
       ]

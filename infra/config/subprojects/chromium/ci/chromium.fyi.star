@@ -1894,7 +1894,7 @@ fyi_coverage_builder(
 )
 
 fyi_coverage_builder(
-    name = "linux-chromeos-js-code-coverage",
+    name = "linux-js-code-coverage",
     console_view_entry = consoles.console_view_entry(
         category = "code_coverage",
         short_name = "jcr",
@@ -1909,9 +1909,6 @@ fyi_coverage_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = [
-                "chromeos",
-            ],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",

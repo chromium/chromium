@@ -1235,18 +1235,6 @@
       "use_remoteexec": true
     }
   },
-  "linux-chromeos-js-code-coverage": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "ChromeOS",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "target_os": "chromeos",
-      "use_javascript_coverage": true,
-      "use_remoteexec": true
-    }
-  },
   "linux-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -1286,6 +1274,20 @@
       "media_use_libvpx": false,
       "proprietary_codecs": false,
       "use_remoteexec": true
+    }
+  },
+  "linux-js-code-coverage": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_webui_inline_sourcemaps": true,
+      "is_clang": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "optimize_webui": false,
+      "symbol_level": 0,
+      "use_clang_coverage": true,
+      "use_goma": true,
+      "use_javascript_coverage": true
     }
   },
   "linux-lacros-builder-fyi-rel": {

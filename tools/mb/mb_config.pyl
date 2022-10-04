@@ -445,11 +445,11 @@
       'linux-blink-v8-sandbox-future-rel': 'release_bot_enable_v8_sandbox_future_dcheck_always_on_reclient',
       'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
-      'linux-chromeos-js-code-coverage': 'chromeos_with_codecs_release_bot_javascript_coverage_reclient',
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot_reclient',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
+      'linux-js-code-coverage': 'clang_code_coverage_with_js_coverage',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
       'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
@@ -2330,10 +2330,6 @@
       'chromeos_with_codecs', 'release_bot_reclient', 'use_clang_coverage',
     ],
 
-    'chromeos_with_codecs_release_bot_javascript_coverage_reclient': [
-      'chromeos_with_codecs', 'release_bot_reclient', 'use_javascript_coverage',
-    ],
-
     'chromeos_with_codecs_release_bot_reclient': [
       'chromeos_with_codecs', 'release_bot_reclient',
     ],
@@ -2366,6 +2362,10 @@
 
     'clang_code_coverage_reclient': [
       'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols',
+    ],
+
+    'clang_code_coverage_with_js_coverage': [
+      'release_bot', 'clang', 'use_clang_coverage', 'no_symbols', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
     ],
 
     'clang_tot_asan_lsan_static_release': [
@@ -4221,6 +4221,10 @@
       'gn_args': 'enable_vulkan=true',
     },
 
+    'enable_webui_inline_sourcemaps_on': {
+      'gn_args': 'enable_webui_inline_sourcemaps=true',
+    },
+
     # This mixin is used to force configs that use it to fail. It
     # is used in two cases: when we have bots that we haven't looked
     # at yet and don't know whether they need MB or not, and for bots
@@ -4524,6 +4528,10 @@
 
     'optimize_for_fuzzing': {
       'gn_args': 'optimize_for_fuzzing=true',
+    },
+
+    'optimize_webui_off': {
+      'gn_args': 'optimize_webui=false',
     },
 
     'ozone': {
