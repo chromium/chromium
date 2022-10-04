@@ -814,7 +814,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/toji/webvr.info.git' + '@' + 'c58ae99b9ff9e2aa4c524633519570bf33536248',
 
   'src/docs/website': {
-    'url': Var('chromium_git') + '/website.git' + '@' + '2d42c91a96eaab027cc6ef06f79b7bf5e77b5ade',
+    'url': Var('chromium_git') + '/website.git' + '@' + 'edf5c24df12ed4a064fb76205ffae95c39ed796a',
   },
 
   'src/ios/third_party/earl_grey2/src': {
