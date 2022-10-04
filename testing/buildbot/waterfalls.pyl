@@ -988,7 +988,6 @@
           'cronet_test_instrumentation_apk',
           'chrome_nocompile_tests',
           'monochrome_static_initializers',
-          'weblayer_shell',
         ],
         'test_suites': {
           'gtest_tests': 'android_marshmallow_device_gtests',
@@ -1055,7 +1054,6 @@
         'additional_compile_targets': [
           'monochrome_static_initializers',
           'validate_expectations',
-          'weblayer_shell',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_android_gtests',
@@ -1086,7 +1084,6 @@
         ],
         'additional_compile_targets': [
           'monochrome_static_initializers',
-          'weblayer_shell',
         ],
         'test_suites': {
           'gtest_tests': 'android_pie_rel_gtests',
@@ -1249,34 +1246,6 @@
           'gtest_tests': 'android_pie_rel_emulator_gtests',
           'scripts': 'chromium_android_scripts',
         }
-      },
-      'android-weblayer-pie-x86-wpt-fyi-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie-x86-emulator',
-          'emulator-8-cores',
-          'linux-bionic',
-          'x86-64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'weblayer_shell_wpt',
-        },
-        'use_swarming': True,
-        'os_type': 'android',
-      },
-      'android-weblayer-pie-x86-wpt-smoketest': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie-x86-emulator',
-          'emulator-8-cores',
-          'linux-bionic',
-          'x86-64',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'weblayer_shell_wpt',
-        },
-        'use_swarming': True,
-        'os_type': 'android',
       },
       'android-webview-12-x64-dbg-tests': {
         'mixins': [

@@ -218,20 +218,6 @@ group("gn_all") {
     ]
   }
 
-  if (is_win || is_linux || is_android) {
-    deps += [
-      "//weblayer/shell:weblayer_shell",
-      "//weblayer/test:weblayer_browsertests",
-      "//weblayer/test:weblayer_unittests",
-    ]
-    if (is_android) {
-      deps += [
-        "//weblayer/browser/android/javatests:weblayer_instrumentation_test_apk",
-        "//weblayer/browser/java:weblayer_junit_tests",
-      ]
-    }
-  }
-
   if (!is_ios && !is_android) {
     deps += [
       "//components/cronet:cronet_tests",
@@ -388,9 +374,6 @@ group("gn_all") {
       "//tools/android/customtabs_benchmark:customtabs_benchmark_apk",
       "//tools/android/kerberos/SpnegoAuthenticator:spnego_authenticator_apk",
       "//ui/android:ui_junit_tests",
-      "//weblayer/public/java:client_aar",
-      "//weblayer/shell/android:weblayer_shell_apk",
-      "//weblayer/shell/android:weblayer_support_apk",
     ]
     deps -= [
       "//net:net_perftests",

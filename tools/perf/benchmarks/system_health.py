@@ -273,42 +273,6 @@ class WebviewStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
     return 'system_health.webview_startup'
 
 
-@benchmark.Info(emails=['cduvall@chromium.org', 'weblayer-team@chromium.org'],
-                component='Internals>WebLayer',
-                documentation_url='https://bit.ly/36XBtpn')
-class WebLayerStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
-  """WebLayer startup time benchmark
-
-  Benchmark that measures how long WebLayer takes to start up
-  and load a blank page.
-  """
-  options = {'pageset_repeat': 20}
-  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
-  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
-  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
-  # TODO(crbug.com/1137468): Add WEBLAYER to telemetry platforms.
-  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
-
-  def CreateStorySet(self, options):
-    return page_sets.SystemHealthBlankStorySet()
-
-  def CreateCoreTimelineBasedMeasurementOptions(self):
-    options = timeline_based_measurement.Options()
-    options.SetTimelineBasedMetrics(['weblayerStartupMetric'])
-    options.config.enable_atrace_trace = True
-    # TODO(crbug.com/1028882): Recording a Chrome trace at the same time as
-    # atrace causes events to stack incorrectly. Fix this by recording a
-    # system+Chrome trace via system perfetto on the device instead.
-    options.config.enable_chrome_trace = False
-    options.config.atrace_config.app_name = 'org.chromium.weblayer.shell'
-    return options
-
-  @classmethod
-  def Name(cls):
-    return 'system_health.weblayer_startup'
-
-
 @benchmark.Info(emails=['tmrts@chromium.org', 'mlippautz@chromium.org'],
                 component='Blink',
                 documentation_url='https://bit.ly/36XBtpn')

@@ -662,54 +662,6 @@
       "script": "//tools/perf/process_perf_results.py"
     }
   },
-  "android-pixel2_weblayer-perf": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "--browser=android-weblayer",
-          "--upload-results",
-          "--test-shard-map-filename=android-pixel2_weblayer-perf_map.json"
-        ],
-        "isolate_name": "performance_weblayer_test_suite",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_weblayer_test_suite",
-        "override_compile_targets": [
-          "performance_weblayer_test_suite"
-        ],
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "OPM1.171019.021",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android",
-              "pool": "chrome.tests.perf-weblayer"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
   "android-pixel2_webview-perf": {
     "isolated_scripts": [
       {
@@ -914,102 +866,6 @@
       }
     ]
   },
-  "android-pixel4_weblayer-perf": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "--browser=android-weblayer-trichrome-google-bundle",
-          "--upload-results",
-          "--test-shard-map-filename=android-pixel4_weblayer-perf_map.json"
-        ],
-        "isolate_name": "performance_weblayer_test_suite",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_weblayer_test_suite",
-        "override_compile_targets": [
-          "performance_weblayer_test_suite"
-        ],
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "RP1A.201105.002",
-              "device_os_flavor": "google",
-              "device_type": "flame",
-              "os": "Android",
-              "pool": "chrome.tests.perf-weblayer"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
-  "android-pixel4_weblayer-perf-pgo": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "--browser=android-weblayer-trichrome-google-bundle",
-          "--upload-results",
-          "--test-shard-map-filename=android-pixel4_weblayer-perf-pgo_map.json"
-        ],
-        "isolate_name": "performance_weblayer_test_suite",
-        "merge": {
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_weblayer_test_suite",
-        "override_compile_targets": [
-          "performance_weblayer_test_suite"
-        ],
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "RP1A.201105.002",
-              "device_os_flavor": "google",
-              "device_type": "flame",
-              "os": "Android",
-              "pool": "chrome.tests.perf-weblayer"
-            }
-          ],
-          "expiration": 7200,
-          "hard_timeout": 21600,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
   "android-pixel4_webview-perf": {
     "isolated_scripts": [
       {
@@ -1167,8 +1023,7 @@
       "chromium_builder_perf",
       "push_apps_to_background_apk",
       "system_webview_apk",
-      "system_webview_shell_apk",
-      "telemetry_weblayer_apks"
+      "system_webview_shell_apk"
     ],
     "isolated_scripts": [
       {
@@ -1408,8 +1263,7 @@
       "chromium_builder_perf",
       "push_apps_to_background_apk",
       "system_webview_apk",
-      "system_webview_shell_apk",
-      "telemetry_weblayer_apks"
+      "system_webview_shell_apk"
     ]
   },
   "chromecast-linux-builder-perf": {

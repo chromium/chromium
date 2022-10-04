@@ -75,7 +75,6 @@ system_health.common_mobile,"charliea@chromium.org, sullivan@chromium.org, tdres
 system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.pcscan,"tmrts@chromium.org, mlippautz@chromium.org",Blink,https://bit.ly/36XBtpn,"2021,health_check,javascript_heavy"
-system_health.weblayer_startup,"cduvall@chromium.org, weblayer-team@chromium.org",Internals>WebLayer,https://bit.ly/36XBtpn,2016
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org, changwan@chromium.org",Mobile>WebView>Perf,,2016
 tab_switching.typical_25,vovoy@chromium.org,OS>Performance,,"2016,tabs_switching"
 tracing.tracing_with_background_memory_infra,ssid@chromium.org,,,
