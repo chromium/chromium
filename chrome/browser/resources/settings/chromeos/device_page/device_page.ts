@@ -41,7 +41,7 @@ interface SettingsDevicePageElement {
 
 const SettingsDevicePageElementBase =
     mixinBehaviors(
-        [I18nMixin, WebUIListenerMixin, RouteObserverBehavior],
+        [RouteObserverBehavior],
         I18nMixin(WebUIListenerMixin(PolymerElement))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUIListenerMixinInterface & RouteObserverBehaviorInterface,

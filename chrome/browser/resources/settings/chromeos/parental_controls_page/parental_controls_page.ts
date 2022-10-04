@@ -14,7 +14,7 @@ import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -23,9 +23,7 @@ import {castExists} from '../assert_extras.js';
 import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
 import {getTemplate} from './parental_controls_page.html.js';
 
-const SettingsParentalControlsPageElementBase = I18nMixin(PolymerElement) as {
-  new (): PolymerElement & I18nMixinInterface,
-};
+const SettingsParentalControlsPageElementBase = I18nMixin(PolymerElement);
 
 export class SettingsParentalControlsPageElement extends
     SettingsParentalControlsPageElementBase {

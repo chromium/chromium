@@ -184,5 +184,11 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-date-time-page': SettingsDateTimePageElement;
+  }
+}
+
 customElements.define(
     SettingsDateTimePageElement.is, SettingsDateTimePageElement);

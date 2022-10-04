@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '../../settings_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeviceNameBrowserProxy, DeviceNameBrowserProxyImpl} from './device_name_browser_proxy.js';
@@ -37,9 +37,7 @@ interface EditHostnameDialogElement {
   };
 }
 
-const EditHostnameDialogElementBase = I18nMixin(PolymerElement) as {
-  new (): PolymerElement & I18nMixinInterface,
-};
+const EditHostnameDialogElementBase = I18nMixin(PolymerElement);
 
 class EditHostnameDialogElement extends EditHostnameDialogElementBase {
   static get is() {

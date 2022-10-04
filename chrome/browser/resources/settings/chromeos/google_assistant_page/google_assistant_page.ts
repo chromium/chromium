@@ -289,5 +289,11 @@ class SettingsGoogleAssistantPageElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-google-assistant-page': SettingsGoogleAssistantPageElement;
+  }
+}
+
 customElements.define(
     SettingsGoogleAssistantPageElement.is, SettingsGoogleAssistantPageElement);
