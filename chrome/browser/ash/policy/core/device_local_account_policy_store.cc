@@ -221,9 +221,9 @@ void DeviceLocalAccountPolicyStore::Validate(
   // updated only after the successful installation of the policy.
   scoped_refptr<ownership::PublicKey> key =
       device_settings_service_->GetPublicKey();
-  if (!key.get() || !key->is_loaded() || !device_policy_data) {
+  if (!key.get() || key->is_empty() || !device_policy_data) {
     LOG(ERROR) << "Failed policy validation, key: " << (key.get() != nullptr)
-               << ", is_loaded: " << (key.get() ? key->is_loaded() : false)
+               << ", is_loaded: " << (key.get() ? !key->is_empty() : false)
                << ", device_policy_data: " << (device_policy_data != nullptr);
     std::move(callback).Run(/*signature_validation_public_key=*/std::string(),
                             /*validator=*/nullptr);

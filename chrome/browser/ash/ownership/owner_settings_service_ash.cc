@@ -82,17 +82,14 @@ void LoadPrivateKeyByPublicKeyOnWorkerThread(
     crypto::ScopedPK11Slot public_slot,
     crypto::ScopedPK11Slot private_slot,
     ReloadKeyCallback callback) {
-  std::vector<uint8_t> public_key_data;
-  scoped_refptr<PublicKey> public_key;
-  if (!owner_key_util->ImportPublicKey(&public_key_data)) {
+  scoped_refptr<PublicKey> public_key = owner_key_util->ImportPublicKey();
+  if (!public_key) {
     scoped_refptr<PrivateKey> private_key;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), public_key, private_key));
     return;
   }
-  public_key = new PublicKey();
-  public_key->data().swap(public_key_data);
 
   // If private slot is already available, this will check it. If not, we'll get
   // called again later when the TPM Token is ready, and the slot will be
@@ -156,11 +153,11 @@ void LoadPrivateKeyOnIOThread(const scoped_refptr<OwnerKeyUtil>& owner_key_util,
 
 bool DoesPrivateKeyExistAsyncHelper(
     const scoped_refptr<OwnerKeyUtil>& owner_key_util) {
-  std::vector<uint8_t> public_key;
-  if (!owner_key_util->ImportPublicKey(&public_key))
+  scoped_refptr<PublicKey> public_key = owner_key_util->ImportPublicKey();
+  if (!public_key)
     return false;
   crypto::ScopedSECKEYPrivateKey key =
-      crypto::FindNSSKeyFromPublicKeyInfo(public_key);
+      crypto::FindNSSKeyFromPublicKeyInfo(public_key->data());
   return key && SECKEY_GetPrivateKeyType(key.get()) == rsaKey;
 }
 

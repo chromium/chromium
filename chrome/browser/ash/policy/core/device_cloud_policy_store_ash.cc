@@ -79,13 +79,13 @@ void DeviceCloudPolicyStoreAsh::Store(const em::PolicyFetchResponse& policy) {
       device_settings_service_->GetPublicKey());
   if (!install_attributes_->IsCloudManaged() ||
       !device_settings_service_->policy_data() || !public_key.get() ||
-      !public_key->is_loaded()) {
+      public_key->is_empty()) {
     LOG(ERROR) << "Policy store failed, is_cloud_managed: "
                << install_attributes_->IsCloudManaged() << ", policy_data: "
                << (device_settings_service_->policy_data() != nullptr)
                << ", public_key: " << (public_key.get() != nullptr)
                << ", public_key_is_loaded: "
-               << (public_key.get() ? public_key->is_loaded() : false);
+               << (public_key.get() ? !public_key->is_empty() : false);
     status_ = STATUS_BAD_STATE;
     NotifyStoreError();
     return;

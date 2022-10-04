@@ -174,7 +174,7 @@ void DeviceSettingsService::Store(
 DeviceSettingsService::OwnershipStatus
     DeviceSettingsService::GetOwnershipStatus() {
   if (public_key_.get())
-    return public_key_->is_loaded() ? OWNERSHIP_TAKEN : OWNERSHIP_NONE;
+    return public_key_->is_empty() ? OWNERSHIP_NONE : OWNERSHIP_TAKEN;
   if (device_mode_ == policy::DEVICE_MODE_ENTERPRISE_AD)
     return OWNERSHIP_TAKEN;
   return OWNERSHIP_UNKNOWN;

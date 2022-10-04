@@ -30,7 +30,7 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   MockOwnerKeyUtil& operator=(const MockOwnerKeyUtil&) = delete;
 
   // OwnerKeyUtil implementation:
-  bool ImportPublicKey(std::vector<uint8_t>* output) override;
+  scoped_refptr<PublicKey> ImportPublicKey() override;
   crypto::ScopedSECKEYPrivateKey FindPrivateKeyInSlot(
       const std::vector<uint8_t>& key,
       PK11SlotInfo* slot) override;

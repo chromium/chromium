@@ -168,7 +168,9 @@ void OwnerSettingsService::OnKeypairLoaded(
   // loading (even if unsuccessfully). Absence of the actual data inside can
   // indicate that the keys are unavailable.
   public_key_ =
-      public_key ? public_key : base::MakeRefCounted<ownership::PublicKey>();
+      public_key ? public_key
+                 : base::MakeRefCounted<ownership::PublicKey>(
+                       /*is_persisted=*/false, /*data=*/std::vector<uint8_t>());
   private_key_ = private_key
                      ? private_key
                      : base::MakeRefCounted<ownership::PrivateKey>(nullptr);

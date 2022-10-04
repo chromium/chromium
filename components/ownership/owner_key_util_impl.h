@@ -24,7 +24,7 @@ class OWNERSHIP_EXPORT OwnerKeyUtilImpl : public OwnerKeyUtil {
   OwnerKeyUtilImpl& operator=(const OwnerKeyUtilImpl&) = delete;
 
   // OwnerKeyUtil implementation:
-  bool ImportPublicKey(std::vector<uint8_t>* output) override;
+  scoped_refptr<PublicKey> ImportPublicKey() override;
   crypto::ScopedSECKEYPrivateKey FindPrivateKeyInSlot(
       const std::vector<uint8_t>& key,
       PK11SlotInfo* slot) override;

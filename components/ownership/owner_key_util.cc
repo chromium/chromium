@@ -11,10 +11,13 @@ namespace ownership {
 ///////////////////////////////////////////////////////////////////////////
 // PublicKey
 
-PublicKey::PublicKey() {
-}
+PublicKey::PublicKey(bool is_persisted, std::vector<uint8_t> data)
+    : is_persisted_(is_persisted), data_(std::move(data)) {}
 
-PublicKey::~PublicKey() {
+PublicKey::~PublicKey() = default;
+
+scoped_refptr<PublicKey> PublicKey::clone() {
+  return base::MakeRefCounted<ownership::PublicKey>(is_persisted_, data_);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -23,7 +26,6 @@ PublicKey::~PublicKey() {
 PrivateKey::PrivateKey(crypto::ScopedSECKEYPrivateKey key)
     : key_(std::move(key)) {}
 
-PrivateKey::~PrivateKey() {
-}
+PrivateKey::~PrivateKey() = default;
 
 }  // namespace ownership

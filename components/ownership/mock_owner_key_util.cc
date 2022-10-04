@@ -18,9 +18,10 @@ MockOwnerKeyUtil::MockOwnerKeyUtil() = default;
 
 MockOwnerKeyUtil::~MockOwnerKeyUtil() = default;
 
-bool MockOwnerKeyUtil::ImportPublicKey(std::vector<uint8_t>* output) {
-  *output = public_key_;
-  return !public_key_.empty();
+scoped_refptr<PublicKey> MockOwnerKeyUtil::ImportPublicKey() {
+  return public_key_.empty() ? nullptr
+                             : base::MakeRefCounted<ownership::PublicKey>(
+                                   /*is_persisted=*/true, /*data=*/public_key_);
 }
 
 crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::FindPrivateKeyInSlot(

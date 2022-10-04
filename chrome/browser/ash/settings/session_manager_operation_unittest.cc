@@ -106,7 +106,7 @@ class SessionManagerOperationTest : public testing::Test {
 
   void CheckPublicKeyLoaded(SessionManagerOperation* op) {
     ASSERT_TRUE(op->public_key().get());
-    ASSERT_TRUE(op->public_key()->is_loaded());
+    ASSERT_FALSE(op->public_key()->is_empty());
     std::vector<uint8_t> public_key;
     ASSERT_TRUE(policy_.GetSigningKey()->ExportPublicKey(&public_key));
     EXPECT_EQ(public_key, op->public_key()->data());
@@ -144,7 +144,7 @@ TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
   EXPECT_FALSE(op.policy_data().get());
   EXPECT_FALSE(op.device_settings().get());
   ASSERT_TRUE(op.public_key().get());
-  EXPECT_FALSE(op.public_key()->is_loaded());
+  EXPECT_TRUE(op.public_key()->is_empty());
 }
 
 TEST_F(SessionManagerOperationTest, LoadOwnerKey) {
@@ -233,7 +233,7 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
         // Verify the public_key() is properly set, but the callback is
         // not yet called.
         EXPECT_TRUE(op->public_key().get());
-        EXPECT_TRUE(op->public_key()->is_loaded());
+        EXPECT_FALSE(op->public_key()->is_empty());
         Mock::VerifyAndClearExpectations(test);
 
         // Now install a different key and policy.
