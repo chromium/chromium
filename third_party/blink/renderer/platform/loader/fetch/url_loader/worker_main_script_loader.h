@@ -29,10 +29,10 @@
 
 namespace blink {
 
+class CachedMetadataHandler;
 class FetchContext;
 class FetchParameters;
 class ResourceLoadInfoNotifierWrapper;
-class SingleCachedMetadataHandler;
 class WorkerMainScriptLoaderClient;
 struct ResourceLoaderOptions;
 
@@ -79,7 +79,7 @@ class PLATFORM_EXPORT WorkerMainScriptLoader final
   // Gets the raw data of the main script.
   SharedBuffer* Data() const { return data_.get(); }
   WTF::TextEncoding GetScriptEncoding() { return script_encoding_; }
-  SingleCachedMetadataHandler* CreateCachedMetadataHandler();
+  CachedMetadataHandler* CreateCachedMetadataHandler();
 
   virtual void Trace(Visitor*) const;
 

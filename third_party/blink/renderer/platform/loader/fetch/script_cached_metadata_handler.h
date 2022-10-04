@@ -32,7 +32,7 @@ class CachedMetadataSender;
 // the handler is rejected if e.g. the disk cache entry has been updated and the
 // handler refers to an older response.
 class PLATFORM_EXPORT ScriptCachedMetadataHandler
-    : public SingleCachedMetadataHandler {
+    : public CachedMetadataHandler {
  public:
   ScriptCachedMetadataHandler(const WTF::TextEncoding&,
                               std::unique_ptr<CachedMetadataSender>);

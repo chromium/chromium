@@ -175,8 +175,7 @@ void WorkerMainScriptLoader::OnComplete(
   NotifyCompletionIfAppropriate();
 }
 
-SingleCachedMetadataHandler*
-WorkerMainScriptLoader::CreateCachedMetadataHandler() {
+CachedMetadataHandler* WorkerMainScriptLoader::CreateCachedMetadataHandler() {
   // Currently we support the metadata caching only for HTTP family.
   if (!initial_request_url_.ProtocolIsInHTTPFamily() ||
       !resource_response_.CurrentRequestUrl().ProtocolIsInHTTPFamily()) {

@@ -53,7 +53,7 @@ class CORE_EXPORT WorkerModuleScriptFetcher final
                     ModuleType module_type,
                     const ParkableString& source_text,
                     const ResourceResponse& response,
-                    SingleCachedMetadataHandler* cache_handler);
+                    CachedMetadataHandler* cache_handler);
 
   const Member<WorkerGlobalScope> global_scope_;
 

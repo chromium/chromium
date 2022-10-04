@@ -828,7 +828,7 @@ void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls) {
   WorkerGlobalScope::importScripts(urls);
 }
 
-SingleCachedMetadataHandler*
+CachedMetadataHandler*
 ServiceWorkerGlobalScope::CreateWorkerScriptCachedMetadataHandler(
     const KURL& script_url,
     std::unique_ptr<Vector<uint8_t>> meta_data) {

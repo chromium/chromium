@@ -77,7 +77,7 @@ ClassicScript* ClassicScript::Create(
     const ScriptFetchOptions& fetch_options,
     ScriptSourceLocationType source_location_type,
     SanitizeScriptErrors sanitize_script_errors,
-    SingleCachedMetadataHandler* cache_handler,
+    CachedMetadataHandler* cache_handler,
     const TextPosition& start_position,
     ScriptStreamer::NotStreamingReason not_streaming_reason,
     InlineScriptStreamer* streamer) {
@@ -156,7 +156,7 @@ ClassicScript::ClassicScript(
     const ScriptFetchOptions& fetch_options,
     ScriptSourceLocationType source_location_type,
     SanitizeScriptErrors sanitize_script_errors,
-    SingleCachedMetadataHandler* cache_handler,
+    CachedMetadataHandler* cache_handler,
     const TextPosition& start_position,
     ScriptStreamer* streamer,
     ScriptStreamer::NotStreamingReason not_streaming_reason,

@@ -32,7 +32,7 @@ class ModuleScriptCreationParams {
       ScriptSourceLocationType source_location_type,
       const ModuleType module_type,
       const ParkableString& source_text,
-      SingleCachedMetadataHandler* cache_handler,
+      CachedMetadataHandler* cache_handler,
       ScriptStreamer* script_streamer = nullptr,
       ScriptStreamer::NotStreamingReason not_streaming_reason =
           ScriptStreamer::NotStreamingReason::kStreamingDisabled)
@@ -94,7 +94,7 @@ class ModuleScriptCreationParams {
         ScriptStreamer::NotStreamingReason::kStreamingDisabled);
   }
 
-  SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+  CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
 
   bool IsSafeToSendToAnotherThread() const { return is_isolated_; }
 
@@ -139,7 +139,7 @@ class ModuleScriptCreationParams {
   mutable String isolated_source_text_;
 
   // |cache_handler_| is cleared when crossing thread boundaries.
-  Persistent<SingleCachedMetadataHandler> cache_handler_;
+  Persistent<CachedMetadataHandler> cache_handler_;
 
   // |script_streamer_| is cleared when crossing thread boundaries.
   Persistent<ScriptStreamer> script_streamer_;

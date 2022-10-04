@@ -60,14 +60,14 @@ class V8ScriptRunnerTest : public testing::Test {
                                         : "http://bla.com/bla%d",
                                     counter_));
   }
-  unsigned TagForCodeCache(SingleCachedMetadataHandler* cache_handler) const {
+  unsigned TagForCodeCache(CachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForCodeCache(cache_handler);
   }
-  unsigned TagForTimeStamp(SingleCachedMetadataHandler* cache_handler) const {
+  unsigned TagForTimeStamp(CachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForTimeStamp(cache_handler);
   }
   void SetCacheTimeStamp(CodeCacheHost* code_cache_host,
-                         SingleCachedMetadataHandler* cache_handler) {
+                         CachedMetadataHandler* cache_handler) {
     V8CodeCache::SetCacheTimeStamp(code_cache_host, cache_handler);
   }
 
@@ -269,7 +269,7 @@ TEST_F(V8ScriptRunnerTest, emptyResourceDoesNotHaveCacheHandler) {
 TEST_F(V8ScriptRunnerTest, codeOption) {
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   ExecutionContext* execution_context =
       ExecutionContext::From(scope.GetScriptState());
   SetCacheTimeStamp(
@@ -294,7 +294,7 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOptionWithoutDiscarding) {
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
   // Set timestamp to simulate a warm run.
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   ExecutionContext* execution_context =
       ExecutionContext::From(scope.GetScriptState());
   SetCacheTimeStamp(
@@ -332,7 +332,7 @@ TEST_F(V8ScriptRunnerTest, consumeCodeOptionWithDiscarding) {
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
   // Set timestamp to simulate a warm run.
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   ExecutionContext* execution_context =
       ExecutionContext::From(scope.GetScriptState());
   SetCacheTimeStamp(
@@ -378,7 +378,7 @@ TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOptionWithoutDiscarding) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
 
   // Cold run - should set the timestamp.
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
@@ -416,7 +416,7 @@ TEST_F(V8ScriptRunnerTest, produceAndConsumeCodeOptionWithDiscarding) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
 
   // Cold run - should set the timestamp.
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
@@ -455,7 +455,7 @@ TEST_F(V8ScriptRunnerTest, cacheRequestedBeforeProduced) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   base::HistogramTester tester;
   HistogramCounter counter(tester);
   EXPECT_FALSE(
@@ -469,7 +469,7 @@ TEST_F(V8ScriptRunnerTest, cacheDataTypeMismatch) {
       blink::features::kDiscardCodeCacheAfterFirstUse);
   V8TestingScope scope;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_FALSE(
       cache_handler->GetCachedMetadata(TagForTimeStamp(cache_handler)));
   EXPECT_TRUE(CompileScript(scope.GetIsolate(), scope.GetScriptState(),
@@ -498,7 +498,7 @@ TEST_F(V8ScriptRunnerTest, successfulCodeCacheWithHashing) {
       "codecachewithhashing");
   code_cache_with_hashing_scheme_ = true;
   ClassicScript* classic_script = CreateScript(CreateResource(UTF8Encoding()));
-  SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+  CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
   EXPECT_TRUE(cache_handler->HashRequired());
 
   // Cold run - should set the timestamp.

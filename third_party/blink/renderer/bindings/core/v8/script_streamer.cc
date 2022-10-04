@@ -727,7 +727,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   // then we reset the code cache entry to just a timestamp, so this condition
   // will allow streaming the next time we load the resource.
   if (V8CodeCache::HasCodeCache(script_resource_->CacheHandler(),
-                                SingleCachedMetadataHandler::kAllowUnchecked)) {
+                                CachedMetadataHandler::kAllowUnchecked)) {
     // The resource has a code cache entry, so it's unnecessary to stream
     // and parse the code.
     // TODO(leszeks): Can we even reach this code path with data pipes?

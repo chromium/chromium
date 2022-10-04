@@ -33,13 +33,13 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
     : public GarbageCollected<ModuleRecordProduceCacheData> {
  public:
   ModuleRecordProduceCacheData(v8::Isolate*,
-                               SingleCachedMetadataHandler*,
+                               CachedMetadataHandler*,
                                V8CodeCache::ProduceCacheOptions,
                                v8::Local<v8::Module>);
 
   void Trace(Visitor*) const;
 
-  SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+  CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
   V8CodeCache::ProduceCacheOptions GetProduceCacheOptions() const {
     return produce_cache_options_;
   }
@@ -48,7 +48,7 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
   }
 
  private:
-  Member<SingleCachedMetadataHandler> cache_handler_;
+  Member<CachedMetadataHandler> cache_handler_;
   V8CodeCache::ProduceCacheOptions produce_cache_options_;
   TraceWrapperV8Reference<v8::UnboundModuleScript> unbound_script_;
 };

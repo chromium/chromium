@@ -257,7 +257,7 @@ String ScriptResource::TextForInspector() const {
   return "";
 }
 
-SingleCachedMetadataHandler* ScriptResource::CacheHandler() {
+CachedMetadataHandler* ScriptResource::CacheHandler() {
   return cached_metadata_handler_;
 }
 
@@ -273,10 +273,10 @@ void ScriptResource::SetSerializedCachedMetadata(mojo_base::BigBuffer data) {
           // It's safe to access unchecked cached metadata here, because the
           // ScriptCacheConsumer result will be ignored if the cached metadata
           // check fails later.
-          SingleCachedMetadataHandler::kAllowUnchecked)) {
+          CachedMetadataHandler::kAllowUnchecked)) {
     cache_consumer_ = MakeGarbageCollected<ScriptCacheConsumer>(
-        V8CodeCache::GetCachedMetadata(
-            CacheHandler(), SingleCachedMetadataHandler::kAllowUnchecked),
+        V8CodeCache::GetCachedMetadata(CacheHandler(),
+                                       CachedMetadataHandler::kAllowUnchecked),
         Url(), InspectorId());
     AdvanceConsumeCacheState(ConsumeCacheState::kRunningOffThread);
   } else {

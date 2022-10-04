@@ -85,7 +85,7 @@ class CORE_EXPORT WorkerGlobalScope
   // use it because we don't create a CachedMetadtaHandler. Only service workers
   // override this method and provide a valid handler. We need to implement it
   // for Dedicated / Shared workers too so we can benefit from code caches.
-  virtual SingleCachedMetadataHandler* CreateWorkerScriptCachedMetadataHandler(
+  virtual CachedMetadataHandler* CreateWorkerScriptCachedMetadataHandler(
       const KURL& script_url,
       std::unique_ptr<Vector<uint8_t>> meta_data) {
     return nullptr;

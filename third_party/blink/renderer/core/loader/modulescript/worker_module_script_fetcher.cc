@@ -116,7 +116,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
     ModuleType module_type,
     const ParkableString& source_text,
     const ResourceResponse& response,
-    SingleCachedMetadataHandler* cache_handler) {
+    CachedMetadataHandler* cache_handler) {
   HeapVector<Member<ConsoleMessage>> error_messages;
 
   const KURL response_url = response.ResponseUrl();

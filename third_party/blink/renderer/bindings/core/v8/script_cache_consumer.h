@@ -28,7 +28,7 @@ class ScriptCacheConsumerClient;
 // completed.
 //
 // ScriptCacheConsumer works on unchecked CachedMetadata speculatively, before
-// the source is available. If SingleCachedMetadataHandler::Check() fails later,
+// the source is available. If CachedMetadataHandler::Check() fails later,
 // the CachedMetadata on the CachedMetadataHandler will be cleared, and the
 // result of this ScriptCacheConsumer will be dropped on TakeV8ConsumeTask() due
 // to a CachedMetadata mismatch.

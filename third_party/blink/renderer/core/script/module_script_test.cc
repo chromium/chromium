@@ -57,7 +57,7 @@ class MockCachedMetadataSender : public CachedMetadataSender {
 };
 
 ClassicScript* CreateClassicScript(const String& source_text,
-                                   SingleCachedMetadataHandler* cache_handler) {
+                                   CachedMetadataHandler* cache_handler) {
   return ClassicScript::Create(source_text, KURL(), KURL(),
                                ScriptFetchOptions(),
                                ScriptSourceLocationType::kInternal,
@@ -86,7 +86,7 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
   static JSModuleScript* CreateJSModuleScript(
       Modulator* modulator,
       const String& source_text,
-      SingleCachedMetadataHandler* cache_handler) {
+      CachedMetadataHandler* cache_handler) {
     ModuleScriptCreationParams params(
         KURL("https://fox.url/script.js"), KURL("https://fox.url/"),
         ScriptSourceLocationType::kInline, ModuleType::kJavaScript,
@@ -125,7 +125,7 @@ class ModuleScriptTest : public ::testing::Test, public ModuleTestBase {
   }
 
   static bool HandlerCachedMetadataWasDiscarded(
-      SingleCachedMetadataHandler* cache_handler) {
+      CachedMetadataHandler* cache_handler) {
     auto* handler = static_cast<ScriptCachedMetadataHandler*>(cache_handler);
     if (!handler)
       return false;
@@ -157,7 +157,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithoutDiscarding) {
 
   auto sender = std::make_unique<MockCachedMetadataSender>();
   MockCachedMetadataSender* sender_ptr = sender.get();
-  SingleCachedMetadataHandler* cache_handler =
+  CachedMetadataHandler* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandler>(UTF8Encoding(),
                                                         std::move(sender));
   const uint32_t kTimeStampTag = V8CodeCache::TagForTimeStamp(cache_handler);
@@ -277,7 +277,7 @@ TEST_F(ModuleScriptTest, V8CodeCacheWithDiscarding) {
 
   auto sender = std::make_unique<MockCachedMetadataSender>();
   MockCachedMetadataSender* sender_ptr = sender.get();
-  SingleCachedMetadataHandler* cache_handler =
+  CachedMetadataHandler* cache_handler =
       MakeGarbageCollected<ScriptCachedMetadataHandler>(UTF8Encoding(),
                                                         std::move(sender));
   const uint32_t kTimeStampTag = V8CodeCache::TagForTimeStamp(cache_handler);

@@ -332,9 +332,8 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
     // source text, settings object, response's url, the default classic script
     // fetch options, and muted errors.
     // TODO(crbug.com/1082086): Fix the base URL.
-    SingleCachedMetadataHandler* handler(
-        CreateWorkerScriptCachedMetadataHandler(complete_url,
-                                                std::move(cached_meta_data)));
+    CachedMetadataHandler* handler(CreateWorkerScriptCachedMetadataHandler(
+        complete_url, std::move(cached_meta_data)));
     ClassicScript* script = ClassicScript::Create(
         source_code, ClassicScript::StripFragmentIdentifier(complete_url),
         response_url /* base_url */, ScriptFetchOptions(),
@@ -431,9 +430,8 @@ void WorkerGlobalScope::EvaluateClassicScript(
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(!IsContextPaused());
 
-  SingleCachedMetadataHandler* handler =
-      CreateWorkerScriptCachedMetadataHandler(script_url,
-                                              std::move(cached_meta_data));
+  CachedMetadataHandler* handler = CreateWorkerScriptCachedMetadataHandler(
+      script_url, std::move(cached_meta_data));
   // Cross-origin workers are disallowed, so use
   // SanitizeScriptErrors::kDoNotSanitize.
   Script* worker_script = ClassicScript::Create(

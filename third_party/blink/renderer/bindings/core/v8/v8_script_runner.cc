@@ -162,8 +162,7 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
 
     case v8::ScriptCompiler::kConsumeCodeCache: {
       // Compile a script, and consume a V8 cache that was generated previously.
-      SingleCachedMetadataHandler* cache_handler =
-          classic_script.CacheHandler();
+      CachedMetadataHandler* cache_handler = classic_script.CacheHandler();
       ScriptCacheConsumer* cache_consumer = classic_script.CacheConsumer();
       scoped_refptr<CachedMetadata> cached_metadata =
           V8CodeCache::GetCachedMetadata(cache_handler);
@@ -318,7 +317,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
       case v8::ScriptCompiler::kConsumeCodeCache: {
         // Compile a script, and consume a V8 cache that was generated
         // previously.
-        SingleCachedMetadataHandler* cache_handler = params.CacheHandler();
+        CachedMetadataHandler* cache_handler = params.CacheHandler();
         DCHECK(cache_handler);
         cache_handler->DidUseCodeCache();
         // TODO(leszeks): Add support for passing in ScriptCacheConsumer.
@@ -417,7 +416,7 @@ v8::MaybeLocal<v8::Value> V8ScriptRunner::RunCompiledScript(
 namespace {
 void DelayedProduceCodeCacheTask(ScriptState* script_state,
                                  v8::Global<v8::Script> script,
-                                 SingleCachedMetadataHandler* cache_handler,
+                                 CachedMetadataHandler* cache_handler,
                                  size_t source_text_length,
                                  KURL source_url,
                                  TextPosition source_start_position) {
@@ -496,7 +495,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
 
     v8::Local<v8::Script> script;
 
-    SingleCachedMetadataHandler* cache_handler = classic_script->CacheHandler();
+    CachedMetadataHandler* cache_handler = classic_script->CacheHandler();
     if (cache_handler) {
       cache_handler->Check(
           ExecutionContext::GetCodeCacheHostFromContext(execution_context),

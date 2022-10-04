@@ -355,7 +355,7 @@ TEST_F(ScriptStreamingTest, SuppressingStreaming) {
   // script is loaded.
   V8TestingScope scope;
 
-  SingleCachedMetadataHandler* cache_handler = resource_->CacheHandler();
+  CachedMetadataHandler* cache_handler = resource_->CacheHandler();
   EXPECT_TRUE(cache_handler);
   cache_handler->DisableSendToPlatformForTesting();
   // CodeCacheHost can be nullptr since we disabled sending data to

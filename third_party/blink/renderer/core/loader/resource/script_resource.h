@@ -40,11 +40,11 @@
 
 namespace blink {
 
+class CachedMetadataHandler;
 class FetchParameters;
 class KURL;
 class ResourceFetcher;
 class ScriptCachedMetadataHandler;
-class SingleCachedMetadataHandler;
 
 // ScriptResource is a resource representing a JavaScript, either a classic or
 // module script. Based on discussions (crbug.com/1178198) ScriptResources are
@@ -120,7 +120,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // not be used outside of the inspector.
   String TextForInspector() const;
 
-  SingleCachedMetadataHandler* CacheHandler();
+  CachedMetadataHandler* CacheHandler();
 
   mojom::blink::ScriptType GetInitialRequestScriptType() const {
     return initial_request_script_type_;

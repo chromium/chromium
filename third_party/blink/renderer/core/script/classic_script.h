@@ -31,7 +31,7 @@ class CORE_EXPORT ClassicScript final : public Script {
       const ScriptFetchOptions&,
       ScriptSourceLocationType = ScriptSourceLocationType::kUnknown,
       SanitizeScriptErrors = SanitizeScriptErrors::kSanitize,
-      SingleCachedMetadataHandler* = nullptr,
+      CachedMetadataHandler* = nullptr,
       const TextPosition& start_position = TextPosition::MinimumPosition(),
       ScriptStreamer::NotStreamingReason =
           ScriptStreamer::NotStreamingReason::kInlineScript,
@@ -62,7 +62,7 @@ class CORE_EXPORT ClassicScript final : public Script {
       const ScriptFetchOptions&,
       ScriptSourceLocationType,
       SanitizeScriptErrors,
-      SingleCachedMetadataHandler* = nullptr,
+      CachedMetadataHandler* = nullptr,
       const TextPosition& start_position = TextPosition::MinimumPosition(),
       ScriptStreamer* = nullptr,
       ScriptStreamer::NotStreamingReason =
@@ -82,7 +82,7 @@ class CORE_EXPORT ClassicScript final : public Script {
     return sanitize_script_errors_;
   }
 
-  SingleCachedMetadataHandler* CacheHandler() const { return cache_handler_; }
+  CachedMetadataHandler* CacheHandler() const { return cache_handler_; }
 
   ScriptStreamer* Streamer() const { return streamer_; }
   ScriptStreamer::NotStreamingReason NotStreamingReason() const {
@@ -120,7 +120,7 @@ class CORE_EXPORT ClassicScript final : public Script {
 
   const SanitizeScriptErrors sanitize_script_errors_;
 
-  const Member<SingleCachedMetadataHandler> cache_handler_;
+  const Member<CachedMetadataHandler> cache_handler_;
 
   const Member<ScriptStreamer> streamer_;
   const ScriptStreamer::NotStreamingReason not_streaming_reason_;
