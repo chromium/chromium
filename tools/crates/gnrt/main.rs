@@ -118,13 +118,10 @@ fn generate_for_third_party(args: &clap::ArgMatches, paths: &paths::ChromiumPath
     // Generate a fake root Cargo.toml for dependency resolution.
     let cargo_manifest = generate_fake_cargo_toml(
         third_party_manifest,
-        crates.iter().map(|(c, _)| {
-            let crate_path = paths.third_party.join(c.crate_path()).canonicalize().unwrap();
-            manifest::PatchSpecification {
-                package_name: c.name.clone(),
-                patch_name: c.patch_name(),
-                path: crate_path,
-            }
+        crates.iter().map(|(c, _)| manifest::PatchSpecification {
+            package_name: c.name.clone(),
+            patch_name: c.patch_name(),
+            path: c.crate_path(),
         }),
     );
 
