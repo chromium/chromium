@@ -179,9 +179,10 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   } else {
     if (!explicit_form) {
       // Step 3.
-      for (uint8_t fallback_form = MathMLOperatorDictionaryForm::kInfix;
-           fallback_form <= MathMLOperatorDictionaryForm::kPostfix;
-           fallback_form++) {
+      for (const auto& fallback_form :
+           {MathMLOperatorDictionaryForm::kInfix,
+            MathMLOperatorDictionaryForm::kPostfix,
+            MathMLOperatorDictionaryForm::kPrefix}) {
         if (fallback_form == form)
           continue;
         category = FindCategory(
