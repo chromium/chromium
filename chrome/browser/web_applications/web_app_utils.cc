@@ -188,13 +188,17 @@ bool AreWebAppsEnabled(const Profile* profile) {
       !ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     return false;
   }
-  // Disable Web Apps if running any kiosk app and kKioskEnableAppService is not
-  // enabled.
   auto* user_manager = user_manager::UserManager::Get();
-  if (user_manager && user_manager->IsLoggedInAsAnyKioskApp() &&
-      !base::FeatureList::IsEnabled(features::kKioskEnableAppService)) {
+  // Don't enable for Chrome App Kiosk sessions.
+  if (user_manager && user_manager->IsLoggedInAsKioskApp())
     return false;
-  }
+  // Don't enable for ARC Kiosk sessions.
+  if (user_manager && user_manager->IsLoggedInAsArcKioskApp())
+    return false;
+  // Don't enable for Web Kiosk if kKioskEnableAppService is disabled.
+  if (user_manager && user_manager->IsLoggedInAsWebKioskApp() &&
+      !base::FeatureList::IsEnabled(features::kKioskEnableAppService))
+    return false;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing)
     return false;
