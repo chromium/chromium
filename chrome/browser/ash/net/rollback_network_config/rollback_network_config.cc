@@ -382,7 +382,7 @@ void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
   }
 
   auto barrier_closure = base::BarrierClosure(
-      network_list->GetListDeprecated().size(),
+      network_list->GetList().size(),
       base::BindOnce(&RollbackNetworkConfig::Importer::AllNetworksConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 
@@ -392,7 +392,7 @@ void RollbackNetworkConfig::Importer::Import(const std::string& network_config,
 
   bool ownership_taken = IsOwnershipTaken();
 
-  for (base::Value& network : network_list->GetListDeprecated()) {
+  for (base::Value& network : network_list->GetList()) {
     if (!ownership_taken) {
       ManagedOncConfigureActivePartAsDeviceWide(network.Clone(),
                                                 finished_a_network);
