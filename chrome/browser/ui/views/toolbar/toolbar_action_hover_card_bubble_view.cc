@@ -128,15 +128,6 @@ class SolidLabel : public views::Label {
 BEGIN_METADATA(SolidLabel, views::Label)
 END_METADATA
 
-// Label that exposes the CreateRenderText() method, so that we can use
-// ToolbarActionHoverCardView::FilenameElider to do a two-line elision of
-// filenames.
-class RenderTextFactoryLabel : public views::Label {
- public:
-  using Label::CreateRenderText;
-  using Label::Label;
-};
-
 }  // namespace
 
 // ToolbarActionHoverCardBubbleView::FadeLabel:
@@ -151,7 +142,7 @@ class RenderTextFactoryLabel : public views::Label {
 class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
  public:
   explicit FadeLabel(int context) {
-    primary_label_ = AddChildView(std::make_unique<RenderTextFactoryLabel>(
+    primary_label_ = AddChildView(std::make_unique<views::Label>(
         std::u16string(), context, views::style::STYLE_PRIMARY));
     primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     primary_label_->SetVerticalAlignment(gfx::ALIGN_TOP);
@@ -169,7 +160,7 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
 
   ~FadeLabel() override = default;
 
-  void SetText(std::u16string text, absl::optional<bool> is_filename) {
+  void SetText(std::u16string text) {
     label_fading_out_->SetText(primary_label_->GetText());
     primary_label_->SetText(text);
   }
@@ -226,7 +217,7 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
   }
 
  private:
-  raw_ptr<RenderTextFactoryLabel> primary_label_;
+  raw_ptr<views::Label> primary_label_;
   raw_ptr<SolidLabel> label_fading_out_;
 
   double percent_ = 1.0;
@@ -253,9 +244,8 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
                   std::u16string host) {
     DCHECK_NE(state, ToolbarActionViewController::HoverCardState::
                          kExtensionDoesNotWantAccess);
-    title_label_->SetText(GetFootnoteTitle(state), absl::nullopt);
-    description_label_->SetText(GetFootnoteDescription(state, host),
-                                absl::nullopt);
+    title_label_->SetText(GetFootnoteTitle(state));
+    description_label_->SetText(GetFootnoteDescription(state, host));
   }
 
   void SetFade(double percent) {
@@ -364,7 +354,7 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
 void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     const ToolbarActionViewController* action_controller,
     content::WebContents* web_contents) {
-  title_label_->SetText(action_controller->GetActionName(), absl::nullopt);
+  title_label_->SetText(action_controller->GetActionName());
 
   DCHECK(GetBubbleFrameView());
   ToolbarActionViewController::HoverCardState state =
