@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/network/hermes_metrics_util.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace ash::hermes_metrics {
@@ -11,6 +12,12 @@ namespace ash::hermes_metrics {
 void LogInstallViaQrCodeResult(HermesResponseStatus status) {
   base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallViaQrCode.Result",
                                 status);
+
+  if (status == HermesResponseStatus::kSuccess ||
+      !base::Contains(kHermesUserErrorCodes, status)) {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.Installation.NonUserErrorSuccessRate", status);
+  }
 }
 
 void LogInstallPendingProfileResult(HermesResponseStatus status) {
