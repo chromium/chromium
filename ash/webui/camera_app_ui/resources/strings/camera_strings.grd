@@ -672,16 +672,16 @@ If your feedback is about image or video quality, please attach a sample photo o
         16 to 9
       </message>
       <message desc="Label of the 4K video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_4K">
-        4K
+        4K (2160p)
       </message>
       <message desc="Label of the Quad HD (QHD) video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_QUAD_HD">
-        Quad HD
+        Quad HD (1440p)
       </message>
       <message desc="Label of the Full HD video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_FULL_HD">
-        Full HD
+        Full HD (1080p)
       </message>
       <message desc="Label of the HD video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_HD">
-        HD
+        HD (720p)
       </message>
       <message desc="Label of the 360p video resolution option." name="IDS_LABEL_VIDEO_RESOLUTION_360P">
         360p
