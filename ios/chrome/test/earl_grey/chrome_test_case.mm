@@ -186,13 +186,6 @@ void ResetAuthentication() {
   gStartupTest = false;
 }
 
-// TODO(crbug.com/1369142): Remove this entire method when the issue is fixed.
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.features_disabled.push_back(kDisableFeediOS14);
-  return config;
-}
-
 - (net::EmbeddedTestServer*)testServer {
   if (!_testServer) {
     _testServer = std::make_unique<net::EmbeddedTestServer>();

@@ -257,10 +257,6 @@ extern const char kEnableFaviconForPasswordsDescription[];
 extern const char kEnableFeedAblationName[];
 extern const char kEnableFeedAblationDescription[];
 
-// Title and description for the flag to remove the Feed from iOS14 devices.
-extern const char kDisableFeediOS14Name[];
-extern const char kDisableFeediOS14Description[];
-
 // Title and description for the flag to test the FRE default browser promo
 // experiment.
 extern const char kEnableFREDefaultBrowserPromoScreenName[];

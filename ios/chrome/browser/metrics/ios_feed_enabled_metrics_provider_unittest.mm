@@ -37,10 +37,6 @@ class IOSFeedEnabledMetricsProviderTest : public PlatformTest {
 
 // Tests the implementation of ProvideCurrentSessionData
 TEST_F(IOSFeedEnabledMetricsProviderTest, ProvideCurrentSessionData) {
-  // TODO(crbug.com/1369142): Remove this when the issue is fixed.
-  base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndDisableFeature(kDisableFeediOS14);
-
   IOSFeedEnabledMetricsProvider provider(&testing_pref_service_);
   provider.ProvideCurrentSessionData(nullptr /* uma_proto */);
   histogram_tester_.ExpectBucketCount("ContentSuggestions.Feed.CanBeShown",

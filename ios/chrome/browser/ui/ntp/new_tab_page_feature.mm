@@ -50,12 +50,6 @@ BASE_FEATURE(kEnableFeedAblation,
              "FeedAblationEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Flag that disables the feed for users on iOS 14.
-// TODO(crbug.com/1369142): Remove this when the issue is fixed.
-BASE_FEATURE(kDisableFeediOS14,
-             "DisableFeediOS14",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
@@ -79,9 +73,7 @@ bool IsDiscoverFeedTopSyncPromoCompact() {
 }
 
 bool IsFeedAblationEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedAblation) ||
-         (base::FeatureList::IsEnabled(kDisableFeediOS14) &&
-          !base::ios::IsRunningOnIOS15OrLater());
+  return base::FeatureList::IsEnabled(kEnableFeedAblation);
 }
 
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
