@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bits.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -169,9 +170,15 @@ bool FrameResources::Initialize() {
   constexpr gfx::BufferFormat kBufferFormat =
       gfx::BufferFormat::YUV_420_BIPLANAR;
 
+  // All YUV420 buffers must have dimensions dividable by 2.
+  constexpr int kI420Alignment = 2;
+  gfx::Size buffer_size_in_pixels(
+      base::bits::AlignUp(coded_size_.width(), kI420Alignment),
+      base::bits::AlignUp(coded_size_.height(), kI420Alignment));
+
   // Create the GpuMemoryBuffer.
-  gpu_memory_buffer_ =
-      context->CreateGpuMemoryBuffer(coded_size_, kBufferFormat, kBufferUsage);
+  gpu_memory_buffer_ = context->CreateGpuMemoryBuffer(
+      buffer_size_in_pixels, kBufferFormat, kBufferUsage);
   if (!gpu_memory_buffer_) {
     DLOG(ERROR) << "Failed to allocate GpuMemoryBuffer for frame: coded_size="
                 << coded_size_.ToString()
