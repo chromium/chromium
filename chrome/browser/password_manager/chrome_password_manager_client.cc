@@ -1013,12 +1013,17 @@ void ChromePasswordManagerClient::CheckProtectedPasswordEntry(
           safe_browsing::kExtensionTelemetryPotentialPasswordTheft)) {
     return;
   }
-  // TODO(zackhan@): Create the struct directly without calling the construct
-  // method. And remove ConstructPasswordReuseInfo method to simplify the code.
-  safe_browsing::PasswordReuseInfo password_reuse_info =
-      pps->ConstructPasswordReuseInfo(
-          reused_password_hash, username, password_type,
-          GetMatchingDomains(matching_reused_credentials));
+  // Construct password reuse info.
+  safe_browsing::PasswordReuseInfo password_reuse_info;
+  password_reuse_info.matches_signin_password =
+      password_type == PasswordType::PRIMARY_ACCOUNT_PASSWORD;
+  password_reuse_info.matching_domains =
+      GetMatchingDomains(matching_reused_credentials);
+  password_reuse_info.reused_password_account_type =
+      pps->GetPasswordProtectionReusedPasswordAccountType(password_type,
+                                                          username);
+  password_reuse_info.count = 1;
+  password_reuse_info.reused_password_hash = reused_password_hash;
 
   // Extract the host part of an extension domain, which will be the extension
   // ID.

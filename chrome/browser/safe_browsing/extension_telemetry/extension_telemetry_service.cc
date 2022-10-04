@@ -60,11 +60,6 @@ void RecordWhenFileWasPersisted(bool persisted_at_write_interval) {
       persisted_at_write_interval);
 }
 
-void RecordSignalType(ExtensionSignalType signal_type) {
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.ExtensionTelemetry.Signals.SignalType", signal_type);
-}
-
 static_assert(extensions::Manifest::NUM_LOAD_TYPES == 10,
               "ExtensionTelemetryReportRequest::ExtensionInfo::Type "
               "needs to match extensions::Manifest::Type.");
@@ -176,6 +171,12 @@ ExtensionTelemetryService::ExtensionTelemetryService(
 
   // Set initial enable/disable state.
   SetEnabled(IsEnhancedProtectionEnabled(*pref_service_));
+}
+
+void ExtensionTelemetryService::RecordSignalType(
+    ExtensionSignalType signal_type) {
+  base::UmaHistogramEnumeration(
+      "SafeBrowsing.ExtensionTelemetry.Signals.SignalType", signal_type);
 }
 
 void ExtensionTelemetryService::OnPrefChanged() {
@@ -312,7 +313,7 @@ void ExtensionTelemetryService::AddSignal(
   ExtensionSignalType signal_type = signal->GetType();
   RecordSignalType(signal_type);
 
-  DCHECK(base::Contains(signal_processors_, signal_type));
+  DCHECK(base::Contains(signal_subscribers_, signal_type));
 
   if (extension_store_.find(signal->extension_id()) == extension_store_.end()) {
     // This is the first signal triggered by this extension since the last

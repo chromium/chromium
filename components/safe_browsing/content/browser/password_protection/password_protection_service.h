@@ -128,13 +128,6 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
   MaybeCreateCommitDeferringCondition(
       content::NavigationHandle& navigation_handle);
 
-  // Exports the password reuse event info to a struct.
-  PasswordReuseInfo ConstructPasswordReuseInfo(
-      uint64_t reused_password_hash,
-      const std::string& username,
-      PasswordType reuse_password_type,
-      std::vector<std::string> matching_domains);
-
  protected:
   void RemoveWarningRequestsByWebContents(content::WebContents* web_contents);
 

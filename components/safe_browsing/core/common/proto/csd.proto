@@ -1923,6 +1923,8 @@ message ExtensionTelemetryReportRequest {
         // pages.
         optional uint32 count = 4;
       }
+      // The remote host(s) contacted within 1 second of at least one (but not
+      // all) of the password reuse event(s) listed below.
       repeated RemoteHostInfo remote_hosts = 1;
       repeated PasswordReuseInfo reused_password_infos = 2;
     }

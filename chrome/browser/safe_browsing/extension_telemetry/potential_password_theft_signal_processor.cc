@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/password_reuse_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -199,6 +200,12 @@ PotentialPasswordTheftSignalProcessor::GetSignalInfoForReport(
         std::move(remote_host_url_w_count_it.first));
     remote_host_url_pb->set_count(remote_host_url_w_count_it.second);
   }
+
+  // Record the combined signal, kPotentialPasswordTheft, which is derived from
+  // kPasswordReuse and kRemoteHostContacted. The signal is created once every
+  // report creation time if there is potential password theft data available.
+  ExtensionTelemetryService::RecordSignalType(
+      ExtensionSignalType::kPotentialPasswordTheft);
 
   // Clear the data in the stores.
   // Following two iters are guaranteed to exist because

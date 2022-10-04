@@ -1214,7 +1214,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the extension telemetry signal type. Logged each time a signal is
-    triggered (eg. a tabs.executeScript API call is invoked).
+    triggered (eg. a tabs.executeScript API call is invoked). The signal can be
+    a raw signal that is created externally and passed to extension service or a
+    combined signal that is created internally and derived from other raw
+    signals.
   </summary>
 </histogram>
 
