@@ -10,7 +10,10 @@
 // See
 // https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: extensionTypes */
+/**
+ * @fileoverview Externs generated from namespace: extensionTypes
+ * @externs
+ */
 
 /** @const */
 chrome.extensionTypes = {};

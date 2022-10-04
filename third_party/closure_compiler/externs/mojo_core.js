@@ -1,5 +1,6 @@
 /**
  * @fileoverview Closure definitions of Mojo core IDL objects only.
+ * @externs
  */
 
 const Mojo = {};

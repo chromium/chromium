@@ -10,7 +10,10 @@
 // See
 // https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: crashReportPrivate */
+/**
+ * @fileoverview Externs generated from namespace: crashReportPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.crashReportPrivate = {};

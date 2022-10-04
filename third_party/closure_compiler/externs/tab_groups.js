@@ -9,7 +9,10 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: tabGroups */
+/**
+ * @fileoverview Externs generated from namespace: tabGroups
+ * @externs
+ */
 
 /** @const */
 chrome.tabGroups = {};

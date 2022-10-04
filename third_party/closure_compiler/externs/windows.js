@@ -12,7 +12,10 @@
 // IMPORTANT NOTE: Work-around for crbug.com/543822
 // s/chrome.windows.tabs.Tab/chrome.tabs.Tab/
 
-/** @fileoverview Externs generated from namespace: windows */
+/**
+ * @fileoverview Externs generated from namespace: windows
+ * @externs
+ */
 
 /** @const */
 chrome.windows = {};

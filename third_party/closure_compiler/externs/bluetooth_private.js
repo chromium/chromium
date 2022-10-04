@@ -13,7 +13,10 @@
 // s/chrome.bluetoothPrivate.bluetooth.Device/chrome.bluetooth.Device/
 // s/chrome.bluetoothPrivate.bluetooth.Transport/chrome.bluetooth.Transport/
 
-/** @fileoverview Externs generated from namespace: bluetoothPrivate */
+/**
+ * @fileoverview Externs generated from namespace: bluetoothPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.bluetoothPrivate = {};

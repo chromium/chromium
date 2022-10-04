@@ -13,7 +13,10 @@
 // If the above tool that generates this file removes it, please readd it or
 // the closure compiler will fail.
 
-/** @fileoverview Externs generated from namespace: system.display */
+/**
+ * @fileoverview Externs generated from namespace: system.display
+ * @externs
+ */
 
 /** @const */
 chrome.system = {};

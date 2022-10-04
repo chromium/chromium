@@ -9,7 +9,10 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: bluetooth */
+/**
+ * @fileoverview Externs generated from namespace: bluetooth
+ * @externs
+ */
 
 /** @const */
 chrome.bluetooth = {};

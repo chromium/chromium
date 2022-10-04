@@ -15,7 +15,10 @@
 // s/chrome.tabs.runtime.Port/chrome.runtime.Port/
 // s/chrome.tabs.windows.Window/chrome.windows.Window/
 
-/** @fileoverview Externs generated from namespace: tabs */
+/**
+ * @fileoverview Externs generated from namespace: tabs
+ * @externs
+ */
 
 /** @const */
 chrome.tabs = {};

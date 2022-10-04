@@ -126,7 +126,10 @@ fake_idl_expected = """// Copyright %s The Chromium Authors
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: fakeApi */
+/**
+ * @fileoverview Externs generated from namespace: fakeApi
+ * @externs
+ */
 
 /** @const */
 chrome.fakeApi = {};
@@ -325,7 +328,10 @@ fake_private_idl_expected = """// Copyright %s The Chromium Authors
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: fakeApiPrivate */
+/**
+ * @fileoverview Externs generated from namespace: fakeApiPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.fakeApiPrivate = {};
@@ -473,7 +479,10 @@ fake_json_expected = """// Copyright %s The Chromium Authors
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: fakeJson */
+/**
+ * @fileoverview Externs generated from namespace: fakeJson
+ * @externs
+ */
 
 /** @const */
 chrome.fakeJson = {};

@@ -12,6 +12,7 @@
 
 /**
  * @fileoverview Externs generated from namespace: metricsPrivateIndividualApis
+ * @externs
  */
 
 /** @const */

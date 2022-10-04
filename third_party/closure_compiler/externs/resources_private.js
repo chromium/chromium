@@ -9,7 +9,10 @@
 // Please run the closure compiler before committing changes.
 // See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: resourcesPrivate */
+/**
+ * @fileoverview Externs generated from namespace: resourcesPrivate
+ * @externs
+ */
 
 /** @const */
 chrome.resourcesPrivate = {};

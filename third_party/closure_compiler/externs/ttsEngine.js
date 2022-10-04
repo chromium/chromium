@@ -10,7 +10,10 @@
 // See
 // https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: ttsEngine */
+/**
+ * @fileoverview Externs generated from namespace: ttsEngine
+ * @externs
+ */
 
 /** @const */
 chrome.ttsEngine = {};

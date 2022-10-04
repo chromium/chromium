@@ -6,6 +6,11 @@
 // specification before we can autogenerate this.
 
 /**
+ * @fileoverview Externs generated from namespace: webview
+ * @externs
+ */
+
+/**
  * @typedef {{
  *   since: (number|undefined)
  * }}

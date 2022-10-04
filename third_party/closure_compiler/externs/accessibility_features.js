@@ -12,7 +12,10 @@
 // chrome.accessibilityFeatures.types.ChromeSetting must be changed to
 // ChromeSetting after this file is generated.
 
-/** @fileoverview Externs generated from namespace: accessibilityFeatures */
+/**
+ * @fileoverview Externs generated from namespace: accessibilityFeatures
+ * @externs
+ */
 
 /** @const */
 chrome.accessibilityFeatures = {};
