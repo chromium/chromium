@@ -29,22 +29,36 @@ Local Modifications:
 
 Instructions:
 
-In order to serve the samples locally, few steps are required:
+In order to serve the samples locally, a few steps are required:
 
-1. Copy contents of src/chrome/test/data/xr/webxr_samples/media into
-   src/third_party/webxr_test_pages/webxr-samples/media
+1. Most samples use images and glTF objects that are stored separately. To make
+   these available, copy the contents of
+     src/chrome/test/data/xr/webxr_samples/media/
+   into a new directory:
+     src/third_party/webxr_test_pages/webxr-samples/media/
+   You can skip this step if you are testing the 'barebones' samples.
 
-2. Serve files, for example by running
+2. Serve files using a local web server, for example by running
    `python -m SimpleHTTPServer <port number>` in
-   src/third_party/webxr_test_pages/webxr-samples
+   src/third_party/webxr_test_pages/webxr-samples/
 
 3. If you are having trouble with the python server such as it being unreliable
    serving media like the gltf files, try using "npm serve".
    To install: `sudo npm install -g serve`
-   To run: `serve .` in src/third_party/webxr_test_pages/webxr-samples
+   To run: `serve .` in src/third_party/webxr_test_pages/webxr-samples/
+
+4. For testing on an Android phone, open chrome://inspect/?tracing#devices
+   and ensure that your phone is visible. The phone must have USB debugging enabled.
+   Then enable port forwarding for your local web server's port. This makes
+   the local web server available on the phone at the address
+   http://localhost/<port number>, for example http://localhost/8080/
+   See https://developer.chrome.com/docs/devtools/remote-debugging/
+   for more detailed instructions.
 
 
-To verify if you have sufficient access to the cloud bucket:
+The following instructions explain how to update the public copy of the repository
+which is stored in a Google cloud bucket. To verify if you have sufficient
+access to the cloud bucket:
 
 1. Run:
      gsutil.py ls -d gs://chromium-webxr-test
