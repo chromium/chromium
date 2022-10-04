@@ -36,16 +36,13 @@ namespace translate {
 
 namespace {
 
-// Prefix for the translate javascript commands. Must be kept in sync with
-// translate_ios.js.
-const char kCommandPrefix[] = "translate";
-
 // Extracts a TranslateErrors value from `value` for the given `key`. Returns
 // absl::nullopt if the value is missing or not convertible to TranslateErrors.
-absl::optional<TranslateErrors> FindTranslateErrorsKey(const base::Value& value,
-                                                       base::StringPiece key) {
+absl::optional<TranslateErrors> FindTranslateErrorsKey(
+    const base::Value::Dict& value,
+    base::StringPiece key) {
   // Does `value` contains a double value for `key`?
-  const absl::optional<double> found_value = value.FindDoubleKey(key);
+  const absl::optional<double> found_value = value.FindDouble(key);
   if (!found_value.has_value())
     return absl::nullopt;
 
@@ -71,6 +68,8 @@ absl::optional<TranslateErrors> FindTranslateErrorsKey(const base::Value& value,
 
 }  // anonymous namespace
 
+WEB_STATE_USER_DATA_KEY_IMPL(TranslateController)
+
 TranslateController::TranslateController(
     web::WebState* web_state,
     JSTranslateWebFrameManagerFactory* js_manager_factory)
@@ -80,11 +79,6 @@ TranslateController::TranslateController(
       weak_method_factory_(this) {
   DCHECK(web_state_);
   web_state_->AddObserver(this);
-  subscription_ = web_state_->AddScriptCommandCallback(
-      base::BindRepeating(
-          base::IgnoreResult(&TranslateController::OnJavascriptCommandReceived),
-          base::Unretained(this)),
-      kCommandPrefix);
 }
 
 TranslateController::~TranslateController() {
@@ -127,67 +121,59 @@ void TranslateController::SetJsTranslateWebFrameManagerFactoryForTesting(
   js_manager_factory_ = manager;
 }
 
-bool TranslateController::OnJavascriptCommandReceived(
-    const base::Value& command,
-    const GURL& page_url,
-    bool user_is_interacting,
-    web::WebFrame* sender_frame) {
-  if (!sender_frame->IsMainFrame()) {
-    // Translate is only supported on main frame.
-    return false;
-  }
-  const std::string* command_string = command.FindStringKey("command");
-  if (!command_string) {
-    return false;
+void TranslateController::OnJavascriptCommandReceived(
+    const base::Value::Dict& payload) {
+  const std::string* command = payload.FindString("command");
+  if (!command) {
+    return;
   }
 
-  if (*command_string == "translate.ready")
-    return OnTranslateReady(command);
-  if (*command_string == "translate.status")
-    return OnTranslateComplete(command);
-  if (*command_string == "translate.loadjavascript")
-    return OnTranslateLoadJavaScript(command);
-  if (*command_string == "translate.sendrequest")
-    return OnTranslateSendRequest(command);
-
-  return false;
+  if (*command == "ready") {
+    OnTranslateReady(payload);
+  } else if (*command == "status") {
+    OnTranslateComplete(payload);
+  } else if (*command == "loadjavascript") {
+    OnTranslateLoadJavaScript(payload);
+  } else if (*command == "sendrequest") {
+    OnTranslateSendRequest(payload);
+  }
 }
 
-bool TranslateController::OnTranslateReady(const base::Value& command) {
+void TranslateController::OnTranslateReady(const base::Value::Dict& payload) {
   absl::optional<TranslateErrors> error_type =
-      FindTranslateErrorsKey(command, "errorCode");
+      FindTranslateErrorsKey(payload, "errorCode");
   if (!error_type.has_value())
-    return false;
+    return;
 
   absl::optional<double> load_time;
   absl::optional<double> ready_time;
   if (*error_type == TranslateErrors::NONE) {
-    load_time = command.FindDoubleKey("loadTime");
-    ready_time = command.FindDoubleKey("readyTime");
+    load_time = payload.FindDouble("loadTime");
+    ready_time = payload.FindDouble("readyTime");
     if (!load_time.has_value() || !ready_time.has_value()) {
-      return false;
+      return;
     }
   }
   if (observer_) {
     observer_->OnTranslateScriptReady(*error_type, load_time.value_or(0.),
                                       ready_time.value_or(0.));
   }
-  return true;
 }
 
-bool TranslateController::OnTranslateComplete(const base::Value& command) {
+void TranslateController::OnTranslateComplete(
+    const base::Value::Dict& payload) {
   absl::optional<TranslateErrors> error_type =
-      FindTranslateErrorsKey(command, "errorCode");
+      FindTranslateErrorsKey(payload, "errorCode");
   if (!error_type.has_value())
-    return false;
+    return;
 
   const std::string* source_language = nullptr;
   absl::optional<double> translation_time;
   if (*error_type == TranslateErrors::NONE) {
-    source_language = command.FindStringKey("pageSourceLanguage");
-    translation_time = command.FindDoubleKey("translationTime");
+    source_language = payload.FindString("pageSourceLanguage");
+    translation_time = payload.FindDouble("translationTime");
     if (!source_language || !translation_time.has_value()) {
-      return false;
+      return;
     }
   }
 
@@ -196,19 +182,18 @@ bool TranslateController::OnTranslateComplete(const base::Value& command) {
         *error_type, source_language ? *source_language : std::string(),
         translation_time.value_or(0.));
   }
-  return true;
 }
 
-bool TranslateController::OnTranslateLoadJavaScript(
-    const base::Value& command) {
-  const std::string* url = command.FindStringKey("url");
+void TranslateController::OnTranslateLoadJavaScript(
+    const base::Value::Dict& payload) {
+  const std::string* url = payload.FindString("url");
   if (!url) {
-    return false;
+    return;
   }
 
   GURL security_origin = translate::GetTranslateSecurityOrigin();
   if (url->find(security_origin.spec()) || script_fetcher_) {
-    return false;
+    return;
   }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -220,31 +205,25 @@ bool TranslateController::OnTranslateLoadJavaScript(
       web_state_->GetBrowserState()->GetURLLoaderFactory(),
       base::BindOnce(&TranslateController::OnScriptFetchComplete,
                      base::Unretained(this)));
-
-  return true;
 }
 
-bool TranslateController::OnTranslateSendRequest(const base::Value& command) {
-  const std::string* method = command.FindStringKey("method");
-  if (!method) {
-    return false;
+void TranslateController::OnTranslateSendRequest(
+    const base::Value::Dict& payload) {
+  const std::string* method = payload.FindString("method");
+  const std::string* url = payload.FindString("url");
+  const std::string* body = payload.FindString("body");
+
+  if (!method || !url || !body) {
+    return;
   }
-  const std::string* url = command.FindStringKey("url");
-  if (!url) {
-    return false;
-  }
-  const std::string* body = command.FindStringKey("body");
-  if (!body) {
-    return false;
-  }
-  absl::optional<double> request_id = command.FindDoubleKey("requestID");
+  absl::optional<double> request_id = payload.FindDouble("requestID");
   if (!request_id.has_value()) {
-    return false;
+    return;
   }
 
   GURL security_origin = translate::GetTranslateSecurityOrigin();
   if (url->find(security_origin.spec())) {
-    return false;
+    return;
   }
 
   auto request = std::make_unique<network::ResourceRequest>();
@@ -261,7 +240,6 @@ bool TranslateController::OnTranslateSendRequest(const base::Value& command) {
       base::BindOnce(&TranslateController::OnRequestFetchComplete,
                      base::Unretained(this), pair.first, *url,
                      static_cast<int>(*request_id)));
-  return true;
 }
 
 void TranslateController::OnScriptFetchComplete(

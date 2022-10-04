@@ -21,6 +21,8 @@ source_set("browser") {
     "string_clipping_util.h",
     "translate_controller.h",
     "translate_controller.mm",
+    "translate_java_script_feature.h",
+    "translate_java_script_feature.mm",
   ]
 
   deps = [
@@ -49,6 +51,11 @@ optimize_js("injected_js") {
   visibility = [ ":browser" ]
   primary_script = "resources/translate_ios.js"
   sources = [ "resources/translate_ios.js" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
 }
 
 source_set("unit_tests") {
