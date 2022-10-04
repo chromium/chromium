@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 20
+// Next MinVersion: 21
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -262,9 +262,6 @@ struct IPConfiguration {
 
   // IP family for that configuration
   IPAddressType type;
-
-  // URL of the HTTP proxy to use for that network.
-  string web_proxy_auto_discovery_url;
 };
 
 // The subset of wireless security protocols that Android defines in
@@ -489,6 +486,74 @@ struct WifiConfiguration {
   // Set of EAP credentials used to connect to a network that matched these
   // credentials.
   [MinVersion=16] EapCredentials? eap@8;
+
+  // Indicates if the App has expressed an explicit opinion about the
+  // meteredness of this network.
+  [MinVersion=20] MeteredOverride metered_override@9;
+
+  // The proxy configuration of this object.
+  [MinVersion=20] ArcProxyInfo? http_proxy@10;
+
+  // Static IPv4 configuration of the network
+  [MinVersion=20] StaticIpv4Configuration? static_ipv4_config@11;
+
+  // List of domains to search when resolving host names on this
+  // link, in priority order.
+  [MinVersion=20] array<string>? domains@12;
+
+    // DNS server IP addresses included in the configuration
+  [MinVersion=20] array<string>? dns_servers@13;
+};
+
+[Extensible]
+enum MeteredOverride {
+  // No metered override
+  [Default] kNone = 0,
+
+  // Override network to be metered
+  kMetered = 1,
+
+  // Override network to be unmetered
+  kNotmetered = 2,
+};
+
+// Static Ipv4 configuration
+struct StaticIpv4Configuration {
+  // Static IPv4 address included in the configuration
+  string? ipv4_addr@0;
+
+  // Static IPv4 address of the gateway included in the configuration
+  string? gateway_ipv4_addr@1;
+
+  // Prefix length of the network
+  int32 prefix_length@2;
+};
+
+// For ProxyInfo, we have 2 options to set up proxy:
+// 1. a direct configuration: host, port, and exclusion_list are
+// used and pac_url is ignored
+// 2. a PAC URL configuration: only pac_url
+// is used and other fields are ignored.
+union ArcProxyInfo {
+  ManualProxyConfig manual_proxy@0;
+  PacUrlProxyConfig pac_url_proxy@1;
+};
+
+struct PacUrlProxyConfig {
+  // PAC script download URL for that network.
+  url.mojom.Url pac_url@0;
+};
+
+struct ManualProxyConfig {
+  // The host IP address of this proxy
+  string host@0;
+
+  // The port of this proxy
+  int32 port@1;
+
+  // When configured to use a Direct Proxy this returns the list of hosts
+  // for which the proxy is ignored.
+  array<string> exclusion_list@2;
 };
 
 // Response object sent back to ARC when it queries existing networks on
