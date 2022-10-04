@@ -11,11 +11,14 @@
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
+#include "cc/tiles/image_decode_cache_utils.h"
+#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -296,7 +299,7 @@ void VizProcessTransportFactory::DisableGpuCompositing(
   compositing_mode_reporter_->SetUsingSoftwareCompositing();
 
   // Drop our reference on the gpu contexts for the compositors.
-  worker_context_provider_.reset();
+  worker_context_provider_wrapper_.reset();
   main_context_provider_.reset();
 
   // ReleaseAcceleratedWidget() removes an entry from |compositor_data_map_|,
@@ -360,11 +363,12 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   }
 
   scoped_refptr<viz::ContextProvider> context_provider;
-  scoped_refptr<viz::RasterContextProvider> worker_context_provider;
+  scoped_refptr<cc::RasterContextProviderWrapper>
+      worker_context_provider_wrapper;
   if (gpu_compositing) {
     // Only pass the contexts to the compositor if it will use gpu compositing.
     context_provider = main_context_provider_;
-    worker_context_provider = worker_context_provider_;
+    worker_context_provider_wrapper = worker_context_provider_wrapper_;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -427,8 +431,8 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   params.client_name = kBrowser;
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-          std::move(context_provider), std::move(worker_context_provider),
-          &params);
+          std::move(context_provider),
+          std::move(worker_context_provider_wrapper), &params);
   compositor->SetLayerTreeFrameSink(std::move(frame_sink),
                                     std::move(display_private));
   if (compositor->use_external_begin_frame_control()) {
@@ -473,17 +477,17 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
   if (gpu_compositing_status != gpu::kGpuFeatureStatusEnabled)
     return gpu::ContextResult::kFatalFailure;
 
-  if (worker_context_provider_ &&
-      IsWorkerContextLost(worker_context_provider_.get()))
-    worker_context_provider_.reset();
+  if (worker_context_provider_wrapper_ &&
+      IsWorkerContextLost(worker_context_provider_wrapper_->GetContext().get()))
+    worker_context_provider_wrapper_.reset();
 
   bool enable_gpu_rasterization =
       features::IsUiGpuRasterizationEnabled() &&
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
           gpu::kGpuFeatureStatusEnabled;
 
-  if (!worker_context_provider_) {
-    worker_context_provider_ = CreateContextProvider(
+  if (!worker_context_provider_wrapper_) {
+    auto worker_context_provider = CreateContextProvider(
         gpu_channel_host, GetGpuMemoryBufferManager(),
         /*supports_locking=*/true,
         /*supports_gles2_interface=*/false,
@@ -491,14 +495,18 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
         /*supports_grcontext=*/false, enable_gpu_rasterization,
         viz::command_buffer_metrics::ContextType::BROWSER_WORKER);
 
-    // Don't observer context loss on |worker_context_provider_| here, that is
-    // already observered by LayerTreeFrameSink. The lost context will be caught
-    // when recreating LayerTreeFrameSink(s).
-    auto context_result = worker_context_provider_->BindToCurrentThread();
-    if (context_result != gpu::ContextResult::kSuccess) {
-      worker_context_provider_.reset();
+    // Don't observer context loss on |worker_context_provider_wrapper_| here,
+    // that is already observed by LayerTreeFrameSink. The lost context will
+    // be caught when recreating LayerTreeFrameSink(s).
+    auto context_result = worker_context_provider->BindToCurrentThread();
+    if (context_result != gpu::ContextResult::kSuccess)
       return context_result;
-    }
+
+    worker_context_provider_wrapper_ =
+        base::MakeRefCounted<cc::RasterContextProviderWrapper>(
+            std::move(worker_context_provider), /*dark_mode_filter=*/nullptr,
+            cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+                /*for_renderer=*/false));
   }
 
   if (main_context_provider_ && IsContextLost(main_context_provider_.get()))

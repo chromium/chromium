@@ -124,7 +124,8 @@ class VizProcessTransportFactory : public ui::ContextFactory,
       compositing_mode_reporter_;
 
   // ContextProvider used on worker threads for rasterization.
-  scoped_refptr<viz::RasterContextProvider> worker_context_provider_;
+  scoped_refptr<cc::RasterContextProviderWrapper>
+      worker_context_provider_wrapper_;
 
   // ContextProvider used on the main thread. Shared by ui::Compositors and also
   // returned from GetSharedMainThreadContextProvider().

@@ -5,6 +5,7 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 
 #include <stdint.h>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -12,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -42,11 +44,12 @@ class LayerTreeFrameSink::ContextLostForwarder
 
 LayerTreeFrameSink::LayerTreeFrameSink(
     scoped_refptr<viz::ContextProvider> context_provider,
-    scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+    scoped_refptr<RasterContextProviderWrapper> worker_context_provider_wrapper,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager)
     : context_provider_(std::move(context_provider)),
-      worker_context_provider_(std::move(worker_context_provider)),
+      worker_context_provider_wrapper_(
+          std::move(worker_context_provider_wrapper)),
       compositor_task_runner_(std::move(compositor_task_runner)),
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {
   DETACH_FROM_THREAD(thread_checker_);
@@ -81,12 +84,12 @@ bool LayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     }
   }
 
-  if (worker_context_provider_) {
+  if (auto* worker_context_provider_ptr = worker_context_provider()) {
     DCHECK(context_provider_);
     DCHECK(compositor_task_runner_);
     DCHECK(compositor_task_runner_->BelongsToCurrentThread());
     viz::RasterContextProvider::ScopedRasterContextLock lock(
-        worker_context_provider_.get());
+        worker_context_provider_ptr);
     if (lock.RasterInterface()->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
       context_provider_->RemoveObserver(this);
       context_provider_ = nullptr;
@@ -96,7 +99,8 @@ bool LayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     // forwarded to compositor thread.
     worker_context_lost_forwarder_ = std::make_unique<ContextLostForwarder>(
         weak_ptr_factory_.GetWeakPtr(), compositor_task_runner_);
-    worker_context_provider_->AddObserver(worker_context_lost_forwarder_.get());
+    worker_context_provider_ptr->AddObserver(
+        worker_context_lost_forwarder_.get());
   }
 
   client_ = client;
@@ -119,10 +123,10 @@ void LayerTreeFrameSink::DetachFromClient() {
     context_provider_ = nullptr;
   }
 
-  if (worker_context_provider_) {
+  if (auto* worker_context_provider_ptr = worker_context_provider()) {
     viz::RasterContextProvider::ScopedRasterContextLock lock(
-        worker_context_provider_.get());
-    worker_context_provider_->RemoveObserver(
+        worker_context_provider_ptr);
+    worker_context_provider_ptr->RemoveObserver(
         worker_context_lost_forwarder_.get());
     worker_context_lost_forwarder_ = nullptr;
   }

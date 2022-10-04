@@ -29,6 +29,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/layers/layer.h"
 #include "cc/metrics/web_vital_metrics.h"
+#include "cc/tiles/raster_dark_mode_filter.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -80,8 +81,6 @@ LayerTreeView::LayerTreeView(
     scoped_refptr<scheduler::WidgetScheduler> scheduler)
     : widget_scheduler_(std::move(scheduler)),
       animation_host_(cc::AnimationHost::CreateMainInstance()),
-      dark_mode_filter_(std::make_unique<RasterDarkModeFilterImpl>(
-          GetCurrentDarkModeSettings())),
       delegate_(delegate) {}
 
 LayerTreeView::~LayerTreeView() = default;
@@ -101,7 +100,7 @@ void LayerTreeView::Initialize(
   params.task_graph_runner = task_graph_runner;
   params.main_task_runner = std::move(main_thread);
   params.mutator_host = animation_host_.get();
-  params.dark_mode_filter = dark_mode_filter_.get();
+  params.dark_mode_filter = &RasterDarkModeFilterImpl::Instance();
   params.ukm_recorder_factory = std::make_unique<UkmRecorderFactoryImpl>();
   if (base::ThreadPoolInstance::Get()) {
     // The image worker thread needs to allow waiting since it makes discardable

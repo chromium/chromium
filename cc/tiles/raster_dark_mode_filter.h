@@ -11,7 +11,7 @@
 
 namespace cc {
 
-// This class provides an interface/wrapeer over blink::DarkModeFilter. The APIs
+// This class provides an interface/wrapper over blink::DarkModeFilter. The APIs
 // in this interface are thread-safe and can be used concurrently from any
 // thread. The interface would be created and destroyed on main thread. Derived
 // classes should ensure making these APIs thread-safe.

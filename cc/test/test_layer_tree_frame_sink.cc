@@ -39,12 +39,19 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
     bool disable_display_vsync,
     double refresh_rate,
     viz::BeginFrameSource* begin_frame_source)
-    : LayerTreeFrameSink(std::move(compositor_context_provider),
-                         std::move(worker_context_provider),
-                         task_runner_provider->HasImplThread()
-                             ? task_runner_provider->ImplThreadTaskRunner()
-                             : task_runner_provider->MainThreadTaskRunner(),
-                         gpu_memory_buffer_manager),
+    : LayerTreeFrameSink(
+          std::move(compositor_context_provider),
+          worker_context_provider
+              ? base::MakeRefCounted<RasterContextProviderWrapper>(
+                    std::move(worker_context_provider),
+                    /*dark_mode_filter=*/nullptr,
+                    ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+                        /*for_renderer=*/false))
+              : nullptr,
+          task_runner_provider->HasImplThread()
+              ? task_runner_provider->ImplThreadTaskRunner()
+              : task_runner_provider->MainThreadTaskRunner(),
+          gpu_memory_buffer_manager),
       synchronous_composite_(synchronous_composite),
       disable_display_vsync_(disable_display_vsync),
       renderer_settings_(renderer_settings),

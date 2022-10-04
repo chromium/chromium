@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/switches.h"
+#include "cc/tiles/image_decode_cache_utils.h"
 #include "components/viz/common/display/de_jelly.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -444,7 +445,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.create_low_res_tiling = true;
 
 #else   // BUILDFLAG(IS_ANDROID)
-  bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
+  const bool using_low_memory_policy = base::SysInfo::IsLowEndDevice();
 
   if (ui::IsOverlayScrollbarEnabled()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
@@ -456,20 +457,11 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   }
 
   settings.enable_fluent_scrollbar = ui::IsFluentScrollbarEnabled();
-
-  // If there's over 4GB of RAM, increase the working set size to 256MB for both
-  // gpu and software.
-  const int kImageDecodeMemoryThresholdMB = 4 * 1024;
-  if (using_low_memory_policy) {
-    settings.decoded_image_working_set_budget_bytes = 32 * 1024 * 1024;
-  } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-             kImageDecodeMemoryThresholdMB) {
-    settings.decoded_image_working_set_budget_bytes = 256 * 1024 * 1024;
-  } else {
-    // This is the default, but recorded here as well.
-    settings.decoded_image_working_set_budget_bytes = 128 * 1024 * 1024;
-  }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  settings.decoded_image_working_set_budget_bytes =
+      cc::ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+          /*for_renderer=*/true);
 
   if (using_low_memory_policy) {
     // RGBA_4444 textures are only enabled:

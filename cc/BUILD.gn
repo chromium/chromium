@@ -413,6 +413,8 @@ cc_component("cc") {
     "trees/proxy_impl.h",
     "trees/proxy_main.cc",
     "trees/proxy_main.h",
+    "trees/raster_context_provider_wrapper.cc",
+    "trees/raster_context_provider_wrapper.h",
     "trees/render_frame_metadata.cc",
     "trees/render_frame_metadata.h",
     "trees/render_frame_metadata_observer.h",

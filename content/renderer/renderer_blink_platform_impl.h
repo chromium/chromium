@@ -127,8 +127,9 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const media::AudioSourceParameters& params) override;
   scoped_refptr<viz::RasterContextProvider> SharedMainThreadContextProvider()
       override;
-  scoped_refptr<viz::RasterContextProvider>
-  SharedCompositorWorkerContextProvider() override;
+  scoped_refptr<cc::RasterContextProviderWrapper>
+  SharedCompositorWorkerContextProvider(
+      cc::RasterDarkModeFilter* dark_mode_filter) override;
   scoped_refptr<gpu::GpuChannelHost> EstablishGpuChannelSync() override;
   void EstablishGpuChannel(EstablishGpuChannelCallback callback) override;
   bool RTCSmoothnessAlgorithmEnabled() override;

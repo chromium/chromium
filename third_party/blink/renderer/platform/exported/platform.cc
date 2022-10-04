@@ -363,8 +363,9 @@ Platform::SharedMainThreadContextProvider() {
   return nullptr;
 }
 
-scoped_refptr<viz::RasterContextProvider>
-Platform::SharedCompositorWorkerContextProvider() {
+scoped_refptr<cc::RasterContextProviderWrapper>
+Platform::SharedCompositorWorkerContextProvider(
+    cc::RasterDarkModeFilter* dark_mode_filter) {
   return nullptr;
 }
 

@@ -7,8 +7,11 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/resources/returned_resource.h"
@@ -35,10 +38,17 @@ FakeLayerTreeFrameSink::Builder::Build() {
 FakeLayerTreeFrameSink::FakeLayerTreeFrameSink(
     scoped_refptr<viz::ContextProvider> context_provider,
     scoped_refptr<viz::RasterContextProvider> worker_context_provider)
-    : LayerTreeFrameSink(std::move(context_provider),
-                         std::move(worker_context_provider),
-                         base::ThreadTaskRunnerHandle::Get(),
-                         nullptr) {
+    : LayerTreeFrameSink(
+          std::move(context_provider),
+          worker_context_provider
+              ? base::MakeRefCounted<RasterContextProviderWrapper>(
+                    std::move(worker_context_provider),
+                    /*dark_mode_filter=*/nullptr,
+                    ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
+                        /*for_renderer=*/false))
+              : nullptr,
+          base::ThreadTaskRunnerHandle::Get(),
+          nullptr) {
   gpu_memory_buffer_manager_ =
       context_provider_ ? &test_gpu_memory_buffer_manager_ : nullptr;
 }

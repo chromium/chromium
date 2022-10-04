@@ -31,6 +31,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/child/child_process.h"
 #include "content/common/android/sync_compositor_statics.h"
@@ -507,9 +508,11 @@ RendererBlinkPlatformImpl::SharedMainThreadContextProvider() {
   return RenderThreadImpl::current()->SharedMainThreadContextProvider();
 }
 
-scoped_refptr<viz::RasterContextProvider>
-RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider() {
-  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider();
+scoped_refptr<cc::RasterContextProviderWrapper>
+RendererBlinkPlatformImpl::SharedCompositorWorkerContextProvider(
+    cc::RasterDarkModeFilter* dark_mode_filter) {
+  return RenderThreadImpl::current()->SharedCompositorWorkerContextProvider(
+      dark_mode_filter);
 }
 
 scoped_refptr<gpu::GpuChannelHost>

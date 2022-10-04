@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
+#include "cc/trees/raster_context_provider_wrapper.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -43,7 +44,11 @@ bool IsApproxEquals(const gfx::Rect& a, const gfx::Rect& b) {
 static void CreateContextProviderOnMainThread(
     scoped_refptr<viz::RasterContextProvider>* result,
     base::WaitableEvent* waitable_event) {
-  *result = blink::Platform::Current()->SharedCompositorWorkerContextProvider();
+  scoped_refptr<cc::RasterContextProviderWrapper> worker_context_provider =
+      blink::Platform::Current()->SharedCompositorWorkerContextProvider(
+          nullptr);
+  if (worker_context_provider)
+    *result = worker_context_provider->GetContext();
   waitable_event->Signal();
 }
 

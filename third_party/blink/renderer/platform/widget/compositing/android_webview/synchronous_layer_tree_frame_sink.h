@@ -83,7 +83,8 @@ class SynchronousLayerTreeFrameSink
  public:
   SynchronousLayerTreeFrameSink(
       scoped_refptr<viz::ContextProvider> context_provider,
-      scoped_refptr<viz::RasterContextProvider> worker_context_provider,
+      scoped_refptr<cc::RasterContextProviderWrapper>
+          worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t layer_tree_frame_sink_id,

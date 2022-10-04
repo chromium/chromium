@@ -35,6 +35,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/platform/graphics/raster_dark_mode_filter_impl.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
@@ -709,9 +710,11 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 
-  scoped_refptr<viz::RasterContextProvider> worker_context_provider =
-      Platform::Current()->SharedCompositorWorkerContextProvider();
-  if (!worker_context_provider) {
+  scoped_refptr<cc::RasterContextProviderWrapper>
+      worker_context_provider_wrapper =
+          Platform::Current()->SharedCompositorWorkerContextProvider(
+              &RasterDarkModeFilterImpl::Instance());
+  if (!worker_context_provider_wrapper) {
     // Cause the compositor to wait and try again.
     std::move(callback).Run(nullptr, nullptr);
     return;
@@ -764,7 +767,8 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
     std::move(callback).Run(
         std::make_unique<SynchronousLayerTreeFrameSink>(
-            std::move(context_provider), std::move(worker_context_provider),
+            std::move(context_provider),
+            std::move(worker_context_provider_wrapper),
             Platform::Current()->CompositorThreadTaskRunner(),
             gpu_memory_buffer_manager, g_next_layer_tree_frame_sink_id++,
             std::move(params->synthetic_begin_frame_source),
@@ -787,8 +791,8 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   params->gpu_memory_buffer_manager = gpu_memory_buffer_manager;
   std::move(callback).Run(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-          std::move(context_provider), std::move(worker_context_provider),
-          params.get()),
+          std::move(context_provider),
+          std::move(worker_context_provider_wrapper), params.get()),
       std::move(render_frame_metadata_observer));
 }
 
