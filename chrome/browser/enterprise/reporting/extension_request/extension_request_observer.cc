@@ -158,11 +158,11 @@ void ExtensionRequestObserver::OnNotificationClosed(
 
 void ExtensionRequestObserver::RemoveExtensionsFromPendingList(
     const std::vector<std::string>& extension_ids) {
-  DictionaryPrefUpdate pending_requests_update(
+  ScopedDictPrefUpdate pending_requests_update(
       Profile::FromBrowserContext(profile_)->GetPrefs(),
       prefs::kCloudExtensionRequestIds);
   for (auto& id : extension_ids)
-    pending_requests_update->RemoveKey(id);
+    pending_requests_update->Remove(id);
 
   closing_notification_and_deleting_requests_ = true;
 }

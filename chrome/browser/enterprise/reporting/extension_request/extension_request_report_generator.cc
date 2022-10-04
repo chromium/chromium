@@ -128,16 +128,16 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   }
 
   // Update the preference in the end.
-  DictionaryPrefUpdate uploaded_requests_update(
+  ScopedDictPrefUpdate uploaded_requests_update(
       profile->GetPrefs(), kCloudExtensionRequestUploadedIds);
 
   for (const auto& report : reports) {
     std::string id = report.get()->id();
     if (!report.get()->removed()) {
-      uploaded_requests_update->SetPath(id + ".upload_timestamp",
-                                        ::base::TimeToValue(base::Time::Now()));
+      uploaded_requests_update->SetByDottedPath(
+          id + ".upload_timestamp", ::base::TimeToValue(base::Time::Now()));
     } else {
-      uploaded_requests_update->RemoveKey(id);
+      uploaded_requests_update->Remove(id);
     }
   }
 
