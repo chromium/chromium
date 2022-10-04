@@ -33,6 +33,7 @@ source_set("chromeos") {
     "//components/viz/host",
     "//gpu/command_buffer/common",
     "//remoting/protocol",
+    "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/aura",
