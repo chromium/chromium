@@ -78,10 +78,6 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     ShowAllPropertyTrees(root_frame_view);
 #endif
 
-  if (root_frame_view.UpdateAllPendingTransforms() ||
-      root_frame_view.UpdateAllPendingOpacityUpdates())
-    needs_invalidate_chrome_client_ = true;
-
   // If the page has anything changed, we need to inform the chrome client
   // so that the client will initiate repaint of the contents if needed (e.g.
   // when this page is embedded as a non-composited content of another page).
@@ -89,6 +85,7 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     if (auto* client = root_frame_view.GetChromeClient())
       client->InvalidateContainer();
   }
+  root_frame_view.UpdateAllPendingTransforms();
 }
 
 void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
