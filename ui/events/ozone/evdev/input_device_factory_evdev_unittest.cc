@@ -20,6 +20,19 @@
 
 namespace ui {
 
+enum DeviceForm : uint32_t {
+  KEYBOARD = 1 << 0,
+  MOUSE = 1 << 1,
+  POINTING_STICK = 1 << 2,
+  TOUCHPAD = 1 << 3,
+  HAPTIC_TOUCHPAD = 1 << 4,
+  TOUCHSCREEN = 1 << 5,
+  PEN = 1 << 6,
+  GAMEPAD = 1 << 7,
+  CAPS_LOCK_LED = 1 << 8,
+  STYLUS_SWITCH = 1 << 9,
+};
+
 class FakeEventConverterEvdev : public EventConverterEvdev {
  public:
   explicit FakeEventConverterEvdev(int fd,
@@ -31,8 +44,7 @@ class FakeEventConverterEvdev : public EventConverterEvdev {
                                    uint16_t vendor_id,
                                    uint16_t product_id,
                                    uint16_t version,
-                                   bool has_mouse,
-                                   bool has_keyboard)
+                                   uint32_t device_form)
       : EventConverterEvdev(fd,
                             path,
                             id,
@@ -42,21 +54,41 @@ class FakeEventConverterEvdev : public EventConverterEvdev {
                             vendor_id,
                             product_id,
                             version),
+        device_form_(device_form) {}
 
-        has_mouse_(has_mouse),
-        has_keyboard_(has_keyboard) {}
-
-  bool HasMouse() const override { return has_mouse_; }
-
-  bool HasKeyboard() const override { return has_keyboard_; }
+  bool HasKeyboard() const override {
+    return device_form_ & DeviceForm::KEYBOARD;
+  }
+  bool HasMouse() const override { return device_form_ & DeviceForm::MOUSE; }
+  bool HasPointingStick() const override {
+    return device_form_ & DeviceForm::POINTING_STICK;
+  }
+  bool HasTouchpad() const override {
+    return device_form_ & DeviceForm::TOUCHPAD;
+  }
+  bool HasHapticTouchpad() const override {
+    return device_form_ & DeviceForm::HAPTIC_TOUCHPAD;
+  }
+  bool HasTouchscreen() const override {
+    return device_form_ & DeviceForm::TOUCHSCREEN;
+  }
+  bool HasPen() const override { return device_form_ & DeviceForm::PEN; }
+  bool HasGamepad() const override {
+    return device_form_ & DeviceForm::GAMEPAD;
+  }
+  bool HasCapsLockLed() const override {
+    return device_form_ & DeviceForm::CAPS_LOCK_LED;
+  }
+  bool HasStylusSwitch() const override {
+    return device_form_ & DeviceForm::STYLUS_SWITCH;
+  }
 
   void OnFileCanReadWithoutBlocking(int fd) override {}
   void SetKeyFilter(bool enable_filter,
                     std::vector<DomCode> allowed_keys) override {}
 
  private:
-  bool has_mouse_;
-  bool has_keyboard_;
+  uint32_t device_form_;
 };
 
 class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
@@ -149,11 +181,11 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndEnableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, false, true);
-
+          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
   converters.push_back(std::move(keyboard_converter));
 
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
@@ -173,13 +205,13 @@ TEST_F(InputDeviceFactoryEvdevTest,
 TEST_F(InputDeviceFactoryEvdevTest, AttachSingularMouse) {
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, true, false);
+          "name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
 
   converters.push_back(std::move(mouse_converter));
-
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
           std::move(dispatcher_), nullptr,
@@ -197,16 +229,17 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndEnableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
-          "phys_path/mouse", 1, 1, 1, true, false);
+          "phys_path/mouse", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           2, base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
-          "phys_path/keyboard", 2, 2, 2, false, true);
+          "phys_path/keyboard", 2, 2, 2, DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(mouse_converter));
   converters.push_back(std::move(keyboard_converter));
@@ -230,16 +263,17 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndEnableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
-          1, 1, true, false);
+          1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           2, base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name", "phys_path",
-          2, 2, 2, false, true);
+          2, 2, 2, DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(mouse_converter));
   converters.push_back(std::move(keyboard_converter));
@@ -263,10 +297,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndEnableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, true, true);
+          "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_and_mouse_converter));
 
@@ -288,10 +324,11 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndDisableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, false, true);
+          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_converter));
 
@@ -314,16 +351,17 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndDisableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
-          "phys_path/mouse", 1, 1, 1, true, false);
+          "phys_path/mouse", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           2, base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
-          "phys_path/keyboard", 2, 2, 2, false, true);
+          "phys_path/keyboard", 2, 2, 2, DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(mouse_converter));
   converters.push_back(std::move(keyboard_converter));
@@ -347,16 +385,17 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndDisableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
-          1, 1, true, false);
+          1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           2, base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name", "phys_path",
-          2, 2, 2, false, true);
+          2, 2, 2, DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(mouse_converter));
   converters.push_back(std::move(keyboard_converter));
@@ -380,10 +419,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
   scoped_feature_list_.InitAndDisableFeature(kEnableFakeKeyboardHeuristic);
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
+
   std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, true, true);
+          "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_and_mouse_converter));
 
@@ -406,15 +447,16 @@ TEST_F(InputDeviceFactoryEvdevTest,
   std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
   base::RunLoop run_loop;
   base::FilePath mouse_path("mouse_path");
+
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
           1, mouse_path, 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "mouse_name", "phys_path", 1, 1, 1, true, false);
+          "mouse_name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
           2, base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name", "phys_path",
-          2, 2, 2, false, true);
+          2, 2, 2, DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(mouse_converter));
   converters.push_back(std::move(keyboard_converter));
