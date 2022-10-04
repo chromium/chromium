@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2022 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Generates GN build files for protobuf. See update_file_lists.sh from
@@ -116,7 +116,7 @@ def main():
     ]
 
     with open(PROTO_SOURCES_GNI, 'w') as f:
-        f.write('''# Copyright 2022 The Chromium Authors. All rights reserved.
+        f.write('''# Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
