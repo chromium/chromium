@@ -119,7 +119,7 @@ class FormInteractionTabHelperWithChildTest
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
     enabled.push_back({blink::features::kInitialNavigationEntry, {}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        enabled, std::vector<base::Feature>());
+        enabled, std::vector<base::test::FeatureRef>());
   }
   ~FormInteractionTabHelperWithChildTest() override = default;
 
