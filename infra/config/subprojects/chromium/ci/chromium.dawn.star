@@ -111,9 +111,6 @@ ci.gpu.linux_builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
-            apply_configs = [
-                "mb",
-            ],
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(
@@ -198,9 +195,6 @@ ci.gpu.linux_builder(
         ),
         chromium_config = builder_config.chromium_config(
             config = "android",
-            apply_configs = [
-                "mb",
-            ],
             target_platform = builder_config.target_platform.ANDROID,
         ),
         android_config = builder_config.android_config(

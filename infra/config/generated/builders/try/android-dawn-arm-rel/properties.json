@@ -17,9 +17,6 @@
                 "config": "main_builder_rel_mb"
               },
               "legacy_chromium_config": {
-                "apply_configs": [
-                  "mb"
-                ],
                 "config": "android",
                 "target_platform": "android"
               },
