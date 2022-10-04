@@ -69,12 +69,6 @@ namespace {
 using InitializeGLTextureParams =
     GLTextureImageBackingHelper::InitializeGLTextureParams;
 
-size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
-  size_t estimated_size = 0;
-  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
-  return estimated_size;
-}
-
 int BytesPerPixel(viz::ResourceFormat format) {
   int bits = viz::BitsPerPixel(format);
   DCHECK_GE(bits, 8);
@@ -133,15 +127,16 @@ GLTextureImageBacking::GLTextureImageBacking(const Mailbox& mailbox,
                                              SkAlphaType alpha_type,
                                              uint32_t usage,
                                              bool is_passthrough)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      EstimatedSize(format, size),
-                                      false /* is_thread_safe */),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          format,
+          size,
+          color_space,
+          surface_origin,
+          alpha_type,
+          usage,
+          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
+          false /* is_thread_safe */),
       is_passthrough_(is_passthrough) {}
 
 GLTextureImageBacking::~GLTextureImageBacking() {
@@ -335,7 +330,8 @@ void GLTextureImageBacking::InitializeGLTexture(
       IsPassthrough() ? nullptr : &texture_);
   texture_params_ = params;
   if (IsPassthrough()) {
-    passthrough_texture_->SetEstimatedSize(EstimatedSize(format(), size()));
+    passthrough_texture_->SetEstimatedSize(
+        viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
     SetClearedRect(params.is_cleared ? gfx::Rect(size()) : gfx::Rect());
   } else {
     texture_->SetLevelInfo(params.target, 0, params.internal_format,

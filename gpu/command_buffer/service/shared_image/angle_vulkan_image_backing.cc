@@ -28,11 +28,6 @@
 namespace gpu {
 
 namespace {
-size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
-  size_t estimated_size = 0;
-  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
-  return estimated_size;
-}
 
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
@@ -134,15 +129,16 @@ AngleVulkanImageBacking::AngleVulkanImageBacking(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      EstimatedSize(format, size),
-                                      false /* is_thread_safe */),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          format,
+          size,
+          color_space,
+          surface_origin,
+          alpha_type,
+          usage,
+          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
+          false /* is_thread_safe */),
       context_state_(context_state) {}
 
 AngleVulkanImageBacking::~AngleVulkanImageBacking() {

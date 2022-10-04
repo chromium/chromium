@@ -30,12 +30,6 @@
 
 namespace gpu {
 namespace {
-size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
-  size_t estimated_size = 0;
-  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
-  return estimated_size;
-}
-
 class MemoryImageRepresentationImpl : public MemoryImageRepresentation {
  public:
   MemoryImageRepresentationImpl(SharedImageManager* manager,
@@ -199,14 +193,15 @@ SharedMemoryImageBacking::SharedMemoryImageBacking(
     SkAlphaType alpha_type,
     uint32_t usage,
     SharedMemoryRegionWrapper wrapper)
-    : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         EstimatedSize(format, size),
-                         false),
+    : SharedImageBacking(
+          mailbox,
+          format,
+          size,
+          color_space,
+          surface_origin,
+          alpha_type,
+          usage,
+          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
+          false),
       shared_memory_wrapper_(std::move(wrapper)) {}
 }  // namespace gpu

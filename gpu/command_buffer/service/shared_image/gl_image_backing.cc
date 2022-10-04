@@ -30,12 +30,6 @@ namespace gpu {
 
 namespace {
 
-size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
-  size_t estimated_size = 0;
-  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
-  return estimated_size;
-}
-
 using ScopedRestoreTexture = GLTextureImageBackingHelper::ScopedRestoreTexture;
 
 using InitializeGLTextureParams =
@@ -336,15 +330,16 @@ GLImageBacking::GLImageBacking(scoped_refptr<gl::GLImage> image,
                                uint32_t usage,
                                const InitializeGLTextureParams& params,
                                bool is_passthrough)
-    : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         EstimatedSize(format, size),
-                         false /* is_thread_safe */),
+    : SharedImageBacking(
+          mailbox,
+          format,
+          size,
+          color_space,
+          surface_origin,
+          alpha_type,
+          usage,
+          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format),
+          false /* is_thread_safe */),
       image_(image),
       gl_params_(params),
       is_passthrough_(is_passthrough),
@@ -382,7 +377,8 @@ void GLImageBacking::RetainGLTexture() {
   // Set the GLImage to be initially unbound from the GL texture.
   image_bind_or_copy_needed_ = true;
   if (is_passthrough_) {
-    passthrough_texture_->SetEstimatedSize(EstimatedSize(format(), size()));
+    passthrough_texture_->SetEstimatedSize(
+        viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format()));
     passthrough_texture_->SetLevelImage(gl_params_.target, 0, image_.get());
     passthrough_texture_->set_is_bind_pending(true);
   } else {

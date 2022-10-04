@@ -19,15 +19,6 @@
 #include "ui/gl/trace_util.h"
 
 namespace gpu {
-namespace {
-
-size_t EstimatedSize(viz::ResourceFormat format, const gfx::Size& size) {
-  size_t estimated_size = 0;
-  viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size);
-  return estimated_size;
-}
-
-}  // namespace
 
 class RawDrawImageBacking::RasterRawDrawImageRepresentation
     : public RasterImageRepresentation {
@@ -158,7 +149,10 @@ void RawDrawImageBacking::OnMemoryDump(
 size_t RawDrawImageBacking::EstimatedSizeForMemTracking() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AutoLock auto_lock(this);
-  return backend_texture_.isValid() ? EstimatedSize(format(), size()) : 0u;
+  return backend_texture_.isValid()
+             ? viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(),
+                                                                format())
+             : 0u;
 }
 
 std::unique_ptr<RasterImageRepresentation> RawDrawImageBacking::ProduceRaster(
