@@ -57,6 +57,8 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
     return nullptr;
   }
 
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  DCHECK(context);
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
   MediaStreamComponent* component = nullptr;
   const gfx::Size size(element.width(), element.height());
@@ -69,12 +71,14 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
   std::unique_ptr<CanvasCaptureHandler> handler;
   if (given_frame_rate) {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
-        frame, size, frame_rate, Platform::Current()->GetIOTaskRunner(),
-        &component);
+        frame, size, frame_rate,
+        context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+        Platform::Current()->GetIOTaskRunner(), &component);
   } else {
     handler = CanvasCaptureHandler::CreateCanvasCaptureHandler(
-        frame, size, kDefaultFrameRate, Platform::Current()->GetIOTaskRunner(),
-        &component);
+        frame, size, kDefaultFrameRate,
+        context->GetTaskRunner(TaskType::kInternalMediaRealTime),
+        Platform::Current()->GetIOTaskRunner(), &component);
   }
 
   if (!handler) {
@@ -84,8 +88,6 @@ MediaStream* HTMLCanvasElementCapture::captureStream(
     return nullptr;
   }
 
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  DCHECK(context);
   CanvasCaptureMediaStreamTrack* canvas_track;
   if (given_frame_rate) {
     canvas_track = MakeGarbageCollected<CanvasCaptureMediaStreamTrack>(

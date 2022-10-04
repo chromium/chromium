@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/test/transfer_test_utils.h"
 
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
@@ -42,7 +43,8 @@ MediaStreamComponent* MakeTabCaptureVideoComponentForTest(
     LocalFrame* frame,
     base::UnguessableToken session_id) {
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
-      frame, MediaStreamVideoCapturerSource::SourceStoppedCallback(),
+      frame->GetTaskRunner(TaskType::kInternalMediaRealTime), frame,
+      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
   auto platform_track = std::make_unique<MediaStreamVideoTrack>(
       mock_source.get(),

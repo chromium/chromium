@@ -83,6 +83,7 @@ class MediaStreamVideoCapturerSourceTest : public testing::Test {
     EXPECT_CALL(*delegate_, GetPreferredFormats());
     auto video_capturer_source =
         std::make_unique<MediaStreamVideoCapturerSource>(
+            scheduler::GetSingleThreadTaskRunnerForTesting(),
             /*LocalFrame =*/nullptr,
             WTF::BindOnce(&MediaStreamVideoCapturerSourceTest::OnSourceStopped,
                           WTF::Unretained(this)),

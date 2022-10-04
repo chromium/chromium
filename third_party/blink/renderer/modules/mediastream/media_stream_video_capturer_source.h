@@ -38,10 +38,13 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   using DeviceCapturerFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<VideoCapturerSource>(
           const base::UnguessableToken& session_id)>;
-  MediaStreamVideoCapturerSource(LocalFrame* frame,
-                                 SourceStoppedCallback stop_callback,
-                                 std::unique_ptr<VideoCapturerSource> source);
   MediaStreamVideoCapturerSource(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      LocalFrame* frame,
+      SourceStoppedCallback stop_callback,
+      std::unique_ptr<VideoCapturerSource> source);
+  MediaStreamVideoCapturerSource(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       LocalFrame* frame,
       SourceStoppedCallback stop_callback,
       const MediaStreamDevice& device,

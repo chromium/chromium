@@ -1404,6 +1404,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
       &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
@@ -1451,6 +1452,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
       &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
@@ -1502,6 +1504,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
 
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
       &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());
@@ -1620,6 +1623,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
                                  "postMessage");
 
   auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
       &scope.GetFrame(),
       MediaStreamVideoCapturerSource::SourceStoppedCallback(),
       std::make_unique<MockVideoCapturerSource>());

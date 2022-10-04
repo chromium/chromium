@@ -59,6 +59,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
       LocalFrame* frame,
       const gfx::Size& size,
       double frame_rate,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
@@ -90,6 +91,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
       LocalFrame* frame,
       const gfx::Size& size,
       double frame_rate,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       MediaStreamComponent** component);
 
@@ -103,6 +105,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
                  scoped_refptr<media::VideoFrame> video_frame);
 
   void AddVideoCapturerSourceToVideoTrack(
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       LocalFrame* frame,
       std::unique_ptr<VideoCapturerSource> source,
       MediaStreamComponent** component);

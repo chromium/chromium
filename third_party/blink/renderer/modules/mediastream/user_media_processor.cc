@@ -1588,7 +1588,8 @@ UserMediaProcessor::CreateVideoSource(
   DCHECK(current_request_info_->video_capture_settings().HasValue());
 
   return std::make_unique<blink::MediaStreamVideoCapturerSource>(
-      frame_, std::move(stop_callback), device,
+      frame_->GetTaskRunner(TaskType::kInternalMediaRealTime), frame_,
+      std::move(stop_callback), device,
       current_request_info_->video_capture_settings().capture_params(),
       WTF::BindRepeating(&blink::LocalVideoCapturerSource::Create,
                          frame_->GetTaskRunner(blink::TaskType::kInternalMedia),

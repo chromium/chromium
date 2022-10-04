@@ -58,7 +58,8 @@ bool AddVideoTrackToMediaStream(
       video_source->GetPreferredFormats();
   auto media_stream_video_source =
       std::make_unique<MediaStreamVideoCapturerSource>(
-          frame, WebPlatformMediaStreamSource::SourceStoppedCallback(),
+          frame->GetTaskRunner(TaskType::kInternalMediaRealTime), frame,
+          WebPlatformMediaStreamSource::SourceStoppedCallback(),
           std::move(video_source));
   auto* media_stream_video_source_ptr = media_stream_video_source.get();
   const String track_id(WTF::CreateCanonicalUUIDString());

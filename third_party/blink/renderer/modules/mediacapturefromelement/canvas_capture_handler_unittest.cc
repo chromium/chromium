@@ -63,7 +63,8 @@ class CanvasCaptureHandlerTest
         /*LocalFrame =*/nullptr,
         gfx::Size(kTestCanvasCaptureWidth, kTestCanvasCaptureHeight),
         kTestCanvasCaptureFramesPerSecond,
-        blink::scheduler::GetSingleThreadTaskRunnerForTesting(), &component);
+        scheduler::GetSingleThreadTaskRunnerForTesting(),
+        scheduler::GetSingleThreadTaskRunnerForTesting(), &component);
     component_ = component;
   }
 
