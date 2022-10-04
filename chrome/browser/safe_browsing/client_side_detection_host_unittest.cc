@@ -408,8 +408,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void AdvanceTimeTickClock(base::TimeDelta delta) { clock_.Advance(delta); }
 
-  void SetFeatures(const std::vector<base::Feature>& enabled_features,
-                   const std::vector<base::Feature>& disabled_features) {
+  void SetFeatures(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 

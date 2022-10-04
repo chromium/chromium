@@ -283,8 +283,8 @@ class DeepScanningRequestTest : public testing::Test {
     ScopedListPrefUpdate(profile_->GetPrefs(), pref_name)->Append(url.host());
   }
 
-  void SetFeatures(const std::vector<base::Feature>& enabled,
-                   const std::vector<base::Feature>& disabled) {
+  void SetFeatures(const std::vector<base::test::FeatureRef>& enabled,
+                   const std::vector<base::test::FeatureRef>& disabled) {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(enabled, disabled);
   }

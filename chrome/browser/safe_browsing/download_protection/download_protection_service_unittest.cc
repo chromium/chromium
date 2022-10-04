@@ -432,12 +432,12 @@ class DownloadProtectionServiceTestBase
     return factories;
   }
 
-  void EnableFeatures(const std::vector<base::Feature>& features) {
+  void EnableFeatures(const std::vector<base::test::FeatureRef>& features) {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(features, {});
   }
 
-  void DisableFeatures(const std::vector<base::Feature>& features) {
+  void DisableFeatures(const std::vector<base::test::FeatureRef>& features) {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures({}, features);
   }

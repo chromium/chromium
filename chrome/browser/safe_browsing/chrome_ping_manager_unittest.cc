@@ -89,8 +89,8 @@ void ChromePingManagerTest::TearDown() {
 void ChromePingManagerTest::SetUpFeatureList(
     bool should_enable_csbrr_with_token,
     bool should_enable_remove_cookies) {
-  std::vector<base::Feature> enabled_features = {};
-  std::vector<base::Feature> disabled_features = {};
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  std::vector<base::test::FeatureRef> disabled_features = {};
   if (should_enable_csbrr_with_token) {
     enabled_features.push_back(kSafeBrowsingCsbrrWithToken);
   } else {

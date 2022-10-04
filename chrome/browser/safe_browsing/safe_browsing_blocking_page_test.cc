@@ -1945,7 +1945,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
       enabled_features.push_back(FeatureAndParams(kDelayedWarnings, {}));
     }
 
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     GetAdditionalFeatures(&enabled_features, &disabled_features);
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -2055,7 +2055,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
   // Subclasses can override to enable/disable features in SetUp().
   virtual void GetAdditionalFeatures(
       std::vector<FeatureAndParams>* enabled_features,
-      std::vector<base::Feature>* disabled_features) {}
+      std::vector<base::test::FeatureRef>* disabled_features) {}
 
   // Initiates a download and waits for it to be completed or cancelled.
   static void DownloadAndWaitForNavigation(Browser* browser) {
