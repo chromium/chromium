@@ -86,7 +86,6 @@ class TabletModeMultitaskMenuView : public views::View {
   TabletModeMultitaskMenuView(const TabletModeMultitaskMenuView&) = delete;
   TabletModeMultitaskMenuView& operator=(const TabletModeMultitaskMenuView&) =
       delete;
-
   ~TabletModeMultitaskMenuView() override = default;
 
   chromeos::MultitaskMenuView* multitask_menu_view_for_testing() {
@@ -104,7 +103,7 @@ END_METADATA
 TabletModeMultitaskMenu::TabletModeMultitaskMenu(
     TabletModeMultitaskMenuEventHandler* event_handler,
     aura::Window* window,
-    base::RepeatingClosure hide_menu)
+    base::RepeatingClosure callback)
     : event_handler_(event_handler), window_(window) {
   // Start observing the window.
   DCHECK(window);
@@ -121,7 +120,8 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
   multitask_menu_widget_->Init(std::move(params));
   multitask_menu_widget_->SetContentsView(
-      std::make_unique<TabletModeMultitaskMenuView>(window_, hide_menu));
+      std::make_unique<TabletModeMultitaskMenuView>(window_, callback));
+  AnimateShow();
 
   widget_observation_.Observe(multitask_menu_widget_.get());
   display_observer_.emplace(this);
@@ -129,42 +129,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
 
 TabletModeMultitaskMenu::~TabletModeMultitaskMenu() = default;
 
-void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
-  DCHECK(observed_window_.IsObservingSource(window));
-
-  observed_window_.Reset();
-  window_ = nullptr;
-
-  // Destroys `this`.
-  event_handler_->CloseMultitaskMenu();
-}
-
-void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
-                                                        bool active) {
-  // `widget` gets deactivated when the window state changes.
-  DCHECK(widget_observation_.IsObservingSource(widget));
-  if (!active) {
-    CloseMultitaskMenu();
-  }
-}
-
-void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t changed_metrics) {
-  // Ignore changes to displays that aren't showing the menu.
-  if (display.id() !=
-      display::Screen::GetScreen()
-          ->GetDisplayNearestView(multitask_menu_widget_->GetNativeWindow())
-          .id()) {
-    return;
-  }
-  // TODO(shidi): Will do the rotate transition on a separate cl. Close the
-  // menu at rotation for now.
-  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
-    CloseMultitaskMenu();
-}
-
-void TabletModeMultitaskMenu::Show() {
+void TabletModeMultitaskMenu::AnimateShow() {
   DCHECK(multitask_menu_widget_);
   auto* multitask_menu_window = multitask_menu_widget_->GetNativeWindow();
   // TODO(sophiewen): Consider adding transient child instead.
@@ -195,8 +160,67 @@ void TabletModeMultitaskMenu::Show() {
       .SetOpacity(widget_layer, 1.f, gfx::Tween::LINEAR);
 }
 
-void TabletModeMultitaskMenu::CloseMultitaskMenu() {
-  event_handler_->CloseMultitaskMenu();
+void TabletModeMultitaskMenu::AnimateClose() {
+  // TODO(crbug.com/1370728): Test animation in portrait mode on secondary
+  // window.
+  DCHECK(multitask_menu_widget_);
+  const gfx::Size widget_size =
+      multitask_menu_widget_->GetContentsView()->GetPreferredSize();
+  const gfx::Rect end_bounds(
+      multitask_menu_widget_->GetWindowBoundsInScreen().x(),
+      -widget_size.height() - kMultitaskMenuVerticalPadding,
+      widget_size.width(), widget_size.height());
+  auto* widget_layer = multitask_menu_widget_->GetLayer();
+  views::AnimationBuilder()
+      .OnEnded(base::BindOnce(&TabletModeMultitaskMenu::Reset,
+                              weak_factory_.GetWeakPtr()))
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(kPositionAnimationDurationMs)
+      .SetBounds(widget_layer, end_bounds, gfx::Tween::ACCEL_20_DECEL_100)
+      .At(base::Seconds(0))
+      .SetDuration(kOpacityAnimationDurationMs)
+      .SetOpacity(widget_layer, 0.f, gfx::Tween::LINEAR);
+}
+
+void TabletModeMultitaskMenu::Reset() {
+  event_handler_->ResetMultitaskMenu();
+}
+
+void TabletModeMultitaskMenu::OnWindowDestroying(aura::Window* window) {
+  DCHECK(observed_window_.IsObservingSource(window));
+
+  observed_window_.Reset();
+  window_ = nullptr;
+
+  // Destroys `this`.
+  event_handler_->ResetMultitaskMenu();
+}
+
+void TabletModeMultitaskMenu::OnWidgetActivationChanged(views::Widget* widget,
+                                                        bool active) {
+  // `widget` gets deactivated when the window state changes.
+  DCHECK(widget_observation_.IsObservingSource(widget));
+  if (!active) {
+    event_handler_->ResetMultitaskMenu();
+  }
+}
+
+void TabletModeMultitaskMenu::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  // Ignore changes to displays that aren't showing the menu.
+  if (display.id() !=
+      display::Screen::GetScreen()
+          ->GetDisplayNearestView(multitask_menu_widget_->GetNativeWindow())
+          .id()) {
+    return;
+  }
+  // TODO(shidi): Will do the rotate transition on a separate cl. Close the
+  // menu at rotation for now.
+  if (changed_metrics & display::DisplayObserver::DISPLAY_METRIC_ROTATION)
+    event_handler_->ResetMultitaskMenu();
 }
 
 chromeos::MultitaskMenuView*

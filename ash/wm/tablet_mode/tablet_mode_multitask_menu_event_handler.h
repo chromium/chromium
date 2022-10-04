@@ -30,7 +30,8 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  void CloseMultitaskMenu();
+  // Destroys the multitask menu.
+  void ResetMultitaskMenu();
 
   TabletModeMultitaskMenu* multitask_menu_for_testing() {
     return multitask_menu_.get();
@@ -38,8 +39,6 @@ class TabletModeMultitaskMenuEventHandler : public ui::EventHandler {
 
  private:
   bool ProcessBeginFlingOrSwipe(const ui::GestureEvent& event);
-
-  void ShowMultitaskMenu(aura::Window* active_window);
 
   std::unique_ptr<TabletModeMultitaskMenu> multitask_menu_;
 
