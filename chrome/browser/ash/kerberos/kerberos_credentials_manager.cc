@@ -871,7 +871,7 @@ void KerberosCredentialsManager::UpdateAccountsFromPref(bool is_retry) {
     const base::Value* krb5_conf_value = account.FindPath(kKrb5Conf);
     if (krb5_conf_value) {
       // Note: The config is encoded as a list of lines.
-      for (const auto& config_line : krb5_conf_value->GetListDeprecated()) {
+      for (const auto& config_line : krb5_conf_value->GetList()) {
         krb5_conf += config_line.GetString();
         krb5_conf += "\n";
       }
