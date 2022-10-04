@@ -240,6 +240,16 @@ TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestNoAccountId) {
 }
 #endif
 
+// Tests that no Mirror request is returned for youtubekids.com.
+//
+// Regression test for b/247647476
+TEST_F(SigninHeaderHelperTest, TestNoMirrorHeaderForYoutubekids) {
+  account_consistency_ = AccountConsistencyMethod::kMirror;
+  CheckMirrorHeaderRequest(GURL("https://youtubekids.com"), "0123456789",
+                           /*is_child_account=*/Tribool::kUnknown, "");
+  CheckMirrorCookieRequest(GURL("https://youtubekids.com"), "0123456789", "");
+}
+
 // Tests that no Mirror request is returned when the cookies aren't allowed to
 // be set.
 TEST_F(SigninHeaderHelperTest, TestNoMirrorRequestCookieSettingBlocked) {
