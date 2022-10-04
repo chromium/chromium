@@ -502,7 +502,7 @@ export class Camera extends View implements CameraViewUI {
       Promise<void> {
     state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
 
-    if (this.cameraManager.preferSquarePhoto()) {
+    if (this.cameraManager.useSquareResolution()) {
       pendingPhotoResult = (async () => {
         const photoResult = await pendingPhotoResult;
         const croppedBlob = await util.cropSquare(photoResult.blob);
