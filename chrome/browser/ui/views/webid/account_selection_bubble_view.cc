@@ -834,12 +834,6 @@ void AccountSelectionBubbleView::ConfigureIdpBrandImageView(
     return;
   }
 
-  // Check `fetched_icons_` to avoid fetching the same icon more than once.
-  if (fetched_icons_.count(idp_metadata.brand_icon_url))
-    return;
-
-  fetched_icons_.insert(idp_metadata.brand_icon_url);
-
   image_view->FetchImage(idp_metadata.brand_icon_url, *image_fetcher_);
 }
 

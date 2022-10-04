@@ -168,9 +168,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // View containing the continue button.
   raw_ptr<views::MdTextButton> continue_button_ = nullptr;
 
-  // The icon URLs which have been fetched.
-  std::set<GURL> fetched_icons_;
-
   // Observes events on AccountSelectionBubbleView.
   raw_ptr<Observer> observer_{nullptr};
 
