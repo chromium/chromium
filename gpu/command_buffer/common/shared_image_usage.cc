@@ -25,6 +25,7 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
       {SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT, "Gles2FramebufferHint"},
       {SHARED_IMAGE_USAGE_RASTER, "Raster"},
       {SHARED_IMAGE_USAGE_DISPLAY_READ, "DisplayRead"},
+      {SHARED_IMAGE_USAGE_DISPLAY_WRITE, "DisplayWrite"},
       {SHARED_IMAGE_USAGE_SCANOUT, "Scanout"},
       {SHARED_IMAGE_USAGE_OOP_RASTERIZATION, "OopRasterization"},
       {SHARED_IMAGE_USAGE_WEBGPU, "Webgpu"},

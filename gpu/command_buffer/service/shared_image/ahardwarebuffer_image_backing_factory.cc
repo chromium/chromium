@@ -558,8 +558,9 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
   // TODO(vikassoni): Also check gpu_preferences.enable_vulkan to figure out
   // if skia is using vulkan backing or GL backing.
   const bool use_gles2 =
-      (usage & (SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER |
-                SHARED_IMAGE_USAGE_DISPLAY_READ));
+      (usage &
+       (SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER |
+        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE));
 
   // If usage flags indicated this backing can be used as a GL texture, then
   // do below gl related checks.

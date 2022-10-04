@@ -739,7 +739,8 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
   constexpr uint32_t kUsage = gpu::SHARED_IMAGE_USAGE_GLES2 |
                               gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
                               gpu::SHARED_IMAGE_USAGE_RASTER |
-                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE;
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   SharedImageFormat si_format = SharedImageFormat::SinglePlane(resource_format);

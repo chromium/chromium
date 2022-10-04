@@ -139,7 +139,8 @@ void BufferQueue::AllocateBuffers(size_t n) {
   for (size_t i = 0; i < n; ++i) {
     const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
         format, size_, color_space_,
-        gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+        gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE,
         surface_handle_);
     DCHECK(!mailbox.IsZero());
 

@@ -158,6 +158,7 @@ gl::GLImage* PresenterImageGL::GetGLImage(
 // static
 const uint32_t OutputPresenterGL::kDefaultSharedImageUsage =
     gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
     gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
 
 // static
