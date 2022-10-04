@@ -34,6 +34,7 @@
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
+#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -61,6 +62,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -5946,6 +5948,151 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   // Each listener should have fired exactly once.
   EXPECT_EQ(1, get_worker_event_count());
   EXPECT_EQ(1, get_page_event_count());
+}
+
+// Tests that an MV3 extension can use the `webRequestAuthProvider` permission
+// to intercept and handle `onAuthRequired` events.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
+  CancelLoginDialog login_dialog_helper;
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest", "webRequestAuthProvider"],
+           "host_permissions": [ "http://example.com/*" ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // The extension will asynchronously provide the user credentials for the
+  // request.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onAuthRequired.addListener(
+             (details, callback) => {
+               chrome.test.assertEq('mv3authprovider', details.realm);
+               chrome.test.assertEq(401, details.statusCode);
+               const authCredentials = {username: 'foo', password: 'secret'};
+               setTimeout(() => {
+                 callback({authCredentials});
+                 chrome.test.succeed();
+               }, 20);
+             },
+             {urls: ['<all_urls>']},
+             ['asyncBlocking']);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+
+  ASSERT_TRUE(extension);
+
+  // Navigate to a special URL that will prompt the user for credentials. The
+  // request should succeed (verified by the last navigation status) and the
+  // extension should have received the event (verified by the ResultCatcher).
+  static constexpr char kRealm[] = "mv3authprovider";
+  std::string auth_url_path =
+      base::StringPrintf("/auth-basic/%s/subpath?realm=%s", kRealm, kRealm);
+  GURL auth_url = embedded_test_server()->GetURL("example.com", auth_url_path);
+
+  ResultCatcher result_catcher;
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::RenderFrameHost* frame_host =
+      ui_test_utils::NavigateToURL(browser(), auth_url);
+  ASSERT_TRUE(result_catcher.GetNextResult());
+  EXPECT_EQ(auth_url, frame_host->GetLastCommittedURL());
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+}
+
+namespace {
+
+// A helper to wait for an error to be added for an extension.
+// TODO(devlin): Pull this into a central test util file.
+class ErrorObserver : public ErrorConsole::Observer {
+ public:
+  ErrorObserver(size_t errors_expected, ErrorConsole* error_console)
+      : errors_expected_(errors_expected), error_console_(error_console) {
+    observation_.Observe(error_console_.get());
+  }
+
+  // ErrorConsole::Observer implementation.
+  void OnErrorAdded(const ExtensionError* error) override {
+    ++errors_observed_;
+    if (errors_observed_ >= errors_expected_) {
+      run_loop_.Quit();
+    }
+  }
+
+  // Spin until the appropriate number of errors have been observed.
+  void WaitForErrors() {
+    if (errors_observed_ < errors_expected_) {
+      run_loop_.Run();
+    }
+  }
+
+ private:
+  size_t errors_expected_;
+  raw_ptr<ErrorConsole> error_console_;
+  size_t errors_observed_ = 0;
+  base::ScopedObservation<ErrorConsole, ErrorConsole::Observer> observation_{
+      this};
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+// Tests that a MV3 extension that doesn't have the `webRequestAuthProvider`
+// permission cannot use blocking listeners for `onAuthRequired`.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       TestOnAuthRequired_NoPermission) {
+  CancelLoginDialog login_dialog_helper;
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "MV3 WebRequest",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["webRequest"],
+           "host_permissions": [ "http://example.com/*" ],
+           "background": {"service_worker": "background.js"}
+         })";
+  // The extension tries to add a listener; this will fail asynchronously
+  // as a part of the webRequestInternal API trying to add the listener.
+  // This results in runtime.lastError being set, but since it's an
+  // internal API, there's no way for the extension to catch the error.
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.webRequest.onAuthRequired.addListener(
+             (details, callback) => {},
+             {urls: ['<all_urls>']},
+             ['asyncBlocking']);)";
+
+  // Since we can't catch the error in the extension's JS, we instead listen to
+  // the error come into the error console. This also requires setting the user
+  // in developer mode.
+  ErrorConsole* error_console = ErrorConsole::Get(profile());
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  ErrorObserver error_observer(1u, error_console);
+
+  // Load the extension and wait for the error to come.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+
+  ASSERT_TRUE(extension);
+  error_observer.WaitForErrors();
+
+  const ErrorList& errors =
+      error_console->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(1u, errors.size());
+  EXPECT_TRUE(
+      base::StartsWith(errors[0]->message(),
+                       u"Unchecked runtime.lastError: You do not have "
+                       u"permission to use blocking webRequest listeners."))
+      << errors[0]->message();
 }
 
 }  // namespace extensions

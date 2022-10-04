@@ -161,6 +161,7 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kWebRequest, "webRequest"},
+    {APIPermissionID::kWebRequestAuthProvider, "webRequestAuthProvider"},
     {APIPermissionID::kWebRequestBlocking, "webRequestBlocking"},
     {APIPermissionID::kWebView, "webview",
      APIPermissionInfo::kFlagCannotBeOptional},

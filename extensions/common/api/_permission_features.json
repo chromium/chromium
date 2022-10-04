@@ -772,5 +772,9 @@
     "extension_types": ["extension"],
     "location": "policy",
     "min_manifest_version": 3
-  }]
+  }],
+  "webRequestAuthProvider": {
+    "channel": "stable",
+    "extension_types": ["extension"]
+  }
 }

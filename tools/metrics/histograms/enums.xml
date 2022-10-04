@@ -36320,6 +36320,7 @@ Called by update_extension_permission.py.-->
   <int value="240" label="kOffscreen"/>
   <int value="241" label="kSidePanel"/>
   <int value="242" label="kDownloadsUi"/>
+  <int value="243" label="kWebRequestAuthProvider"/>
 </enum>
 
 <enum name="ExtensionPointEnableState">

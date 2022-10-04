@@ -2841,13 +2841,23 @@ WebRequestInternalAddEventListenerFunction::Run() {
       extension ? extension->name() : extension_id_safe();
 
   if (!web_view_instance_id) {
+    auto has_blocking_permission = [&extension, &event_name]() {
+      if (extension->permissions_data()->HasAPIPermission(
+              APIPermissionID::kWebRequestBlocking)) {
+        return true;
+      }
+
+      return event_name == keys::kOnAuthRequiredEvent &&
+             extension->permissions_data()->HasAPIPermission(
+                 APIPermissionID::kWebRequestAuthProvider);
+    };
+
     // We check automatically whether the extension has the 'webRequest'
     // permission. For blocking calls we require the additional permission
-    // 'webRequestBlocking'.
-    if ((extra_info_spec &
-         (ExtraInfoSpec::BLOCKING | ExtraInfoSpec::ASYNC_BLOCKING)) &&
-        !extension->permissions_data()->HasAPIPermission(
-            APIPermissionID::kWebRequestBlocking)) {
+    // 'webRequestBlocking' or 'webRequestAuthProvider'.
+    bool is_blocking = extra_info_spec & (ExtraInfoSpec::BLOCKING |
+                                          ExtraInfoSpec::ASYNC_BLOCKING);
+    if (is_blocking && !has_blocking_permission()) {
       return RespondNow(Error(keys::kBlockingPermissionRequired));
     }
 
