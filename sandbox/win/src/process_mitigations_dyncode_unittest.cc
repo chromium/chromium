@@ -249,7 +249,9 @@ class DynamicCodeOptOutThread {
 std::unique_ptr<sandbox::TestRunner> RunnerWithMitigation(
     sandbox::MitigationFlags mitigations) {
   auto runner = std::make_unique<sandbox::TestRunner>();
-  runner->GetPolicy()->GetConfig()->SetDelayedProcessMitigations(mitigations);
+  EXPECT_EQ(sandbox::SBOX_ALL_OK,
+            runner->GetPolicy()->GetConfig()->SetDelayedProcessMitigations(
+                mitigations));
   return runner;
 }
 
@@ -304,9 +306,10 @@ void DynamicCodeTestHarness(sandbox::MitigationFlags which_mitigation,
   // Need token level >= USER_LIMITED to be able to successfully run test 3.
   runner = enable_mitigation ? RunnerWithMitigation(which_mitigation)
                              : std::make_unique<sandbox::TestRunner>();
-  runner->GetPolicy()->GetConfig()->SetTokenLevel(
-      sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
-      sandbox::TokenLevel::USER_LIMITED);
+  EXPECT_EQ(sandbox::SBOX_ALL_OK,
+            runner->GetPolicy()->GetConfig()->SetTokenLevel(
+                sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS,
+                sandbox::TokenLevel::USER_LIMITED));
 
   test = base::StringPrintf(L"%ls %u", shared.c_str(), MAPVIEWCUSTOM);
   EXPECT_EQ((expect_success ? sandbox::SBOX_TEST_SUCCEEDED

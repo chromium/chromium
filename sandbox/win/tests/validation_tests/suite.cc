@@ -158,9 +158,11 @@ TEST(ValidationSuite, TestRegistry) {
 
 std::unique_ptr<TestRunner> DesktopRunner() {
   auto runner = std::make_unique<TestRunner>();
-  runner->GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->CreateAlternateDesktop(
+                             Desktop::kAlternateWinstation));
   runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
-  runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
+                             INTEGRITY_LEVEL_LOW));
   return runner;
 }
 
@@ -184,11 +186,14 @@ TEST(ValidationSuite, TestAlternateDesktop) {
   TestRunner runner;
   wchar_t command[1024] = {0};
   runner.SetTimeout(3600000);
-  runner.GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->CreateAlternateDesktop(
+                             Desktop::kAlternateWinstation));
   runner.GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
-  runner.GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->GetConfig()->SetIntegrityLevel(
+                             INTEGRITY_LEVEL_LOW));
   // Ensure the desktop is created.
-  runner.GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  EXPECT_EQ(SBOX_ALL_OK, runner.GetPolicy()->CreateAlternateDesktop(
+                             Desktop::kAlternateWinstation));
   std::wstring desktop_name = runner.GetPolicy()->GetDesktopName();
   desktop_name = desktop_name.substr(desktop_name.find('\\') + 1);
   wsprintf(command, L"OpenAlternateDesktop %lS", desktop_name.c_str());
@@ -197,9 +202,11 @@ TEST(ValidationSuite, TestAlternateDesktop) {
 
 std::unique_ptr<TestRunner> AlternateDesktopLocalWinstationRunner() {
   auto runner = std::make_unique<TestRunner>();
-  runner->GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateDesktop);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->CreateAlternateDesktop(
+                             Desktop::kAlternateDesktop));
   runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateDesktop);
-  runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
+                             INTEGRITY_LEVEL_LOW));
   return runner;
 }
 
@@ -252,9 +259,10 @@ TEST(ValidationSuite, TestProcessDenyLockdown) {
 
 std::unique_ptr<TestRunner> ProcessDenyLowIntegrityRunner() {
   auto runner = std::make_unique<TestRunner>();
-  runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  runner->GetPolicy()->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
-                                                  USER_INTERACTIVE);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
+                             INTEGRITY_LEVEL_LOW));
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetTokenLevel(
+                             USER_RESTRICTED_SAME_ACCESS, USER_INTERACTIVE));
   return runner;
 }
 
@@ -275,8 +283,8 @@ std::unique_ptr<TestRunner> ProcessDenyBelowLowIntegrityRunner() {
   auto runner = std::make_unique<TestRunner>();
   runner->GetPolicy()->GetConfig()->SetDelayedIntegrityLevel(
       INTEGRITY_LEVEL_UNTRUSTED);
-  runner->GetPolicy()->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
-                                                  USER_INTERACTIVE);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetTokenLevel(
+                             USER_RESTRICTED_SAME_ACCESS, USER_INTERACTIVE));
   return runner;
 }
 
@@ -284,9 +292,10 @@ std::unique_ptr<TestRunner> ProcessDenyBelowLowIntegrityRunner() {
 TEST(ValidationSuite, TestProcessDenyBelowLowIntegrity) {
   TestRunner target;
   target.SetAsynchronous(true);
-  target.GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  target.GetPolicy()->GetConfig()->SetTokenLevel(USER_RESTRICTED_SAME_ACCESS,
-                                                 USER_INTERACTIVE);
+  EXPECT_EQ(SBOX_ALL_OK, target.GetPolicy()->GetConfig()->SetIntegrityLevel(
+                             INTEGRITY_LEVEL_LOW));
+  EXPECT_EQ(SBOX_ALL_OK, target.GetPolicy()->GetConfig()->SetTokenLevel(
+                             USER_RESTRICTED_SAME_ACCESS, USER_INTERACTIVE));
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, target.RunTest(L"SleepCmd 30000"));
 

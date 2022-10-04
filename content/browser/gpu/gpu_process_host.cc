@@ -402,14 +402,21 @@ class GpuSandboxedProcessLauncherDelegate
 
     if (UseOpenGLRenderer()) {
       // Open GL path.
-      config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                            sandbox::USER_LIMITED);
-      sandbox::policy::SandboxWin::SetJobLevel(sandbox::mojom::Sandbox::kGpu,
-                                               sandbox::JobLevel::kUnprotected,
-                                               0, config);
+      sandbox::ResultCode result = config->SetTokenLevel(
+          sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
+
+      result = sandbox::policy::SandboxWin::SetJobLevel(
+          sandbox::mojom::Sandbox::kGpu, sandbox::JobLevel::kUnprotected, 0,
+          config);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
     } else {
-      config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                            sandbox::USER_LIMITED);
+      sandbox::ResultCode result = config->SetTokenLevel(
+          sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
 
       // UI restrictions break when we access Windows from outside our job.
       // However, we don't want a proxy window in this process because it can
@@ -417,12 +424,14 @@ class GpuSandboxedProcessLauncherDelegate
       // turn blocks on the browser UI thread. So, instead we forgo a window
       // message pump entirely and just add job restrictions to prevent child
       // processes.
-      sandbox::policy::SandboxWin::SetJobLevel(
+      result = sandbox::policy::SandboxWin::SetJobLevel(
           sandbox::mojom::Sandbox::kGpu, sandbox::JobLevel::kLimitedUser,
           JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS | JOB_OBJECT_UILIMIT_DESKTOP |
               JOB_OBJECT_UILIMIT_EXITWINDOWS |
               JOB_OBJECT_UILIMIT_DISPLAYSETTINGS,
           config);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
     }
 
     // Check if we are running on the winlogon desktop and set a delayed
@@ -432,10 +441,14 @@ class GpuSandboxedProcessLauncherDelegate
     // winlogon desktop normally). So instead, let the gpu process start with
     // the normal integrity and delay the switch to low integrity until after
     // the gpu process has started and has access to the desktop.
-    if (ShouldSetDelayedIntegrity())
+    if (ShouldSetDelayedIntegrity()) {
       config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-    else
-      config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+    } else {
+      sandbox::ResultCode result =
+          config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
+    }
 
     // Block this DLL even if it is not loaded by the browser process.
     config->AddDllToUnload(L"cmsetac.dll");

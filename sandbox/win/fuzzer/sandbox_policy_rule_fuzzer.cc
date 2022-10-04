@@ -23,19 +23,28 @@ std::unique_ptr<sandbox::PolicyBase> InitPolicy() {
   auto policy = std::make_unique<sandbox::PolicyBase>("");
   auto* config = policy->GetConfig();
 
-  config->AddRule(sandbox::SubSystem::kWin32kLockdown,
-                  sandbox::Semantics::kFakeGdiInit, nullptr);
+  auto result = config->AddRule(sandbox::SubSystem::kWin32kLockdown,
+                                sandbox::Semantics::kFakeGdiInit, nullptr);
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
-  config->AddRule(sandbox::SubSystem::kFiles,
-                  sandbox::Semantics::kFilesAllowAny, L"\\??\\pipe\\chrome.*");
+  result = config->AddRule(sandbox::SubSystem::kFiles,
+                           sandbox::Semantics::kFilesAllowAny,
+                           L"\\??\\pipe\\chrome.*");
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
-  config->AddRule(sandbox::SubSystem::kNamedPipes,
-                  sandbox::Semantics::kNamedPipesAllowAny,
-                  L"\\\\.\\pipe\\chrome.nacl.*");
+  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
+                           sandbox::Semantics::kNamedPipesAllowAny,
+                           L"\\\\.\\pipe\\chrome.nacl.*");
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
-  config->AddRule(sandbox::SubSystem::kNamedPipes,
-                  sandbox::Semantics::kNamedPipesAllowAny,
-                  L"\\\\.\\pipe\\chrome.sync.*");
+  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
+                           sandbox::Semantics::kNamedPipesAllowAny,
+                           L"\\\\.\\pipe\\chrome.sync.*");
+  if (result != sandbox::SBOX_ALL_OK)
+    return nullptr;
 
   sandbox::BrokerServicesBase::FreezeTargetConfigForTesting(
       policy->GetConfig());

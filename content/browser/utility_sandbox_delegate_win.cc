@@ -52,11 +52,15 @@ bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
 
   // Custom default policy allowing audio drivers to read device properties
   // (https://crbug.com/883326).
-  config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
   config->SetLockdownDefaultDacl();
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-  config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                        sandbox::USER_RESTRICTED_NON_ADMIN);
+  result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                                 sandbox::USER_RESTRICTED_NON_ADMIN);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   return true;
@@ -66,11 +70,10 @@ bool AudioPreSpawnTarget(sandbox::TargetConfig* config) {
 bool NetworkPreSpawnTarget(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   // LPAC sandbox is enabled, so do not use a restricted token.
-  if (sandbox::SBOX_ALL_OK !=
-      config->SetTokenLevel(sandbox::USER_UNPROTECTED,
-                            sandbox::USER_UNPROTECTED)) {
+  auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                                      sandbox::USER_UNPROTECTED);
+  if (result != sandbox::SBOX_ALL_OK)
     return false;
-  }
   // Network Sandbox in LPAC sandbox needs access to its data files. These
   // files are marked on disk with an ACE that permits this access.
   auto lpac_capability =
@@ -97,14 +100,17 @@ bool NetworkPreSpawnTarget(sandbox::TargetConfig* config) {
 }
 
 // Sets the sandbox policy for the print backend service process.
-void PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
+bool PrintBackendPreSpawnTarget(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   // Print Backend policy lockdown level must be at least USER_LIMITED and
   // delayed integrity level INTEGRITY_LEVEL_LOW, otherwise ::OpenPrinter()
   // will fail with error code ERROR_ACCESS_DENIED (0x5).
-  config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                        sandbox::USER_LIMITED);
+  auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                                      sandbox::USER_LIMITED);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  return true;
 }
 
 std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
@@ -114,25 +120,39 @@ std::string UtilityAppContainerId(base::CommandLine& cmd_line) {
 bool IconReaderPreSpawnTarget(sandbox::TargetConfig* config) {
   DCHECK(!config->IsConfigured());
 
-  config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                        sandbox::USER_LOCKDOWN);
+  auto result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                                      sandbox::USER_LOCKDOWN);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
   config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_UNTRUSTED);
-  config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
   config->SetLockdownDefaultDacl();
   config->SetDesktop(sandbox::Desktop::kAlternateWinstation);
 
   sandbox::MitigationFlags flags = config->GetDelayedProcessMitigations();
   flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-  if (config->SetDelayedProcessMitigations(flags) != sandbox::SBOX_ALL_OK)
+  result = config->SetDelayedProcessMitigations(flags);
+  if (result != sandbox::SBOX_ALL_OK)
     return false;
 
   // Allow file read. These should match IconLoader::GroupForFilepath().
-  config->AddRule(sandbox::SubSystem::kFiles,
-                  sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
-  config->AddRule(sandbox::SubSystem::kFiles,
-                  sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
-  config->AddRule(sandbox::SubSystem::kFiles,
-                  sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+  result =
+      config->AddRule(sandbox::SubSystem::kFiles,
+                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
+  result =
+      config->AddRule(sandbox::SubSystem::kFiles,
+                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
+  result =
+      config->AddRule(sandbox::SubSystem::kFiles,
+                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
   return true;
 }
 
@@ -144,17 +164,28 @@ bool XrCompositingPreSpawnTarget(sandbox::TargetConfig* config,
   // sandbox to use mitigations and restrict the token.
 
   // Unprotected token/job.
-  config->SetTokenLevel(sandbox::USER_UNPROTECTED, sandbox::USER_UNPROTECTED);
-  sandbox::policy::SandboxWin::SetJobLevel(
+  auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                                      sandbox::USER_UNPROTECTED);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
+
+  result = sandbox::policy::SandboxWin::SetJobLevel(
       sandbox_type, sandbox::JobLevel::kUnprotected, 0, config);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
 
   // There were issues with some mitigations, causing an inability
   // to load OpenVR and Oculus APIs.
-  config->SetProcessMitigations(0);
-  config->SetDelayedProcessMitigations(0);
+  result = config->SetProcessMitigations(0);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
+
+  result = config->SetDelayedProcessMitigations(0);
+  if (result != sandbox::SBOX_ALL_OK)
+    return false;
 
   std::string appcontainer_id = UtilityAppContainerId(cmd_line);
-  auto result = sandbox::policy::SandboxWin::AddAppContainerProfileToConfig(
+  result = sandbox::policy::SandboxWin::AddAppContainerProfileToConfig(
       cmd_line, sandbox_type, appcontainer_id, config);
   if (result != sandbox::SBOX_ALL_OK)
     return false;
@@ -234,16 +265,22 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     }
 
     if (sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
+      auto result = config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
       config->SetDelayedIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-      config->SetIntegrityLevel(sandbox::INTEGRITY_LEVEL_LOW);
-      config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
-                            sandbox::USER_LIMITED);
+      result = config->SetTokenLevel(sandbox::USER_RESTRICTED_SAME_ACCESS,
+                                     sandbox::USER_LIMITED);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
     }
 
     if (sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
         sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
-      config->SetTokenLevel(sandbox::USER_UNPROTECTED,
-                            sandbox::USER_UNPROTECTED);
+      auto result = config->SetTokenLevel(sandbox::USER_UNPROTECTED,
+                                          sandbox::USER_UNPROTECTED);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
     }
 
     if (sandbox_type_ == sandbox::mojom::Sandbox::kService ||
@@ -263,7 +300,8 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     }
 #if BUILDFLAG(ENABLE_PRINTING)
     if (sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend) {
-      PrintBackendPreSpawnTarget(config);
+      if (!PrintBackendPreSpawnTarget(config))
+        return false;
     }
 #endif
   }

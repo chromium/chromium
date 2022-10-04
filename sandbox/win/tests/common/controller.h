@@ -61,7 +61,9 @@ enum SboxTestResult {
   SBOX_TEST_TIMED_OUT,
   // Test failed. (0xE5B1000B or -441384949)
   SBOX_TEST_FAILED,
-  // Last Result. (0xE5B1000C or -441384948)
+  // Failed to configure sandbox before test. (0xE5B1000C or -441384948)
+  SBOX_TEST_FAILED_SETUP,
+  // Last Result. (0xE5B1000D or -441384947)
   SBOX_TEST_LAST_RESULT
 };
 

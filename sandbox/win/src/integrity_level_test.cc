@@ -46,9 +46,11 @@ std::unique_ptr<TestRunner> LowILRealRunner() {
   auto runner = std::make_unique<TestRunner>(
       JobLevel::kLockdown, USER_INTERACTIVE, USER_INTERACTIVE);
   runner->SetTimeout(INFINITE);
-  runner->GetPolicy()->CreateAlternateDesktop(Desktop::kAlternateWinstation);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->CreateAlternateDesktop(
+                             Desktop::kAlternateWinstation));
   runner->GetPolicy()->GetConfig()->SetDesktop(Desktop::kAlternateWinstation);
-  runner->GetPolicy()->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  EXPECT_EQ(SBOX_ALL_OK, runner->GetPolicy()->GetConfig()->SetIntegrityLevel(
+                             INTEGRITY_LEVEL_LOW));
   return runner;
 }
 
@@ -91,7 +93,7 @@ TEST(IntegrityLevelTest, TestUntrustedIL) {
   TestRunner runner(JobLevel::kLockdown, USER_RESTRICTED_SAME_ACCESS,
                     USER_LOCKDOWN);
   auto* config = runner.GetPolicy()->GetConfig();
-  config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  EXPECT_EQ(SBOX_ALL_OK, config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW));
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
   config->SetLockdownDefaultDacl();
 
@@ -105,7 +107,7 @@ TEST(IntegrityLevelTest, TestLowIL) {
   TestRunner runner(JobLevel::kLockdown, USER_RESTRICTED_SAME_ACCESS,
                     USER_LOCKDOWN);
   auto* config = runner.GetPolicy()->GetConfig();
-  config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  EXPECT_EQ(SBOX_ALL_OK, config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW));
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
   config->SetLockdownDefaultDacl();
 

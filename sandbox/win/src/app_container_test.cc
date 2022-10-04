@@ -302,8 +302,9 @@ TEST_F(AppContainerTest, NoCapabilities) {
   if (!container_)
     return;
 
-  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
+                                                             USER_UNPROTECTED));
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0));
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -318,9 +319,9 @@ TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
   if (!container_)
     return;
 
-  policy_->GetConfig()->SetTokenLevel(USER_LOCKDOWN,
-                                      USER_RESTRICTED_SAME_ACCESS);
-  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(
+                             USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN));
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0));
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -338,8 +339,9 @@ TEST_F(AppContainerTest, WithCapabilities) {
   container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
   container_->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
-  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
+                                                             USER_UNPROTECTED));
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0));
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -357,9 +359,9 @@ TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
   container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
   container_->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
-  policy_->GetConfig()->SetTokenLevel(USER_LOCKDOWN,
-                                      USER_RESTRICTED_SAME_ACCESS);
-  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(
+                             USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN));
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0));
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -381,8 +383,9 @@ TEST_F(AppContainerTest, WithImpersonationCapabilities) {
       base::win::WellKnownCapability::kPrivateNetworkClientServer);
   container_->AddImpersonationCapability(
       base::win::WellKnownCapability::kPicturesLibrary);
-  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
+                                                             USER_UNPROTECTED));
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0));
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();
@@ -400,8 +403,9 @@ TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
     return;
 
   container_->SetEnableLowPrivilegeAppContainer(true);
-  policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
-  policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0);
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
+                                                             USER_UNPROTECTED));
+  EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetJobLevel(JobLevel::kNone, 0));
 
   CreateProcess();
   auto security_capabilities = container_->GetSecurityCapabilities();

@@ -431,6 +431,7 @@ scoped_refptr<AppContainer> ConfigBase::GetAppContainer() {
 }
 
 ResultCode ConfigBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {
+  // Note: TokenLevel enum values increase as lockdown decreases.
   if (initial < lockdown) {
     return SBOX_ERROR_BAD_PARAMS;
   }

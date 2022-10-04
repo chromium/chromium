@@ -1057,8 +1057,9 @@ TEST(ProcessMitigationsTest, CheckChildProcessSuccess) {
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   // Set a policy that would normally allow for process creation.
-  config->SetJobLevel(JobLevel::kInteractive, 0);
-  config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_ALL_OK, config->SetJobLevel(JobLevel::kInteractive, 0));
+  EXPECT_EQ(SBOX_ALL_OK,
+            config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED));
   runner.SetDisableCsrss(false);
 
   base::FilePath cmd;
@@ -1081,8 +1082,9 @@ TEST(ProcessMitigationsTest, CheckChildProcessFailure) {
 
   // Now set the job level to be <= JobLevel::kLimitedUser
   // and ensure we can no longer create a child process.
-  config->SetJobLevel(JobLevel::kLimitedUser, 0);
-  config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_ALL_OK, config->SetJobLevel(JobLevel::kLimitedUser, 0));
+  EXPECT_EQ(SBOX_ALL_OK,
+            config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED));
   runner.SetDisableCsrss(false);
 
   base::FilePath cmd;
@@ -1107,8 +1109,9 @@ TEST(ProcessMitigationsTest, CheckChildProcessAbnormalExit) {
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   // Set a policy that would normally allow for process creation.
-  config->SetJobLevel(JobLevel::kInteractive, 0);
-  config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
+  EXPECT_EQ(SBOX_ALL_OK, config->SetJobLevel(JobLevel::kInteractive, 0));
+  EXPECT_EQ(SBOX_ALL_OK,
+            config->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED));
   runner.SetDisableCsrss(false);
 
   base::FilePath cmd;

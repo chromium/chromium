@@ -28,7 +28,9 @@ int RunOpenProcessTest(bool unsandboxed,
                     USER_LOCKDOWN);
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED);
-  config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  if (result != SBOX_ALL_OK)
+    return SBOX_TEST_FAILED_SETUP;
   if (lockdown_dacl)
     config->SetLockdownDefaultDacl();
   runner.SetAsynchronous(true);
@@ -39,7 +41,9 @@ int RunOpenProcessTest(bool unsandboxed,
                      USER_LIMITED);
   auto* config2 = runner2.GetPolicy()->GetConfig();
   config2->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  config2->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  result = config2->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  if (result != SBOX_ALL_OK)
+    return SBOX_TEST_FAILED_SETUP;
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
       base::StringPrintf(L"RestrictedTokenTest_openprocess %d 0x%08X",
@@ -53,7 +57,10 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
   TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  if (result != SBOX_ALL_OK)
+    return SBOX_TEST_FAILED_SETUP;
+
   if (lockdown_dacl) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
@@ -66,7 +73,9 @@ int RunRestrictedOpenProcessTest(bool unsandboxed,
                      USER_LIMITED);
   auto* config2 = runner2.GetPolicy()->GetConfig();
   config2->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  config2->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  result = config2->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  if (result != SBOX_ALL_OK)
+    return SBOX_TEST_FAILED_SETUP;
   runner2.SetUnsandboxed(unsandboxed);
   return runner2.RunTest(
       base::StringPrintf(L"RestrictedTokenTest_openprocess %d 0x%08X",
@@ -78,7 +87,9 @@ int RunRestrictedSelfOpenProcessTest(bool add_random_sid, DWORD access_mask) {
   TestRunner runner(JobLevel::kNone, USER_RESTRICTED_SAME_ACCESS, USER_LIMITED);
   auto* config = runner.GetPolicy()->GetConfig();
   config->SetDelayedIntegrityLevel(INTEGRITY_LEVEL_LOW);
-  config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  ResultCode result = config->SetIntegrityLevel(INTEGRITY_LEVEL_LOW);
+  if (result != SBOX_ALL_OK)
+    return SBOX_TEST_FAILED_SETUP;
   config->SetLockdownDefaultDacl();
   if (add_random_sid)
     config->AddRestrictingRandomSid();

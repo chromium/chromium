@@ -652,9 +652,11 @@ bool WebTestContentBrowserClient::PreSpawnChild(
     std::vector<std::string> font_files = switches::GetSideloadFontFiles();
     for (std::vector<std::string>::const_iterator i(font_files.begin());
          i != font_files.end(); ++i) {
-      policy->GetConfig()->AddRule(sandbox::SubSystem::kFiles,
-                                   sandbox::Semantics::kFilesAllowReadonly,
-                                   base::UTF8ToWide(*i).c_str());
+      sandbox::ResultCode result = policy->GetConfig()->AddRule(
+          sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowReadonly,
+          base::UTF8ToWide(*i).c_str());
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
     }
   }
   return true;
