@@ -152,7 +152,7 @@ bool HasOemPrefix(const std::string& name) {
 
 StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
   StatisticsProviderImpl::StatisticsSources sources;
-  sources.crossystem_tool = {kCrosSystemTool};
+  sources.crossystem_tool = base::CommandLine(base::FilePath(kCrosSystemTool));
   sources.machine_info_filepath = GetFilePathIgnoreFailure(FILE_MACHINE_INFO);
   sources.vpd_echo_filepath = base::FilePath(kEchoCouponFile);
   sources.vpd_filepath = GetFilePathIgnoreFailure(FILE_VPD);
@@ -199,8 +199,6 @@ StatisticsProviderImpl::StatisticsProviderImpl(StatisticsSources sources)
       oem_manifest_loaded_(false),
       statistics_loaded_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  DCHECK(!sources_.crossystem_tool.empty());
-
   regional_data_extractors_[kInitialLocaleKey] =
       &GetInitialLocaleFromRegionalData;
   regional_data_extractors_[kKeyboardLayoutKey] =
@@ -373,7 +371,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
     if (!parser.ParseNameValuePairsFromTool(
             sources_.crossystem_tool, NameValuePairsFormat::kCrossystem)) {
       LOG(ERROR) << "Errors parsing output from: "
-                 << sources_.crossystem_tool[0];
+                 << sources_.crossystem_tool.GetProgram();
     }
     // Drop useless "(error)" values so they don't displace valid values
     // supplied later by other tools: https://crbug.com/844258

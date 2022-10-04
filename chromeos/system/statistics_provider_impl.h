@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -41,7 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) StatisticsProviderImpl
     StatisticsSources& operator=(StatisticsSources&& other);
 
     // Binary to fake crossystem tool with arguments. E.g. echo.
-    std::vector<std::string> crossystem_tool;
+    base::CommandLine crossystem_tool{base::CommandLine::NO_PROGRAM};
 
     base::FilePath machine_info_filepath;
     base::FilePath vpd_echo_filepath;

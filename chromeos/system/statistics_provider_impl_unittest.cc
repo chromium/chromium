@@ -5,6 +5,7 @@
 #include "chromeos/system/statistics_provider_impl.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -63,10 +64,8 @@ class SourcesBuilder {
   SourcesBuilder(const SourcesBuilder&) = delete;
   SourcesBuilder& operator=(const SourcesBuilder&) = delete;
 
-  SourcesBuilder& set_crossystem_tool(const std::string& tool_cmd,
-                                      const std::string& tool_args) {
-    EXPECT_FALSE(tool_args.empty());
-    sources_.crossystem_tool = {tool_cmd, tool_args};
+  SourcesBuilder& set_crossystem_tool(const base::CommandLine& tool_cmd) {
+    sources_.crossystem_tool = tool_cmd;
     return *this;
   }
 
@@ -96,8 +95,8 @@ class SourcesBuilder {
   }
 
   StatisticsProviderImpl::StatisticsSources Build() {
-    if (sources_.crossystem_tool.empty()) {
-      sources_.crossystem_tool = {kEchoCmd};
+    if (sources_.crossystem_tool.GetProgram().empty()) {
+      sources_.crossystem_tool = base::CommandLine(base::FilePath(kEchoCmd));
     }
 
     if (sources_.machine_info_filepath.empty()) {
@@ -167,7 +166,7 @@ TEST_F(StatisticsProviderImplTest, LoadsStatisticsFromCrossystemTool) {
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_crossystem_tool(kEchoCmd, kEchoArgs)
+          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
           .Build();
 
   // Load statistics.
@@ -226,7 +225,7 @@ TEST_F(StatisticsProviderImplTest,
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_crossystem_tool(kEchoCmd, kEchoArgs)
+          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
           .set_machine_info(
               CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
           .Build();
@@ -265,7 +264,7 @@ TEST_F(
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_crossystem_tool(kEchoCmd, kEchoArgs)
+          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
           .set_machine_info(
               CreateFileInTempDir(kMachineInfoStatistics, temp_dir()))
           .Build();
@@ -300,7 +299,7 @@ TEST_F(StatisticsProviderImplTest,
 
   StatisticsProviderImpl::StatisticsSources testing_sources =
       SourcesBuilder(temp_dir())
-          .set_crossystem_tool(kEchoCmd, kEchoArgs)
+          .set_crossystem_tool(base::CommandLine({kEchoCmd, kEchoArgs}))
           .Build();
 
   // Load statistics.

@@ -28,16 +28,13 @@ const char kStableDeviceSecretDoNotShare[] =
 
 // Runs a tool and capture its standard output into |output|. Returns false
 // if the tool cannot be run.
-bool GetToolOutput(const std::vector<std::string>& args, std::string* output) {
-  DCHECK_GE(args.size(), 1u);
-
-  if (!base::PathExists(base::FilePath(args[0]))) {
-    LOG(WARNING) << "Tool for statistics not found: " << args[0];
+bool GetToolOutput(const base::CommandLine& command, std::string* output) {
+  if (!base::PathExists(command.GetProgram())) {
+    LOG(WARNING) << "Tool for statistics not found: " << command.GetProgram();
     return false;
   }
-
-  if (!base::GetAppOutput(args, output)) {
-    LOG(WARNING) << "Error executing " << args[0];
+  if (!base::GetAppOutput(command, output)) {
+    LOG(WARNING) << "Error executing " << command.GetProgram();
     return false;
   }
 
@@ -156,15 +153,14 @@ bool NameValuePairsParser::ParseNameValuePairsFromFile(
 }
 
 bool NameValuePairsParser::ParseNameValuePairsFromTool(
-    const std::vector<std::string>& args,
+    const base::CommandLine& command,
     NameValuePairsFormat format) {
-  DCHECK_GE(args.size(), 1u);
-
   std::string output_string;
-  if (!GetToolOutput(args, &output_string))
+  if (!GetToolOutput(command, &output_string))
     return false;
 
-  return ParseNameValuePairs(output_string, format, /*debug_source=*/args[0]);
+  return ParseNameValuePairs(output_string, format,
+                             /*debug_source=*/command.GetProgram().value());
 }
 
 void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {

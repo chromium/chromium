@@ -4,6 +4,7 @@
 
 #include "chromeos/system/name_value_pairs_parser.h"
 
+#include "base/command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -140,19 +141,20 @@ name4="value4"
 }
 
 TEST(NameValuePairsParser, TestParseNameValuePairsFromCrossystemTool) {
-  // Sample output is taken from the /usr/bin/crosssytem tool.
-  const std::vector<std::string> command = {
-      "/bin/echo",
-      "arch                   = x86           # Platform architecture\n"
-      "cros_debug             = 1             # OS should allow debug\n"
-      "dbg_reset              = (error)       # Debug reset mode request\n"
-      "key#with_comment       = some value    # Multiple # comment # delims\n"
-      "key                    =               # No value.\n"
-      "vdat_timers            = "
-      "LFS=0,0 LF=1784220250,2971030570 LK=9064076660,9342689170 "
-      "# Timer values from VbSharedData\n"
-      "wpsw_cur               = 1             # Firmware hardware WP switch "
-      "pos\n"};
+  // Sample output is taken from the /usr/bin/crossystem tool.
+  const base::CommandLine command(
+      {"/bin/echo",
+       // Below is single string argument.
+       "arch                   = x86           # Platform architecture\n"
+       "cros_debug             = 1             # OS should allow debug\n"
+       "dbg_reset              = (error)       # Debug reset mode request\n"
+       "key#with_comment       = some value    # Multiple # comment # delims\n"
+       "key                    =               # No value.\n"
+       "vdat_timers            = "
+       "LFS=0,0 LF=1784220250,2971030570 LK=9064076660,9342689170 "
+       "# Timer values from VbSharedData\n"
+       "wpsw_cur               = 1             # Firmware hardware WP switch "
+       "pos\n"});
 
   NameValuePairsParser::NameValueMap map;
   NameValuePairsParser parser(&map);
@@ -167,6 +169,20 @@ TEST(NameValuePairsParser, TestParseNameValuePairsFromCrossystemTool) {
   EXPECT_EQ("LFS=0,0 LF=1784220250,2971030570 LK=9064076660,9342689170",
             map["vdat_timers"]);
   EXPECT_EQ("1", map["wpsw_cur"]);
+}
+
+TEST(NameValuePairsParser, TestParseNameValuePairsFromEmptyTool) {
+  // Sample output is taken from the /usr/bin/crossystem tool.
+  const base::CommandLine command(
+      {"/bin/echo",
+       // Use empty string argument to check that tool caller can handle it.
+       ""});
+
+  NameValuePairsParser::NameValueMap map;
+  NameValuePairsParser parser(&map);
+  parser.ParseNameValuePairsFromTool(command,
+                                     NameValuePairsFormat::kCrossystem);
+  EXPECT_TRUE(map.empty());
 }
 
 TEST(NameValuePairsParser, DeletePairsWithValue) {
