@@ -302,11 +302,21 @@ public class CompositorViewHolder extends FrameLayout
 
                     @Override
                     public void setCurrentTouchEventOffsets(float top) {
-                        if (mTabVisible == null) return;
+                        EventForwarder forwarder = getEventForwarder();
+                        if (forwarder != null) forwarder.setCurrentTouchEventOffsets(0, top);
+                    }
+
+                    @Override
+                    public void setCurrentDragEventOffsets(float dx, float dy) {
+                        EventForwarder forwarder = getEventForwarder();
+                        if (forwarder != null) forwarder.setDragDispatchingOffset(dx, dy);
+                    }
+
+                    private EventForwarder getEventForwarder() {
+                        if (mTabVisible == null) return null;
                         WebContents webContents = mTabVisible.getWebContents();
-                        if (webContents == null) return;
-                        EventForwarder forwarder = webContents.getEventForwarder();
-                        forwarder.setCurrentTouchEventOffsets(0, top);
+                        if (webContents == null) return null;
+                        return webContents.getEventForwarder();
                     }
                 });
 
@@ -765,7 +775,7 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public boolean dispatchDragEvent(DragEvent e) {
-        mEventOffsetHandler.onPreDispatchDragEvent(e.getAction());
+        mEventOffsetHandler.onPreDispatchDragEvent(e.getAction(), 0.f, 0.f);
         boolean ret = super.dispatchDragEvent(e);
         mEventOffsetHandler.onPostDispatchDragEvent(e.getAction());
         return ret;
@@ -1539,9 +1549,11 @@ public class CompositorViewHolder extends FrameLayout
     private void updateViewStateListener(ContentView newContentView) {
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
+            mContentView.setEventOffsetHandler(null);
         }
         if (newContentView != null) {
             newContentView.addOnHierarchyChangeListener(this);
+            newContentView.setEventOffsetHandler(mEventOffsetHandler);
         }
         mContentView = newContentView;
     }

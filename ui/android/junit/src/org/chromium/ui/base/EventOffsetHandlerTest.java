@@ -35,6 +35,9 @@ public class EventOffsetHandlerTest {
                 public void setCurrentTouchEventOffsets(float top) {
                     mOffsetY = top;
                 }
+
+                @Override
+                public void setCurrentDragEventOffsets(float dx, float dy) {}
             };
 
     private RectF mViewport;
@@ -53,7 +56,7 @@ public class EventOffsetHandlerTest {
 
     @Test
     public void testOffsetChangesWhileDragging() {
-        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_STARTED);
+        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_STARTED, 0.f, 0.f);
         mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_STARTED);
 
         // Viewport position has been negated.
@@ -69,7 +72,7 @@ public class EventOffsetHandlerTest {
 
         assertOffsets(-200);
 
-        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED);
+        mHandler.onPreDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED, 0.f, 0.f);
         mHandler.onPostDispatchDragEvent(DragEvent.ACTION_DRAG_ENDED);
         assertOffsets(0);
     }
