@@ -61,6 +61,11 @@ class ShoppingListUiTabHelper
 
   // bookmarks::BaseBookmarkModelObserver
   void BookmarkModelChanged() override;
+  void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
+                           const bookmarks::BookmarkNode* parent,
+                           size_t old_index,
+                           const bookmarks::BookmarkNode* node,
+                           const std::set<GURL>& no_longer_bookmarked) override;
   void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
                                const bookmarks::BookmarkNode* node) override;
 

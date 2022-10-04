@@ -105,6 +105,15 @@ void ShoppingListUiTabHelper::PrimaryPageChanged(content::Page& page) {
 
 void ShoppingListUiTabHelper::BookmarkModelChanged() {}
 
+void ShoppingListUiTabHelper::BookmarkNodeRemoved(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node,
+    const std::set<GURL>& no_longer_bookmarked) {
+  UpdatePriceTrackingIconView();
+}
+
 void ShoppingListUiTabHelper::BookmarkMetaInfoChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {

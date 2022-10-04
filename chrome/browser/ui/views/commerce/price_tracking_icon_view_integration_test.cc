@@ -1,0 +1,191 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
+
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/commerce/price_tracking/mock_shopping_list_ui_tab_helper.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/test_utils.h"
+#include "components/omnibox/browser/vector_icons.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/interaction/element_tracker_views.h"
+
+namespace {
+const char kTrackableUrl[] = "http://google.com";
+const char kNonTrackableUrl[] = "about:blank";
+
+}  // namespace
+
+class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
+ public:
+  PriceTrackingIconViewIntegrationTest() = default;
+
+  PriceTrackingIconViewIntegrationTest(
+      const PriceTrackingIconViewIntegrationTest&) = delete;
+  PriceTrackingIconViewIntegrationTest& operator=(
+      const PriceTrackingIconViewIntegrationTest&) = delete;
+
+  ~PriceTrackingIconViewIntegrationTest() override = default;
+
+  void SetUp() override {
+    test_features_.InitAndEnableFeature(commerce::kShoppingList);
+    TestWithBrowserView::SetUp();
+    AddTab(browser(), GURL(kNonTrackableUrl));
+    mock_tab_helper_ = AttachTabHelperToWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    TestingProfile::TestingFactories factories =
+        TestWithBrowserView::GetTestingFactories();
+    factories.emplace_back(BookmarkModelFactory::GetInstance(),
+                           BookmarkModelFactory::GetDefaultFactory());
+    factories.emplace_back(ManagedBookmarkServiceFactory::GetInstance(),
+                           ManagedBookmarkServiceFactory::GetDefaultFactory());
+    return factories;
+  }
+
+  PriceTrackingIconView* GetChip() {
+    auto* location_bar_view = browser_view()->toolbar()->location_bar();
+    const ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForView(location_bar_view);
+    views::View* matched_view =
+        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+            kPriceTrackingChipElementId, context);
+
+    return matched_view
+               ? views::AsViewClass<PriceTrackingIconView>(matched_view)
+               : nullptr;
+  }
+
+  void SimulateServerPriceTrackState(bool is_price_tracked) {
+    bookmarks::BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+    bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+    bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTrackableUrl),
+                                  std::u16string());
+
+    commerce::AddProductBookmark(bookmark_model, u"title", GURL(kTrackableUrl),
+                                 0, is_price_tracked);
+  }
+
+  void VerifyIconState(PriceTrackingIconView* icon_view,
+                       bool is_price_tracked) {
+    EXPECT_TRUE(icon_view->GetVisible());
+    if (is_price_tracked) {
+      EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+                l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+      EXPECT_STREQ(icon_view->GetVectorIcon().name,
+                   omnibox::kPriceTrackingEnabledFilledIcon.name);
+      EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+                l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
+    } else {
+      EXPECT_EQ(icon_view->GetIconLabelForTesting(),
+                l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+      EXPECT_STREQ(icon_view->GetVectorIcon().name,
+                   omnibox::kPriceTrackingDisabledIcon.name);
+      EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
+                l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+    }
+  }
+
+  MockShoppingListUiTabHelper* GetTabHelper() { return mock_tab_helper_.get(); }
+
+ protected:
+  raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
+
+ private:
+  base::test::ScopedFeatureList test_features_;
+
+  MockShoppingListUiTabHelper* AttachTabHelperToWebContents(
+      content::WebContents* web_contents) {
+    MockShoppingListUiTabHelper::CreateForWebContents(web_contents);
+    return static_cast<MockShoppingListUiTabHelper*>(
+        MockShoppingListUiTabHelper::FromWebContents(web_contents));
+  }
+};
+
+TEST_F(PriceTrackingIconViewIntegrationTest,
+       PriceTrackingIconViewVisibleOnNavigation) {
+  SimulateServerPriceTrackState(/*is_price_tracked=*/true);
+
+  ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+
+  NavigateAndCommitActiveTab(GURL(kTrackableUrl));
+
+  auto* icon_view = GetChip();
+  VerifyIconState(icon_view, /*is_price_tracked=*/true);
+}
+
+TEST_F(PriceTrackingIconViewIntegrationTest,
+       PriceTrackingIconViewInvisibleOnNavigation) {
+  SimulateServerPriceTrackState(/*is_price_tracked=*/true);
+
+  ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+
+  NavigateAndCommitActiveTab(GURL(kTrackableUrl));
+
+  auto* icon_view = GetChip();
+  EXPECT_TRUE(icon_view->GetVisible());
+
+  ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(false));
+
+  NavigateAndCommitActiveTab(GURL(kNonTrackableUrl));
+  EXPECT_FALSE(icon_view->GetVisible());
+}
+
+TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenRemoveBookmark) {
+  SimulateServerPriceTrackState(/*is_price_tracked=*/true);
+
+  ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+
+  NavigateAndCommitActiveTab(GURL(kTrackableUrl));
+
+  auto* icon_view = GetChip();
+  VerifyIconState(icon_view, /*is_price_tracked=*/true);
+
+  // Simulate removed bookmark.
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::RemoveAllBookmarks(bookmark_model, GURL(kTrackableUrl));
+
+  VerifyIconState(icon_view, /*is_price_tracked=*/false);
+}
+
+TEST_F(PriceTrackingIconViewIntegrationTest, IconUpdatedWhenMetaDataChanged) {
+  SimulateServerPriceTrackState(/*is_price_tracked=*/true);
+
+  ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
+      .WillByDefault(testing::Return(true));
+
+  NavigateAndCommitActiveTab(GURL(kTrackableUrl));
+
+  auto* icon_view = GetChip();
+  VerifyIconState(icon_view, /*is_price_tracked=*/true);
+
+  // Simulate meta data changed.
+  SimulateServerPriceTrackState(false);
+
+  VerifyIconState(icon_view, /*is_price_tracked=*/false);
+}
