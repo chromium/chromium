@@ -1111,14 +1111,9 @@ const FeatureEntry::FeatureVariation
          std::size(kPageEntitiesPageContentAnnotationsAllLocalesParams),
          nullptr},
 };
-const FeatureEntry::FeatureParam
-    kJourneysSortClustersWithinBatchForQueryParams[] = {
-        {"JourneysLocaleOrLanguageAllowlist", "*"},
-        {"JourneysSortClustersWithinBatchForQuery", "true"},
-};
-const FeatureEntry::FeatureParam kJourneysDropHiddenVisitsParams[] = {
+const FeatureEntry::FeatureParam kJourneysHiddenVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
-    {"drop_hidden_visits", "true"},
+    {"drop_hidden_visits", "false"},
 };
 const FeatureEntry::FeatureParam kJourneysShowAllVisitsParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
@@ -1132,13 +1127,10 @@ const FeatureEntry::FeatureParam kJourneysAllLocalesParams[] = {
     {"JourneysLocaleOrLanguageAllowlist", "*"},
 };
 const FeatureEntry::FeatureVariation kJourneysVariations[] = {
-    {"Sort Clusters Within Batch for Query",
-     kJourneysSortClustersWithinBatchForQueryParams,
-     std::size(kJourneysSortClustersWithinBatchForQueryParams), nullptr},
-    {"No 'Show More' - Drop hidden visits", kJourneysDropHiddenVisitsParams,
-     std::size(kJourneysDropHiddenVisitsParams), nullptr},
     {"No 'Show More' - Show all visits", kJourneysShowAllVisitsParams,
      std::size(kJourneysShowAllVisitsParams), nullptr},
+    {"'Show More' - Hide hidden visits", kJourneysHiddenVisitsParams,
+     std::size(kJourneysHiddenVisitsParams), nullptr},
     {"All Supported Locales", kJourneysAllLocalesParams,
      std::size(kJourneysAllLocalesParams), nullptr},
 };
