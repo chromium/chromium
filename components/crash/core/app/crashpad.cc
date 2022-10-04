@@ -199,10 +199,7 @@ bool InitializeCrashpadImpl(bool initial_client,
     g_database =
         crashpad::CrashReportDatabase::Initialize(database_path).release();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-    // On Android crashpad doesn't handle uploads. Android uses
-    // //components/minidump_uploader which queries metrics sample/consent opt
-    // in from preferences.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
     CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
     SetUploadConsent(crash_reporter_client->GetCollectStatsConsent());
 #endif
