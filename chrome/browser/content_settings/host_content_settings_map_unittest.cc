@@ -1097,15 +1097,14 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
   // Set utf-8 data.
   {
-    DictionaryPrefUpdate update(prefs,
+    ScopedDictPrefUpdate update(prefs,
                                 GetPrefName(ContentSettingsType::COOKIES));
-    base::Value* all_settings_dictionary = update.Get();
-    ASSERT_TRUE(all_settings_dictionary);
+    base::Value::Dict& all_settings_dictionary = update.Get();
 
-    base::Value dummy_payload(base::Value::Type::DICTIONARY);
-    dummy_payload.SetKey("setting", base::Value(CONTENT_SETTING_ALLOW));
-    all_settings_dictionary->SetKey("[*.]\xC4\x87ira.com,*",
-                                    std::move(dummy_payload));
+    base::Value::Dict dummy_payload;
+    dummy_payload.Set("setting", CONTENT_SETTING_ALLOW);
+    all_settings_dictionary.Set("[*.]\xC4\x87ira.com,*",
+                                std::move(dummy_payload));
   }
 
   HostContentSettingsMapFactory::GetForProfile(&profile);

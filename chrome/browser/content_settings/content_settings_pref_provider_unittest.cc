@@ -396,10 +396,10 @@ TEST_F(PrefProviderTest, Deadlock) {
 
   DeadlockCheckerObserver observer(&prefs, &provider);
   {
-    DictionaryPrefUpdate update(&prefs, info->pref_name());
-    base::Value* mutable_settings = update.Get();
-    mutable_settings->SetKey("www.example.com,*",
-                             base::Value(base::Value::Type::DICTIONARY));
+    ScopedDictPrefUpdate update(&prefs, info->pref_name());
+    base::Value::Dict& mutable_settings = update.Get();
+    mutable_settings.Set("www.example.com,*",
+                         base::Value(base::Value::Type::DICTIONARY));
   }
   EXPECT_TRUE(observer.notification_received());
 
@@ -543,9 +543,8 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   // Expect the prefs are not empty before we trigger clearing them.
   for (const char* pref : cleared_prefs) {
-    DictionaryPrefUpdate update(&prefs, pref);
-    const base::Value* dictionary = update.Get();
-    ASSERT_FALSE(dictionary->DictEmpty());
+    const base::Value::Dict& dictionary = prefs.GetDict(pref);
+    ASSERT_FALSE(dictionary.empty());
   }
 
   provider.ClearAllContentSettingsRules(ContentSettingsType::JAVASCRIPT);
@@ -553,9 +552,8 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   // Ensure they become empty afterwards.
   for (const char* pref : cleared_prefs) {
-    DictionaryPrefUpdate update(&prefs, pref);
-    const base::Value* dictionary = update.Get();
-    EXPECT_TRUE(dictionary->DictEmpty());
+    const base::Value::Dict& dictionary = prefs.GetDict(pref);
+    EXPECT_TRUE(dictionary.empty());
   }
 
   // Test that the preferences for cookies and notifications are not empty.
@@ -565,9 +563,8 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   };
 
   for (const char* pref : nonempty_prefs) {
-    DictionaryPrefUpdate update(&prefs, pref);
-    const base::Value* dictionary = update.Get();
-    EXPECT_EQ(1u, dictionary->DictSize());
+    const base::Value::Dict& dictionary = prefs.GetDict(pref);
+    EXPECT_EQ(1u, dictionary.size());
   }
 
   provider.ShutdownOnUIThread();
