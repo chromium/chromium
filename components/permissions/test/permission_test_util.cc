@@ -75,7 +75,7 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
           browser_context, ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
           blink::mojom::PermissionsPolicyFeature::kEncryptedMedia);
 #endif
-  permission_contexts[ContentSettingsType::WINDOW_PLACEMENT] =
+  permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
       std::make_unique<WindowPlacementPermissionContext>(browser_context);
   return permission_contexts;
 }

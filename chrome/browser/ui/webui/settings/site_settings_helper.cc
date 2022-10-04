@@ -109,7 +109,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::BLUETOOTH_GUARD, "bluetooth-devices"},
     {ContentSettingsType::BLUETOOTH_CHOOSER_DATA,
      kBluetoothChooserDataGroupType},
-    {ContentSettingsType::WINDOW_PLACEMENT, "window-placement"},
+    {ContentSettingsType::WINDOW_MANAGEMENT, "window-placement"},
     {ContentSettingsType::LOCAL_FONTS, "local-fonts"},
     {ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA,
      "file-system-access-handles-data"},
@@ -406,7 +406,7 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       ContentSettingsType::SOUND,
       ContentSettingsType::USB_GUARD,
       ContentSettingsType::VR,
-      ContentSettingsType::WINDOW_PLACEMENT,
+      ContentSettingsType::WINDOW_MANAGEMENT,
   }};
   static bool initialized = false;
   if (!initialized) {

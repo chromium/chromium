@@ -134,7 +134,7 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
 
   // TODO(crbug.com/897300): Still in development for Android so we don't
   // support it on WebLayer yet.
-  permission_contexts[ContentSettingsType::WINDOW_PLACEMENT] =
+  permission_contexts[ContentSettingsType::WINDOW_MANAGEMENT] =
       std::make_unique<permissions::WindowPlacementPermissionContext>(profile);
 
   return permission_contexts;

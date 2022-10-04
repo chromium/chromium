@@ -61,10 +61,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, DefaultSetting) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::WINDOW_PLACEMENT, nullptr));
+                ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::WINDOW_PLACEMENT));
+                url, url, ContentSettingsType::WINDOW_MANAGEMENT));
   EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission));
 
   PolicyMap policies;
@@ -73,10 +73,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, DefaultSetting) {
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::WINDOW_PLACEMENT, nullptr));
+                ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::WINDOW_PLACEMENT));
+                url, url, ContentSettingsType::WINDOW_MANAGEMENT));
   EXPECT_EQ("denied", EvalJs(tab, kCheckPermission));
   EXPECT_EQ("error", EvalJs(tab, kGetScreens));
 
@@ -85,10 +85,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, DefaultSetting) {
 
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::WINDOW_PLACEMENT, nullptr));
+                ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::WINDOW_PLACEMENT));
+                url, url, ContentSettingsType::WINDOW_MANAGEMENT));
   EXPECT_EQ("prompt", EvalJs(tab, kCheckPermission));
 }
 
@@ -108,10 +108,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, AllowedForUrlsSettings) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::WINDOW_PLACEMENT, nullptr));
+                ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::WINDOW_PLACEMENT));
+                url, url, ContentSettingsType::WINDOW_MANAGEMENT));
   EXPECT_EQ("granted", EvalJs(tab, kCheckPermission));
   EXPECT_EQ("granted", EvalJs(tab, kGetScreens));
 }
@@ -132,10 +132,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTestWindowPlacement, BlockedForUrlsSettings) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::WINDOW_PLACEMENT, nullptr));
+                ContentSettingsType::WINDOW_MANAGEMENT, nullptr));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
-                url, url, ContentSettingsType::WINDOW_PLACEMENT));
+                url, url, ContentSettingsType::WINDOW_MANAGEMENT));
   EXPECT_EQ("denied", EvalJs(tab, kCheckPermission));
   EXPECT_EQ("error", EvalJs(tab, kGetScreens));
 }

@@ -111,7 +111,7 @@ std::string PermissionUtil::GetPermissionString(
       return "StorageAccess";
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       return "CameraPanTiltZoom";
-    case ContentSettingsType::WINDOW_PLACEMENT:
+    case ContentSettingsType::WINDOW_MANAGEMENT:
       return "WindowPlacement";
     case ContentSettingsType::LOCAL_FONTS:
       return "LocalFonts";
@@ -201,7 +201,7 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       *out = PermissionType::CAMERA_PAN_TILT_ZOOM;
       break;
-    case ContentSettingsType::WINDOW_PLACEMENT:
+    case ContentSettingsType::WINDOW_MANAGEMENT:
       *out = PermissionType::WINDOW_PLACEMENT;
       break;
     case ContentSettingsType::LOCAL_FONTS:
@@ -246,7 +246,7 @@ bool PermissionUtil::IsPermission(ContentSettingsType type) {
     case ContentSettingsType::AR:
     case ContentSettingsType::STORAGE_ACCESS:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-    case ContentSettingsType::WINDOW_PLACEMENT:
+    case ContentSettingsType::WINDOW_MANAGEMENT:
     case ContentSettingsType::LOCAL_FONTS:
     case ContentSettingsType::IDLE_DETECTION:
     case ContentSettingsType::DISPLAY_CAPTURE:
@@ -360,7 +360,7 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
     case PermissionType::CAMERA_PAN_TILT_ZOOM:
       return ContentSettingsType::CAMERA_PAN_TILT_ZOOM;
     case PermissionType::WINDOW_PLACEMENT:
-      return ContentSettingsType::WINDOW_PLACEMENT;
+      return ContentSettingsType::WINDOW_MANAGEMENT;
     case PermissionType::LOCAL_FONTS:
       return ContentSettingsType::LOCAL_FONTS;
     case PermissionType::DISPLAY_CAPTURE:
@@ -432,7 +432,7 @@ PermissionType PermissionUtil::ContentSettingTypeToPermissionType(
       return PermissionType::STORAGE_ACCESS_GRANT;
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
       return PermissionType::CAMERA_PAN_TILT_ZOOM;
-    case ContentSettingsType::WINDOW_PLACEMENT:
+    case ContentSettingsType::WINDOW_MANAGEMENT:
       return PermissionType::WINDOW_PLACEMENT;
     case ContentSettingsType::LOCAL_FONTS:
       return PermissionType::LOCAL_FONTS;

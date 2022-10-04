@@ -203,10 +203,11 @@ enum class ContentSettingsType : int32_t {
   // movements. It does not give access to camera.
   CAMERA_PAN_TILT_ZOOM,
 
-  // Content setting for Screen Enumeration and Window Placement functionality.
-  // Permits access to information about the screens, like size and position.
-  // Permits creating and placing windows across the set of connected screens.
-  WINDOW_PLACEMENT,
+  // Content setting for Screen Enumeration and Screen Detail functionality.
+  // Permits access to detailed multi-screen information, like size and
+  // position. Permits placing fullscreen and windowed content on specific
+  // screens. See also: https://w3c.github.io/window-placement
+  WINDOW_MANAGEMENT,
 
   // Stores whether to allow insecure websites to make private network requests.
   // See also: https://wicg.github.io/cors-rfc1918

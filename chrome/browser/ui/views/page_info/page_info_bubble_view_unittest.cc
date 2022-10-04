@@ -593,11 +593,11 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   // Verify labels match the settings on the PermissionInfoList.
   EXPECT_EQ(u"Notifications", api_->GetPermissionLabelTextAt(0));
 
-  PageInfo::PermissionInfo window_placement_permission;
-  window_placement_permission.type = ContentSettingsType::WINDOW_PLACEMENT;
-  window_placement_permission.setting = CONTENT_SETTING_ALLOW;
-  window_placement_permission.default_setting = CONTENT_SETTING_ASK;
-  list.push_back(window_placement_permission);
+  PageInfo::PermissionInfo window_management_permission;
+  window_management_permission.type = ContentSettingsType::WINDOW_MANAGEMENT;
+  window_management_permission.setting = CONTENT_SETTING_ALLOW;
+  window_management_permission.default_setting = CONTENT_SETTING_ASK;
+  list.push_back(window_management_permission);
 
   num_expected_children = list.size();
   api_->SetPermissionInfo(list);

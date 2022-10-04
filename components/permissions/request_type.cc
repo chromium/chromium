@@ -180,7 +180,7 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::VR:
       return RequestType::kVrSession;
 #if !BUILDFLAG(IS_ANDROID)
-    case ContentSettingsType::WINDOW_PLACEMENT:
+    case ContentSettingsType::WINDOW_MANAGEMENT:
       return RequestType::kWindowPlacement;
 #endif
     default:
@@ -245,7 +245,7 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::VR;
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowPlacement:
-      return ContentSettingsType::WINDOW_PLACEMENT;
+      return ContentSettingsType::WINDOW_MANAGEMENT;
 #endif
     default:
       // Not associated with a ContentSettingsType.
