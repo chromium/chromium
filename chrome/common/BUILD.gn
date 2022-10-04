@@ -583,7 +583,6 @@ static_library("constants") {
   ]
 
   deps = [
-    ":channel_info",
     ":version_header",
     "//base",
     "//base/third_party/dynamic_annotations",
@@ -626,6 +625,7 @@ static_library("constants") {
     public_deps += [ "//chromeos/crosapi/mojom" ]
   } else if (is_linux || is_chromeos) {
     sources += [ "chrome_paths_linux.cc" ]
+    deps += [ ":channel_info" ]
   }
   if (is_mac) {
     sources += [ "chrome_paths_mac.mm" ]
