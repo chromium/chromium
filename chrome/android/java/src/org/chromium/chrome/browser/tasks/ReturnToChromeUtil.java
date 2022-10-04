@@ -500,9 +500,6 @@ public final class ReturnToChromeUtil {
             return true;
         }
 
-        // Checks whether to hide Start surface when last visited tab is a search result page.
-        if (isStartSurfaceEnabled && shouldHideStartSurfaceWhenLastVisitedTabIsSRP()) return false;
-
         // Checks whether to show the Start surface / grid Tab switcher due to feature flag
         // TAB_SWITCHER_ON_RETURN_MS.
         long lastBackgroundedTimeMillis = inactivityTracker.getLastBackgroundedTimeMs();
@@ -956,14 +953,5 @@ public final class ReturnToChromeUtil {
      */
     public static void recordBackNavigationToStart(String from) {
         RecordUserAction.record(SHOWN_FROM_BACK_NAVIGATION_UMA + from);
-    }
-
-    /**
-     * Returns whether Start surface should be hidden when last visited tab is a search result page.
-     */
-    private static boolean shouldHideStartSurfaceWhenLastVisitedTabIsSRP() {
-        return StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP.getValue()
-                && SharedPreferencesManager.getInstance().readBoolean(
-                        ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false);
     }
 }

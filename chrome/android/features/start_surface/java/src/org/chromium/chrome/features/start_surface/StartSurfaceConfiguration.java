@@ -105,12 +105,6 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, IS_DOODLE_SUPPORTED_PARAM, false);
 
-    private static final String HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP_PARAM =
-            "hide_start_when_last_visited_tab_is_srp";
-    public static final BooleanCachedFieldTrialParameter HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
-                    HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP_PARAM, false);
-
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";

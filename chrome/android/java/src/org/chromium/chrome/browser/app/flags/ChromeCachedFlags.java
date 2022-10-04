@@ -158,7 +158,6 @@ public class ChromeCachedFlags {
                         add(CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY);
                         add(CustomTabIntentDataProvider.DENYLIST_ENTRIES);
                         add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);
-                        add(StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP);
                         add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
                         add(StartSurfaceConfiguration.NUM_DAYS_KEEP_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.NUM_DAYS_USER_CLICK_BELOW_THRESHOLD);
