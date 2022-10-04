@@ -89,21 +89,22 @@ Buckets consist of slot spans, organized as linked lists (see below).
   holds some not-too-large memory chunks, ready to be allocated. This
   speeds up in-thread allocation by reducing a lock hold to a
   thread-local storage lookup, improving cache locality.
-* **Pool**: A large (and contiguous on 64-bit)  memory region, housing
+* **Pool**: A large (and contiguous on 64-bit) virtual address region, housing
   super pages, etc. from which PartitionAlloc services allocations. The
   primary purpose of the pools is to provide a fast answer to the
   question, "Did PartitionAlloc allocate the memory for this pointer
   from this pool?" with a single bit-masking operation.
-  * The regular pool contains all non-BackupRefPtr allocations.
-  * The BRP pool contains all the BRP allocations.
-  * Pools are downgraded into a logical concept in 32-bit environments,
-    tracking a non-contiguous set of allocations using a bitmap.
+  * The regular pool is a general purpose pool that contains allocations that
+    aren't protected by BackupRefPtr.
+  * The BRP pool contains all allocations protected by BackupRefPtr.
+  * [64-bit only] The configurable pool is named generically, because its
+    primary user (the [V8 Sandbox][v8-sandbox]) can configure it at runtime,
+    providing a pre-existing mapping. Its allocations aren't protected by
+    BackupRefPtr.
 
 *** promo
-A third pool is provided in 64-bit environments. It is generically
-named the "configurable" pool, because its primary user (the
-[V8 Sandbox][v8-sandbox]) can configure it at runtime, providing a
-pre-existing mapping.
+Pools are downgraded into a logical concept in 32-bit environments,
+tracking a non-contiguous set of allocations using a bitmap.
 ***
 
 * **Payload**: The usable area of a super page in which slot spans

@@ -31,11 +31,8 @@ namespace partition_alloc {
 
 namespace internal {
 
-// Reserves address space for PartitionAllocator.
-//
-// This reserves space for the regular and BRP pools. If callers would
-// like to use the configurable pool, they must manually set up the
-// address space themselves and provide the mapping to PartitionAlloc.
+// Manages PartitionAlloc address space, which is split into pools.
+// See `glossary.md`.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
 #if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
@@ -80,14 +77,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
     return kConfigurablePoolMinSize;
   }
 
-  // Initialize pools.
+  // Initialize pools (except for the configurable one).
   //
   // This function must only be called from the main thread.
   static void Init();
   // Initialize the ConfigurablePool at the given address |pool_base|. It must
   // be aligned to the size of the pool. The size must be a power of two and
-  // must be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()]. This
-  // function must only be called from the main thread.
+  // must be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()].
+  //
+  // This function must only be called from the main thread.
   static void InitConfigurablePool(uintptr_t pool_base, size_t size);
   static void UninitForTesting();
   static void UninitConfigurablePoolForTesting();
@@ -133,6 +131,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #endif
     return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
   }
+
+  static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+    PA_DCHECK(IsInBRPPool(address));
+    return address - setup_.brp_pool_base_address_;
+  }
+
   // Returns false for nullptr.
   static PA_ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
     return (address & setup_.configurable_pool_base_mask_) ==
@@ -141,11 +145,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   static PA_ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
     return setup_.configurable_pool_base_address_;
-  }
-
-  static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
-    PA_DCHECK(IsInBRPPool(address));
-    return address - setup_.brp_pool_base_address_;
   }
 
 #if defined(PA_ENABLE_SHADOW_METADATA)
@@ -192,16 +191,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // Pool sizes have to be the power of two. Each pool will be aligned at its
   // own size boundary.
   //
-  // NOTE! The BRP pool must be preceded by a reserved region, where allocations
-  // are forbidden. This is to prevent a pointer to the end of a non-BRP-pool
-  // allocation from falling into the BRP pool, thus triggering BRP mechanism
-  // and likely crashing. This "forbidden zone" can be as small as 1B, but it's
-  // simpler to just reserve an allocation granularity unit.
+  // NOTE! The BRP pool must be preceded by an inaccessible region. This is to
+  // prevent a pointer to the end of a non-BRP-pool allocation from falling into
+  // the BRP pool, thus triggering BRP mechanism and likely crashing. This
+  // "forbidden zone" can be as small as 1B, but it's simpler to just reserve an
+  // allocation granularity unit.
   //
   // The ConfigurablePool is an optional Pool that can be created inside an
-  // existing mapping by the embedder. This Pool can be used when certain PA
-  // allocations must be located inside a given virtual address region. One
-  // use case for this Pool is V8's virtual memory cage, which requires that
+  // existing mapping provided by the embedder. This Pool can be used when
+  // certain PA allocations must be located inside a given virtual address
+  // region. One use case for this Pool is V8 Sandbox, which requires that
   // ArrayBuffers be located inside of it.
   static constexpr size_t kRegularPoolSize = kPoolMaxSize;
   static constexpr size_t kBRPPoolSize = kPoolMaxSize;

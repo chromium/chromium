@@ -259,10 +259,8 @@ constexpr size_t kSuperPageAlignment = kSuperPageSize;
 constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
 constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
-// PartitionAlloc's address space is primarily split into two pools.
-// See `glossary.md`.
+// PartitionAlloc's address space is split into pools. See `glossary.md`.
 #if defined(PA_HAS_64_BITS_POINTERS)
-// The 3rd, Configurable Pool is only available in 64-bit mode.
 constexpr size_t kNumPools = 3;
 // Maximum pool size. With exception of Configurable Pool, it is also
 // the actual size, unless PA_DYNAMICALLY_SELECT_POOL_SIZE is set, which
