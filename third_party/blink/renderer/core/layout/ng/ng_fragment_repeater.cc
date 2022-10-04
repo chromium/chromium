@@ -114,6 +114,31 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
 
 void NGFragmentRepeater::CloneChildFragments(
     const NGPhysicalBoxFragment& cloned_fragment) {
+  if (cloned_fragment.HasItems()) {
+    // Fragment items have already been cloned, but any atomic inlines were
+    // shallowly cloned. Deep-clone them now, if any.
+    for (auto& cloned_item : cloned_fragment.Items()->Items()) {
+      const NGPhysicalBoxFragment* child_box_fragment =
+          cloned_item.BoxFragment();
+      if (!child_box_fragment)
+        continue;
+      const auto* child_layout_box =
+          DynamicTo<LayoutBox>(child_box_fragment->GetLayoutObject());
+      if (!child_layout_box) {
+        // We don't need to clone non-atomic inlines.
+        DCHECK(child_box_fragment->GetLayoutObject()->IsLayoutInline());
+        continue;
+      }
+      const NGLayoutResult* child_result =
+          GetClonableLayoutResult(*child_layout_box, *child_box_fragment);
+      child_result = Repeat(*child_result);
+      child_box_fragment =
+          &To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
+      cloned_item.GetMutableForCloning().ReplaceBoxFragment(
+          *child_box_fragment);
+    }
+  }
+
   for (NGLink& child : cloned_fragment.GetMutableForCloning().Children()) {
     if (const auto* child_box =
             DynamicTo<NGPhysicalBoxFragment>(child.fragment.Get())) {
@@ -146,31 +171,6 @@ const NGLayoutResult* NGFragmentRepeater::Repeat(const NGLayoutResult& other) {
     // We're (re-)inserting cloned results, and we're at the first clone. Remove
     // the old results first.
     RemoveClonedResults(layout_box);
-  }
-
-  if (cloned_fragment.HasItems()) {
-    // Fragment items have already been cloned, but any atomic inlines were
-    // shallowly cloned. Deep-clone them now, if any.
-    for (auto& cloned_item : cloned_fragment.Items()->Items()) {
-      const NGPhysicalBoxFragment* child_box_fragment =
-          cloned_item.BoxFragment();
-      if (!child_box_fragment)
-        continue;
-      const auto* child_layout_box =
-          DynamicTo<LayoutBox>(child_box_fragment->GetLayoutObject());
-      if (!child_layout_box) {
-        // We don't need to clone non-atomic inlines.
-        DCHECK(child_box_fragment->GetLayoutObject()->IsLayoutInline());
-        continue;
-      }
-      const NGLayoutResult* child_result =
-          GetClonableLayoutResult(*child_layout_box, *child_box_fragment);
-      child_result = Repeat(*child_result);
-      child_box_fragment =
-          &To<NGPhysicalBoxFragment>(child_result->PhysicalFragment());
-      cloned_item.GetMutableForCloning().ReplaceBoxFragment(
-          *child_box_fragment);
-    }
   }
 
   CloneChildFragments(cloned_fragment);
