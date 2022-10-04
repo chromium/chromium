@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
@@ -415,7 +416,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsVisible) {
   ASSERT_NE(prerender_host, nullptr);
   CommitPrerenderNavigation(*prerender_host);
 
-  // Changing the visibility state to VISIBLE will not affect prerendering.
+  // Changing the visibility state to VISIBLE will not stop prerendering.
   web_contents->WasShown();
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
@@ -437,7 +438,7 @@ TEST_F(PrerenderHostTest, DontCancelPrerenderWhenTriggerGetsOcculded) {
   ASSERT_NE(prerender_host, nullptr);
   CommitPrerenderNavigation(*prerender_host);
 
-  // Changing the visibility state to OCCLUDED will not affect prerendering.
+  // Changing the visibility state to OCCLUDED will not stop prerendering.
   web_contents->WasOccluded();
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
@@ -567,8 +568,71 @@ TEST_F(PrerenderHostInBackgroundTest,
   ASSERT_NE(prerender_host, nullptr);
   CommitPrerenderNavigation(*prerender_host);
 
-  // Changing the visibility state to HIDDEN will not affect prerendering.
+  // Changing the visibility state to HIDDEN will not stop prerendering.
   web_contents->WasHidden();
+  web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
+}
+
+TEST_F(PrerenderHostInBackgroundTest, CancelPrerenderWhenTimeout) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // The timer should not start yet when the prerendered page is in the
+  // foreground.
+  ASSERT_FALSE(prerender_host->GetTimerForTesting()->IsRunning());
+
+  // Inject mock time task runner.
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  prerender_host->SetTaskRunnerForTesting(task_runner);
+
+  // Changing the visibility state to HIDDEN will not stop prerendering.
+  web_contents->WasHidden();
+  ASSERT_TRUE(prerender_host->GetTimerForTesting()->IsRunning());
+
+  task_runner->FastForwardBy(PrerenderHost::kTimeToLiveInBackground);
+
+  ExpectFinalStatus(PrerenderHost::FinalStatus::kTimeoutBackgrounded);
+}
+
+TEST_F(PrerenderHostInBackgroundTest,
+       TimerResetWhenHiddenPageGoBackToForeground) {
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  const GURL kPrerenderingUrl = GURL("https://example.com/empty.html");
+  RenderFrameHostImpl* initiator_rfh = web_contents->GetPrimaryMainFrame();
+  PrerenderHostRegistry* registry = web_contents->GetPrerenderHostRegistry();
+  const int prerender_frame_tree_node_id = registry->CreateAndStartHost(
+      GeneratePrerenderAttributes(kPrerenderingUrl, initiator_rfh),
+      *web_contents);
+  PrerenderHost* prerender_host =
+      registry->FindNonReservedHostById(prerender_frame_tree_node_id);
+  ASSERT_NE(prerender_host, nullptr);
+  CommitPrerenderNavigation(*prerender_host);
+
+  // The timer should not start yet when the prerendered page is in the
+  // foreground.
+  ASSERT_FALSE(prerender_host->GetTimerForTesting()->IsRunning());
+
+  // Changing the visibility state to HIDDEN will not stop prerendering.
+  web_contents->WasHidden();
+  ASSERT_TRUE(prerender_host->GetTimerForTesting()->IsRunning());
+
+  // The timer should be reset when the hidden page goes back to the foreground.
+  web_contents->WasShown();
+  ASSERT_FALSE(prerender_host->GetTimerForTesting()->IsRunning());
+
   web_contents->ActivatePrerenderedPage(kPrerenderingUrl);
   ExpectFinalStatus(PrerenderHost::FinalStatus::kActivated);
 }

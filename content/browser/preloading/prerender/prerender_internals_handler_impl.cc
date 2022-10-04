@@ -88,6 +88,8 @@ const char* FinalStatusToString(PrerenderHost::FinalStatus final_status) {
       return "InactivePageRestriction";
     case PrerenderHost::FinalStatus::kStartFailed:
       return "StartFailed";
+    case PrerenderHost::FinalStatus::kTimeoutBackgrounded:
+      return "TimeoutBackgrounded";
   }
   NOTREACHED();
   return "";

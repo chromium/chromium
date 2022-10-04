@@ -56,6 +56,12 @@ class WebContentsImpl;
 // is owned by PrerenderHostRegistry.
 class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
  public:
+  // The time to allow prerendering kept alive in the background. PrerenderHost
+  // will be terminated with kTimeoutBackgrounded when the timer exceeds this.
+  // The value was determined to align with the default value of BFCache's
+  // eviction timer.
+  static constexpr base::TimeDelta kTimeToLiveInBackground = base::Seconds(180);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class FinalStatus {
@@ -108,7 +114,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kActivatedBeforeStarted = 40,
     kInactivePageRestriction = 41,
     kStartFailed = 42,
-    kMaxValue = kStartFailed,
+    kTimeoutBackgrounded = 43,
+    kMaxValue = kTimeoutBackgrounded,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -244,6 +251,11 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
       const url::Origin& origin,
       blink::EnabledClientHints* client_hints) const;
 
+  // Only used for tests.
+  base::OneShotTimer* GetTimerForTesting() { return &timeout_timer_; }
+  void SetTaskRunnerForTesting(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   // Returns absl::nullopt iff prerendering is initiated by the browser (not by
   // a renderer using Speculation Rules API).
   absl::optional<url::Origin> initiator_origin() const {
@@ -304,6 +316,8 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   AreCommonNavigationParamsCompatibleWithNavigation(
       const blink::mojom::CommonNavigationParams& potential_activation);
 
+  scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
+
   const PrerenderAttributes attributes_;
 
   // Indicates if `page_holder_` is ready for activation.
@@ -335,6 +349,12 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   // Stores the client hints type that applies to this page.
   base::flat_map<url::Origin, std::vector<network::mojom::WebClientHintsType>>
       client_hints_type_;
+
+  // Starts running the timer when prerendering gets hidden.
+  base::OneShotTimer timeout_timer_;
+  // Only used for tests. This task runner is used for precise injection in
+  // tests and for timing control.
+  scoped_refptr<base::SingleThreadTaskRunner> timer_task_runner_for_testing_;
 
   // Holds the navigation ID for the main frame initial navigation.
   absl::optional<int64_t> initial_navigation_id_;

@@ -8495,6 +8495,7 @@ domain Page
       ActivatedBeforeStarted
       InactivePageRestriction
       StartFailed
+      TimeoutBackgrounded
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

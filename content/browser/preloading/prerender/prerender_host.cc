@@ -277,10 +277,30 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 void PrerenderHost::OnVisibilityChanged(Visibility visibility) {
   TRACE_EVENT("navigation", "PrerenderHost::OnVisibilityChanged");
-  // Keep prerenderings alive in the background when their visibility state
-  // changes to HIDDEN if the feature is enabled.
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InBackground))
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2InBackground)) {
+    switch (visibility) {
+      case Visibility::HIDDEN:
+        // Keep a prerendered page alive in the background when its visibility
+        // state changes to HIDDEN if the feature is enabled.
+        DCHECK(!timeout_timer_.IsRunning());
+
+        timeout_timer_.SetTaskRunner(GetTimerTaskRunner());
+        // Cancel PrerenderHost in the background when it exceeds a certain
+        // amount of time defined in `kTimeToLiveInBackground`.
+        timeout_timer_.Start(
+            FROM_HERE, kTimeToLiveInBackground,
+            base::BindOnce(&PrerenderHost::Cancel, base::Unretained(this),
+                           FinalStatus::kTimeoutBackgrounded));
+        break;
+      case Visibility::OCCLUDED:
+        break;
+      case Visibility::VISIBLE:
+        // Stop the timer when a prerendered page gets visible to users.
+        timeout_timer_.Stop();
+        break;
+    }
     return;
+  }
 
   if (visibility == Visibility::HIDDEN) {
     Cancel(FinalStatus::kTriggerBackgrounded);
@@ -753,6 +773,7 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     case FinalStatus::kActivatedBeforeStarted:
     case FinalStatus::kInactivePageRestriction:
     case FinalStatus::kStartFailed:
+    case FinalStatus::kTimeoutBackgrounded:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       // We reset the attempt to ensure we don't update once we have reported it
       // as failure or accidentally use it for any other prerender attempts as
@@ -802,6 +823,17 @@ void PrerenderHost::Cancel(FinalStatus status) {
       host->delegate()->GetPrerenderHostRegistry();
   DCHECK(registry);
   registry->CancelHost(frame_tree_node_id_, status);
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
+PrerenderHost::GetTimerTaskRunner() {
+  return timer_task_runner_for_testing_ ? timer_task_runner_for_testing_
+                                        : base::ThreadTaskRunnerHandle::Get();
+}
+
+void PrerenderHost::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  timer_task_runner_for_testing_ = std::move(task_runner);
 }
 
 }  // namespace content

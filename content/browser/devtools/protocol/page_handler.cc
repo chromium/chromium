@@ -1521,6 +1521,8 @@ Page::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Page::PrerenderFinalStatusEnum::InactivePageRestriction;
     case PrerenderHost::FinalStatus::kStartFailed:
       return Page::PrerenderFinalStatusEnum::StartFailed;
+    case PrerenderHost::FinalStatus::kTimeoutBackgrounded:
+      return Page::PrerenderFinalStatusEnum::TimeoutBackgrounded;
   }
 }
 
