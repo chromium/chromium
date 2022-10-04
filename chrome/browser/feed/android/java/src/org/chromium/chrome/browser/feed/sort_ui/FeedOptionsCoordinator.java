@@ -14,7 +14,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.ContentOrder;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.chips.ChipViewBinder;
@@ -111,6 +113,20 @@ public class FeedOptionsCoordinator {
         if (mOptionsListener != null) {
             mOptionsListener.onOptionChanged();
         }
+        @FeedUserActionType
+        int feedUserActionType;
+        switch (selectedOption.get(ChipProperties.ID)) {
+            case ContentOrder.GROUPED:
+                feedUserActionType = FeedUserActionType.FOLLOWING_FEED_SELECTED_GROUP_BY_PUBLISHER;
+                break;
+            case ContentOrder.REVERSE_CHRON:
+                feedUserActionType = FeedUserActionType.FOLLOWING_FEED_SELECTED_SORT_BY_LATEST;
+                break;
+            default:
+                // Should not happen.
+                feedUserActionType = FeedUserActionType.MAX_VALUE;
+        }
+        FeedServiceBridge.reportOtherUserAction(StreamKind.FOLLOWING, feedUserActionType);
     }
 
     private PropertyModel createChipModel(@ContentOrder int id, @StringRes int textId,
