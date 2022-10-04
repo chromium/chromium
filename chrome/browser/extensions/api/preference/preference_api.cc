@@ -1150,13 +1150,13 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
     return RespondNow(Error(kPermissionErrorMessage, pref_key));
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* profile = Profile::FromBrowserContext(browser_context());
   // If the pref is ash-controlled, check that the service is present.
   // If it isn't, don't allow the pref to be cleared.
   crosapi::mojom::PrefPath pref_path =
       PrefMapping::GetInstance()->GetPrefPathForPrefName(browser_pref);
   chromeos::LacrosService* lacros_service;
   if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
+    Profile* profile = Profile::FromBrowserContext(browser_context());
     if (!profile->IsMainProfile()) {
       return RespondNow(Error(kPrimaryProfileOnlyErrorMessage, pref_key));
     }
