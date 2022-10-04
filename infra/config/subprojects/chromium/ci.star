@@ -103,9 +103,8 @@ consoles.console_view(
     name = "sheriff.fuchsia",
     title = "Fuchsia Sheriff Console",
     ordering = {
-        "*type*": consoles.ordering(short_names = ["a64", "x64"]),
-        None: ["ci", "fuchsia ci", "hardware", "fyi"],
-        "chromium.fyi|13": "*type*",
+        None: ["ci", "fuchsia ci", "p/chrome", "hardware", "fyi"],
+        "fyi": ["arm64", "x64", "clang"],
     },
 )
 

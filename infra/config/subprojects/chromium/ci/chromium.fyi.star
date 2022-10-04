@@ -200,6 +200,12 @@ ci.builder(
             category = "fuchsia|arm64",
             short_name = "emu-arg",
         ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi|arm64",
+            short_name = "emu-arg",
+        ),
     ],
     notifies = ["cr-fuchsia-engprod"],
     os = os.LINUX_DEFAULT,
@@ -215,8 +221,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
-            short_name = "arm64",
+            category = "fyi|arm64",
+            short_name = "fyi-rel",
         ),
     ],
     notifies = ["cr-fuchsia"],
@@ -247,6 +253,12 @@ ci.builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "fuchsia|x64",
+            short_name = "cfv2",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi|x64",
             short_name = "cfv2",
         ),
     ],
@@ -281,6 +293,12 @@ ci.builder(
             category = "fuchsia|arm64",
             short_name = "cfv2",
         ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi|arm64",
+            short_name = "cfv2",
+        ),
     ],
     os = os.LINUX_DEFAULT,
 )
@@ -295,8 +313,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
-            short_name = "x64",
+            category = "fyi|x64",
+            short_name = "fyi-rel",
         ),
     ],
     notifies = ["cr-fuchsia"],
@@ -313,7 +331,7 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
+            category = "fyi|x64",
             short_name = "work",
         ),
     ],
@@ -1825,12 +1843,12 @@ fyi_coverage_builder(
     console_view_entry = [
         consoles.console_view_entry(
             category = "code_coverage",
-            short_name = "fsa",
+            short_name = "fx",
         ),
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
+            category = "fyi|x64",
             short_name = "cov",
         ),
     ],

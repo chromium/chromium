@@ -226,14 +226,14 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
-            short_name = "clang-x64",
+            category = "fyi|clang",
+            short_name = "x64",
         ),
     ],
 )
 
 ci.builder(
-    name = "ToTFuchsiaOfficial",
+    name = "ToTFuchsiaOfficial arm64",
     console_view_entry = [
         consoles.console_view_entry(
             category = "ToT Fuchsia",
@@ -242,8 +242,8 @@ ci.builder(
         consoles.console_view_entry(
             branch_selector = branches.MAIN,
             console_view = "sheriff.fuchsia",
-            category = "fyi",
-            short_name = "clang-off",
+            category = "fyi|clang",
+            short_name = "arm64-off",
         ),
     ],
 )

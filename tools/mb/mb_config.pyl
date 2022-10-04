@@ -197,7 +197,7 @@
       'ToTChromeOS': 'lacros_on_linux_tot_release',
       'ToTChromeOS (dbg)': 'lacros_on_linux_tot_debug',
       'ToTFuchsia x64': 'fuchsia_clang_tot_release_x64',
-      'ToTFuchsiaOfficial': 'fuchsia_clang_tot_official_arm64',
+      'ToTFuchsiaOfficial arm64': 'fuchsia_clang_tot_official_arm64',
       'ToTLinux': 'clang_tot_linux_full_symbols_shared_release',
       'ToTLinux (dbg)': 'clang_tot_shared_debug',
       'ToTLinuxASan': 'clang_tot_asan_lsan_static_release',

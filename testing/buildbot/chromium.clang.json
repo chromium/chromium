@@ -9735,7 +9735,7 @@
       }
     ]
   },
-  "ToTFuchsiaOfficial": {
+  "ToTFuchsiaOfficial arm64": {
     "gtest_tests": [
       {
         "merge": {

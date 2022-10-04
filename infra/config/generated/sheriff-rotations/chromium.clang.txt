@@ -13,7 +13,7 @@ ci/ToTAndroidOfficial
 ci/ToTChromeOS
 ci/ToTChromeOS (dbg)
 ci/ToTFuchsia x64
-ci/ToTFuchsiaOfficial
+ci/ToTFuchsiaOfficial arm64
 ci/ToTLinux
 ci/ToTLinux (dbg)
 ci/ToTLinuxASan

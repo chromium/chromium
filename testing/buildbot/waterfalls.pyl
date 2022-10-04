@@ -1795,7 +1795,7 @@
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
         },
       },
-      'ToTFuchsiaOfficial': {
+      'ToTFuchsiaOfficial arm64': {
         'test_suites': {
           'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
           'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
