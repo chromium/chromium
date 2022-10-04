@@ -66,7 +66,7 @@ struct GL_EXPORT DCRendererLayerParams {
 
   gfx::HDRMetadata hdr_metadata;
 
-  bool is_video_fullscreen_letterboxing;
+  bool is_video_fullscreen_letterboxing = false;
 };
 
 }  // namespace ui

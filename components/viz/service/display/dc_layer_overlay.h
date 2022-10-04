@@ -71,7 +71,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlay {
 
   gfx::HDRMetadata hdr_metadata;
 
-  bool is_video_fullscreen_letterboxing;
+  bool is_video_fullscreen_letterboxing = false;
 };
 
 typedef std::vector<DCLayerOverlay> DCLayerOverlayList;
