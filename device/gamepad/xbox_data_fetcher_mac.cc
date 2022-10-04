@@ -15,6 +15,7 @@
 #include <limits>
 #include <string>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,17 +26,19 @@ namespace device {
 namespace {
 
 // XboxDataFetcher recognizes the following devices connected over USB.
-constexpr GamepadId kSupportedDeviceIds[]{
-    GamepadId::kAmazonProduct041a,     // Amazon Luna Controller
-    GamepadId::kMicrosoftProduct028e,  // Xbox 360
-    GamepadId::kMicrosoftProduct02d1,  // Xbox One
-    GamepadId::kMicrosoftProduct02dd,  // Xbox One, 2015 firmware
-    GamepadId::kMicrosoftProduct02e3,  // Xbox Elite
-    GamepadId::kMicrosoftProduct02ea,  // Xbox One S
-    GamepadId::kMicrosoftProduct0b00,  // Xbox Elite 2
-    GamepadId::kMicrosoftProduct0b0a,  // Xbox Adaptive
-    GamepadId::kMicrosoftProduct0b12,  // Xbox Series X
-};
+constexpr auto kSupportedDeviceIds = base::MakeFixedFlatSet<GamepadId>({
+    GamepadId::kAmazonProduct041a,       // Amazon Luna Controller
+    GamepadId::kMicrosoftProduct028e,    // Xbox 360
+    GamepadId::kMicrosoftProduct02d1,    // Xbox One
+    GamepadId::kMicrosoftProduct02dd,    // Xbox One, 2015 firmware
+    GamepadId::kMicrosoftProduct02e3,    // Xbox Elite
+    GamepadId::kMicrosoftProduct02ea,    // Xbox One S
+    GamepadId::kMicrosoftProduct0b00,    // Xbox Elite 2
+    GamepadId::kMicrosoftProduct0b0a,    // Xbox Adaptive
+    GamepadId::kMicrosoftProduct0b12,    // Xbox Series X
+    GamepadId::kSteelSeriesProduct1430,  // Stratus Duo receiver
+    GamepadId::kSteelSeriesProduct1431,  // Stratus Duo
+});
 
 }  // namespace
 

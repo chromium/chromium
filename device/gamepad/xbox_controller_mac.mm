@@ -18,6 +18,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/mac/foundation_util.h"
@@ -586,8 +587,14 @@ void XboxControllerMac::SetLEDPattern(LEDPattern pattern) {
 }
 
 bool XboxControllerMac::SupportsVibration() const {
-  // The Xbox Adaptive Controller has no vibration actuators.
-  return gamepad_id_ != GamepadId::kMicrosoftProduct0b0a;
+  static constexpr auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
+      // The Xbox Adaptive Controller has no vibration actuators.
+      GamepadId::kMicrosoftProduct0b0a,
+      // SteelSeries Stratus Duo is XInput but does not support vibration.
+      GamepadId::kSteelSeriesProduct1430,
+      GamepadId::kSteelSeriesProduct1431,
+  });
+  return !kNoVibration.contains(gamepad_id_);
 }
 
 // static

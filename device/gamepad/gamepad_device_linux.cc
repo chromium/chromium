@@ -12,6 +12,7 @@
 #include <sys/ioctl.h>
 
 #include "base/callback_helpers.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -262,12 +263,19 @@ bool GamepadDeviceLinux::IsEmpty() const {
 }
 
 bool GamepadDeviceLinux::SupportsVibration() const {
+  static constexpr auto kNoVibration = base::MakeFixedFlatSet<GamepadId>({
+      // The Xbox Adaptive Controller reports force feedback capability, but
+      // the device itself does not have any vibration actuators.
+      GamepadId::kMicrosoftProduct0b0a,
+      // SteelSeries Stratus Duo is XInput but does not support vibration.
+      GamepadId::kSteelSeriesProduct1430,
+      GamepadId::kSteelSeriesProduct1431,
+  });
+
   if (dualshock4_ || xbox_hid_ || hid_haptics_)
     return true;
 
-  // The Xbox Adaptive Controller reports force feedback capability, but the
-  // device itself does not have any vibration actuators.
-  if (gamepad_id_ == GamepadId::kMicrosoftProduct0b0a)
+  if (kNoVibration.contains(gamepad_id_))
     return false;
 
   return supports_force_feedback_ && evdev_fd_.is_valid();

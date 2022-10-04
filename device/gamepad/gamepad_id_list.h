@@ -114,6 +114,8 @@ enum class GamepadId : uint32_t {
   kSteelSeriesProduct1412 = 0x10381412,
   kSteelSeriesProduct1418 = 0x10381418,
   kSteelSeriesProduct1420 = 0x10381420,
+  kSteelSeriesProduct1430 = 0x10381430,
+  kSteelSeriesProduct1431 = 0x10381431,
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadIdList {
