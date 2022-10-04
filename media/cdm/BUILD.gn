@@ -117,6 +117,8 @@ source_set("cdm") {
       "cdm_document_service.h",
       "cdm_helpers.cc",
       "cdm_helpers.h",
+      "load_cdm_uma_helper.cc",
+      "load_cdm_uma_helper.h",
     ]
     deps += [
       ":cdm_api",
