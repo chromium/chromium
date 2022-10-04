@@ -320,6 +320,14 @@ void SetupFragmentBuilderForFragmentation(
   // SetHasBlockFragmentation(), but we still need to resume layout correctly,
   // based on the previous break token.
   DCHECK(space.HasBlockFragmentation() || previous_break_token);
+  // If the node itself is monolithic, we shouldn't be here.
+  DCHECK(!node.IsMonolithic() || space.IsAnonymous());
+  // If we turn off fragmentation on a non-monolithic node, we need to treat the
+  // resulting fragment as monolithic. This matters when it comes to determining
+  // the containing block of out-of-flow positioned descendants.
+  builder->SetIsMonolithic(!space.IsAnonymous() &&
+                           space.IsBlockFragmentationForcedOff());
+
   if (space.HasBlockFragmentation())
     builder->SetHasBlockFragmentation();
   builder->SetPreviousBreakToken(previous_break_token);

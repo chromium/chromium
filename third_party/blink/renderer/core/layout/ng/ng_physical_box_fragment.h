@@ -405,6 +405,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return bit_field_.get<IsFragmentationContextRootFlag>();
   }
 
+  bool IsMonolithic() const { return bit_field_.get<IsMonolithicFlag>(); }
+
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const NGPhysicalBoxFragment&,
                                     bool check_same_block_size) const;
@@ -525,6 +527,8 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
       IsFirstForNodeFlag::DefineNextValue<bool, 1>;
   using IsFragmentationContextRootFlag =
       HasDescendantsForTablePartFlag::DefineNextValue<bool, 1>;
+  using IsMonolithicFlag =
+      IsFragmentationContextRootFlag::DefineNextValue<bool, 1>;
 
   bool ConstHasRareData() const {
     // Use get_concurrently because it can be called from a background thread in

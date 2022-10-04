@@ -159,6 +159,7 @@ class CORE_EXPORT NGConstraintSpace final {
     NGConstraintSpace copy = *this;
     DCHECK(copy.rare_data_);
     copy.rare_data_->block_direction_fragmentation_type = kFragmentNone;
+    copy.rare_data_->is_block_fragmentation_forced_off = true;
     return copy;
   }
 
@@ -541,6 +542,12 @@ class CORE_EXPORT NGConstraintSpace final {
     return BlockFragmentationType() != kFragmentNone;
   }
 
+  // Return true if the node actually participates in block fragmentation, that
+  // was disabled due to clipped overflow.
+  bool IsBlockFragmentationForcedOff() const {
+    return HasRareData() && rare_data_->is_block_fragmentation_forced_off;
+  }
+
   // Return true if the document is paginated (for printing).
   bool IsPaginated() const {
     // TODO(layout-dev): This will not work correctly if establishing a nested
@@ -878,6 +885,7 @@ class CORE_EXPORT NGConstraintSpace final {
           hide_table_cell_if_empty(false),
           block_direction_fragmentation_type(
               static_cast<unsigned>(kFragmentNone)),
+          is_block_fragmentation_forced_off(false),
           requires_content_before_breaking(false),
           is_inside_balanced_columns(false),
           should_ignore_forced_breaks(false),
@@ -907,6 +915,8 @@ class CORE_EXPORT NGConstraintSpace final {
           hide_table_cell_if_empty(other.hide_table_cell_if_empty),
           block_direction_fragmentation_type(
               other.block_direction_fragmentation_type),
+          is_block_fragmentation_forced_off(
+              other.is_block_fragmentation_forced_off),
           requires_content_before_breaking(
               other.requires_content_before_breaking),
           is_inside_balanced_columns(other.is_inside_balanced_columns),
@@ -989,6 +999,8 @@ class CORE_EXPORT NGConstraintSpace final {
           hide_table_cell_if_empty != other.hide_table_cell_if_empty ||
           block_direction_fragmentation_type !=
               other.block_direction_fragmentation_type ||
+          is_block_fragmentation_forced_off !=
+              other.is_block_fragmentation_forced_off ||
           requires_content_before_breaking !=
               other.requires_content_before_breaking ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
@@ -1029,6 +1041,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_pushed_by_floats || is_restricted_block_size_table_cell ||
           hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
+          is_block_fragmentation_forced_off ||
           requires_content_before_breaking || is_inside_balanced_columns ||
           should_ignore_forced_breaks || is_in_column_bfc ||
           min_break_appeal != kBreakAppealLastResort ||
@@ -1316,6 +1329,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned hide_table_cell_if_empty : 1;
 
     unsigned block_direction_fragmentation_type : 2;
+    unsigned is_block_fragmentation_forced_off : 1;
     unsigned requires_content_before_breaking : 1;
     unsigned is_inside_balanced_columns : 1;
     unsigned should_ignore_forced_breaks : 1;

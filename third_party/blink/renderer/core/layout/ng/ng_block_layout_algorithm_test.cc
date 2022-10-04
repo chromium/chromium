@@ -2105,7 +2105,7 @@ TEST_F(NGBlockLayoutAlgorithmTest, FloatFragmentationOrthogonalFlows) {
       #container {
         width: 150px;
         height: 60px;
-        overflow: hidden;
+        display: flow-root;
       }
       #float1 {
         width: 100px;

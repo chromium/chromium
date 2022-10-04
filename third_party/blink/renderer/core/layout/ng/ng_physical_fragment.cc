@@ -543,6 +543,17 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::CloneOutOfFlowData()
       *FragmentedOutOfFlowData());
 }
 
+bool NGPhysicalFragment::IsMonolithic() const {
+  // Line boxes are monolithic, except for line boxes that are just there to
+  // contain a block inside an inline, in which case the anonymous block child
+  // wrapper inside the line is breakable.
+  if (IsLineBox())
+    return !IsBlockInInline();
+  if (const auto* box_fragment = DynamicTo<NGPhysicalBoxFragment>(this))
+    return box_fragment->IsMonolithic();
+  return false;
+}
+
 const FragmentData* NGPhysicalFragment::GetFragmentData() const {
   const LayoutBox* box = DynamicTo<LayoutBox>(GetLayoutObject());
   if (!box) {

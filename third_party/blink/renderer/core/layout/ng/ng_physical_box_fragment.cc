@@ -358,7 +358,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
                  ConstHasRareDataFlag::encode(has_rare_data) |
                  HasDescendantsForTablePartFlag::encode(false) |
                  IsFragmentationContextRootFlag::encode(
-                     builder->is_fragmentation_context_root_)),
+                     builder->is_fragmentation_context_root_) |
+                 IsMonolithicFlag::encode(builder->is_monolithic_)),
       const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());

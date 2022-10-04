@@ -289,6 +289,8 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Specify whether this will be the first fragment generated for the node.
   void SetIsFirstForNode(bool is_first) { is_first_for_node_ = is_first; }
 
+  void SetIsMonolithic(bool b) { is_monolithic_ = b; }
+
   // Set how much of the block-size we've used so far for this box. This will be
   // the sum of the block-size of all previous fragments PLUS the one we're
   // building now.
@@ -755,6 +757,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_known_to_fit_in_fragmentainer_ = false;
   bool requires_content_before_breaking_ = false;
   bool is_block_size_for_fragmentation_clamped_ = false;
+  bool is_monolithic_ = true;
   bool is_first_for_node_ = true;
   bool did_break_self_ = false;
   bool has_inflow_child_break_inside_ = false;

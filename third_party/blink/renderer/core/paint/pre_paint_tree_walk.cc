@@ -449,9 +449,8 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   // contained by the object participates in the current block fragmentation
   // context. If we're not participating in block fragmentation, the containing
   // fragment of an OOF fragment is always simply the parent.
-  const LayoutBox* box = DynamicTo<LayoutBox>(&object);
   if (!context.current_container.IsInFragmentationContext() ||
-      (box && box->GetNGPaginationBreakability() == LayoutBox::kForbidBreaks)) {
+      (fragment && fragment->IsMonolithic())) {
     context.current_container.fragment = fragment;
   }
 
