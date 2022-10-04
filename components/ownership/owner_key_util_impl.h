@@ -25,6 +25,7 @@ class OWNERSHIP_EXPORT OwnerKeyUtilImpl : public OwnerKeyUtil {
 
   // OwnerKeyUtil implementation:
   scoped_refptr<PublicKey> ImportPublicKey() override;
+  crypto::ScopedSECKEYPrivateKey GenerateKeyPair(PK11SlotInfo* slot) override;
   crypto::ScopedSECKEYPrivateKey FindPrivateKeyInSlot(
       const std::vector<uint8_t>& key,
       PK11SlotInfo* slot) override;

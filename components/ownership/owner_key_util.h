@@ -88,6 +88,10 @@ class OWNERSHIP_EXPORT OwnerKeyUtil
   // failure and a populated key on success.
   virtual scoped_refptr<PublicKey> ImportPublicKey() = 0;
 
+  // Generates a new key pair in the `slot`.
+  virtual crypto::ScopedSECKEYPrivateKey GenerateKeyPair(
+      PK11SlotInfo* slot) = 0;
+
   // Looks for the private key associated with |key| in the |slot|
   // and returns it if it can be found.  Returns NULL otherwise.
   // Caller takes ownership.

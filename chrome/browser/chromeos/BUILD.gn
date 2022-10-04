@@ -1634,6 +1634,7 @@ source_set("unit_tests") {
     "../ash/notifications/request_system_proxy_credentials_view_unittest.cc",
     "../ash/notifications/update_required_notification_unittest.cc",
     "../ash/os_feedback/os_feedback_screenshot_manager_unittest.cc",
+    "../ash/ownership/owner_key_loader_unittest.cc",
     "../ash/ownership/owner_settings_service_ash_unittest.cc",
     "../ash/pcie_peripheral/ash_usb_detector_unittest.cc",
     "../ash/phonehub/browser_tabs_metadata_fetcher_impl_unittest.cc",

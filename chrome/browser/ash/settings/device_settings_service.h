@@ -24,7 +24,7 @@
 namespace ownership {
 class OwnerKeyUtil;
 class PublicKey;
-}
+}  // namespace ownership
 
 namespace policy {
 namespace off_hours {
@@ -60,7 +60,9 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
     OWNERSHIP_TAKEN
   };
 
-  typedef base::OnceCallback<void(OwnershipStatus)> OwnershipStatusCallback;
+  using OwnershipStatusCallback = base::OnceCallback<void(OwnershipStatus)>;
+  using PolicyDataCallback =
+      base::OnceCallback<void(enterprise_management::PolicyData*)>;
 
   // Status codes for Load() and Store().
   // These values are logged to UMA. Entries should not be renumbered and
@@ -127,6 +129,13 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
     return policy_data_.get();
   }
 
+  // Asynchronously return policy data. If Chrome doesn't have any policy data
+  // yet, it will enqueue a new policy load. The callback will be called on
+  // success or if policy loaded successfully, but it it was empty (i.e.
+  // STORE_NO_POLICY). If failed to load, the callback is expected to be called
+  // some time later on the next successful load (requested by something else).
+  void GetPolicyDataAsync(PolicyDataCallback callback);
+
   const enterprise_management::PolicyFetchResponse* policy_fetch_response()
       const {
     return policy_fetch_response_.get();
@@ -134,8 +143,8 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Returns the currently active device settings. Returns nullptr if the device
   // settings have not been retrieved from session_manager yet.
-  const enterprise_management::ChromeDeviceSettingsProto*
-      device_settings() const {
+  const enterprise_management::ChromeDeviceSettingsProto* device_settings()
+      const {
     return device_settings_.get();
   }
 
@@ -209,6 +218,12 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // of owner is fully loaded.
   void MarkWillEstablishConsumerOwnership();
 
+  // Returns whether the current user should take ownership of the device
+  // (effectively whether the user is the first consumer user on the device).
+  bool GetWillEstablishConsumerOwnership() const {
+    return will_establish_consumer_ownership_;
+  }
+
   // Adds an observer.
   void AddObserver(Observer* observer);
   // Removes an observer.
@@ -259,12 +274,16 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Processes pending callbacks from GetOwnershipStatusAsync().
   void RunPendingOwnershipStatusCallbacks();
 
+  // Processes pending callbacks from GetPolicyDataAsync().
+  void RunPendingPolicyDataCallbacks();
+
   SessionManagerClient* session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Status store_status_ = STORE_SUCCESS;
 
   std::vector<OwnershipStatusCallback> pending_ownership_status_callbacks_;
+  std::vector<PolicyDataCallback> pending_policy_data_callbacks_;
 
   std::string username_;
   scoped_refptr<ownership::PublicKey> public_key_;

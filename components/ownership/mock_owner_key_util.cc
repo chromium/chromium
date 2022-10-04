@@ -14,6 +14,8 @@
 
 namespace ownership {
 
+static const uint16_t kKeySizeInBits = 2048;
+
 MockOwnerKeyUtil::MockOwnerKeyUtil() = default;
 
 MockOwnerKeyUtil::~MockOwnerKeyUtil() = default;
@@ -22,6 +24,25 @@ scoped_refptr<PublicKey> MockOwnerKeyUtil::ImportPublicKey() {
   return public_key_.empty() ? nullptr
                              : base::MakeRefCounted<ownership::PublicKey>(
                                    /*is_persisted=*/true, /*data=*/public_key_);
+}
+
+crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::GenerateKeyPair(
+    PK11SlotInfo* slot) {
+  if (generate_key_fail_times_ > 0) {
+    --generate_key_fail_times_;
+    return nullptr;
+  }
+
+  PK11RSAGenParams param;
+  param.keySizeInBits = kKeySizeInBits;
+  param.pe = 65537L;
+  SECKEYPublicKey* public_key_ptr = nullptr;
+
+  crypto::ScopedSECKEYPrivateKey key(PK11_GenerateKeyPair(
+      slot, CKM_RSA_PKCS_KEY_PAIR_GEN, &param, &public_key_ptr,
+      PR_TRUE /* permanent */, PR_TRUE /* sensitive */, nullptr));
+  crypto::ScopedSECKEYPublicKey public_key(public_key_ptr);
+  return key;
 }
 
 crypto::ScopedSECKEYPrivateKey MockOwnerKeyUtil::FindPrivateKeyInSlot(
@@ -65,6 +86,10 @@ void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKey(
   private_key_ = crypto::ImportNSSKeyFromPrivateKeyInfo(
       slot.get(), key_exported, false /* not permanent */);
   CHECK(private_key_);
+}
+
+void MockOwnerKeyUtil::SimulateGenerateKeyFailure(int fail_times) {
+  generate_key_fail_times_ = fail_times;
 }
 
 }  // namespace ownership

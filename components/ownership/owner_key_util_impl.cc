@@ -16,6 +16,8 @@
 
 namespace ownership {
 
+static const uint16_t kKeySizeInBits = 2048;
+
 OwnerKeyUtilImpl::OwnerKeyUtilImpl(const base::FilePath& public_key_file)
     : public_key_file_(public_key_file) {}
 
@@ -56,6 +58,22 @@ scoped_refptr<PublicKey> OwnerKeyUtilImpl::ImportPublicKey() {
 
   return base::MakeRefCounted<ownership::PublicKey>(
       /*is_persisted=*/true, std::move(key_data));
+}
+
+crypto::ScopedSECKEYPrivateKey OwnerKeyUtilImpl::GenerateKeyPair(
+    PK11SlotInfo* slot) {
+  DCHECK(slot);
+
+  PK11RSAGenParams param;
+  param.keySizeInBits = kKeySizeInBits;
+  param.pe = 65537L;
+  SECKEYPublicKey* public_key_ptr = nullptr;
+
+  crypto::ScopedSECKEYPrivateKey key(PK11_GenerateKeyPair(
+      slot, CKM_RSA_PKCS_KEY_PAIR_GEN, &param, &public_key_ptr,
+      PR_TRUE /* permanent */, PR_TRUE /* sensitive */, nullptr));
+  crypto::ScopedSECKEYPublicKey public_key(public_key_ptr);
+  return key;
 }
 
 crypto::ScopedSECKEYPrivateKey OwnerKeyUtilImpl::FindPrivateKeyInSlot(

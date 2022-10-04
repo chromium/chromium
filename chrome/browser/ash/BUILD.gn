@@ -1974,6 +1974,8 @@ source_set("ash") {
     "os_feedback/os_feedback_screenshot_manager.h",
     "ownership/fake_owner_settings_service.cc",
     "ownership/fake_owner_settings_service.h",
+    "ownership/owner_key_loader.cc",
+    "ownership/owner_key_loader.h",
     "ownership/owner_settings_service_ash.cc",
     "ownership/owner_settings_service_ash.h",
     "ownership/owner_settings_service_ash_factory.cc",

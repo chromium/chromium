@@ -133,6 +133,17 @@ void DeviceSettingsService::SetDeviceMode(policy::DeviceMode device_mode) {
   }
 }
 
+void DeviceSettingsService::GetPolicyDataAsync(PolicyDataCallback callback) {
+  if (policy_data_) {
+    std::move(callback).Run(policy_data_.get());
+    return;
+  }
+
+  pending_policy_data_callbacks_.push_back(std::move(callback));
+  if (pending_operations_.empty())
+    EnqueueLoad(false);
+}
+
 scoped_refptr<PublicKey> DeviceSettingsService::GetPublicKey() {
   return public_key_;
 }
@@ -172,7 +183,7 @@ void DeviceSettingsService::Store(
 }
 
 DeviceSettingsService::OwnershipStatus
-    DeviceSettingsService::GetOwnershipStatus() {
+DeviceSettingsService::GetOwnershipStatus() {
   if (public_key_.get())
     return public_key_->is_empty() ? OWNERSHIP_NONE : OWNERSHIP_TAKEN;
   if (device_mode_ == policy::DEVICE_MODE_ENTERPRISE_AD)
@@ -308,8 +319,8 @@ void DeviceSettingsService::EnsureReload(bool request_key_load) {
 void DeviceSettingsService::StartNextOperation() {
   if (!pending_operations_.empty() && session_manager_client_ &&
       owner_key_util_.get()) {
-    pending_operations_.front()->Start(
-        session_manager_client_, owner_key_util_, public_key_);
+    pending_operations_.front()->Start(session_manager_client_, owner_key_util_,
+                                       public_key_);
   }
 }
 
@@ -360,6 +371,10 @@ void DeviceSettingsService::HandleCompletedOperation(
   NotifyDeviceSettingsUpdated();
   RunPendingOwnershipStatusCallbacks();
 
+  if ((status == STORE_SUCCESS) || (status == STORE_NO_POLICY)) {
+    RunPendingPolicyDataCallbacks();
+  }
+
   // The completion callback happens after the notification so clients can
   // filter self-triggered updates.
   if (!callback.is_null())
@@ -381,6 +396,14 @@ void DeviceSettingsService::RunPendingOwnershipStatusCallbacks() {
   callbacks.swap(pending_ownership_status_callbacks_);
   for (auto& callback : callbacks) {
     std::move(callback).Run(GetOwnershipStatus());
+  }
+}
+
+void DeviceSettingsService::RunPendingPolicyDataCallbacks() {
+  std::vector<PolicyDataCallback> callbacks;
+  callbacks.swap(pending_policy_data_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(policy_data_.get());
   }
 }
 
