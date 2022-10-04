@@ -1248,6 +1248,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void AddPropertyToPresentationAttributeStyle(MutableCSSPropertyValueSet*,
                                                CSSPropertyID,
                                                const CSSValue&);
+  void MapLanguageAttributeToLocale(const AtomicString&,
+                                    MutableCSSPropertyValueSet*);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

@@ -657,6 +657,10 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
   if (params.name == html_names::kNonceAttr) {
     if (params.new_value != g_empty_atom)
       setNonce(params.new_value);
+  } else if (params.name.Matches(xml_names::kLangAttr)) {
+    PseudoStateChanged(CSSSelector::kPseudoLang);
+  } else if (params.name == svg_names::kLangAttr) {
+    PseudoStateChanged(CSSSelector::kPseudoLang);
   }
 
   const AtomicString& event_name =
@@ -779,6 +783,10 @@ bool SVGElement::IsAnimatableCSSProperty(const QualifiedName& attr_name) {
 bool SVGElement::IsPresentationAttribute(const QualifiedName& name) const {
   if (const SVGAnimatedPropertyBase* property = PropertyFromAttribute(name))
     return property->HasPresentationAttributeMapping();
+  if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled() &&
+      (name.Matches(xml_names::kLangAttr) || name == svg_names::kLangAttr)) {
+    return true;
+  }
   return CssPropertyIdForSVGAttributeName(GetExecutionContext(), name) >
          CSSPropertyID::kInvalid;
 }
@@ -789,8 +797,17 @@ void SVGElement::CollectStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
   CSSPropertyID property_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), name);
-  if (property_id > CSSPropertyID::kInvalid)
+  if (property_id > CSSPropertyID::kInvalid) {
     AddPropertyToPresentationAttributeStyle(style, property_id, value);
+  } else if (name.Matches(xml_names::kLangAttr)) {
+    if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled())
+      MapLanguageAttributeToLocale(value, style);
+  } else if (name == svg_names::kLangAttr) {
+    if (RuntimeEnabledFeatures::LangAttributeAwareSvgTextEnabled() &&
+        !FastHasAttribute(xml_names::kLangAttr)) {
+      MapLanguageAttributeToLocale(value, style);
+    }
+  }
 }
 
 bool SVGElement::HaveLoadedRequiredResources() {

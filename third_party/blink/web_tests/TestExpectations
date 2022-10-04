@@ -800,6 +800,11 @@ crbug.com/1368167 external/wpt/svg/struct/reftests/currentScale-change-repaint.h
 
 crbug.com/699040 external/wpt/svg/text/reftests/text-xml-space-001.svg [ Failure ]
 
+# Content Shell on macOS doesn't work well for Han glyph selection for
+# languages. Chrome works well.
+crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/lang-attribute.svg [ Failure ]
+crbug.com/1370460 [ Mac ] external/wpt/svg/text/reftests/xml-lang-attribute.svg [ Failure ]
+
 # WPT backgrounds and borders tests. Note that there are many more in NeverFixTests
 # that should be investigated (see crbug.com/780700)
 crbug.com/1242416 [ Linux ] external/wpt/css/CSS2/backgrounds/background-position-201.xht [ Failure Pass ]

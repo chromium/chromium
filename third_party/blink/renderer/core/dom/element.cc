@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -199,6 +200,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -8286,6 +8288,43 @@ void Element::AddPropertyToPresentationAttributeStyle(
     const CSSValue& value) {
   DCHECK(IsStyledElement());
   style->SetProperty(property_id, value);
+}
+
+void Element::MapLanguageAttributeToLocale(const AtomicString& value,
+                                           MutableCSSPropertyValueSet* style) {
+  if (!value.empty()) {
+    // Have to quote so the locale id is treated as a string instead of as a CSS
+    // keyword.
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWebkitLocale,
+                                            SerializeString(value));
+
+    // FIXME: Remove the following UseCounter code when we collect enough
+    // data.
+    UseCounter::Count(GetDocument(), WebFeature::kLangAttribute);
+    if (IsA<HTMLHtmlElement>(this))
+      UseCounter::Count(GetDocument(), WebFeature::kLangAttributeOnHTML);
+    else if (IsA<HTMLBodyElement>(this))
+      UseCounter::Count(GetDocument(), WebFeature::kLangAttributeOnBody);
+    String html_language = value.GetString();
+    wtf_size_t first_separator = html_language.find('-');
+    if (first_separator != kNotFound)
+      html_language = html_language.Left(first_separator);
+    String ui_language = DefaultLanguage();
+    first_separator = ui_language.find('-');
+    if (first_separator != kNotFound)
+      ui_language = ui_language.Left(first_separator);
+    first_separator = ui_language.find('_');
+    if (first_separator != kNotFound)
+      ui_language = ui_language.Left(first_separator);
+    if (!DeprecatedEqualIgnoringCase(html_language, ui_language)) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kLangAttributeDoesNotMatchToUILocale);
+    }
+  } else {
+    // The empty string means the language is explicitly unknown.
+    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWebkitLocale,
+                                            CSSValueID::kAuto);
+  }
 }
 
 void Element::LogAddElementIfIsolatedWorldAndInDocument(

@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringtreatnullasemptystring_trustedscript.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
-#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -92,7 +91,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"
@@ -275,44 +273,6 @@ void HTMLElement::ApplyBorderAttributeToStyle(
                                           CSSPrimitiveValue::UnitType::kPixels);
   AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kBorderStyle,
                                           CSSValueID::kSolid);
-}
-
-void HTMLElement::MapLanguageAttributeToLocale(
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  if (!value.empty()) {
-    // Have to quote so the locale id is treated as a string instead of as a CSS
-    // keyword.
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWebkitLocale,
-                                            SerializeString(value));
-
-    // FIXME: Remove the following UseCounter code when we collect enough
-    // data.
-    UseCounter::Count(GetDocument(), WebFeature::kLangAttribute);
-    if (IsA<HTMLHtmlElement>(this))
-      UseCounter::Count(GetDocument(), WebFeature::kLangAttributeOnHTML);
-    else if (IsA<HTMLBodyElement>(this))
-      UseCounter::Count(GetDocument(), WebFeature::kLangAttributeOnBody);
-    String html_language = value.GetString();
-    wtf_size_t first_separator = html_language.find('-');
-    if (first_separator != kNotFound)
-      html_language = html_language.Left(first_separator);
-    String ui_language = DefaultLanguage();
-    first_separator = ui_language.find('-');
-    if (first_separator != kNotFound)
-      ui_language = ui_language.Left(first_separator);
-    first_separator = ui_language.find('_');
-    if (first_separator != kNotFound)
-      ui_language = ui_language.Left(first_separator);
-    if (!DeprecatedEqualIgnoringCase(html_language, ui_language)) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kLangAttributeDoesNotMatchToUILocale);
-    }
-  } else {
-    // The empty string means the language is explicitly unknown.
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWebkitLocale,
-                                            CSSValueID::kAuto);
-  }
 }
 
 bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {

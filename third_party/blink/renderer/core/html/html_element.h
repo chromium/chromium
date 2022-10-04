@@ -239,8 +239,6 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsStyledElement() const =
       delete;  // This will catch anyone doing an unnecessary check.
 
-  void MapLanguageAttributeToLocale(const AtomicString&,
-                                    MutableCSSPropertyValueSet*);
   void ApplyAspectRatioToStyle(double width,
                                double height,
                                MutableCSSPropertyValueSet* style);
