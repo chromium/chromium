@@ -377,6 +377,8 @@ public final class ProductionSupportedFlagList {
                     "This persists client hints between top-level navigations."),
             Flag.commandLine(CcFeatures.USE_DMSAA_FOR_TILES,
                     "Switches skia to use DMSAA instead of MSAA for tile raster"),
+            Flag.baseFeature(
+                    CcFeatures.AVOID_RASTER_DURING_ELASTIC_OVERSCROLL, "No effect on webview"),
 
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
