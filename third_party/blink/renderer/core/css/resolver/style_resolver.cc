@@ -120,6 +120,22 @@ namespace blink {
 
 namespace {
 
+scoped_refptr<const ComputedStyle> BuildInitialStyleForImg(
+    const scoped_refptr<const ComputedStyle>& initial_style) {
+  if (!RuntimeEnabledFeatures::CSSOverflowForReplacedElementsEnabled())
+    return initial_style;
+
+  // This matches the img {} declarations in html.css to avoid copy-on-write
+  // when only UA styles apply for these properties. See crbug.com/1369454
+  // for details.
+  auto initial_style_for_img = ComputedStyle::Clone(*initial_style);
+  initial_style_for_img->SetOverflowX(EOverflow::kClip);
+  initial_style_for_img->SetOverflowY(EOverflow::kClip);
+  initial_style_for_img->SetOverflowClipMargin(
+      StyleOverflowClipMargin::CreateContent());
+  return initial_style_for_img;
+}
+
 bool ShouldStoreOldStyle(const StyleRecalcContext& style_recalc_context,
                          StyleResolverState& state) {
   // Storing the old style is only relevant if we risk computing the style
@@ -369,6 +385,7 @@ static void CollectScopedResolversForHostedShadowTrees(
 
 StyleResolver::StyleResolver(Document& document)
     : initial_style_(ComputedStyle::CreateInitialStyleSingleton()),
+      initial_style_for_img_(BuildInitialStyleForImg(initial_style_)),
       document_(document) {
   UpdateMediaType();
 }
@@ -1006,7 +1023,16 @@ void StyleResolver::ApplyInheritance(Element& element,
 
     state.SetStyle(ComputedStyle::Clone(*state.ParentStyle()));
   } else {
-    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+    // We use a different initial_style for img elements to match the overrides
+    // in html.css. This avoids allocation overhead from copy-on-write when these
+    // properties are set only via UA styles. The overhead shows up on motionmark
+    // which stress tests this code. See crbub.com/1369454 for details.
+    scoped_refptr<ComputedStyle> style;
+    if (IsA<HTMLImageElement>(element))
+      style = ComputedStyle::Clone(*initial_style_for_img_);
+    else
+      style = CreateComputedStyle();
+
     style->InheritFrom(
         *state.ParentStyle(),
         (!style_request.IsPseudoStyleRequest() && IsAtShadowBoundary(&element))

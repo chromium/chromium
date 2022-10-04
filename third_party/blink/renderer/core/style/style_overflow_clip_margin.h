@@ -17,6 +17,10 @@ class StyleOverflowClipMargin {
   StyleOverflowClipMargin(ReferenceBox reference_box, LayoutUnit margin)
       : reference_box_(reference_box), margin_(margin) {}
 
+  static StyleOverflowClipMargin CreateContent() {
+    return StyleOverflowClipMargin(ReferenceBox::kContentBox, LayoutUnit());
+  }
+
   StyleOverflowClipMargin() = default;
 
   ReferenceBox GetReferenceBox() const { return reference_box_; }

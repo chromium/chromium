@@ -306,6 +306,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   MatchedPropertiesCache matched_properties_cache_;
   scoped_refptr<const ComputedStyle> initial_style_;
+  scoped_refptr<const ComputedStyle> initial_style_for_img_;
   SelectorFilter selector_filter_;
 
   Member<Document> document_;
