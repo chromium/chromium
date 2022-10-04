@@ -19,11 +19,6 @@ class MockPressureService {
       ['power-supply', PressureFactor.kPowerSupply]
     ]);
     this.pressureServiceReadingTimerId_ = null;
-    // Sets a timestamp by creating a DOMHighResTimeStamp from a given
-    // platform timestamp. In this mock implementation we use a starting value
-    // and an increment step value that resemble a platform timestamp
-    // reasonably enough.
-    this.timestamp_ = window.performance.timeOrigin;
   }
 
   start() {
@@ -64,11 +59,28 @@ class MockPressureService {
     if (this.pressureServiceReadingTimerId_ != null)
       stopPlatformCollector();
 
+    // The following code for calculating the timestamp was taken from
+    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/
+    // blink/web_tests/http/tests/resources/
+    // geolocation-mock.js;l=131;drc=37a9b6c03b9bda9fcd62fc0e5e8016c278abd31f
+
+    // The new Date().getTime() returns the number of milliseconds since the
+    // UNIX epoch (1970-01-01 00::00:00 UTC), while |internalValue| of the
+    // device.mojom.PressureUpdate represents the value of microseconds since
+    // the Windows FILETIME epoch (1601-01-01 00:00:00 UTC). So add the delta
+    // when sets the |internalValue|. See more info in //base/time/time.h.
+    const windowsEpoch = Date.UTC(1601, 0, 1, 0, 0, 0, 0);
+    const unixEpoch = Date.UTC(1970, 0, 1, 0, 0, 0, 0);
+    // |epochDeltaInMs| equals to base::Time::kTimeTToMicrosecondsOffset.
+    const epochDeltaInMs = unixEpoch - windowsEpoch;
+
     const timeout = (1 / sampleRate) * 1000;
     this.pressureServiceReadingTimerId_ = window.setInterval(() => {
       if (this.pressureUpdate_ === null || this.observer_ === null)
         return;
-      this.pressureUpdate_.timestamp = this.timestamp_++;
+      this.pressureUpdate_.timestamp = {
+        internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)
+      };
       this.observer_.onUpdate(this.pressureUpdate_);
       this.updatesDelivered_++;
     }, timeout);
@@ -102,7 +114,6 @@ class MockPressureService {
     this.pressureUpdate_ = {
       state: this.mojomStateType_.get(state),
       factors: pressureFactors,
-      timestamp: window.performance.timeOrigin
     };
   }
 }
