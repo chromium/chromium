@@ -110,6 +110,14 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getTpmInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getTpmInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.getTpmInfo. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function getVpdInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getVpdInfo(),

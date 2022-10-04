@@ -163,6 +163,88 @@ telemetry_api::NetworkInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::TpmVersion UncheckedConvertPtr(
+    telemetry_service::ProbeTpmVersionPtr input) {
+  telemetry_api::TpmVersion result;
+
+  result.gsc_version = Convert(input->gsc_version);
+  if (input->family) {
+    result.family = input->family->value;
+  }
+  if (input->spec_level) {
+    result.spec_level = input->spec_level->value;
+  }
+  if (input->manufacturer) {
+    result.manufacturer = input->manufacturer->value;
+  }
+  if (input->tpm_model) {
+    result.tpm_model = input->tpm_model->value;
+  }
+  if (input->firmware_version) {
+    result.firmware_version = input->firmware_version->value;
+  }
+  result.vendor_specific = input->vendor_specific;
+
+  return result;
+}
+
+telemetry_api::TpmStatus UncheckedConvertPtr(
+    telemetry_service::ProbeTpmStatusPtr input) {
+  telemetry_api::TpmStatus result;
+
+  if (input->enabled) {
+    result.enabled = input->enabled->value;
+  }
+  if (input->owned) {
+    result.owned = input->owned->value;
+  }
+  if (input->owner_password_is_present) {
+    result.owner_password_is_present = input->owner_password_is_present->value;
+  }
+
+  return result;
+}
+
+telemetry_api::TpmDictionaryAttack UncheckedConvertPtr(
+    telemetry_service::ProbeTpmDictionaryAttackPtr input) {
+  telemetry_api::TpmDictionaryAttack result;
+
+  if (input->counter) {
+    result.counter = input->counter->value;
+  }
+  if (input->threshold) {
+    result.threshold = input->threshold->value;
+  }
+  if (input->lockout_in_effect) {
+    result.lockout_in_effect = input->lockout_in_effect->value;
+  }
+  if (input->lockout_seconds_remaining) {
+    result.lockout_seconds_remaining = input->lockout_seconds_remaining->value;
+  }
+
+  return result;
+}
+
+telemetry_api::TpmInfo UncheckedConvertPtr(
+    telemetry_service::ProbeTpmInfoPtr input) {
+  telemetry_api::TpmInfo result;
+
+  if (input->version) {
+    result.version =
+        ConvertPtr<telemetry_api::TpmVersion>(std::move(input->version));
+  }
+  if (input->status) {
+    result.status =
+        ConvertPtr<telemetry_api::TpmStatus>(std::move(input->status));
+  }
+  if (input->dictionary_attack) {
+    result.dictionary_attack = ConvertPtr<telemetry_api::TpmDictionaryAttack>(
+        std::move(input->dictionary_attack));
+  }
+
+  return result;
+}
+
 }  // namespace unchecked
 
 telemetry_api::CpuArchitectureEnum Convert(
@@ -226,6 +308,19 @@ telemetry_api::NetworkType Convert(
       return telemetry_api::NetworkType::NETWORK_TYPE_NONE;
     case network_config::mojom::NetworkType::kWiFi:
       return telemetry_api::NetworkType::NETWORK_TYPE_WIFI;
+  }
+  NOTREACHED();
+}
+
+chromeos::api::os_telemetry::TpmGSCVersion Convert(
+    crosapi::mojom::ProbeTpmGSCVersion input) {
+  switch (input) {
+    case telemetry_service::ProbeTpmGSCVersion::kNotGSC:
+      return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_NOT_GSC;
+    case telemetry_service::ProbeTpmGSCVersion::kCr50:
+      return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50;
+    case telemetry_service::ProbeTpmGSCVersion::kTi50:
+      return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_TI50;
   }
   NOTREACHED();
 }

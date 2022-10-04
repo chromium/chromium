@@ -1780,6 +1780,7 @@ enum HistogramValue {
   PASSWORDSPRIVATE_SWITCHBIOMETRICAUTHBEFOREFILLINGSTATE = 1717,
   WMDESKSPRIVATE_GETACTIVEDESK = 1718,
   WMDESKSPRIVATE_SWITCHDESK = 1719,
+  OS_TELEMETRY_GETTPMINFO = 1720,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

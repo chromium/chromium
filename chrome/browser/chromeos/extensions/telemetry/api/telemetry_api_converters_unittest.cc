@@ -406,5 +406,179 @@ TEST(TelemetryApiConverters, NetworkInfo) {
   EXPECT_EQ(static_cast<double_t>(*result.signal_strength), kSignalStrength);
 }
 
+TEST(TelemetryApiConverters, TpmVersion) {
+  constexpr uint32_t kFamily = 0x322e3000;
+  constexpr uint64_t kSpecLevel = 1000;
+  constexpr uint32_t kManufacturer = 42;
+  constexpr uint32_t kTpmModel = 101;
+  constexpr uint64_t kFirmwareVersion = 1001;
+  constexpr char kVendorSpecific[] = "info";
+
+  auto input = telemetry_service::ProbeTpmVersion::New();
+  input->gsc_version = telemetry_service::ProbeTpmGSCVersion::kCr50;
+  input->family = telemetry_service::UInt32Value::New(kFamily);
+  input->spec_level = telemetry_service::UInt64Value::New(kSpecLevel);
+  input->manufacturer = telemetry_service::UInt32Value::New(kManufacturer);
+  input->tpm_model = telemetry_service::UInt32Value::New(kTpmModel);
+  input->firmware_version =
+      telemetry_service::UInt64Value::New(kFirmwareVersion);
+  input->vendor_specific = kVendorSpecific;
+
+  auto result = ConvertPtr<telemetry_api::TpmVersion>(std::move(input));
+  EXPECT_EQ(telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50,
+            result.gsc_version);
+  ASSERT_TRUE(result.family);
+  EXPECT_EQ(kFamily, static_cast<uint32_t>(*result.family));
+  ASSERT_TRUE(result.spec_level);
+  EXPECT_EQ(kSpecLevel, static_cast<uint64_t>(*result.spec_level));
+  ASSERT_TRUE(result.manufacturer);
+  EXPECT_EQ(kManufacturer, static_cast<uint32_t>(*result.manufacturer));
+  ASSERT_TRUE(result.tpm_model);
+  EXPECT_EQ(kTpmModel, static_cast<uint32_t>(*result.tpm_model));
+  ASSERT_TRUE(result.firmware_version);
+  EXPECT_EQ(kFirmwareVersion, static_cast<uint64_t>(*result.firmware_version));
+  ASSERT_TRUE(result.vendor_specific);
+  EXPECT_EQ(kVendorSpecific, *result.vendor_specific);
+}
+
+TEST(TelemetryApiConverters, TpmStatus) {
+  constexpr bool kEnabled = true;
+  constexpr bool kOwned = false;
+  constexpr bool kOwnerPasswortIsPresent = false;
+
+  auto input = telemetry_service::ProbeTpmStatus::New();
+  input->enabled = telemetry_service::BoolValue::New(kEnabled);
+  input->owned = telemetry_service::BoolValue::New(kOwned);
+  input->owner_password_is_present =
+      telemetry_service::BoolValue::New(kOwnerPasswortIsPresent);
+
+  auto result = ConvertPtr<telemetry_api::TpmStatus>(std::move(input));
+  ASSERT_TRUE(result.enabled);
+  EXPECT_EQ(kEnabled, *result.enabled);
+  ASSERT_TRUE(result.owned);
+  EXPECT_EQ(kOwned, *result.owned);
+  ASSERT_TRUE(result.owner_password_is_present);
+  EXPECT_EQ(kOwnerPasswortIsPresent, *result.owner_password_is_present);
+}
+
+TEST(TelemetryApiConverters, TpmDictionaryAttack) {
+  constexpr uint32_t kCounter = 42;
+  constexpr uint32_t kThreshold = 100;
+  constexpr bool kLockOutInEffect = true;
+  constexpr uint32_t kLockoutSecondsRemaining = 5;
+
+  auto input = telemetry_service::ProbeTpmDictionaryAttack::New();
+  input->counter = telemetry_service::UInt32Value::New(kCounter);
+  input->threshold = telemetry_service::UInt32Value::New(kThreshold);
+  input->lockout_in_effect =
+      telemetry_service::BoolValue::New(kLockOutInEffect);
+  input->lockout_seconds_remaining =
+      telemetry_service::UInt32Value::New(kLockoutSecondsRemaining);
+
+  auto result =
+      ConvertPtr<telemetry_api::TpmDictionaryAttack>(std::move(input));
+  ASSERT_TRUE(result.counter);
+  EXPECT_EQ(kCounter, static_cast<uint32_t>(*result.counter));
+  ASSERT_TRUE(result.threshold);
+  EXPECT_EQ(kThreshold, static_cast<uint32_t>(*result.threshold));
+  ASSERT_TRUE(result.lockout_in_effect);
+  EXPECT_EQ(kLockOutInEffect, *result.lockout_in_effect);
+  ASSERT_TRUE(result.lockout_seconds_remaining);
+  EXPECT_EQ(kLockoutSecondsRemaining,
+            static_cast<uint32_t>(*result.lockout_seconds_remaining));
+}
+
+TEST(TelemetryApiConverters, TpmInfo) {
+  // TPM Version fields.
+  constexpr uint32_t kFamily = 0x322e3000;
+  constexpr uint64_t kSpecLevel = 1000;
+  constexpr uint32_t kManufacturer = 42;
+  constexpr uint32_t kTpmModel = 101;
+  constexpr uint64_t kFirmwareVersion = 1001;
+  constexpr char kVendorSpecific[] = "info";
+
+  // TPM Status fields.
+  constexpr bool kEnabled = true;
+  constexpr bool kOwned = false;
+  constexpr bool kOwnerPasswortIsPresent = false;
+
+  // TPM dictionary attack fields.
+  constexpr uint32_t kCounter = 42;
+  constexpr uint32_t kThreshold = 100;
+  constexpr bool kLockOutInEffect = true;
+  constexpr uint32_t kLockoutSecondsRemaining = 5;
+
+  auto tpm_version = telemetry_service::ProbeTpmVersion::New();
+  tpm_version->gsc_version = telemetry_service::ProbeTpmGSCVersion::kCr50;
+  tpm_version->family = telemetry_service::UInt32Value::New(kFamily);
+  tpm_version->spec_level = telemetry_service::UInt64Value::New(kSpecLevel);
+  tpm_version->manufacturer =
+      telemetry_service::UInt32Value::New(kManufacturer);
+  tpm_version->tpm_model = telemetry_service::UInt32Value::New(kTpmModel);
+  tpm_version->firmware_version =
+      telemetry_service::UInt64Value::New(kFirmwareVersion);
+  tpm_version->vendor_specific = kVendorSpecific;
+
+  auto tpm_status = telemetry_service::ProbeTpmStatus::New();
+  tpm_status->enabled = telemetry_service::BoolValue::New(kEnabled);
+  tpm_status->owned = telemetry_service::BoolValue::New(kOwned);
+  tpm_status->owner_password_is_present =
+      telemetry_service::BoolValue::New(kOwnerPasswortIsPresent);
+
+  auto dictionary_attack = telemetry_service::ProbeTpmDictionaryAttack::New();
+  dictionary_attack->counter = telemetry_service::UInt32Value::New(kCounter);
+  dictionary_attack->threshold =
+      telemetry_service::UInt32Value::New(kThreshold);
+  dictionary_attack->lockout_in_effect =
+      telemetry_service::BoolValue::New(kLockOutInEffect);
+  dictionary_attack->lockout_seconds_remaining =
+      telemetry_service::UInt32Value::New(kLockoutSecondsRemaining);
+
+  auto input = telemetry_service::ProbeTpmInfo::New();
+  input->version = std::move(tpm_version);
+  input->status = std::move(tpm_status);
+  input->dictionary_attack = std::move(dictionary_attack);
+
+  auto result = ConvertPtr<telemetry_api::TpmInfo>(std::move(input));
+
+  auto version_result = std::move(result.version);
+  EXPECT_EQ(telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50,
+            version_result.gsc_version);
+  ASSERT_TRUE(version_result.family);
+  EXPECT_EQ(kFamily, static_cast<uint32_t>(*version_result.family));
+  ASSERT_TRUE(version_result.spec_level);
+  EXPECT_EQ(kSpecLevel, static_cast<uint64_t>(*version_result.spec_level));
+  ASSERT_TRUE(version_result.manufacturer);
+  EXPECT_EQ(kManufacturer, static_cast<uint32_t>(*version_result.manufacturer));
+  ASSERT_TRUE(version_result.tpm_model);
+  EXPECT_EQ(kTpmModel, static_cast<uint32_t>(*version_result.tpm_model));
+  ASSERT_TRUE(version_result.firmware_version);
+  EXPECT_EQ(kFirmwareVersion,
+            static_cast<uint64_t>(*version_result.firmware_version));
+  ASSERT_TRUE(version_result.vendor_specific);
+  EXPECT_EQ(kVendorSpecific, *version_result.vendor_specific);
+
+  auto status_result = std::move(result.status);
+  ASSERT_TRUE(status_result.enabled);
+  EXPECT_EQ(kEnabled, *status_result.enabled);
+  ASSERT_TRUE(status_result.owned);
+  EXPECT_EQ(kOwned, *status_result.owned);
+  ASSERT_TRUE(status_result.owner_password_is_present);
+  EXPECT_EQ(kOwnerPasswortIsPresent, *status_result.owner_password_is_present);
+
+  auto dictionary_attack_result = std::move(result.dictionary_attack);
+  ASSERT_TRUE(dictionary_attack_result.counter);
+  EXPECT_EQ(kCounter, static_cast<uint32_t>(*dictionary_attack_result.counter));
+  ASSERT_TRUE(dictionary_attack_result.threshold);
+  EXPECT_EQ(kThreshold,
+            static_cast<uint32_t>(*dictionary_attack_result.threshold));
+  ASSERT_TRUE(dictionary_attack_result.lockout_in_effect);
+  EXPECT_EQ(kLockOutInEffect, *dictionary_attack_result.lockout_in_effect);
+  ASSERT_TRUE(dictionary_attack_result.lockout_seconds_remaining);
+  EXPECT_EQ(kLockoutSecondsRemaining,
+            static_cast<uint32_t>(
+                *dictionary_attack_result.lockout_seconds_remaining));
+}
+
 }  // namespace converters
 }  // namespace chromeos

@@ -160,6 +160,14 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
         );
         chrome.test.succeed();
       },
+      async function getTpmInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getTpmInfo(),
+            'Error: API chrome.os.telemetry.getTpmInfo failed. ' +
+            'Not supported by ash browser'
+        );
+        chrome.test.succeed();
+      },
       async function getVpdInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getVpdInfo(),
@@ -1071,6 +1079,127 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           {
             availableSpace: 3000000000000000,
             totalSpace: 9000000000000000,
+          }, result);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetTpmInfo_Error) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kTpm});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getTpmInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getTpmInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetTpmInfo_Success) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // If Probe interface is not available on this version of ash-chrome, this
+  // test suite will no-op.
+  if (!IsServiceAvailable()) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Configure FakeProbeService.
+  {
+    auto telemetry_info = crosapi::mojom::ProbeTelemetryInfo::New();
+    {
+      auto tpm_version = crosapi::mojom::ProbeTpmVersion::New();
+      tpm_version->gsc_version = crosapi::mojom::ProbeTpmGSCVersion::kCr50;
+      tpm_version->family = crosapi::mojom::UInt32Value::New(120);
+      tpm_version->spec_level = crosapi::mojom::UInt64Value::New(1000);
+      tpm_version->manufacturer = crosapi::mojom::UInt32Value::New(42);
+      tpm_version->tpm_model = crosapi::mojom::UInt32Value::New(333);
+      tpm_version->firmware_version = crosapi::mojom::UInt64Value::New(10000);
+      tpm_version->vendor_specific = "VendorSpecific";
+
+      auto tpm_status = crosapi::mojom::ProbeTpmStatus::New();
+      tpm_status->enabled = crosapi::mojom::BoolValue::New(true);
+      tpm_status->owned = crosapi::mojom::BoolValue::New(false);
+      tpm_status->owner_password_is_present =
+          crosapi::mojom::BoolValue::New(false);
+
+      auto dictonary_attack = crosapi::mojom::ProbeTpmDictionaryAttack::New();
+      dictonary_attack->counter = crosapi::mojom::UInt32Value::New(5);
+      dictonary_attack->threshold = crosapi::mojom::UInt32Value::New(1000);
+      dictonary_attack->lockout_in_effect =
+          crosapi::mojom::BoolValue::New(false);
+      dictonary_attack->lockout_seconds_remaining =
+          crosapi::mojom::UInt32Value::New(0);
+
+      auto tpm_info = crosapi::mojom::ProbeTpmInfo::New();
+      tpm_info->version = std::move(tpm_version);
+      tpm_info->status = std::move(tpm_status);
+      tpm_info->dictionary_attack = std::move(dictonary_attack);
+
+      telemetry_info->tpm_result =
+          crosapi::mojom::ProbeTpmResult::NewTpmInfo(std::move(tpm_info));
+    }
+
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
+    fake_service_impl->SetExpectedLastRequestedCategories(
+        {crosapi::mojom::ProbeCategoryEnum::kTpm});
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getTpmInfo() {
+        const result = await chrome.os.telemetry.getTpmInfo();
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            version: {
+              gscVersion: "cr50",
+              family: 120,
+              specLevel: 1000,
+              manufacturer: 42,
+              tpmModel: 333,
+              firmwareVersion: 10000,
+              vendorSpecific: "VendorSpecific",
+            },
+            status: {
+              enabled: true,
+              owned: false,
+              ownerPasswordIsPresent: false,
+            },
+            dictionaryAttack: {
+              counter: 5,
+              threshold: 1000,
+              lockoutInEffect: false,
+              lockoutSecondsRemaining: 0,
+            },
           }, result);
         chrome.test.succeed();
       }

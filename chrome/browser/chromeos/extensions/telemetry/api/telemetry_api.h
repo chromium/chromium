@@ -214,6 +214,24 @@ class OsTelemetryGetStatefulPartitionInfoFunction
   void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
+class OsTelemetryGetTpmInfoFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getTpmInfo", OS_TELEMETRY_GETTPMINFO)
+
+  OsTelemetryGetTpmInfoFunction();
+  OsTelemetryGetTpmInfoFunction(const OsTelemetryGetTpmInfoFunction&) = delete;
+  OsTelemetryGetTpmInfoFunction& operator=(
+      const OsTelemetryGetTpmInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetTpmInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_TELEMETRY_API_H_

@@ -339,6 +339,32 @@ void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
       api::os_telemetry::GetStatefulPartitionInfo::Results::Create(result)));
 }
 
+// OsTelemetryGetTpmInfoFunction -----------------------------------------------
+
+OsTelemetryGetTpmInfoFunction::OsTelemetryGetTpmInfoFunction() = default;
+OsTelemetryGetTpmInfoFunction::~OsTelemetryGetTpmInfoFunction() = default;
+
+void OsTelemetryGetTpmInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetTpmInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo(
+      {crosapi::mojom::ProbeCategoryEnum::kTpm}, std::move(cb));
+}
+
+void OsTelemetryGetTpmInfoFunction::OnResult(
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->tpm_result || !ptr->tpm_result->is_tpm_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+  auto& tpm_info = ptr->tpm_result->get_tpm_info();
+
+  api::os_telemetry::TpmInfo result =
+      converters::ConvertPtr<api::os_telemetry::TpmInfo>(std::move(tpm_info));
+
+  Respond(ArgumentList(api::os_telemetry::GetTpmInfo::Results::Create(result)));
+}
+
 // OsTelemetryGetVpdInfoFunction -----------------------------------------------
 
 OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
