@@ -11,7 +11,7 @@ Running create_zip.py to distribute is the recommended way to distribute and
 run the tests. This method creates a batch file that will automatically
 set the paths.
 
-python chrome\test\mini_installer\create_zip.py ^
+vpython3 chrome\test\mini_installer\create_zip.py ^
   --output-path <ZIP_FILE_OUTPUT_PATH> ^
   --installer-path <CURRENT_INSTALLER_PATH> ^
   --previous-version-installer-path <PREVIOUS_INSTALLER_PATH> ^
@@ -34,7 +34,7 @@ since the default may be wrong.
 
 To run:
 
-1) Ensure the latest python 2.7 is installed and in your path
+1) Ensure the latest python 3 is installed and in your path
 2) Unzip zip file
 3) Open a command window in administrator mode
 4) Navigate to the unzip folder
@@ -49,4 +49,3 @@ if desired.
 
 The batch script will use Python's pip module to install pywin32 and psutil
 to reduce the amount of setup time is needed.
-
