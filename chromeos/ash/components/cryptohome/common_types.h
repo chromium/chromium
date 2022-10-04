@@ -17,6 +17,12 @@ namespace cryptohome {
 // variables of type `std::string`.
 using KeyLabel = base::StrongAlias<class KeyLabelTag, std::string>;
 
+// The PIN as the user would enter it. Not salted or hashed.
+using RawPin = base::StrongAlias<class RawPinTag, std::string>;
+
+// The salt we use for PINs.
+using PinSalt = base::StrongAlias<class PinSaltTag, std::string>;
+
 }  // namespace cryptohome
 
 #endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_COMMON_TYPES_H_

@@ -66,6 +66,29 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void ReplaceContextKey(std::unique_ptr<UserContext> context,
                          AuthOperationCallback callback);
 
+  // Adds a PIN factor of the user corresponding to `context`. The PIN factor
+  // must not be configured prior to calling this.
+  // Session should be authenticated.
+  void AddPinFactor(std::unique_ptr<UserContext> context,
+                    cryptohome::PinSalt salt,
+                    cryptohome::RawPin pin,
+                    AuthOperationCallback callback);
+
+  // Replaces an already configured PIN factor of the user corresponding to
+  // `context`. The PIN factor must already be configured configured prior to
+  // calling this.
+  // Session should be authenticated.
+  void ReplacePinFactor(std::unique_ptr<UserContext> context,
+                        cryptohome::PinSalt salt,
+                        cryptohome::RawPin pin,
+                        AuthOperationCallback callback);
+
+  // Removes the PIN factor of the user corresponding to `context`. Yields an
+  // error if no PIN factor was configured prior to calling this.
+  // Session should be authenticated.
+  void RemovePinFactor(std::unique_ptr<UserContext> context,
+                       AuthOperationCallback callback);
+
   // Adds a recovery key for the user by `context`. No key is added if there is
   // already a recovery key.
   // Session must be authenticated.
@@ -106,12 +129,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::UpdateAuthFactorReply> reply);
 
-  void OnRecoveryFactorAdded(
-      std::unique_ptr<UserContext> context,
-      AuthOperationCallback callback,
-      absl::optional<user_data_auth::AddAuthFactorReply> reply);
-
-  void OnRecoveryFactorRemoved(
+  void OnRemoveAuthFactor(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::RemoveAuthFactorReply> reply);

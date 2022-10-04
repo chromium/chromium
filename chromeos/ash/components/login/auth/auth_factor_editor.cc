@@ -265,6 +265,103 @@ void AuthFactorEditor::ReplaceContextKey(std::unique_ptr<UserContext> context,
                               std::move(callback)));
 }
 
+void AuthFactorEditor::AddPinFactor(std::unique_ptr<UserContext> context,
+                                    cryptohome::PinSalt salt,
+                                    cryptohome::RawPin pin,
+                                    AuthOperationCallback callback) {
+  DCHECK(features::IsUseAuthFactorsEnabled());
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  user_data_auth::AddAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPin,
+                                KeyLabel{kCryptohomePinLabel}};
+
+  cryptohome::AuthFactorCommonMetadata metadata;
+  cryptohome::AuthFactor factor(ref, std::move(metadata));
+
+  Key key{std::move(*pin)};
+  key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, std::move(*salt));
+
+  const cryptohome::AuthFactorInput input(
+      cryptohome::AuthFactorInput::Pin{key.GetSecret()});
+  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+
+  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+
+  auto on_added_callback = base::BindOnce(
+      &AuthFactorEditor::OnAddAuthFactor, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  LOGIN_LOG(EVENT) << "Adding pin factor";
+  UserDataAuthClient::Get()->AddAuthFactor(std::move(request),
+                                           std::move(on_added_callback));
+}
+
+void AuthFactorEditor::ReplacePinFactor(std::unique_ptr<UserContext> context,
+                                        cryptohome::PinSalt salt,
+                                        cryptohome::RawPin pin,
+                                        AuthOperationCallback callback) {
+  DCHECK(features::IsUseAuthFactorsEnabled());
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  user_data_auth::UpdateAuthFactorRequest request;
+  request.set_auth_session_id(context->GetAuthSessionId());
+
+  request.set_auth_factor_label(kCryptohomePinLabel);
+
+  cryptohome::AuthFactorRef ref{cryptohome::AuthFactorType::kPin,
+                                KeyLabel{kCryptohomePinLabel}};
+
+  cryptohome::AuthFactorCommonMetadata metadata;
+  cryptohome::AuthFactor factor(ref, std::move(metadata));
+
+  Key key{std::move(*pin)};
+  key.Transform(Key::KEY_TYPE_SALTED_PBKDF2_AES256_1234, std::move(*salt));
+
+  const cryptohome::AuthFactorInput input(
+      cryptohome::AuthFactorInput::Pin{key.GetSecret()});
+  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+
+  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
+  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
+
+  auto on_updated_callback = base::BindOnce(
+      &AuthFactorEditor::OnUpdateAuthFactor, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  LOGIN_LOG(EVENT) << "Adding pin factor";
+  UserDataAuthClient::Get()->UpdateAuthFactor(std::move(request),
+                                              std::move(on_updated_callback));
+}
+
+void AuthFactorEditor::RemovePinFactor(std::unique_ptr<UserContext> context,
+                                       AuthOperationCallback callback) {
+  DCHECK(features::IsUseAuthFactorsEnabled());
+  DCHECK(!context->GetAuthSessionId().empty());
+
+  const cryptohome::AuthFactor* pin_factor =
+      context->GetAuthFactorsData().FindPinFactor();
+  if (!pin_factor) {
+    std::move(callback).Run(std::move(context), absl::nullopt);
+    return;
+  }
+
+  LOGIN_LOG(EVENT) << "Removing pin factor";
+
+  user_data_auth::RemoveAuthFactorRequest req;
+  req.set_auth_session_id(context->GetAuthSessionId());
+  req.set_auth_factor_label(kCryptohomePinLabel);
+
+  auto remove_auth_factor_callback = base::BindOnce(
+      &AuthFactorEditor::OnRemoveAuthFactor, weak_factory_.GetWeakPtr(),
+      std::move(context), std::move(callback));
+  UserDataAuthClient::Get()->RemoveAuthFactor(
+      req, std::move(remove_auth_factor_callback));
+}
+
 void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
                                          AuthOperationCallback callback) {
   CHECK(features::IsCryptohomeRecoverySetupEnabled());
@@ -292,7 +389,7 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
 
   auto add_auth_factor_callback = base::BindOnce(
-      &AuthFactorEditor::OnRecoveryFactorAdded, weak_factory_.GetWeakPtr(),
+      &AuthFactorEditor::OnAddAuthFactor, weak_factory_.GetWeakPtr(),
       std::move(context), std::move(callback));
 
   UserDataAuthClient::Get()->AddAuthFactor(std::move(request),
@@ -315,7 +412,7 @@ void AuthFactorEditor::RemoveRecoveryFactor(
   req.set_auth_factor_label(kCryptohomeRecoveryKeyLabel);
 
   auto remove_auth_factor_callback = base::BindOnce(
-      &AuthFactorEditor::OnRecoveryFactorRemoved, weak_factory_.GetWeakPtr(),
+      &AuthFactorEditor::OnRemoveAuthFactor, weak_factory_.GetWeakPtr(),
       std::move(context), std::move(callback));
   UserDataAuthClient::Get()->RemoveAuthFactor(
       req, std::move(remove_auth_factor_callback));
@@ -432,36 +529,19 @@ void AuthFactorEditor::OnUpdateAuthFactor(
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
-void AuthFactorEditor::OnRecoveryFactorAdded(
-    std::unique_ptr<UserContext> context,
-    AuthOperationCallback callback,
-    absl::optional<::user_data_auth::AddAuthFactorReply> reply) {
-  auto error = user_data_auth::ReplyToCryptohomeError(reply);
-  if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
-    LOG(WARNING) << "AddAuthFactor for recovery failed with error " << error;
-    std::move(callback).Run(std::move(context), AuthenticationError{error});
-    return;
-  }
-
-  CHECK(reply.has_value());
-  LOGIN_LOG(EVENT) << "Successfully added recovery key";
-  context->ClearAuthFactorsConfiguration();
-  std::move(callback).Run(std::move(context), absl::nullopt);
-}
-
-void AuthFactorEditor::OnRecoveryFactorRemoved(
+void AuthFactorEditor::OnRemoveAuthFactor(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     absl::optional<::user_data_auth::RemoveAuthFactorReply> reply) {
   auto error = user_data_auth::ReplyToCryptohomeError(reply);
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
-    LOG(WARNING) << "RemoveAuthFactor for recovery failed with error " << error;
+    LOG(WARNING) << "RemoveAuthFactor failed with error " << error;
     std::move(callback).Run(std::move(context), AuthenticationError{error});
     return;
   }
 
   CHECK(reply.has_value());
-  LOGIN_LOG(EVENT) << "Successfully removed recovery key";
+  LOGIN_LOG(EVENT) << "Successfully removed auth factor";
   context->ClearAuthFactorsConfiguration();
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
