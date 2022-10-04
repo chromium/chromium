@@ -115,7 +115,6 @@ generate_grd("build_static_grdp") {
     "foreground/images/filetype/filetype_word.svg",
     "foreground/images/volumes/android.svg",
     "foreground/images/volumes/archive.svg",
-    "foreground/images/volumes/audio.svg",
     "foreground/images/volumes/camera.svg",
     "foreground/images/volumes/cd.svg",
     "foreground/images/volumes/computer.svg",
@@ -123,7 +122,6 @@ generate_grd("build_static_grdp") {
     "foreground/images/volumes/downloads.svg",
     "foreground/images/volumes/drive.svg",
     "foreground/images/volumes/hard_drive.svg",
-    "foreground/images/volumes/images.svg",
     "foreground/images/volumes/linux_files.svg",
     "foreground/images/volumes/my_files.svg",
     "foreground/images/volumes/offline.svg",
@@ -137,6 +135,5 @@ generate_grd("build_static_grdp") {
     "foreground/images/volumes/smb.svg",
     "foreground/images/volumes/team_drive.svg",
     "foreground/images/volumes/usb.svg",
-    "foreground/images/volumes/videos.svg",
   ]
 }

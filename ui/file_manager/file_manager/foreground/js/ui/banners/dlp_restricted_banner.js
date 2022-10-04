@@ -48,9 +48,6 @@ export class DlpRestrictedBanner extends StateBanner {
       {root: VolumeManagerCommon.RootType.COMPUTER},
       {root: VolumeManagerCommon.RootType.ARCHIVE},
       {root: VolumeManagerCommon.RootType.RECENT},
-      {root: VolumeManagerCommon.RootType.RECENT_AUDIO},
-      {root: VolumeManagerCommon.RootType.RECENT_IMAGES},
-      {root: VolumeManagerCommon.RootType.RECENT_VIDEOS},
       {root: VolumeManagerCommon.RootType.TRASH},
     ];
   }

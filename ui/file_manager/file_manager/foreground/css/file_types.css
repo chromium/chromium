@@ -402,24 +402,6 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/volumes/cd.svg);
 }
 
-.tree-row
-    > .file-row > [volume-type-icon='media_view'][volume-subtype='images_root'],
-.tree-row > .file-row > [root-type-icon='recent'][recent-file-type='image'] {
-  -webkit-mask-image: url(../images/volumes/images.svg);
-}
-
-.tree-row > .file-row
-    > [volume-type-icon='media_view'][volume-subtype='videos_root'],
-.tree-row > .file-row > [root-type-icon='recent'][recent-file-type='video'] {
-  -webkit-mask-image: url(../images/volumes/videos.svg);
-}
-
-.tree-row > .file-row
-    > [volume-type-icon='media_view'][volume-subtype='audio_root'],
-.tree-row > .file-row > [root-type-icon='recent'][recent-file-type='audio'] {
-  -webkit-mask-image: url(../images/volumes/audio.svg);
-}
-
 .tree-row > .file-row > [volume-type-icon='mtp'] {
   -webkit-mask-image: url(../images/volumes/phone.svg);
 }

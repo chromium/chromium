@@ -147,39 +147,6 @@ export async function testToggleHoldingSpaceCommand(done) {
         entries: [audioFileEntry, downloadFileEntry],
       },
     },
-    {
-      description: 'Tests selection from supported volume in `Recent Audio`',
-      currentRootType: VolumeManagerCommon.RootType.RECENT_AUDIO,
-      currentVolumeInfo: null,
-      selection: [audioFileEntry],
-      expect: {
-        canExecute: true,
-        hidden: false,
-        entries: [audioFileEntry],
-      },
-    },
-    {
-      description: 'Tests selection from supported volume in `Recent Images`',
-      currentRootType: VolumeManagerCommon.RootType.RECENT_AUDIO,
-      currentVolumeInfo: null,
-      selection: [imageFileEntry],
-      expect: {
-        canExecute: true,
-        hidden: false,
-        entries: [imageFileEntry],
-      },
-    },
-    {
-      description: 'Tests selection from supported volume in `Recent Videos`',
-      currentRootType: VolumeManagerCommon.RootType.RECENT_AUDIO,
-      currentVolumeInfo: null,
-      selection: [videoFileEntry],
-      expect: {
-        canExecute: true,
-        hidden: false,
-        entries: [videoFileEntry],
-      },
-    },
   ];
 
   // Run test cases.

@@ -43,10 +43,8 @@ export function testEveryRootTypeHasAVolumeType() {
     // switch because they do not have a corresponding volume.
     // TODO(tapted): Validate this against util.isFakeEntry(..) when
     // files_app_entry_types is moved to file_manager/base.
-    if (rootType === VolumeManagerCommon.RootType.RECENT ||
-        rootType === VolumeManagerCommon.RootType.RECENT_AUDIO ||
-        rootType === VolumeManagerCommon.RootType.RECENT_IMAGES ||
-        rootType === VolumeManagerCommon.RootType.RECENT_VIDEOS ||
+    if (rootType.startsWith('DEPRECATED_') ||
+        rootType === VolumeManagerCommon.RootType.RECENT ||
         rootType === VolumeManagerCommon.RootType.DRIVE_FAKE_ROOT ||
         rootType ===
             VolumeManagerCommon.RootType.DEPRECATED_ADD_NEW_SERVICES_MENU) {

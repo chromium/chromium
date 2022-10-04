@@ -132,15 +132,6 @@ VolumeManagerCommon.RootType = {
   // Root directory of an SMB file share.
   SMB: 'smb',
 
-  // Root directory of recently-modified audio files.
-  RECENT_AUDIO: 'recent_audio',
-
-  // Root directory of recently-modified image files.
-  RECENT_IMAGES: 'recent_images',
-
-  // Root directory of recently-modified video files.
-  RECENT_VIDEOS: 'recent_videos',
-
   // Trash.
   TRASH: 'trash',
 };
@@ -180,9 +171,9 @@ VolumeManagerCommon.RootTypesForUMA = [
   VolumeManagerCommon.RootType.EXTERNAL_MEDIA,                    // 21
   VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER,                // 22
   VolumeManagerCommon.RootType.SMB,                               // 23
-  VolumeManagerCommon.RootType.RECENT_AUDIO,                      // 24
-  VolumeManagerCommon.RootType.RECENT_IMAGES,                     // 25
-  VolumeManagerCommon.RootType.RECENT_VIDEOS,                     // 26
+  'DEPRECATED_RECENT_AUDIO',                                      // 24
+  'DEPRECATED_RECENT_IMAGES',                                     // 25
+  'DEPRECATED_RECENT_VIDEOS',                                     // 26
   VolumeManagerCommon.RootType.TRASH,                             // 27
   VolumeManagerCommon.RootType.GUEST_OS,                          // 28
 ];
