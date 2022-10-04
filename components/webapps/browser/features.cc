@@ -61,7 +61,7 @@ const base::Feature kSkipServiceWorkerCheckInstallOnly{
 
 // Enables showing a detailed install dialog for user installs.
 const base::Feature kDesktopPWAsDetailedInstallDialog{
-    "DesktopPWAsDetailedInstallDialog", base::FEATURE_ENABLED_BY_DEFAULT};
+    "DesktopPWAsDetailedInstallDialog", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool SkipBannerServiceWorkerCheck() {
   return base::FeatureList::IsEnabled(kSkipServiceWorkerCheckAll);
