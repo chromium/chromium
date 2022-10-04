@@ -862,7 +862,7 @@ class VariationsHttpHeadersBrowserTestWithOptimizationGuide
         {features::kLoadingPredictorUseOptimizationGuide,
          {{"use_predictions_for_preconnect", "true"}}},
         {optimization_guide::features::kOptimizationHints, {}}};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> disabled = {
         features::kLoadingPredictorUseLocalPredictions};
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
