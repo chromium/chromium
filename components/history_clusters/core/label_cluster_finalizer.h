@@ -5,18 +5,32 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_LABEL_CLUSTER_FINALIZER_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_LABEL_CLUSTER_FINALIZER_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "components/history_clusters/core/cluster_finalizer.h"
+
+namespace optimization_guide {
+struct EntityMetadata;
+}  // namespace optimization_guide
 
 namespace history_clusters {
 
 // A cluster finalizer that determines the label for a given cluster.
 class LabelClusterFinalizer : public ClusterFinalizer {
  public:
-  LabelClusterFinalizer();
+  explicit LabelClusterFinalizer(
+      const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+          entity_metadata_map);
   ~LabelClusterFinalizer() override;
 
   // ClusterFinalizer:
   void FinalizeCluster(history::Cluster& cluster) override;
+
+ private:
+  // A map from entity id to the metadata associated with it.
+  const base::flat_map<std::string, optimization_guide::EntityMetadata>
+      entity_metadata_map_;
 };
 
 }  // namespace history_clusters

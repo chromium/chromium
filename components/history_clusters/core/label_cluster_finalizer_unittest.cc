@@ -8,6 +8,7 @@
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,7 +20,20 @@ using ::testing::UnorderedElementsAre;
 class LabelClusterFinalizerTest : public ::testing::Test {
  public:
   void SetUp() override {
-    cluster_finalizer_ = std::make_unique<LabelClusterFinalizer>();
+    base::flat_map<std::string, optimization_guide::EntityMetadata>
+        entity_metadata_map;
+    optimization_guide::EntityMetadata md1;
+    md1.human_readable_name = "doesntmatter";
+    entity_metadata_map["someotherentity"] = md1;
+    optimization_guide::EntityMetadata md2;
+    md2.human_readable_name = "doesntmatter";
+    entity_metadata_map["highscoringentitybutlowvisitscore"] = md2;
+    optimization_guide::EntityMetadata label_md;
+    label_md.human_readable_name = "chosenlabel";
+    entity_metadata_map["baz"] = label_md;
+
+    cluster_finalizer_ =
+        std::make_unique<LabelClusterFinalizer>(entity_metadata_map);
   }
 
   void TearDown() override { cluster_finalizer_.reset(); }
@@ -38,13 +52,13 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://foo.com/")));
   visit.score = 0.8;
   visit.annotated_visit.content_annotations.model_annotations.entities = {
-      {"chosenlabel", 50}};
+      {"baz", 50}};
 
   history::ClusterVisit visit2 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/")));
   visit2.score = 0.25;
   visit2.annotated_visit.content_annotations.model_annotations.entities = {
-      {"chosenlabel", 50}, {"highscoringentitybutlowvisitscore", 100}};
+      {"baz", 50}, {"highscoringentitybutlowvisitscore", 100}};
 
   history::ClusterVisit visit3 = testing::CreateClusterVisit(
       testing::CreateDefaultAnnotatedVisit(3, GURL("https://baz.com/")));
@@ -52,7 +66,7 @@ TEST_F(LabelClusterFinalizerTest, ClusterWithNoSearchTerms) {
       testing::ClusterVisitToDuplicateClusterVisit(visit));
   visit3.score = 0.8;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"chosenlabel", 25}, {"someotherentity", 10}};
+      {"baz", 25}, {"someotherentity", 10}};
 
   {
     // With only search term labelling active, there should be no label.
@@ -143,7 +157,7 @@ TEST_F(LabelClusterFinalizerTest, TakesHighestScoringSearchTermIfAvailable) {
       testing::CreateDefaultAnnotatedVisit(2, GURL("https://baz.com/")));
   visit3.score = 0.8;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 100}, {"otherentity", 100}};
+      {"github", 100}, {"someotherentity", 100}};
   visit3.annotated_visit.content_annotations.search_terms = u"searchtermlabel";
 
   history::Cluster cluster;

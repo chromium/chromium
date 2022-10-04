@@ -370,7 +370,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>(
       entity_id_to_entity_metadata_map));
   if (GetConfig().should_label_clusters) {
-    cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>());
+    cluster_finalizers.push_back(std::make_unique<LabelClusterFinalizer>(
+        entity_id_to_entity_metadata_map));
   }
   if (clustering_request_source ==
       ClusteringRequestSource::kKeywordCacheGeneration) {

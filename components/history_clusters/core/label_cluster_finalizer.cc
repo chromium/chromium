@@ -13,13 +13,17 @@
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
+#include "components/optimization_guide/core/entity_metadata.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace history_clusters {
 
-LabelClusterFinalizer::LabelClusterFinalizer() = default;
+LabelClusterFinalizer::LabelClusterFinalizer(
+    const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+        entity_metadata_map)
+    : entity_metadata_map_(entity_metadata_map) {}
 LabelClusterFinalizer::~LabelClusterFinalizer() = default;
 
 void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
@@ -53,8 +57,13 @@ void LabelClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
                               ? it->second + (entity.weight * visit.score)
                               : entity.weight * visit.score;
         if (new_score > max_label_score) {
+          auto entity_metadata_it = entity_metadata_map_.find(entity.id);
+          if (entity_metadata_it == entity_metadata_map_.end()) {
+            continue;
+          }
           max_label_score = new_score;
-          current_highest_scoring_label = base::UTF8ToUTF16(entity.id);
+          current_highest_scoring_label =
+              base::UTF8ToUTF16(entity_metadata_it->second.human_readable_name);
           current_highest_scoring_label_unquoted =
               current_highest_scoring_label;
         }
