@@ -114,8 +114,12 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
 
 void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
     OnSyncCycleCompleted(syncer::SyncService* sync) {
-  if (!is_waiting_for_the_first_sync_cycle_)
+  // Reenrollment check is made on the first sync cycle when password sync is
+  // active.
+  if (!sync_util::IsPasswordSyncActive(sync) ||
+      !is_waiting_for_the_first_sync_cycle_) {
     return;
+  }
   is_waiting_for_the_first_sync_cycle_ = false;
 
   // If the sync cycle has completed successfully, the migrator
