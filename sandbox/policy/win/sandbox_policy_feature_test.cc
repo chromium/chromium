@@ -8,8 +8,8 @@ namespace sandbox {
 namespace policy {
 
 SandboxFeatureTest::SandboxFeatureTest() {
-  std::vector<base::Feature> enabled_features;
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
 
   if (::testing::get<TestParameter::kEnableRendererAppContainer>(GetParam()))
     enabled_features.push_back(features::kRendererAppContainer);
