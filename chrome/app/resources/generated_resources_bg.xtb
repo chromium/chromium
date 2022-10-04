@@ -788,6 +788,7 @@
 <translation id="1723824996674794290">&amp;Нов прозорец</translation>
 <translation id="1724801751621173132">Режим за въвеждане</translation>
 <translation id="1725562816265788801">Превъртане на разделите</translation>
+<translation id="1726503915437308071">Курсив</translation>
 <translation id="1729533290416704613">То също контролира коя страница се показва при търсене от полето за всичко.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />За да премахнете приложения, отворете „Настройки“ &gt; „Google Play Магазин“ &gt; „Управление на предпочитанията за Android“ &gt; „Приложения“ или мениджъра на приложенията. Докоснете това, което искате да деинсталирате (може да се наложи да прекарате пръст надясно или наляво, за да го намерите). Докоснете „Деинсталиране“ или „Деактивиране“.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Превъртане към последния раздел</translation>
@@ -1791,6 +1792,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2627424346328942291">Споделянето не е възможно</translation>
 <translation id="2628770867680720336">За да активирате отстраняването на грешки през ADB, трябва да възстановите фабричните настройки на този Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Разработване на приложения за Android</translation>
+<translation id="2629437048544561682">Изчистване на платното</translation>
 <translation id="2631498379019108537">Опциите за въвеждане да се показват в лавицата</translation>
 <translation id="2633212996805280240">Да се премахне ли „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> не успя да завърши инсталацията, но ще продължи да работи от образа си на диска.</translation>
@@ -2423,6 +2425,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3225319735946384299">Подписване на код</translation>
 <translation id="3226487301970807183">Превключване на подравнения вляво страничен панел</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3232558119926886907">Подравняване вдясно</translation>
 <translation id="3232754137068452469">Уеб приложение</translation>
 <translation id="3233271424239923319">Създаване на резервно копие за приложенията и файловете на Linux</translation>
 <translation id="3234251228180563751">Потребителското име съдържа повече от 1000 знака</translation>
@@ -2467,6 +2470,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3275778809241512831">Понастоящем вътрешният ви ключ за сигурност не е защитен. Моля, премахнете го от услугите, с които сте го използвали. За да отстраните проблема, нулирайте ключа за сигурност.</translation>
 <translation id="3275778913554317645">Отваряне като прозорец</translation>
 <translation id="3277214528693754078">Навигиране чрез текстов курсор (клавишно сърфиране)</translation>
+<translation id="3277594800340743211">Голяма сянка</translation>
 <translation id="3278001907972365362">Профилите ви в Google изискват внимание</translation>
 <translation id="3279092821516760512">Избраните контакти могат да споделят с вас, когато са в близост. Прехвърлянето няма да стартира, докато не се съгласите.</translation>
 <translation id="3279230909244266691">Това може да отнеме няколко минути. Виртуалната машина стартира.</translation>
@@ -3922,6 +3926,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4651484272688821107">Онлайн компонентът с ресурси за демонстрационен режим не можа да бъде зареден.</translation>
 <translation id="4651921906638302153">Не може да се влезе с този профил</translation>
 <translation id="4652935475563630866">Промяната в настройката за камерата изисква повторно стартиране на Parallels Desktop. За да продължите, стартирайте отново Parallels Desktop.</translation>
+<translation id="4653116291358041820">Малка сянка</translation>
 <translation id="4653405415038586100">Грешка при конфигурирането на Linux</translation>
 <translation id="465406513924180949">Показват се кошници, с чиято помощ лесно да се върнете към артикулите, които сте оставили в различни пазарски кошници в мрежата.
         <ph name="BREAK" />
@@ -4256,6 +4261,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4972737347717125191">Сайтовете могат да извеждат запитвания за използване на устройствата и данните за виртуална реалност</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Спиране на звука на сайта}other{Спиране на звука на сайтовете}}</translation>
 <translation id="497403230787583386">Проверките на сигурността завършиха. Документът ви ще бъде отпечатан.</translation>
+<translation id="4975543297921324897">Непропорционален шрифт</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Потвърждаване на достъпа</translation>
 <translation id="4980805016576257426">Това разширение съдържа злонамерен софтуер.</translation>
@@ -4657,6 +4663,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5390743329570580756">Изпращане за</translation>
 <translation id="5392192690789334093">Сайтове с разрешение да изпращат известия</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Връзка}other{# връзки}}</translation>
+<translation id="5395498824851198390">Стандартен шрифт</translation>
 <translation id="5396325212236512832">Автоматично влизане в профила ви в сайтове и приложения, като се ползват съхранени идентификационни данни. Ако е изключено, ще се иска потвърждение от вас преди всяко влизане в профил в сайт или приложение.</translation>
 <translation id="5397378439569041789">Устройство в павилионен режим или в такъв за подписване</translation>
 <translation id="5397794290049113714">Вие</translation>
@@ -4932,6 +4939,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5639549361331209298">Презареждане на тази страница – задръжте, за да видите още опции</translation>
 <translation id="5640133431808313291">Управление на ключовете за сигурност</translation>
 <translation id="5641608986289282154">Първи стъпки с <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Редактор на екранни снимки</translation>
 <translation id="5642508497713047">Подписващ CRL</translation>
 <translation id="5643321261065707929">Мрежа с отчитане</translation>
 <translation id="5643620609347735571">Изчистване и продължаване</translation>
@@ -5123,6 +5131,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5842497610951477805">Активиране на Bluetooth</translation>
 <translation id="5844574845205796324">Предлагане на ново съдържание за разглеждане</translation>
 <translation id="5846200638699387931">Синтактична грешка в релацията: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">Без сянка</translation>
 <translation id="5846504156837627898">Управление на разрешенията за сайтовете</translation>
 <translation id="5846807460505171493">Инсталиране на актуализации и приложения. С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки.</translation>
 <translation id="5849212445710944278">Вече е добавено</translation>
@@ -5487,6 +5496,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6185132558746749656">Местоположение на устройството</translation>
 <translation id="6190953336330058278">Приложения на Phone Hub</translation>
 <translation id="6195005504600220730">Да има достъп до информация за браузъра, операционната система и устройството ви</translation>
+<translation id="6195155925303302899">Подравняване в средата</translation>
 <translation id="6195693561221576702">Това устройство не може да бъде настроено в офлайн демонстрационен режим.</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="6196854373336333322">Разширението „<ph name="EXTENSION_NAME" />“ е поело контрол над настройките ви за прокси сървър. Това означава, че то може да променя, прекъсва или следи всичко, което правите онлайн. Ако не сте сигурни какво е причинило тази промяна, вероятно не искате тя да остава в сила.</translation>
@@ -6162,6 +6172,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6828860976882136098">Настройването на автоматични актуализации за всички потребители не бе успешно (грешка при изпълнението на предстартовия процес: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Декларация за поверителност на Google</translation>
 <translation id="6831043979455480757">Превод</translation>
+<translation id="6832218595502288407">Подравняване вляво</translation>
 <translation id="6833479554815567477">Разделът бе премахнат от групата „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Преминете към интелигентен и сигурен браузър</translation>
 <translation id="6833996806551876956">Пробен период за Privacy Sandbox</translation>
@@ -7573,6 +7584,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Чрез <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> Chrome разработва нови технологии, за да ви предпазва от проследяване в различни сайтове, съхранявайки отворената мрежа.</translation>
 <translation id="8161293209665121583">Режим за четене за уеб страниците</translation>
+<translation id="8161604891089629425">Контур</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на разделите в нов прозорец}}</translation>
 <translation id="8165997195302308593">Пренасочване на портове за Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{телефонен номер}other{# телефонни номера}}</translation>

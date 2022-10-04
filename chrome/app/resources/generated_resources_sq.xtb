@@ -778,6 +778,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1723824996674794290">&amp;Dritare e re</translation>
 <translation id="1724801751621173132">Modaliteti i hyrjes</translation>
 <translation id="1725562816265788801">Lëvizja përmes skedave</translation>
+<translation id="1726503915437308071">Fonti kursiv</translation>
 <translation id="1729533290416704613">Gjithashtu kontrollon se cila faqe shfaqet kur kërkon nga Omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Për të hequr aplikacionet, shko te Cilësimet &gt; Dyqani i Google Play &gt; Menaxho preferencat e Android &gt; Aplikacionet ose "Menaxheri i aplikacioneve". Më pas trokit tek aplikacioni që dëshiron të çinstalosh (mund të jetë e nevojshme që të rrëshqasësh djathtas ose majtas për të gjetur aplikacionin). Më pas trokit te "Çinstalo" ose "Çaktivizo".<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Lëviz drejt skedës së fundit</translation>
@@ -1778,6 +1779,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2627424346328942291">Nuk mund të ndahet</translation>
 <translation id="2628770867680720336">Kërkohet një rivendosje në cilësimet e fabrikës për këtë Chromebook për të aktivizuar korrigjimin e ADB-së. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Zhvillo aplikacione të Android</translation>
+<translation id="2629437048544561682">Pastro kanavacën</translation>
 <translation id="2631498379019108537">Shfaq opsionet e hyrjes në raft</translation>
 <translation id="2633212996805280240">Të hiqet "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> nuk mund ta përfundonte instalimin, por do të vazhdojë të ekzekutohet nga imazhi i diskut.</translation>
@@ -2410,6 +2412,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3225319735946384299">Nënshkrimi me kod</translation>
 <translation id="3226487301970807183">Kalo te paneli anësor i bashkërenditur majtas</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
+<translation id="3232558119926886907">Drejtvendos djathtas</translation>
 <translation id="3232754137068452469">Aplikacioni i uebit</translation>
 <translation id="3233271424239923319">Rezervo aplikacionet dhe skedarët Linux</translation>
 <translation id="3234251228180563751">Emri i përdoruesit është më shumë se 1000 karaktere</translation>
@@ -2454,6 +2457,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3275778809241512831">Çelësi yt i brendshëm i sigurisë është aktualisht i pasigurt. Hiqe atë nga çdo shërbim me të cilin e ke përdorur. Për të zgjidhur problemin, rivendos çelësin e sigurisë.</translation>
 <translation id="3275778913554317645">Hape si dritare</translation>
 <translation id="3277214528693754078">Navigo me kursorin e tekstit (shfletimi me kursorin e tekstit)</translation>
+<translation id="3277594800340743211">Hije e madhe</translation>
 <translation id="3278001907972365362">"Llogaria(të) jote e Google" ka nevojë për vëmendje</translation>
 <translation id="3279092821516760512">Kontaktet e zgjedhura mund të ndajnë me ty kur je në afërsi. Transferimet nuk do të fillojnë derisa të pranosh.</translation>
 <translation id="3279230909244266691">Procesi mund të zgjasë disa minuta. Po niset pajisja virtuale.</translation>
@@ -3907,6 +3911,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4651484272688821107">Komponenti në linjë me burimet e modalitetit të demonstrimit nuk mund të ngarkohej.</translation>
 <translation id="4651921906638302153">Nuk mund të identifikohesh me këtë llogari</translation>
 <translation id="4652935475563630866">Ndryshimi në cilësimin e kamerës kërkon që të riniset Parallels Desktop. Rinis Parallels Desktop për të vazhduar.</translation>
+<translation id="4653116291358041820">Hije e vogël</translation>
 <translation id="4653405415038586100">Gabim gjatë konfigurimit të Linux</translation>
 <translation id="465406513924180949">Po shikon karta që të ndihmojnë të kthehesh me lehtësi te artikujt që ke lënë te grumbujt e artikujve për blerje në ueb.
         <ph name="BREAK" />
@@ -4241,6 +4246,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4972737347717125191">Sajtet mund të kërkojnë të përdorin të dhënat dhe pajisjet e realitetit virtual</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Hiq zërin e sajtit}other{Hiq zërin e sajteve}}</translation>
 <translation id="497403230787583386">Kontrollet e sigurisë përfunduan. Dokumenti yt do të printohet.</translation>
+<translation id="4975543297921324897">Fonti me hapësirë fikse</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Konfirmo qasjen</translation>
 <translation id="4980805016576257426">Kjo shtesë përmban një softuer keqdashës.</translation>
@@ -4642,6 +4648,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5390743329570580756">Dërgo për</translation>
 <translation id="5392192690789334093">Lejohen të dërgojnë njoftime</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lidhje}other{# lidhje}}</translation>
+<translation id="5395498824851198390">Fonti i parazgjedhur</translation>
 <translation id="5396325212236512832">Identifikohu automatikisht në sajte dhe aplikacione duke përdorur kredencialet e ruajtura. Nëse është i çaktivizuar, do të të kërkohet gjithmonë konfirmim para se të identifikohesh në një sajt apo aplikacion.</translation>
 <translation id="5397378439569041789">Regjistro kioskën ose pajisjen sinjalizuese</translation>
 <translation id="5397794290049113714">Ti</translation>
@@ -4916,6 +4923,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5639549361331209298">Ringarkoje këtë faqe, mbaj shtypur për të parë më shumë opsione</translation>
 <translation id="5640133431808313291">Menaxho çelësat e sigurisë</translation>
 <translation id="5641608986289282154">Fillo të përdorësh <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Modifikuesi i imazhit të pamjes së ekranit</translation>
 <translation id="5642508497713047">Nënshkrues CRL</translation>
 <translation id="5643321261065707929">Rrjet me matje</translation>
 <translation id="5643620609347735571">Pastro dhe vazhdo</translation>
@@ -5107,6 +5115,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5842497610951477805">Aktivizo Bluetooth-in</translation>
 <translation id="5844574845205796324">Sugjero përmbajtje të re për të eksploruar</translation>
 <translation id="5846200638699387931">Gabim i sintaksës së marrëdhënies: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">Pa hije</translation>
 <translation id="5846504156837627898">Menaxho lejet e sajtit</translation>
 <translation id="5846807460505171493">Instalo përditësimet dhe aplikacionet. Duke vazhduar, ti pranon se kjo pajisje mund të shkarkojë dhe instalojë gjithashtu automatikisht përditësime dhe aplikacione nga Google, operatori yt celular, prodhuesi i pajisjes sate, duke përdorur mundësisht të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacioneve.</translation>
 <translation id="5849212445710944278">Është shtuar tashmë</translation>
@@ -5471,6 +5480,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6185132558746749656">Vendndodhja e pajisjes</translation>
 <translation id="6190953336330058278">Aplikacionet Phone Hub</translation>
 <translation id="6195005504600220730">Të lexojë informacionet për shfletuesin, sistemin operativ dhe pajisjen tënde</translation>
+<translation id="6195155925303302899">Drejtvendos në qendër</translation>
 <translation id="6195693561221576702">Kjo pajisje nuk mund të konfigurohet në modalitetin e demonstrimit jashtë linje.</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6196854373336333322">Shtesa <ph name="EXTENSION_NAME" /> ka marrë nën kontroll cilësimet e përfaqësuesit, që do të thotë se mund të ndryshojë, shkelë ose përgjojë çdo gjë që ti bën në linjë. Nëse s'je i sigurt se pse ndodhi ky ndryshim, ndoshta nuk e do.</translation>
@@ -6146,6 +6156,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6828860976882136098">Dështoi në konfigurimin e përditësimeve automatike për të gjithë përdoruesit (gabimi i ekzekutimit të kontrollit përfundimtar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Politika e privatësisë së Google</translation>
 <translation id="6831043979455480757">Përkthe</translation>
+<translation id="6832218595502288407">Drejtvendos majtas</translation>
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Kalo te një shfletues inteligjent dhe i sigurt</translation>
 <translation id="6833996806551876956">Prova e "Nismës për mjedis uebi privat"</translation>
@@ -7554,6 +7565,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Me <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome po zhvillon teknologji të reja për të të mbrojtur nga gjurmimi nëpër sajtet e uebit, ndërkohë që vazhdon të ruajë uebin e hapur.</translation>
 <translation id="8161293209665121583">Modaliteti i lexuesit për faqet e uebit</translation>
+<translation id="8161604891089629425">Fonti me kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
 <translation id="8165997195302308593">Transferimi i portës së Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{një numër telefoni}other{# numra telefoni}}</translation>

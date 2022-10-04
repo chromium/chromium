@@ -791,6 +791,7 @@
 <translation id="1723824996674794290">新視窗(&amp;N)</translation>
 <translation id="1724801751621173132">輸入法</translation>
 <translation id="1725562816265788801">分頁捲動</translation>
+<translation id="1726503915437308071">斜體字型</translation>
 <translation id="1729533290416704613">這個擴充功能也會控管您使用網址列搜尋時所顯示的網頁。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />如要移除應用程式，請前往「設定」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">碌去最後一個分頁</translation>
@@ -1795,6 +1796,7 @@
 <translation id="2627424346328942291">無法分享</translation>
 <translation id="2628770867680720336">必須將 Chromebook 回復原廠設定才能啟用 ADB 偵錯。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">開發 Android 應用程式</translation>
+<translation id="2629437048544561682">清除畫布</translation>
 <translation id="2631498379019108537">在捷徑列中顯示輸入法選項</translation>
 <translation id="2633212996805280240">要移除「<ph name="EXTENSION_NAME" />」嗎？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> 無法完成安裝，但會繼續透過磁碟影像執行。</translation>
@@ -2427,6 +2429,7 @@
 <translation id="3225319735946384299">代碼簽名</translation>
 <translation id="3226487301970807183">切換靠左對齊側邊面板</translation>
 <translation id="3227137524299004712">麥克風</translation>
+<translation id="3232558119926886907">靠右對齊</translation>
 <translation id="3232754137068452469">網絡應用程式</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
 <translation id="3234251228180563751">使用者名稱超過 1000 個字元</translation>
@@ -2471,6 +2474,7 @@
 <translation id="3275778809241512831">您目前的內部安全密鑰並不安全。請將其從所有您使用此密鑰的服務中移除。如要解決此問題，請重設安全密鑰。</translation>
 <translation id="3275778913554317645">在視窗中開啟</translation>
 <translation id="3277214528693754078">透過文字游標導覽 (鍵盤瀏覽)</translation>
+<translation id="3277594800340743211">大型陰影</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帳戶</translation>
 <translation id="3279092821516760512">所選聯絡人在附近時可與您分享內容。您必須選擇接受，系統才能傳送檔案。</translation>
 <translation id="3279230909244266691">此程序可能需時幾分鐘。正在啟動虛擬機器。</translation>
@@ -3925,6 +3929,7 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入網上組件。</translation>
 <translation id="4651921906638302153">無法使用此帳戶登入</translation>
 <translation id="4652935475563630866">Parallels Desktop 需要重新啟動，相機設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
+<translation id="4653116291358041820">小型陰影</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
 <translation id="465406513924180949">畫面會顯示購物車，以便您在網絡上輕鬆查看購物車中的商品。
         <ph name="BREAK" />
@@ -4259,6 +4264,7 @@
 <translation id="4972737347717125191">網站可要求使用虛擬實境﻿裝置和資料</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{將單一網站靜音}other{將多個網站靜音}}</translation>
 <translation id="497403230787583386">已完成安全檢查。即將列印文件。</translation>
+<translation id="4975543297921324897">等寬字型</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">確認存取權</translation>
 <translation id="4980805016576257426">這個擴充程式含有惡意軟件。</translation>
@@ -4660,6 +4666,7 @@
 <translation id="5390743329570580756">傳送類型</translation>
 <translation id="5392192690789334093">已允許傳送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
+<translation id="5395498824851198390">預設字型</translation>
 <translation id="5396325212236512832">使用已儲存的憑證自動登入網站和應用程式如果關閉此功能，系統將會在每次登入網站或應用程式前要求您進行確認。</translation>
 <translation id="5397378439569041789">註冊 Kiosk 或標牌裝置</translation>
 <translation id="5397794290049113714">您</translation>
@@ -4932,6 +4939,7 @@
 <translation id="5639549361331209298">重新載入這個網頁 (按住即可查看更多選項)</translation>
 <translation id="5640133431808313291">管理安全密鑰</translation>
 <translation id="5641608986289282154">開始使用 <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">螢幕截圖編輯器</translation>
 <translation id="5642508497713047">CRL 簽署者</translation>
 <translation id="5643321261065707929">按用量收費的網絡</translation>
 <translation id="5643620609347735571">清除並繼續</translation>
@@ -5123,6 +5131,7 @@
 <translation id="5842497610951477805">藍牙開關</translation>
 <translation id="5844574845205796324">建議可探索的新內容</translation>
 <translation id="5846200638699387931">關聯語法錯誤：<ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">沒有陰影</translation>
 <translation id="5846504156837627898">管理網站權限</translation>
 <translation id="5846807460505171493">安裝更新和應用程式。繼續操作即代表您同意此裝置亦可自動下載及安裝由 Google、您的流動網絡供應商及裝置製造商提供的更新和應用程式 (可能會耗用流動數據)。其中部分應用程式可能會提供應用程式內購買項目。</translation>
 <translation id="5849212445710944278">已加入</translation>
@@ -5487,6 +5496,7 @@
 <translation id="6185132558746749656">裝置位置</translation>
 <translation id="6190953336330058278">Phone Hub 應用程式</translation>
 <translation id="6195005504600220730">讀取您的瀏覽器、作業系統和裝置相關資料</translation>
+<translation id="6195155925303302899">置中對齊</translation>
 <translation id="6195693561221576702">無法在此裝置上設定離線示範模式。</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
@@ -6162,6 +6172,7 @@
 <translation id="6828860976882136098">無法為所有使用者設定自動更新 (預先執行錯誤：<ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Google 私隱權政策</translation>
 <translation id="6831043979455480757">翻譯</translation>
+<translation id="6832218595502288407">靠左對齊</translation>
 <translation id="6833479554815567477">分頁已經由包含「<ph name="GROUP_CONTENTS" />」嘅「<ph name="GROUP_NAME" />」群組度移除</translation>
 <translation id="683373380308365518">改用智能且安全的瀏覽器</translation>
 <translation id="6833996806551876956">私隱沙箱試用</translation>
@@ -7573,6 +7584,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Chrome 透過「<ph name="BEGIN_LINK" />私隱沙箱<ph name="END_LINK" />」開發新的技術，防止有心人士透過跨網站追蹤機制取得您的資料，同時保護開放網絡。</translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
+<translation id="8161604891089629425">輪廓字型</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
 <translation id="8165997195302308593">Crostini 連接埠轉送</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 個電話號碼}other{# 個電話號碼}}</translation>

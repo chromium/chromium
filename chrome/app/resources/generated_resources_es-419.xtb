@@ -778,6 +778,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1723824996674794290">&amp;Nueva ventana</translation>
 <translation id="1724801751621173132">Modo de entrada de texto</translation>
 <translation id="1725562816265788801">Desplazamiento de pestañas</translation>
+<translation id="1726503915437308071">Fuente en cursiva</translation>
 <translation id="1729533290416704613">También controla qué página se muestra al realizar búsquedas desde el cuadro multifunción.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Desplazarse hacia la última pestaña</translation>
@@ -1777,6 +1778,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2627424346328942291">No se puede compartir</translation>
 <translation id="2628770867680720336">Para habilitar la depuración de adb, es necesario restablecer la configuración de fábrica de esta Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Desarrollar apps para Android</translation>
+<translation id="2629437048544561682">Borrar lienzo</translation>
 <translation id="2631498379019108537">Mostrar opciones de entrada en la biblioteca</translation>
 <translation id="2633212996805280240">¿Quieres eliminar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> no pudo completar la instalación, pero se continuará ejecutando desde la imagen de disco.</translation>
@@ -2409,6 +2411,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3225319735946384299">Firma de código</translation>
 <translation id="3226487301970807183">Mover el panel lateral a la izquierda</translation>
 <translation id="3227137524299004712">Micrófono</translation>
+<translation id="3232558119926886907">Alinear a la derecha</translation>
 <translation id="3232754137068452469">Aplicación web</translation>
 <translation id="3233271424239923319">Crear una copia de seguridad de los archivos y apps de Linux</translation>
 <translation id="3234251228180563751">El nombre de usuario tiene más de 1,000 caracteres</translation>
@@ -2453,6 +2456,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3275778809241512831">Por el momento, tu llave de seguridad interna no es segura. Quítala de los servicios donde la hayas usado. Para resolver este problema, restablécela.</translation>
 <translation id="3275778913554317645">Abrir como ventana</translation>
 <translation id="3277214528693754078">Navegar con el cursor de texto (navegación por cursor de texto)</translation>
+<translation id="3277594800340743211">Sombra grande</translation>
 <translation id="3278001907972365362">Tus Cuentas de Google necesitan atención</translation>
 <translation id="3279092821516760512">Ciertos contactos pueden compartir contenido contigo cuando están cerca. Las transferencias no comenzarán hasta que las aceptes.</translation>
 <translation id="3279230909244266691">Este proceso puede demorar unos minutos. Se está iniciando la máquina virtual.</translation>
@@ -3906,6 +3910,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4651484272688821107">No se pudo cargar el componente en línea con los recursos del modo de demostración.</translation>
 <translation id="4651921906638302153">No puedes acceder con esta cuenta</translation>
 <translation id="4652935475563630866">Es necesario que reinicies Parallels Desktop para aplicar los cambios en la configuración de la cámara. Para continuar, reinicia Parallels Desktop.</translation>
+<translation id="4653116291358041820">Sombra pequeña</translation>
 <translation id="4653405415038586100">Se produjo un error al configurar Linux</translation>
 <translation id="465406513924180949">Estás viendo carritos para que puedas regresar a los elementos que dejaste en los carritos de compras en la Web.
         <ph name="BREAK" />
@@ -4240,6 +4245,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4972737347717125191">Permitir que los sitios soliciten permiso para usar datos y dispositivos de realidad virtual</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Silenciar sitio}other{Silenciar sitios}}</translation>
 <translation id="497403230787583386">Se completaron los controles de seguridad. Se imprimirá el documento.</translation>
+<translation id="4975543297921324897">Fuente monoespaciada</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmar acceso</translation>
 <translation id="4980805016576257426">Esta extensión contiene software malicioso.</translation>
@@ -4641,6 +4647,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5390743329570580756">Enviar para</translation>
 <translation id="5392192690789334093">Pueden enviar notificaciones</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Vínculo}other{# vínculos}}</translation>
+<translation id="5395498824851198390">Fuente predeterminada</translation>
 <translation id="5396325212236512832">Accede automáticamente a los sitios y las apps mediante las credenciales almacenadas. Si la función está inhabilitada, deberás confirmar siempre tu identidad para acceder a un sitio o una app.</translation>
 <translation id="5397378439569041789">Inscribir dispositivo de kiosco o señalización</translation>
 <translation id="5397794290049113714">Tú</translation>
@@ -4915,6 +4922,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5639549361331209298">Vuelve a cargar esta página y espera para ver más opciones.</translation>
 <translation id="5640133431808313291">Administrar llaves de seguridad</translation>
 <translation id="5641608986289282154">Empieza a utilizar <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Editor de capturas de pantalla</translation>
 <translation id="5642508497713047">Firmante de la CRL</translation>
 <translation id="5643321261065707929">Red de uso medido</translation>
 <translation id="5643620609347735571">Borrar y continuar</translation>
@@ -5106,6 +5114,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5842497610951477805">Activación de Bluetooth</translation>
 <translation id="5844574845205796324">Sugerir nuevo contenido para explorar</translation>
 <translation id="5846200638699387931">Error de sintaxis relacional: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">Sin sombra</translation>
 <translation id="5846504156837627898">Administrar los permisos de sitios</translation>
 <translation id="5846807460505171493">Instala actualizaciones y apps. Si continúas, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu proveedor y el fabricante del dispositivo usando datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación.</translation>
 <translation id="5849212445710944278">Ya se agregó</translation>
@@ -5470,6 +5479,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6185132558746749656">Ubicación del dispositivo</translation>
 <translation id="6190953336330058278">Apps en Phone Hub</translation>
 <translation id="6195005504600220730">Leer información acerca de tu navegador, SO y dispositivo</translation>
+<translation id="6195155925303302899">Centrar</translation>
 <translation id="6195693561221576702">Este dispositivo no puede configurarse en el modo de demostración sin conexión.</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión "<ph name="EXTENSION_NAME" />" tomó el control de la configuración de proxy, lo que significa que puede modificar, dañar o espiar cualquier actividad que lleves a cabo en línea. Si no sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>
@@ -6145,6 +6155,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6828860976882136098">No se pudieron configurar actualizaciones automáticas para todos los usuarios (error de ejecución preliminar: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Política de Privacidad de Google</translation>
 <translation id="6831043979455480757">Traducir</translation>
+<translation id="6832218595502288407">Alinear a la izquierda</translation>
 <translation id="6833479554815567477">Se quitó la pestaña del grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Cambia a un navegador inteligente y seguro</translation>
 <translation id="6833996806551876956">Prueba de Privacy Sandbox</translation>
@@ -7556,6 +7567,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">A través de <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" />, Chrome está desarrollando nuevas tecnologías para protegerte ante el seguimiento entre sitios, a la vez que se preserva la Web abierta.</translation>
 <translation id="8161293209665121583">Modo de lectura para páginas web</translation>
+<translation id="8161604891089629425">Fuente con contorno</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
 <translation id="8165997195302308593">Redirección de puertos para Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un número de teléfono}other{# números de teléfono}}</translation>

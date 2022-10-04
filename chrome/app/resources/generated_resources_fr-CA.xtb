@@ -782,6 +782,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1723824996674794290">&amp;Nouvelle fenêtre</translation>
 <translation id="1724801751621173132">Mode d'entrée</translation>
 <translation id="1725562816265788801">Défilement des onglets</translation>
+<translation id="1726503915437308071">Caractères italiques</translation>
 <translation id="1729533290416704613">Elle définit également quelle page s'affiche lorsque vous effectuez une recherche dans l'omnibox.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications. Ensuite, touchez l'application que vous souhaitez désinstaller (vous devrez peut-être balayer l'écran vers la droite ou vers la gauche pour trouver l'application). Enfin, touchez Désinstaller ou Désactiver.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Faire défiler l'écran vers le dernier onglet</translation>
@@ -1782,6 +1783,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2627424346328942291">Impossible de partager</translation>
 <translation id="2628770867680720336">Vous devez réinitialiser ce Chromebook à ses paramètres par défaut pour activer le débogage PDA. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Concevoir des applications Android</translation>
+<translation id="2629437048544561682">Effacer le Canvas</translation>
 <translation id="2631498379019108537">Afficher les options d'entrée dans l'étagère</translation>
 <translation id="2633212996805280240">Désinstaller « <ph name="EXTENSION_NAME" /> »?</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> n'a pas pu terminer l'installation, mais va poursuivre son exécution à partir de son image disque.</translation>
@@ -2414,6 +2416,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3225319735946384299">Signature de code</translation>
 <translation id="3226487301970807183">Activer ou désactiver le panneau latéral aligné à gauche</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3232558119926886907">Aligner à droite</translation>
 <translation id="3232754137068452469">Application Web</translation>
 <translation id="3233271424239923319">Sauvegarder les applications et les fichiers Linux</translation>
 <translation id="3234251228180563751">Le nom d'utilisateur comprend plus de 1 000 caractères</translation>
@@ -2458,6 +2461,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3275778809241512831">Votre clé de sécurité interne n'est pas sécuritaire pour le moment. Veuillez la supprimer de tout service avec lequel vous l'utilisiez. Pour régler ce problème, veuillez réinitialiser la clé de sécurité.</translation>
 <translation id="3275778913554317645">Ouvrir dans une fenêtre</translation>
 <translation id="3277214528693754078">Naviguer à l'aide du curseur de texte (navigation au clavier)</translation>
+<translation id="3277594800340743211">Grande ombre</translation>
 <translation id="3278001907972365362">Un ou plusieurs de vos comptes Google nécessitent votre attention</translation>
 <translation id="3279092821516760512">Certains contacts peuvent partager du contenu avec vous lorsqu'ils sont à proximité. Les transferts ne démarreront pas tant que vous ne les autoriserez pas.</translation>
 <translation id="3279230909244266691">Ce processus peut prendre quelques minutes. Démarrage de la machine virtuelle en cours…</translation>
@@ -3911,6 +3915,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4651484272688821107">Impossible de charger le composant en ligne avec les ressources du mode Démo.</translation>
 <translation id="4651921906638302153">Impossible de se connecter avec ce compte</translation>
 <translation id="4652935475563630866">Pour que la modification apportée à la caméra soit appliquée, Parallels Desktop doit être relancé. Relancez Parallels Desktop pour continuer.</translation>
+<translation id="4653116291358041820">Petite ombre</translation>
 <translation id="4653405415038586100">Une erreur s'est produite lors de la configuration de Linux</translation>
 <translation id="465406513924180949">Des paniers sont affichés pour vous permettre de retourner aux articles que vous avez laissés dans les paniers d'achat sur le Web de façon conviviale.
         <ph name="BREAK" />
@@ -4245,6 +4250,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4972737347717125191">Les sites peuvent demander à utiliser des données et des appareils de réalité virtuelle</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Désactiver le son sur le site}one{Désactiver le son sur le site}other{Désactiver le son sur les sites}}</translation>
 <translation id="497403230787583386">La vérification de sécurité est terminée. Votre document sera imprimé.</translation>
+<translation id="4975543297921324897">Police à espace unique</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmation d'accès</translation>
 <translation id="4980805016576257426">Cette extension contient un logiciel malveillant.</translation>
@@ -4646,6 +4652,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5390743329570580756">Envoyer pour</translation>
 <translation id="5392192690789334093">Autorisés à envoyer des notifications</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Lien}one{# lien}other{# liens}}</translation>
+<translation id="5395498824851198390">Police par défaut</translation>
 <translation id="5396325212236512832">Connectez-vous automatiquement aux sites et aux applications au moyen de l'authentifiant enregistré. Si cette fonctionnalité est désactivée, une confirmation vous sera demandée avant chaque connexion à un site ou à une application.</translation>
 <translation id="5397378439569041789">Inscrire l'appareil kiosk ou d'affichage</translation>
 <translation id="5397794290049113714">Vous</translation>
@@ -4920,6 +4927,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5639549361331209298">Actualiser cette page, maintenir enfoncé pour obtenir davantage d'options</translation>
 <translation id="5640133431808313291">Gérer les clés de sécurité</translation>
 <translation id="5641608986289282154">Commencer à utiliser <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Éditeur d'images de capture d'écran</translation>
 <translation id="5642508497713047">Signataire de la liste de révocation de certificats</translation>
 <translation id="5643321261065707929">Réseau à connexion mesurée</translation>
 <translation id="5643620609347735571">Effacer et continuer</translation>
@@ -5111,6 +5119,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5842497610951477805">Activer le Bluetooth</translation>
 <translation id="5844574845205796324">Suggérer du nouveau contenu à explorer</translation>
 <translation id="5846200638699387931">Erreur de syntaxe de relation : <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">Pas d'ombre</translation>
 <translation id="5846504156837627898">Gérer les autorisations du site</translation>
 <translation id="5846807460505171493">Installer les mises à jour et les applications. En continuant, vous acceptez que cet appareil puisse également télécharger et installer automatiquement des mises à jour et des applications de Google, de votre fournisseur de services et du fabricant de l'appareil, possiblement par l'intermédiaire du réseau de données cellulaires. Certaines de ces applications peuvent proposer des achats au moyen de l'application.</translation>
 <translation id="5849212445710944278">Déjà ajouté</translation>
@@ -5475,6 +5484,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6185132558746749656">Position de l'appareil</translation>
 <translation id="6190953336330058278">Applications de la fonctionnalité Phone Hub</translation>
 <translation id="6195005504600220730">Lire de l'information à propos de votre navigateur, votre appareil et son SE</translation>
+<translation id="6195155925303302899">Centrer</translation>
 <translation id="6195693561221576702">Cet appareil ne peut pas être configuré en mode Démo hors ligne.</translation>
 <translation id="6196640612572343990">Bloquer les témoins de tiers</translation>
 <translation id="6196854373336333322">L'extension « <ph name="EXTENSION_NAME" /> » a pris le contrôle de vos paramètres de mandataire, ce qui signifie qu'elle peut modifier ou espionner tout ce que vous faites en ligne. Si vous ne savez pas pourquoi ce changement s'est produit, vous ne voulez probablement pas l'accepter.</translation>
@@ -6152,6 +6162,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6828860976882136098">Impossible de configurer les mises à jour automatiques pour tous les utilisateurs (erreur d'exécution des vérifications : <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Politique de confidentialité de Google</translation>
 <translation id="6831043979455480757">Traduire</translation>
+<translation id="6832218595502288407">Aligner à gauche</translation>
 <translation id="6833479554815567477">Onglet retiré du groupe <ph name="GROUP_NAME" /> : <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Passer à un navigateur intelligent et sécurisé</translation>
 <translation id="6833996806551876956">Essai du bac à sable de confidentialité</translation>
@@ -7562,6 +7573,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Grâce au <ph name="BEGIN_LINK" />bac à sable de confidentialité<ph name="END_LINK" />, Chrome développe de nouvelles technologies pour vous protéger du suivi intersites, tout en préservant le caractère ouvert du Web.</translation>
 <translation id="8161293209665121583">Mode Lecteur pour pages Web</translation>
+<translation id="8161604891089629425">Police de contour</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
 <translation id="8165997195302308593">Redirection de port Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>

@@ -776,6 +776,7 @@
 <translation id="1723824996674794290">打开新的窗口(&amp;N)</translation>
 <translation id="1724801751621173132">输入法</translation>
 <translation id="1725562816265788801">标签页滚动</translation>
+<translation id="1726503915437308071">斜体</translation>
 <translation id="1729533290416704613">它还能够控制您通过多功能框进行搜索时系统显示的页面。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">滚动至最后一个标签页</translation>
@@ -1772,6 +1773,7 @@
 <translation id="2627424346328942291">无法分享</translation>
 <translation id="2628770867680720336">要启用 ADB 调试，您必须将此 Chromebook 恢复出厂设置。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">开发 Android 应用</translation>
+<translation id="2629437048544561682">清除画布</translation>
 <translation id="2631498379019108537">在任务栏中显示输入法选项</translation>
 <translation id="2633212996805280240">要删除“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" />无法完成安装，但是会通过其磁盘映像继续运行。</translation>
@@ -2404,6 +2406,7 @@
 <translation id="3225319735946384299">代码签名</translation>
 <translation id="3226487301970807183">显示/隐藏靠左对齐的侧边栏</translation>
 <translation id="3227137524299004712">麦克风</translation>
+<translation id="3232558119926886907">右对齐</translation>
 <translation id="3232754137068452469">网络应用</translation>
 <translation id="3233271424239923319">备份 Linux 应用和文件</translation>
 <translation id="3234251228180563751">用户名长度超过了 1,000 个字符</translation>
@@ -2448,6 +2451,7 @@
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
 <translation id="3277214528693754078">使用文本光标（光标浏览模式）进行导航</translation>
+<translation id="3277594800340743211">大阴影</translation>
 <translation id="3278001907972365362">您需要注意自己的 Google 帐号</translation>
 <translation id="3279092821516760512">附近的所选联系人可与您分享内容。仅当您接受后，系统才会开始传输内容。</translation>
 <translation id="3279230909244266691">此过程可能需要几分钟的时间。正在启动虚拟机。</translation>
@@ -3898,6 +3902,7 @@
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4651921906638302153">无法使用此帐号登录</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
+<translation id="4653116291358041820">小阴影</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
 <translation id="465406513924180949">系统会显示购物车，方便您回来购买网购时留在购物车中的商品。
         <ph name="BREAK" />
@@ -4232,6 +4237,7 @@
 <translation id="4972737347717125191">网站可以请求使用虚拟实境设备和数据</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="497403230787583386">已完成安全检查。即将打印您的文档。</translation>
+<translation id="4975543297921324897">等宽字体</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">确认访问</translation>
 <translation id="4980805016576257426">此扩展程序包含恶意软件。</translation>
@@ -4633,6 +4639,7 @@
 <translation id="5390743329570580756">为何发送</translation>
 <translation id="5392192690789334093">允许发送通知</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
+<translation id="5395498824851198390">默认字体</translation>
 <translation id="5396325212236512832">使用存储的凭据自动登录网站和应用。如果关闭了该功能，在您每次登录网站或应用之前，系统都会要求您确认。</translation>
 <translation id="5397378439569041789">注册自助服务终端或数字标牌设备</translation>
 <translation id="5397794290049113714">您</translation>
@@ -4905,6 +4912,7 @@
 <translation id="5639549361331209298">重新加载此网页，按下可查看更多选项</translation>
 <translation id="5640133431808313291">管理安全密钥</translation>
 <translation id="5641608986289282154">开始使用 <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">屏幕截图编辑器</translation>
 <translation id="5642508497713047">CRL 签名人</translation>
 <translation id="5643321261065707929">按流量计费的网络</translation>
 <translation id="5643620609347735571">清除并继续</translation>
@@ -5096,6 +5104,7 @@
 <translation id="5842497610951477805">蓝牙开关</translation>
 <translation id="5844574845205796324">建议新内容以供探索</translation>
 <translation id="5846200638699387931">相关语法错误：<ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">没有阴影</translation>
 <translation id="5846504156837627898">管理网站权限</translation>
 <translation id="5846807460505171493">安装更新和应用。继续操作即表示您同意：此设备也可自动下载和安装来自 Google、您的运营商和设备制造商的更新和应用（此过程可能会使用移动数据网络）。部分应用可能会提供应用内购商品。</translation>
 <translation id="5849212445710944278">此前已添加</translation>
@@ -5459,6 +5468,7 @@
 <translation id="6185132558746749656">设备位置</translation>
 <translation id="6190953336330058278">Phone Hub 应用</translation>
 <translation id="6195005504600220730">读取您的浏览器、操作系统和设备的相关信息</translation>
+<translation id="6195155925303302899">居中对齐</translation>
 <translation id="6195693561221576702">无法在此设备上设置离线演示模式。</translation>
 <translation id="6196640612572343990">阻止第三方 Cookie</translation>
 <translation id="6196854373336333322">“<ph name="EXTENSION_NAME" />”扩展程序控制了您的代理设置，也就是说，它可以更改、中断或窃听您在网上执行的任何操作。如果您不确定出现这种变化的原因，那么这种变化可能并不是您所希望的。</translation>
@@ -6134,6 +6144,7 @@
 <translation id="6828860976882136098">未能按您的要求为所有用户设置自动更新（执行预定流程时出错：<ph name="ERROR_NUMBER" />）</translation>
 <translation id="682971198310367122">Google 隐私权政策</translation>
 <translation id="6831043979455480757">翻译</translation>
+<translation id="6832218595502288407">左对齐</translation>
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>
 <translation id="6833996806551876956">隐私沙盒试用</translation>
@@ -7544,6 +7555,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Chrome 正在通过 <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> 开发新技术，以便既能保护开放网络又能使您免受跨网站跟踪。</translation>
 <translation id="8161293209665121583">使用阅读器模式显示网页</translation>
+<translation id="8161604891089629425">轮廓字体</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>

@@ -793,6 +793,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1723824996674794290">&amp;Nyt vindue</translation>
 <translation id="1724801751621173132">Input-tilstand</translation>
 <translation id="1725562816265788801">Fanerulning</translation>
+<translation id="1726503915437308071">Skrifttype med kursiv</translation>
 <translation id="1729533290416704613">Den styrer også, hvilken side der vises, når du søger via omnifeltet.</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">Rul til sidste fane</translation>
@@ -1796,6 +1797,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2627424346328942291">Delingen lykkedes ikke</translation>
 <translation id="2628770867680720336">Du skal gendanne fabriksindstillingerne på denne Chromebook for at aktivere ADB-fejlretning. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Vær med til at udvikle Android-apps</translation>
+<translation id="2629437048544561682">Ryd lærred</translation>
 <translation id="2631498379019108537">Vis indtastningsmuligheder på hylden</translation>
 <translation id="2633212996805280240">Vil du fjerne "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="263325223718984101">Installationen af <ph name="PRODUCT_NAME" /> kunne ikke gennemføres, men vil fortsætte kørslen fra dets diskbillede.</translation>
@@ -2428,6 +2430,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3225319735946384299">Kodesignering</translation>
 <translation id="3226487301970807183">Vis/skjul venstrejusteret sidepanel</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232558119926886907">Højrejusteret</translation>
 <translation id="3232754137068452469">Webapp</translation>
 <translation id="3233271424239923319">Sikkerhedskopiér Linux-apps og -filer</translation>
 <translation id="3234251228180563751">Brugernavnet er på mere end 1.000 tegn</translation>
@@ -2472,6 +2475,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3275778809241512831">Din interne sikkerhedsnøgle er i øjeblikket ikke sikker. Fjern den fra alle de enheder, som du har brugt den med. Nulstil sikkerhedsnøglen for at løse problemet.</translation>
 <translation id="3275778913554317645">Åbn som vindue</translation>
 <translation id="3277214528693754078">Naviger med tekstmarkør (tastenavigation)</translation>
+<translation id="3277594800340743211">Stor skygge</translation>
 <translation id="3278001907972365362">Din Google-konto kræver handling</translation>
 <translation id="3279092821516760512">Dine valgte kontakter kan dele med dig, når de er i nærheden. Overførsler starter først, når du har accepteret dem.</translation>
 <translation id="3279230909244266691">Denne proces kan tage et par minutter. Den virtuelle maskine startes.</translation>
@@ -3926,6 +3930,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4651484272688821107">Onlinekomponenten med ressourcer til demotilstand kunne ikke indlæses.</translation>
 <translation id="4651921906638302153">Du kan ikke logge ind med denne konto</translation>
 <translation id="4652935475563630866">Ændringen af kameraindstillingen kræver, at Parallels Desktop genstartes. Genstart Parallels Desktop for at fortsætte.</translation>
+<translation id="4653116291358041820">Lille skygge</translation>
 <translation id="4653405415038586100">Der opstod en fejl under konfigurationen af Linux</translation>
 <translation id="465406513924180949">Du får vist kurve, som hjælper dig med nemt at vende tilbage til de varer, du har efterladt i kurve rundt omkring på nettet.
         <ph name="BREAK" />
@@ -4260,6 +4265,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4972737347717125191">Websites kan anmode om tilladelse til at bruge virtual reality-enheder og -data</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{Slå lyden fra på dette website}one{Slå lyden fra på dette website}other{Slå lyden fra på disse websites}}</translation>
 <translation id="497403230787583386">Sikkerhedstjekkene blev gennemført. Dit dokument udskrives.</translation>
+<translation id="4975543297921324897">Skrifttype med fast tegnbredde</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Bekræft adgang</translation>
 <translation id="4980805016576257426">Denne udvidelse indeholder malware.</translation>
@@ -4661,6 +4667,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5390743329570580756">Send til</translation>
 <translation id="5392192690789334093">Har tilladelse til at sende notifikationer</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# links}}</translation>
+<translation id="5395498824851198390">Standardskrifttype</translation>
 <translation id="5396325212236512832">Log automatisk ind på websites og i apps ved hjælp af gemte loginoplysninger. Hvis indstillingen er deaktiveret, bliver du bedt om en bekræftelse, hver gang du logger ind på et website eller i en app.</translation>
 <translation id="5397378439569041789">Tilmeld terminal- eller signeringsenhed</translation>
 <translation id="5397794290049113714">Dig</translation>
@@ -4935,6 +4942,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5639549361331209298">Opdater denne side, og hold markøren for at se flere valgmuligheder</translation>
 <translation id="5640133431808313291">Administrer sikkerhedsnøgler</translation>
 <translation id="5641608986289282154">Kom i gang med at bruge <ph name="DEVICE_OS" /></translation>
+<translation id="5641648607875312660">Redigering af screenshot</translation>
 <translation id="5642508497713047">CRL-underskriver</translation>
 <translation id="5643321261065707929">Forbrugsafregnet netværk</translation>
 <translation id="5643620609347735571">Ryd og fortsæt</translation>
@@ -5126,6 +5134,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5842497610951477805">Aktivering af Bluetooth</translation>
 <translation id="5844574845205796324">Foreslå nyt indhold til mig</translation>
 <translation id="5846200638699387931">Fejl i relationens syntaks: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">Ingen skygge</translation>
 <translation id="5846504156837627898">Administrer websitetilladelser</translation>
 <translation id="5846807460505171493">Installer opdateringer og apps. Ved at fortsætte accepterer du, at denne enhed også automatisk kan downloade og installere opdateringer og apps fra Google, dit mobilselskab og enhedsproducenten, muligvis ved hjælp af mobildata. Nogle af disse apps tilbyder køb i appen.</translation>
 <translation id="5849212445710944278">Allerede tilføjet</translation>
@@ -5490,6 +5499,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6185132558746749656">Enhedslokation</translation>
 <translation id="6190953336330058278">Telefonstyring-apps</translation>
 <translation id="6195005504600220730">Læs oplysninger om din browser, dit operativsystem og din enhed</translation>
+<translation id="6195155925303302899">Centreret</translation>
 <translation id="6195693561221576702">Enheden kan ikke konfigureres i offlinedemotilstand.</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
 <translation id="6196854373336333322">Udvidelsen <ph name="EXTENSION_NAME" /> har taget kontrol over dine proxyindstillinger, hvilket betyder, at den kan ændre, ødelægge eller aflytte alt, hvad du foretager dig på nettet. Hvis du ikke er sikker på, hvorfor denne ændring er sket, er den sandsynligvis uønsket.</translation>
@@ -6167,6 +6177,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6828860976882136098">Automatiske opdateringer kunne ikke konfigureres for alle brugere (fejl ved forhåndsudførelse: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="682971198310367122">Googles privatlivspolitik</translation>
 <translation id="6831043979455480757">Oversæt</translation>
+<translation id="6832218595502288407">Venstrejusteret</translation>
 <translation id="6833479554815567477">Fanen blev fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">Skift til en smart og sikker browser</translation>
 <translation id="6833996806551876956">Prøveperiode til Privacy Sandbox</translation>
@@ -7577,6 +7588,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="81610453212785426">Med <ph name="BEGIN_LINK" />Privacy Sandbox<ph name="END_LINK" /> udvikler Chrome nye teknologier, der beskytter dig mod sporing på tværs af forskellige websites og samtidig bevarer det åbne net.</translation>
 <translation id="8161293209665121583">Læser-tilstand for websider</translation>
+<translation id="8161604891089629425">Skrifttype med kontur</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flyt fanen til et nyt vindue}one{Flyt fanen til et nyt vindue}other{Flyt fanerne til et nyt vindue}}</translation>
 <translation id="8165997195302308593">Omdirigering af port i Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{et telefonnummer}one{# telefonnummer}other{# telefonnumre}}</translation>

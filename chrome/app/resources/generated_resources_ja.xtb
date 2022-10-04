@@ -780,6 +780,7 @@
 <translation id="1723824996674794290">新しいウィンドウ(&amp;N)</translation>
 <translation id="1724801751621173132">ローマ字入力・かな入力</translation>
 <translation id="1725562816265788801">タブスクロール</translation>
+<translation id="1726503915437308071">斜体フォント</translation>
 <translation id="1729533290416704613">この拡張機能では、アドレスバーからの検索時に表示されるページも制御されます。</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />アプリを削除するには、まず [設定] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。<ph name="END_PARAGRAPH1" /></translation>
 <translation id="1730989807608739928">最後のタブまでスクロール</translation>
@@ -1774,6 +1775,7 @@
 <translation id="2627424346328942291">共有できません</translation>
 <translation id="2628770867680720336">ADB デバッグを有効にするには、この Chromebook を出荷時の設定にリセットする必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2629227353894235473">Android アプリの開発</translation>
+<translation id="2629437048544561682">キャンバスを消去</translation>
 <translation id="2631498379019108537">シェルフに入力オプションを表示</translation>
 <translation id="2633212996805280240">「<ph name="EXTENSION_NAME" />」を削除しますか？</translation>
 <translation id="263325223718984101"><ph name="PRODUCT_NAME" /> のインストールを完了できませんでした。ただし、今後もディスク イメージから実行できます。</translation>
@@ -2406,6 +2408,7 @@
 <translation id="3225319735946384299">コード署名</translation>
 <translation id="3226487301970807183">左揃えのサイドパネルを切り替えます</translation>
 <translation id="3227137524299004712">マイク</translation>
+<translation id="3232558119926886907">右揃え</translation>
 <translation id="3232754137068452469">ウェブアプリ</translation>
 <translation id="3233271424239923319">Linux のアプリとファイルをバックアップします</translation>
 <translation id="3234251228180563751">ユーザー名が 1,000 文字を超えています</translation>
@@ -2450,6 +2453,7 @@
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
 <translation id="3277214528693754078">テキスト カーソルを使って移動する（カーソル ブラウジング）</translation>
+<translation id="3277594800340743211">大きいシャドウ</translation>
 <translation id="3278001907972365362">お使いの Google アカウントは対応が必要です</translation>
 <translation id="3279092821516760512">近くにいる選択した連絡先が共有できます。許可するまで転送は行われません。</translation>
 <translation id="3279230909244266691">この処理には数分かかることがあります。仮想マシンを起動します。</translation>
@@ -3898,6 +3902,7 @@
 <translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
 <translation id="4651921906638302153">このアカウントではログインできません</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
+<translation id="4653116291358041820">小さいシャドウ</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
 <translation id="465406513924180949">ウェブ上でショッピング カートに入れた商品に簡単にアクセスできるよう、カートが表示されています。
         <ph name="BREAK" />
@@ -4231,6 +4236,7 @@
 <translation id="4972737347717125191">サイトがバーチャル リアリティ デバイスとデータの使用を要求できるようにする</translation>
 <translation id="4973325300212422370">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="497403230787583386">セキュリティ チェックが完了しました。ドキュメントが印刷されます。</translation>
+<translation id="4975543297921324897">等幅フォント</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" /> / <ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">アクセスの確認</translation>
 <translation id="4980805016576257426">この拡張機能には不正なソフトウェアが含まれています。</translation>
@@ -4631,6 +4637,7 @@
 <translation id="5390743329570580756">送信先</translation>
 <translation id="5392192690789334093">通知の送信を許可するサイト</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{リンク}other{# 件のリンク}}</translation>
+<translation id="5395498824851198390">デフォルトのフォント</translation>
 <translation id="5396325212236512832">保存済みの認証情報を使用してサイトやアプリに自動的にログインできます。この機能をオフにすると、サイトやアプリにログインするときに毎回確認を求められます。</translation>
 <translation id="5397378439569041789">キオスクまたはサイネージ デバイスを登録</translation>
 <translation id="5397794290049113714">あなた</translation>
@@ -4904,6 +4911,7 @@
 <translation id="5639549361331209298">このページを再読み込みするには、詳細オプションが表示されるまで押し続けます</translation>
 <translation id="5640133431808313291">セキュリティ キーの管理</translation>
 <translation id="5641608986289282154"><ph name="DEVICE_OS" /> のご利用開始</translation>
+<translation id="5641648607875312660">スクリーンショット画像エディタ</translation>
 <translation id="5642508497713047">CRL の署名者</translation>
 <translation id="5643321261065707929">従量制ネットワーク</translation>
 <translation id="5643620609347735571">削除して続行</translation>
@@ -5095,6 +5103,7 @@
 <translation id="5842497610951477805">Bluetooth 有効</translation>
 <translation id="5844574845205796324">提案されるコンテンツの範囲を拡大する</translation>
 <translation id="5846200638699387931">関係を表す構文にエラーがあります: <ph name="ERROR_LINE" /></translation>
+<translation id="5846455742152785308">シャドウなし</translation>
 <translation id="5846504156837627898">サイトの権限を管理</translation>
 <translation id="5846807460505171493">アップデートやアプリをインストールします。続行すると、Google、ご利用の携帯通信会社、デバイスの製造元からのアップデートやアプリもデバイスで自動的にダウンロードおよびインストールされる場合があることについて、同意したものと見なされます（ダウンロードの際にはモバイルデータ通信が使用される可能性もあります）。こうしたアプリの一部ではアプリ内購入が提案される場合もあります。</translation>
 <translation id="5849212445710944278">すでに追加されています</translation>
@@ -5456,6 +5465,7 @@
 <translation id="6185132558746749656">デバイスの位置情報</translation>
 <translation id="6190953336330058278">スマートフォン ハブ アプリ</translation>
 <translation id="6195005504600220730">ブラウザ、OS、デバイスに関する情報の読み取り</translation>
+<translation id="6195155925303302899">中央揃え</translation>
 <translation id="6195693561221576702">このデバイスはオフライン デモモードで設定できません。</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6196854373336333322">拡張機能「<ph name="EXTENSION_NAME" />」によってプロキシ設定が制御されています。オンラインで行う操作は、この拡張機能によって変更、遮断、傍受される可能性があります。この変更が行われた理由に心当たりがない場合、これは不正な変更と考えられます。</translation>
@@ -6129,6 +6139,7 @@
 <translation id="6828860976882136098">すべてのユーザーで自動更新を行うよう設定できませんでした（プリフライト実行エラー: <ph name="ERROR_NUMBER" />）</translation>
 <translation id="682971198310367122">Google プライバシー ポリシー</translation>
 <translation id="6831043979455480757">翻訳</translation>
+<translation id="6832218595502288407">左揃え</translation>
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="683373380308365518">スマートで安全なブラウザをぜひご利用ください</translation>
 <translation id="6833996806551876956">プライバシー サンドボックス（試用版）</translation>
@@ -7537,6 +7548,7 @@
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />（<ph name="TIME_REMAINING" />）</translation>
 <translation id="81610453212785426">Chrome では、<ph name="BEGIN_LINK" />プライバシー サンドボックス<ph name="END_LINK" />という取り組みを通じて、クロスサイト トラッキングからユーザーを保護しつつ、オープンウェブの理念を支える新しい技術を開発しています。</translation>
 <translation id="8161293209665121583">ウェブページのリーダーモード</translation>
+<translation id="8161604891089629425">アウトライン フォント</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
 <translation id="8165997195302308593">Crostini のポート転送</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
