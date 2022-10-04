@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "cc/base/switches.h"
 #include "components/embedder_support/switches.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
@@ -63,6 +64,7 @@ bool AddCommandLineArgsFromConfig(const base::Value& config,
       embedder_support::kOriginTrialDisabledTokens,
       switches::kDisableFeatures,
       switches::kDisableGpuWatchdog,
+      switches::kDisableQuic,
       switches::kDisableMipmapGeneration,
       // TODO(crbug.com/1082821): Remove this switch from the allow-list.
       switches::kEnableCastStreamingReceiver,
