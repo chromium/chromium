@@ -96,20 +96,23 @@ std::unique_ptr<message_center::Notification> CreatePre2022Notification(
     scoped_refptr<message_center::NotificationDelegate> delegate,
     message_center::NotifierId notifier_id,
     bool is_wifi) {
-  return CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE,
-      NetworkPortalNotificationController::kNotificationId,
-      l10n_util::GetStringUTF16(
-          is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
-                  : IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
-      l10n_util::GetStringFUTF16(
-          is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI
-                  : IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIRED,
-          base::UTF8ToUTF16(network->name())),
-      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
-      message_center::RichNotificationData(), std::move(delegate),
-      kNotificationCaptivePortalIcon,
-      message_center::SystemNotificationWarningLevel::WARNING);
+  std::unique_ptr<message_center::Notification> notification =
+      CreateSystemNotification(
+          message_center::NOTIFICATION_TYPE_SIMPLE,
+          NetworkPortalNotificationController::kNotificationId,
+          l10n_util::GetStringUTF16(
+              is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIFI
+                      : IDS_PORTAL_DETECTION_NOTIFICATION_TITLE_WIRED),
+          l10n_util::GetStringFUTF16(
+              is_wifi ? IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIFI
+                      : IDS_PORTAL_DETECTION_NOTIFICATION_MESSAGE_WIRED,
+              base::UTF8ToUTF16(network->name())),
+          /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
+          notifier_id, message_center::RichNotificationData(),
+          std::move(delegate), kNotificationCaptivePortalIcon,
+          message_center::SystemNotificationWarningLevel::WARNING);
+  notification->set_never_timeout(true);
+  return notification;
 }
 
 void CloseNotification() {
