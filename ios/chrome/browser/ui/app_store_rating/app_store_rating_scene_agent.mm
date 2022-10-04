@@ -129,10 +129,11 @@ NSString* const kActiveDaysInPastWeek = @"ActiveDaysInPastWeek";
 
   // Add kActiveDaysInPastWeek to NSUserDefaults if it doesn't already exist.
   if ([defaults objectForKey:kActiveDaysInPastWeek] == nil) {
-    [defaults setObject:[NSMutableArray alloc] forKey:kActiveDaysInPastWeek];
+    [defaults setObject:[[NSMutableArray alloc] init]
+                 forKey:kActiveDaysInPastWeek];
   }
   NSMutableArray* activeDaysInPastWeek =
-      [defaults objectForKey:kActiveDaysInPastWeek];
+      [[defaults objectForKey:kActiveDaysInPastWeek] mutableCopy];
 
   // Exit early if the last recorded day was today.
   if ([activeDaysInPastWeek lastObject] != nil &&
