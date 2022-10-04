@@ -259,7 +259,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
+    # tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
         "enable_weetbix_queries": 100,
@@ -291,7 +291,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(),
+    # tryjob = try_.job(),
     experiments = {
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
@@ -348,12 +348,35 @@ try_.builder(
     ],
 )
 
-try_.builder(
+try_.orchestrator_builder(
     name = "android-nougat-x86-rel",
-    mirrors = ["ci/android-nougat-x86-rel"],
-    tryjob = try_.job(
-        experiment_percentage = 5,
+    mirrors = [
+        "ci/android-nougat-x86-rel",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
     ),
+    check_for_flakiness = True,
+    compilator = "android-nougat-x86-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    tryjob = try_.job(),
+    experiments = {
+        "enable_weetbix_queries": 100,
+        "weetbix.retry_weak_exonerations": 100,
+        "remove_src_checkout_experiment": 100,
+        "weetbix.enable_weetbix_exonerations": 100,
+    },
+    use_orchestrator_pool = True,
+)
+
+try_.compilator_builder(
+    name = "android-nougat-x86-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    check_for_flakiness = True,
+    main_list_view = "try",
 )
 
 try_.builder(
