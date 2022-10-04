@@ -69,8 +69,8 @@ AutofillContextMenuManager::AutofillContextMenuManager(
       menu_model_(menu_model),
       delegate_(delegate),
       browser_(browser) {
-  if (delegate_)
-    params_ = delegate_->params();
+  DCHECK(delegate_);
+  params_ = delegate_->params();
 }
 
 AutofillContextMenuManager::~AutofillContextMenuManager() {
@@ -83,6 +83,17 @@ void AutofillContextMenuManager::AppendItems() {
           features::kAutofillShowManualFallbackInContextMenu)) {
     return;
   }
+
+  content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
+  if (!rfh)
+    return;
+
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(rfh);
+  // Do not show autofill context menu options for input fields that cannot be
+  // filled by the driver. See crbug.com/1367547.
+  if (!driver || !driver->CanShowAutofillUi())
+    return;
 
   DCHECK(personal_data_manager_);
   DCHECK(menu_model_);
@@ -98,7 +109,7 @@ void AutofillContextMenuManager::AppendItems() {
         PopupHidingReason::kOverlappingWithAutofillContextMenu);
   }
 
-  // Stores all the profile values added to the content menu alongwith the
+  // Stores all the profile values added to the context menu along with the
   // command id of the row.
   std::vector<std::pair<CommandId, ContextMenuItem>>
       detail_items_added_to_context_menu;
