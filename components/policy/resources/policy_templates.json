@@ -17647,6 +17647,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable remote attestation for the device',
+        },
+        {
+          'value': False,
+          'caption': 'Disable remote attestation for the device',
+        },
+      ],
       'device_only': True,
       'example_value': True,
       'id': 207,
@@ -17666,6 +17676,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable remote attestation for the user',
+        },
+        {
+          'value': False,
+          'caption': 'Disable remote attestation for the user',
+        },
+      ],
       'example_value': True,
       'id': 200,
       'caption': '''Enable remote attestation for the user''',
@@ -17729,6 +17749,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable remote attestation for content protection',
+        },
+        {
+          'value': False,
+          'caption': 'Disable remote attestation for content protection',
+        },
+      ],
       'device_only': True,
       'example_value': True,
       'id': 239,
@@ -18022,6 +18052,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable transfer of SAML SSO Cookies into user session during sign-in',
+        },
+        {
+          'value': False,
+          'caption': 'Disable transfer of SAML SSO Cookies into user session during sign-in',
+        },
+      ],
       'example_value': True,
       'id': 271,
       'caption': '''Transfer SAML IdP cookies during login''',
@@ -18110,6 +18150,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Smart Lock',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow Smart Lock',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 272,
@@ -18160,6 +18210,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow guest browser logins',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent guest browser logins',
+        },
+      ],
       'example_value': True,
       'id': 275,
       'caption': '''Enable guest mode in browser''',
