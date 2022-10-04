@@ -34,7 +34,6 @@
 -CrossSiteSubframe/DragAndDropBrowserTest.DragSameOriginImageBetweenFrames/*
 -DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
 -DesktopWindowTreeHostPlatformImplTest.CaptureEventForwarding
--DesktopWindowTreeHostPlatformImplTest.Deactivate
 -DesktopWindowTreeHostPlatformImplTest.InputMethodFocus
 -ExtensionApiTest.WindowOpenFocus
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
@@ -45,11 +44,6 @@
 -SameSiteSubframe/DragAndDropBrowserTest.DragCorsSameOriginImageBetweenFrames/*
 -SameSiteSubframe/DragAndDropBrowserTest.DragCrossOriginImageBetweenFrames/*
 -SameSiteSubframe/DragAndDropBrowserTest.DragSameOriginImageBetweenFrames/*
--SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
--TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
--WidgetInputMethodInteractiveTest.Activation
--WidgetInputMethodInteractiveTest.OneWindow
--WidgetInputMethodInteractiveTest.TwoWindows
 
 # TODO(crbug.com/1195712): Implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand

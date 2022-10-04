@@ -5,3 +5,11 @@
 
 # Older versions of ash don't support injecting touch events via weston-test.
 -TabDragging/*/1
+
+# Can be removed when ash >= M110
+-SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
+-TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
+-WidgetInputMethodInteractiveTest.Activation
+-WidgetInputMethodInteractiveTest.OneWindow
+-WidgetInputMethodInteractiveTest.TwoWindows
+-DesktopWindowTreeHostPlatformImplTest.Deactivate

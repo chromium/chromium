@@ -558,22 +558,32 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
 TEST_F(DesktopWindowTreeHostPlatformImplTest, Deactivate) {
   std::unique_ptr<Widget> widget(CreateWidget(gfx::Rect(100, 100, 100, 100)));
 
-  views::test::WidgetActivationWaiter waiter(widget.get(), true);
-  widget->Show();
-  widget->Activate();
-  waiter.Wait();
+  {
+    views::test::WidgetActivationWaiter waiter(widget.get(), true);
+    widget->Show();
+    widget->Activate();
+    waiter.Wait();
+  }
 
-  widget->Deactivate();
-  // Regardless of whether |widget|'s X11 window eventually gets deactivated,
-  // |widget|'s "active" state should change.
-  EXPECT_FALSE(widget->IsActive());
+  {
+    // Regardless of whether |widget|'s X11 window eventually gets deactivated,
+    // |widget|'s "active" state should change.
+    views::test::WidgetActivationWaiter waiter(widget.get(), false);
+    widget->Deactivate();
+    waiter.Wait();
+    EXPECT_FALSE(widget->IsActive());
+  }
 
-  // |widget|'s X11 window should still be active. Reactivating |widget| should
-  // update the widget's "active" state.
-  // Note: Activating a widget whose X11 window is not active does not
-  // synchronously update the widget's "active" state.
-  widget->Activate();
-  EXPECT_TRUE(widget->IsActive());
+  {
+    // |widget|'s X11 window should still be active. Reactivating |widget|
+    // should update the widget's "active" state. Note: Activating a widget
+    // whose X11 window is not active does not synchronously update the widget's
+    // "active" state.
+    views::test::WidgetActivationWaiter waiter(widget.get(), true);
+    widget->Activate();
+    waiter.Wait();
+    EXPECT_TRUE(widget->IsActive());
+  }
 }
 
 // Chrome attempts to make mouse capture look synchronous on Linux. Test that
