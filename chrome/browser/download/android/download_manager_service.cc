@@ -61,7 +61,6 @@ using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 using offline_items_collection::android::OfflineItemBridge;
-using OfflineItemSchedule = offline_items_collection::OfflineItemSchedule;
 
 namespace {
 
@@ -161,9 +160,6 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
     otr_profile_id = profile->GetOTRProfileID().ConvertToJavaOTRProfileID(env);
   }
 
-  absl::optional<OfflineItemSchedule> offline_item_schedule;
-  auto j_offline_item_schedule =
-      OfflineItemBridge::CreateOfflineItemSchedule(env, offline_item_schedule);
   return Java_DownloadInfo_createDownloadInfo(
       env, ConvertUTF8ToJavaString(env, item->GetGuid()),
       ConvertUTF8ToJavaString(env, item->GetFileNameToReportUser().value()),
@@ -181,8 +177,7 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       item->GetLastAccessTime().ToJavaTime(), item->IsDangerous(),
       static_cast<int>(
           OfflineItemUtils::ConvertDownloadInterruptReasonToFailState(
-              item->GetLastReason())),
-      j_offline_item_schedule);
+              item->GetLastReason())));
 }
 
 static jlong JNI_DownloadManagerService_Init(JNIEnv* env,

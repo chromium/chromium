@@ -47,8 +47,7 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       item.allow_metered, item.received_bytes, item.progress.value,
       item.progress.max.value_or(-1), static_cast<jint>(item.progress.unit),
       item.time_remaining_ms, item.is_dangerous, item.can_rename,
-      item.ignore_visuals, item.content_quality_score,
-      OfflineItemBridge::CreateOfflineItemSchedule(env, item.schedule));
+      item.ignore_visuals, item.content_quality_score);
 }
 
 }  // namespace
@@ -82,19 +81,6 @@ ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateUpdateDelta(
   return Java_OfflineItemBridge_createUpdateDelta(
       env, update_delta.value().state_changed,
       update_delta.value().visuals_changed);
-}
-
-// static
-ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateOfflineItemSchedule(
-    JNIEnv* env,
-    const absl::optional<OfflineItemSchedule>& schedule) {
-  if (!schedule.has_value())
-    return ScopedJavaLocalRef<jobject>();
-
-  int64_t start_time_ms =
-      schedule->start_time.has_value() ? schedule->start_time->ToJavaTime() : 0;
-  return Java_OfflineItemBridge_createOfflineItemSchedule(
-      env, schedule->only_on_wifi, start_time_ms);
 }
 
 OfflineItemBridge::OfflineItemBridge() = default;

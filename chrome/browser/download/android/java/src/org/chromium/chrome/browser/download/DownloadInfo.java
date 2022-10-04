@@ -17,7 +17,6 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.PendingState;
@@ -64,7 +63,6 @@ public final class DownloadInfo {
     @FailState
     private final int mFailState;
     private final boolean mShouldPromoteOrigin;
-    private final OfflineItemSchedule mSchedule;
 
     private DownloadInfo(Builder builder) {
         mUrl = builder.mUrl == null ? GURL.emptyGURL() : builder.mUrl;
@@ -105,7 +103,6 @@ public final class DownloadInfo {
         mPendingState = builder.mPendingState;
         mFailState = builder.mFailState;
         mShouldPromoteOrigin = builder.mShouldPromoteOrigin;
-        mSchedule = builder.mSchedule;
     }
 
     @NonNull
@@ -246,10 +243,6 @@ public final class DownloadInfo {
         return mShouldPromoteOrigin;
     }
 
-    public OfflineItemSchedule getOfflineItemSchedule() {
-        return mSchedule;
-    }
-
     /**
      * Helper method to build a {@link DownloadInfo} from an {@link OfflineItem}.
      * @param item    The {@link OfflineItem} to mimic.
@@ -316,8 +309,7 @@ public final class DownloadInfo {
                 .setIcon(visuals == null ? null : visuals.icon)
                 .setPendingState(item.pendingState)
                 .setFailState(item.failState)
-                .setShouldPromoteOrigin(item.promoteOrigin)
-                .setOfflineItemSchedule(item.schedule);
+                .setShouldPromoteOrigin(item.promoteOrigin);
     }
 
     /**
@@ -359,7 +351,6 @@ public final class DownloadInfo {
         @FailState
         private int mFailState;
         private boolean mShouldPromoteOrigin;
-        private OfflineItemSchedule mSchedule;
 
         public Builder setUrl(GURL url) {
             mUrl = url;
@@ -522,11 +513,6 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setOfflineItemSchedule(OfflineItemSchedule schedule) {
-            mSchedule = schedule;
-            return this;
-        }
-
         public DownloadInfo build() {
             return new DownloadInfo(this);
         }
@@ -567,8 +553,7 @@ public final class DownloadInfo {
                     .setIcon(downloadInfo.getIcon())
                     .setPendingState(downloadInfo.getPendingState())
                     .setFailState(downloadInfo.getFailState())
-                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin())
-                    .setOfflineItemSchedule(downloadInfo.getOfflineItemSchedule());
+                    .setShouldPromoteOrigin(downloadInfo.getShouldPromoteOrigin());
             return builder;
         }
     }
@@ -579,7 +564,7 @@ public final class DownloadInfo {
             OTRProfileID otrProfileId, int state, int percentCompleted, boolean isPaused,
             boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
             GURL originalUrl, GURL referrerUrl, long timeRemainingInMs, long lastAccessTime,
-            boolean isDangerous, @FailState int failState, OfflineItemSchedule schedule) {
+            boolean isDangerous, @FailState int failState) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 
         Progress progress = new Progress(bytesReceived,
@@ -606,7 +591,6 @@ public final class DownloadInfo {
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
                 .setFailState(failState)
-                .setOfflineItemSchedule(schedule)
                 .build();
     }
 }

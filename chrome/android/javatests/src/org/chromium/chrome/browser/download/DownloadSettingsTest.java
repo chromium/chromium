@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -97,17 +96,6 @@ public class DownloadSettingsTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.DOWNLOAD_LATER, ChromeFeatureList.OFFLINE_PAGES_PREFETCHING})
-    public void testGeneralSettings() throws Exception {
-        mSettingsActivityTestRule.startSettingsActivity();
-        assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);
-        assertPreference(DownloadSettings.PREF_LOCATION_PROMPT_ENABLED);
-        mSettingsActivityTestRule.getActivity().finish();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.DOWNLOAD_LATER)
     @EnableFeatures(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING)
     public void testWithoutDownloadLater() throws Exception {
         mSettingsActivityTestRule.startSettingsActivity();

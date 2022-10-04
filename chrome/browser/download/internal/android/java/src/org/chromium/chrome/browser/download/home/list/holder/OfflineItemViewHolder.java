@@ -52,7 +52,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
     // flag to hide rename list menu option for offline pages
     private boolean mCanRename;
     private boolean mCanShare;
-    private boolean mIsScheduled;
 
     /**
      * Creates a new instance of a {@link OfflineItemViewHolder}.
@@ -73,7 +72,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;
         mCanRename = offlineItem.canRename;
         mCanShare = UiUtils.canShare(offlineItem);
-        mIsScheduled = offlineItem.schedule != null;
 
         // Push 'interaction' state
         bindOnClick(properties, item, offlineItem);
@@ -108,11 +106,6 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuButton
     }
 
     private void bindOnClick(PropertyModel properties, ListItem item, OfflineItem offlineItem) {
-        // For scheduled items, click doesn't do anything.
-        if (mIsScheduled) {
-            return;
-        }
-
         itemView.setOnClickListener(v -> {
             if (mSelectionView != null && mSelectionView.isInSelectionMode()) {
                 properties.get(ListProperties.CALLBACK_SELECTION).onResult(item);

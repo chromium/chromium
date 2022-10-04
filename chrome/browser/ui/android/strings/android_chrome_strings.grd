@@ -1696,14 +1696,6 @@ Your Google account may have other forms of browsing history like searches and a
           Discard
         </message>
 
-      <!-- Download later -->
-      <message name="IDS_DOWNLOAD_DATE_TIME_PICKER_NEXT_TEXT" desc="The text for the positive button of the download date time picker dialog.">
-        Next
-      </message>
-      <message name="IDS_DOWNLOAD_LATER_PROMPT_ENABLED_TITLE" desc="A setting text to ask whether to show a dialog about when to download.">
-        Ask when to save files
-      </message>
-
       <!-- Downloads location -->
       <message name="IDS_DOWNLOADS_LOCATION_SELECTOR_TITLE" desc="Title of the preference that allows the user to select which of the folders they would like to make the default location to save their downloads.">
         Download location
@@ -2255,20 +2247,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
           =1 {1 download pending}
           other {# downloads pending}}
       </message>
-      <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_SCHEDULED" desc="Download message label describing that one or more downloads are scheduled">
-        {FILE_COUNT, plural,
-          =1 {1 download scheduled}
-          other {# downloads scheduled}}
-      </message>
-      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION_ON_WIFI" desc="Download message text describing that user can find about their download status from notifications.">
-        Download will start when on Wi-Fi
-      </message>
-      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION_ON_DATE" desc="Download message text describing that the download was scheduled to start at a later date.">
-        Download will start on <ph name="date">%1$s<ex>Feb 28 2020</ex></ph>.
-      </message>
-      <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_SCHEDULED_DESCRIPTION_ON_TIME" desc="Download message text describing that the download was scheduled to start at a later time.">
-        Download will start at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
-      </message>
 
       <message name="IDS_INCOGNITO_DOWNLOAD_MESSAGE_TITLE" desc="Download title displayed in a prompt message when the user downloads a file in Incognito mode.">
         Download file?
@@ -2744,9 +2722,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_DOWNLOAD_MANAGER_JUST_NOW" desc="Text on a label describing that the associated download event happened just now.">
         Just now
-      </message>
-      <message name="IDS_DOWNLOAD_MANAGER_SCHEDULED_LATER" desc="Text on a label describing that the associated download is scheduled to start later.">
-        Scheduled for later
       </message>
       <message name="IDS_DOWNLOAD_MANAGER_OFFLINE_HOME" desc="The title text on download home indicating that we are in offline mode.">
         Offline Home

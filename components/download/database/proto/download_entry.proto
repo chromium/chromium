@@ -48,6 +48,7 @@ message UkmInfo {
 }
 
 // Information about when to start the download, used by download later feature.
+// Deprecated.
 message DownloadSchedule {
   optional int64 start_time = 1;
 }
@@ -81,7 +82,7 @@ message InProgressInfo {
   optional bool metered = 25;
   optional int64 bytes_wasted = 26;
   optional int32 auto_resume_count = 27;
-  optional DownloadSchedule download_schedule = 28;
+  optional DownloadSchedule download_schedule = 28;  // // Deprecated.
   optional enterprise_connectors.DownloadItemRerouteInfo reroute_info = 29;
   optional int32 credentials_mode = 30;  // network::mojom::CredentialsMode
   optional int64 range_request_from = 31;

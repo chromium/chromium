@@ -38,7 +38,6 @@ import org.chromium.components.browser_ui.util.date.CalendarFactory;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
@@ -319,35 +318,6 @@ public class DateOrderedListMutatorTest {
         assertOfflineItem(mModel.get(1), buildCalendar(2018, 2, 1, 1), item1);
         assertSectionHeader(mModel.get(2), buildCalendar(2018, 1, 1, 0));
         assertOfflineItem(mModel.get(3), buildCalendar(2018, 1, 1, 1), item2);
-    }
-
-    /**
-     * Action                               List
-     * 1. Set(item1 @ 1:00 1/1/2018         [ Header Scheduled for later,
-     *              Scheduled for later,      item1  @ 1:00 1/1/2018
-     *        item2 @ 1:00 2/1/2018           Header Just Now
-     *              Video IN_PROGRESS         item2  @ 1:00 2/1/2018
-     *        item3 @ 1:00 1/1/2018           DATE   1/1/2018
-     *              Audio COMPLETE)           item3  @ 1:00 1/1/2018 ]
-     */
-    @Test
-    public void testScheduledForLaterSection() {
-        Calendar calendar = buildCalendar(2018, 1, 1, 1);
-        OfflineItem item1 = buildItem("1", calendar, OfflineItemFilter.VIDEO);
-        item1.schedule = new OfflineItemSchedule(false, calendar.getTimeInMillis() + 1000);
-        OfflineItem item2 = buildItem("1", buildCalendar(2018, 2, 1, 1), OfflineItemFilter.VIDEO);
-        OfflineItem item3 = buildItem("2", buildCalendar(2018, 1, 1, 1), OfflineItemFilter.AUDIO);
-        item2.state = OfflineItemState.IN_PROGRESS;
-        when(mSource.getItems()).thenReturn(Arrays.asList(item1, item2, item3));
-        DateOrderedListMutator list = createMutatorWithJustNowProvider();
-
-        Assert.assertEquals(6, mModel.size());
-        assertScheduledLaterHeader(mModel.get(0));
-        assertOfflineItem(mModel.get(1), calendar, item1);
-        assertJustNowSection(mModel.get(2));
-        assertOfflineItem(mModel.get(3), buildCalendar(2018, 2, 1, 1), item2);
-        assertSectionHeader(mModel.get(4), buildCalendar(2018, 1, 1, 0));
-        assertOfflineItem(mModel.get(5), buildCalendar(2018, 1, 1, 1), item3);
     }
 
     /**
@@ -1276,9 +1246,6 @@ public class DateOrderedListMutatorTest {
         Assert.assertEquals(SectionHeaderListItem.generateStableId(
                                     SectionHeaderType.JUST_NOW, calendar.getTimeInMillis()),
                 StableIds.JUST_NOW_SECTION);
-        Assert.assertEquals(SectionHeaderListItem.generateStableId(
-                                    SectionHeaderType.SCHEDULED_LATER, calendar.getTimeInMillis()),
-                StableIds.SCHEDULE_LATER_SECTION);
     }
 
     private static void assertJustNowSection(ListItem item) {
@@ -1286,13 +1253,6 @@ public class DateOrderedListMutatorTest {
         SectionHeaderListItem sectionHeader = (SectionHeaderListItem) item;
         Assert.assertEquals(SectionHeaderType.JUST_NOW, sectionHeader.type);
         Assert.assertEquals(StableIds.JUST_NOW_SECTION, item.stableId);
-    }
-
-    private static void assertScheduledLaterHeader(ListItem item) {
-        Assert.assertTrue(item instanceof SectionHeaderListItem);
-        SectionHeaderListItem sectionHeader = (SectionHeaderListItem) item;
-        Assert.assertEquals(SectionHeaderType.SCHEDULED_LATER, sectionHeader.type);
-        Assert.assertEquals(StableIds.SCHEDULE_LATER_SECTION, item.stableId);
     }
 
     private static void assertCardHeader(ListItem item, Calendar calendar, String domain) {

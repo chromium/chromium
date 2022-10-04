@@ -31,15 +31,5 @@ public class OfflineItemBridgeUnitTest {
         Assert.assertEquals(OfflineItemState.COMPLETE, item.state);
         Assert.assertEquals(FailState.NO_FAILURE, item.failState);
         Assert.assertEquals(PendingState.NOT_PENDING, item.pendingState);
-        Assert.assertNull(item.schedule);
-    }
-
-    @CalledByNative
-    public void testOfflineItemSchedule(
-            OfflineItem item, boolean expectedOnlyOnWifi, long expectedStartTime) {
-        Assert.assertNotNull(item);
-        Assert.assertNotNull(item.schedule);
-        Assert.assertEquals(expectedOnlyOnWifi, item.schedule.onlyOnWifi);
-        Assert.assertEquals(expectedStartTime, item.schedule.startTimeMs);
     }
 }

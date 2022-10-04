@@ -36,8 +36,6 @@ namespace {
 const char kNow[] = "1 Sep 2020 01:00:00 GMT";
 const DownloadTaskType kResumptionTaskType =
     DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_TASK;
-const DownloadTaskType kDownloadLaterTaskType =
-    DownloadTaskType::DOWNLOAD_LATER_TASK;
 
 base::Time GetNow() {
   base::Time now;
@@ -140,8 +138,6 @@ TEST_F(AutoResumptionHandlerTest, TaskFinishedCalledOnDownloadCompletion) {
 
   // Complete the download.
   EXPECT_CALL(*task_manager_, NotifyTaskFinished(kResumptionTaskType, _));
-  EXPECT_CALL(*task_manager_,
-              NotifyTaskFinished(kDownloadLaterTaskType, false));
   EXPECT_CALL(*task_manager_, UnscheduleTask(kResumptionTaskType));
   SetDownloadState(item.get(), DownloadItem::COMPLETE, false, false);
   auto_resumption_handler_->OnDownloadUpdated(item.get());
@@ -161,8 +157,6 @@ TEST_F(AutoResumptionHandlerTest, TaskFinishedCalledOnDownloadRemoved) {
 
   // Remove the download.
   EXPECT_CALL(*task_manager_, NotifyTaskFinished(kResumptionTaskType, _));
-  EXPECT_CALL(*task_manager_,
-              NotifyTaskFinished(kDownloadLaterTaskType, false));
   SetDownloadState(item.get(), DownloadItem::COMPLETE, false, false);
   auto_resumption_handler_->OnDownloadRemoved(item.get());
   task_runner_->FastForwardUntilNoTasksRemain();
@@ -193,8 +187,6 @@ TEST_F(AutoResumptionHandlerTest, MultipleDownloads) {
   // Finish item2. The task should now complete.
   EXPECT_CALL(*task_manager_, UnscheduleTask(kResumptionTaskType));
   EXPECT_CALL(*task_manager_, NotifyTaskFinished(kResumptionTaskType, _));
-  EXPECT_CALL(*task_manager_,
-              NotifyTaskFinished(kDownloadLaterTaskType, false));
   SetDownloadState(item2.get(), DownloadItem::COMPLETE, false, false);
   auto_resumption_handler_->OnDownloadUpdated(item2.get());
   task_runner_->FastForwardUntilNoTasksRemain();

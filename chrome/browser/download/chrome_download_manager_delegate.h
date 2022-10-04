@@ -257,7 +257,6 @@ class ChromeDownloadManagerDelegate
                            RequestConfirmation_Android);
   FRIEND_TEST_ALL_PREFIXES(ChromeDownloadManagerDelegateTest,
                            CancelAllEphemeralWarnings);
-  FRIEND_TEST_ALL_PREFIXES(DownloadLaterTriggerTest, DownloadLaterTrigger);
 
   using IdCallbackVector = std::vector<content::DownloadIdCallback>;
 

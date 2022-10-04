@@ -166,7 +166,6 @@ android_resources("java_resources") {
     "java/res/drawable/group_card_footer_curved_border.xml",
     "java/res/drawable/group_card_header_curved_border.xml",
     "java/res/drawable/group_card_item_border.xml",
-    "java/res/drawable/ic_file_download_scheduled_24dp.xml",
     "java/res/drawable/infobar_download_complete_animation.xml",
     "java/res/layout/download_home_tabs.xml",
     "java/res/layout/download_home_toolbar.xml",

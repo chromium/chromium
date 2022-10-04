@@ -11,8 +11,4 @@ found in the LICENSE file.
     <style name="TextAppearance.DownloadDialogTitle" parent="TextAppearance.AlertDialogTitleStyle">
         <item name="android:textSize">20sp</item>
     </style>
-    <style name="ThemeOverlay.DownloadDateTimePickerDialog" parent="ThemeOverlay.BrowserUI.ModalDialog">
-        <item name="android:windowMinWidthMajor">@null</item>
-        <item name="android:windowMinWidthMinor">@null</item>
-    </style>
 </resources>

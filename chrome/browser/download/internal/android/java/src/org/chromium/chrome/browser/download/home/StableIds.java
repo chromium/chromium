@@ -17,7 +17,4 @@ public class StableIds {
 
     /** The stable ID associated with the pagination header. */
     public static long PAGINATION_HEADER = Long.MAX_VALUE - 4;
-
-    /** The stable ID associated with the scheduled for later section. */
-    public static long SCHEDULE_LATER_SECTION = Long.MAX_VALUE - 5;
 }

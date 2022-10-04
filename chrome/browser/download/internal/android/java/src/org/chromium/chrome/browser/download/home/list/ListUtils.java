@@ -110,7 +110,6 @@ public class ListUtils {
         if (item instanceof OfflineItemListItem) {
             OfflineItemListItem offlineItem = (OfflineItemListItem) item;
             if (offlineItem.isGrouped) return ViewType.GROUP_CARD_ITEM;
-            if (offlineItem.item.schedule != null) return ViewType.GENERIC;
 
             boolean inProgress = offlineItem.item.state == OfflineItemState.IN_PROGRESS
                     || offlineItem.item.state == OfflineItemState.PAUSED
@@ -221,20 +220,6 @@ public class ListUtils {
         int comparison = a.id.namespace.compareTo(b.id.namespace);
         if (comparison != 0) return comparison;
         return a.id.id.compareTo(b.id.id);
-    }
-    /**
-     * Helper method to compare list items based on {@link OfflineItemSchedule}.
-     * @return -1 if {@code a} should be shown before {@code b}.
-     *          0 if {@code a} == {@code b}.
-     *          1 if {@code a} should be shown after {@code b}.
-     */
-    public static int compareItemBySchedule(OfflineItem a, OfflineItem b) {
-        if (a.schedule != null && b.schedule != null) {
-            return a.schedule.startTimeMs <= b.schedule.startTimeMs ? -1 : 1;
-        }
-
-        if (a.schedule == null && b.schedule == null) return 0;
-        return a.schedule != null ? -1 : 1;
     }
 
     private static int getVisualPriorityForFilter(@FilterType int type) {

@@ -16,9 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "ui/android/window_android.h"
 
-// Default minimum file size in kilobyte to trigger download later feature.
-const int64_t kDownloadLaterDefaultMinFileSizeKb = 204800;
-
 // -----------------------------------------------------------------------------
 // DownloadDialogResult
 DownloadDialogResult::DownloadDialogResult() = default;
@@ -86,15 +83,13 @@ void DownloadDialogBridge::ShowDialog(
       static_cast<int>(dialog_type),
       base::android::ConvertUTF8ToJavaString(env,
                                              suggested_path.AsUTF8Unsafe()),
-      false /*supports_later_dialog*/, is_incognito);
+      is_incognito);
 }
 
 void DownloadDialogBridge::OnComplete(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& returned_path,
-    jboolean on_wifi,
-    jlong start_time) {
+    const base::android::JavaParamRef<jstring>& returned_path) {
   DownloadDialogResult dialog_result;
   dialog_result.location_result = DownloadLocationDialogResult::USER_CONFIRMED;
   dialog_result.file_path = base::FilePath(
@@ -147,35 +142,9 @@ void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, path);
 }
 
-// static
-jlong JNI_DownloadDialogBridge_GetDownloadLaterMinFileSize(JNIEnv* env) {
-  return DownloadDialogBridge::GetDownloadLaterMinFileSize();
-}
-
-// static
-jboolean JNI_DownloadDialogBridge_ShouldShowDateTimePicker(JNIEnv* env) {
-  return DownloadDialogBridge::ShouldShowDateTimePicker();
-}
-
 jboolean JNI_DownloadDialogBridge_IsLocationDialogManaged(JNIEnv* env) {
   PrefService* pref_service =
       ProfileManager::GetActiveUserProfile()->GetOriginalProfile()->GetPrefs();
 
   return pref_service->IsManagedPreference(prefs::kPromptForDownload);
-}
-
-// static
-long DownloadDialogBridge::GetDownloadLaterMinFileSize() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      download::features::kDownloadLater,
-      download::features::kDownloadLaterMinFileSizeKb,
-      kDownloadLaterDefaultMinFileSizeKb);
-}
-
-// static
-bool DownloadDialogBridge::ShouldShowDateTimePicker() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      download::features::kDownloadLater,
-      download::features::kDownloadLaterShowDateTimePicker,
-      /*default_value=*/true);
 }

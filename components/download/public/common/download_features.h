@@ -12,14 +12,6 @@
 namespace download {
 namespace features {
 
-// The Finch parameter to control whether download later dialog should show the
-// date time picker option.
-constexpr char kDownloadLaterShowDateTimePicker[] = "show_date_time_picker";
-
-// The Finch parameter to control the minimum download file size to show the
-// download later dialog.
-constexpr char kDownloadLaterMinFileSizeKb[] = "min_file_size_kb";
-
 // Whether offline content provider should be used for the downloads UI..
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kUseDownloadOfflineContentProvider);
@@ -29,9 +21,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadAutoResumptionNative);
 
 // Whether a download can be handled by parallel jobs.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kParallelDownloading);
-
-// Whether to enable download later feature.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadLater);
 
 #if BUILDFLAG(IS_ANDROID)
 // Whether download expiration date will be refreshed on resumption.
@@ -69,14 +58,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kAllowFileBufferSizeControl);
 // Arbitrary range request support for download system.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kDownloadRange);
 }  // namespace features
-
-namespace switches {
-
-// If set, show the download later dialog without the requirement of being on
-// cellular network.
-COMPONENTS_DOWNLOAD_EXPORT extern const char kDownloadLaterDebugOnWifi[];
-
-}  // namespace switches
 
 }  // namespace download
 

@@ -41,7 +41,6 @@ using offline_items_collection::ContentId;
 using offline_items_collection::LaunchLocation;
 using offline_items_collection::OfflineItem;
 using offline_items_collection::OfflineItemFilter;
-using offline_items_collection::OfflineItemSchedule;
 
 namespace {
 

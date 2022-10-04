@@ -690,7 +690,7 @@ TEST(DownloadPrefsTest, DefaultDownloadPathPrefMigrationFromOldFormat) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-// Verfies the returned value of PromptForDownload()
+// Verifies the returned value of PromptForDownload()
 // when prefs::kPromptForDownload is managed by enterprise policy,
 TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   content::BrowserTaskEnvironment task_environment_;

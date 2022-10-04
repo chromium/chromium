@@ -49,10 +49,7 @@ public class DateSorter implements ListConsumer {
         OfflineItem lhs = ((ListItem.OfflineItemListItem) listItem1).item;
         OfflineItem rhs = ((ListItem.OfflineItemListItem) listItem2).item;
 
-        int comparison = ListUtils.compareItemBySchedule(lhs, rhs);
-        if (comparison != 0) return comparison;
-
-        comparison = compareItemByJustNowProvider(lhs, rhs);
+        int comparison = compareItemByJustNowProvider(lhs, rhs);
         if (comparison != 0) return comparison;
 
         comparison = ListUtils.compareItemByDate(lhs, rhs);

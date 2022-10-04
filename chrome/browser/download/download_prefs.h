@@ -93,13 +93,6 @@ class DownloadPrefs {
   // to choose another download location).
   bool PromptForDownload() const;
 
-  // Returns whether to prompt download later dialog to let the user choose
-  // download time.
-  bool PromptDownloadLater() const;
-
-  // Returns whether the download later prompt is ever shown to the user.
-  bool HasDownloadLaterPromptShown() const;
-
   // Returns true if the download path preference is managed.
   bool IsDownloadPathManaged() const;
 

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -26,7 +25,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -36,7 +34,6 @@ import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.url_formatter.SchemeDisplay;
@@ -47,10 +44,8 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -63,7 +58,6 @@ import java.util.Set;
  */
 public class DownloadMessageUiControllerImpl implements DownloadMessageUiController {
     private static final long DURATION_SHOW_RESULT_IN_MS = 6000;
-    private static final long DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS = 12000;
 
     // The description can be an extremely long data url, whose length can cause a low memory
     // error when applied to a text view. https://crbug.com/1250423
@@ -132,7 +126,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         int COMPLETE = 0;
         int FAILED = 1;
         int PENDING = 2;
-        int SCHEDULED = 3;
     }
 
     @IntDef({IconType.DRAWABLE, IconType.VECTOR_DRAWABLE, IconType.ANIMATED_VECTOR_DRAWABLE})
@@ -191,9 +184,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         @ResultState
         public int resultState;
 
-        // Contains the information to change the download schedule for download later feature.
-        public OfflineItemSchedule schedule;
-
         @Override
         public int hashCode() {
             int result = (id == null ? 0 : id.hashCode());
@@ -225,7 +215,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             forceShow = other.forceShow;
             downloadCount = other.downloadCount;
             resultState = other.resultState;
-            schedule = other.schedule;
         }
     }
 
@@ -237,11 +226,10 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public int pending;
         public int failed;
         public int completed;
-        public int scheduled;
 
         /** @return The total number of downloads being tracked. */
         public int totalCount() {
-            return inProgress + pending + failed + completed + scheduled;
+            return inProgress + pending + failed + completed;
         }
 
         public int getCountForResultState(@ResultState int state) {
@@ -252,8 +240,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                     return failed;
                 case ResultState.PENDING:
                     return pending;
-                case ResultState.SCHEDULED:
-                    return scheduled;
                 default:
                     assert false;
             }
@@ -266,7 +252,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             result = 31 * result + pending;
             result = 31 * result + failed;
             result = 31 * result + completed;
-            result = 31 * result + scheduled;
             return result;
         }
 
@@ -277,8 +262,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
             DownloadCount other = (DownloadCount) obj;
             return inProgress == other.inProgress && pending == other.pending
-                    && failed == other.failed && completed == other.completed
-                    && scheduled == other.scheduled;
+                    && failed == other.failed && completed == other.completed;
         }
     }
 
@@ -531,7 +515,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         preProcessUpdatedItem(updatedItem);
         boolean isNewDownload = forceShowDownloadStarted
                 || (updatedItem != null && updatedItem.state == OfflineItemState.IN_PROGRESS
-                        && updatedItem.schedule == null && !mSeenItems.contains(updatedItem.id));
+                        && !mSeenItems.contains(updatedItem.id));
         boolean itemResumedFromPending = itemResumedFromPending(updatedItem);
 
         if (updatedItem != null) {
@@ -547,9 +531,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         DownloadCount downloadCount = getDownloadCount();
 
-        boolean shouldShowResult = (downloadCount.completed + downloadCount.failed
-                                           + downloadCount.pending + downloadCount.scheduled)
-                > 0;
+        boolean shouldShowResult =
+                (downloadCount.completed + downloadCount.failed + downloadCount.pending) > 0;
 
         @UiState
         int nextState = mState;
@@ -604,8 +587,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             if (nextState == UiState.INITIAL) {
                 mTrackedItems.clear();
             } else {
-                clearFinishedItems(ResultState.COMPLETE, ResultState.FAILED, ResultState.PENDING,
-                        ResultState.SCHEDULED);
+                clearFinishedItems(ResultState.COMPLETE, ResultState.FAILED, ResultState.PENDING);
             }
             clearEndTimerRunnable();
         }
@@ -643,7 +625,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
         // If there are completed downloads, show immediately.
         if (downloadCount.completed > 0) return ResultState.COMPLETE;
-        if (downloadCount.scheduled > 0) return ResultState.SCHEDULED;
 
         // If the message is already showing this state, just add this item to the same state.
         int previousResultState =
@@ -690,9 +671,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             stringRes = R.plurals.download_message_multiple_download_pending;
             info.icon = org.chromium.components.browser_ui.widget.R.drawable
                                 .ic_error_outline_googblue_24dp;
-        } else if (resultState == ResultState.SCHEDULED) {
-            stringRes = R.plurals.download_message_multiple_download_scheduled;
-            info.icon = R.drawable.ic_file_download_scheduled_24dp;
         } else {
             assert false : "Unexpected resultState " + resultState + " and uiState " + uiState;
         }
@@ -716,8 +694,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         } else if (uiState == UiState.SHOW_RESULT) {
             int itemCount = getDownloadCount().getCountForResultState(resultState);
             boolean singleDownloadCompleted = itemCount == 1 && resultState == ResultState.COMPLETE;
-            boolean singleDownloadScheduled =
-                    itemCount == 1 && resultState == ResultState.SCHEDULED;
             info.message =
                     getContext().getResources().getQuantityString(stringRes, itemCount, itemCount);
             if (singleDownloadCompleted) {
@@ -732,12 +708,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 info.id = itemToShow.id;
                 info.link = getContext().getString(R.string.open_downloaded_label);
                 info.icon = R.drawable.infobar_download_complete_animation;
-            } else if (singleDownloadScheduled) {
-                // TODO(shaktisahu, xingliu): Find out what the message should be.
-                info.description = getMessageForDownloadScheduled(itemToShow);
-                info.link = getContext().getString(R.string.change_link);
-                info.id = itemToShow.id;
-                info.schedule = itemToShow.schedule.clone();
             } else {
                 // TODO(shaktisahu): Incorporate various types of failure messages.
                 // TODO(shaktisahu, xingliu): Consult UX to handle multiple schedule variations.
@@ -775,34 +745,11 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         info.downloadCount = getDownloadCount();
         info.forceShow = !info.downloadCount.equals(
                 mCurrentInfo == null ? null : mCurrentInfo.downloadCount);
-
-        // TODO(xingliu, shaktisahu): downloadCount may not be updated at the correct time, see
-        // https://crbug.com/1127522. For now, scheduled download will always show in new tabs.
-        if (info.downloadCount.scheduled > 0) {
-            info.forceShow = true;
-        }
     }
+
     private void clearEndTimerRunnable() {
         mHandler.removeCallbacks(mEndTimerRunnable);
         mEndTimerRunnable = null;
-    }
-
-    private String getMessageForDownloadScheduled(OfflineItem offlineItem) {
-        assert offlineItem != null && offlineItem.schedule != null;
-        if (offlineItem.schedule.onlyOnWifi) {
-            return getContext().getString(
-                    R.string.download_message_download_scheduled_description_on_wifi);
-        } else {
-            long now = new Date().getTime();
-            String dateTimeString = DateUtils
-                                            .formatSameDayTime(offlineItem.schedule.startTimeMs,
-                                                    now, DateFormat.MEDIUM, DateFormat.SHORT)
-                                            .toString();
-            int stringId = CalendarUtils.isSameDay(now, offlineItem.schedule.startTimeMs)
-                    ? R.string.download_message_download_scheduled_description_on_time
-                    : R.string.download_message_download_scheduled_description_on_date;
-            return getContext().getString(stringId, dateTimeString);
-        }
     }
 
     private void preProcessUpdatedItem(OfflineItem updatedItem) {
@@ -824,9 +771,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     @VisibleForTesting
     protected long getDelayToNextStep(@ResultState int resultState) {
-        // Scheduled download uses a longer delay to reset tracking downloads states.
-        return resultState == ResultState.SCHEDULED ? DURATION_SHOW_RESULT_DOWNLOAD_SCHEDULED_IN_MS
-                                                    : DURATION_SHOW_RESULT_IN_MS;
+        return DURATION_SHOW_RESULT_IN_MS;
     }
 
     /**
@@ -884,8 +829,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(MessageBannerProperties.DESCRIPTION_MAX_LINES, 3);
         mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, info.link);
         mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed);
-        mPropertyModel.set(MessageBannerProperties.ON_PRIMARY_ACTION,
-                () -> onPrimaryAction(info.id, info.schedule));
+        mPropertyModel.set(
+                MessageBannerProperties.ON_PRIMARY_ACTION, () -> onPrimaryAction(info.id));
         final MessageDispatcher dispatcher = getMessageDispatcher();
         mDismissRunnable = () -> {
             if (dispatcher == null) return;
@@ -925,11 +870,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private DownloadCount getDownloadCount() {
         DownloadCount downloadCount = new DownloadCount();
         for (OfflineItem item : mTrackedItems.values()) {
-            if (item.schedule != null) {
-                downloadCount.scheduled++;
-                continue;
-            }
-
             switch (item.state) {
                 case OfflineItemState.IN_PROGRESS:
                     downloadCount.inProgress++;
@@ -980,8 +920,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     private @ResultState int fromOfflineItemState(OfflineItem offlineItem) {
-        if (offlineItem.schedule != null) return ResultState.SCHEDULED;
-
         switch (offlineItem.state) {
             case OfflineItemState.COMPLETE:
                 return ResultState.COMPLETE;
@@ -1006,8 +944,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mNotificationIds.remove(contentId);
     }
 
-    private @PrimaryActionClickBehavior int onPrimaryAction(
-            ContentId itemId, final OfflineItemSchedule schedule) {
+    private @PrimaryActionClickBehavior int onPrimaryAction(ContentId itemId) {
         OfflineItem offlineItem = mTrackedItems.remove(itemId);
         removeNotification(itemId);
         if (itemId != null) {
@@ -1063,11 +1000,6 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 case ResultState.PENDING:
                     shownState = info.downloadCount.pending == 1 ? UmaInfobarShown.PENDING
                                                                  : UmaInfobarShown.MULTIPLE_PENDING;
-                    break;
-                case ResultState.SCHEDULED:
-                    shownState = info.downloadCount.scheduled == 1
-                            ? UmaInfobarShown.SCHEDULED
-                            : UmaInfobarShown.MULTIPLE_SCHEDULED;
                     break;
                 default:
                     assert false : "Unexpected state " + info.resultState;

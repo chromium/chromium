@@ -407,14 +407,6 @@ bool DownloadPrefs::PromptForDownload() const {
 #endif
 }
 
-bool DownloadPrefs::PromptDownloadLater() const {
-  return false;
-}
-
-bool DownloadPrefs::HasDownloadLaterPromptShown() const {
-  return false;
-}
-
 bool DownloadPrefs::IsDownloadPathManaged() const {
   return download_path_.IsManaged();
 }

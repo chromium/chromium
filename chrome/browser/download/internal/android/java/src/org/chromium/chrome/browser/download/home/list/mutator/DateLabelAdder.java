@@ -98,9 +98,6 @@ public class DateLabelAdder implements ListConsumer {
     private @SectionHeaderType int getSectionHeaderType(@Nullable OfflineItem offlineItem) {
         if (offlineItem == null) return SectionHeaderType.INVALID;
 
-        // Scheduled for later section shows at the top.
-        if (offlineItem.schedule != null) return SectionHeaderType.SCHEDULED_LATER;
-
         // Just now section follows the scheduled for later section.
         boolean isJustNow = mJustNowProvider != null && mJustNowProvider.isJustNowItem(offlineItem);
         if (isJustNow) return SectionHeaderType.JUST_NOW;

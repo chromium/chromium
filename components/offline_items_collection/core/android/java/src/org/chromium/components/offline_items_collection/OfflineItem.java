@@ -110,7 +110,6 @@ public class OfflineItem implements Cloneable {
     public int failState;
     @PendingState
     public int pendingState;
-    public OfflineItemSchedule schedule;
 
     public OfflineItem() {
         id = new ContentId();
@@ -151,7 +150,6 @@ public class OfflineItem implements Cloneable {
         clone.timeRemainingMs = timeRemainingMs;
         clone.failState = failState;
         clone.pendingState = pendingState;
-        if (schedule != null) clone.schedule = schedule.clone();
 
         if (progress != null) {
             clone.progress = new Progress(progress.value, progress.max, progress.unit);

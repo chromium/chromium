@@ -31,10 +31,6 @@ BASE_FEATURE(kParallelDownloading,
 #endif
 );
 
-BASE_FEATURE(kDownloadLater,
-             "DownloadLater",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSmartSuggestionForLargeDownloads,
              "SmartSuggestionForLargeDownloads",
@@ -81,11 +77,5 @@ BASE_FEATURE(kAllowFileBufferSizeControl,
 BASE_FEATURE(kDownloadRange, "DownloadRange", base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
-
-namespace switches {
-
-const char kDownloadLaterDebugOnWifi[] = "download-later-debug-on-wifi";
-
-}  // namespace switches
 
 }  // namespace download

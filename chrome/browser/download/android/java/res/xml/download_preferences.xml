@@ -13,12 +13,6 @@ found in the LICENSE file.
         android:negativeButtonText="@null"  />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="download_later_prompt_enabled"
-        android:title="@string/download_later_prompt_enabled_title"
-        android:summaryOn="@string/text_on"
-        android:summaryOff="@string/text_off" />
-
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="location_prompt_enabled"
         android:title="@string/download_location_prompt_enabled_title"
         android:summaryOn="@string/text_on"

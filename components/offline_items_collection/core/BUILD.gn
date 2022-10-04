@@ -69,7 +69,6 @@ source_set("unit_tests") {
   sources = [
     "filtered_offline_item_observer_unittest.cc",
     "offline_content_aggregator_unittest.cc",
-    "offline_item_unittest.cc",
     "throttled_offline_content_provider_unittest.cc",
   ]
 
@@ -97,7 +96,6 @@ if (is_android) {
       "android/java/src/org/chromium/components/offline_items_collection/OfflineContentAggregatorBridge.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineContentProvider.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItem.java",
-      "android/java/src/org/chromium/components/offline_items_collection/OfflineItemSchedule.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItemShareInfo.java",
       "android/java/src/org/chromium/components/offline_items_collection/OfflineItemVisuals.java",
       "android/java/src/org/chromium/components/offline_items_collection/OpenParams.java",

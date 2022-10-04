@@ -25,8 +25,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 import org.chromium.components.offline_items_collection.ContentId;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
-import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.UUID;
@@ -154,25 +152,5 @@ public class SystemDownloadNotifierTest {
         waitForNotifications(3);
         Assert.assertEquals(
                 notificationId, mMockDownloadNotificationService.getLastNotificationId());
-    }
-
-    /**
-     * No notifications when {@link DownloadInfo#getOfflineItemSchedule()} exists.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Download"})
-    public void testDownloadLaterNotification() {
-        DownloadInfo info = getDownloadInfoBuilder(new ContentId("download", "1"))
-                                    .setOfflineItemSchedule(new OfflineItemSchedule(true, -1))
-                                    .build();
-
-        mSystemDownloadNotifier.notifyDownloadProgress(
-                info, 100, true /* canDownloadWhileMetered */);
-        mSystemDownloadNotifier.notifyDownloadPaused(info);
-        mSystemDownloadNotifier.notifyDownloadFailed(info);
-        mSystemDownloadNotifier.notifyDownloadInterrupted(info, true, PendingState.PENDING_NETWORK);
-
-        Assert.assertEquals(0, mMockDownloadNotificationService.getNumberOfNotifications());
     }
 }

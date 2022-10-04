@@ -107,7 +107,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &content_creation::kLightweightReactions,
     &content_settings::kDarkenWebsitesCheckboxInThemesSetting,
     &download::features::kDownloadAutoResumptionNative,
-    &download::features::kDownloadLater,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
     &embedder_support::kShowTrustedPublisherURL,

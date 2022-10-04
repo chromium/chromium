@@ -31,8 +31,6 @@ public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
                 InvalidStateOfflineItemFilter.isInPrimaryStorageDownloadDirectory(item.filePath);
         if ((item.externallyRemoved && inPrimaryDirectory) || item.isTransient) return true;
 
-        if (item.schedule != null) return false;
-
         switch (item.state) {
             case OfflineItemState.CANCELLED:
             case OfflineItemState.FAILED:

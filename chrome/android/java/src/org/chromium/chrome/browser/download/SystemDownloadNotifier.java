@@ -90,8 +90,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     @Override
     public void notifyDownloadSuccessful(DownloadInfo info, long systemDownloadId,
             boolean canResolve, boolean isSupportedMimeType) {
-        if (info.getOfflineItemSchedule() != null) return;
-
         NotificationInfo notificationInfo = new NotificationInfo(
                 NotificationType.SUCCEEDED, info, PendingNotificationTask.Priority.HIGH);
         notificationInfo.mSystemDownloadId = systemDownloadId;
@@ -102,8 +100,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
 
     @Override
     public void notifyDownloadFailed(DownloadInfo info) {
-        if (info.getOfflineItemSchedule() != null) return;
-
         NotificationInfo notificationInfo = new NotificationInfo(
                 NotificationType.FAILED, info, PendingNotificationTask.Priority.HIGH);
         addPendingNotification(notificationInfo);
@@ -112,8 +108,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     @Override
     public void notifyDownloadProgress(
             DownloadInfo info, long startTime, boolean canDownloadWhileMetered) {
-        if (info.getOfflineItemSchedule() != null) return;
-
         NotificationInfo notificationInfo = new NotificationInfo(
                 NotificationType.PROGRESS, info, PendingNotificationTask.Priority.LOW);
         notificationInfo.mStartTime = startTime;
@@ -123,8 +117,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
 
     @Override
     public void notifyDownloadPaused(DownloadInfo info) {
-        if (info.getOfflineItemSchedule() != null) return;
-
         NotificationInfo notificationInfo = new NotificationInfo(
                 NotificationType.PAUSED, info, PendingNotificationTask.Priority.HIGH);
         addPendingNotification(notificationInfo);
@@ -133,8 +125,6 @@ public class SystemDownloadNotifier implements DownloadNotifier {
     @Override
     public void notifyDownloadInterrupted(
             DownloadInfo info, boolean isAutoResumable, @PendingState int pendingState) {
-        if (info.getOfflineItemSchedule() != null) return;
-
         NotificationInfo notificationInfo = new NotificationInfo(
                 NotificationType.INTERRUPTED, info, PendingNotificationTask.Priority.HIGH);
         notificationInfo.mIsAutoResumable = isAutoResumable;
