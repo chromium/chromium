@@ -716,7 +716,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["destination"]: must be a valid, secure origin)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -737,48 +737,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["expiry"]: must be a positive number of)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "expiry": "-5"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["priority"]: must be an int64)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "priority": "x"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["source_event_id"]: must be a uint64 formatted)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "x",
-            "destination": "https://a.d.test"
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]: must be a dictionary)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -792,7 +751,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]["a"]: must be a list)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -808,7 +767,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["filter_data"]["a"][0]: must be a string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -824,7 +783,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["aggregation_keys"]: must be a dictionary)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -838,7 +797,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["aggregation_keys"]["a"]: must be a uint128 formatted as a base-16 string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -854,7 +813,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]["aggregation_keys"]["a"]: must be a uint128 formatted as a base-16 string)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: invalid source)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
