@@ -59,6 +59,8 @@ const char* RequestDestinationToString(
       return "xslt";
     case network::mojom::RequestDestination::kFencedframe:
       return "fencedframe";
+    case network::mojom::RequestDestination::kWebIdentity:
+      return "webidentity";
   }
 }
 

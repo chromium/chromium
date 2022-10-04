@@ -63,6 +63,9 @@ enum RequestDestination {
   // https://github.com/shivanigithub/fenced-frame for the explainer and
   // crbug.com/1123606 for the implementation.
   kFencedframe = 22,
+  // Requests from the federated credential management API,
+  // https://fedidcg.github.io/FedCM/
+  kWebIdentity = 23,
 };
 
 // Corresponds to Fetch request's "redirect mode":

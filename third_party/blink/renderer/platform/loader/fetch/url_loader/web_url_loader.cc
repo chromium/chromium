@@ -986,6 +986,7 @@ net::NetworkTrafficAnnotationTag WebURLLoader::Context::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kIframe:
     case network::mojom::RequestDestination::kFrame:
     case network::mojom::RequestDestination::kFencedframe:
+    case network::mojom::RequestDestination::kWebIdentity:
       NOTREACHED();
       [[fallthrough]];
 
