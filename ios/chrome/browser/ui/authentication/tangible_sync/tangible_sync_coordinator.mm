@@ -80,6 +80,7 @@
   _firstRun = appState.initStage == InitStageFirstRun;
   _viewController = [[TangibleSyncViewController alloc] init];
   _viewController.delegate = self;
+  _viewController.modalInPresentation = YES;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
