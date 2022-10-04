@@ -213,7 +213,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*merchantTrustSignalsCoordinatorSupplier=*/null,
                 new OmniboxPedalDelegateImpl(this, new OneshotSupplierImpl<>(),
                         getModalDialogManagerSupplier()), null,
-                ChromePureJavaExceptionReporter::reportJavaException, backPressManager);
+                ChromePureJavaExceptionReporter::postReportJavaException, backPressManager);
         // clang-format on
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);

@@ -22,6 +22,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -252,7 +254,10 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                 String logMessage = String.format(
                         "The survey prompt for survey with ID %s has already been shown.", siteId);
                 Log.w(TAG, logMessage);
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+                PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        ()
+                                -> ChromePureJavaExceptionReporter.reportJavaException(
+                                        new Throwable(logMessage)));
                 return;
             }
 
@@ -263,7 +268,10 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                                         + "with ID %s has expired.",
                                 siteId);
                 Log.w(TAG, logMessage);
-                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(logMessage));
+                PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                        ()
+                                -> ChromePureJavaExceptionReporter.reportJavaException(
+                                        new Throwable(logMessage)));
                 return;
             }
             Resources resources = mActivity.getResources();
@@ -331,8 +339,10 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                                             + " because the survey with ID %s has expired.",
                                     siteId);
                             Log.w(TAG, logMessage);
-                            ChromePureJavaExceptionReporter.reportJavaException(
-                                    new Throwable(logMessage));
+                            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                                    ()
+                                            -> ChromePureJavaExceptionReporter.reportJavaException(
+                                                    new Throwable(logMessage)));
                             mMessageDispatcher.dismissMessage(
                                     message, DismissReason.DISMISSED_BY_FEATURE);
                         }
