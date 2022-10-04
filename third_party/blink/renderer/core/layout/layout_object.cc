@@ -3674,6 +3674,7 @@ void LayoutObject::WillBeDestroyed() {
 
   if (GetFrameView()) {
     GetFrameView()->RemovePendingTransformUpdate(*this);
+    GetFrameView()->RemovePendingOpacityUpdate(*this);
     SetIsBackgroundAttachmentFixedObject(false);
   }
 }

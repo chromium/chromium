@@ -371,8 +371,10 @@ class PaintPropertyTreeBuilder {
   }
 
   static void DirectlyUpdateTransformMatrix(const LayoutObject& object);
+  static void DirectlyUpdateOpacityValue(const LayoutObject& object);
 
   static bool ScheduleDeferredTransformNodeUpdate(LayoutObject& object);
+  static bool ScheduleDeferredOpacityNodeUpdate(LayoutObject& object);
 
  private:
   ALWAYS_INLINE void InitFragmentPaintProperties(
@@ -410,6 +412,7 @@ class PaintPropertyTreeBuilder {
 
   bool IsInNGFragmentTraversal() const { return pre_paint_info_; }
   static bool CanDoDeferredTransformNodeUpdate(const LayoutObject& object);
+  static bool CanDoDeferredOpacityNodeUpdate(const LayoutObject& object);
 
   const LayoutObject& object_;
   NGPrePaintInfo* pre_paint_info_;
