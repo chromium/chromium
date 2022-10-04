@@ -13,10 +13,6 @@
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/test/test_sync_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif
-
 namespace syncer {
 
 ModelTypeSet UserSelectableTypesToModelTypes(
