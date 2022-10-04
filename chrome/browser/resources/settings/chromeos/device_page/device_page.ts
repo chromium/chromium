@@ -20,36 +20,40 @@ import '../../settings_page/settings_animated_pages.js';
 import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Router} from '../../router.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
+import {getTemplate} from './device_page.html.js';
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {WebUIListenerBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsDevicePageElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior, RouteObserverBehavior],
-    PolymerElement);
+interface SettingsDevicePageElement {
+  $: {
+    pointersRow: CrLinkRowElement,
+  };
+}
 
-/** @polymer */
+const SettingsDevicePageElementBase =
+    mixinBehaviors(
+        [I18nMixin, WebUIListenerMixin, RouteObserverBehavior],
+        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+          WebUIListenerMixinInterface & RouteObserverBehaviorInterface,
+    };
+
 class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   static get is() {
     return 'settings-device-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -64,29 +68,24 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
       /**
        * |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_| start undefined so
        * observers don't trigger until they have been populated.
-       * @private
        */
       hasMouse_: Boolean,
 
       /**
        * Whether a pointing stick (such as a TrackPoint) is connected.
-       * @private
        */
       hasPointingStick_: Boolean,
 
-      /** @private */
       hasTouchpad_: Boolean,
 
       /**
        * Whether the device has a haptic touchpad. If this is true,
        * |hasTouchpad_| will also be true.
-       * @private
        */
       hasHapticTouchpad_: Boolean,
 
       /**
        * |hasStylus_| is initialized to false so that dom-if behaves correctly.
-       * @private
        */
       hasStylus_: {
         type: Boolean,
@@ -95,7 +94,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
       /**
        * Whether audio management info should be shown.
-       * @protected
        */
       showAudioInfo_: {
         type: Boolean,
@@ -107,7 +105,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
       /**
        * Whether storage management info should be hidden.
-       * @private
        */
       hideStorageInfo_: {
         type: Boolean,
@@ -119,7 +116,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         readOnly: true,
       },
 
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -154,7 +150,6 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         },
       },
 
-      /** @private */
       androidEnabled_: {
         type: Boolean,
         value() {
@@ -170,15 +165,18 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     ];
   }
 
+  private browserProxy_: DevicePageBrowserProxy;
+  private hasMouse_: boolean;
+  private hasPointingStick_: boolean;
+  private hasTouchpad_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUIListener(
@@ -202,11 +200,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.browserProxy_.updateAndroidEnabled();
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPointersTitle_() {
+  private getPointersTitle_(): string {
     // For the purposes of the title, we call pointing sticks mice. The user
     // will know what we mean, and otherwise we'd get too many possible titles.
     const hasMouseOrPointingStick = this.hasMouse_ || this.hasPointingStick_;
@@ -224,87 +218,79 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
-   * @private
    */
-  onPointersTap_() {
+  private onPointersTap_() {
     Router.getInstance().navigateTo(routes.POINTERS);
   }
 
   /**
    * Handler for tapping the Keyboard settings menu item.
-   * @private
    */
-  onKeyboardTap_() {
+  private onKeyboardTap_() {
     Router.getInstance().navigateTo(routes.KEYBOARD);
   }
 
   /**
    * Handler for tapping the Stylus settings menu item.
-   * @private
    */
-  onStylusTap_() {
+  private onStylusTap_() {
     Router.getInstance().navigateTo(routes.STYLUS);
   }
 
   /**
    * Handler for tapping the Display settings menu item.
-   * @private
    */
-  onDisplayTap_() {
+  private onDisplayTap_() {
     Router.getInstance().navigateTo(routes.DISPLAY);
   }
 
   /**
    * Handler for tapping the Audio settings menu item.
-   * @private
    */
-  onAudioTap_() {
+  private onAudioTap_() {
     Router.getInstance().navigateTo(routes.AUDIO);
   }
 
   /**
    * Handler for tapping the Storage settings menu item.
-   * @private
    */
-  onStorageTap_() {
+  private onStorageTap_() {
     Router.getInstance().navigateTo(routes.STORAGE);
   }
 
   /**
    * Handler for tapping the Power settings menu item.
-   * @private
    */
-  onPowerTap_() {
+  private onPowerTap_() {
     Router.getInstance().navigateTo(routes.POWER);
   }
 
-  /** @protected */
-  currentRouteChanged() {
+  override currentRouteChanged() {
     this.checkPointerSubpage_();
   }
 
-  /**
-   * @param {boolean} hasMouse
-   * @param {boolean} hasPointingStick
-   * @param {boolean} hasTouchpad
-   * @private
-   */
-  pointersChanged_(hasMouse, hasPointingStick, hasTouchpad) {
+  private pointersChanged_(
+      hasMouse: boolean, hasPointingStick: boolean, hasTouchpad: boolean) {
     this.$.pointersRow.hidden = !hasMouse && !hasPointingStick && !hasTouchpad;
     this.checkPointerSubpage_();
   }
 
   /**
    * Leaves the pointer subpage if all pointing devices are detached.
-   * @private
    */
-  checkPointerSubpage_() {
+  private checkPointerSubpage_() {
     // Check that the properties have explicitly been set to false.
     if (this.hasMouse_ === false && this.hasPointingStick_ === false &&
         this.hasTouchpad_ === false &&
         Router.getInstance().getCurrentRoute() === routes.POINTERS) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-device-page': SettingsDevicePageElement;
   }
 }
 

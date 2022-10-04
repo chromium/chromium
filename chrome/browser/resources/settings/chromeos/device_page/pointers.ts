@@ -16,34 +16,33 @@ import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
+import {cast} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsPointersElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+import {getTemplate} from './pointers.html.js';
 
-/** @polymer */
+const SettingsPointersElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
+        PolymerElement) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          PrefsBehaviorInterface & RouteObserverBehaviorInterface,
+    };
+
 class SettingsPointersElement extends SettingsPointersElementBase {
   static get is() {
     return 'settings-pointers';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -95,8 +94,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
        * so we don't have to generate a simple range of natural numbers
        * ourselves. These values match the TouchpadSensitivity enum in
        * enums.xml.
-       * @type {!Array<number>}
-       * @private
        */
       sensitivityValues_: {
         type: Array,
@@ -107,8 +104,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
       /**
        * The click sensitivity values from prefs are [1,3,5] but ChromeVox needs
        * to announce them as [1,2,3].
-       * @type {!Array<SliderTick>}
-       * @private
        */
       hapticClickSensitivityValues_: {
         type: Array,
@@ -124,7 +119,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
       /**
        * TODO(khorimoto): Remove this conditional once the feature is launched.
-       * @private
        */
       allowScrollSettings_: {
         type: Boolean,
@@ -135,7 +129,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
       /**
        * TODO(gavinwill): Remove this conditional once the feature is launched.
-       * @private
        */
       allowTouchpadHapticFeedback_: {
         type: Boolean,
@@ -146,7 +139,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
       /**
        * TODO(gavinwill): Remove this conditional once the feature is launched.
-       * @private
        */
       allowTouchpadHapticClickSettings_: {
         type: Boolean,
@@ -157,7 +149,6 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -185,13 +176,10 @@ class SettingsPointersElement extends SettingsPointersElementBase {
 
   /**
    * Headings should only be visible if more than one subsection is present.
-   * @param {boolean} hasMouse
-   * @param {boolean} hasPointingStick
-   * @param {boolean} hasTouchpad
-   * @return {boolean}
-   * @private
    */
-  computeShowHeadings_(hasMouse, hasPointingStick, hasTouchpad) {
+  private computeShowHeadings_(
+      hasMouse: boolean, hasPointingStick: boolean,
+      hasTouchpad: boolean): boolean {
     const sectionVisibilities = [hasMouse, hasPointingStick, hasTouchpad];
     // Count the number of true values in sectionVisibilities.
     const numVisibleSections = sectionVisibilities.filter(x => x).length;
@@ -201,23 +189,16 @@ class SettingsPointersElement extends SettingsPointersElementBase {
   /**
    * Mouse, pointing stick, and touchpad sections are only subsections if more
    * than one is present.
-   * @param {boolean} hasMouse
-   * @param {boolean} hasPointingStick
-   * @param {boolean} hasTouchpad
-   * @return {string}
-   * @private
    */
-  computeSubsectionClass_(hasMouse, hasPointingStick, hasTouchpad) {
+  private computeSubsectionClass_(
+      hasMouse: boolean, hasPointingStick: boolean,
+      hasTouchpad: boolean): string {
     const subsections =
         this.computeShowHeadings_(hasMouse, hasPointingStick, hasTouchpad);
     return subsections ? 'subsection' : '';
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.POINTERS) {
       return;
@@ -226,41 +207,40 @@ class SettingsPointersElement extends SettingsPointersElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onLearnMoreLinkClicked_(event) {
+  private onLearnMoreLinkClicked_(event: Event) {
     const path = event.composedPath();
     if (!Array.isArray(path) || !path.length) {
       return;
     }
 
-    if (path[0].tagName === 'A') {
+    if (cast(path[0], HTMLElement).tagName === 'A') {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }
   }
 
-  /** @private */
-  onMouseReverseScrollRowClicked_() {
+  private onMouseReverseScrollRowClicked_() {
     this.setPrefValue(
         'settings.mouse.reverse_scroll',
         !this.getPref('settings.mouse.reverse_scroll').value);
   }
 
-  /** @private */
-  onTouchpadReverseScrollRowClicked_() {
+  private onTouchpadReverseScrollRowClicked_() {
     this.setPrefValue(
         'settings.touchpad.natural_scroll',
         !this.getPref('settings.touchpad.natural_scroll').value);
   }
 
-  /** @private */
-  onTouchpadHapticFeedbackRowClicked_() {
+  private onTouchpadHapticFeedbackRowClicked_() {
     this.setPrefValue(
         'settings.touchpad.haptic_feedback',
         !this.getPref('settings.touchpad.haptic_feedback').value);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-pointers': SettingsPointersElement;
   }
 }
 

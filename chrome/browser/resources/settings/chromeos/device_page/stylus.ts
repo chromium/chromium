@@ -16,39 +16,43 @@ import '../../controls/settings_toggle_button.js';
 import '../../settings_shared.css.js';
 
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
+import {assertExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, NoteAppInfo, NoteAppLockScreenSupport} from './device_page_browser_proxy.js';
+import {getTemplate} from './stylus.html.js';
+
+interface SettingsStylusElement {
+  $: {
+    selectApp: HTMLSelectElement,
+  };
+}
 
 const FIND_MORE_APPS_URL = 'https://play.google.com/store/apps/' +
     'collection/promotion_30023cb_stylus_apps';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsStylusElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
+const SettingsStylusElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          RouteObserverBehaviorInterface,
+    };
 
-/** @polymer */
 class SettingsStylusElement extends SettingsStylusElementBase {
   static get is() {
     return 'settings-stylus';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -63,8 +67,6 @@ class SettingsStylusElement extends SettingsStylusElementBase {
        * Policy indicator type for user policy - used for policy indicator UI
        * shown when an app that is not allowed to run on lock screen by policy
        * is selected.
-       * @type {CrPolicyIndicatorType}
-       * @private
        */
       userPolicyIndicator_: {
         type: String,
@@ -73,7 +75,6 @@ class SettingsStylusElement extends SettingsStylusElementBase {
 
       /**
        * Note taking apps the user can pick between.
-       * @private {Array<!NoteAppInfo>}
        */
       appChoices_: {
         type: Array,
@@ -84,7 +85,6 @@ class SettingsStylusElement extends SettingsStylusElementBase {
 
       /**
        * True if the device has an internal stylus.
-       * @private
        */
       hasInternalStylus_: {
         type: Boolean,
@@ -96,7 +96,6 @@ class SettingsStylusElement extends SettingsStylusElementBase {
 
       /**
        * Currently selected note taking app.
-       * @private {?NoteAppInfo}
        */
       selectedApp_: {
         type: Object,
@@ -105,7 +104,6 @@ class SettingsStylusElement extends SettingsStylusElementBase {
 
       /**
        * True if the ARC container has not finished starting yet.
-       * @private
        */
       waitingForAndroid_: {
         type: Boolean,
@@ -114,7 +112,6 @@ class SettingsStylusElement extends SettingsStylusElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -129,16 +126,18 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     };
   }
 
-  /** @override */
+  private appChoices_: NoteAppInfo[];
+  private browserProxy_: DevicePageBrowserProxy;
+  private selectedApp_: NoteAppInfo|null;
+  private waitingForAndroid_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     this.browserProxy_.setNoteTakingAppsUpdatedCallback(
@@ -146,11 +145,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     this.browserProxy_.requestNoteTakingApps();
   }
 
-  /**
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route) {
     // Does not apply to this page.
     if (route !== routes.STYLUS) {
       return;
@@ -160,33 +155,30 @@ class SettingsStylusElement extends SettingsStylusElementBase {
   }
 
   /**
-   * @return {boolean} Whether note taking from the lock screen is supported
+   * @return Whether note taking from the lock screen is supported
    *     by the selected note-taking app.
-   * @private
    */
-  supportsLockScreen_() {
+  private supportsLockScreen_(): boolean {
     return !!this.selectedApp_ &&
         this.selectedApp_.lockScreenSupport !==
         NoteAppLockScreenSupport.NOT_SUPPORTED;
   }
 
   /**
-   * @return {boolean} Whether the selected app is disallowed to handle note
+   * @return Whether the selected app is disallowed to handle note
    *     actions from lock screen as a result of a user policy.
-   * @private
    */
-  disallowedOnLockScreenByPolicy_() {
+  private disallowedOnLockScreenByPolicy_(): boolean {
     return !!this.selectedApp_ &&
         this.selectedApp_.lockScreenSupport ===
         NoteAppLockScreenSupport.NOT_ALLOWED_BY_POLICY;
   }
 
   /**
-   * @return {boolean} Whether the selected app is enabled as a note action
+   * @return Whether the selected app is enabled as a note action
    *     handler on the lock screen.
-   * @private
    */
-  lockScreenSupportEnabled_() {
+  private lockScreenSupportEnabled_(): boolean {
     return !!this.selectedApp_ &&
         this.selectedApp_.lockScreenSupport ===
         NoteAppLockScreenSupport.ENABLED;
@@ -194,24 +186,17 @@ class SettingsStylusElement extends SettingsStylusElementBase {
 
   /**
    * Finds note app info with the provided app id.
-   * @param {!string} id
-   * @return {?NoteAppInfo}
-   * @private
    */
-  findApp_(id) {
-    return this.appChoices_.find(function(app) {
-      return app.value === id;
-    }) ||
-        null;
+  private findApp_(id: string): NoteAppInfo|null {
+    return this.appChoices_.find((app) => app.value === id) || null;
   }
 
   /**
    * Toggles whether the selected app is enabled as a note action handler on
    * the lock screen.
-   * @private
    */
-  toggleLockScreenSupport_() {
-    assert(this.selectedApp_);
+  private toggleLockScreenSupport_() {
+    assertExists(this.selectedApp_);
     if (this.selectedApp_.lockScreenSupport !==
             NoteAppLockScreenSupport.ENABLED &&
         this.selectedApp_.lockScreenSupport !==
@@ -225,8 +210,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     recordSettingChange();
   }
 
-  /** @private */
-  onSelectedAppChanged_() {
+  private onSelectedAppChanged_() {
     const app = this.findApp_(this.$.selectApp.value);
     this.selectedApp_ = app;
 
@@ -236,12 +220,7 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     }
   }
 
-  /**
-   * @param {Array<!NoteAppInfo>} apps
-   * @param {boolean} waitingForAndroid
-   * @private
-   */
-  onNoteAppsUpdated_(apps, waitingForAndroid) {
+  private onNoteAppsUpdated_(apps: NoteAppInfo[], waitingForAndroid: boolean) {
     this.waitingForAndroid_ = waitingForAndroid;
     this.appChoices_ = apps;
 
@@ -249,27 +228,23 @@ class SettingsStylusElement extends SettingsStylusElementBase {
     microTask.run(this.onSelectedAppChanged_.bind(this));
   }
 
-  /**
-   * @param {Array<!NoteAppInfo>} apps
-   * @param {boolean} waitingForAndroid
-   * @private
-   */
-  showNoApps_(apps, waitingForAndroid) {
+  private showNoApps_(apps: NoteAppInfo[], waitingForAndroid: boolean):
+      boolean {
     return apps.length === 0 && !waitingForAndroid;
   }
 
-  /**
-   * @param {Array<!NoteAppInfo>} apps
-   * @param {boolean} waitingForAndroid
-   * @private
-   */
-  showApps_(apps, waitingForAndroid) {
+  private showApps_(apps: NoteAppInfo[], waitingForAndroid: boolean): boolean {
     return apps.length > 0 && !waitingForAndroid;
   }
 
-  /** @private */
-  onFindAppsTap_() {
+  private nFindAppsTap_() {
     this.browserProxy_.showPlayStore(FIND_MORE_APPS_URL);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-stylus': SettingsStylusElement;
   }
 }
 
