@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_promise.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -83,15 +84,15 @@ class ClipboardTextReader final : public ClipboardReader {
     }
 
     worker_pool::PostTask(
-        FROM_HERE, CrossThreadBindOnce(
-                       &ClipboardTextReader::EncodeOnBackgroundThread,
-                       std::move(plain_text), WrapCrossThreadPersistent(this),
-                       std::move(clipboard_task_runner_)));
+        FROM_HERE,
+        CrossThreadBindOnce(&ClipboardTextReader::EncodeOnBackgroundThread,
+                            std::move(plain_text), MakeCrossThreadHandle(this),
+                            std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
       String plain_text,
-      ClipboardTextReader* reader,
+      CrossThreadHandle<ClipboardTextReader> reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
     DCHECK(!IsMainThread());
 
@@ -101,10 +102,13 @@ class ClipboardTextReader final : public ClipboardReader {
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
     utf8_bytes.Append(utf8_text.data(), utf8_text.size());
 
-    PostCrossThreadTask(*clipboard_task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ClipboardTextReader::NextRead,
-                                            WrapCrossThreadPersistent(reader),
-                                            std::move(utf8_bytes)));
+    PostCrossThreadTask(
+        *clipboard_task_runner, FROM_HERE,
+        CrossThreadBindOnce(
+            &ClipboardTextReader::NextRead,
+            MakeUnwrappingCrossThreadHandle<ClipboardTextReader>(
+                std::move(reader)),
+            std::move(utf8_bytes)));
   }
 
   void NextRead(Vector<uint8_t> utf8_bytes) override {
@@ -160,16 +164,15 @@ class ClipboardHtmlReader final : public ClipboardReader {
       return;
     }
     worker_pool::PostTask(
-        FROM_HERE,
-        CrossThreadBindOnce(&ClipboardHtmlReader::EncodeOnBackgroundThread,
-                            std::move(sanitized_html),
-                            WrapCrossThreadPersistent(this),
-                            std::move(clipboard_task_runner_)));
+        FROM_HERE, CrossThreadBindOnce(
+                       &ClipboardHtmlReader::EncodeOnBackgroundThread,
+                       std::move(sanitized_html), MakeCrossThreadHandle(this),
+                       std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
       String plain_text,
-      ClipboardHtmlReader* reader,
+      CrossThreadHandle<ClipboardHtmlReader> reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
     DCHECK(!IsMainThread());
 
@@ -179,10 +182,11 @@ class ClipboardHtmlReader final : public ClipboardReader {
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
     utf8_bytes.Append(utf8_text.data(), utf8_text.size());
 
-    PostCrossThreadTask(*clipboard_task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ClipboardHtmlReader::NextRead,
-                                            WrapCrossThreadPersistent(reader),
-                                            std::move(utf8_bytes)));
+    PostCrossThreadTask(
+        *clipboard_task_runner, FROM_HERE,
+        CrossThreadBindOnce(&ClipboardHtmlReader::NextRead,
+                            MakeUnwrappingCrossThreadHandle(std::move(reader)),
+                            std::move(utf8_bytes)));
   }
 
   void NextRead(Vector<uint8_t> utf8_bytes) override {
@@ -234,16 +238,15 @@ class ClipboardSvgReader final : public ClipboardReader {
       return;
     }
     worker_pool::PostTask(
-        FROM_HERE,
-        CrossThreadBindOnce(&ClipboardSvgReader::EncodeOnBackgroundThread,
-                            std::move(sanitized_svg),
-                            WrapCrossThreadPersistent(this),
-                            std::move(clipboard_task_runner_)));
+        FROM_HERE, CrossThreadBindOnce(
+                       &ClipboardSvgReader::EncodeOnBackgroundThread,
+                       std::move(sanitized_svg), MakeCrossThreadHandle(this),
+                       std::move(clipboard_task_runner_)));
   }
 
   static void EncodeOnBackgroundThread(
       String plain_text,
-      ClipboardSvgReader* reader,
+      CrossThreadHandle<ClipboardSvgReader> reader,
       scoped_refptr<base::SingleThreadTaskRunner> clipboard_task_runner) {
     DCHECK(!IsMainThread());
 
@@ -253,10 +256,11 @@ class ClipboardSvgReader final : public ClipboardReader {
     utf8_bytes.ReserveInitialCapacity(utf8_text.size());
     utf8_bytes.Append(utf8_text.data(), utf8_text.size());
 
-    PostCrossThreadTask(*clipboard_task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ClipboardSvgReader::NextRead,
-                                            WrapCrossThreadPersistent(reader),
-                                            std::move(utf8_bytes)));
+    PostCrossThreadTask(
+        *clipboard_task_runner, FROM_HERE,
+        CrossThreadBindOnce(&ClipboardSvgReader::NextRead,
+                            MakeUnwrappingCrossThreadHandle(std::move(reader)),
+                            std::move(utf8_bytes)));
   }
 
   void NextRead(Vector<uint8_t> utf8_bytes) override {

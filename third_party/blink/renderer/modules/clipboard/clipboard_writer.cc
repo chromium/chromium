@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -44,20 +46,23 @@ class ClipboardImageWriter final : public ClipboardWriter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    // ArrayBufferContents is a thread-safe smart pointer around the backing
+    // store.
+    ArrayBufferContents contents = *raw_data->Content();
     worker_pool::PostTask(
         FROM_HERE,
         CrossThreadBindOnce(&ClipboardImageWriter::DecodeOnBackgroundThread,
-                            WrapCrossThreadPersistent(raw_data),
-                            WrapCrossThreadPersistent(this), task_runner));
+                            std::move(contents), MakeCrossThreadHandle(this),
+                            task_runner));
   }
   static void DecodeOnBackgroundThread(
-      DOMArrayBuffer* png_data,
-      ClipboardImageWriter* writer,
+      ArrayBufferContents png_data,
+      CrossThreadHandle<ClipboardImageWriter> writer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     DCHECK(!IsMainThread());
     std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
         SegmentReader::CreateFromSkData(
-            SkData::MakeWithoutCopy(png_data->Data(), png_data->ByteLength())),
+            SkData::MakeWithoutCopy(png_data.Data(), png_data.DataLength())),
         true, ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
         ColorBehavior::Tag());
     sk_sp<SkImage> image = nullptr;
@@ -65,10 +70,11 @@ class ClipboardImageWriter final : public ClipboardWriter {
     if (decoder)
       image = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));
 
-    PostCrossThreadTask(*task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ClipboardImageWriter::Write,
-                                            WrapCrossThreadPersistent(writer),
-                                            std::move(image)));
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(&ClipboardImageWriter::Write,
+                            MakeUnwrappingCrossThreadHandle(std::move(writer)),
+                            std::move(image)));
   }
   void Write(sk_sp<SkImage> image) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -99,25 +105,28 @@ class ClipboardTextWriter final : public ClipboardWriter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+    // ArrayBufferContents is a thread-safe smart pointer around the backing
+    // store.
+    ArrayBufferContents contents = *raw_data->Content();
     worker_pool::PostTask(
         FROM_HERE,
         CrossThreadBindOnce(&ClipboardTextWriter::DecodeOnBackgroundThread,
-                            WrapCrossThreadPersistent(raw_data),
-                            WrapCrossThreadPersistent(this), task_runner));
+                            std::move(contents), MakeCrossThreadHandle(this),
+                            task_runner));
   }
   static void DecodeOnBackgroundThread(
-      DOMArrayBuffer* raw_data,
-      ClipboardTextWriter* writer,
+      ArrayBufferContents raw_data,
+      CrossThreadHandle<ClipboardTextWriter> writer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     DCHECK(!IsMainThread());
 
-    String wtf_string =
-        String::FromUTF8(reinterpret_cast<const LChar*>(raw_data->Data()),
-                         raw_data->ByteLength());
-    PostCrossThreadTask(*task_runner, FROM_HERE,
-                        CrossThreadBindOnce(&ClipboardTextWriter::Write,
-                                            WrapCrossThreadPersistent(writer),
-                                            std::move(wtf_string)));
+    String wtf_string = String::FromUTF8(
+        reinterpret_cast<const LChar*>(raw_data.Data()), raw_data.DataLength());
+    PostCrossThreadTask(
+        *task_runner, FROM_HERE,
+        CrossThreadBindOnce(&ClipboardTextWriter::Write,
+                            MakeUnwrappingCrossThreadHandle(std::move(writer)),
+                            std::move(wtf_string)));
   }
   void Write(const String& text) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
