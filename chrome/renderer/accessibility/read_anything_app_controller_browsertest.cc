@@ -44,9 +44,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                           float font_size,
                           SkColor foreground_color,
                           SkColor background_color,
+                          int line_spacing,
                           int letter_spacing) {
     controller_->SetThemeForTesting(font_name, font_size, foreground_color,
-                                    background_color, letter_spacing);
+                                    background_color, line_spacing,
+                                    letter_spacing);
   }
   void OnAXTreeDistilled(const ui::AXTreeUpdate& snapshot,
                          const std::vector<ui::AXNodeID>& content_node_ids) {
@@ -64,6 +66,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   SkColor ForegroundColor() { return controller_->ForegroundColor(); }
 
   SkColor BackgroundColor() { return controller_->BackgroundColor(); }
+
+  float LineSpacing() { return controller_->LineSpacing(); }
 
   float LetterSpacing() { return controller_->LetterSpacing(); }
 
@@ -104,12 +108,15 @@ TEST_F(ReadAnythingAppControllerTest, Theme) {
   SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
   int letter_spacing = 0;  // enum value, kTight
   float letter_spacing_value = -0.05;
-  SetThemeForTesting(font_name, font_size, foreground, background,
+  int line_spacing = 1;  // enum value, kDefault
+  float line_spacing_value = 1.15;
+  SetThemeForTesting(font_name, font_size, foreground, background, line_spacing,
                      letter_spacing);
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
   EXPECT_EQ(foreground, ForegroundColor());
   EXPECT_EQ(background, BackgroundColor());
+  EXPECT_EQ(line_spacing_value, LineSpacing());
   EXPECT_EQ(letter_spacing_value, LetterSpacing());
 }
 

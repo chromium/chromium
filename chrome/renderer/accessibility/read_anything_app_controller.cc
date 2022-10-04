@@ -297,11 +297,12 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 }
 
 void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
+  background_color_ = new_theme->background_color;
   font_name_ = new_theme->font_name;
   font_size_ = new_theme->font_size;
-  letter_spacing_ = GetLetterSpacingValue(new_theme->letter_spacing);
   foreground_color_ = new_theme->foreground_color;
-  background_color_ = new_theme->background_color;
+  letter_spacing_ = GetLetterSpacingValue(new_theme->letter_spacing);
+  line_spacing_ = GetLineSpacingValue(new_theme->line_spacing);
 
   // TODO(abigailbklein): Use v8::Function rather than javascript. If possible,
   // replace this function call with firing an event.
@@ -313,14 +314,15 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {
   return gin::Wrappable<ReadAnythingAppController>::GetObjectTemplateBuilder(
              isolate)
+      .SetProperty("backgroundColor",
+                   &ReadAnythingAppController::BackgroundColor)
       .SetProperty("displayNodeIds", &ReadAnythingAppController::DisplayNodeIds)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
-      .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("foregroundColor",
                    &ReadAnythingAppController::ForegroundColor)
-      .SetProperty("backgroundColor",
-                   &ReadAnythingAppController::BackgroundColor)
+      .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
+      .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
       .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
@@ -339,6 +341,10 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::DisplayNodeIds() {
   return content_node_ids_;
 }
 
+SkColor ReadAnythingAppController::BackgroundColor() {
+  return background_color_;
+}
+
 std::string ReadAnythingAppController::FontName() {
   return font_name_;
 }
@@ -347,16 +353,16 @@ float ReadAnythingAppController::FontSize() {
   return font_size_;
 }
 
-float ReadAnythingAppController::LetterSpacing() {
-  return letter_spacing_;
-}
-
 SkColor ReadAnythingAppController::ForegroundColor() {
   return foreground_color_;
 }
 
-SkColor ReadAnythingAppController::BackgroundColor() {
-  return background_color_;
+float ReadAnythingAppController::LetterSpacing() {
+  return letter_spacing_;
+}
+
+float ReadAnythingAppController::LineSpacing() {
+  return line_spacing_;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
@@ -428,9 +434,15 @@ void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
                                                    float font_size,
                                                    SkColor foreground_color,
                                                    SkColor background_color,
+                                                   int line_spacing,
                                                    int letter_spacing) {
+  auto line_spacing_enum =
+      static_cast<read_anything::mojom::Spacing>(line_spacing);
+  auto letter_spacing_enum =
+      static_cast<read_anything::mojom::Spacing>(letter_spacing);
   OnThemeChanged(ReadAnythingTheme::New(font_name, font_size, foreground_color,
-                                        background_color, letter_spacing));
+                                        background_color, line_spacing_enum,
+                                        letter_spacing_enum));
 }
 
 void ReadAnythingAppController::SetContentForTesting(
@@ -442,17 +454,34 @@ void ReadAnythingAppController::SetContentForTesting(
   OnAXTreeDistilled(snapshot, content_node_ids);
 }
 
-double ReadAnythingAppController::GetLetterSpacingValue(int letter_spacing) {
-  auto ls = static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
-  switch (ls) {
-    case read_anything::mojom::LetterSpacing::kTight:
+double ReadAnythingAppController::GetLetterSpacingValue(
+    read_anything::mojom::Spacing letter_spacing) {
+  // auto ls = static_cast<read_anything::mojom::Spacing>(letter_spacing);
+  switch (letter_spacing) {
+    case read_anything::mojom::Spacing::kTight:
       return -0.05;
-    case read_anything::mojom::LetterSpacing::kDefault:
+    case read_anything::mojom::Spacing::kDefault:
       return 0;
-    case read_anything::mojom::LetterSpacing::kLoose:
+    case read_anything::mojom::Spacing::kLoose:
       return 0.05;
-    case read_anything::mojom::LetterSpacing::kVeryLoose:
+    case read_anything::mojom::Spacing::kVeryLoose:
       return 0.1;
+  }
+}
+
+double ReadAnythingAppController::GetLineSpacingValue(
+    read_anything::mojom::Spacing line_spacing) {
+  // auto ls = static_cast<read_anything::mojom::Spacing>(line_spacing);
+  switch (line_spacing) {
+    case read_anything::mojom::Spacing::kTight:
+      return 1.0;
+    case read_anything::mojom::Spacing::kDefault:
+    default:
+      return 1.15;
+    case read_anything::mojom::Spacing::kLoose:
+      return 1.5;
+    case read_anything::mojom::Spacing::kVeryLoose:
+      return 2.0;
   }
 }
 

@@ -43,7 +43,7 @@ void RegisterReadAnythingProfilePrefs(
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityReadAnythingLetterSpacing,
-      (int)read_anything::mojom::LetterSpacing::kDefaultValue,
+      (int)read_anything::mojom::Spacing::kDefaultValue,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 }
 

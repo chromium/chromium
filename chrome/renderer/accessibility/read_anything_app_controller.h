@@ -72,11 +72,12 @@ class ReadAnythingAppController
 
   // gin templates:
   std::vector<ui::AXNodeID> DisplayNodeIds();
+  SkColor BackgroundColor();
   std::string FontName();
   float FontSize();
-  float LetterSpacing();
   SkColor ForegroundColor();
-  SkColor BackgroundColor();
+  float LetterSpacing();
+  float LineSpacing();
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id);
   std::string GetHtmlTag(ui::AXNodeID ax_node_id);
   std::string GetLanguage(ui::AXNodeID ax_node_id);
@@ -107,8 +108,10 @@ class ReadAnythingAppController
                           float font_size,
                           SkColor foreground_color,
                           SkColor background_color,
+                          int line_spacing,
                           int letter_spacing);
-  double GetLetterSpacingValue(int letter_spacing);
+  double GetLetterSpacingValue(read_anything::mojom::Spacing letter_spacing);
+  double GetLineSpacingValue(read_anything::mojom::Spacing line_spacing);
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id);
 
@@ -132,11 +135,13 @@ class ReadAnythingAppController
   ui::AXNode* end_node_ = nullptr;
   int32_t start_offset_ = -1;
   int32_t end_offset_ = -1;
+
+  SkColor background_color_;
   std::string font_name_;
   float font_size_;
-  float letter_spacing_;
   SkColor foreground_color_;
-  SkColor background_color_;
+  float letter_spacing_;
+  float line_spacing_;
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_CONTROLLER_H_

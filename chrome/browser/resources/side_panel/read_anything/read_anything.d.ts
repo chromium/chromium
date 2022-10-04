@@ -18,6 +18,7 @@ declare namespace chrome {
     let fontSize: number;
     let foregroundColor: number;
     let backgroundColor: number;
+    let lineSpacing: number;
     let letterSpacing: number;
 
     // Returns a list of AXNodeIDs corresponding to the unignored children of
@@ -67,7 +68,8 @@ declare namespace chrome {
     // Set the theme. Used by tests only.
     function setThemeForTesting(
         fontName: string, fontSize: number, foregroundColor: number,
-        backgroundColor: number, letterSpacing: number): void;
+        backgroundColor: number, lineSpacing: number,
+        letterSpacing: number): void;
 
     ////////////////////////////////////////////////////////////////
     // Implemented in read_anything/app.ts and called by native c++.

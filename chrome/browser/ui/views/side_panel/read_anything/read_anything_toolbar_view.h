@@ -31,6 +31,8 @@ class ReadAnythingToolbarView : public views::View,
     virtual void OnFontSizeChanged(bool increase) = 0;
     virtual void OnColorsChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetColorsModel() = 0;
+    virtual void OnLineSpacingChanged(int new_index) = 0;
+    virtual ui::ComboboxModel* GetLineSpacingModel() = 0;
     virtual void OnLetterSpacingChanged(int new_index) = 0;
     virtual ui::ComboboxModel* GetLetterSpacingModel() = 0;
   };
@@ -56,6 +58,7 @@ class ReadAnythingToolbarView : public views::View,
   void DecreaseFontSizeCallback();
   void IncreaseFontSizeCallback();
   void ChangeColorsCallback();
+  void ChangeLineSpacingCallback();
   void ChangeLetterSpacingCallback();
 
   // views::View:
@@ -67,6 +70,7 @@ class ReadAnythingToolbarView : public views::View,
   raw_ptr<ReadAnythingButtonView> decrease_text_size_button_;
   raw_ptr<ReadAnythingButtonView> increase_text_size_button_;
   raw_ptr<views::Combobox> colors_combobox_;
+  raw_ptr<views::Combobox> lines_combobox_;
   raw_ptr<views::Combobox> letter_spacing_combobox_;
 
   raw_ptr<ReadAnythingToolbarView::Delegate> delegate_;

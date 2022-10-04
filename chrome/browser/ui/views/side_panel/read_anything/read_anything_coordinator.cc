@@ -50,8 +50,12 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
       browser->profile()->GetPrefs()->GetInteger(
           prefs::kAccessibilityReadAnythingColorInfo));
 
-  read_anything::mojom::LetterSpacing prefs_letter_spacing;
-  prefs_letter_spacing = static_cast<read_anything::mojom::LetterSpacing>(
+  read_anything::mojom::Spacing prefs_line_spacing;
+  // TODO Get pref from browser profile (future CL)
+  prefs_line_spacing = read_anything::mojom::Spacing::kDefault;
+
+  read_anything::mojom::Spacing prefs_letter_spacing;
+  prefs_letter_spacing = static_cast<read_anything::mojom::Spacing>(
       browser->profile()->GetPrefs()->GetInteger(
           prefs::kAccessibilityReadAnythingLetterSpacing));
 
@@ -59,6 +63,7 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
       /* font name = */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
       /* colors = */ prefs_colors,
+      /* line spacing = */ prefs_line_spacing,
       /* letter spacing = */ prefs_letter_spacing);
 }
 

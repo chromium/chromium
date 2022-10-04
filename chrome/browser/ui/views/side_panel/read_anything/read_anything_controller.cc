@@ -77,6 +77,17 @@ ui::ComboboxModel* ReadAnythingController::GetColorsModel() {
   return model_->GetColorsModel();
 }
 
+void ReadAnythingController::OnLineSpacingChanged(int new_index) {
+  if (!model_->GetLineSpacingModel()->IsValidLineSpacingIndex(new_index))
+    return;
+
+  model_->SetSelectedLineSpacingByIndex(new_index);
+}
+
+ui::ComboboxModel* ReadAnythingController::GetLineSpacingModel() {
+  return model_->GetLineSpacingModel();
+}
+
 void ReadAnythingController::OnLetterSpacingChanged(int new_index) {
   if (!model_->GetLetterSpacingModel()->IsValidLetterSpacingIndex(new_index))
     return;

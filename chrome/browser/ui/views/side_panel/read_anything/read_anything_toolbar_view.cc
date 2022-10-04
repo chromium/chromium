@@ -76,6 +76,18 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   colors_combobox->SetShouldShowArrow(false);
   colors_combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
 
+  // Create line spacing combobox
+  auto lines_combobox = std::make_unique<views::Combobox>();
+  lines_combobox->SetModel(delegate_->GetLineSpacingModel());
+  lines_combobox->SetTooltipTextAndAccessibleName(
+      l10n_util::GetStringUTF16(IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL));
+  lines_combobox->SetSizeToLargestLabel(true);
+  lines_combobox->SetCallback(
+      base::BindRepeating(&ReadAnythingToolbarView::ChangeLineSpacingCallback,
+                          weak_pointer_factory_.GetWeakPtr()));
+  lines_combobox->SetShouldShowArrow(false);
+  lines_combobox->SetBorderColorId(ui::kColorSidePanelComboboxBorder);
+
   // Create letter spacing selection combobox.
   auto letter_spacing_combobox = std::make_unique<views::Combobox>();
   letter_spacing_combobox->SetModel(delegate_->GetLetterSpacingModel());
@@ -96,6 +108,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   increase_text_size_button_ = AddChildView(std::move(increase_size_button));
   AddChildView(Separator());
   colors_combobox_ = AddChildView(std::move(colors_combobox));
+  lines_combobox_ = AddChildView(std::move(lines_combobox));
   letter_spacing_combobox_ = AddChildView(std::move(letter_spacing_combobox));
 
   // Start observing model after views creation so initial theme is applied.
@@ -118,6 +131,12 @@ void ReadAnythingToolbarView::ChangeColorsCallback() {
         colors_combobox_->GetSelectedIndex().value_or(0));
 }
 
+void ReadAnythingToolbarView::ChangeLineSpacingCallback() {
+  if (delegate_)
+    delegate_->OnLineSpacingChanged(
+        lines_combobox_->GetSelectedIndex().value_or(1));
+}
+
 void ReadAnythingToolbarView::ChangeLetterSpacingCallback() {
   if (delegate_)
     delegate_->OnLetterSpacingChanged(
@@ -137,6 +156,8 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
   font_combobox_->SetBackground(
       views::CreateSolidBackground(new_theme->background_color));
   colors_combobox_->SetBackground(
+      views::CreateSolidBackground(new_theme->background_color));
+  lines_combobox_->SetBackground(
       views::CreateSolidBackground(new_theme->background_color));
   letter_spacing_combobox_->SetBackground(
       views::CreateSolidBackground(new_theme->background_color));

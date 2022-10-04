@@ -144,11 +144,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         SkColor = {value: chrome.readAnything.backgroundColor};
 
     this.updateStyles({
-      '--foreground-color': skColorToRgba(foregroundColor),
       '--background-color': skColorToRgba(backgroundColor),
       '--font-family': this.validatedFontName(),
       '--font-size': chrome.readAnything.fontSize + 'em',
+      '--foreground-color': skColorToRgba(foregroundColor),
       '--letter-spacing': chrome.readAnything.letterSpacing + 'em',
+      '--line-height': chrome.readAnything.lineSpacing,
     });
   }
 }

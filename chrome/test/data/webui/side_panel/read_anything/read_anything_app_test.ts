@@ -20,7 +20,7 @@ suite('ReadAnythingAppTest', () => {
     document.body.innerHTML = '';
     readAnythingApp = document.createElement('read-anything-app');
     document.body.appendChild(readAnythingApp);
-    chrome.readAnything.setThemeForTesting('default', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('default', 18.0, 0, 0, 1, 0);
   });
 
   function assertFontName(fontFamily: string) {
@@ -33,6 +33,11 @@ suite('ReadAnythingAppTest', () => {
     assertEquals(fontSize, getComputedStyle(container!).fontSize);
   }
 
+  function assertLineSpacing(lineSpacing: string) {
+    const container = readAnythingApp.shadowRoot!.getElementById('container');
+    assertEquals(lineSpacing, getComputedStyle(container!).lineHeight);
+  }
+
   function assertContainerInnerHTML(expected: string) {
     const actual: string =
         readAnythingApp.shadowRoot!.getElementById('container')!.innerHTML;
@@ -40,36 +45,36 @@ suite('ReadAnythingAppTest', () => {
   }
 
   test('updateTheme fontName', () => {
-    chrome.readAnything.setThemeForTesting('Standard font', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Standard font', 18.0, 0, 0, 1, 0);
     assertFontName('"Standard font"');
 
-    chrome.readAnything.setThemeForTesting('Sans-serif', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Sans-serif', 18.0, 0, 0, 1, 0);
     assertFontName('sans-serif');
 
-    chrome.readAnything.setThemeForTesting('Serif', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
     assertFontName('serif');
 
-    chrome.readAnything.setThemeForTesting('Avenir', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Avenir', 18.0, 0, 0, 1, 0);
     assertFontName('avenir');
 
-    chrome.readAnything.setThemeForTesting('Comic Neue', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Comic Neue', 18.0, 0, 0, 1, 0);
     assertFontName('"Comic Neue"');
 
-    chrome.readAnything.setThemeForTesting('Comic Sans MS', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Comic Sans MS', 18.0, 0, 0, 1, 0);
     assertFontName('"Comic Sans MS"');
 
-    chrome.readAnything.setThemeForTesting('Poppins', 18.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Poppins', 18.0, 0, 0, 1, 0);
     assertFontName('poppins');
   });
 
   test('updateTheme fontSize', () => {
-    chrome.readAnything.setThemeForTesting('Standard font', 1.0, 0, 0, 0);
+    chrome.readAnything.setThemeForTesting('Standard font', 1.0, 0, 0, 1, 0);
     assertFontSize('16px');  // 1em = 16px
   });
 
   test('updateTheme foregroundColor', () => {
     chrome.readAnything.setThemeForTesting(
-        'f', 1, /* SkColorSetRGB(0x33, 0x36, 0x39) = */ 4281546297, 0, 0);
+        'f', 1, /* SkColorSetRGB(0x33, 0x36, 0x39) = */ 4281546297, 0, 1, 0);
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(
         /* #333639 = */ 'rgb(51, 54, 57)', getComputedStyle(container!).color);
@@ -77,15 +82,20 @@ suite('ReadAnythingAppTest', () => {
 
   test('updateTheme backgroundColor', () => {
     chrome.readAnything.setThemeForTesting(
-        'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 0);
+        'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1, 0);
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     assertEquals(
         /* #FDE293 = */ 'rgb(253, 226, 147)',
         getComputedStyle(container!).backgroundColor);
   });
 
+  test('updateTheme lineSpacing', () => {
+    chrome.readAnything.setThemeForTesting('Standard font', 1.0, 0, 0, 2, 0);
+    assertLineSpacing('24px');  // 1.5 times the 1em (16px) font size
+  });
+
   test('updateTheme letterSpacing', () => {
-    chrome.readAnything.setThemeForTesting('f', 1, 0, 0, 3);
+    chrome.readAnything.setThemeForTesting('f', 1, 0, 0, 1, 3);
     const container = readAnythingApp.shadowRoot!.getElementById('container');
     // very loose letter letter spacing = 0.1em, font size = 1em = 16px
     assertEquals('1.6px', getComputedStyle(container!).letterSpacing);

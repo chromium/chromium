@@ -21,8 +21,11 @@ struct ReadAnythingTheme {
   skia.mojom.SkColor foreground_color;
   skia.mojom.SkColor background_color;
 
+  // The enum value of the user's line spacing choice
+  read_anything.mojom.Spacing line_spacing;
+
   // The enum value of the user's letter spacing choice.
-  int32 letter_spacing;
+  read_anything.mojom.Spacing letter_spacing;
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
@@ -42,8 +45,9 @@ enum Colors {
   kYellow = 3,
 };
 
-[Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2"]
-enum LetterSpacing {
+[Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
+ RenamedFrom="read_anything.mojom.LetterSpacing"]
+enum Spacing {
   kTight = 0,
   [Default]kDefault = 1,
   kLoose = 2,
