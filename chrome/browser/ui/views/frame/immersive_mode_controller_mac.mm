@@ -203,6 +203,16 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     browser_frame_observation_.Observe(browser_view_->GetWidget());
     overlay_widget_observation_.Observe(browser_view_->overlay_widget());
 
+    // Capture the overlay content view before enablement. Once enabled the view
+    // is moved to an AppKit window leaving us otherwise without a reference.
+    NSView* content_view = browser_view_->overlay_widget()
+                               ->GetNativeWindow()
+                               .GetNativeNSWindow()
+                               .contentView;
+    browser_view_->overlay_widget()->SetNativeWindowProperty(
+        views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView,
+        content_view);
+
     views::NativeWidgetMacNSWindowHost* overlay_host =
         views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
             browser_view_->overlay_widget()->GetNativeWindow());
@@ -237,6 +247,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     // Rollback the view shuffling from enablement.
     browser_view_->overlay_widget()->Hide();
     ns_window_mojo_->DisableImmersiveFullscreen();
+    browser_view_->overlay_widget()->SetNativeWindowProperty(
+        views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView, nullptr);
 
     menu_lock_.reset();
     focus_lock_.reset();
@@ -281,13 +293,6 @@ void ImmersiveModeControllerMac::OnWidgetActivationChanged(
 
 void ImmersiveModeControllerMac::FullScreenOverlayViewWillAppear() {
   SetMenuRevealed(true);
-  NSView* content_view = browser_view_->overlay_widget()
-                             ->GetNativeWindow()
-                             .GetNativeNSWindow()
-                             .contentView;
-  browser_view_->overlay_widget()->SetNativeWindowProperty(
-      views::NativeWidgetMacNSWindowHost::kImmersiveContentNSView,
-      content_view);
 }
 
 void ImmersiveModeControllerMac::OnWillChangeFocus(views::View* focused_before,

@@ -199,12 +199,18 @@ ImmersiveModeController::ImmersiveModeController(
   // Remove the content view from the overlay view widget's NSWindow. This
   // view will be re-parented into the AppKit created NSWindow.
   NSView* overlay_content_view = overlay_widget_.contentView;
+  [overlay_content_view retain];
   [overlay_content_view removeFromSuperview];
 
-  // Add the overlay view to the accessory view controller and hand everything
-  // over to AppKit.
+  // Removing a view from its superview under macOS 13 nils out the reference in
+  // the tree. Match this behavior under previous macOS releases.
+  overlay_widget_.contentView = nil;
+
+  // Add the overlay view to the accessory view controller and hand
+  // everything over to AppKit.
   [immersive_mode_titlebar_view_controller_.get().view
       addSubview:overlay_content_view];
+  [overlay_content_view release];
   immersive_mode_titlebar_view_controller_.get().layoutAttribute =
       NSLayoutAttributeBottom;
 
