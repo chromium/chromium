@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/performance_controls/high_efficiency_bubble_observer.h"
 #include "chrome/browser/ui/performance_controls/tab_discard_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
@@ -79,6 +81,10 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
+  bubble->SetHighlightedButton(
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider()
+          ->GetPageActionIconView(PageActionIconType::kHighEfficiency));
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
