@@ -4,14 +4,12 @@
 
 #include "ash/login/ui/login_password_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_constants.h"
@@ -72,17 +70,6 @@ class LoginPasswordViewTest : public LoginTestBase {
   bool is_password_field_empty_ = true;
   bool easy_unlock_icon_hovered_called_ = false;
   bool easy_unlock_icon_tapped_called_ = false;
-};
-
-// For tests with the Smart Lock UI revamp feature enabled. Enables the flag
-// before the view is constructed.
-class LoginPasswordViewWithSmartLockRevampTest : public LoginPasswordViewTest {
- protected:
-  LoginPasswordViewWithSmartLockRevampTest() {
-    feature_list.InitAndEnableFeature(features::kSmartLockUIRevamp);
-  }
-
-  base::test::ScopedFeatureList feature_list;
 };
 
 }  // namespace
@@ -245,79 +232,6 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitClearsPassword) {
   ASSERT_TRUE(password_.has_value());
   // The submitted password is 'b' instead of "ab".
   EXPECT_EQ(u"b", *password_);
-}
-
-// Verifies that clicking the easy unlock icon fires the click event.
-TEST_F(LoginPasswordViewTest, EasyUnlockClickFiresEvent) {
-  LoginPasswordView::TestApi test_api(view_);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Enable icon.
-  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
-                           std::u16string() /*accessibility_label*/);
-  ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
-
-  // Click to the right of the icon, call is not generated.
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-  generator->MoveMouseTo(
-      test_api.easy_unlock_icon()->GetBoundsInScreen().bottom_right() +
-      gfx::Vector2d(2, 0));
-  generator->ClickLeftButton();
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-
-  // Click the icon.
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-  generator->MoveMouseTo(
-      test_api.easy_unlock_icon()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-  EXPECT_TRUE(easy_unlock_icon_tapped_called_);
-
-  // Icon was not hovered (since we did not enable immediate hover).
-  EXPECT_FALSE(easy_unlock_icon_hovered_called_);
-}
-
-// Verifies that hovering the icon fires the hover event.
-TEST_F(LoginPasswordViewTest, EasyUnlockMouseHover) {
-  LoginPasswordView::TestApi test_api(view_);
-  ui::test::EventGenerator* generator = GetEventGenerator();
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Enable icon, enable immediate hovering.
-  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
-                           std::u16string() /*accessibility_label*/);
-  test_api.set_immediately_hover_easy_unlock_icon();
-  ASSERT_TRUE(test_api.easy_unlock_icon()->GetVisible());
-
-  // Hover over the icon.
-  EXPECT_FALSE(easy_unlock_icon_hovered_called_);
-  generator->MoveMouseTo(
-      test_api.easy_unlock_icon()->GetBoundsInScreen().CenterPoint());
-  EXPECT_TRUE(easy_unlock_icon_hovered_called_);
-
-  // Icon was not tapped.
-  EXPECT_FALSE(easy_unlock_icon_tapped_called_);
-}
-
-// Verifies that the easy unlock icon is not visible if the Smart Lock revamp is
-// enabled
-TEST_F(LoginPasswordViewWithSmartLockRevampTest,
-       EasyUnlockNotVisibleWithSmartLockRevampEnabled) {
-  // Test fixture enables kSmartLockUIRevamp feature.
-
-  LoginPasswordView::TestApi test_api(view_);
-
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
-
-  // Enable icon, should still not be visible.
-  view_->SetEasyUnlockIcon(EasyUnlockIconState::SPINNER,
-                           std::u16string() /*accessibility_label*/);
-  EXPECT_FALSE(test_api.easy_unlock_icon()->GetVisible());
 }
 
 // Checks that the user can't hit Ctrl+Z to revert the password when it has been

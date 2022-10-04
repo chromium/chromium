@@ -4,7 +4,6 @@
 
 #include "ash/login/ui/login_auth_factors_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/auth_factor_model.h"
@@ -14,9 +13,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -118,10 +115,7 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
       delete;
 
  protected:
-  LoginAuthFactorsViewUnittest() : LoginTestBase() {
-    feature_list_.InitAndEnableFeature(features::kSmartLockUIRevamp);
-  }
-
+  LoginAuthFactorsViewUnittest() = default;
   ~LoginAuthFactorsViewUnittest() override = default;
 
   // LoginTestBase:
@@ -215,7 +209,6 @@ class LoginAuthFactorsViewUnittest : public LoginTestBase {
     EXPECT_FALSE(view_->GetFocusManager()->GetFocusedView());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   views::View* container_ = nullptr;
   LoginAuthFactorsView* view_ = nullptr;  // Owned by container.
   std::vector<FakeAuthFactorModel*> auth_factors_;

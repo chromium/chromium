@@ -554,6 +554,10 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   auto* service =
       static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
 
+  // service->AttemptAuth() will fail if the SmartLockState is not
+  // kPhoneAuthenticated.
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
+
   EXPECT_TRUE(service->AttemptAuth(account_id_));
   service->FinalizeUnlock(true);
 
@@ -579,6 +583,10 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
 
   auto* service =
       static_cast<EasyUnlockService*>(easy_unlock_service_regular_.get());
+
+  // service->AttemptAuth() will fail if the SmartLockState is not
+  // kPhoneAuthenticated.
+  service->UpdateSmartLockState(SmartLockState::kPhoneAuthenticated);
 
   EXPECT_TRUE(service->AttemptAuth(account_id_));
   service->FinalizeUnlock(true);
@@ -608,8 +616,6 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
 // auth attempt, allowing the next auth attempt to proceed.
 TEST_F(EasyUnlockServiceRegularTest,
        UpdateSmartLockStateClearsLastAuthAttempt) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
-
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
 
@@ -642,8 +648,6 @@ TEST_F(EasyUnlockServiceRegularTest,
 }
 
 TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
-
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
 
@@ -654,8 +658,6 @@ TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureEnabled) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
-
   InitializeService(true /* should_initialize_all_dependencies */);
   SetIsEnabled(false);
   SetScreenLockState(true /* is_locked */);
@@ -666,8 +668,6 @@ TEST_F(EasyUnlockServiceRegularTest, GetInitialSmartLockState_FeatureDisabled) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, ShowInitialSmartLockState_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
-
   InitializeService(true /* should_initialize_all_dependencies */);
 
   EXPECT_FALSE(fake_lock_handler_->smart_lock_state());
@@ -689,8 +689,6 @@ TEST_F(EasyUnlockServiceRegularTest, ShowInitialSmartLockState_FeatureEnabled) {
 
 TEST_F(EasyUnlockServiceRegularTest,
        ShowInitialSmartLockState_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
-
   InitializeService(true /* should_initialize_all_dependencies */);
   SetIsEnabled(false);
 
@@ -706,7 +704,6 @@ TEST_F(EasyUnlockServiceRegularTest,
 }
 
 TEST_F(EasyUnlockServiceRegularTest, PrepareForSuspend) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
@@ -720,10 +717,8 @@ TEST_F(EasyUnlockServiceRegularTest, PrepareForSuspend) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, OnScreenOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kSmartLockUIRevamp, features::kSmartLockBluetoothScreenOffFix},
-      {});
+  base::test::ScopedFeatureList feature_list(
+      features::kSmartLockBluetoothScreenOffFix);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
@@ -742,7 +737,6 @@ TEST_F(EasyUnlockServiceRegularTest, OnScreenOff) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, HandleAuthFailureInUpdateSmartLockState) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
@@ -761,7 +755,6 @@ TEST_F(EasyUnlockServiceRegularTest, HandleAuthFailureInUpdateSmartLockState) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, IsSmartLockStateValidOnRemoteAuthFailure) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
@@ -785,7 +778,6 @@ TEST_F(EasyUnlockServiceRegularTest, IsSmartLockStateValidOnRemoteAuthFailure) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, FinalizeUnlock) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
@@ -801,7 +793,6 @@ TEST_F(EasyUnlockServiceRegularTest, FinalizeUnlock) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, GetPasswordAuthEvent) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
@@ -817,7 +808,6 @@ TEST_F(EasyUnlockServiceRegularTest, GetPasswordAuthEvent) {
 }
 
 TEST_F(EasyUnlockServiceRegularTest, GetSmartUnlockPasswordAuthEvent) {
-  base::test::ScopedFeatureList feature_list(features::kSmartLockUIRevamp);
   InitializeService(/*should_initialize_all_dependencies=*/true);
   SetScreenLockState(/*is_locked=*/true);
   EasyUnlockService* service = easy_unlock_service_regular_.get();
