@@ -82,6 +82,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
   void ResetForTesting() override;
+  const net::GlobalFirstPartySets* GetGlobalSetsIfReady() const override;
   void GetContextConfigForPolicy(
       const base::Value::Dict& policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
@@ -137,7 +138,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // data.
   //
   // Must be called after the list has been initialized.
-  net::GlobalFirstPartySets GetPublicSetsSync() const;
+  net::GlobalFirstPartySets GetGlobalSetsSync() const;
 
   // Performs the actual state clearing for the given context. Must not be
   // called until initialization is complete.

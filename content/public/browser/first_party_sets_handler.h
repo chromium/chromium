@@ -16,6 +16,10 @@
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace net {
+class GlobalFirstPartySets;
+}
+
 namespace content {
 
 class BrowserContext;
@@ -87,7 +91,6 @@ class CONTENT_EXPORT FirstPartySetsHandler {
 
   using ParseError = IssueWithMetadata<ParseErrorType>;
   using ParseWarning = IssueWithMetadata<ParseWarningType>;
-
   virtual ~FirstPartySetsHandler() = default;
 
   // Returns the singleton instance.
@@ -129,6 +132,12 @@ class CONTENT_EXPORT FirstPartySetsHandler {
 
   // Resets the state on the instance for testing.
   virtual void ResetForTesting() = 0;
+
+  // Returns all First-Party Sets that are scoped to the entire browser.
+  //
+  // If initialization is not yet complete, returns nullptr; otherwise, returns
+  // a pointer to the initialized GlobalFirstPartySets instance.
+  virtual const net::GlobalFirstPartySets* GetGlobalSetsIfReady() const = 0;
 
   // Computes a representation of the changes that need to be made to the
   // browser's list of First-Party Sets to respect the `policy` value of the

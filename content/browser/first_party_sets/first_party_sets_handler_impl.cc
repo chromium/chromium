@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/task/thread_pool.h"
@@ -21,9 +19,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_client.h"
-#include "net/base/schemeful_site.h"
-#include "net/first_party_sets/addition_overlaps_union_find.h"
-#include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -117,7 +112,7 @@ absl::optional<net::GlobalFirstPartySets> FirstPartySetsHandlerImpl::GetSets(
   if (!callback.is_null()) {
     // base::Unretained(this) is safe here because this is a static singleton.
     on_sets_ready_callbacks_.push_back(
-        base::BindOnce(&FirstPartySetsHandlerImpl::GetPublicSetsSync,
+        base::BindOnce(&FirstPartySetsHandlerImpl::GetGlobalSetsSync,
                        base::Unretained(this))
             .Then(std::move(callback)));
   }
@@ -179,6 +174,12 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
   db_helper_.Reset();
 }
 
+const net::GlobalFirstPartySets*
+FirstPartySetsHandlerImpl::GetGlobalSetsIfReady() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return base::OptionalToPtr(global_sets_);
+}
+
 void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
     const std::string& browser_context_id,
     base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
@@ -231,10 +232,11 @@ void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   }
 }
 
-net::GlobalFirstPartySets FirstPartySetsHandlerImpl::GetPublicSetsSync() const {
+net::GlobalFirstPartySets FirstPartySetsHandlerImpl::GetGlobalSetsSync() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(global_sets_.has_value());
-  return global_sets_->Clone();
+  const net::GlobalFirstPartySets* sets = GetGlobalSetsIfReady();
+  DCHECK(sets);
+  return sets->Clone();
 }
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
