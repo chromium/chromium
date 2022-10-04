@@ -82,7 +82,7 @@ std::set<std::string> ListToStringSet(const base::Value* list,
   if (!list) {
     return result;
   }
-  for (const base::Value& value : list->GetListDeprecated()) {
+  for (const base::Value& value : list->GetList()) {
     result.insert(to_lower_ascii ? base::ToLowerASCII(value.GetString())
                                  : value.GetString());
   }

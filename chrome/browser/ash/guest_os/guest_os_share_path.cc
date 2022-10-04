@@ -559,7 +559,7 @@ std::vector<base::FilePath> GuestOsSharePath::GetPersistedSharedPaths(
       profile_->GetPrefs()->GetDict(prefs::kGuestOSPathsSharedToVms);
   for (const auto it : shared_paths) {
     base::FilePath path(it.first);
-    for (const auto& vm : it.second.GetListDeprecated()) {
+    for (const auto& vm : it.second.GetList()) {
       // Register all shared paths for all VMs since we want FilePathWatchers
       // to start immediately.
       RegisterSharedPath(vm.GetString(), path);
@@ -653,7 +653,7 @@ void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
     if (path != volume.mount_path() && !volume.mount_path().IsParent(path)) {
       continue;
     }
-    const auto& vms = it.second.GetListDeprecated();
+    const auto& vms = it.second.GetList();
     for (const auto& vm : vms) {
       RegisterSharedPath(vm.GetString(), path);
       if (crostini::CrostiniManager::GetForProfile(profile_)->IsVmRunning(
