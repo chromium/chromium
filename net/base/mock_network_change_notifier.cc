@@ -84,6 +84,10 @@ void MockNetworkChangeNotifier::NotifyNetworkConnected(
   base::RunLoop().RunUntilIdle();
 }
 
+bool MockNetworkChangeNotifier::IsDefaultNetworkActiveInternal() {
+  return is_default_network_active_;
+}
+
 void MockNetworkChangeNotifier::SetConnectionTypeAndNotifyObservers(
     ConnectionType connection_type) {
   SetConnectionType(connection_type);

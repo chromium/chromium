@@ -29,6 +29,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -40,6 +41,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/mock_network_change_notifier.h"
+#include "net/base/network_change_notifier.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -65,6 +68,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/radio_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace network {
 namespace {
@@ -3843,6 +3850,49 @@ TEST_P(SimpleURLLoaderTest, BatchingTimeout) {
     EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
     EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
   }
+}
+
+TEST(SimpleURLLoaderThrottleTest, ShouldThrottle) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
+  auto notifier = net::test::MockNetworkChangeNotifier::Create();
+  SimpleURLLoaderThrottle throttle = SimpleURLLoaderThrottle();
+
+  // Device NOT on battery power
+  power_monitor_source.SetOnBatteryPower(false);
+
+  // Device's DefaultNetwork NOT Active
+  notifier.get()->ForceNetworkHandlesSupported();
+  notifier.get()->SetIsDefaultNetworkActiveInternalForTesting(false);
+
+// Device's RadioConnectionType is kCell
+#if BUILDFLAG(IS_ANDROID)
+  base::android::RadioUtils::OverrideForTesting radio_utils_test;
+  radio_utils_test.SetConnectionTypeForTesting(
+      base::android::RadioConnectionType::kCell);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  EXPECT_FALSE(throttle.GetDelegateForTesting().ShouldThrottle());
+  power_monitor_source.SetOnBatteryPower(true);
+
+  // Device's DefaultNetwork is active
+  notifier.get()->SetIsDefaultNetworkActiveInternalForTesting(true);
+
+  EXPECT_FALSE(throttle.GetDelegateForTesting().ShouldThrottle());
+  notifier.get()->SetIsDefaultNetworkActiveInternalForTesting(false);
+
+// Device's connection type is != kCell
+#if BUILDFLAG(IS_ANDROID)
+  radio_utils_test.SetConnectionTypeForTesting(
+      base::android::RadioConnectionType::kWifi);
+
+  EXPECT_FALSE(throttle.GetDelegateForTesting().ShouldThrottle());
+  radio_utils_test.SetConnectionTypeForTesting(
+      base::android::RadioConnectionType::kCell);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  EXPECT_TRUE(throttle.GetDelegateForTesting().ShouldThrottle());
 }
 
 TEST(SimpleURLLoaderThrottleTest, BatchingDisabled_FeatureDisabled) {

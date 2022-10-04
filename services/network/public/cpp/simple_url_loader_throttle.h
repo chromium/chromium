@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoaderThrottle {
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
   void SetTimeoutForTesting(base::TimeDelta timeout);
+  Delegate& GetDelegateForTesting() { return *delegate_; }
 
  private:
   void OnTimeout();

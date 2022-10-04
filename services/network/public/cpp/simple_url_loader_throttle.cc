@@ -43,7 +43,7 @@ class BatchingDelegate
       return false;
 
     if (base::PowerMonitor::IsInitialized() &&
-        base::PowerMonitor::IsOnBatteryPower()) {
+        !base::PowerMonitor::IsOnBatteryPower()) {
       return false;
     }
 

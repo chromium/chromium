@@ -3688,6 +3688,7 @@ test("base_unittests") {
       "android/linker/modern_linker_jni.h",
       "android/linker/modern_linker_unittest.cc",
       "android/path_utils_unittest.cc",
+      "android/radio_utils_unittest.cc",
       "android/reached_addresses_bitset_unittest.cc",
       "android/scoped_java_ref_unittest.cc",
       "android/sys_utils_unittest.cc",
