@@ -43,9 +43,13 @@ async def _eval_via_call_function(script, sandbox, context_id, websocket):
 
 @pytest.mark.parametrize("call_delegate", [_evaluate, _eval_via_call_function])
 @pytest.mark.asyncio
-async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
-    # Create PROPERTY_0 in default execution context
+async def test_sandbox_isolated(websocket, context_id, call_delegate):
+    # Create PROPERTY_0 in default execution context.
     await call_delegate("window.PROPERTY_0='VALUE_0'", None, context_id,
+                        websocket)
+
+    # Create PROPERTY_ in empty string sandbox.
+    await call_delegate("window.PROPERTY_='VALUE_'", None, context_id,
                         websocket)
 
     # Create SHARED_PROPERTY_NAME with UNIQUE_VALUE_0 in default execution
@@ -75,6 +79,7 @@ async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
     # default execution context
     result_0 = await call_delegate("["
                                    "window.PROPERTY_0, "
+                                   "window.PROPERTY_, "
                                    "window.PROPERTY_1, "
                                    "window.PROPERTY_2, "
                                    "window.SHARED_PROPERTY_NAME]",
@@ -84,6 +89,26 @@ async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
     assert result_0["result"] == {
         "type": "array", "value": [
             {"type": "string", "value": "VALUE_0"},
+            {"type": "string", "value": "VALUE_"},
+            {"type": "undefined"},
+            {"type": "undefined"},
+            {"type": "string", "value": "UNIQUE_VALUE_0"}]}
+
+    # Get PROPERTY_0, PROPERTY_1, PROPERTY_2 and SHARED_PROPERTY_NAME from
+    # empty string sandbox, which redirects to the default realm.
+    result_0 = await call_delegate("["
+                                   "window.PROPERTY_0, "
+                                   "window.PROPERTY_, "
+                                   "window.PROPERTY_1, "
+                                   "window.PROPERTY_2, "
+                                   "window.SHARED_PROPERTY_NAME]",
+                                   "",
+                                   context_id, websocket)
+
+    assert result_0["result"] == {
+        "type": "array", "value": [
+            {"type": "string", "value": "VALUE_0"},
+            {"type": "string", "value": "VALUE_"},
             {"type": "undefined"},
             {"type": "undefined"},
             {"type": "string", "value": "UNIQUE_VALUE_0"}]}
@@ -92,6 +117,7 @@ async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
     # SANDBOX_1
     result_1 = await call_delegate("["
                                    "window.PROPERTY_0, "
+                                   "window.PROPERTY_, "
                                    "window.PROPERTY_1, "
                                    "window.PROPERTY_2, "
                                    "window.SHARED_PROPERTY_NAME]",
@@ -101,6 +127,7 @@ async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
     assert result_1["result"] == {
         "type": "array", "value": [
             {"type": "undefined"},
+            {"type": "undefined"},
             {"type": "string", "value": "VALUE_1"},
             {"type": "undefined"},
             {"type": "string", "value": "UNIQUE_VALUE_1"}]}
@@ -109,6 +136,7 @@ async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
     # SANDBOX_2
     result_2 = await call_delegate("["
                                    "window.PROPERTY_0, "
+                                   "window.PROPERTY_, "
                                    "window.PROPERTY_1, "
                                    "window.PROPERTY_2, "
                                    "window.SHARED_PROPERTY_NAME]",
@@ -116,6 +144,7 @@ async def test_sandbox_evaluate_isolated(websocket, context_id, call_delegate):
                                    context_id, websocket)
     assert result_2["result"] == {
         "type": "array", "value": [
+            {"type": "undefined"},
             {"type": "undefined"},
             {"type": "undefined"},
             {"type": "string", "value": "VALUE_2"},

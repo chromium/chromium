@@ -513,7 +513,7 @@ export class BrowsingContextImpl {
   }
 
   async getOrCreateSandbox(sandbox: string | undefined): Promise<Realm> {
-    if (sandbox === undefined) {
+    if (sandbox === undefined || sandbox === '') {
       return this.#defaultRealm;
     }
 
