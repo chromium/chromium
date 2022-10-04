@@ -96,18 +96,19 @@ function onWriteFileRequested(options, onSuccess, onError) {
     return;
   }
 
-  // Convert ArrayBuffer to string.
-  var reader = new FileReader();
-  reader.onloadend = function(e) {
-    var oldContents = fileContents[filePath] || '';
-    var newContents = oldContents.substr(0, options.offset) + reader.result +
-        oldContents.substr(options.offset + reader.result.length);
-    metadata.size = newContents.length;
-    fileContents[filePath] = newContents;
-    onSuccess();
-  };
-
-  reader.readAsText(new Blob([options.data]));
+  // Create an array with enough space for new data.
+  const oldArray = new TextEncoder().encode(fileContents[filePath] || '');
+  const newLength =
+      Math.max(oldArray.length, options.offset + options.data.byteLength);
+  const newArray = new Uint8Array(new ArrayBuffer(newLength));
+  // Write existing data and new data.
+  newArray.set(oldArray, 0);
+  newArray.set(new Uint8Array(options.data), options.offset);
+  // Save the new file as text.
+  const newContents = new TextDecoder().decode(newArray);
+  fileContents[filePath] = newContents;
+  metadata.size = newContents.length;
+  onSuccess();
 }
 
 /**
