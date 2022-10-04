@@ -130,10 +130,9 @@ absl::optional<SmbShareInfo> SmbPersistedShareRegistry::Get(
   const base::Value& pref =
       profile_->GetPrefs()->GetValue(prefs::kNetworkFileSharesSavedShares);
 
-  base::Value::ConstListView share_list = pref.GetListDeprecated();
-  for (auto it = share_list.begin(); it != share_list.end(); ++it) {
-    if (GetStringValue(*it, kShareUrlKey) == share_url.ToString()) {
-      return DictToShare(*it);
+  for (const auto& entry : pref.GetList()) {
+    if (GetStringValue(entry, kShareUrlKey) == share_url.ToString()) {
+      return DictToShare(entry);
     }
   }
   return {};
@@ -144,13 +143,11 @@ std::vector<SmbShareInfo> SmbPersistedShareRegistry::GetAll() const {
       profile_->GetPrefs()->GetValue(prefs::kNetworkFileSharesSavedShares);
 
   std::vector<SmbShareInfo> shares;
-  base::Value::ConstListView share_list = pref.GetListDeprecated();
-  for (auto it = share_list.begin(); it != share_list.end(); ++it) {
-    absl::optional<SmbShareInfo> info = DictToShare(*it);
-    if (!info) {
-      continue;
+  for (const auto& entry : pref.GetList()) {
+    absl::optional<SmbShareInfo> info = DictToShare(entry);
+    if (info) {
+      shares.push_back(std::move(*info));
     }
-    shares.push_back(std::move(*info));
   }
   return shares;
 }
