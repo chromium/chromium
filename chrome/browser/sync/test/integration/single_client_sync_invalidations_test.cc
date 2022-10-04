@@ -194,8 +194,8 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
 class SingleClientSyncInvalidationsTestBase : public SyncTest {
  public:
   SingleClientSyncInvalidationsTestBase(
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features)
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features)
       : SyncTest(SINGLE_CLIENT) {
     override_features_.InitWithFeatures(enabled_features, disabled_features);
   }

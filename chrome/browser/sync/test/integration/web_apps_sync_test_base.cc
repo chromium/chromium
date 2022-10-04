@@ -24,7 +24,7 @@ namespace web_app {
 
 WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
     : SyncTest(test_type) {
-  std::vector<base::Feature> disabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/1357905): Update test driver to work with new UI.
