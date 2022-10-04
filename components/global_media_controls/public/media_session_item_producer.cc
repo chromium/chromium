@@ -427,6 +427,14 @@ MediaSessionItemProducer::RegisterIsAudioOutputDeviceSwitchingSupportedCallback(
       std::move(callback));
 }
 
+void MediaSessionItemProducer::UpdateMediaItemSourceOrigin(
+    const std::string& id,
+    const url::Origin& origin) {
+  auto it = sessions_.find(id);
+  if (it != sessions_.end())
+    it->second.item()->UpdatePresentationRequestOrigin(origin);
+}
+
 MediaSessionItemProducer::Session* MediaSessionItemProducer::GetSession(
     const std::string& id) {
   auto it = sessions_.find(id);

@@ -35,6 +35,7 @@ component("global_media_controls") {
 
   public_deps = [
     "//components/media_message_center",
+    "//components/url_formatter",
     "//services/media_session/public/cpp",
     "//services/media_session/public/mojom",
     "//ui/views",

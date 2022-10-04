@@ -247,6 +247,14 @@ void MediaNotificationService::OnStartPresentationContextCreated(
     // If there exists a media session notification associated with
     // |web_contents|, hold onto the context for later use.
     context_ = std::move(context);
+
+    // When a media session item is associated with a presentation request, we
+    // must show the origin associated with the request rather than that for
+    // the top frame.
+    std::string item_id =
+        GetActiveControllableSessionForWebContents(web_contents);
+    media_session_item_producer_->UpdateMediaItemSourceOrigin(
+        item_id, context_->presentation_request().frame_origin);
   } else if (presentation_request_notification_producer_) {
     // If there do not exist active notifications, pass |context| to
     // |presentation_request_notification_producer_| to create a dummy
