@@ -1701,7 +1701,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.SearchResumptionModule.NotShown"
     enum="SearchResumptionModule.ModuleNotShownReason"
-    expires_after="2022-10-31">
+    expires_after="2023-04-30">
   <owner>hanxi@chromium.org</owner>
   <owner>spdonghao@chromium.org</owner>
   <summary>
