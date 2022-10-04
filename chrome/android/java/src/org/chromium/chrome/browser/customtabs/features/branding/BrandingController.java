@@ -192,7 +192,7 @@ public class BrandingController {
 
     private static void reportErrorMessage(String message) {
         Log.e(TAG, message);
-        ChromePureJavaExceptionReporter.postReportJavaException(new Throwable(message));
+        ChromePureJavaExceptionReporter.reportJavaException(new Throwable(message));
     }
 
     @BrandingDecision

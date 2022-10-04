@@ -25,13 +25,15 @@ public class CustomAssertionHandler {
         // We've gotten an assertion report before we were ready to report. We drop these assertions
         // until we are ready to report them.
         if (sReporterFactory != null) {
-            PureJavaExceptionHandler.JavaExceptionReporter reporter =
-                    sReporterFactory.createJavaExceptionReporter();
-            reporter.postCreateAndUploadReport(exception);
+            NativeAndJavaSmartExceptionReporter.postUploadReport(exception, (e) -> {
+                PureJavaExceptionHandler.JavaExceptionReporter reporter =
+                        sReporterFactory.createJavaExceptionReporter();
+                reporter.createAndUploadReport(e);
+            });
         }
     }
 
-    public static void installHandler(
+    public static void installPreNativeHandler(
             PureJavaExceptionHandler.JavaExceptionReporterFactory factory) {
         sReporterFactory = factory;
     }

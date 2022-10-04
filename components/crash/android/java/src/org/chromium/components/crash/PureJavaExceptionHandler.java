@@ -17,13 +17,12 @@ import org.chromium.build.annotations.MainDex;
 public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler mParent;
     private boolean mHandlingException;
-    private static boolean sIsDisabled;
+    private static boolean sIsEnabled = true;
     private JavaExceptionReporterFactory mReporterFactory;
 
     /** Interface to allow uploading reports. */
     public interface JavaExceptionReporter {
         void createAndUploadReport(Throwable e);
-        void postCreateAndUploadReport(Throwable e);
     }
 
     /** A factory interface to allow creating custom reporters. */
@@ -39,7 +38,7 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if (!mHandlingException && !sIsDisabled) {
+        if (!mHandlingException && sIsEnabled) {
             mHandlingException = true;
             reportJavaException(e);
         }
@@ -49,7 +48,7 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
     }
 
     public static void installHandler(JavaExceptionReporterFactory reporterFactory) {
-        if (!sIsDisabled) {
+        if (sIsEnabled) {
             Thread.setDefaultUncaughtExceptionHandler(new PureJavaExceptionHandler(
                     Thread.getDefaultUncaughtExceptionHandler(), reporterFactory));
         }
@@ -61,12 +60,16 @@ public class PureJavaExceptionHandler implements Thread.UncaughtExceptionHandler
         // about handlers before it. If resetting the uncaught exception handler to mParent, we lost
         // all the handlers before mParent. In order to disable this handler, globally setting a
         // flag to ignore it seems to be the easiest way.
-        sIsDisabled = true;
+        sIsEnabled = false;
         CrashKeys.getInstance().flushToNative();
     }
 
     private void reportJavaException(Throwable e) {
         JavaExceptionReporter reporter = mReporterFactory.createJavaExceptionReporter();
         reporter.createAndUploadReport(e);
+    }
+
+    static boolean isEnabled() {
+        return sIsEnabled;
     }
 }
