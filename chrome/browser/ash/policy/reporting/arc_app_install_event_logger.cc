@@ -146,7 +146,7 @@ void ArcAppInstallEventLogger::OnComplianceReportReceived(
       GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending);
 
   std::set<std::string> noncompliant_apps_in_report;
-  for (const auto& detail : details->GetListDeprecated()) {
+  for (const auto& detail : details->GetList()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
     if (!reason || reason->GetInt() != kNonComplianceReasonAppNotInstalled) {
