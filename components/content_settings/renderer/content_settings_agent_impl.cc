@@ -409,7 +409,7 @@ bool ContentSettingsAgentImpl::ShouldAutoupgradeMixedContent() {
         content_setting_rules_->mixed_content_rules, GURL());
     return setting != CONTENT_SETTING_ALLOW;
   }
-  return false;
+  return true;
 }
 
 RendererContentSettingRules*

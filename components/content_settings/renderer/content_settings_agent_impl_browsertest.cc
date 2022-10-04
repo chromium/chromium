@@ -591,6 +591,14 @@ TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesDisabledByRules) {
   EXPECT_FALSE(agent->ShouldAutoupgradeMixedContent());
 }
 
+TEST_F(ContentSettingsAgentImplBrowserTest, MixedAutoupgradesNoSettingsSet) {
+  MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
+
+  ContentSettingsAgentImpl* agent =
+      ContentSettingsAgentImpl::Get(GetMainRenderFrame());
+  EXPECT_TRUE(agent->ShouldAutoupgradeMixedContent());
+}
+
 TEST_F(ContentSettingsAgentImplBrowserTest, ContentSettingsAllowedAutoDark) {
   MockContentSettingsAgentImpl mock_agent(GetMainRenderFrame());
 
