@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.metricsPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: metricsPrivate */
 
@@ -147,7 +147,7 @@ chrome.metricsPrivate.recordLongTime = function(metricName, value) {};
  */
 chrome.metricsPrivate.recordSparseValueWithHashMetricName = function(metricName, value) {};
 
- /**
+/**
  * Increments the count associated with the hash of |value| in the sparse
  * histogram defined by the |metricName| using base::PersistentHash(value).
  * @param {string} metricName
