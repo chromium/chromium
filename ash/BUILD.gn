@@ -1762,6 +1762,8 @@ component("ash") {
     "system/tray/unfocusable_label.cc",
     "system/tray/unfocusable_label.h",
     "system/tray/view_click_listener.h",
+    "system/unified/buttons.cc",
+    "system/unified/buttons.h",
     "system/unified/camera_mic_tray_item_view.cc",
     "system/unified/camera_mic_tray_item_view.h",
     "system/unified/collapse_button.cc",
