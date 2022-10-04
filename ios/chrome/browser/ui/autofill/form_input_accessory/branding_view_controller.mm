@@ -19,12 +19,14 @@ namespace {
 constexpr CGFloat kLeadingInset = 10;
 // The scale used by the "pop" animation.
 constexpr CGFloat kAnimationScale = ((CGFloat)4) / 3;
-// Wait time after the keyboard settles into placetwit to perform pop animation.
+// Wait time after the keyboard settles into place to perform pop animation.
 constexpr base::TimeDelta kAnimationWaitTime = base::Milliseconds(200);
 // Time it takes the "pop" animation to perform.
 constexpr base::TimeDelta kTimeToAnimate = base::Milliseconds(400);
 // Minimum time interval between two animations.
 constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
+// Accessibility ID of the view.
+constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 }  // namespace
 
 @interface BrandingViewController ()
@@ -69,6 +71,7 @@ constexpr base::TimeDelta kMinTimeIntervalBetweenAnimations = base::Seconds(3);
   }
   [button setImage:logo forState:UIControlStateNormal];
   [button setImage:logo forState:UIControlStateHighlighted];
+  button.accessibilityIdentifier = kBrandingButtonAXId;
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;
   button.isAccessibilityElement = NO;  // Prevents VoiceOver users from tap.
   button.translatesAutoresizingMaskIntoConstraints = NO;
