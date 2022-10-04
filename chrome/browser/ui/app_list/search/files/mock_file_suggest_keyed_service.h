@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 class BrowserContext;
@@ -38,6 +39,10 @@ class MockFileSuggestKeyedService : public app_list::FileSuggestKeyedService {
   // app_list::FileSuggestKeyedService:
   void GetSuggestFileData(app_list::FileSuggestionType type,
                           GetSuggestFileDataCallback callback) override;
+  MOCK_METHOD(void,
+              RemoveSuggestionsAndNotify,
+              (const std::vector<base::FilePath>& suggested_file_paths),
+              (override));
 
   void SetSuggestionsForType(
       app_list::FileSuggestionType type,

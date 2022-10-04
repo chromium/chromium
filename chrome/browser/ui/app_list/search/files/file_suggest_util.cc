@@ -25,7 +25,7 @@ std::string GetPrefixFromSuggestionType(FileSuggestionType type) {
 
 }  // namespace
 
-// FileSuggestData -------------------------------------------------------
+// FileSuggestData -------------------------------------------------------------
 
 FileSuggestData::FileSuggestData(
     FileSuggestionType new_type,
@@ -34,7 +34,7 @@ FileSuggestData::FileSuggestData(
     absl::optional<float> new_score)
     : type(new_type),
       file_path(new_file_path),
-      id(GetPrefixFromSuggestionType(type) + file_path.value()),
+      id(CalculateSuggestionId(type, file_path)),
       prediction_reason(new_prediction_reason),
       score(new_score) {}
 
@@ -45,5 +45,12 @@ FileSuggestData::FileSuggestData(const FileSuggestData&) = default;
 FileSuggestData& FileSuggestData::operator=(const FileSuggestData&) = default;
 
 FileSuggestData::~FileSuggestData() = default;
+
+// Helper functions ------------------------------------------------------------
+
+std::string CalculateSuggestionId(FileSuggestionType type,
+                                  const base::FilePath& file_path) {
+  return GetPrefixFromSuggestionType(type) + file_path.value();
+}
 
 }  // namespace app_list

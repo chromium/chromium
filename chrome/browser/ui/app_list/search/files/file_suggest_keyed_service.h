@@ -61,17 +61,18 @@ class FileSuggestKeyedService : public KeyedService {
   virtual void GetSuggestFileData(FileSuggestionType type,
                                   GetSuggestFileDataCallback callback);
 
+  // Persists the ids of the suggestions specified by `absolute_file_paths` so
+  // that the corresponding suggestions are not sent to service clients anymore.
+  // Also notifies observers of suggestion updates. Overridden for tests.
+  virtual void RemoveSuggestionsAndNotify(
+      const std::vector<base::FilePath>& absolute_file_paths);
+
   // Used to expose `proto_` to app list so that the app list can query/remove
   // non-file result ids from `proto_`.
   // TODO(https://crbug.com/1368833): remove this function when the removed file
   // results are managed by this service's own proto without reusing the app
   // list's.
   PersistentProto<RemovedResultsProto>* GetProto(base::PassKey<RankerDelegate>);
-
-  // Persists `suggestion_id` so that the corresponding suggestion is not sent
-  // to service clients anymore.
-  void RemoveFileSuggestion(FileSuggestionType type,
-                            const std::string& suggestion_id);
 
   // Adds/Removes an observer.
   void AddObserver(Observer* observer);
@@ -115,6 +116,8 @@ class FileSuggestKeyedService : public KeyedService {
   std::unique_ptr<LocalFileSuggestionProvider> local_file_suggestion_provider_;
 
   base::ObserverList<Observer> observers_;
+
+  Profile* const profile_;
 
   // Used to query/persis the removed result ids. NOTE: `proto_` contains
   // non-file ids.

@@ -508,19 +508,26 @@ void HoldingSpaceViewDelegate::ExecuteCommand(int command, int event_flags) {
     case HoldingSpaceCommandId::kPinItem:
       client->PinItems(items);
       break;
-    case HoldingSpaceCommandId::kRemoveItem:
+    case HoldingSpaceCommandId::kRemoveItem: {
+      std::vector<base::FilePath> suggested_file_paths;
       HoldingSpaceController::Get()->model()->RemoveIf(base::BindRepeating(
           [](const std::vector<const HoldingSpaceItem*>& items,
+             std::vector<base::FilePath>& suggested_file_paths,
              const HoldingSpaceItem* item) {
             const bool remove = base::Contains(items, item);
             if (remove) {
+              if (HoldingSpaceItem::IsSuggestion(item->type()))
+                suggested_file_paths.push_back(item->file_path());
               holding_space_metrics::RecordItemAction(
                   {item}, holding_space_metrics::ItemAction::kRemove);
             }
             return remove;
           },
-          std::cref(items)));
+          std::cref(items), std::ref(suggested_file_paths)));
+      HoldingSpaceController::Get()->client()->RemoveFileSuggestions(
+          suggested_file_paths);
       break;
+    }
     case HoldingSpaceCommandId::kShowInFolder:
       DCHECK_EQ(items.size(), 1u);
       client->ShowItemInFolder(*items.front(), base::DoNothing());

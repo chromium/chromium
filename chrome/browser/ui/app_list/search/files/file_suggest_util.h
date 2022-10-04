@@ -64,6 +64,10 @@ struct FileSuggestData {
   absl::optional<float> score;
 };
 
+// Calculates the id of a file suggestion specified by `type` and `file_path`.
+std::string CalculateSuggestionId(FileSuggestionType type,
+                                  const base::FilePath& file_path);
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_UTIL_H_

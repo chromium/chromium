@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ui/app_list/search/files/drive_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/app_list/search/files/local_file_suggestion_provider.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 namespace app_list {
 
@@ -17,7 +19,9 @@ using SuggestResults = std::vector<FileSuggestData>;
 FileSuggestKeyedService::FileSuggestKeyedService(
     Profile* profile,
     PersistentProto<RemovedResultsProto> proto)
-    : proto_(std::move(proto)) {
+    : profile_(profile), proto_(std::move(proto)) {
+  DCHECK(profile_);
+
   proto_.RegisterOnRead(
       base::BindOnce(&FileSuggestKeyedService::OnRemovedSuggestionProtoReady,
                      weak_factory_.GetWeakPtr()));
@@ -68,25 +72,56 @@ void FileSuggestKeyedService::GetSuggestFileData(
   }
 }
 
+void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
+    const std::vector<base::FilePath>& absolute_file_paths) {
+  if (!IsProtoInitialized())
+    return;
+
+  // Record the types of the removed suggestions. `observers_` should be
+  // notified of the updates on these types.
+  base::flat_set<FileSuggestionType> types_to_update;
+
+  for (const auto& file_path : absolute_file_paths) {
+    DCHECK(file_path.IsAbsolute());
+
+    // Calculate the suggestion type based on `file_path`.
+    GURL crack_url;
+    const bool resolve_success =
+        file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
+            profile_, file_path, file_manager::util::GetFileManagerURL(),
+            &crack_url);
+    DCHECK(resolve_success);
+    const storage::FileSystemURL& file_system_url =
+        file_manager::util::GetFileManagerFileSystemContext(profile_)
+            ->CrackURLInFirstPartyContext(crack_url);
+    DCHECK(file_system_url.is_valid());
+    const FileSuggestionType type =
+        file_system_url.type() == storage::kFileSystemTypeDriveFs
+            ? FileSuggestionType::kDriveFile
+            : FileSuggestionType::kLocalFile;
+
+    // Record the suggestion id to the storage proto's map.
+    // Note: We are using a map for its set capabilities; the map value is
+    // arbitrary.
+    const bool success =
+        proto_->mutable_removed_ids()
+            ->insert({CalculateSuggestionId(type, file_path), false})
+            .second;
+
+    // Skip the suggestion whose id is already in `proto_`.
+    if (success)
+      types_to_update.insert(type);
+  }
+
+  proto_.StartWrite();
+
+  for (const auto& type : types_to_update)
+    OnSuggestionProviderUpdated(type);
+}
+
 PersistentProto<RemovedResultsProto>* FileSuggestKeyedService::GetProto(
     base::PassKey<RankerDelegate>) {
   return &proto_;
-}
-
-void FileSuggestKeyedService::RemoveFileSuggestion(
-    FileSuggestionType type,
-    const std::string& suggestion_id) {
-  if (proto_.initialized()) {
-    // Record the string ID of `result` to the storage proto's map.
-    // Note: We are using a map for its set capabilities; the map value is
-    // arbitrary.
-    proto_->mutable_removed_ids()->insert({suggestion_id, false});
-    proto_.StartWrite();
-
-    // Suggestions of `type` update because of a new removed suggestion. Notify
-    // clients of this update.
-    OnSuggestionProviderUpdated(type);
-  }
 }
 
 void FileSuggestKeyedService::AddObserver(Observer* observer) {

@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
@@ -57,7 +58,6 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/test/async_file_test_helper.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/chromeos/styles/cros_styles.h"
@@ -2996,6 +2996,39 @@ class HoldingSpaceSuggestionsDelegateTest
 INSTANTIATE_TEST_SUITE_P(All,
                          HoldingSpaceSuggestionsDelegateTest,
                          /*enable_suggestion_feature=*/testing::Bool());
+
+// Verifies that suggestion removal through the holding space client works as
+// expected.
+TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
+  // Populate drive and local file suggestions.
+  const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
+  const base::FilePath file_path_2 = mount_point()->CreateArbitraryFile();
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      app_list::FileSuggestionType::kDriveFile,
+      /*suggestions=*/std::vector<app_list::FileSuggestData>{
+          {app_list::FileSuggestionType::kDriveFile, file_path_1,
+           /*new_prediction_reason=*/absl::nullopt, absl::nullopt}});
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      app_list::FileSuggestionType::kLocalFile,
+      /*suggestions=*/std::vector<app_list::FileSuggestData>{
+          {app_list::FileSuggestionType::kLocalFile, file_path_2,
+           /*new_prediction_reason=*/absl::nullopt, absl::nullopt}});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  const bool suggestion_feature_enabled =
+      features::IsHoldingSpaceSuggestionsEnabled();
+  HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
+  EXPECT_EQ(GetSuggestionsInModel(model).size(),
+            suggestion_feature_enabled ? 2u : 0u);
+
+  // Remove all suggestions through the holding space client. Verify that
+  // `HoldingSpaceClient::RemoveFileSuggestions()` is called.
+  HoldingSpaceClient* client = HoldingSpaceController::Get()->client();
+  EXPECT_CALL(*GetFileSuggestKeyedService(),
+              RemoveSuggestionsAndNotify(
+                  std::vector<base::FilePath>({file_path_1, file_path_2})));
+  client->RemoveFileSuggestions({file_path_1, file_path_2});
+}
 
 TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();

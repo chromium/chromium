@@ -219,6 +219,22 @@ size_t GetMaxVisibleItemCount(HoldingSpaceSectionId section_id) {
   return GetHoldingSpaceSection(section_id)->max_visible_item_count.value();
 }
 
+// Returns whether a context menu is currently showing.
+bool IsShowingContextMenu() {
+  return views::MenuController::GetActiveInstance();
+}
+
+// Returns the menu item matched by `id`.
+const views::MenuItemView* GetMenuItemByCommandId(HoldingSpaceCommandId id) {
+  if (!IsShowingContextMenu())
+    return nullptr;
+  if (auto* menu_item =
+          views::MenuController::GetActiveInstance()->GetSelectedMenuItem()) {
+    return menu_item->GetMenuItemByID(static_cast<int>(id));
+  }
+  return nullptr;
+}
+
 // PredicateWaiter -------------------------------------------------------------
 
 // A class capable of waiting until a predicate returns true.
@@ -2852,6 +2868,32 @@ TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsSection) {
   EXPECT_TRUE(test_api()->GetSuggestionChips().empty());
 }
 
+// Tests the code flow when a suggestion item is removed through the context
+// menu.
+TEST_P(HoldingSpaceTraySuggestionsSectionTest, SuggestionsRemoval) {
+  StartSession();
+
+  // Add a suggestion item.
+  const base::FilePath path("/tmp/fake_1");
+  AddItem(GetType(), path);
+
+  test_api()->Show();
+  std::vector<views::View*> item_views = test_api()->GetHoldingSpaceItemViews();
+  ASSERT_EQ(item_views.size(), 1u);
+
+  // Hover over the item view.
+  MoveMouseTo(item_views.front());
+
+  // Right click the item view to show the context menu.
+  RightClick(item_views.front());
+
+  // Click at the menu item of item removal. Verify that
+  // `HoldingSpaceClient::RemoveFileSuggestions()` is called.
+  EXPECT_CALL(*client(),
+              RemoveFileSuggestions(std::vector<base::FilePath>({path})));
+  Click(GetMenuItemByCommandId(HoldingSpaceCommandId::kRemoveItem));
+}
+
 // Base class for tests of the holding space downloads section parameterized by
 // the set of holding space item types which are expected to appear there.
 class HoldingSpaceTrayDownloadsSectionTest
@@ -3749,11 +3791,6 @@ class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
     return progress_indicator->inner_icon_visible();
   }
 
-  // Returns whether a context menu is currently showing.
-  bool IsShowingContextMenu() const {
-    return views::MenuController::GetActiveInstance();
-  }
-
   // Returns whether the holding space image is currently showing.
   bool IsShowingImage(views::View* view) const {
     auto* v = view->GetViewByID(kHoldingSpaceItemImageId);
@@ -3774,11 +3811,7 @@ class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
 
   // Returns whether a context menu is showing with a command matching `id`.
   bool HasContextMenuCommand(HoldingSpaceCommandId id) const {
-    if (!IsShowingContextMenu())
-      return false;
-    auto* menu_controller = views::MenuController::GetActiveInstance();
-    auto* menu_item = menu_controller->GetSelectedMenuItem();
-    return menu_item && menu_item->GetMenuItemByID(static_cast<int>(id));
+    return !!GetMenuItemByCommandId(id);
   }
 };
 

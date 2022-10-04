@@ -24,7 +24,14 @@ MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService(
 MockFileSuggestKeyedService::MockFileSuggestKeyedService(
     Profile* profile,
     PersistentProto<RemovedResultsProto> proto)
-    : app_list::FileSuggestKeyedService(profile, std::move(proto)) {}
+    : app_list::FileSuggestKeyedService(profile, std::move(proto)) {
+  ON_CALL(*this, RemoveSuggestionsAndNotify)
+      .WillByDefault(
+          [this](const std::vector<base::FilePath>& suggested_file_paths) {
+            FileSuggestKeyedService::RemoveSuggestionsAndNotify(
+                suggested_file_paths);
+          });
+}
 
 MockFileSuggestKeyedService::~MockFileSuggestKeyedService() = default;
 
