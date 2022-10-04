@@ -58,8 +58,6 @@ constexpr char kHostD[] = "d.test";
 
 constexpr char kUseCounterHistogram[] = "Blink.UseCounter.Features";
 constexpr char kRequestOutcomeHistogram[] = "API.StorageAccess.RequestOutcome";
-constexpr char kRequestForOriginResultHistogram[] =
-    "API.StorageAccess.RequestStorageAccessForOrigin";
 
 enum class TestType { kFrame, kWorker };
 
@@ -759,8 +757,8 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
 // Validate that if an iframe requests access that cookies become unblocked for
 // just that top-level/third-party combination.
 IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
-                       // TODO(crbug.com/1370096): Re-enable this test
-                       DISABLED_GrantGivesCrossSiteCookieAccess) {
+                       // TODO(crbug.com/1370096): Re-enable metric assertions.
+                       GrantGivesCrossSiteCookieAccess) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
 
@@ -793,19 +791,6 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
   EXPECT_EQ(GetFrameContent(), "None");
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "");
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
-
-  content::FetchHistogramsFromChildProcesses();
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kRequestForOriginResultHistogram,
-                  1 /*RequestStorageResult::APPROVED_NEW_GRANT*/),
-              Gt(0));
-  EXPECT_THAT(histogram_tester.GetBucketCount(
-                  kUseCounterHistogram,
-                  blink::mojom::WebFeature::
-                      kStorageAccessAPI_requestStorageAccessForOrigin_Method),
-              Gt(0));
 }
 
 INSTANTIATE_TEST_CASE_P(/* no prefix */,
