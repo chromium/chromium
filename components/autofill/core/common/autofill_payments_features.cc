@@ -59,6 +59,14 @@ BASE_FEATURE(kAutofillEnableCardProductName,
              "AutofillEnableCardProductName",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, if the user encounters the yellow path (challenge path) in the
+// VCN retrieval flow and the server denotes that the card is eligible for CVC
+// authentication, CVC authentication will be offered as one of the challenge
+// options.
+BASE_FEATURE(kAutofillEnableCvcForVcnYellowPath,
+             "AutofillEnableCvcForVcnYellowPath",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the GetDetailsForEnrollResponseDetails in the
 // UploadCardResponseDetails will be parsed, which will allow the Virtual Card
 // Enrollment flow to skip making a new GetDetailsForEnroll request. This is an
