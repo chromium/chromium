@@ -23,12 +23,12 @@ PASS KeyframeEffect.getKeyframes() returns expected frames for overlapping keyfr
 FAIL KeyframeEffect.getKeyframes() returns expected values for animations with filter properties and missing keyframes assert_equals: value for 'filter' on Keyframe #1 should match expected "blur(5px) sepia(60%) saturate(30%)" but got "blur(5px) sepia(0.6) saturate(0.3)"
 PASS KeyframeEffect.getKeyframes() returns expected values for animation with drop-shadow of filter property
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with text-shadow properties and missing keyframes
-PASS KeyframeEffect.getKeyframes() returns expected values for animations with background-size properties and missing keyframes
+FAIL KeyframeEffect.getKeyframes() returns expected values for animations with background-size properties and missing keyframes assert_equals: value for 'backgroundSize' on ComputedKeyframe #1 should match expected "50% auto, 6px auto, contain" but got "50%, 6px, contain"
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with CSS variables as keyframe values in a shorthand property
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with a CSS variable which is overriden by the value in keyframe
 PASS KeyframeEffect.getKeyframes() returns expected values for animations with only custom property in a keyframe
 PASS KeyframeEffect.getKeyframes() reflects changes to @keyframes rules
-PASS KeyframeEffect.getKeyframes() returns expected values for animations with implicit values and a non-default timingfunction specified for 0% and 100%
+FAIL KeyframeEffect.getKeyframes() returns expected values for animations with implicit values and a non-default timingfunction specified for 0% and 100% assert_array_equals: properties on Keyframe #0 should match lengths differ, expected array ["composite", "computedOffset", "easing", "offset"] length 4, got ["composite", "computedOffset", "easing", "left", "offset"] length 5
 Harness: the test ran to completion.
 
