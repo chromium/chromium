@@ -1853,9 +1853,6 @@ const FeatureEntry::FeatureVariation
         {"(Zero threshold)", kTranslateForceTriggerOnEnglishBackoff,
          std::size(kTranslateForceTriggerOnEnglishBackoff), nullptr}};
 
-const FeatureEntry::FeatureParam kExploreSitesExperimental = {
-    chrome::android::explore_sites::kExploreSitesVariationParameterName,
-    chrome::android::explore_sites::kExploreSitesVariationExperimental};
 const FeatureEntry::FeatureParam kExploreSitesDenseTitleBottom[] = {
     {chrome::android::explore_sites::kExploreSitesDenseVariationParameterName,
      chrome::android::explore_sites::
@@ -1867,7 +1864,6 @@ const FeatureEntry::FeatureParam kExploreSitesDenseTitleRight[] = {
          kExploreSitesDenseVariationDenseTitleRight},
 };
 const FeatureEntry::FeatureVariation kExploreSitesVariations[] = {
-    {"Experimental", &kExploreSitesExperimental, 1, nullptr},
     {"Dense Title Bottom", kExploreSitesDenseTitleBottom,
      std::size(kExploreSitesDenseTitleBottom), nullptr},
     {"Dense Title Right", kExploreSitesDenseTitleRight,

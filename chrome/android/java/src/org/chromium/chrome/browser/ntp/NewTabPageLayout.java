@@ -22,7 +22,6 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -34,8 +33,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.video_tutorials.NewTabPageVideoIPHManager;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
-import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
-import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -91,11 +88,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     private ImageView mCryptidHolder;
     private ViewGroup mMvTilesContainerLayout;
     private MostVisitedTilesCoordinator mMostVisitedTilesCoordinator;
-
-    @Nullable
-    private View mExploreSectionView; // View is null if explore flag is disabled.
-    @Nullable
-    private Object mExploreSection; // Null when explore sites disabled.
 
     private OnSearchBoxScrollListener mSearchBoxScrollListener;
 
@@ -159,13 +151,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         mVideoIPHManager = new NewTabPageVideoIPHManager(
                 findViewById(R.id.video_iph_stub), Profile.getLastUsedRegularProfile());
         insertSiteSectionView();
-
-        int variation = ExploreSitesBridge.getVariation();
-        if (ExploreSitesBridge.isExperimental(variation)) {
-            ViewStub exploreStub = findViewById(R.id.explore_sites_stub);
-            exploreStub.setLayoutResource(R.layout.experimental_explore_sites_section);
-            mExploreSectionView = exploreStub.inflate();
-        }
     }
 
     /**
@@ -357,12 +342,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
 
         mMostVisitedTilesCoordinator.initWithNative(
                 mManager, tileGroupDelegate, touchEnabledDelegate);
-
-        int variation = ExploreSitesBridge.getVariation();
-        if (ExploreSitesBridge.isExperimental(variation)) {
-            mExploreSection = new ExperimentalExploreSitesSection(
-                    mExploreSectionView, profile, mManager.getNavigationDelegate());
-        }
     }
 
     /**
@@ -879,20 +858,11 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                 final int width = mMvTilesContainerLayout.getMeasuredWidth() - mTileGridLayoutBleed;
                 measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
                 measureExactly(logoView, width, logoView.getMeasuredHeight());
-
-                if (mExploreSectionView != null) {
-                    measureExactly(mExploreSectionView, mMvTilesContainerLayout.getMeasuredWidth(),
-                            mExploreSectionView.getMeasuredHeight());
-                }
             } else {
-                final int exploreWidth = getMeasuredWidth() - mTileGridLayoutBleed;
-                measureExactly(searchBoxView, exploreWidth, searchBoxView.getMeasuredHeight());
-                measureExactly(logoView, exploreWidth, logoView.getMeasuredHeight());
+                final int width = getMeasuredWidth() - mTileGridLayoutBleed;
+                measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
+                measureExactly(logoView, width, logoView.getMeasuredHeight());
             }
-        } else if (mExploreSectionView != null) {
-            final int exploreWidth = mExploreSectionView.getMeasuredWidth() - mTileGridLayoutBleed;
-            measureExactly(searchBoxView, exploreWidth, searchBoxView.getMeasuredHeight());
-            measureExactly(logoView, exploreWidth, logoView.getMeasuredHeight());
         }
     }
 

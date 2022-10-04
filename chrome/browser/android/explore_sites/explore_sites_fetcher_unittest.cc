@@ -34,7 +34,6 @@ using testing::SaveArg;
 
 namespace {
 const char kAcceptLanguages[] = "en-US,en;q=0.5";
-const char kExperimentData[] = "FooBar";
 const char kTestData[] = "Any data.";
 }  // namespace
 
@@ -355,21 +354,6 @@ TEST_F(ExploreSitesFetcherTest, TestHeaders) {
   // The finch header should not be set since the experiment is not on.
   success = headers.HasHeader("X-Goog-Chrome-Experiment-Tag");
   EXPECT_FALSE(success);
-}
-
-TEST_F(ExploreSitesFetcherTest, TestFinchHeader) {
-  // Set up the Finch experiment.
-  SetUpExperimentOption("exp", kExperimentData);
-
-  std::string data;
-  EXPECT_EQ(ExploreSitesRequestStatus::kSuccess,
-            RunFetcherWithData(kTestData, &data));
-
-  net::HttpRequestHeaders headers = last_resource_request.headers;
-  std::string header_text;
-
-  headers.GetHeader("X-Goog-Chrome-Experiment-Tag", &header_text);
-  EXPECT_EQ(std::string(kExperimentData), header_text);
 }
 
 TEST_F(ExploreSitesFetcherTest, OneBackoffForImmediateFetch) {

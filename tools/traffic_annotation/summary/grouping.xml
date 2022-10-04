@@ -29,8 +29,6 @@ after discussions on the right group.
       <annotation id="download_bitmap"/>
       <annotation id="download_manager_service_retry"/>
       <annotation id="explore_sites"/>
-      <annotation id="explore_sites_catalog_fetcher"/>
-      <annotation id="explore_sites_image_fetcher"/>
       <annotation id="family_info"/>
       <annotation id="gstatic_change_password_scripts"/>
       <annotation id="gstatic_onboarding_definition"/>
@@ -263,9 +261,6 @@ after discussions on the right group.
       <annotation id="cryptohome_recovery_fetch_epoch"/>
       <annotation id="cryptohome_recovery_fetch_recovery_response"/>
       <annotation id="supervised_user_favicon_request"/>
-      <annotation id="nearby_share_update_device"/>
-      <annotation id="nearby_share_contacts"/>
-      <annotation id="nearby_share_list_public_certificates"/>
       <annotation id="app_preload_service"/>
     </sender>
   </group>

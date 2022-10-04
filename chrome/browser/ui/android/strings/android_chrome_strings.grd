@@ -3242,9 +3242,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_EXPLORE_SITES_TITLE" desc="Title of a section showing different categories, each with a number of popular websites">
         Explore
       </message>
-      <message name="IDS_NTP_EXPLORE_SITES_MORE" desc="Text on a button leading to a complete view of all categories for all popular websites">
-        More categories
-      </message>
       <message name="IDS_EXPLORE_SITES_LOADING_FROM_NET" desc="Caption for an indeterminate loading spinner indicating that we are loading the data from the internet">
         Finding the best from the web…
       </message>

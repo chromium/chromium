@@ -134,10 +134,6 @@ public class ExploreSitesBridge {
         return variation == ExploreSitesVariation.ENABLED;
     }
 
-    public static boolean isExperimental(@ExploreSitesVariation int variation) {
-        return variation == ExploreSitesVariation.EXPERIMENT;
-    }
-
     public static boolean isDense(@DenseVariation int variation) {
         return variation != DenseVariation.ORIGINAL;
     }

@@ -28,8 +28,6 @@ std::string GetChromeFlagsSetupString() {
   switch (GetExploreSitesVariation()) {
     case ExploreSitesVariation::ENABLED:
       return "Enabled";
-    case ExploreSitesVariation::EXPERIMENT:
-      return "Experiment";
     case ExploreSitesVariation::DISABLED:
       return "Disabled";
   }

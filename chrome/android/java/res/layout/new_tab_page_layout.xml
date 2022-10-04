@@ -54,14 +54,6 @@ found in the LICENSE file.
 
     <!-- Insertion point of the SiteSectionView, see NewTabPageLayout#insertSiteSection() -->
 
-    <ViewStub
-        android:id="@+id/explore_sites_stub"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inflatedId="@+id/explore_sites"
-        android:layout_marginBottom="16dp"
-        android:layout="@layout/explore_sites_section" />
-
     <!-- Site suggestion tile grid placeholder -->
     <ViewStub
         android:id="@+id/tile_grid_placeholder_stub"

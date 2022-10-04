@@ -160,16 +160,6 @@ void ExploreSitesFetcher::Start() {
         net::HttpRequestHeaders::kAcceptLanguage, accept_languages_);
   }
 
-  // Get field trial value, if any.
-  std::string tag = base::GetFieldTrialParamValueByFeature(
-      chrome::android::kExploreSites,
-      chrome::android::explore_sites::
-          kExploreSitesHeadersExperimentParameterName);
-
-  if (!tag.empty()) {
-    resource_request->headers.SetHeader("X-Goog-Chrome-Experiment-Tag", tag);
-  }
-
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
 

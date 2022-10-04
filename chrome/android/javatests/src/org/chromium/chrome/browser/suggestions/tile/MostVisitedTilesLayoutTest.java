@@ -12,8 +12,6 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createSiteSuggestion;
 
@@ -204,13 +202,6 @@ public class MostVisitedTilesLayoutTest {
         mRenderTestRule.render(tilesLayout,
                 mEnableScrollableMVT ? "modern_full_carousel_landscape"
                                      : "modern_full_grid_landscape");
-
-        // In landscape, modern tiles should use all available space.
-        int tileGridMaxWidthPx = tilesLayout.getResources().getDimensionPixelSize(
-                R.dimen.tile_grid_layout_max_width);
-        if (((FrameLayout) tilesLayout.getParent()).getMeasuredWidth() > tileGridMaxWidthPx) {
-            assertThat(tilesLayout.getMeasuredWidth(), greaterThan(tileGridMaxWidthPx));
-        }
 
         // Reset device orientation.
         ActivityTestUtils.clearActivityOrientation(activity);

@@ -160,7 +160,6 @@ found in the LICENSE file.
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
     <!-- NTP dimensions -->
-    <dimen name="tile_grid_layout_max_width">504dp</dimen>
     <dimen name="tile_grid_layout_top_margin">24dp</dimen>
     <dimen name="tile_grid_layout_top_margin_push_down_small">36dp</dimen>
     <dimen name="tile_grid_layout_top_margin_push_down_large">54dp</dimen>
@@ -182,10 +181,6 @@ found in the LICENSE file.
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
-    <dimen name="experimental_explore_sites_radius">8dp</dimen>
-    <dimen name="experimental_explore_sites_padding">8dp</dimen>
-    <dimen name="experimental_explore_sites_margin">16dp</dimen>
-    <dimen name="experimental_explore_sites_spacing">12dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">56dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>

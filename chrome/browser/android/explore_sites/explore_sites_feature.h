@@ -9,11 +9,6 @@ namespace chrome {
 namespace android {
 namespace explore_sites {
 
-extern const char kExploreSitesVariationParameterName[];
-extern const char kExploreSitesVariationExperimental[];
-
-extern const char kExploreSitesHeadersExperimentParameterName[];
-
 extern const char kExploreSitesDenseVariationParameterName[];
 extern const char kExploreSitesDenseVariationOriginal[];
 extern const char kExploreSitesDenseVariationDenseTitleBottom[];
@@ -21,11 +16,7 @@ extern const char kExploreSitesDenseVariationDenseTitleRight[];
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.explore_sites
-enum class ExploreSitesVariation {
-  ENABLED,
-  EXPERIMENT,
-  DISABLED
-};
+enum class ExploreSitesVariation { ENABLED, DISABLED };
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.explore_sites
