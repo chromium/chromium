@@ -54,7 +54,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManager {
   AddressPoolManager& operator=(const AddressPoolManager&) = delete;
 
 #if defined(PA_HAS_64_BITS_POINTERS)
-  pool_handle Add(uintptr_t address, size_t length);
+  void Add(pool_handle handle, uintptr_t address, size_t length);
   void Remove(pool_handle handle);
 
   // Populate a |used| bitset of superpages currently in use.

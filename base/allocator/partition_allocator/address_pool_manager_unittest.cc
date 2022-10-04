@@ -59,7 +59,8 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
                                PageAccessibilityConfiguration::kInaccessible,
                                PageTag::kPartitionAlloc);
     ASSERT_TRUE(base_address_);
-    pool_ = manager_->Add(base_address_, kPoolSize);
+    manager_->Add(kRegularPoolHandle, base_address_, kPoolSize);
+    pool_ = kRegularPoolHandle;
   }
 
   void TearDown() override {
@@ -80,9 +81,13 @@ class PartitionAllocAddressPoolManagerTest : public testing::Test {
 
 TEST_F(PartitionAllocAddressPoolManagerTest, TooLargePool) {
   uintptr_t base_addr = 0x4200000;
+  const pool_handle extra_pool = 2;
+  static_assert(kNumPools >= 2);
 
   EXPECT_DEATH_IF_SUPPORTED(
-      GetAddressPoolManager()->Add(base_addr, kPoolSize + kSuperPageSize), "");
+      GetAddressPoolManager()->Add(extra_pool, base_addr,
+                                   kPoolSize + kSuperPageSize),
+      "");
 }
 
 TEST_F(PartitionAllocAddressPoolManagerTest, ManyPages) {

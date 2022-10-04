@@ -183,9 +183,8 @@ void PartitionAddressSpace::Init() {
   setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
 #endif
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
-  pool_handle pool = AddressPoolManager::GetInstance().Add(
-      setup_.regular_pool_base_address_, regular_pool_size);
-  PA_CHECK(pool == kRegularPoolHandle);
+  AddressPoolManager::GetInstance().Add(
+      kRegularPoolHandle, setup_.regular_pool_base_address_, regular_pool_size);
   PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
   PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
   PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
@@ -216,9 +215,8 @@ void PartitionAddressSpace::Init() {
   setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
 #endif
   PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
-  pool = AddressPoolManager::GetInstance().Add(setup_.brp_pool_base_address_,
-                                               brp_pool_size);
-  PA_CHECK(pool == kBRPPoolHandle);
+  AddressPoolManager::GetInstance().Add(
+      kBRPPoolHandle, setup_.brp_pool_base_address_, brp_pool_size);
   PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
   PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_));
   PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size - 1));
@@ -270,9 +268,8 @@ void PartitionAddressSpace::InitConfigurablePool(uintptr_t pool_base,
   setup_.configurable_pool_base_address_ = pool_base;
   setup_.configurable_pool_base_mask_ = ~(size - 1);
 
-  pool_handle pool = AddressPoolManager::GetInstance().Add(
-      setup_.configurable_pool_base_address_, size);
-  PA_CHECK(pool == kConfigurablePoolHandle);
+  AddressPoolManager::GetInstance().Add(
+      kConfigurablePoolHandle, setup_.configurable_pool_base_address_, size);
 }
 
 void PartitionAddressSpace::UninitForTesting() {

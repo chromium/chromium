@@ -47,18 +47,14 @@ void DecommitPages(uintptr_t address, size_t size) {
 
 }  // namespace
 
-pool_handle AddressPoolManager::Add(uintptr_t ptr, size_t length) {
+void AddressPoolManager::Add(pool_handle handle, uintptr_t ptr, size_t length) {
   PA_DCHECK(!(ptr & kSuperPageOffsetMask));
   PA_DCHECK(!((ptr + length) & kSuperPageOffsetMask));
+  PA_CHECK(handle > 0 && handle <= std::size(pools_));
 
-  for (pool_handle i = 0; i < std::size(pools_); ++i) {
-    if (!pools_[i].IsInitialized()) {
-      pools_[i].Initialize(ptr, length);
-      return i + 1;
-    }
-  }
-  PA_NOTREACHED();
-  return 0;
+  Pool* pool = GetPool(handle);
+  PA_CHECK(!pool->IsInitialized());
+  pool->Initialize(ptr, length);
 }
 
 void AddressPoolManager::GetPoolUsedSuperPages(
