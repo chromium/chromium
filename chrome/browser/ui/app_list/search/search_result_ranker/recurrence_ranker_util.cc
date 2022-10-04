@@ -102,7 +102,7 @@ bool ConvertHourBinPredictor(const Value* value,
   if (!bin_weights)
     return false;
 
-  for (const Value& bin_weight : bin_weights.value()->GetListDeprecated()) {
+  for (const Value& bin_weight : bin_weights.value()->GetList()) {
     const auto& bin = GetInt(&bin_weight, "bin");
     const auto& weight = GetDouble(&bin_weight, "weight");
     if (!bin || !weight)
@@ -127,7 +127,7 @@ bool ConvertExponentialWeightsEnsemble(
   proto->set_learning_rate(learning_rate.value());
 
   bool success = true;
-  for (const Value& predictor : predictors.value()->GetListDeprecated())
+  for (const Value& predictor : predictors.value()->GetList())
     success &= ConvertRecurrencePredictor(&predictor, proto->add_predictors());
   return success;
 }
