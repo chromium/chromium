@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
@@ -122,7 +121,6 @@ void SelectFileDialogLacros::SelectFileImpl(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
-  CheckCalledOnValidSequence();
   params_ = params;
 
   crosapi::mojom::SelectFileOptionsPtr options =
@@ -154,15 +152,13 @@ void SelectFileDialogLacros::SelectFileImpl(
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::SelectFile>()
       ->Select(std::move(options),
-               base::BindOnce(&SelectFileDialogLacros::OnSelected,
-                              base::AsWeakPtr(this)));
+               base::BindOnce(&SelectFileDialogLacros::OnSelected, this));
 }
 
 void SelectFileDialogLacros::OnSelected(
     crosapi::mojom::SelectFileResult result,
     std::vector<crosapi::mojom::SelectedFileInfoPtr> mojo_files,
     int file_type_index) {
-  CheckCalledOnValidSequence();
   owning_shell_window_id_.clear();
   if (!listener_)
     return;

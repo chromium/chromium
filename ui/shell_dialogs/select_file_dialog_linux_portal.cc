@@ -7,7 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -202,13 +201,11 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
-  CheckCalledOnValidSequence();
-
   auto info = base::MakeRefCounted<DialogInfo>(
       base::BindOnce(&SelectFileDialogLinuxPortal::CompleteOpenOnMainThread,
-                     base::AsWeakPtr(this)),
+                     this),
       base::BindOnce(&SelectFileDialogLinuxPortal::CancelOpenOnMainThread,
-                     base::AsWeakPtr(this)));
+                     this));
   info_ = info;
   info->type = type;
   info->main_task_runner = base::SequencedTaskRunnerHandle::Get();
@@ -236,8 +233,7 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
             *parent_,
             base::BindOnce(
                 &SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle,
-                base::AsWeakPtr(this), title, default_path, filter_set,
-                default_extension))) {
+                this, title, default_path, filter_set, default_extension))) {
       // Return early to skip the fallback below.
       return;
     } else {
@@ -433,7 +429,6 @@ void SelectFileDialogLinuxPortal::SelectFileImplWithParentHandle(
     PortalFilterSet filter_set,
     base::FilePath::StringType default_extension,
     std::string parent_handle) {
-  CheckCalledOnValidSequence();
   bool default_path_exists = CallDirectoryExistsOnUIThread(default_path);
   dbus_thread_linux::GetTaskRunner()->PostTask(
       FROM_HERE,
@@ -657,7 +652,6 @@ void SelectFileDialogLinuxPortal::DialogInfo::CancelOpen() {
 void SelectFileDialogLinuxPortal::CompleteOpenOnMainThread(
     std::vector<base::FilePath> paths,
     std::string current_filter) {
-  CheckCalledOnValidSequence();
   UnparentOnMainThread();
 
   if (listener_) {

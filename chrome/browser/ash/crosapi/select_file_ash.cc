@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
 
-#include <memory>
 #include <utility>
 #include <vector>
 
@@ -13,6 +12,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chromeos/crosapi/mojom/select_file.mojom-shared.h"
@@ -165,7 +165,7 @@ class SelectFileDialogHolder : public ui::SelectFileDialog::Listener {
   mojom::SelectFile::SelectCallback select_callback_;
 
   // The file select dialog.
-  std::unique_ptr<SelectFileDialogExtension> select_file_dialog_;
+  scoped_refptr<SelectFileDialogExtension> select_file_dialog_;
 
   // Optional file type extension filters.
   std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> file_types_;

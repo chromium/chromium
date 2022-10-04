@@ -94,7 +94,7 @@ class SessionLogHandler : public content::WebUIMessageHandler,
   std::unique_ptr<NetworkingLog> networking_log_;
   ash::HoldingSpaceClient* const holding_space_client_;
   std::string save_session_log_callback_id_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::OnceClosure log_created_closure_;
   // Task runner for tasks posted by save session log handler. Used to ensure
   // posted tasks are handled while SessionLogHandler is in scope to stop

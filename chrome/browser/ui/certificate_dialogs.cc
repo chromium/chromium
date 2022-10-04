@@ -92,7 +92,7 @@ class Exporter : public ui::SelectFileDialog::Listener {
 
   std::string GetCMSString(size_t start, size_t end) const;
 
-  std::unique_ptr<ui::SelectFileDialog> const select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> const select_file_dialog_;
 
   // The certificate hierarchy (leaf cert first).
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain_list_;

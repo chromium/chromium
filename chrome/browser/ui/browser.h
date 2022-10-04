@@ -1243,7 +1243,7 @@ class Browser : public TabStripModelObserver,
   std::unique_ptr<FindBarController> find_bar_controller_;
 
   // Dialog box used for opening and saving files.
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // Helper which implements the ContentSettingBubbleModel interface.
   std::unique_ptr<BrowserContentSettingBubbleModelDelegate>

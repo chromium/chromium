@@ -246,7 +246,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
   bool use_hardware_backed_;
   std::string file_data_;
   net::ScopedCERTCertificateList selected_cert_list_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   crypto::ScopedPK11Slot slot_;
 
   // Used in reading and writing certificate files.

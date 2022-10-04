@@ -84,7 +84,7 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
 
   std::unique_ptr<password_manager::PasswordManagerExporter> exporter_;
   std::unique_ptr<password_manager::PasswordImporter> importer_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<Profile> profile_;
 
   // We store |presenter_| and

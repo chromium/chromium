@@ -107,7 +107,7 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
   base::ScopedClosureRunner fullscreen_block_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<ui::SelectFileDialog> dialog_;
+  scoped_refptr<ui::SelectFileDialog> dialog_;
 };
 
 }  // namespace content

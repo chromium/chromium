@@ -71,14 +71,15 @@ class PendingDialog {
  public:
   static PendingDialog* GetInstance();
   void Add(SelectFileDialogExtension::RoutingID id,
-           SelectFileDialogExtension* dialog);
+           scoped_refptr<SelectFileDialogExtension> dialog);
   void Remove(SelectFileDialogExtension::RoutingID id);
-  SelectFileDialogExtension* Find(SelectFileDialogExtension::RoutingID id);
+  scoped_refptr<SelectFileDialogExtension> Find(
+      SelectFileDialogExtension::RoutingID id);
 
  private:
   friend struct base::DefaultSingletonTraits<PendingDialog>;
   using Map = std::map<SelectFileDialogExtension::RoutingID,
-                       raw_ptr<SelectFileDialogExtension>>;
+                       scoped_refptr<SelectFileDialogExtension>>;
   Map map_;
 };
 
@@ -89,8 +90,8 @@ PendingDialog* PendingDialog::GetInstance() {
 }
 
 void PendingDialog::Add(SelectFileDialogExtension::RoutingID id,
-                        SelectFileDialogExtension* dialog) {
-  DCHECK(dialog);
+                        scoped_refptr<SelectFileDialogExtension> dialog) {
+  DCHECK(dialog.get());
   if (map_.find(id) == map_.end())
     map_.insert(std::make_pair(id, dialog));
   else
@@ -101,7 +102,7 @@ void PendingDialog::Remove(SelectFileDialogExtension::RoutingID id) {
   map_.erase(id);
 }
 
-SelectFileDialogExtension* PendingDialog::Find(
+scoped_refptr<SelectFileDialogExtension> PendingDialog::Find(
     SelectFileDialogExtension::RoutingID id) {
   Map::const_iterator it = map_.find(id);
   if (it == map_.end())
@@ -255,12 +256,10 @@ SelectFileDialogExtension::Owner& SelectFileDialogExtension::Owner::operator=(
     SelectFileDialogExtension::Owner&&) = default;
 
 // static
-std::unique_ptr<SelectFileDialogExtension> SelectFileDialogExtension::Create(
+SelectFileDialogExtension* SelectFileDialogExtension::Create(
     Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy) {
-  // Using WrapUnique because the constructor is private.
-  return base::WrapUnique(
-      new SelectFileDialogExtension(listener, std::move(policy)));
+  return new SelectFileDialogExtension(listener, std::move(policy));
 }
 
 SelectFileDialogExtension::SelectFileDialogExtension(
@@ -304,9 +303,9 @@ void SelectFileDialogExtension::OnFileSelected(
     RoutingID routing_id,
     const ui::SelectedFileInfo& file,
     int index) {
-  SelectFileDialogExtension* dialog =
+  scoped_refptr<SelectFileDialogExtension> dialog =
       PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog)
+  if (!dialog.get())
     return;
   dialog->selection_type_ = SINGLE_FILE;
   dialog->selection_files_.clear();
@@ -318,9 +317,9 @@ void SelectFileDialogExtension::OnFileSelected(
 void SelectFileDialogExtension::OnMultiFilesSelected(
     RoutingID routing_id,
     const std::vector<ui::SelectedFileInfo>& files) {
-  SelectFileDialogExtension* dialog =
+  scoped_refptr<SelectFileDialogExtension> dialog =
       PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog)
+  if (!dialog.get())
     return;
   dialog->selection_type_ = MULTIPLE_FILES;
   dialog->selection_files_ = files;
@@ -329,9 +328,9 @@ void SelectFileDialogExtension::OnMultiFilesSelected(
 
 // static
 void SelectFileDialogExtension::OnFileSelectionCanceled(RoutingID routing_id) {
-  SelectFileDialogExtension* dialog =
+  scoped_refptr<SelectFileDialogExtension> dialog =
       PendingDialog::GetInstance()->Find(routing_id);
-  if (!dialog)
+  if (!dialog.get())
     return;
   dialog->selection_type_ = CANCEL;
   dialog->selection_files_.clear();
@@ -563,5 +562,5 @@ void SelectFileDialogExtension::AddPending(RoutingID routing_id) {
 
 // static
 bool SelectFileDialogExtension::PendingExists(RoutingID routing_id) {
-  return PendingDialog::GetInstance()->Find(routing_id) != nullptr;
+  return PendingDialog::GetInstance()->Find(routing_id).get() != nullptr;
 }

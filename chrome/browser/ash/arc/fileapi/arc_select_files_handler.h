@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_SELECT_FILES_HANDLER_H_
 #define CHROME_BROWSER_ASH_ARC_FILEAPI_ARC_SELECT_FILES_HANDLER_H_
 
-#include <memory>
 #include <vector>
 
 #include "ash/components/arc/mojom/file_system.mojom.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "content/public/browser/render_frame_host.h"
@@ -146,7 +146,7 @@ class SelectFileDialogHolder {
       content::RenderFrameHost::JavaScriptResultCallback callback);
 
  private:
-  std::unique_ptr<SelectFileDialogExtension> select_file_dialog_;
+  scoped_refptr<SelectFileDialogExtension> select_file_dialog_;
 };
 
 }  // namespace arc

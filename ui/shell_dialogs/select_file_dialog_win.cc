@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
-#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -246,7 +245,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
-  CheckCalledOnValidSequence();
   has_multiple_file_type_choices_ =
       file_types ? file_types->extensions.size() > 1 : true;
 
@@ -266,8 +264,7 @@ void SelectFileDialogImpl::SelectFileImpl(
                      filter, file_type_index, default_extension, owner,
                      base::ThreadTaskRunnerHandle::Get(),
                      base::BindOnce(&SelectFileDialogImpl::OnSelectFileExecuted,
-                                    base::AsWeakPtr(this), type,
-                                    std::move(run_state), params)));
+                                    this, type, std::move(run_state), params)));
 }
 
 bool SelectFileDialogImpl::HasMultipleFileTypeChoicesImpl() {
@@ -284,7 +281,6 @@ bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow owning_window) const {
 void SelectFileDialogImpl::ListenerDestroyed() {
   // Our associated listener has gone away, so we shouldn't call back to it if
   // our worker thread returns after the listener is dead.
-  CheckCalledOnValidSequence();
   listener_ = nullptr;
 }
 

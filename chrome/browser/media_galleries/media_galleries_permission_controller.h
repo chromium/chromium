@@ -216,7 +216,7 @@ class MediaGalleriesPermissionController
   // The view that's showing.
   std::unique_ptr<MediaGalleriesDialog> dialog_;
 
-  std::unique_ptr<ui::SelectFileDialog> select_folder_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
 
   std::unique_ptr<MediaGalleryContextMenu> context_menu_;
 

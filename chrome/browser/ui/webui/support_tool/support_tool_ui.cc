@@ -118,7 +118,7 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   std::set<feedback::PIIType> selected_pii_to_keep_;
   base::FilePath data_path_;
   std::unique_ptr<SupportToolHandler> handler_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   base::WeakPtrFactory<SupportToolMessageHandler> weak_ptr_factory_{this};
 };
 

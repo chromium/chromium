@@ -195,7 +195,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   base::TimeTicks background_images_request_start_time_;
   absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
   raw_ptr<Profile> profile_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<content::WebContents> web_contents_;
   base::Time ntp_navigation_start_time_;
   NTPUserDataLogger logger_;

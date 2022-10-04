@@ -253,7 +253,7 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
   friend class base::RefCounted<SelectDirectoryDialog>;
   ~SelectDirectoryDialog() override = default;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<WebContents> web_contents_;
   Callback callback_;
 };

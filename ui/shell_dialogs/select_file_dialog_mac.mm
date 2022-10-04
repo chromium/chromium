@@ -39,7 +39,6 @@ bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow parent_window) const {
 }
 
 void SelectFileDialogImpl::ListenerDestroyed() {
-  CheckCalledOnValidSequence();
   listener_ = nullptr;
 }
 

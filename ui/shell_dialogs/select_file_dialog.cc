@@ -86,14 +86,12 @@ void SelectFileDialog::SetFactory(ui::SelectFileDialogFactory* factory) {
 }
 
 // static
-std::unique_ptr<SelectFileDialog> SelectFileDialog::Create(
+scoped_refptr<SelectFileDialog> SelectFileDialog::Create(
     Listener* listener,
-    std::unique_ptr<SelectFilePolicy> policy) {
-  if (dialog_factory_) {
-    return base::WrapUnique(
-        dialog_factory_->Create(listener, std::move(policy)));
-  }
-  return base::WrapUnique(CreateSelectFileDialog(listener, std::move(policy)));
+    std::unique_ptr<ui::SelectFilePolicy> policy) {
+  if (dialog_factory_)
+    return dialog_factory_->Create(listener, std::move(policy));
+  return CreateSelectFileDialog(listener, std::move(policy));
 }
 
 base::FilePath SelectFileDialog::GetShortenedFilePath(
@@ -128,7 +126,6 @@ void SelectFileDialog::SelectFile(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
-  CheckCalledOnValidSequence();
   DCHECK(listener_);
 
   if (select_file_policy_.get() &&
@@ -139,8 +136,8 @@ void SelectFileDialog::SelectFile(
     // Post a task rather than calling FileSelectionCanceled directly to ensure
     // that the listener is called asynchronously.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&SelectFileDialog::CancelFileSelection,
-                                  AsWeakPtr(), params));
+        FROM_HERE,
+        base::BindOnce(&SelectFileDialog::CancelFileSelection, this, params));
     return;
   }
 
@@ -161,12 +158,9 @@ SelectFileDialog::SelectFileDialog(Listener* listener,
   DCHECK(listener_);
 }
 
-SelectFileDialog::~SelectFileDialog() {
-  CheckCalledOnValidSequence();
-}
+SelectFileDialog::~SelectFileDialog() {}
 
 void SelectFileDialog::CancelFileSelection(void* params) {
-  CheckCalledOnValidSequence();
   if (listener_)
     listener_->FileSelectionCanceled(params);
 }

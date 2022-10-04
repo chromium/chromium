@@ -80,7 +80,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 
   void WritePoliciesToJSONFile(const base::FilePath& path);
 
-  std::unique_ptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> export_policies_select_file_dialog_;
 
   std::unique_ptr<policy::PolicyValueAndStatusAggregator>
       policy_value_and_status_aggregator_;

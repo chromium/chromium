@@ -82,7 +82,7 @@ class FolderSelectionDialogController : public ui::SelectFileDialog::Listener,
   WindowDimmer dialog_background_dimmer_;
 
   // Provides us with the APIs needed to construct a folder selection dialog.
-  std::unique_ptr<ui::SelectFileDialog> select_folder_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
 
   // This is the window of the dialog that gets created by
   // |select_folder_dialog_| as a transient child of the dimming window.

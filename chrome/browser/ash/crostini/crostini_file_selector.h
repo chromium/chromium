@@ -41,7 +41,7 @@ class CrostiniFileSelector : public ui::SelectFileDialog::Listener {
   raw_ptr<content::WebUI> web_ui_;
   base::OnceCallback<void(const base::FilePath&)> selected_callback_;
   base::OnceCallback<void(void)> cancelled_callback_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 };
 
 }  // namespace crostini

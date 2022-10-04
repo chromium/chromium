@@ -231,7 +231,7 @@ TEST_F(SelectFileDialogWinTest, CancelAllDialogs) {
 
     const auto& test_case = kTestCases[i];
 
-    std::unique_ptr<ui::SelectFileDialog> dialog =
+    scoped_refptr<ui::SelectFileDialog> dialog =
         ui::SelectFileDialog::Create(this, nullptr);
 
     std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> file_type_info;
@@ -269,7 +269,7 @@ TEST_F(SelectFileDialogWinTest, UploadFolderCheckStrings) {
   ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
   base::FilePath default_path = scoped_temp_dir.GetPath();
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_UPLOAD_FOLDER,
                      std::u16string(), default_path, nullptr, 0, L"",
@@ -310,7 +310,7 @@ TEST_F(SelectFileDialogWinTest, SpecifyTitle) {
   std::string contents = "Hello test!";
   ASSERT_TRUE(base::WriteFile(default_path, contents));
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, kTitle,
                      default_path, nullptr, 0, L"", native_window(), nullptr);
@@ -338,7 +338,7 @@ TEST_F(SelectFileDialogWinTest, TestSelectFile) {
   std::string contents = "Hello test!";
   ASSERT_TRUE(base::WriteFile(default_path, contents));
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, nullptr, 0, L"", native_window(), nullptr);
@@ -365,7 +365,7 @@ TEST_F(SelectFileDialogWinTest, TestSaveFile) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({L"html"});
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
@@ -389,7 +389,7 @@ TEST_F(SelectFileDialogWinTest, OnlyBasename) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({L"html"});
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),
@@ -416,7 +416,7 @@ TEST_F(SelectFileDialogWinTest, SaveAsDifferentExtension) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({L"exe"});
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"html", native_window(),
@@ -443,7 +443,7 @@ TEST_F(SelectFileDialogWinTest, OpenFileDifferentExtension) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({L"exe"});
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"html", native_window(),
@@ -466,7 +466,7 @@ TEST_F(SelectFileDialogWinTest, SelectNonExistingFile) {
   base::FilePath default_path =
       scoped_temp_dir.GetPath().Append(L"does-not-exist.html");
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
                      default_path, nullptr, 0, L"", native_window(), nullptr);
@@ -502,7 +502,7 @@ TEST_F(SelectFileDialogWinTest, SaveFileOverwritePrompt) {
   ui::SelectFileDialog::FileTypeInfo file_type_info;
   file_type_info.extensions.push_back({L"txt"});
 
-  std::unique_ptr<ui::SelectFileDialog> dialog =
+  scoped_refptr<ui::SelectFileDialog> dialog =
       ui::SelectFileDialog::Create(this, nullptr);
   dialog->SelectFile(ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
                      default_path, &file_type_info, 1, L"", native_window(),

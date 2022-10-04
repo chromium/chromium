@@ -11,8 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/sequence_checker.h"
+#include "base/memory/ref_counted.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/base_shell_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
@@ -27,7 +26,7 @@ struct SelectedFileInfo;
 
 // Shows a dialog box for selecting a file or a folder.
 class SHELL_DIALOGS_EXPORT SelectFileDialog
-    : public base::SupportsWeakPtr<SelectFileDialog>,
+    : public base::RefCountedThreadSafe<SelectFileDialog>,
       public BaseShellDialog {
  public:
   enum Type {
@@ -110,14 +109,14 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   //
   // The lifetime of the Listener is not managed by this class. The calling
   // code should call always ListenerDestroyed() (on the base class
-  // BaseShellDialog) when the listener is destroyed.
-  static std::unique_ptr<SelectFileDialog> Create(
+  // BaseShellDialog) when the listener is destroyed since the SelectFileDialog
+  // is refcounted and uses a background thread.
+  static scoped_refptr<SelectFileDialog> Create(
       Listener* listener,
       std::unique_ptr<SelectFilePolicy> policy);
 
   SelectFileDialog(const SelectFileDialog&) = delete;
   SelectFileDialog& operator=(const SelectFileDialog&) = delete;
-  ~SelectFileDialog() override;
 
   // Holds information about allowed extensions on a file save dialog.
   struct SHELL_DIALOGS_EXPORT FileTypeInfo {
@@ -212,8 +211,11 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   bool HasMultipleFileTypeChoices();
 
  protected:
+  friend class base::RefCountedThreadSafe<SelectFileDialog>;
+
   explicit SelectFileDialog(Listener* listener,
                             std::unique_ptr<SelectFilePolicy> policy);
+  ~SelectFileDialog() override;
 
   // Displays the actual file-selection dialog.
   // This is overridden in the platform-specific descendants of FileSelectDialog
@@ -230,26 +232,21 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
       void* params,
       const GURL* caller) = 0;
 
-  // SelectFileDialog and each platform implementation should be accessed only
-  // in the main thread. Implementations often use background threads to
-  // interface with the system or for IO, but the SelectFileDialog uses
-  // unique_ptr and WeakPtr, which are only guaranteed to be valid in the thread
-  // that constructed it (main thread).
-  void CheckCalledOnValidSequence() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
   // The listener to be notified of selection completion.
   raw_ptr<Listener> listener_;
 
  private:
+  // Tests if the file selection dialog can be displayed by
+  // testing if the AllowFileSelectionDialogs-Policy is
+  // either unset or set to true.
+  bool CanOpenSelectFileDialog();
+
   // Informs the |listener_| that the file selection dialog was canceled. Moved
   // to a function for being able to post it to the message loop.
   void CancelFileSelection(void* params);
 
   // Returns true if the dialog has multiple file type choices.
   virtual bool HasMultipleFileTypeChoicesImpl() = 0;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 
   std::unique_ptr<SelectFilePolicy> select_file_policy_;
 };

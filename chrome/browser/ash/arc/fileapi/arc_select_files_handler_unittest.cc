@@ -111,8 +111,7 @@ class ArcSelectFilesHandlerTest : public testing::Test {
         std::make_unique<ArcSelectFilesHandler>(profile);
 
     std::unique_ptr<MockSelectFileDialogHolder> mock_dialog_holder =
-        std::make_unique<MockSelectFileDialogHolder>(
-            arc_select_files_handler_.get());
+        std::make_unique<MockSelectFileDialogHolder>(nullptr);
     mock_dialog_holder_ = mock_dialog_holder.get();
     arc_select_files_handler_->SetDialogHolderForTesting(
         std::move(mock_dialog_holder));

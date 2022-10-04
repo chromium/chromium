@@ -258,7 +258,7 @@ class CrostiniExportImport : public KeyedService,
       TrackerMap::iterator it);
 
   Profile* profile_;
-  std::unique_ptr<ui::SelectFileDialog> select_folder_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
   TrackerMap status_trackers_;
   // |operation_data_storage_| persists the data required to complete an
   // operation while the file selection dialog is open/operation is in progress.

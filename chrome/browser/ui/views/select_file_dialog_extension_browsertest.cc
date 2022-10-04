@@ -14,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -168,8 +167,7 @@ class BaseSelectFileDialogExtensionBrowserTest
   void SetUp() override {
     // Create the dialog wrapper and listener objects.
     listener_ = std::make_unique<MockSelectFileDialogListener>();
-    dialog_ = base::WrapUnique(
-        new SelectFileDialogExtension(listener_.get(), nullptr));
+    dialog_ = new SelectFileDialogExtension(listener_.get(), nullptr);
 
     // One mount point will be needed. Files app looks for the "Downloads"
     // volume mount point by default, so use that.
@@ -295,8 +293,8 @@ class BaseSelectFileDialogExtensionBrowserTest
 
   void TryOpeningSecondDialog(const gfx::NativeWindow& owning_window) {
     second_listener_ = std::make_unique<MockSelectFileDialogListener>();
-    second_dialog_ = base::WrapUnique(
-        new SelectFileDialogExtension(second_listener_.get(), nullptr));
+    second_dialog_ =
+        new SelectFileDialogExtension(second_listener_.get(), nullptr);
 
     // The dialog type is not relevant for this test but is required: use the
     // open file dialog type.
@@ -343,10 +341,10 @@ class BaseSelectFileDialogExtensionBrowserTest
   base::FilePath downloads_dir_;
 
   std::unique_ptr<MockSelectFileDialogListener> listener_;
-  std::unique_ptr<SelectFileDialogExtension> dialog_;
+  scoped_refptr<SelectFileDialogExtension> dialog_;
 
   std::unique_ptr<MockSelectFileDialogListener> second_listener_;
-  std::unique_ptr<SelectFileDialogExtension> second_dialog_;
+  scoped_refptr<SelectFileDialogExtension> second_dialog_;
 
   bool use_file_type_filter_;
 

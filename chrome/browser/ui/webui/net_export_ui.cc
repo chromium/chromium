@@ -156,7 +156,7 @@ class NetExportMessageHandler
   net::NetLogCaptureMode capture_mode_;
   uint64_t max_log_file_size_;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_{this};
 };

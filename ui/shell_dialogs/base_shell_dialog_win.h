@@ -59,20 +59,20 @@ class SHELL_DIALOGS_EXPORT BaseShellDialogImpl {
     scoped_refptr<base::SingleThreadTaskRunner> dialog_task_runner;
   };
 
-  // Cleans up after a dialog run. If the run_state has a valid HWND this makes
-  // sure that the window is enabled. This is essential because BeginRun
-  // aggressively guards against multiple modal dialogs per HWND. Must be called
-  // on the UI thread after the result of the dialog has been determined.
-  static void EndRun(std::unique_ptr<RunState> run_state);
-
-  // Returns true if a modal shell dialog is currently active for the specified
-  // owner. Must be called on the UI thread.
-  static bool IsRunningDialogForOwner(HWND owner);
-
   // Called at the beginning of a modal dialog run. Disables the owner window
   // and tracks it. Returns the dedicated single-threaded sequence that the
   // dialog will be run on.
   std::unique_ptr<RunState> BeginRun(HWND owner);
+
+  // Cleans up after a dialog run. If the run_state has a valid HWND this makes
+  // sure that the window is enabled. This is essential because BeginRun
+  // aggressively guards against multiple modal dialogs per HWND. Must be called
+  // on the UI thread after the result of the dialog has been determined.
+  void EndRun(std::unique_ptr<RunState> run_state);
+
+  // Returns true if a modal shell dialog is currently active for the specified
+  // owner. Must be called on the UI thread.
+  bool IsRunningDialogForOwner(HWND owner) const;
 
  private:
   typedef std::set<HWND> Owners;

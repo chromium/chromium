@@ -98,7 +98,7 @@ class ScanningHandler : public content::WebUIMessageHandler,
 
   std::string scan_location_callback_id_;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // Provides browser functionality from //chrome to the Scan app UI.
   std::unique_ptr<ScanningAppDelegate> scanning_app_delegate_;

@@ -10,7 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -76,9 +77,9 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
     ui::SelectFileDialog::FileTypeInfo file_type_info;
     file_type_info.extensions.resize(1);
     file_type_info.extensions[0].push_back(FILE_PATH_LITERAL("pdf"));
-    select_file_dialog_ = base::WrapUnique(ui::CreateWinSelectFileDialog(
+    select_file_dialog_ = ui::CreateWinSelectFileDialog(
         this, nullptr /*policy already checked*/,
-        base::BindRepeating(&ExecuteCancelledSelectFileDialog)));
+        base::BindRepeating(&ExecuteCancelledSelectFileDialog));
     select_file_dialog_->SelectFile(
         ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(),
         default_filename, &file_type_info, 0, base::FilePath::StringType(),

@@ -163,7 +163,7 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
 
   void SaveTraceFinished(bool success);
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<content::WebUI> web_ui_;  // The WebUI that owns us.
 #endif

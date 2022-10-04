@@ -60,7 +60,7 @@ class FileEntryPicker : public ui::SelectFileDialog::Listener {
 
   FileSystemDelegate::FilesSelectedCallback files_selected_callback_;
   base::OnceClosure file_selection_canceled_callback_;
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 };
 
 }  // namespace extensions

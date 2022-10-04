@@ -70,7 +70,7 @@ class DownloadFilePicker : public ui::SelectFileDialog::Listener,
   ConfirmationCallback file_selected_callback_;
 
   // For managing select file dialogs.
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
   // The item to be downloaded.
   raw_ptr<download::DownloadItem> download_item_;

@@ -334,7 +334,7 @@ class BookmarksIOFunction : public BookmarksFunction,
  protected:
   ~BookmarksIOFunction() override;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 };
 
 class BookmarksImportFunction : public BookmarksIOFunction {

@@ -44,7 +44,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
   SelectFileDialogExtension(const SelectFileDialogExtension&) = delete;
   SelectFileDialogExtension& operator=(SelectFileDialogExtension&) = delete;
 
-  static std::unique_ptr<SelectFileDialogExtension> Create(
+  static SelectFileDialogExtension* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy);
 
@@ -116,8 +116,6 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
                                        bool show_android_picker_apps,
                                        bool use_media_store_filter = false);
 
-  ~SelectFileDialogExtension() override;
-
  protected:
   // ui::SelectFileDialog:
   void SelectFileImpl(Type type,
@@ -146,10 +144,11 @@ class SelectFileDialogExtension : public ui::SelectFileDialog {
                            const std::string& id);
   void OnSystemDialogWillClose();
 
-  // Use Create().
+  // Object is ref-counted, use Create().
   explicit SelectFileDialogExtension(
       SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy);
+  ~SelectFileDialogExtension() override;
 
   // Invokes the appropriate file selection callback on our listener.
   void NotifyListener();

@@ -84,7 +84,7 @@ class PdfPrinterHandler : public PrinterHandler,
   const raw_ptr<content::WebContents> preview_web_contents_;
 
   // The underlying dialog object. Protected so unit tests can access it.
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
  private:
   void PostPrintToPdfTask();

@@ -125,7 +125,7 @@ class SelectFileDialog : public ui::SelectFileDialog::Listener {
         platform_util::GetTopLevel(web_contents->GetNativeView()), nullptr);
   }
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   SelectedCallback selected_callback_;
   CanceledCallback canceled_callback_;
 };

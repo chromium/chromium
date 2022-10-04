@@ -261,7 +261,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // that has been resolved in the lifetime of this object.
   std::map<std::string, PpdProvider::ResolvedPrintersList> resolved_printers_;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   std::string webui_callback_id_;
   CupsPrintersManager* printers_manager_;
   std::unique_ptr<local_discovery::EndpointResolver> endpoint_resolver_;

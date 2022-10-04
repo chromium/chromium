@@ -108,7 +108,6 @@ bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {
 }
 
 void SelectFileDialogImpl::ListenerDestroyed() {
-  CheckCalledOnValidSequence();
   listener_ = nullptr;
 }
 
@@ -122,7 +121,6 @@ void SelectFileDialogImpl::SelectFileImpl(
     gfx::NativeWindow owning_window,
     void* params,
     const GURL* caller) {
-  CheckCalledOnValidSequence();
   JNIEnv* env = base::android::AttachCurrentThread();
 
   // The first element in the pair is a list of accepted types, the second

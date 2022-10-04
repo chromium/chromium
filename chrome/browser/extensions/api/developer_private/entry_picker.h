@@ -54,7 +54,7 @@ class EntryPicker : public ui::SelectFileDialog::Listener {
   void MultiFilesSelected(const std::vector<base::FilePath>& files,
                           void* params) override;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<EntryPickerClient> client_;
 };
 

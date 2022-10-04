@@ -40,7 +40,7 @@ namespace ash {
 namespace {
 
 struct SelectFileData {
-  std::unique_ptr<ui::SelectFileDialog> dialog;
+  scoped_refptr<ui::SelectFileDialog> dialog;
   vm_tools::cicerone::FileSelectedSignal signal;
 };
 

@@ -46,7 +46,7 @@ class UserImageFileSelector : public ui::SelectFileDialog::Listener {
 
   base::OnceCallback<void(void)> canceled_cb_;
 
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 };
 
 }  // namespace ash

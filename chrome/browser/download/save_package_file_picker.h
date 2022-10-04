@@ -57,7 +57,7 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
   std::vector<content::SavePageType> save_types_;
 
   // For managing select file dialogs.
-  std::unique_ptr<ui::SelectFileDialog> select_file_dialog_;
+  scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_SAVE_PACKAGE_FILE_PICKER_H_

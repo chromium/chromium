@@ -373,9 +373,10 @@ void ArcSelectFilesHandler::SetDialogHolderForTesting(
 }
 
 SelectFileDialogHolder::SelectFileDialogHolder(
-    ui::SelectFileDialog::Listener* listener)
-    : select_file_dialog_(
-          SelectFileDialogExtension::Create(listener, nullptr)) {}
+    ui::SelectFileDialog::Listener* listener) {
+  select_file_dialog_ = static_cast<SelectFileDialogExtension*>(
+      ui::SelectFileDialog::Create(listener, nullptr).get());
+}
 
 SelectFileDialogHolder::~SelectFileDialogHolder() {
   // select_file_dialog_ can be nullptr only in unit tests.
