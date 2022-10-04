@@ -333,8 +333,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void acceptingSyncEndsFreAndEnablesSyncIfEnableSyncImmediatelyFeatureEnabled() {
+    public void acceptingSyncEndsFreAndEnablesSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
@@ -350,25 +349,7 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void acceptingSyncEndsFreAndEnablesSyncIfEnableSyncImmediatelyFeatureDisabled() {
-        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        clickButton(R.id.signin_fre_continue_button);
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        clickButton(R.id.positive_button);
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-        SyncTestUtil.waitForSyncFeatureEnabled();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void refusingSyncEndsFreAndDoesNotEnableSyncIfEnableSyncImmediatelyFeatureEnabled() {
+    public void refusingSyncEndsFreAndDoesNotEnableSync() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();
         waitUntilCurrentPageIs(SigninFirstRunFragment.class);
@@ -384,48 +365,8 @@ public class FirstRunActivitySigninAndSyncTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void refusingSyncEndsFreAndDoesNotEnableSyncIfEnableSyncImmediatelyFeatureDisabled() {
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        clickButton(R.id.signin_fre_continue_button);
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        clickButton(R.id.negative_button);
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-
-        assertFalse(SyncTestUtil.canSyncFeatureStart());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
     @DisabledTest(message = "https://crbug.com/1335094")
-    public void
-    clickingSettingsEndsFreAndStartsEnablingSyncIfEnableSyncImmediatelyFeatureEnabled() {
-        when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        launchFirstRunActivityAndWaitForNativeInitialization();
-        waitUntilCurrentPageIs(SigninFirstRunFragment.class);
-        clickButton(R.id.signin_fre_continue_button);
-        waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
-
-        onView(withId(R.id.signin_details_description)).perform(new LinkClick());
-
-        ApplicationTestUtils.waitForActivityState(mFirstRunActivity, Stage.DESTROYED);
-
-        // Sync-the-feature can start but won't become enabled until the user clicks the "Confirm"
-        // button in settings.
-        SyncTestUtil.waitForCanSyncFeatureStart();
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.ENABLE_SYNC_IMMEDIATELY_IN_FRE})
-    public void
-    clickingSettingsEndsFreAndStartsEnablingSyncIfEnableSyncImmediatelyFeatureDisabled() {
+    public void clickingSettingsEndsFreAndStartsEnablingSync() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
         launchFirstRunActivityAndWaitForNativeInitialization();

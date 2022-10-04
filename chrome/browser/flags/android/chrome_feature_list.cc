@@ -416,7 +416,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kGaiaIdInAMF,
     &switches::kTangibleSync,
-    &syncer::kEnableSyncImmediatelyInFRE,
     &syncer::kSyncTrustedVaultPassphraseRecovery,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncAndroidPromosWithAlternativeTitle,
