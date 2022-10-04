@@ -82,8 +82,9 @@ class WaylandTest : public ::testing::TestWithParam<wl::ServerConfig> {
   std::unique_ptr<WaylandScreen> screen_;
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  std::vector<base::Feature> enabled_features_{ui::kWaylandOverlayDelegation};
-  std::vector<base::Feature> disabled_features_;
+  std::vector<base::test::FeatureRef> enabled_features_{
+      ui::kWaylandOverlayDelegation};
+  std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
   bool initialized_ = false;
