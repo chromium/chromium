@@ -1197,26 +1197,6 @@
         },
         'os_type': 'android',
       },
-      # A builder for early prototype of test-reviver in Clank.
-      # TODO(crbug.com/1300020): Remove this builder once we have a way to reuse
-      # the built binaries or a formal solution for test-reviver.
-      'android-marshmallow-x86-fyi-rel-reviver': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'marshmallow-x86-emulator',
-          'emulator-4-cores',
-          'linux-bionic',
-          'x86-64',
-          'gtest_run_disabled',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_marshmallow_emulator_gtests',
-          'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
-          'scripts': 'chromium_android_scripts',
-        },
-      },
       'android-pie-arm64-wpt-rel-non-cq': {
         'mixins': [
           'has_native_resultdb_integration',

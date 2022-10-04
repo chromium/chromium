@@ -239,10 +239,6 @@ try_.builder(
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
 )
 
-try_.builder(
-    name = "android-marshmallow-x86-fyi-rel-reviver",
-)
-
 try_.orchestrator_builder(
     name = "android-marshmallow-arm64-rel",
     mirrors = [
