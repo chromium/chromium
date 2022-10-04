@@ -136,6 +136,12 @@ abstract class OverlayPanelBase {
     /** The padding on each side of the close and open-tab icons. */
     protected final int mButtonPaddingDps;
 
+    /**
+     *  Indicates whether the Toolbar is allowed to hide vs cannot ever be hidden.
+     *  @see OverlayPanel#shouldHideAndroidBrowserControls
+     */
+    protected boolean mCanHideAndroidBrowserControls = true;
+
     // ============================================================================================
     // Constructor
     // ============================================================================================
@@ -276,7 +282,7 @@ abstract class OverlayPanelBase {
      * @return The current Y-position of the Overlay Panel.
      */
     protected float calculateOverlayPanelY() {
-        return getTabHeight() - mHeight;
+        return getTabHeight() + heightForNeverHideBrowserControls() - mHeight;
     }
 
     /**
@@ -319,7 +325,7 @@ abstract class OverlayPanelBase {
      * @return The height of the tab the panel is displayed on top of.
      */
     public float getTabHeight() {
-        return mLayoutHeight;
+        return mLayoutHeight - heightForNeverHideBrowserControls();
     }
 
     /**
@@ -355,8 +361,31 @@ abstract class OverlayPanelBase {
     }
 
     // ============================================================================================
-    // UI States
+    // Controls for a never hidden Toolbar.
     // ============================================================================================
+
+    /**
+     * Tells this Panel whether it can ever hide the Browser Controls (Toolbar).
+     * This is set to false by a Partial-height Chrome Custom Tab, and defaults to true.
+     * @param canHideAndroidBrowserControls whether hiding is ever allowed.
+     */
+    public void setCanHideAndroidBrowserControls(boolean canHideAndroidBrowserControls) {
+        mCanHideAndroidBrowserControls = canHideAndroidBrowserControls;
+    }
+
+    /**
+     * @return The Tab height adjustment needed for Android Browser controls that can never hide,
+     * or 0 if the Toolbar is allowed to hide. When the Toolbar cannot hide, it obscures part of
+     * the Base Page so the Overlay cannot use that part of the page height. Value in pixels.
+     */
+    private float heightForNeverHideBrowserControls() {
+        return mCanHideAndroidBrowserControls ? 0.f : mToolbarHeightDp * mPxToDp;
+    }
+
+    @VisibleForTesting
+    protected boolean getCanHideAndroidBrowserControls() {
+        return mCanHideAndroidBrowserControls;
+    }
 
     // --------------------------------------------------------------------------------------------
     // Overlay Panel states

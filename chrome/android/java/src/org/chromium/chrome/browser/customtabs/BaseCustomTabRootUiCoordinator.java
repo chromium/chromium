@@ -48,7 +48,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RequestDesktopUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
@@ -200,6 +202,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                     ((PartialCustomTabHeightStrategy) mCustomTabHeightStrategy)::onShowSoftInput;
             mTabController.get().registerTabObserver(
                     new PartialCustomTabTabObserver(softInputCallback));
+            mTabController.get().registerTabObserver(new EmptyTabObserver() {
+                @Override
+                public void didFirstVisuallyNonEmptyPaint(Tab tab) {
+                    BaseCustomTabActivity baseActivity = (BaseCustomTabActivity) mActivity;
+                    assert baseActivity != null;
+                    baseActivity.getContextualSearchManagerSupplier()
+                            .get()
+                            .setCanHideAndroidBrowserControls(false);
+                }
+            });
         }
     }
 

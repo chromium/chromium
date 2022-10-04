@@ -1807,6 +1807,15 @@ public class CustomTabActivityTest {
     @Features.DisableFeatures({ChromeFeatureList.CCT_RESIZABLE_WINDOW_ABOVE_NAVBAR})
     public void testLaunchPartialCustomTabActivity_fixedWindow() throws Exception {
         testLaunchPartialCustomTabActivity();
+        assertOverlayPanelCanHideAndroidBrowserControls(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testCanHideBrowserControls_notPartial() throws Exception {
+        CustomTabsSessionToken session = warmUpAndLaunchUrlWithSession();
+        assertEquals(getActivity().getIntentDataProvider().getSession(), session);
+        assertOverlayPanelCanHideAndroidBrowserControls(true);
     }
 
     @Test
@@ -1849,6 +1858,23 @@ public class CustomTabActivityTest {
             });
         });
         eventHelper.waitForCallback(0);
+    }
+
+    /** Asserts that the Overlay Panel is set to allow or not allow ever hiding the Toolbar. */
+    private void assertOverlayPanelCanHideAndroidBrowserControls(boolean canEverHide) {
+        // Wait for CS to get initialized.
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> getActivity().getContextualSearchManagerSupplier() != null
+                        && getActivity().getContextualSearchManagerSupplier().get() != null);
+
+        // The toolbar cannot go away for Partial Height Custom Tabs, but can for full height ones.
+        CriteriaHelper.pollUiThread(()
+                                            -> getActivity()
+                                                       .getContextualSearchManagerSupplier()
+                                                       .get()
+                                                       .getCanHideAndroidBrowserControls()
+                        == canEverHide);
     }
 
     private void verifyHistoryAfterHiddenTab(boolean speculationWasAHit) throws Exception {
