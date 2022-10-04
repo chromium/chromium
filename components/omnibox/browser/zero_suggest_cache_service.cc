@@ -4,6 +4,9 @@
 
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/memory_usage_estimator.h"
+
 ZeroSuggestCacheService::ZeroSuggestCacheService(size_t cache_size)
     : cache_(cache_size) {}
 
@@ -19,6 +22,8 @@ void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
     const std::string& response) {
   cache_.Put(page_url, response);
+  base::UmaHistogramCounts1M("Omnibox.ZeroSuggestProvider.CacheMemoryUsage",
+                             base::trace_event::EstimateMemoryUsage(cache_));
 
   for (auto& observer : observers_) {
     observer.OnZeroSuggestResponseUpdated(page_url, response);

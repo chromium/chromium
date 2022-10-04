@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class FakeObserver : public ZeroSuggestCacheService::Observer {
@@ -43,6 +44,31 @@ TEST(ZeroSuggestCacheServiceTest, StoreResponsePopulatesCache) {
   ZeroSuggestCacheService cache_svc(1);
   cache_svc.StoreZeroSuggestResponse("https://www.google.com", "foo");
   EXPECT_FALSE(cache_svc.IsCacheEmpty());
+}
+
+TEST(ZeroSuggestCacheServiceTest, StoreResponseRecordsMemoryUsageHistogram) {
+  base::HistogramTester histogram_tester;
+  ZeroSuggestCacheService cache_svc(1);
+
+  const std::string page_url = "https://www.google.com";
+  const std::string response = "foo";
+  const std::string histogram = "Omnibox.ZeroSuggestProvider.CacheMemoryUsage";
+
+  cache_svc.StoreZeroSuggestResponse(page_url, response);
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(page_url), response);
+  histogram_tester.ExpectTotalCount(histogram, 1);
+
+  cache_svc.StoreZeroSuggestResponse(page_url, "");
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(page_url), "");
+  histogram_tester.ExpectTotalCount(histogram, 2);
+
+  cache_svc.StoreZeroSuggestResponse("", response);
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(""), response);
+  histogram_tester.ExpectTotalCount(histogram, 3);
+
+  cache_svc.StoreZeroSuggestResponse("", "");
+  EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(""), "");
+  histogram_tester.ExpectTotalCount(histogram, 4);
 }
 
 TEST(ZeroSuggestCacheServiceTest, StoreResponseUpdatesExistingEntry) {

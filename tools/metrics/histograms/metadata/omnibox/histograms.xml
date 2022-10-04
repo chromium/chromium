@@ -2171,8 +2171,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.ZeroSuggestProvider.CacheMemoryUsage" units="Bytes"
+    expires_after="2023-09-30">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    Emitted in ZeroSuggestCacheService, records the estimated dynamically
+    allocated memory usage of the ZeroSuggestProvider cache every time the
+    prefetch or the non-prefetch zero-suggest response is stored in the cache on
+    eligible page load / page switch events and when the user has focused or
+    cleared the omnibox but has not typed in yet, respectively. Note that the
+    max number of responses stored in the cache is always capped. The cache size
+    can build up as more responses are stored. The cache size can also decrease
+    as responses are removed from the cache when suggestions are deleted from
+    the omnibox or when the user clears the browsing data. Hence, due to the
+    dynamic nature of the cache size, this histogram is recorded on every store
+    event as opposed to the cache destructor.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggestProvider.Eligibility"
-    enum="ZeroSuggestEligibility" expires_after="2022-12-11">
+    enum="ZeroSuggestEligibility" expires_after="2023-09-30">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2186,7 +2205,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestProvider.{ResultType}.{RequestType}"
-    enum="ZeroSuggestProviderEvent" expires_after="2022-12-11">
+    enum="ZeroSuggestProviderEvent" expires_after="2023-09-30">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -2207,7 +2226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestRequests.NonPrefetch"
-    enum="OmniboxZeroSuggestRequests" expires_after="2022-12-11">
+    enum="OmniboxZeroSuggestRequests" expires_after="2023-09-30">
   <obsolete>
     Obsolete as of M105.
   </obsolete>
@@ -2223,7 +2242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestRequests.NonPrefetch.RoundTripTime"
-    units="ms" expires_after="2022-12-11">
+    units="ms" expires_after="2023-09-30">
   <obsolete>
     Obsolete as of M105.
   </obsolete>
@@ -2238,7 +2257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestRequests.Prefetch"
-    enum="OmniboxZeroSuggestRequests" expires_after="2022-12-11">
+    enum="OmniboxZeroSuggestRequests" expires_after="2023-09-30">
   <obsolete>
     Obsolete as of M105.
   </obsolete>
@@ -2254,7 +2273,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ZeroSuggestRequests.Prefetch.RoundTripTime" units="ms"
-    expires_after="2022-12-11">
+    expires_after="2023-09-30">
   <obsolete>
     Obsolete as of M105.
   </obsolete>
