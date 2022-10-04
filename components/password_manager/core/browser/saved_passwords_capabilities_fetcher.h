@@ -32,7 +32,8 @@ class SavedPasswordsCapabilitiesFetcher
 
   SavedPasswordsCapabilitiesFetcher(
       std::unique_ptr<CapabilitiesService> fetcher,
-      scoped_refptr<password_manager::PasswordStoreInterface> password_store);
+      std::unique_ptr<password_manager::SavedPasswordsPresenter>
+          saved_passwords_presenter);
 
   SavedPasswordsCapabilitiesFetcher(const SavedPasswordsCapabilitiesFetcher&) =
       delete;
@@ -90,7 +91,8 @@ class SavedPasswordsCapabilitiesFetcher
   std::unique_ptr<CapabilitiesService> fetcher_;
 
   // Manages the list of saved passwords, including updates.
-  password_manager::SavedPasswordsPresenter saved_passwords_presenter_;
+  std::unique_ptr<password_manager::SavedPasswordsPresenter>
+      saved_passwords_presenter_;
 
   // Stores the callbacks that are waiting for the refresh capabilities request
   // to finish.

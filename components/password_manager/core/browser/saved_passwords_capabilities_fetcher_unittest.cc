@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/capabilities_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,12 +112,14 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
  public:
   SavedPasswordsCapabilitiesFetcherTest() {
     store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    FillPasswordStore();
     auto capabilities_service =
         std::make_unique<NiceMock<MockCapabilitiesService>>();
     mock_capabilities_service_ = capabilities_service.get();
     fetcher_ = std::make_unique<SavedPasswordsCapabilitiesFetcher>(
-        std::move(capabilities_service), store_);
-    FillPasswordStore();
+        std::move(capabilities_service),
+        std::make_unique<SavedPasswordsPresenter>(store_));
+    RunUntilIdle();
   }
 
   ~SavedPasswordsCapabilitiesFetcherTest() override {

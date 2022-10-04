@@ -8,15 +8,14 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/cxx20_erase.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/values.h"
-#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
@@ -25,10 +24,11 @@ namespace password_manager {
 
 SavedPasswordsCapabilitiesFetcher::SavedPasswordsCapabilitiesFetcher(
     std::unique_ptr<CapabilitiesService> fetcher,
-    scoped_refptr<password_manager::PasswordStoreInterface> password_store)
-    : fetcher_(std::move(fetcher)), saved_passwords_presenter_(password_store) {
-  observed_saved_password_presenter_.Observe(&saved_passwords_presenter_);
-  saved_passwords_presenter_.Init();
+    std::unique_ptr<SavedPasswordsPresenter> saved_passwords_presenter)
+    : fetcher_(std::move(fetcher)),
+      saved_passwords_presenter_(std::move(saved_passwords_presenter)) {
+  observed_saved_password_presenter_.Observe(saved_passwords_presenter_.get());
+  saved_passwords_presenter_->Init();
 }
 
 SavedPasswordsCapabilitiesFetcher::~SavedPasswordsCapabilitiesFetcher() =
@@ -111,7 +111,7 @@ bool SavedPasswordsCapabilitiesFetcher::IsScriptAvailable(
 
 void SavedPasswordsCapabilitiesFetcher::OnEdited(const PasswordForm& form) {
   // OnEdited() only gets called if a the password was edited via
-  // |saved_passwords_presenter_|, so even if the password gets edited
+  // `saved_passwords_presenter_`, so even if the password gets edited
   // elsewhere, we wouldn't end up here.
   NOTREACHED();
 }
@@ -243,7 +243,7 @@ void SavedPasswordsCapabilitiesFetcher::FetchCapababilitiesForSingleOriginDone(
 std::vector<url::Origin>
 SavedPasswordsCapabilitiesFetcher::GetOriginsOfStoredPasswords() const {
   std::vector<url::Origin> origins;
-  for (const auto& form : saved_passwords_presenter_.GetSavedPasswords()) {
+  for (const auto& form : saved_passwords_presenter_->GetSavedPasswords()) {
     if (form.url.SchemeIs(url::kHttpScheme)) {
       // Http schemes are not supported.
       continue;
