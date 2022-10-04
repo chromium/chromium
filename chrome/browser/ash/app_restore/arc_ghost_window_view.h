@@ -38,17 +38,20 @@ class ArcGhostWindowView : public views::View {
 
   void LoadIcon(const std::string& app_id);
 
+  void SetType(arc::GhostWindowType type);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, IconLoadTest);
   FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, FixupMessageTest);
+  FRIEND_TEST_ALL_PREFIXES(ArcGhostWindowViewTest, SetTypeTest);
 
   void InitLayout(arc::GhostWindowType type,
                   uint32_t theme_color,
                   int diameter);
   void OnIconLoaded(apps::IconValuePtr icon_value);
 
-  views::ImageView* icon_view_;
-  views::Label* message_label_;
+  views::ImageView* icon_view_ = nullptr;
+  views::Label* message_label_ = nullptr;
   base::OnceCallback<void(apps::IconValuePtr icon_value)>
       icon_loaded_cb_for_testing_;
 
