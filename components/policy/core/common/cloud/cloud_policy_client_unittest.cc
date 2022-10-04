@@ -2589,15 +2589,11 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
-  // Enable the DMToken deletion feature.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDmTokenDeletion);
-
   RegisterClient();
-
-  // Handle 410 (device needs reset) on policy fetch.
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->requires_reregistration());
+
+  // Handle 410 (device needs reset) on policy fetch.
   DeviceManagementService::JobConfiguration::JobType upload_type;
   em::DeviceManagementResponse response;
   response.add_error_detail(em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
@@ -2642,6 +2638,10 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
 }
 
 TEST_F(CloudPolicyClientTest, PolicyFetchDMTokenDeletion_Disabled) {
+  // Disable the DMToken deletion feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kDmTokenDeletion);
+
   RegisterClient();
   EXPECT_TRUE(client_->is_registered());
   EXPECT_FALSE(client_->requires_reregistration());
