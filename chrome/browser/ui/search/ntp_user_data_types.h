@@ -49,21 +49,6 @@ enum class CustomizedShortcutSettings {
   kMaxValue = CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN
 };
 
-// This enum must match the numbering for NTPCustomizeAction in
-// enums.xml. Do not reorder or remove items, and update kMaxValue when new
-// items are added.
-enum class CustomizeAction {
-  CUSTOMIZE_ACTION_CHROME_BACKGROUNDS = 0,
-  CUSTOMIZE_ACTION_LOCAL_IMAGE = 1,
-  CUSTOMIZE_ACTION_RESTORE_BACKGROUND = 2,
-  CUSTOMIZE_ACTION_ATTRIBUTION = 3,
-  CUSTOMIZE_ACTION_ADD_SHORTCUT = 4,
-  CUSTOMIZE_ACTION_EDIT_SHORTCUT = 5,
-  CUSTOMIZE_ACTION_RESTORE_SHORTCUT = 6,
-
-  kMaxValue = CUSTOMIZE_ACTION_RESTORE_SHORTCUT
-};
-
 // This enum must match the numbering for NTPCustomizeChromeBackgroundAction in
 // enums.xml. Do not reorder or remove items, and update kMaxValue when new
 // items are added.

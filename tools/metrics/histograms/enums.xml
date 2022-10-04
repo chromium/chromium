@@ -72066,6 +72066,9 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="NTPCustomizeAction">
+  <obsolete>
+    Removed 2022-10.
+  </obsolete>
   <int value="0" label="'Chrome backgrounds' menu item clicked."/>
   <int value="1" label="'Upload an image' menu item clicked."/>
   <int value="2" label="'Restore default background' menu item clicked."/>

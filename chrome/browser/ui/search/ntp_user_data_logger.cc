@@ -58,31 +58,6 @@ CustomizedFeature LoggingEventToCustomizedFeature(NTPLoggingEventType event) {
   return CustomizedFeature::CUSTOMIZED_FEATURE_BACKGROUND;
 }
 
-// Converts |NTPLoggingEventType| to a |CustomizeAction|.
-CustomizeAction LoggingEventToCustomizeAction(NTPLoggingEventType event) {
-  switch (event) {
-    case NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_CHROME_BACKGROUNDS;
-    case NTP_CUSTOMIZE_LOCAL_IMAGE_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_LOCAL_IMAGE;
-    case NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_RESTORE_BACKGROUND;
-    case NTP_CUSTOMIZE_ATTRIBUTION_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_ATTRIBUTION;
-    case NTP_CUSTOMIZE_ADD_SHORTCUT_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_ADD_SHORTCUT;
-    case NTP_CUSTOMIZE_EDIT_SHORTCUT_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_EDIT_SHORTCUT;
-    case NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED:
-      return CustomizeAction::CUSTOMIZE_ACTION_RESTORE_SHORTCUT;
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return CustomizeAction::CUSTOMIZE_ACTION_CHROME_BACKGROUNDS;
-}
-
 // Converts |NTPLoggingEventType| to a |CustomizeChromeBackgroundAction|.
 CustomizeChromeBackgroundAction LoggingEventToCustomizeChromeBackgroundAction(
     NTPLoggingEventType event) {
@@ -337,16 +312,6 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
     case NTP_SHORTCUT_CUSTOMIZED:
       UMA_HISTOGRAM_ENUMERATION("NewTabPage.Customized",
                                 LoggingEventToCustomizedFeature(event));
-      break;
-    case NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED:
-    case NTP_CUSTOMIZE_LOCAL_IMAGE_CLICKED:
-    case NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED:
-    case NTP_CUSTOMIZE_ATTRIBUTION_CLICKED:
-    case NTP_CUSTOMIZE_ADD_SHORTCUT_CLICKED:
-    case NTP_CUSTOMIZE_EDIT_SHORTCUT_CLICKED:
-    case NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED:
-      UMA_HISTOGRAM_ENUMERATION("NewTabPage.CustomizeAction",
-                                LoggingEventToCustomizeAction(event));
       break;
     case NTP_CUSTOMIZE_CHROME_BACKGROUND_SELECT_COLLECTION:
     case NTP_CUSTOMIZE_CHROME_BACKGROUND_SELECT_IMAGE:

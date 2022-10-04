@@ -795,9 +795,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeAction" enum="NTPCustomizeAction"
-    expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
+    expires_after="M86">
+  <obsolete>
+    Last logged in M86. Removed 2022-10.
+  </obsolete>
   <owner>dbeam@chromium.org</owner>
   <owner>yyushkina@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

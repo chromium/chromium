@@ -67,20 +67,13 @@ enum NTPLoggingEventType {
   // Shortcuts have been customized on the NTP.
   NTP_SHORTCUT_CUSTOMIZED = 39,
 
-  // The 'Chrome backgrounds' menu item was clicked.
-  NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED = 40,
-  // The 'Upload an image' menu item was clicked.
-  NTP_CUSTOMIZE_LOCAL_IMAGE_CLICKED = 41,
-  // The 'Restore default background' menu item was clicked.
-  NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED = 42,
-  // The attribution link on a customized background image was clicked.
-  NTP_CUSTOMIZE_ATTRIBUTION_CLICKED = 43,
-  // The 'Add shortcut' link was clicked.
-  NTP_CUSTOMIZE_ADD_SHORTCUT_CLICKED = 44,
-  // The 'Edit shortcut' link was clicked.
-  NTP_CUSTOMIZE_EDIT_SHORTCUT_CLICKED = 45,
-  // The 'Restore default shortcuts' menu item was clicked.
-  NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED = 46,
+  // Deleted: NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED = 40,
+  // Deleted: NTP_CUSTOMIZE_LOCAL_IMAGE_CLICKED = 41,
+  // Deleted: NTP_CUSTOMIZE_RESTORE_BACKGROUND_CLICKED = 42,
+  // Deleted: NTP_CUSTOMIZE_ATTRIBUTION_CLICKED = 43,
+  // Deleted: NTP_CUSTOMIZE_ADD_SHORTCUT_CLICKED = 44,
+  // Deleted: NTP_CUSTOMIZE_EDIT_SHORTCUT_CLICKED = 45,
+  // Deleted: NTP_CUSTOMIZE_RESTORE_SHORTCUTS_CLICKED = 46,
 
   // A collection was selected in the 'Chrome backgrounds' dialog.
   NTP_CUSTOMIZE_CHROME_BACKGROUND_SELECT_COLLECTION = 47,

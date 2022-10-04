@@ -564,12 +564,14 @@ TEST_F(NTPUserDataLoggerTest, ShouldNotRecordCustomizationActionFromNTPOther) {
 
   // Attempt to log an event that is only supported when the default search
   // provider is Google.
-  logger.LogEvent(NTP_CUSTOMIZE_CHROME_BACKGROUNDS_CLICKED, delta_tiles_loaded);
+  logger.LogEvent(NTP_CUSTOMIZE_CHROME_BACKGROUND_SELECT_COLLECTION,
+                  delta_tiles_loaded);
 
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime"), SizeIs(1));
   EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.LoadTime.WebUINTP"),
               IsEmpty());
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("NewTabPage.CustomizeAction"),
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "NewTabPage.CustomizeChromeBackgroundAction"),
               IsEmpty());
 }
