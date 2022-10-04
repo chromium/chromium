@@ -112,7 +112,9 @@ TEST(HardeningTest, MetadataPointerCrashing) {
 #endif  // !BUILDFLAG(IS_ANDROID) && defined(GTEST_HAS_DEATH_TEST) &&
         // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
-// Below test also misbehaves on Android, crbug.com/1370048
+// Below test also misbehaves on Android; as above, death tests don't
+// quite work (crbug.com/1240184), and having free slot bitmaps enabled
+// force the expectations below to crash.
 #if !BUILDFLAG(IS_ANDROID)
 
 TEST(HardeningTest, SuccessfulCorruption) {
