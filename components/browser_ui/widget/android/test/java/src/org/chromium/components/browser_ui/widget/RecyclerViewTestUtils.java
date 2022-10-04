@@ -5,10 +5,16 @@
 package org.chromium.components.browser_ui.widget;
 
 import android.view.View;
+import android.view.ViewParent;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
@@ -104,5 +110,63 @@ public final class RecyclerViewTestUtils {
         // Wait until we can scroll no further.
         // A positive parameter checks scrolling down, a negative one scrolling up.
         CriteriaHelper.pollUiThread(() -> !recyclerView.canScrollVertically(1));
+    }
+
+    /**
+     * The {@link RecyclerView} will respond to changes, particularly things like
+     * {@link androidx.recyclerview.widget.RecyclerView.Adapter#notifyItemChanged(int)} by
+     * immediately creating a new {@link View}, but asynchronously removing the old Views. The
+     * generic {@link ViewParent} interface methods that Espresso is using to access children
+     * may return stale information. This often results in
+     * {@link androidx.test.espresso.AmbiguousViewMatcherException}. This matcher utilizes our
+     * knowledge that the view must be rooted somewhere within a RecycleView, to use RecyclerView
+     * specific methods to verify if the View is still active or not.
+     */
+    public static Matcher<View> activeInRecyclerView() {
+        return new ActiveInRecyclerViewMatcher();
+    }
+
+    private static class ActiveInRecyclerViewMatcher extends TypeSafeMatcher<View> {
+        @Override
+        protected boolean matchesSafely(View view) {
+            View topChild = getTopChild(view);
+            if (topChild == null) {
+                return false;
+            }
+
+            RecyclerView recyclerView = (RecyclerView) topChild.getParent();
+            LayoutManager layoutManager = recyclerView.getLayoutManager();
+            ViewHolder viewHolder = recyclerView.getChildViewHolder(topChild);
+
+            // The ViewHolder's index maybe be stale for Views that have been removed. Instead
+            // believe what the RecyclerView/LayoutManager claims is the top child view at the give
+            // index.
+            View activeChild = layoutManager.getChildAt(viewHolder.getLayoutPosition());
+            return topChild == activeChild;
+        }
+
+        /**
+         * Returns the top most child under the RecyclerView. This is the View with the ViewHolder.
+         * Often this matcher is called on view that's much farther down.
+         */
+        private static View getTopChild(View view) {
+            View previous = view;
+            while (true) {
+                if (previous == null || !(previous.getParent() instanceof View)) {
+                    return null;
+                }
+                View current = (View) previous.getParent();
+                if (current instanceof RecyclerView) {
+                    return previous;
+                }
+
+                previous = current;
+            }
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("Not the active view in RecyclerView");
+        }
     }
 }
