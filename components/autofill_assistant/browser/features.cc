@@ -29,13 +29,13 @@ BASE_FEATURE(kAutofillAssistantChromeEntry,
 // |GetActions| calls.
 BASE_FEATURE(kAutofillAssistantVerifyGetActionsResponses,
              "AutofillAssistantVerifyGetActionsResponses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether RPC requests to the backend should be signed for
 // |GetActions| calls.
 BASE_FEATURE(kAutofillAssistantSignGetActionsRequests,
              "AutofillAssistantSignGetActionsRequests",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether RPC requests to the backend should be signed for
 // |GetNoRoundTripScriptsByHash| calls.
