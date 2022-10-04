@@ -375,7 +375,8 @@ struct BackupRefPtrImpl {
   // will occur.
 
   static ALWAYS_INLINE bool IsSupportedAndNotNull(uintptr_t address) {
-    // This covers the nullptr case, as address 0 is never in GigaCage.
+    // This covers the nullptr case, as address 0 is never in any
+    // PartitionAlloc pool.
     bool is_in_brp_pool =
         partition_alloc::IsManagedByPartitionAllocBRPPool(address);
 
@@ -521,15 +522,15 @@ struct BackupRefPtrImpl {
     return wrapped_ptr + delta_elems;
 #else
     // In the "before allocation" mode, on 32-bit, we can run into a problem
-    // that the end-of-allocation address could fall out of "GigaCage", if this
-    // is the last slot of the super page, thus pointing to the guard page. This
-    // mean the ref-count won't be decreased when the pointer is released
-    // (leak).
+    // that the end-of-allocation address could fall outside of
+    // PartitionAlloc's pools, if this is the last slot of the super page,
+    // thus pointing to the guard page. This mean the ref-count won't be
+    // decreased when the pointer is released (leak).
     //
     // We could possibly solve it in a few different ways:
-    // - Add the trailing guard page to "GigaCage", but we'd have to think very
+    // - Add the trailing guard page to the pool, but we'd have to think very
     //   hard if this doesn't create another hole.
-    // - Add an address adjustment to "GigaCage" check, similar as the one in
+    // - Add an address adjustment to "is in pool?" check, similar as the one in
     //   PartitionAllocGetSlotStartInBRPPool(), but that seems fragile, not to
     //   mention adding an extra instruction to an inlined hot path.
     // - Let the leak happen, since it should a very rare condition.
