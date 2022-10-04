@@ -689,8 +689,8 @@ void BluetoothTestWin::FinishPendingTasks() {
 }
 
 BluetoothTestWinrt::BluetoothTestWinrt() {
-  std::vector<base::Feature> enabled;
-  std::vector<base::Feature> disabled;
+  std::vector<base::test::FeatureRef> enabled;
+  std::vector<base::test::FeatureRef> disabled;
   if (GetParam().new_ble_implementation_enabled) {
     enabled.push_back(kNewBLEWinImplementation);
     if (base::win::GetVersion() >= base::win::Version::WIN10) {
