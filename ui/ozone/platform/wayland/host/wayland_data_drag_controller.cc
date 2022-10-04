@@ -200,7 +200,13 @@ void WaylandDataDragController::DrawIcon() {
   wl_surface* const surface = icon_surface_->surface();
   icon_frame_callback_.reset(wl_surface_frame(surface));
   wl_callback_add_listener(icon_frame_callback_.get(), &kFrameListener, this);
-  wl_surface_commit(surface);
+
+  // Some Wayland compositors seem to assume that the icon surface will already
+  // have a non-null buffer attached when wl_data_device.start_drag is issued,
+  // otherwise it does not get drawn when, for example, attached in an upcoming
+  // wl_surface.frame callback. This was observed, at least in Sway/Wlroots and
+  // Weston, see https://crbug.com/1359364 for details.
+  DrawIconInternal();
 }
 
 void WaylandDataDragController::OnDragSurfaceFrame(void* data,
