@@ -12,8 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
+#include "components/prefs/scoped_user_pref_update.h"
 
 namespace {
 const char kAppShims[] = "app_shims";
@@ -160,7 +159,7 @@ void AppShimRegistry::SetAppInfo(
     const std::string& app_id,
     const std::set<base::FilePath>* installed_profiles,
     const std::set<base::FilePath>* last_active_profiles) {
-  prefs::ScopedDictionaryPrefUpdate update(GetPrefService(), kAppShims);
+  ScopedDictPrefUpdate update(GetPrefService(), kAppShims);
 
   // If there are no installed profiles, clear the app's key.
   if (installed_profiles && installed_profiles->empty()) {
@@ -169,27 +168,26 @@ void AppShimRegistry::SetAppInfo(
   }
 
   // Look up dictionary for the app.
-  std::unique_ptr<prefs::DictionaryValueUpdate> app_info;
-  if (!update->GetDictionaryWithoutPathExpansion(app_id, &app_info)) {
+  base::Value::Dict* app_info = update->FindDict(app_id);
+  if (!app_info) {
     // If the key for the app doesn't exist, don't add it unless we are
     // specifying a new |installed_profiles| (e.g, for when the app exits
     // during uninstall and tells us its last-used profile after we just
     // removed the entry for the app).
     if (!installed_profiles)
       return;
-    app_info = update->SetDictionaryWithoutPathExpansion(
-        app_id, std::make_unique<base::DictionaryValue>());
+    app_info = update->EnsureDict(app_id);
   }
   if (installed_profiles) {
-    auto values = std::make_unique<base::ListValue>();
+    base::Value::List values;
     for (const auto& profile : *installed_profiles)
-      values->Append(profile.BaseName().value());
+      values.Append(profile.BaseName().value());
     app_info->Set(kInstalledProfiles, std::move(values));
   }
   if (last_active_profiles) {
-    auto values = std::make_unique<base::ListValue>();
+    base::Value::List values;
     for (const auto& profile : *last_active_profiles)
-      values->Append(profile.BaseName().value());
+      values.Append(profile.BaseName().value());
     app_info->Set(kLastActiveProfiles, std::move(values));
   }
 }

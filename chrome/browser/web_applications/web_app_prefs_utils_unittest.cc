@@ -13,12 +13,11 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_app {
@@ -132,10 +131,8 @@ TEST_F(WebAppPrefsUtilsTest, TestIphConsecutiveAppIgnore) {
 TEST_F(WebAppPrefsUtilsTest, TestGlobalConsecutiveAppIgnore) {
   RecordInstallIphIgnored(prefs(), app_id_2, time_before_global_mute);
   {
-    prefs::ScopedDictionaryPrefUpdate update(
-        prefs(), prefs::kWebAppsAppAgnosticIphState);
-    update->SetInteger(kIphIgnoreCount,
-                       kIphMuteAfterConsecutiveAppAgnosticIgnores);
+    ScopedDictPrefUpdate update(prefs(), prefs::kWebAppsAppAgnosticIphState);
+    update->Set(kIphIgnoreCount, kIphMuteAfterConsecutiveAppAgnosticIgnores);
   }
   EXPECT_FALSE(ShouldShowIph(prefs(), app_id));
 }

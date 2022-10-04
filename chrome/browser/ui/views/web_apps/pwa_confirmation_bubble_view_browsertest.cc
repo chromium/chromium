@@ -21,9 +21,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 
 class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
  public:
@@ -155,9 +154,9 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   web_app::UpdateIntWebAppPref(pref_service, app_id, web_app::kIphIgnoreCount,
                                1);
   {
-    prefs::ScopedDictionaryPrefUpdate update(
-        pref_service, prefs::kWebAppsAppAgnosticIphState);
-    update->SetInteger(web_app::kIphIgnoreCount, 1);
+    ScopedDictPrefUpdate update(pref_service,
+                                prefs::kWebAppsAppAgnosticIphState);
+    update->Set(web_app::kIphIgnoreCount, 1);
   }
   base::RunLoop loop;
   // Show the PWA install dialog.
