@@ -335,6 +335,10 @@ ci.gpu.linux_builder(
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
         run_tests_serially = True,
+        skylab_upload_location = builder_config.skylab_upload_location(
+            gs_bucket = "lacros-arm64-generic-rel-skylab-try",
+            gs_extra = "chromeos_gpu",
+        ),
     ),
     console_view_entry = consoles.console_view_entry(
         category = "ChromeOS|ARM",

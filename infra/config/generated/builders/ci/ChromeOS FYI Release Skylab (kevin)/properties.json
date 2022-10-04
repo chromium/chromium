@@ -32,7 +32,11 @@
                 ],
                 "config": "chromium"
               },
-              "run_tests_serially": true
+              "run_tests_serially": true,
+              "skylab_upload_location": {
+                "gs_bucket": "lacros-arm64-generic-rel-skylab-try",
+                "gs_extra": "chromeos_gpu"
+              }
             }
           }
         ]
