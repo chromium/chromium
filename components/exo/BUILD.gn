@@ -12,7 +12,7 @@ import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
 assert(use_ozone)
-assert(!is_chromeos_lacros)
+assert(is_chromeos_ash)
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
