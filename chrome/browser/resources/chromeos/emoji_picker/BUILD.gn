@@ -12,8 +12,8 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 web_component_files = [
   "emoji_button.js",
   "emoji_category_button.js",
-  "emoji_group_button.js",
   "emoji_group.js",
+  "emoji_group_button.ts",
   "emoji_picker.js",
   "emoji_search.js",
   "emoji_variants.js",
@@ -193,7 +193,6 @@ js_library("emoji_picker") {
   deps = [
     ":constants",
     ":emoji_group",
-    ":emoji_group_button",
     ":emoji_picker_api_proxy",
     ":emoji_search",
     ":events",
@@ -217,13 +216,6 @@ js_library("emoji_picker_api_proxy") {
 
 js_library("emoji_category_button") {
   deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("emoji_group_button") {
-  deps = [
-    ":events",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -311,7 +303,6 @@ js_type_check("closure_compile") {
     ":emoji_button",
     ":emoji_category_button",
     ":emoji_group",
-    ":emoji_group_button",
     ":emoji_picker",
     ":emoji_picker_api_proxy",
     ":emoji_search",

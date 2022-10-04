@@ -12,7 +12,7 @@ import {createCustomEvent, GROUP_BUTTON_CLICK} from './events.js';
 
 export class EmojiGroupButton extends PolymerElement {
   static get is() {
-    return 'emoji-group-button';
+    return 'emoji-group-button' as const;
   }
 
   static get template() {
@@ -21,33 +21,37 @@ export class EmojiGroupButton extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!string} */
-      name: {type: String, readonly: true},
-      /** @type {!string} */
-      icon: {type: String, readonly: true},
-      /** @type {!string} */
-      groupId: {type: String, readonly: true},
-      /** @type {!boolean} */
       active: {type: Boolean, value: false},
-      /** @type {!boolean} */
-      disabled: {type: Boolean, value: false},
-      /** @type {number} */
       customTabIndex: {type: Number, value: -1},
+      disabled: {type: Boolean, value: false},
+      groupId: {type: String, readonly: true},
+      icon: {type: String, readonly: true},
+      name: {type: String, readonly: true},
     };
   }
 
-  constructor() {
-    super();
-  }
+  active: boolean;
+  customTabIndex: number;
+  disabled: boolean;
+  groupId: string;
+  icon: string;
+  name: string;
 
-  handleClick(ev) {
+  handleClick(): void {
     this.dispatchEvent(
         createCustomEvent(GROUP_BUTTON_CLICK, {group: this.groupId}));
   }
 
-  _className(active) {
+  private calculateClassName(active: boolean): string {
     return active ? 'emoji-group-active' : '';
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [EmojiGroupButton.is]: EmojiGroupButton;
+  }
+}
+
 
 customElements.define(EmojiGroupButton.is, EmojiGroupButton);

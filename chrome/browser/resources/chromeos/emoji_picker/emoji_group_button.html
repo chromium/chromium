@@ -28,10 +28,9 @@
 <cr-icon-button
     id="group-button"
     iron-icon="[[icon]]"
-    class$="[[_className(active)]]"
+    class$="[[calculateClassName(active)]]"
     on-click="handleClick"
     aria-label="[[name]]"
     disabled="[[disabled]]"
-    custom-tab-index="[[customTabIndex]]"
-    >
+    custom-tab-index="[[customTabIndex]]">
 </cr-icon-button>
