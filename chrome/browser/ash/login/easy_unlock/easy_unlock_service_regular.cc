@@ -275,7 +275,7 @@ void EasyUnlockServiceRegular::SetStoredRemoteDevices(
 
   ScopedDictPrefUpdate pairing_update(profile()->GetPrefs(),
                                       prefs::kEasyUnlockPairing);
-  if (devices.GetListDeprecated().empty())
+  if (devices.GetList().empty())
     pairing_update->Remove(kKeyDevices);
   else
     pairing_update->Set(kKeyDevices, devices.Clone());
