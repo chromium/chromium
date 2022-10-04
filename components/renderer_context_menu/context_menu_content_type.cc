@@ -22,12 +22,9 @@ bool IsDevToolsURL(const GURL& url) {
 }  // namespace
 
 ContextMenuContentType::ContextMenuContentType(
-    content::WebContents* web_contents,
     const content::ContextMenuParams& params,
     bool supports_custom_items)
-    : params_(params),
-      source_web_contents_(web_contents),
-      supports_custom_items_(supports_custom_items) {}
+    : params_(params), supports_custom_items_(supports_custom_items) {}
 
 ContextMenuContentType::~ContextMenuContentType() {
 }

@@ -18,19 +18,22 @@ using extensions::Extension;
 using extensions::ProcessManager;
 
 ContextMenuContentTypeWebView::ContextMenuContentTypeWebView(
-    content::WebContents* web_contents,
+    const base::WeakPtr<extensions::WebViewGuest> web_view_guest,
     const content::ContextMenuParams& params)
-    : ContextMenuContentType(web_contents, params, true) {
-}
+    : ContextMenuContentType(params, true),
+      web_view_guest_(std::move(web_view_guest)) {}
 
 ContextMenuContentTypeWebView::~ContextMenuContentTypeWebView() {
 }
 
 const Extension* ContextMenuContentTypeWebView::GetExtension() const {
-  ProcessManager* process_manager =
-      ProcessManager::Get(source_web_contents()->GetBrowserContext());
-  return process_manager->GetExtensionForWebContents(
-      source_web_contents());
+  if (!web_view_guest_)
+    return nullptr;
+
+  ProcessManager* process_manager = ProcessManager::Get(
+      web_view_guest_->GetGuestMainFrame()->GetBrowserContext());
+  return process_manager->GetExtensionForRenderFrameHost(
+      web_view_guest_->GetGuestMainFrame());
 }
 
 bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
@@ -49,22 +52,20 @@ bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
       return true;
     case ITEM_GROUP_DEVELOPER:
       {
-        const extensions::Extension* embedder_extension = GetExtension();
-        if (chrome::GetChannel() >= version_info::Channel::DEV) {
-          // Hide dev tools items in guests inside WebUI if we are not running
-          // canary or tott.
-          auto* web_view_guest =
-              extensions::WebViewGuest::FromWebContents(source_web_contents());
-          // Note that this check might not be sufficient to hide dev tools
-          // items on OS_MAC if we start supporting <webview> inside
-          // component extensions.
-          // For a list of places where <webview>/GuestViews are supported, see:
-          // https://goo.gl/xfJkwp.
-          if (!embedder_extension && web_view_guest &&
-                  web_view_guest->owner_web_contents()->GetWebUI()) {
-              return false;
-          }
+      const extensions::Extension* embedder_extension = GetExtension();
+      if (chrome::GetChannel() >= version_info::Channel::DEV) {
+        // Hide dev tools items in guests inside WebUI if we are not running
+        // canary or tott.
+        // Note that this check might not be sufficient to hide dev tools
+        // items on OS_MAC if we start supporting <webview> inside
+        // component extensions.
+        // For a list of places where <webview>/GuestViews are supported, see:
+        // https://goo.gl/xfJkwp.
+        if (!embedder_extension && web_view_guest_ &&
+            web_view_guest_->owner_web_contents()->GetWebUI()) {
+          return false;
         }
+      }
 
         // TODO(lazyboy): Enable this for mac too when http://crbug.com/380405
         // is fixed.

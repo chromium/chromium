@@ -19,8 +19,8 @@ class ContextMenuContentTypeAppMode : public ContextMenuContentType {
   bool SupportsGroup(int group) override;
 
  protected:
-  ContextMenuContentTypeAppMode(content::WebContents* web_contents,
-                                const content::ContextMenuParams& params);
+  explicit ContextMenuContentTypeAppMode(
+      const content::ContextMenuParams& params);
 
  private:
   friend class ContextMenuContentTypeFactory;

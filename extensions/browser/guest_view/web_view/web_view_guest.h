@@ -145,6 +145,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Returns spatial navigation status.
   bool IsSpatialNavigationEnabled() const;
 
+  base::WeakPtr<WebViewGuest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   explicit WebViewGuest(content::WebContents* owner_web_contents);
 

@@ -9,6 +9,7 @@
 
 namespace extensions {
 class Extension;
+class WebViewGuest;
 }
 
 // A ContextMenuContentType for <webview> guest.
@@ -27,13 +28,16 @@ class ContextMenuContentTypeWebView : public ContextMenuContentType {
   bool SupportsGroup(int group) override;
 
  protected:
-  ContextMenuContentTypeWebView(content::WebContents* web_contents,
-                                const content::ContextMenuParams& params);
+  ContextMenuContentTypeWebView(
+      const base::WeakPtr<extensions::WebViewGuest> web_view_guest,
+      const content::ContextMenuParams& params);
 
  private:
   friend class ContextMenuContentTypeFactory;
 
   const extensions::Extension* GetExtension() const;
+
+  base::WeakPtr<extensions::WebViewGuest> web_view_guest_;
 };
 
 #endif  // CHROME_BROWSER_GUEST_VIEW_WEB_VIEW_CONTEXT_MENU_CONTENT_TYPE_WEB_VIEW_H_

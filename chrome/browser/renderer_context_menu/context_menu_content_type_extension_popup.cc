@@ -5,10 +5,8 @@
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_extension_popup.h"
 
 ContextMenuContentTypeExtensionPopup::ContextMenuContentTypeExtensionPopup(
-    content::WebContents* web_contents,
     const content::ContextMenuParams& params)
-    : ContextMenuContentType(web_contents, params, false) {
-}
+    : ContextMenuContentType(params, false) {}
 
 ContextMenuContentTypeExtensionPopup::~ContextMenuContentTypeExtensionPopup() {
 }

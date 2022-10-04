@@ -17,17 +17,16 @@ using extensions::ProcessManager;
 ContextMenuContentTypePlatformApp::ContextMenuContentTypePlatformApp(
     content::WebContents* web_contents,
     const content::ContextMenuParams& params)
-    : ContextMenuContentType(web_contents, params, false) {
-}
+    : ContextMenuContentType(params, false),
+      source_web_contents_(web_contents) {}
 
 ContextMenuContentTypePlatformApp::~ContextMenuContentTypePlatformApp() {
 }
 
 const Extension* ContextMenuContentTypePlatformApp::GetExtension() {
   ProcessManager* process_manager =
-      ProcessManager::Get(source_web_contents()->GetBrowserContext());
-  return process_manager->GetExtensionForWebContents(
-      source_web_contents());
+      ProcessManager::Get(source_web_contents_->GetBrowserContext());
+  return process_manager->GetExtensionForWebContents(source_web_contents_);
 }
 
 bool ContextMenuContentTypePlatformApp::SupportsGroup(int group) {

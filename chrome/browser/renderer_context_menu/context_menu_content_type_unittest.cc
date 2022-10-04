@@ -15,14 +15,7 @@
 
 using extensions::MenuItem;
 
-class ContextMenuContentTypeTest : public ChromeRenderViewHostTestHarness {
- public:
-  static std::unique_ptr<ContextMenuContentType> Create(
-      content::WebContents* web_contents,
-      const content::ContextMenuParams& params) {
-    return std::make_unique<ContextMenuContentType>(web_contents, params, true);
-  }
-};
+using ContextMenuContentTypeTest = ChromeRenderViewHostTestHarness;
 
 // Generates a ContextMenuParams that matches the specified contexts.
 content::ContextMenuParams CreateParams(int contexts) {
@@ -67,8 +60,7 @@ content::ContextMenuParams CreateParams(int contexts) {
 TEST_F(ContextMenuContentTypeTest, CheckTypes) {
   {
     content::ContextMenuParams params = CreateParams(MenuItem::LINK);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_LINK));
     EXPECT_TRUE(content_type->SupportsGroup(
@@ -79,8 +71,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
 
   {
     content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_LINK));
     EXPECT_TRUE(content_type->SupportsGroup(
@@ -93,8 +84,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
 
   {
     content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_FALSE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_LINK));
     EXPECT_FALSE(content_type->SupportsGroup(
@@ -105,8 +95,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
 
   {
     content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE));
     EXPECT_TRUE(content_type->SupportsGroup(
@@ -124,8 +113,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
 
   {
     content::ContextMenuParams params = CreateParams(MenuItem::VIDEO);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_VIDEO));
 
@@ -139,8 +127,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
 
   {
     content::ContextMenuParams params = CreateParams(MenuItem::AUDIO);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_MEDIA_AUDIO));
 
@@ -154,8 +141,7 @@ TEST_F(ContextMenuContentTypeTest, CheckTypes) {
 
   {
     content::ContextMenuParams params = CreateParams(MenuItem::FRAME);
-    std::unique_ptr<ContextMenuContentType> content_type(
-        Create(web_contents(), params));
+    auto content_type = std::make_unique<ContextMenuContentType>(params, true);
     EXPECT_TRUE(content_type->SupportsGroup(
                     ContextMenuContentType::ITEM_GROUP_FRAME));
     EXPECT_TRUE(content_type->SupportsGroup(

@@ -733,7 +733,7 @@ RenderViewContextMenu::RenderViewContextMenu(
                                    IDC_CONTENT_CONTEXT_CUSTOM_LAST);
   }
   set_content_type(
-      ContextMenuContentTypeFactory::Create(source_web_contents_, params));
+      ContextMenuContentTypeFactory::Create(&render_frame_host, params));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   system_app_ = GetBrowser() && GetBrowser()->app_controller()
@@ -873,7 +873,9 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
     return;
 
   extensions::WebViewGuest* web_view_guest =
-      extensions::WebViewGuest::FromWebContents(source_web_contents_);
+      extensions::WebViewGuest::FromRenderFrameHost(
+          content::RenderFrameHost::FromID(render_process_id_,
+                                           render_frame_id_));
   MenuItem::ExtensionKey key;
   if (web_view_guest) {
     key = MenuItem::ExtensionKey(extension->id(),

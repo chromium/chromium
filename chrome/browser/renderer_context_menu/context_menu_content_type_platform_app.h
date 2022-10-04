@@ -7,6 +7,10 @@
 
 #include "components/renderer_context_menu/context_menu_content_type.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace extensions {
 class Extension;
 }
@@ -31,6 +35,8 @@ class ContextMenuContentTypePlatformApp : public ContextMenuContentType {
   friend class ContextMenuContentTypeFactory;
 
   const extensions::Extension* GetExtension();
+
+  const raw_ptr<content::WebContents> source_web_contents_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_PLATFORM_APP_H_
