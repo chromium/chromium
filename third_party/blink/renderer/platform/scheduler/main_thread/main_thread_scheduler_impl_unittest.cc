@@ -395,8 +395,9 @@ class MainThreadSchedulerImplForTest : public MainThreadSchedulerImpl {
 
 class MainThreadSchedulerImplTest : public testing::Test {
  public:
-  MainThreadSchedulerImplTest(std::vector<Feature> features_to_enable,
-                              std::vector<Feature> features_to_disable) {
+  MainThreadSchedulerImplTest(
+      const std::vector<base::test::FeatureRef>& features_to_enable,
+      const std::vector<base::test::FeatureRef>& features_to_disable) {
     feature_list_.InitWithFeatures(features_to_enable, features_to_disable);
   }
 

@@ -89,9 +89,9 @@ class BaseReclaimableCodecTest
 class ReclaimBackgroundOnlyTest : public BaseReclaimableCodecTest {
  public:
   ReclaimBackgroundOnlyTest() {
-    std::vector<base::Feature> enabled_features{
+    std::vector<base::test::FeatureRef> enabled_features{
         kReclaimInactiveWebCodecs, kOnlyReclaimBackgroundWebCodecs};
-    std::vector<base::Feature> disabled_features{};
+    std::vector<base::test::FeatureRef> disabled_features{};
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -104,8 +104,9 @@ class ReclaimBackgroundOnlyTest : public BaseReclaimableCodecTest {
 class ReclaimForegroundSameAsBackgroundTest : public BaseReclaimableCodecTest {
  public:
   ReclaimForegroundSameAsBackgroundTest() {
-    std::vector<base::Feature> enabled_features{kReclaimInactiveWebCodecs};
-    std::vector<base::Feature> disabled_features{
+    std::vector<base::test::FeatureRef> enabled_features{
+        kReclaimInactiveWebCodecs};
+    std::vector<base::test::FeatureRef> disabled_features{
         kOnlyReclaimBackgroundWebCodecs};
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -118,8 +119,8 @@ class ReclaimForegroundSameAsBackgroundTest : public BaseReclaimableCodecTest {
 class ReclaimDisabledTest : public BaseReclaimableCodecTest {
  public:
   ReclaimDisabledTest() {
-    std::vector<base::Feature> enabled_features{};
-    std::vector<base::Feature> disabled_features{
+    std::vector<base::test::FeatureRef> enabled_features{};
+    std::vector<base::test::FeatureRef> disabled_features{
         kReclaimInactiveWebCodecs, kOnlyReclaimBackgroundWebCodecs};
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

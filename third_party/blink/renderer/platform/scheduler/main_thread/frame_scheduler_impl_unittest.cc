@@ -198,17 +198,19 @@ class FrameSchedulerImplTest : public testing::Test {
 
   // Constructs a FrameSchedulerImplTest with a list of features to enable and a
   // list of features to disable.
-  FrameSchedulerImplTest(std::vector<base::Feature> features_to_enable,
-                         std::vector<base::Feature> features_to_disable)
+  FrameSchedulerImplTest(
+      std::vector<base::test::FeatureRef> features_to_enable,
+      std::vector<base::test::FeatureRef> features_to_disable)
       : FrameSchedulerImplTest() {
     feature_list_.InitWithFeatures(features_to_enable, features_to_disable);
   }
 
   // Constructs a FrameSchedulerImplTest with a feature to enable, associated
   // params, and a list of features to disable.
-  FrameSchedulerImplTest(const base::Feature& feature_to_enable,
-                         const base::FieldTrialParams& feature_to_enable_params,
-                         const std::vector<base::Feature>& features_to_disable)
+  FrameSchedulerImplTest(
+      const base::Feature& feature_to_enable,
+      const base::FieldTrialParams& feature_to_enable_params,
+      const std::vector<base::test::FeatureRef>& features_to_disable)
       : FrameSchedulerImplTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{feature_to_enable, feature_to_enable_params}}, features_to_disable);

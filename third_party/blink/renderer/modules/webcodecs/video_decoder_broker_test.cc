@@ -179,12 +179,12 @@ class VideoDecoderBrokerTest : public testing::Test {
  public:
   VideoDecoderBrokerTest() {
     // Make sure we have the option of creating HW or SW decoders.
-    std::vector<base::Feature> disabled_features{
+    std::vector<base::test::FeatureRef> disabled_features{
         media::kForceHardwareVideoDecoders};
 
     // Make it easier to switch between HW and SW decoders, by initializing with
     // configs with a small height.
-    std::vector<base::Feature> enabled_features{
+    std::vector<base::test::FeatureRef> enabled_features{
         media::kResolutionBasedDecoderPriority};
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);

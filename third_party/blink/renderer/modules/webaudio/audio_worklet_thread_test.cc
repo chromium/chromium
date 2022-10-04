@@ -336,8 +336,8 @@ class AudioWorkletThreadPriorityTest
       public testing::WithParamInterface<ThreadPriorityTestParam> {
  public:
   void InitWithRealtimePrioritySettings(bool is_enabled_by_finch) {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
     if (is_enabled_by_finch) {
       enabled.push_back(features::kAudioWorkletThreadRealtimePriority);
     } else {

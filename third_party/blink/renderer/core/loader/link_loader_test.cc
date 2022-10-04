@@ -545,8 +545,8 @@ class LinkLoaderTestPrefetchPrivacyChanges
   LinkLoaderTestPrefetchPrivacyChanges()
       : privacy_changes_enabled_(GetParam()) {}
   void SetUp() override {
-    std::vector<base::Feature> enable_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enable_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {
       enable_features.push_back(features::kPrefetchPrivacyChanges);
     } else {

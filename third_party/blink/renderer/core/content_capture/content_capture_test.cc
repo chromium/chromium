@@ -152,14 +152,15 @@ class ContentCaptureLocalFrameClientHelper : public EmptyLocalFrameClient {
   WebContentCaptureClient& client_;
 };
 
-class ContentCaptureTest
-    : public PageTestBase,
-      public ::testing::WithParamInterface<std::vector<base::Feature>> {
+class ContentCaptureTest : public PageTestBase,
+                           public ::testing::WithParamInterface<
+                               std::vector<base::test::FeatureRef>> {
  public:
   ContentCaptureTest() {
     EnablePlatform();
     feature_list_.InitWithFeatures(
-        GetParam(), /*disabled_features=*/std::vector<base::Feature>());
+        GetParam(),
+        /*disabled_features=*/std::vector<base::test::FeatureRef>());
   }
 
   void SetUp() override {
@@ -366,8 +367,8 @@ class ContentCaptureTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentCaptureTest,
-    testing::Values(std::vector<base::Feature>{},
-                    std::vector<base::Feature>{
+    testing::Values(std::vector<base::test::FeatureRef>{},
+                    std::vector<base::test::FeatureRef>{
                         features::kContentCaptureConstantStreaming}));
 
 TEST_P(ContentCaptureTest, Basic) {
