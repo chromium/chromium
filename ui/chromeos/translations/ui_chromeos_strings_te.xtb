@@ -165,7 +165,7 @@
 <translation id="2389832672041313158">బర్మీస్/మయన్మార్</translation>
 <translation id="2392369802118427583">యాక్టివేట్ చేయండి</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> అందుబాటులో ఉంది</translation>
-<translation id="2425665904502185219">మొత్తం ఫైల్ పరిమాణం</translation>
+<translation id="2425665904502185219">మొత్తం ఫైల్ సైజ్‌</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2452444014801043526">మెగాఫోన్ పట్టుకున్న వ్యక్తి</translation>
@@ -472,7 +472,7 @@
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5059127710849015030">నేపాలీ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="5068919226082848014">పిజ్జా</translation>
-<translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> పరిమాణం వరకు ఫైళ్లు తొలగించబడతాయి</translation>
+<translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> సైజ్‌ వరకు ఫైళ్లు తొలగించబడతాయి</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను <ph name="FOLDER_NAME" />కు తరలిస్తోంది</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5098629044894065541">హిబ్రూ</translation>
@@ -834,7 +834,7 @@
 <translation id="7980421588063892270">కోల్‌మాక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="8000066093800657092">ఏ నెట్‌వర్క్ లేదు</translation>
 <translation id="8008366997883261463">జాక్ రస్సెల్ టెర్రియర్</translation>
-<translation id="8028993641010258682">పరిమాణం</translation>
+<translation id="8028993641010258682">సైజ్‌</translation>
 <translation id="803771048473350947">ఫైల్</translation>
 <translation id="8038111231936746805">(డిఫాల్ట్)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ఆడియో</translation>
