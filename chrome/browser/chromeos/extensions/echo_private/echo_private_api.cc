@@ -146,8 +146,8 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
   chromeos::echo_offer::RemoveEmptyValueDicts(dict);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate offer_update(local_state, prefs::kEchoCheckedOffers);
-  offer_update->SetKey("echo." + service_id, base::Value(std::move(dict)));
+  ScopedDictPrefUpdate offer_update(local_state, prefs::kEchoCheckedOffers);
+  offer_update->Set("echo." + service_id, std::move(dict));
   return RespondNow(NoArguments());
 }
 

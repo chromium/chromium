@@ -361,8 +361,8 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesMutePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesMutePref() {
-  DictionaryPrefUpdate dict_update(local_state_, prefs::kAudioDevicesMute);
-  dict_update->GetDict() = device_mute_settings_.Clone();
+  local_state_->SetDict(prefs::kAudioDevicesMute,
+                        device_mute_settings_.Clone());
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesVolumePref() {
@@ -372,9 +372,8 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesVolumePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesVolumePref() {
-  DictionaryPrefUpdate dict_update(local_state_,
-                                   prefs::kAudioDevicesVolumePercent);
-  dict_update->GetDict() = device_volume_settings_.Clone();
+  local_state_->SetDict(prefs::kAudioDevicesVolumePercent,
+                        device_volume_settings_.Clone());
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesGainPref() {
@@ -384,9 +383,8 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesGainPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesGainPref() {
-  DictionaryPrefUpdate dict_update(local_state_,
-                                   prefs::kAudioDevicesGainPercent);
-  dict_update->GetDict() = device_gain_settings_.Clone();
+  local_state_->SetDict(prefs::kAudioDevicesGainPercent,
+                        device_gain_settings_.Clone());
 }
 
 void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
@@ -396,8 +394,8 @@ void AudioDevicesPrefHandlerImpl::LoadDevicesStatePref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveDevicesStatePref() {
-  DictionaryPrefUpdate dict_update(local_state_, prefs::kAudioDevicesState);
-  dict_update->GetDict() = device_state_settings_.Clone();
+  local_state_->SetDict(prefs::kAudioDevicesState,
+                        device_state_settings_.Clone());
 }
 
 void AudioDevicesPrefHandlerImpl::LoadInputDevicesUserPriorityPref() {
@@ -407,9 +405,8 @@ void AudioDevicesPrefHandlerImpl::LoadInputDevicesUserPriorityPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveInputDevicesUserPriorityPref() {
-  DictionaryPrefUpdate dict_update(local_state_,
-                                   prefs::kAudioInputDevicesUserPriority);
-  dict_update->GetDict() = input_device_user_priority_settings_.Clone();
+  local_state_->SetDict(prefs::kAudioInputDevicesUserPriority,
+                        input_device_user_priority_settings_.Clone());
 }
 
 void AudioDevicesPrefHandlerImpl::LoadOutputDevicesUserPriorityPref() {
@@ -419,9 +416,8 @@ void AudioDevicesPrefHandlerImpl::LoadOutputDevicesUserPriorityPref() {
 }
 
 void AudioDevicesPrefHandlerImpl::SaveOutputDevicesUserPriorityPref() {
-  DictionaryPrefUpdate dict_update(local_state_,
-                                   prefs::kAudioOutputDevicesUserPriority);
-  dict_update->GetDict() = output_device_user_priority_settings_.Clone();
+  local_state_->SetDict(prefs::kAudioOutputDevicesUserPriority,
+                        output_device_user_priority_settings_.Clone());
 }
 
 bool AudioDevicesPrefHandlerImpl::MigrateDevicesStatePref(

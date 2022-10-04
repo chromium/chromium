@@ -85,14 +85,11 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
     return;
   }
 
-  base::Value* device_id_to_nickname_map =
-      DictionaryPrefUpdate(local_state_, kDeviceIdToNicknameMapPrefName).Get();
-  DCHECK(device_id_to_nickname_map)
-      << "Device ID to nickname map pref is unregistered.";
+  ScopedDictPrefUpdate update(local_state_, kDeviceIdToNicknameMapPrefName);
 
   BLUETOOTH_LOG(USER) << "Setting device nickname for " << device_id << " to "
                       << nickname;
-  device_id_to_nickname_map->SetStringKey(device_id, nickname);
+  update->Set(device_id, nickname);
 
   NotifyDeviceNicknameChanged(device_id, nickname);
   device::RecordSetDeviceNickName(device::SetNicknameResult::kSuccess);
@@ -105,20 +102,17 @@ void DeviceNameManagerImpl::RemoveDeviceNickname(const std::string& device_id) {
     return;
   }
 
-  base::Value* device_id_to_nickname_map =
-      DictionaryPrefUpdate(local_state_, kDeviceIdToNicknameMapPrefName).Get();
-  DCHECK(device_id_to_nickname_map)
-      << "Device ID to nickname map pref is unregistered.";
+  ScopedDictPrefUpdate update(local_state_, kDeviceIdToNicknameMapPrefName);
 
   // Do nothing if no nickname exists for |device_id|.
-  if (!device_id_to_nickname_map->FindStringKey(device_id)) {
+  if (!update->Find(device_id)) {
     BLUETOOTH_LOG(ERROR) << "RemoveDeviceNickname for device failed because no "
                          << "nickname exists for " << device_id;
     return;
   }
 
   BLUETOOTH_LOG(EVENT) << "Removing device nickname for " << device_id;
-  device_id_to_nickname_map->RemoveKey(device_id);
+  update->Remove(device_id);
   NotifyDeviceNicknameChanged(device_id, /*nickname=*/absl::nullopt);
 }
 

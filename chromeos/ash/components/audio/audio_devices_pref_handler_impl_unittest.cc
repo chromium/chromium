@@ -116,27 +116,27 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     // are set when pref value sets up its internal state.
     std::string preset_key = GetPresetDeviceDeprecatedPrefKey();
     {
-      DictionaryPrefUpdate update(pref_service_.get(),
+      ScopedDictPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesState);
-      base::Value* pref = update.Get();
-      base::Value state(base::Value::Type::DICTIONARY);
-      state.SetBoolKey("active", kPresetState.active);
-      state.SetBoolKey("activate_by_user", kPresetState.activate_by_user);
-      pref->SetKey(preset_key, std::move(state));
+      base::Value::Dict& pref = update.Get();
+      base::Value::Dict state;
+      state.Set("active", kPresetState.active);
+      state.Set("activate_by_user", kPresetState.activate_by_user);
+      pref.Set(preset_key, std::move(state));
     }
 
     {
-      DictionaryPrefUpdate update(pref_service_.get(),
+      ScopedDictPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesVolumePercent);
-      base::Value* pref = update.Get();
-      pref->SetDoubleKey(preset_key, kPresetState.sound_level);
+      base::Value::Dict& pref = update.Get();
+      pref.Set(preset_key, kPresetState.sound_level);
     }
 
     {
-      DictionaryPrefUpdate update(pref_service_.get(),
+      ScopedDictPrefUpdate update(pref_service_.get(),
                                   prefs::kAudioDevicesMute);
-      base::Value* pref = update.Get();
-      pref->SetIntKey(preset_key, static_cast<int>(kPresetState.mute));
+      base::Value::Dict& pref = update.Get();
+      pref.Set(preset_key, static_cast<int>(kPresetState.mute));
     }
 
     audio_pref_handler_ = new AudioDevicesPrefHandlerImpl(pref_service_.get());
