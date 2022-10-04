@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.MainThreadsCongestion{Phase}" units="janks"
-    expires_after="2023-01-15">
+    expires_after="2023-03-15">
 <!-- on probation: expected to graduate as a go/chrome-browser-guiding-metrics -->
 
   <owner>etienneb@chromium.org</owner>
@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds3{Phase}"
-    units="janks" expires_after="M108">
+    units="janks" expires_after="M111">
 <!-- to graduate as Browser.MainThreadsCongestion as a go/chrome-browser-guiding-metrics) -->
 
   <owner>etienneb@chromium.org</owner>
@@ -474,7 +474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds{Phase}"
-    units="janks" expires_after="M108">
+    units="janks" expires_after="M111">
 <!-- to be replaced by Browser.MainThreadsCongestion as a go/chrome-browser-guiding-metrics) -->
 
   <owner>gab@chromium.org</owner>
