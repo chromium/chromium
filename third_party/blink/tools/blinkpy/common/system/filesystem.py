@@ -160,7 +160,7 @@ class FileSystem(object):
         return os.getcwd()
 
     def glob(self, path):
-        return glob.glob(path)
+        return glob.iglob(path, recursive=True)
 
     def isabs(self, path):
         return os.path.isabs(path)

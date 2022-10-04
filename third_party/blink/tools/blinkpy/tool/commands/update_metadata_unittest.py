@@ -15,7 +15,11 @@ from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.mock_tool import MockBlinkTool
-from blinkpy.tool.commands.update_metadata import UpdateMetadata, MetadataUpdater
+from blinkpy.tool.commands.update_metadata import (
+    UpdateMetadata,
+    MetadataUpdater,
+    load_and_update_manifests,
+)
 from blinkpy.web_tests.builder_list import BuilderList
 
 path_finder.bootstrap_wpt_imports()
@@ -280,6 +284,10 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertEqual(self.command.git_cl.calls, [])
 
     def test_execute_dry_run(self):
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('external', 'wpt', 'dir', 'is',
+                                            'orphaned.html.ini'),
+            '[orphaned.html]\n')
         files_before = dict(self.tool.filesystem.files)
         with self._patch_builtins():
             exit_code = self.command.main(['--dry-run'])
@@ -287,6 +295,8 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
         self.assertLog([
             'INFO: All builds finished.\n',
             'INFO: Processing wptrunner report (1/1)\n',
+            'WARNING: Deleting 1 orphaned metadata file:\n',
+            'WARNING:   external/wpt/dir/is/orphaned.html.ini\n',
             "INFO: Updated 'crash.html' (1/5, modified)\n",
             "INFO: Updated 'dir/multiglob.https.any.js' (2/5)\n",
             "INFO: Updated 'fail.html' (3/5)\n",
@@ -381,6 +391,41 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
             'WARNING: No reports to process.\n',
         ])
 
+    def test_remove_orphaned_metadata(self):
+        """Verify that the tool removes orphaned metadata files.
+
+        A metadata file is orphaned when its corresponding test no longer exists
+        in the manifest.
+        """
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('external', 'wpt', 'dir', 'is',
+                                            'orphaned.html.ini'),
+            '[orphaned.html]\n')
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('external', 'wpt',
+                                            'infrastructure', 'metadata',
+                                            'testdriver.html.ini'),
+            '[testdriver.html]\n')
+        self.tool.filesystem.write_text_file(
+            self.finder.path_from_web_tests('external', 'wpt', 'dir', 'is',
+                                            '__dir__.ini'), 'expected: FAIL\n')
+        with self._patch_builtins():
+            manifests = load_and_update_manifests(self.finder)
+            self.command.remove_orphaned_metadata(manifests)
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.finder.path_from_web_tests('external', 'wpt', 'dir', 'is',
+                                                'orphaned.html.ini')))
+        self.assertTrue(
+            self.tool.filesystem.exists(
+                self.finder.path_from_web_tests('external', 'wpt', 'dir', 'is',
+                                                '__dir__.ini')))
+        self.assertTrue(
+            self.tool.filesystem.exists(
+                self.finder.path_from_web_tests('external', 'wpt',
+                                                'infrastructure', 'metadata',
+                                                'testdriver.html.ini')))
+
 
 class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
     """Verify the metadata ASTs are manipulated and written correctly.
@@ -399,7 +444,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             'known_intermittent': [],
         }
         with self._patch_builtins():
-            updater = MetadataUpdater.from_path_finder(self.finder, **options)
+            manifests = load_and_update_manifests(self.finder)
+            updater = MetadataUpdater.from_manifests(manifests, **options)
             for report in reports:
                 report['run_info'] = {
                     'os': 'mac',

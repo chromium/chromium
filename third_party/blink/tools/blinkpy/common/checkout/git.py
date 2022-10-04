@@ -29,6 +29,7 @@
 
 import logging
 import re
+from typing import List
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.executive import Executive, ScriptError
@@ -175,11 +176,43 @@ class Git(object):
             path = line[3:]
             yield line[0].strip(), line[1].strip(), path
 
-    def add_list(self, paths, return_exit_code=False):
-        return self.run(['add'] + paths, return_exit_code=return_exit_code)
+    def add_list(self, paths: List[str], return_exit_code: bool = False):
+        return self._run_chunked(['add'],
+                                 paths,
+                                 return_exit_code=return_exit_code)
 
-    def delete_list(self, paths):
-        return self.run(['rm', '-f'] + paths)
+    def delete_list(self, paths: List[str], ignore_unmatch: bool = False):
+        command = ['rm', '-f']
+        if ignore_unmatch:
+            command.append('--ignore-unmatch')
+        return self._run_chunked(command, paths)
+
+    def _run_chunked(self,
+                     command: List[str],
+                     paths: List[str],
+                     chunk_size: int = 128,
+                     **run_kwargs):
+        """Safely run `git` operations on an arbitrary number of paths.
+
+        This helper transparently avoids command line length limitations on
+        Windows by splitting paths across multiple `git` invocations. This only
+        works for commands that can operate on a variable number of paths.
+
+        Arguments:
+            command: The non-path arguments after `git` but before the paths.
+            paths: The paths to operate on.
+            chunk_size: The maximum number of paths to operate on at a time. The
+                default was picked heuristically.
+
+        Returns:
+            The first truthy value returned by a `run` command. This is usually
+            stdout or a nonzero exit code.
+        """
+        rv = 0
+        for chunk_start in range(0, len(paths), chunk_size):
+            chunk = paths[chunk_start:chunk_start + chunk_size]
+            rv = rv or self.run(command + chunk, **run_kwargs)
+        return rv
 
     def move(self, origin, destination):
         return self.run(['mv', '-f', origin, destination])

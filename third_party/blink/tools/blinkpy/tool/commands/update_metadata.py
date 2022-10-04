@@ -13,6 +13,7 @@ import pathlib
 import optparse
 import re
 from typing import (
+    Collection,
     Iterable,
     Iterator,
     List,
@@ -35,10 +36,21 @@ from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
+from manifest import manifest
 from wptrunner import metadata, testloader, wpttest
 from wptrunner.wptmanifest.backends import conditional
 
 _log = logging.getLogger(__name__)
+
+
+class TestPaths:
+    tests_path: str
+    metadata_path: str
+    manifest_path: str
+    url_base: Optional[str]
+
+
+ManifestMap = Mapping[manifest.Manifest, TestPaths]
 
 
 class UpdateMetadata(Command):
@@ -130,8 +142,9 @@ class UpdateMetadata(Command):
             self._tool.builders,
             self.git_cl,
             can_trigger_jobs=(options.trigger_jobs and not options.dry_run))
-        updater = MetadataUpdater.from_path_finder(
-            self._path_finder,
+        manifests = load_and_update_manifests(self._path_finder)
+        updater = MetadataUpdater.from_manifests(
+            manifests,
             self._explicit_include_patterns(options, args),
             overwrite_conditions=options.overwrite_conditions,
             disable_intermittent=options.disable_intermittent,
@@ -150,6 +163,8 @@ class UpdateMetadata(Command):
                 stack.enter_context(self._io_pool)
                 updater.collect_results(
                     self.gather_reports(build_statuses, options.reports or []))
+                self.remove_orphaned_metadata(manifests,
+                                              dry_run=options.dry_run)
                 self.update_and_stage(updater,
                                       test_files,
                                       dry_run=options.dry_run)
@@ -162,11 +177,42 @@ class UpdateMetadata(Command):
             _log.error('%s', error)
             return 1
 
+    def remove_orphaned_metadata(self,
+                                 manifests: ManifestMap,
+                                 dry_run: bool = False):
+        infrastructure_tests = self._path_finder.path_from_wpt_tests(
+            'infrastructure')
+        for manifest, paths in manifests.items():
+            allowlist = {
+                metadata.expected_path(paths['metadata_path'], test_path)
+                for _, test_path, _ in manifest
+            }
+            orphans = []
+            glob = self._fs.join(paths['metadata_path'], '**', '*.ini')
+            for candidate in self._fs.glob(glob):
+                # Directory metadata are not supposed to correspond to any
+                # particular test, so do not remove them. Skip infrastructure
+                # test metadata as well, since they are managed by the upstream
+                # repository.
+                if (self._fs.basename(candidate) == '__dir__.ini'
+                        or candidate.startswith(infrastructure_tests)):
+                    continue
+                if candidate not in allowlist:
+                    orphans.append(candidate)
+
+            if orphans:
+                message = (
+                    'Deleting %s:' %
+                    grammar.pluralize('orphaned metadata file', len(orphans)))
+                self._log_metadata_paths(message, orphans)
+                if not dry_run:
+                    # Ignore untracked files.
+                    self.git.delete_list(orphans, ignore_unmatch=True)
+
     def update_and_stage(self,
                          updater: 'MetadataUpdater',
                          test_files: List[metadata.TestFileData],
-                         dry_run: bool = False,
-                         chunk_size: int = 128):
+                         dry_run: bool = False):
         test_files_to_stage = []
         update_results = self._io_pool.map(updater.update, test_files)
         for i, (test_file,
@@ -189,10 +235,7 @@ class UpdateMetadata(Command):
                 path for path in self._metadata_paths(test_files_to_stage)
                 if path in unstaged_changes
             ]
-            # Stage the files in chunks to avoid a Windows command line length
-            # limit. The chunk size was picked heuristically.
-            for chunk_start in range(0, len(paths), chunk_size):
-                self.git.add_list(paths[chunk_start:chunk_start + chunk_size])
+            self.git.add_list(paths)
             _log.info('Staged %s.',
                       grammar.pluralize('metadata file', len(paths)))
 
@@ -220,13 +263,22 @@ class UpdateMetadata(Command):
         metadata_paths = set(self._metadata_paths(test_files))
         uncommitted_metadata = uncommitted_changes & metadata_paths
         if uncommitted_metadata:
-            _log.error('Aborting: there are uncommitted metadata files:')
-            web_tests_root = self._path_finder.web_tests_dir()
-            for path in sorted(uncommitted_metadata):
-                rel_path = pathlib.Path(path).relative_to(web_tests_root)
-                _log.error('  %s', rel_path.as_posix())
+            self._log_metadata_paths(
+                'Aborting: there are uncommitted metadata files:',
+                uncommitted_metadata,
+                log=_log.error)
             raise UpdateAbortError('Please commit or reset these files '
                                    'to continue.')
+
+    def _log_metadata_paths(self,
+                            message: str,
+                            paths: Collection[str],
+                            log=_log.warning):
+        log(message)
+        web_tests_root = self._path_finder.web_tests_dir()
+        for path in sorted(paths):
+            rel_path = pathlib.Path(path).relative_to(web_tests_root)
+            log('  %s', rel_path.as_posix())
 
     def _metadata_paths(
             self,
@@ -376,40 +428,20 @@ class MetadataUpdater:
         self._dry_run = dry_run
 
     @classmethod
-    def from_path_finder(
-            cls,
-            finder: path_finder.PathFinder,
-            include: Optional[List[str]] = None,
-            **options,
-    ) -> 'MetadataUpdater':
-        """Construct a metadata updater from a path finder.
+    def from_manifests(cls,
+                       manifests: ManifestMap,
+                       include: Optional[List[str]] = None,
+                       **options) -> 'MetadataUpdater':
+        """Construct a metadata updater from WPT manifests.
 
         Arguments:
-            finder: Path finder. Each WPT root is used as both the test and
-                metadata root. The manifest is read from `MANIFEST.json` at the
-                WPT root.
             include: A list of test patterns that are resolved into test IDs to
                 update. The resolution works the same way as `wpt run`:
-                  * Directories are expanded to include all children (e.g.,
-                    `a/` includes `a/b.html?c`).
+                  * Directories are expanded to include all children (e.g., `a/`
+                    includes `a/b.html?c`).
                   * Test files are expanded to include all variants (e.g.,
                     `a.html` includes `a.html?b` and `a.html?c`).
         """
-        # See: https://github.com/web-platform-tests/wpt/blob/merge_pr_35574/tools/wptrunner/wptrunner/testloader.py#L171-L199
-        test_paths = {}
-        for rel_path_to_wpt_root, url_base in Port.WPT_DIRS.items():
-            wpt_root = finder.path_from_web_tests(rel_path_to_wpt_root)
-            test_paths[url_base] = {
-                'tests_path':
-                wpt_root,
-                'metadata_path':
-                wpt_root,
-                'manifest_path':
-                finder.path_from_web_tests(rel_path_to_wpt_root,
-                                           'MANIFEST.json'),
-            }
-        manifests = testloader.ManifestLoader(
-            test_paths, force_manifest_update=True).load()
         # TODO(crbug.com/1299650): Validate the include list instead of silently
         # ignoring the bad test pattern.
         test_filter = testloader.TestFilter(manifests, include=include)
@@ -419,10 +451,15 @@ class MetadataUpdater:
             # `testloader.TestLoader` API. Monkey-patching here is the cleanest
             # way to filter tests to be updated without loading more tests than
             # are necessary.
-            manifest.itertypes = _compose(test_filter, manifest.itertypes)
-            test_files.update(
-                metadata.create_test_tree(paths['metadata_path'], manifest))
-        return MetadataUpdater(test_files, **options)
+            itertypes = manifest.itertypes
+            try:
+                manifest.itertypes = _compose(test_filter, manifest.itertypes)
+                test_files.update(
+                    metadata.create_test_tree(paths['metadata_path'],
+                                              manifest))
+            finally:
+                manifest.itertypes = itertypes
+        return cls(test_files, **options)
 
     def collect_results(self, reports: Iterable[io.TextIOBase]):
         """Parse and record test results."""
@@ -484,6 +521,31 @@ class MetadataUpdater:
 
 def _compose(f, g):
     return lambda *args, **kwargs: f(g(*args, **kwargs))
+
+
+def load_and_update_manifests(finder: path_finder.PathFinder) -> ManifestMap:
+    """Load and update WPT manifests on disk by scanning the test root.
+
+    Arguments:
+        finder: Path finder for constructing test paths (test root, metadata
+            root, and manifest path).
+
+    See Also:
+        https://github.com/web-platform-tests/wpt/blob/merge_pr_35574/tools/wptrunner/wptrunner/testloader.py#L171-L199
+    """
+    test_paths = {}
+    for rel_path_to_wpt_root, url_base in Port.WPT_DIRS.items():
+        wpt_root = finder.path_from_web_tests(rel_path_to_wpt_root)
+        test_paths[url_base] = {
+            'tests_path':
+            wpt_root,
+            'metadata_path':
+            wpt_root,
+            'manifest_path':
+            finder.path_from_web_tests(rel_path_to_wpt_root, 'MANIFEST.json'),
+        }
+    return testloader.ManifestLoader(test_paths,
+                                     force_manifest_update=True).load()
 
 
 def _default_expected_by_type():
