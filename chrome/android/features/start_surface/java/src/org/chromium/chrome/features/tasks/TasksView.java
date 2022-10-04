@@ -51,6 +51,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
     private final Context mContext;
     private FrameLayout mCarouselTabSwitcherContainer;
     private AppBarLayout mHeaderView;
+    private ViewGroup mMvTilesContainerLayout;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
@@ -82,6 +83,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
 
         mCarouselTabSwitcherContainer =
                 (FrameLayout) findViewById(R.id.carousel_tab_switcher_container);
+        mMvTilesContainerLayout = findViewById(R.id.mv_tiles_container);
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
 
         mHeaderView = (AppBarLayout) findViewById(R.id.task_surface_header);
@@ -156,7 +158,7 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * Set the visibility of the Most Visited Tiles.
      */
     void setMostVisitedVisibility(int visibility) {
-        findViewById(R.id.mv_tiles_container).setVisibility(visibility);
+        mMvTilesContainerLayout.setVisibility(visibility);
     }
 
     /**
@@ -327,10 +329,18 @@ public class TasksView extends CoordinatorLayoutForPointer {
      * @param topMargin The top margin to set.
      */
     void setMVTilesContainerTopMargin(int topMargin) {
-        MarginLayoutParams params =
-                (MarginLayoutParams) mHeaderView.findViewById(R.id.mv_tiles_container)
-                        .getLayoutParams();
+        MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
         params.topMargin = topMargin;
+    }
+
+    /**
+     * Set the left and right margin for the mv tiles container.
+     * @param margin The left and right margin to set.
+     */
+    void setMVTilesContainerLeftAndRightMargin(int margin) {
+        MarginLayoutParams params = (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
+        params.leftMargin = margin;
+        params.rightMargin = margin;
     }
 
     /**
@@ -340,6 +350,17 @@ public class TasksView extends CoordinatorLayoutForPointer {
     void setTabSwitcherTitleTopMargin(int topMargin) {
         MarginLayoutParams params =
                 (MarginLayoutParams) mHeaderView.findViewById(R.id.tab_switcher_title)
+                        .getLayoutParams();
+        params.topMargin = topMargin;
+    }
+
+    /**
+     * Set the top margin for the single tab card.
+     * @param topMargin The top margin to set.
+     */
+    void setSingleTabTopMargin(int topMargin) {
+        MarginLayoutParams params =
+                (MarginLayoutParams) mHeaderView.findViewById(R.id.single_tab_view)
                         .getLayoutParams();
         params.topMargin = topMargin;
     }

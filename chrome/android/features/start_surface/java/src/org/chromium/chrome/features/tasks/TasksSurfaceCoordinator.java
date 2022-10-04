@@ -168,16 +168,16 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             int maxRowsForGridMVT = getQueryTilesVisibility()
                     ? QueryTileSection.getMaxRowsForMostVisitedTiles(activity)
                     : MAX_TILE_ROWS_FOR_GRID_MVT;
-            mMostVisitedCoordinator =
-                    new MostVisitedTilesCoordinator(activity, activityLifecycleDispatcher,
-                            mView.findViewById(R.id.mv_tiles_container), windowAndroid,
-                            TabUiFeatureUtilities.supportInstantStart(
-                                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                                    mActivity),
-                            isScrollableMVTEnabled,
-                            isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
-                            /*snapshotTileGridChangedRunnable=*/null,
-                            /*tileCountChangedRunnable=*/null);
+            View mvTilesContainer = mView.findViewById(R.id.mv_tiles_container);
+            mMostVisitedCoordinator = new MostVisitedTilesCoordinator(activity,
+                    activityLifecycleDispatcher, mvTilesContainer, windowAndroid,
+                    TabUiFeatureUtilities.supportInstantStart(
+                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                            mActivity),
+                    isScrollableMVTEnabled,
+                    isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
+                    /*snapshotTileGridChangedRunnable=*/null,
+                    /*tileCountChangedRunnable=*/null);
         }
 
         if (hasQueryTiles) {

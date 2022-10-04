@@ -67,6 +67,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -495,6 +497,29 @@ public class InstantStartTest {
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
 
         testShowLastTabAtStartUp();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.FEED_ABLATION,
+        ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT,
+        ChromeFeatureList.TAB_SWITCHER_ON_RETURN,
+        ChromeFeatureList.START_SURFACE_ANDROID})
+    public void renderImprovingStartSurfaceWhenFeedDisabled() throws IOException {
+        // clang-format on
+        StartSurfaceTestUtils.setMVTiles(mSuggestionsDeps);
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
+        mActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(cta));
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+
+        View surface = cta.findViewById(R.id.primary_tasks_surface_view);
+        ChromeRenderTestRule.sanitize(surface);
+        mRenderTestRule.render(surface, "start_surface_no_feed_improvement");
     }
 
     private void testShowLastTabAtStartUp() throws IOException {

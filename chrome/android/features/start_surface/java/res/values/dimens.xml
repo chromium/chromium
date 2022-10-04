@@ -7,5 +7,6 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="tasks_surface_body_top_margin">24dp</dimen>
     <dimen name="mv_tiles_container_top_margin">17dp</dimen>
+    <dimen name="single_tab_view_top_margin_for_feed_improvement">32dp</dimen>
     <dimen name="tab_switcher_title_top_margin">16dp</dimen>
 </resources>

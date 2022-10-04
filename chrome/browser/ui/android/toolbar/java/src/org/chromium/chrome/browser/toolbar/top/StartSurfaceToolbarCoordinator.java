@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -61,6 +60,7 @@ public class StartSurfaceToolbarCoordinator {
     private OnLongClickListener mTabSwitcherLongClickListener;
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private CallbackController mCallbackController = new CallbackController();
+    private boolean mIsNativeInitialized;
 
     StartSurfaceToolbarCoordinator(ViewStub startSurfaceToolbarStub,
             UserEducationHelper userEducationHelper, ButtonDataProvider identityDiscController,
@@ -214,6 +214,7 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     void initLogoWithNative() {
+        mIsNativeInitialized = true;
         mToolbarMediator.initLogoWithNative();
     }
 
@@ -229,8 +230,7 @@ public class StartSurfaceToolbarCoordinator {
      * @return Whether or not toolbar phone layout view should be shown.
      */
     boolean shouldShowRealSearchBox() {
-        boolean isBigLogoShownInContent = !mShouldCreateLogoInToolbar
-                && LibraryLoader.getInstance().isInitialized()
+        boolean isBigLogoShownInContent = !mShouldCreateLogoInToolbar && mIsNativeInitialized
                 && TemplateUrlServiceFactory.get().doesDefaultSearchEngineHaveLogo();
         // This value should be equal to
         // |fakeSearchBoxToRealSearchBoxTop + realVerticalMargin| in

@@ -21,10 +21,12 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_C
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MORE_TABS_CLICK_LISTENER;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.QUERY_TILES_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.RESET_TASK_SURFACE_HEADER_SCROLL_POSITION;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
@@ -124,7 +126,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
             new ObservableSupplierImpl<>();
     private final CallbackController mCallbackController = new CallbackController();
     private final View mLogoContainerView;
-    private final boolean mShouldCreateLogo;
+    private final boolean mIsFeedGoneImprovementEnabled;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -220,7 +222,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // here to keep consistent with toolbar's check. This cannot be moved to other places, since
         // FEED_ARTICLES_LIST_VISIBLE may be changed after feed header is rendered, which then
         // causes inconsistency with toolbar's check.
-        mShouldCreateLogo = ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
+        mIsFeedGoneImprovementEnabled =
+                ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context);
 
         if (mPropertyModel != null) {
             assert mIsStartSurfaceEnabled;
@@ -388,14 +391,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
                 }
             };
 
-            // Tweak the margins between sections.
-            Resources resources = mContext.getResources();
-            mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
-            mPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
-            mPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN,
-                    resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin));
+            tweakMarginsBetweenSections();
         }
 
         mController.addTabSwitcherViewObserver(this);
@@ -1113,6 +1109,20 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         // shouldn't show the tab switcher layout on Start.
         boolean shouldShowTabCarousel =
                 isVisible && !(isSingleTabSwitcher() && isCurrentSelectedTabNTP());
+        // If improving Start surface when Feed is disabled is needed, mvt grid layout is shown. We
+        // need to update the body top margin according to the visibility of carousel tab.
+        // TODO(crbug.com/1360486): After Feed divider is removed, remove this setting top margin
+        // since the body top margin should always be R.dimen.tasks_surface_body_top_margin then.
+        // Also, update |tile_grid_layout_bottom_margin| in NTPLayout to be equal to
+        // |tasks_surface_body_top_margin| too.
+        if (mIsFeedGoneImprovementEnabled) {
+            Resources resources = mContext.getResources();
+            mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
+                    resources.getDimensionPixelSize(shouldShowTabCarousel
+                                    ? R.dimen.tasks_surface_body_top_margin
+                                    : R.dimen.tile_grid_layout_bottom_margin));
+        }
+
         if (shouldShowTabCarousel == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
 
         mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, shouldShowTabCarousel);
@@ -1127,7 +1137,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
     }
 
     private void setLogoVisibility(boolean isVisible) {
-        if (!mShouldCreateLogo) return;
+        if (!mIsFeedGoneImprovementEnabled) return;
 
         if (isVisible && mLogoCoordinator == null) {
             mLogoCoordinator = initializeLogo();
@@ -1334,5 +1344,31 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         if (mPropertyModel == null) return null;
         ExploreSurfaceCoordinator coordinator = mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR);
         return coordinator != null ? coordinator.getFeedReliabilityLogger() : null;
+    }
+
+    private void tweakMarginsBetweenSections() {
+        Resources resources = mContext.getResources();
+        mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
+                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
+        mPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN,
+                resources.getDimensionPixelSize(R.dimen.mv_tiles_container_top_margin));
+        mPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN,
+                resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin));
+
+        // If improving Start surface when Feed is disabled is needed, mvt grid layout (two row) is
+        // shown.
+        if (mIsFeedGoneImprovementEnabled) {
+            mPropertyModel.set(MV_TILES_CONTAINER_TOP_MARGIN,
+                    resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
+                            + resources.getDimensionPixelOffset(
+                                    R.dimen.ntp_search_box_bottom_margin));
+            mPropertyModel.set(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN,
+                    resources.getDimensionPixelSize(R.dimen.ntp_header_lateral_paddings_v2));
+            if (isSingleTabSwitcher()) {
+                mPropertyModel.set(SINGLE_TAB_TOP_MARGIN,
+                        resources.getDimensionPixelOffset(
+                                R.dimen.single_tab_view_top_margin_for_feed_improvement));
+            }
+        }
     }
 }

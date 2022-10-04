@@ -41,11 +41,14 @@ import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_INCOG
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_CONTAINER_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
+import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.SINGLE_TAB_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.features.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
@@ -1208,6 +1211,61 @@ public class StartSurfaceMediatorUnitTest {
                 equalTo(mvTilesContainerTopMargin));
         assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
                 equalTo(tabSwitcherTitleTopMargin));
+
+        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_LEFT_RIGHT_MARGIN), equalTo(0));
+        assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(0));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.START_SURFACE_DISABLED_FEED_IMPROVEMENT)
+    public void testStartSurfaceTopMarginsWhenFeedGoneImprovementEnabled() {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE, false);
+        Context context = ContextUtils.getApplicationContext();
+        Assert.assertTrue(ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(context));
+        doReturn(TabSwitcherType.SINGLE).when(mMainTabGridController).getTabSwitcherType();
+
+        Resources resources = context.getResources();
+        int tasksSurfaceBodyTopMarginWithTab =
+                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin);
+        int tasksSurfaceBodyTopMarginWithoutTab =
+                resources.getDimensionPixelSize(R.dimen.tile_grid_layout_bottom_margin);
+        int mvTilesContainerTopMargin =
+                resources.getDimensionPixelOffset(R.dimen.tile_grid_layout_top_margin)
+                + resources.getDimensionPixelOffset(R.dimen.ntp_search_box_bottom_margin);
+        int tabSwitcherTitleTopMargin =
+                resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
+        int singleTopMargin = resources.getDimensionPixelSize(
+                R.dimen.single_tab_view_top_margin_for_feed_improvement);
+
+        StartSurfaceMediator mediator =
+                createStartSurfaceMediatorWithoutInit(/* isStartSurfaceEnabled= */ true,
+                        /* hadWarmStart= */ false);
+        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+                equalTo(tasksSurfaceBodyTopMarginWithTab));
+        assertThat(mPropertyModel.get(MV_TILES_CONTAINER_TOP_MARGIN),
+                equalTo(mvTilesContainerTopMargin));
+        assertThat(mPropertyModel.get(TAB_SWITCHER_TITLE_TOP_MARGIN),
+                equalTo(tabSwitcherTitleTopMargin));
+        assertThat(mPropertyModel.get(SINGLE_TAB_TOP_MARGIN), equalTo(singleTopMargin));
+
+        // Tasks surface body top margin should be updated when tab carousel/single card visibility
+        // is changed.
+        doReturn(0).when(mNormalTabModel).getCount();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+        mediator.showOverview(false);
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(false));
+        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+                equalTo(tasksSurfaceBodyTopMarginWithoutTab));
+
+        doReturn(2).when(mNormalTabModel).getCount();
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWING_HOMEPAGE);
+        mediator.showOverview(false);
+        mediator.setStartSurfaceState(StartSurfaceState.SHOWN_HOMEPAGE);
+        assertThat(mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE), equalTo(true));
+        assertThat(mPropertyModel.get(TASKS_SURFACE_BODY_TOP_MARGIN),
+                equalTo(tasksSurfaceBodyTopMarginWithTab));
     }
 
     @Test
