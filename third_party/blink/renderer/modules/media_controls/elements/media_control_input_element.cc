@@ -84,6 +84,14 @@ HTMLElement* MediaControlInputElement::CreateOverflowElement(
   overflow_menu_container_->setAttribute(html_names::kAriaHiddenAttr, "true");
   aria_label_ = button->FastGetAttribute(html_names::kAriaLabelAttr) + " " +
                 button->GetOverflowMenuString();
+
+  // The button label along with the overflow menu string will be part of
+  // the aria-label for the overflow label element, so all information is
+  // already available to the screen reader. Additionally, invoking the
+  // overflow label element (it's a menuitem) will invoke the button so
+  // the button should be hidden from screenreaders.
+  button->setAttribute(html_names::kAriaHiddenAttr, "true");
+
   UpdateOverflowSubtitleElement(button->GetOverflowMenuSubtitleString());
   overflow_label_element_->ParserAppendChild(overflow_menu_container_);
 
