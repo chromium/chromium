@@ -817,6 +817,14 @@ bool TemplateURLService::IsSearchResultsPageFromDefaultSearchProvider(
       default_provider->IsSearchURL(url, search_terms_data());
 }
 
+GURL TemplateURLService::GenerateSearchURLForDefaultSearchProvider(
+    const std::u16string& search_terms) const {
+  const TemplateURL* default_provider = GetDefaultSearchProvider();
+  return default_provider ? default_provider->GenerateSearchURL(
+                                search_terms_data(), search_terms)
+                          : GURL();
+}
+
 bool TemplateURLService::IsSideSearchSupportedForDefaultSearchProvider() const {
   const TemplateURL* default_provider = GetDefaultSearchProvider();
   return default_provider && default_provider->IsSideSearchSupported();

@@ -852,9 +852,14 @@ class TemplateURL {
       std::u16string* encoded_terms,
       std::u16string* encoded_original_query) const;
 
-  // Returns the search url for this template URL.
+  // Returns the search url for this template URL and the optional search terms.
+  // Uses something obscure as the default value for the search terms argument
+  // so that in the rare case the term replaces the URL it's unlikely another
+  // keyword would have the same url.
   // Returns an empty GURL if this template URL has no url().
-  GURL GenerateSearchURL(const SearchTermsData& search_terms_data) const;
+  GURL GenerateSearchURL(
+      const SearchTermsData& search_terms_data,
+      const std::u16string& search_terms = u"blah.blah.blah.blah.blah") const;
 
   // Returns the suggest endpoint URL for this template URL.
   // Returns an empty GURL if this template URL has no suggestions_url().

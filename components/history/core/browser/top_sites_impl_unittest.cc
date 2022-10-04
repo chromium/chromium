@@ -202,13 +202,15 @@ class TopSitesImplTest : public HistoryUnitTestBase {
   // Adds a search results page to history.
   bool AddSearchResultsPageToHistory(const std::u16string& search_terms,
                                      GURL* url) {
-    bool success = GetSearchResultsPageForDefaultSearchProvider(
-        *default_search_provider(), template_url_service()->search_terms_data(),
-        search_terms, url);
+    *url = template_url_service()->GenerateSearchURLForDefaultSearchProvider(
+        search_terms);
+    if (!url->is_valid()) {
+      return false;
+    }
     AddPageToHistory(*url);
     history_service()->SetKeywordSearchTermsForURL(
         *url, default_search_provider()->id(), search_terms);
-    return success;
+    return true;
   }
 
   // Deletes a url.

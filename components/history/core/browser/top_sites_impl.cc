@@ -115,17 +115,6 @@ void RecordDBMetrics(const base::TimeTicks db_query_time,
 // Initially, histogram is not recorded.
 bool TopSitesImpl::histogram_recorded_ = false;
 
-bool GetSearchResultsPageForDefaultSearchProvider(
-    const TemplateURL& default_provider,
-    const SearchTermsData& search_terms_data,
-    const std::u16string& search_terms,
-    GURL* url) {
-  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
-  *url = GURL(default_provider.url_ref().ReplaceSearchTerms(search_terms_args,
-                                                            search_terms_data));
-  return url->is_valid();
-}
-
 TopSitesImpl::TopSitesImpl(PrefService* pref_service,
                            HistoryService* history_service,
                            TemplateURLService* template_url_service,
@@ -347,11 +336,9 @@ MostVisitedURLList TopSitesImpl::AddMostRepeatedQueries(
   history::GetMostRepeatedSearchTermsFromEnumerator(*enumerator, &search_terms);
   RecordDBMetrics(db_query_time, search_terms.size());
   for (const auto& search_term : search_terms) {
-    GURL url;
-    if (!GetSearchResultsPageForDefaultSearchProvider(
-            *default_provider, template_url_service_->search_terms_data(),
-            search_term->normalized_term, &url) ||
-        IsBlocked(url)) {
+    GURL url = template_url_service_->GenerateSearchURLForDefaultSearchProvider(
+        search_term->normalized_term);
+    if (!url.is_valid() || IsBlocked(url)) {
       continue;
     }
     repeatable_query_sites.emplace_back(url, search_term->normalized_term,

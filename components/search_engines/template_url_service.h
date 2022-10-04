@@ -308,6 +308,12 @@ class TemplateURLService : public WebDataServiceConsumer,
   // provider.
   bool IsSearchResultsPageFromDefaultSearchProvider(const GURL& url) const;
 
+  // Generates a search results page URL for the default search provider with
+  // the given search terms. Returns an empty GURL if the default search
+  // provider is not available.
+  GURL GenerateSearchURLForDefaultSearchProvider(
+      const std::u16string& search_terms) const;
+
   // Returns true if the default search provider supports the side search
   // feature.
   bool IsSideSearchSupportedForDefaultSearchProvider() const;

@@ -27,8 +27,6 @@
 
 class PrefRegistrySimple;
 class PrefService;
-class SearchTermsData;
-class TemplateURL;
 class TemplateURLService;
 
 namespace base {
@@ -41,14 +39,6 @@ class TopSitesImplTest;
 
 // How many top sites to store in the cache.
 static constexpr size_t kTopSitesNumber = 10;
-
-// Returns true if it can set |url| to a valid canonical search results page
-// URL for |default_provider| given the search terms.
-bool GetSearchResultsPageForDefaultSearchProvider(
-    const TemplateURL& default_provider,
-    const SearchTermsData& search_terms_data,
-    const std::u16string& search_terms,
-    GURL* url);
 
 // This class allows requests for most visited urls on any thread. All other
 // methods must be invoked on the UI thread. All mutations to internal state
