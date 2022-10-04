@@ -72,9 +72,9 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
     return;
   }
 
-  SpeechRecognitionRecognizerImpl::Create(
-      std::move(receiver), std::move(client), weak_factory_.GetWeakPtr(),
-      std::move(options), binary_path_, config_path_);
+  SpeechRecognitionRecognizerImpl::Create(std::move(receiver),
+                                          std::move(client), std::move(options),
+                                          binary_path_, config_path_);
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -103,8 +103,7 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(client), weak_factory_.GetWeakPtr(), std::move(options),
-          binary_path_, config_path_));
+          std::move(client), std::move(options), binary_path_, config_path_));
   std::move(callback).Run(
       SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }

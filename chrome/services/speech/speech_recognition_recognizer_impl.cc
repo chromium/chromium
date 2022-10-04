@@ -124,14 +124,12 @@ SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
 void SpeechRecognitionRecognizerImpl::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
-    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<SpeechRecognitionRecognizerImpl>(
-          std::move(remote), std::move(speech_recognition_service_impl),
-          std::move(options), binary_path, config_path),
+          std::move(remote), std::move(options), binary_path, config_path),
       std::move(receiver));
 }
 
@@ -174,7 +172,6 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionStoppedCallback() {
 
 SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
-    base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
     media::mojom::SpeechRecognitionOptionsPtr options,
     const base::FilePath& binary_path,
     const base::FilePath& config_path)

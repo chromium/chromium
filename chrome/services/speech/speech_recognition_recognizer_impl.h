@@ -20,7 +20,6 @@ class SodaClient;
 }  // namespace soda
 
 namespace speech {
-class SpeechRecognitionServiceImpl;
 
 class SpeechRecognitionRecognizerImpl
     : public media::mojom::SpeechRecognitionRecognizer {
@@ -37,8 +36,6 @@ class SpeechRecognitionRecognizerImpl
   SpeechRecognitionRecognizerImpl(
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
-      base::WeakPtr<SpeechRecognitionServiceImpl>
-          speech_recognition_service_impl,
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);
@@ -57,8 +54,6 @@ class SpeechRecognitionRecognizerImpl
       mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer> receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
-      base::WeakPtr<SpeechRecognitionServiceImpl>
-          speech_recognition_service_impl,
       media::mojom::SpeechRecognitionOptionsPtr options,
       const base::FilePath& binary_path,
       const base::FilePath& config_path);

@@ -83,9 +83,8 @@ void CrosSpeechRecognitionService::BindRecognizer(
                     languagepack_path);
 
   CrosSpeechRecognitionRecognizerImpl::Create(
-      std::move(receiver), std::move(client),
-      nullptr /* =SpeechRecognitionService WeakPtr*/, std::move(options),
-      binary_path, languagepack_path);
+      std::move(receiver), std::move(client), std::move(options), binary_path,
+      languagepack_path);
   std::move(callback).Run(
       CrosSpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
@@ -133,8 +132,8 @@ void CrosSpeechRecognitionService::CreateAudioSourceFetcherOnIOThread(
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
-          std::move(client), nullptr /* =SpeechRecognitionService WeakPtr*/,
-          std::move(options), binary_path, languagepack_path));
+          std::move(client), std::move(options), binary_path,
+          languagepack_path));
 }
 
 }  // namespace speech
