@@ -472,8 +472,8 @@ int main(int argc, char** argv) {
   bool use_legacy = false;
   bool use_vd_vda = false;
   bool linear_output = false;
-  std::vector<base::Feature> disabled_features;
-  std::vector<base::Feature> enabled_features;
+  std::vector<base::test::FeatureRef> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
 
 #if defined(ARCH_CPU_ARM_FAMILY)
   enabled_features.push_back(media::kPreferLibYuvImageProcessor);

@@ -26,8 +26,8 @@ namespace test {
 VideoTestEnvironment::VideoTestEnvironment() : VideoTestEnvironment({}, {}) {}
 
 VideoTestEnvironment::VideoTestEnvironment(
-    const std::vector<base::Feature>& enabled_features,
-    const std::vector<base::Feature>& disabled_features) {
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features) {
   // Using shared memory requires mojo to be initialized (crbug.com/849207).
   mojo::core::Init();
 

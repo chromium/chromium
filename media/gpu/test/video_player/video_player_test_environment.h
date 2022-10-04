@@ -36,8 +36,8 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
       bool linear_output,
       const base::FilePath& output_folder = base::FilePath(),
       const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
-      const std::vector<base::Feature>& enabled_features = {},
-      const std::vector<base::Feature>& disabled_features = {});
+      const std::vector<base::test::FeatureRef>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features = {});
   ~VideoPlayerTestEnvironment() override;
 
   // Get the video the tests will be ran on.
@@ -68,8 +68,8 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
       bool linear_output,
       const base::FilePath& output_folder,
       const FrameOutputConfig& frame_output_config,
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features);
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
 
   const std::unique_ptr<media::test::Video> video_;
   const ValidatorType validator_type_;

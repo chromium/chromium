@@ -51,8 +51,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       Bitrate::Mode bitrate_mode,
       bool reverse,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
-      const std::vector<base::Feature>& enabled_features = {},
-      const std::vector<base::Feature>& disabled_features = {});
+      const std::vector<base::test::FeatureRef>& enabled_features = {},
+      const std::vector<base::test::FeatureRef>& disabled_features = {});
 
   ~VideoEncoderTestEnvironment() override;
 
@@ -103,8 +103,8 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       bool save_output_bitstream,
       bool reverse,
       const FrameOutputConfig& frame_output_config,
-      const std::vector<base::Feature>& enabled_features,
-      const std::vector<base::Feature>& disabled_features);
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
 
   // Video file to be used for testing.
   const std::unique_ptr<media::test::Video> video_;

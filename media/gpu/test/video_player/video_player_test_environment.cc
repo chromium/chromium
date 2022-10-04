@@ -32,8 +32,8 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
     bool linear_output,
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config,
-    const std::vector<base::Feature>& enabled_features,
-    const std::vector<base::Feature>& disabled_features) {
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features) {
   auto video = std::make_unique<media::test::Video>(
       video_path.empty() ? base::FilePath(kDefaultTestVideoPath) : video_path,
       video_metadata_path);
@@ -44,9 +44,11 @@ VideoPlayerTestEnvironment* VideoPlayerTestEnvironment::Create(
 
   // TODO(b/182008564) Add checks to make sure no features are duplicated, and
   // there is no intersection between the enabled and disabled set.
-  std::vector<base::Feature> combined_enabled_features(enabled_features);
+  std::vector<base::test::FeatureRef> combined_enabled_features(
+      enabled_features);
   combined_enabled_features.push_back(media::kVp9kSVCHWDecoding);
-  std::vector<base::Feature> combined_disabled_features(disabled_features);
+  std::vector<base::test::FeatureRef> combined_disabled_features(
+      disabled_features);
 #if BUILDFLAG(USE_VAAPI)
   // TODO(b/172217032): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiAV1Decoder);
@@ -71,8 +73,8 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
     bool linear_output,
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config,
-    const std::vector<base::Feature>& enabled_features,
-    const std::vector<base::Feature>& disabled_features)
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features)
     : VideoTestEnvironment(enabled_features, disabled_features),
       video_(std::move(video)),
       validator_type_(validator_type),

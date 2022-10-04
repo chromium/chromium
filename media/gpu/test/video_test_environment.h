@@ -50,8 +50,9 @@ class VideoTestEnvironment : public ::testing::Environment {
  public:
   VideoTestEnvironment();
   // Features are overridden by given features in this environment.
-  VideoTestEnvironment(const std::vector<base::Feature>& enabled_features,
-                       const std::vector<base::Feature>& disabled_features);
+  VideoTestEnvironment(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features);
   virtual ~VideoTestEnvironment();
 
   // ::testing::Environment implementation.

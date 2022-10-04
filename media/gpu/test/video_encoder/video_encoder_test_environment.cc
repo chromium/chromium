@@ -100,8 +100,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     Bitrate::Mode bitrate_mode,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
-    const std::vector<base::Feature>& enabled_features,
-    const std::vector<base::Feature>& disabled_features) {
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features) {
   if (video_path.empty()) {
     LOG(ERROR) << "No video specified";
     return nullptr;
@@ -147,8 +147,10 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 
   // TODO(b/182008564) Add checks to make sure no features are duplicated, and
   // there is no intersection between the enabled and disabled set.
-  std::vector<base::Feature> combined_enabled_features(enabled_features);
-  std::vector<base::Feature> combined_disabled_features(disabled_features);
+  std::vector<base::test::FeatureRef> combined_enabled_features(
+      enabled_features);
+  std::vector<base::test::FeatureRef> combined_disabled_features(
+      disabled_features);
   combined_disabled_features.push_back(media::kFFmpegDecodeOpaqueVP8);
 #if BUILDFLAG(USE_VAAPI)
   // TODO(crbug.com/828482): remove once enabled by default.
@@ -208,8 +210,8 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
     bool save_output_bitstream,
     bool reverse,
     const FrameOutputConfig& frame_output_config,
-    const std::vector<base::Feature>& enabled_features,
-    const std::vector<base::Feature>& disabled_features)
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features)
     : VideoTestEnvironment(enabled_features, disabled_features),
       video_(std::move(video)),
       enable_bitstream_validator_(enable_bitstream_validator),
