@@ -86,8 +86,8 @@ class HotseatWidgetTest
     if (is_assistant_enabled_)
       assistant_test_api_ = AssistantTestApi::Create();
 
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (navigation_buttons_shown_in_tablet_mode_) {
       disabled_features.push_back(features::kHideShelfControlsInTabletMode);

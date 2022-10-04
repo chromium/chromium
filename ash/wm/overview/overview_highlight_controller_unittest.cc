@@ -83,7 +83,7 @@ class OverviewHighlightControllerTest
 
   // OverviewTestBase:
   void SetUp() override {
-    std::vector<base::Feature> enabled_features, disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
     if (IsDesksTemplatesEnabled())
       enabled_features.push_back(features::kDesksTemplates);
     else

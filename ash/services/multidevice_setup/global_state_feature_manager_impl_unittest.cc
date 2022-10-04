@@ -245,8 +245,8 @@ class MultiDeviceSetupGlobalStateFeatureManagerImplTest
   }
 
   void SetFeatureFlags(bool use_v1_devicesync, bool enable_feature_flag) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     // These flags have no direct effect of on the GlobalStateFeatureManager;
     // however, v2 Enrollment and DeviceSync must be enabled before v1

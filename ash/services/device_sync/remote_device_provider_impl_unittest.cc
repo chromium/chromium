@@ -268,8 +268,8 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
   void SetFeatureFlags(bool use_v1, bool use_v2) {
     ASSERT_TRUE(use_v1 || use_v2);
 
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     // This flag has no direct effect of on the RemoteDeviceProvider; however,
     // v2 Enrollment is a prerequisite for v2 DeviceSync.

@@ -76,7 +76,7 @@ class UnifiedSystemInfoViewTest
     // Enable/disable of the two features we care about is conditional on the
     // passed-in parameter.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    std::vector<base::Feature> enabled_features, disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
     if (IsManagedDeviceUIRedesignEnabled())
       enabled_features.push_back(features::kManagedDeviceUIRedesign);
     else

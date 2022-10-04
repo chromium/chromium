@@ -833,9 +833,7 @@ TEST_F(DockedMagnifierTest, TransformSimple) {
 // Tests resizing docked magnifier by dragging the separator.
 TEST_F(DockedMagnifierTest, ResizeDockedMagnifier) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      std::vector<base::Feature>{::features::kDockedMagnifierResizing},
-      std::vector<base::Feature>{});
+  features.InitWithFeatures({::features::kDockedMagnifierResizing}, {});
 
   UpdateDisplay("800x600");
   const auto root_windows = Shell::GetAllRootWindows();
@@ -869,9 +867,7 @@ TEST_F(DockedMagnifierTest, ResizeDockedMagnifier) {
 // Tests to verify dragging above separator does not resize docked magnifier.
 TEST_F(DockedMagnifierTest, DragAboveSeparatorDoesNotResizeDockedMagnifier) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      std::vector<base::Feature>{::features::kDockedMagnifierResizing},
-      std::vector<base::Feature>{});
+  features.InitWithFeatures({::features::kDockedMagnifierResizing}, {});
 
   UpdateDisplay("800x600");
   const auto root_windows = Shell::GetAllRootWindows();

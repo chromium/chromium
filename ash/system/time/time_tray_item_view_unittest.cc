@@ -21,8 +21,8 @@ class TimeTrayItemViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    std::vector<base::Feature> features = {features::kScalableStatusArea,
-                                           features::kCalendarView};
+    std::vector<base::test::FeatureRef> features = {
+        features::kScalableStatusArea, features::kCalendarView};
     if (IsCalendarViewEnabled())
       scoped_feature_list_.InitWithFeatures(features, {});
     else

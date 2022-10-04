@@ -3485,8 +3485,8 @@ class HoldingSpaceTraySuggestionsFeatureTest
           /*suggestions_enabled=*/bool>> {
  public:
   HoldingSpaceTraySuggestionsFeatureTest() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     (IsHoldingSpacePredictabilityEnabled() ? enabled_features
                                            : disabled_features)

@@ -718,8 +718,8 @@ class DeviceSyncServiceTest
   ~DeviceSyncServiceTest() override = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     // Choose between v1 and v2 Enrollment infrastructure based on the first
     // parameter provided by ::testing::TestWithParam<std::tuple<bool, bool,

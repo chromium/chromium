@@ -250,8 +250,8 @@ class MultiDeviceSetupHostVerifierImplTest
         break;
     }
 
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     // These flags have no direct effect; however, v2 Enrollment and v2
     // DeviceSync are prerequisites for disabling v1 DeviceSync.
