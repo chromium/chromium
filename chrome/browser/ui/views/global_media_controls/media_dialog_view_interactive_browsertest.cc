@@ -1124,7 +1124,7 @@ class MediaDialogViewWithBackForwardCacheBrowserTest
         features::kBackForwardCacheMediaSessionService,
         std::map<std::string, std::string>{});
 
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         features::kBackForwardCacheMemoryControls,
     };
 

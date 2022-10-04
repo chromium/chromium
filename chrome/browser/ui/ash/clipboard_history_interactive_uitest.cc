@@ -41,7 +41,7 @@ const std::list<ash::ClipboardHistoryItem>& GetClipboardItems() {
 class ClipboardHistoryWebContentsInteractiveTest : public InProcessBrowserTest {
  public:
   ClipboardHistoryWebContentsInteractiveTest() {
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kClipboardHistoryReorder};
     feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
   }

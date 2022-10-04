@@ -124,9 +124,9 @@ class SearchResultRankerTest : public testing::Test {
 
   void EnableOneFeature(const base::Feature& feature,
                         const std::map<std::string, std::string>& params = {}) {
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     for (const auto& f : all_feature_flags_) {
-      if (f.name != feature.name)
+      if (f->name != feature.name)
         disabled.push_back(f);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters({{feature, params}},
@@ -167,7 +167,7 @@ class SearchResultRankerTest : public testing::Test {
  private:
   // All the relevant feature flags for the SearchResultRanker. New experiments
   // should add their flag here.
-  std::vector<base::Feature> all_feature_flags_ = {
+  std::vector<base::test::FeatureRef> all_feature_flags_ = {
       app_list_features::kEnableAppRanker,
       app_list_features::kEnableZeroStateMixedTypesRanker};
 };

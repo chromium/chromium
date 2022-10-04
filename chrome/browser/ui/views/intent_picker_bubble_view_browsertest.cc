@@ -33,7 +33,7 @@ class IntentPickerBubbleViewBrowserTest
       public ::testing::WithParamInterface<std::string> {
  public:
   IntentPickerBubbleViewBrowserTest() {
-    auto disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         // TODO(schenney): Stop disabling Paint Holding. crbug.com/1001189
         blink::features::kPaintHolding,
         // TODO(crbug.com/1357905): Run relevant tests against the updated UI.

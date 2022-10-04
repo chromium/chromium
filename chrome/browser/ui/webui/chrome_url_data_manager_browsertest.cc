@@ -148,7 +148,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
       public testing::WithParamInterface<const char*> {
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
-    std::vector<base::Feature> enabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
 #if !BUILDFLAG(IS_CHROMEOS)
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);

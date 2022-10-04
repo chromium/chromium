@@ -350,7 +350,7 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
  public:
   explicit ProfilePickerCreationFlowBrowserTest(
       bool local_profile_creation_dialog_enabled) {
-    std::vector<base::Feature> enabled_features = {
+    std::vector<base::test::FeatureRef> enabled_features = {
         feature_engagement::kIPHProfileSwitchFeature};
     if (local_profile_creation_dialog_enabled) {
       enabled_features.push_back(kSyncPromoAfterSigninIntercept);

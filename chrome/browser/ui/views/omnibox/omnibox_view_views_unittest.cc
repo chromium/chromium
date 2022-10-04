@@ -300,7 +300,7 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
  public:
   OmniboxViewViewsTestBase(
       const std::vector<FeatureAndParams>& enabled_features,
-      const std::vector<base::Feature>& disabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features,
       bool is_rtl_ui_test = false) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
@@ -313,13 +313,14 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
 
 class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
  public:
-  OmniboxViewViewsTest(const std::vector<FeatureAndParams>& enabled_features,
-                       const std::vector<base::Feature>& disabled_features,
-                       bool is_rtl_ui_test = false);
+  OmniboxViewViewsTest(
+      const std::vector<FeatureAndParams>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features,
+      bool is_rtl_ui_test = false);
 
   OmniboxViewViewsTest()
       : OmniboxViewViewsTest(std::vector<FeatureAndParams>(),
-                             std::vector<base::Feature>()) {}
+                             std::vector<base::test::FeatureRef>()) {}
   OmniboxViewViewsTest(const OmniboxViewViewsTest&) = delete;
   OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
 
@@ -396,7 +397,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
 
 OmniboxViewViewsTest::OmniboxViewViewsTest(
     const std::vector<FeatureAndParams>& enabled_features,
-    const std::vector<base::Feature>& disabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features,
     bool is_rtl_ui_test)
     : OmniboxViewViewsTestBase(enabled_features,
                                disabled_features,

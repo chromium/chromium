@@ -783,8 +783,8 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
  public:
   HoldingSpaceKeyedServiceLacrosBrowserTest()
       : HoldingSpaceKeyedServiceBrowserTest(std::get<0>(GetParam())) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
   }

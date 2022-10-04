@@ -323,8 +323,9 @@ class MultideviceHandlerTest : public testing::Test {
     handler_->AllowJavascript();
   }
 
-  void InitWithFeatures(const std::vector<base::Feature>& enabled_features,
-                        const std::vector<base::Feature>& disabled_features) {
+  void InitWithFeatures(
+      const std::vector<base::test::FeatureRef>& enabled_features,
+      const std::vector<base::test::FeatureRef>& disabled_features) {
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 

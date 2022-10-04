@@ -549,8 +549,8 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
                      /*enable_suggestion=*/bool>> {
  public:
   HoldingSpaceKeyedServiceWithExperimentalFeatureTest() {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
     if (std::get<0>(GetParam())) {
       enabled_features.push_back(features::kHoldingSpacePredictability);
     } else {

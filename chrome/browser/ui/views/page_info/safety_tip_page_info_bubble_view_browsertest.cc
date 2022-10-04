@@ -262,7 +262,7 @@ class SafetyTipPageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 
     if (digital_asset_links_enabled()) {
       enabled_features.emplace_back(

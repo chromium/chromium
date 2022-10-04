@@ -454,8 +454,8 @@ class DetachToBrowserTabDragControllerTest
   DetachToBrowserTabDragControllerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/std::get<0>(GetParam())
-            ? std::vector<base::Feature>{features::kSplitTabStrip}
-            : std::vector<base::Feature>{},
+            ? std::vector<base::test::FeatureRef>{features::kSplitTabStrip}
+            : std::vector<base::test::FeatureRef>{},
         /*disabled_features=*/{
           features::kWebUITabStrip,
 #if BUILDFLAG(IS_WIN)

@@ -44,9 +44,9 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
 class ProfileCustomizationBrowserTest : public DialogBrowserTest {
  public:
   explicit ProfileCustomizationBrowserTest(bool dialog_enabled) {
-    std::vector<base::Feature> enabled_features = {
+    std::vector<base::test::FeatureRef> enabled_features = {
         feature_engagement::kIPHProfileSwitchFeature};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (dialog_enabled) {
       enabled_features.push_back(kSyncPromoAfterSigninIntercept);
     } else {

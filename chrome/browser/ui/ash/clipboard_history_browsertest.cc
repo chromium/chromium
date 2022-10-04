@@ -203,7 +203,7 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ClipboardHistoryBrowserTest() {
     login_mixin_.AppendRegularUsers(1);
     account_id1_ = login_mixin_.users()[0].account_id;
-    std::vector<base::Feature> disabled_features = {
+    std::vector<base::test::FeatureRef> disabled_features = {
         ash::features::kClipboardHistoryReorder};
     feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
   }
@@ -915,7 +915,7 @@ class ClipboardHistoryReorderBrowserTest
                      bool /* paste_plain_text */>> {
  public:
   ClipboardHistoryReorderBrowserTest() {
-    std::vector<base::Feature> enabled_features, disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
     (ClipboardHistoryReorderEnabled() ? enabled_features : disabled_features)
         .push_back(ash::features::kClipboardHistoryReorder);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
