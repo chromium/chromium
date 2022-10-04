@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/linux/pkg_config.gni")
-import("//build/config/sysroot.gni")
 import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
@@ -10,11 +9,7 @@ import("//tools/generate_stubs/rules.gni")
 # This should be open to both system and non - system libwayland as wayland_stubs
 # also uses this.
 wayland_protocol("wayland_protocol_c") {
-  if (use_system_libwayland_client) {
-    sources = [ "${sysroot}/usr/share/wayland/wayland.xml" ]
-  } else {
-    sources = [ "src/protocol/wayland.xml" ]
-  }
+  sources = [ "src/protocol/wayland.xml" ]
   code_marshalling = true
 }
 
