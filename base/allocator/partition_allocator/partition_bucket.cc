@@ -601,7 +601,7 @@ void PartitionBucket<thread_safe>::Init(uint32_t new_slot_size) {
   slot_size = new_slot_size;
   slot_size_reciprocal = kReciprocalMask / new_slot_size + 1;
   active_slot_spans_head =
-      SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
+      SlotSpanMetadata<thread_safe>::get_sentinel_slot_span_non_const();
   empty_slot_spans_head = nullptr;
   decommitted_slot_spans_head = nullptr;
   num_full_slot_spans = 0;
@@ -1170,7 +1170,7 @@ bool PartitionBucket<thread_safe>::SetNewActiveSlotSpan() {
   } else {
     // Active list is now empty.
     active_slot_spans_head =
-        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
+        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span_non_const();
   }
 
   return usable_active_list_head;
@@ -1218,7 +1218,7 @@ void PartitionBucket<thread_safe>::MaintainActiveList() {
 
   if (!new_active_slot_spans_head) {
     new_active_slot_spans_head =
-        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span();
+        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span_non_const();
   }
   active_slot_spans_head = new_active_slot_spans_head;
 }
@@ -1317,7 +1317,13 @@ void PartitionBucket<thread_safe>::SortActiveSlotSpans() {
 
   // Reverse order, since we insert at the head of the list.
   for (int i = index - 1; i >= 0; i--) {
-    active_spans_array[i]->next_slot_span = active_slot_spans_head;
+    if (active_spans_array[i] ==
+        SlotSpanMetadata<thread_safe>::get_sentinel_slot_span()) {
+      // The sentinel is const, don't try to write to it.
+      PA_DCHECK(active_slot_spans_head == nullptr);
+    } else {
+      active_spans_array[i]->next_slot_span = active_slot_spans_head;
+    }
     active_slot_spans_head = active_spans_array[i];
   }
 }

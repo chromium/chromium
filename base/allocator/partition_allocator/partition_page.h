@@ -296,7 +296,13 @@ struct SlotSpanMetadata {
 
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153
   PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-  static SlotSpanMetadata* get_sentinel_slot_span();
+  static const SlotSpanMetadata* get_sentinel_slot_span();
+  // The sentinel is not supposed to be modified and hence we mark it as const
+  // under the hood. However, we often store it together with mutable metadata
+  // objects and need a non-const pointer.
+  // You can use this function for this case, but you need to ensure that the
+  // returned object will not be written to.
+  static SlotSpanMetadata* get_sentinel_slot_span_non_const();
 
   // Slot span state getters.
   PA_ALWAYS_INLINE bool is_active() const;
@@ -316,7 +322,7 @@ struct SlotSpanMetadata {
   //
   // Note, this declaration is kept in the header as opposed to an anonymous
   // namespace so the getter can be fully inlined.
-  static SlotSpanMetadata sentinel_slot_span_;
+  static const SlotSpanMetadata sentinel_slot_span_;
   // For the sentinel.
   constexpr SlotSpanMetadata() noexcept
       : marked_full(0),

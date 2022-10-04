@@ -137,14 +137,21 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::RegisterEmpty() {
 }
 // static
 template <bool thread_safe>
-SlotSpanMetadata<thread_safe>
+const SlotSpanMetadata<thread_safe>
     SlotSpanMetadata<thread_safe>::sentinel_slot_span_;
 
 // static
 template <bool thread_safe>
-SlotSpanMetadata<thread_safe>*
+const SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::get_sentinel_slot_span() {
   return &sentinel_slot_span_;
+}
+
+// static
+template <bool thread_safe>
+SlotSpanMetadata<thread_safe>*
+SlotSpanMetadata<thread_safe>::get_sentinel_slot_span_non_const() {
+  return const_cast<SlotSpanMetadata<thread_safe>*>(&sentinel_slot_span_);
 }
 
 template <bool thread_safe>
