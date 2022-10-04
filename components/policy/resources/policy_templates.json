@@ -14259,6 +14259,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable audio input',
+        },
+        {
+          'value': False,
+          'caption': 'Disable audio input',
+        },
+      ],
       'example_value': False,
       'id': 160,
       'caption': '''Allow or deny audio capture''',
@@ -14303,6 +14313,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable video input',
+        },
+        {
+          'value': False,
+          'caption': 'Disable video input',
+        },
+      ],
       'example_value': False,
       'id': 167,
       'caption': '''Allow or deny video capture''',
@@ -14346,6 +14366,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Do not allow users to take screenshots or video recordings',
+        },
+        {
+          'value': False,
+          'caption': 'Allow users to take screenshots and video recordings',
+        },
+      ],
       'example_value': True,
       'id': 153,
       'caption': '''Disable taking screenshots''',
@@ -14382,7 +14412,22 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': '24 hour clock format',
+        },
+        {
+          'value': False,
+          'caption': '12 hour clock format',
+        },
+        {
+          'value': None,
+          'caption': 'Automatic based on current language',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 236,
       'caption': '''Use 24 hour clock by default''',
       'tags': [],
@@ -14404,7 +14449,22 @@
         'dynamic_refresh': True,
         'per_profile': True
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable on-screen keyboard',
+        },
+        {
+          'value': False,
+          'caption': 'Disable on-screen keyboard',
+        },
+        {
+          'value': None,
+          'caption': 'Enable on-screen keyboard in tablet mode',
+        },
+      ],
       'example_value': False,
+      'default': None,
       'id': 269,
       'caption': '''Enable virtual keyboard''',
       'tags': [],
@@ -14431,6 +14491,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show logout button in tray',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show logout button in tray',
+        },
+      ],
       'example_value': True,
       'id': 164,
       'caption': '''Add a logout button to the system tray''',
@@ -14454,7 +14524,22 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always use the built-in DNS client if available',
+        },
+        {
+          'value': False,
+          'caption': 'Never use the built-in DNS client',
+        },
+        {
+          'value': None,
+          'caption': 'Use the built-in DNS client on macOS, Android and ChromeOS',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 165,
       'caption': '''Use built-in DNS client''',
       'tags': [],
@@ -14819,6 +14904,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show the floating accessibility menu in kiosk mode',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show the floating accessibility menu in kiosk mode',
+        },
+      ],
       'example_value': True,
       'id': 691,
       'caption': '''Enables the floating accessibility menu''',
@@ -14884,6 +14979,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow fullscreen mode',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow fullscreen mode',
+        },
+      ],
       'example_value': True,
       'id': 240,
       'caption': '''Allow fullscreen mode''',
@@ -15463,6 +15568,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Do not consider the user as idle while audio plays',
+        },
+        {
+          'value': False,
+          'caption': 'Consider the user as idle while audio plays',
+        },
+      ],
       'example_value': True,
       'id': 182,
       'caption': '''Specify whether audio activity affects power management''',
