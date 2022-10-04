@@ -405,7 +405,7 @@ class SearchPrefetchServiceEnabledBrowserTest
                              {{"max_attempts_per_caching_duration", "3"},
                               {"cache_size", "1"},
                               {"device_memory_threshold_MB", "0"}}}};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
     if (BlockOnHeadersEnabled()) {
       enabled_features.push_back({kSearchPrefetchBlockBeforeHeaders, {}});
     } else {
@@ -3382,7 +3382,7 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
                               {"cache_size", "1"},
                               {"device_memory_threshold_MB", "0"}}},
                             {kSearchNavigationPrefetch, {}}};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -3677,7 +3677,7 @@ class SearchNavigationPrefetchHoldbackBrowserTest
                               {"device_memory_threshold_MB", "0"},
                               {"prefetch_holdback", "true"}}},
                             {kSearchNavigationPrefetch, {{}}}};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -3780,7 +3780,7 @@ class SearchNavigationPrefetchNoCancelBrowserTest
                               {"device_memory_threshold_MB", "0"}}},
                             {kSearchPrefetchSkipsCancel, {}},
                             {kSearchNavigationPrefetch, {{}}}};
-    std::vector<base::Feature> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
