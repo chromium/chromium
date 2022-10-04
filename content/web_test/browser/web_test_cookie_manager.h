@@ -27,6 +27,13 @@ class WebTestCookieManager
   void DeleteAllCookies(
       blink::test::mojom::CookieManagerAutomation::DeleteAllCookiesCallback)
       override;
+  void GetAllCookies(
+      blink::test::mojom::CookieManagerAutomation::GetAllCookiesCallback)
+      override;
+  void GetNamedCookie(
+      const std::string& name,
+      blink::test::mojom::CookieManagerAutomation::GetNamedCookieCallback)
+      override;
 
  private:
   const raw_ptr<network::mojom::CookieManager> cookie_manager_;

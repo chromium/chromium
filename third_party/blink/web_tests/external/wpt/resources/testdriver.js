@@ -185,6 +185,38 @@
         },
 
         /**
+         * Get details for all cookies in the current context.
+         * See https://w3c.github.io/webdriver/#get-all-cookies
+         *
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Returns an array of cookies objects as defined in the spec:
+         *                    https://w3c.github.io/webdriver/#cookies
+         */
+         get_all_cookies: function(context=null) {
+            return window.test_driver_internal.get_all_cookies(context);
+        },
+
+        /**
+         * Get details for a cookie in the current context by name if it exists.
+         * See https://w3c.github.io/webdriver/#get-named-cookie
+         *
+         * @param {String} name - The name of the cookie to get.
+         * @param {WindowProxy} context - Browsing context in which
+         *                                to run the call, or null for the current
+         *                                browsing context.
+         *
+         * @returns {Promise} Returns null if no such cookie exists or
+         *                    the matching cookie object as defined in the spec:
+         *                    https://w3c.github.io/webdriver/#cookies
+         */
+         get_named_cookie: function(name, context=null) {
+            return window.test_driver_internal.get_named_cookie(name, context);
+        },
+
+        /**
          * Send keys to an element.
          *
          * If ``element`` isn't inside the
@@ -634,6 +666,14 @@
         },
 
         delete_all_cookies: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        get_all_cookies: function(context=null) {
+            return Promise.reject(new Error("unimplemented"));
+        },
+
+        delete_named_cookie: function(name, context=null) {
             return Promise.reject(new Error("unimplemented"));
         },
 

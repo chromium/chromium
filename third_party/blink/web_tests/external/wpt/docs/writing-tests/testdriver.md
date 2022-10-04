@@ -50,6 +50,8 @@ the global scope.
 ### Cookies ###
 ```eval_rst
 .. js:autofunction:: test_driver.delete_all_cookies
+.. js:autofunction:: test_driver.get_all_cookies
+.. js:autofunction:: test_driver.get_named_cookie
 ```
 
 ### Permissions ###

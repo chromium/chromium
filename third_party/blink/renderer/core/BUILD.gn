@@ -467,8 +467,14 @@ source_set("testing") {
     "testing/internal_settings.h",
     "testing/internals.cc",
     "testing/internals.h",
+    "testing/internals_cookies.cc",
+    "testing/internals_cookies.h",
     "testing/internals_delete_all_cookies.cc",
     "testing/internals_delete_all_cookies.h",
+    "testing/internals_get_all_cookies.cc",
+    "testing/internals_get_all_cookies.h",
+    "testing/internals_get_named_cookie.cc",
+    "testing/internals_get_named_cookie.h",
     "testing/intersection_observer_test_helper.h",
     "testing/mock_clipboard_host.cc",
     "testing/mock_clipboard_host.h",
@@ -1681,7 +1687,8 @@ fuzzer_test("attribution_source_registration_fuzzer") {
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
     "//third_party/libprotobuf-mutator",
   ]
-  seed_corpus = "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus"
+  seed_corpus =
+      "//testing/libfuzzer/fuzzers/attribution_source_registration_corpus"
 }
 
 fuzzer_test("attribution_trigger_registration_fuzzer") {

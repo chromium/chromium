@@ -445,6 +445,14 @@
     return internals.deleteAllCookies();
   }
 
+  window.test_driver_internal.get_all_cookies = function() {
+    return internals.getAllCookies();
+  }
+
+  window.test_driver_internal.get_named_cookie = function(name) {
+    return internals.getNamedCookie(name);
+  }
+
   window.test_driver_internal.minimize_window = async () => {
     window.testRunner.setMainWindowHidden(true);
     // Wait until the new state is reflected in the document
