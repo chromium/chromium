@@ -611,11 +611,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     private void ensureFooters(
             @State int buttonState, boolean canLoadMore, HistoryClustersResult result) {
-        mMoreProgressItem.model.set(
-                HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
         boolean showVerticallyCentered = buttonState == State.LOADING && !mIsScrollToLoadDisabled;
-        mMoreProgressItem.model.set(
-                HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED, showVerticallyCentered);
         boolean shouldShowLoadIndicator =
                 (buttonState == State.BUTTON && canLoadMore && mIsScrollToLoadDisabled)
                 || buttonState == State.LOADING;
@@ -627,6 +623,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         if (shouldShowLoadIndicator) {
             mModelList.add(mMoreProgressItem);
+            mMoreProgressItem.model.set(
+                    HistoryClustersItemProperties.SHOW_VERTICALLY_CENTERED, showVerticallyCentered);
+            mMoreProgressItem.model.set(
+                    HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
         }
 
         boolean emptyTextShowing = mModelList.indexOf(mEmptyTextListItem) != -1;
