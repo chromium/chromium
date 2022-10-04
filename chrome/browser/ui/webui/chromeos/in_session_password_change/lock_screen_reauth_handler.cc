@@ -288,8 +288,8 @@ void LockScreenReauthHandler::HandleCompleteAuthentication(
   user_context_ = std::make_unique<UserContext>();
   if (!login::BuildUserContextForGaiaSignIn(
           login::GetUsertypeFromServicesString(services),
-          user_manager::known_user::GetAccountId(email, gaia_id,
-                                                 AccountType::GOOGLE),
+          AccountId::FromUserEmailGaiaId(gaia::CanonicalizeEmail(email),
+                                         gaia_id),
           using_saml, false /* using_saml_api */, password,
           SamlPasswordAttributes::FromJs(password_attributes),
           /*sync_trusted_vault_keys=*/absl::nullopt,
