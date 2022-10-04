@@ -435,27 +435,28 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
   if (result.is_new_entry)
     return;
 
+  // If this is a fragment of the existing |LayoutObject|, unite the rect.
   DCHECK(result.stored_value->value);
   NGLogicalAnchorReference& existing = *result.stored_value->value;
   const LayoutObject* existing_object = existing.fragment->GetLayoutObject();
   DCHECK(existing_object);
   const LayoutObject* new_object = reference->fragment->GetLayoutObject();
   DCHECK(new_object);
-  if (existing_object != new_object) {
-    if (!reference->is_invalid && !existing.is_invalid) {
-      // If both new and existing values are valid, ignore the new value. This
-      // logic assumes the callers call this function in the correct order.
-      DCHECK(existing_object->IsBeforeInPreOrder(*new_object));
-      return;
-    }
-    // When out-of-flow objects are involved, callers can't guarantee the call
-    // order. Insert into the list in the tree order.
-    reference->InsertInPreOrderInto(&result.stored_value->value);
+  if (existing_object == new_object) {
+    existing.rect.Unite(reference->rect);
     return;
   }
 
-  // If this is a fragment from the same |LayoutObject|, unite the rect.
-  existing.rect.Unite(reference->rect);
+  // Ignore the new value if both new and existing values are valid. This logic
+  // assumes the callers call this function in the correct order.
+  if (!reference->is_invalid && !existing.is_invalid) {
+    DCHECK(existing_object->IsBeforeInPreOrder(*new_object));
+    return;
+  }
+
+  // When out-of-flow objects are involved, callers can't guarantee the call
+  // order. Insert into the list in the tree order.
+  reference->InsertInPreOrderInto(&result.stored_value->value);
 }
 
 void NGPhysicalAnchorQuery::SetFromLogical(
