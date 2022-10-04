@@ -945,6 +945,24 @@
             ]
         }
     ],
+    "AutofillAssistantNiuEaadharDownloadInChromeTriggering": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "json_parameters": "\n        {\n          \"intent\":\"NIU_ID_DOWNLOAD\",\n          \"heuristics\":[\n           {\n            \"conditionSet\":{\n              \"urlMatches\":\"https://myaadhaar.uidai.gov.in\"\n             }\n           }\n          ],\n          \"enabledInCustomTabs\":true,\n          \"enabledForSignedOutUsers\":true\n        }\n        "
+                    },
+                    "enable_features": [
+                        "AutofillAssistantUrlHeuristic3"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAssistantNiuWtvInChromeTriggering": [
         {
             "platforms": [
