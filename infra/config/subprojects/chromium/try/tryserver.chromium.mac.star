@@ -333,9 +333,6 @@ try_.compilator_builder(
     check_for_flakiness = True,
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
-    experiments = {
-        "luci.buildbucket.omit_python2": 100,
-    },
     os = os.MAC_DEFAULT,
     ssd = None,
     xcode = xcode.x14main,
