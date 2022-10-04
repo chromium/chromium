@@ -338,7 +338,6 @@ void AddPreferredApp(const std::string& app_id,
 }
 
 void ResetVerifiedLinks(
-    const apps::IntentFilterPtr& intent_filter,
     const apps::ReplacedAppPreferences& replaced_app_preferences,
     arc::ArcServiceManager* arc_service_manager,
     ArcAppListPrefs* prefs) {
@@ -1109,8 +1108,7 @@ void ArcApps::OnPreferredAppSet(
   }
   AddPreferredApp(app_id, intent_filter, std::move(intent), arc_service_manager,
                   prefs);
-  ResetVerifiedLinks(intent_filter, replaced_app_preferences,
-                     arc_service_manager, prefs);
+  ResetVerifiedLinks(replaced_app_preferences, arc_service_manager, prefs);
 }
 
 void ArcApps::SetResizeLocked(const std::string& app_id, bool locked) {
@@ -1449,8 +1447,7 @@ void ArcApps::OnPreferredAppSet(
   AddPreferredApp(app_id, ConvertMojomIntentFilterToIntentFilter(intent_filter),
                   ConvertMojomIntentToIntent(intent), arc_service_manager,
                   prefs);
-  ResetVerifiedLinks(ConvertMojomIntentFilterToIntentFilter(intent_filter),
-                     ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
+  ResetVerifiedLinks(ConvertMojomReplacedAppPreferencesToReplacedAppPreferences(
                          replaced_app_preferences),
                      arc_service_manager, prefs);
 }
