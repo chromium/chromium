@@ -218,12 +218,6 @@ void ChromeOSSystemProfileProvider::OnMachineStatisticsLoaded(
     base::OnceClosure callback) {
   chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
       "hardware_class", &full_hardware_class_);
-
-  // Structured metrics needs to know when full hardware class is available
-  // since events should have full hardware class populated. Notify structured
-  // metrics recorder that HWID is available to start sending events.
-  metrics::structured::Recorder::GetInstance()->OnHardwareClassInitialized(
-      full_hardware_class_);
   std::move(callback).Run();
 }
 

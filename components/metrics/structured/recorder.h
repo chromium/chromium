@@ -48,9 +48,8 @@ class Recorder {
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
     // Called on a call to OnReportingStateChanged.
     virtual void OnReportingStateChanged(bool enabled) = 0;
-    // Called when full hardware class has been loaded.
-    virtual void OnHardwareClassInitialized(
-        const std::string& full_hardware_class) {}
+    // Called when SystemProfile has finished loading
+    virtual void OnSystemProfileInitialized() {}
     // Called on a call to LastKeyRotation.
     virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };
@@ -80,8 +79,8 @@ class Recorder {
   // Notifies observers that metrics reporting has been enabled or disabled.
   void OnReportingStateChanged(bool enabled);
 
-  // Notifies observers that full hardware class has been loaded.
-  void OnHardwareClassInitialized(const std::string& full_hardware_class);
+  // Notifies observers that system profile has been loaded.
+  void OnSystemProfileInitialized();
 
   void SetUiTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner> ui_task_runner);

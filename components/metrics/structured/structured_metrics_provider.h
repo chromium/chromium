@@ -57,7 +57,8 @@ class ExternalMetrics;
 class StructuredMetricsProvider : public metrics::MetricsProvider,
                                   public Recorder::RecorderImpl {
  public:
-  StructuredMetricsProvider();
+  explicit StructuredMetricsProvider(
+      base::raw_ptr<metrics::MetricsProvider> system_profile_provider);
   ~StructuredMetricsProvider() override;
   StructuredMetricsProvider(const StructuredMetricsProvider&) = delete;
   StructuredMetricsProvider& operator=(const StructuredMetricsProvider&) =
@@ -89,8 +90,7 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnRecord(const EventBase& event) override;
   void OnReportingStateChanged(bool enabled) override;
-  void OnHardwareClassInitialized(
-      const std::string& full_hardware_class) override;
+  void OnSystemProfileInitialized() override;
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   // metrics::MetricsProvider:
@@ -117,10 +117,11 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // has been initialized.
   void HashUnhashedEventsAndPersist();
 
-  // Populates full hardware class needed for Structured Metrics.
-  // Independent metric uploads must populate hardware_class as the normal
-  // ChromeOSMetricsProvider will not be called to populate the SystemProfile.
-  void ProvideFullHardwareClass(SystemProfileProto* system_profile);
+  // Populates system profile needed for Structured Metrics.
+  // Independent metric uploads will rely on a SystemProfileProvider
+  // to supply the system profile since ChromeOSMetricsProvider will
+  // not be called to populate the SystemProfile.
+  void ProvideSystemProfile(SystemProfileProto* system_profile);
 
   // Beyond this number of logging events between successive calls to
   // ProvideCurrentSessionData, we stop recording events.
@@ -194,8 +195,14 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // only.
   absl::optional<base::FilePath> device_key_data_path_for_test_;
 
-  // Hardware class used to populate independent metric uploads.
-  absl::optional<std::string> full_hardware_class_;
+  // todo(andrewbreggr): investigate removing this field, it is used
+  //                     when feature kDelayUploadUntilHwid is enabled
+  // SystemProfile is loaded to populate independent metric uploads.
+  bool system_profile_initialized_ = false;
+
+  // Interface for providing the SystemProfile to metrics.
+  // See chrome/browser/metrics/chrome_metrics_service_client.h
+  base::raw_ptr<metrics::MetricsProvider> system_profile_provider_;
 
   base::WeakPtrFactory<StructuredMetricsProvider> weak_factory_{this};
 };

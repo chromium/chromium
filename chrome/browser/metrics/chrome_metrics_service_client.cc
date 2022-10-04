@@ -848,7 +848,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<ash::PrinterMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::structured::StructuredMetricsProvider>());
+      std::make_unique<metrics::structured::StructuredMetricsProvider>(
+          cros_system_profile_provider_.get()));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AssistantServiceMetricsProvider>());
@@ -1191,8 +1192,11 @@ void ChromeMetricsServiceClient::RenderProcessHostDestroyed(
 void ChromeMetricsServiceClient::AsyncInitSystemProfileProvider() {
   DCHECK(cros_system_profile_provider_);
   cros_system_profile_provider_->AsyncInit(base::BindOnce([]() {
-    // todo: callback to Structured Metrics when system profiles
-    //       load is complete.
+    // Structured metrics needs to know when the SystemProfile is
+    // available since events should have SystemProfile populated.
+    // Notify structured metrics recorder that SystemProfile is available to
+    // start sending events.
+    metrics::structured::Recorder::GetInstance()->OnSystemProfileInitialized();
   }));
 }
 #endif

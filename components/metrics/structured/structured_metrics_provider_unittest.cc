@@ -84,6 +84,7 @@ constexpr char kValueOne[] = "value one";
 constexpr char kValueTwo[] = "value two";
 
 constexpr char kHwid[] = "hwid";
+constexpr size_t kUserCount = 3;
 
 std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
@@ -116,6 +117,21 @@ class TestRecorder : public StructuredMetricsClient::RecordingDelegate {
   }
 
   bool IsReadyToRecord() const override { return true; }
+};
+
+class TestSystemProfileProvider : public metrics::MetricsProvider {
+ public:
+  TestSystemProfileProvider() = default;
+  TestSystemProfileProvider(const TestSystemProfileProvider& recorder) = delete;
+  TestSystemProfileProvider& operator=(
+      const TestSystemProfileProvider& recorder) = delete;
+  ~TestSystemProfileProvider() override = default;
+
+  void ProvideSystemProfileMetrics(
+      metrics::SystemProfileProto* proto) override {
+    proto->set_multi_profile_user_count(kUserCount);
+    proto->mutable_hardware()->set_full_hardware_class(kHwid);
+  }
 };
 
 }  // namespace
@@ -204,8 +220,11 @@ class StructuredMetricsProviderTest : public testing::Test {
   // about: the metrics service initializing and enabling its providers, and a
   // user logging in.
   void Init() {
+    // Create a system profile, normally done by ChromeMetricsServiceClient.
+    system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create the provider, normally done by the ChromeMetricsServiceClient.
-    provider_ = std::make_unique<StructuredMetricsProvider>();
+    provider_ = std::make_unique<StructuredMetricsProvider>(
+        system_profile_provider_.get());
     // Set the device key data to be within the temp dir, rather than to
     // /var/lib/metrics/structured as is default.
     provider_->SetDeviceKeyDataPathForTest(DeviceKeyFilePath());
@@ -268,6 +287,25 @@ class StructuredMetricsProviderTest : public testing::Test {
     return p;
   }
 
+  ChromeUserMetricsExtension GetUmaProto() {
+    // Independent metrics are only reported at intervals. So advance time to
+    // ensure HasIndependentMetrics will return true if there are recorded
+    // metrics.
+    task_environment_.AdvanceClock(base::Hours(1));
+
+    ChromeUserMetricsExtension uma_proto;
+    if (provider_->HasIndependentMetrics()) {
+      provider_->ProvideIndependentMetrics(
+          base::BindOnce([](bool success) { CHECK(success); }), &uma_proto,
+          nullptr);
+      Wait();
+      return uma_proto;
+    }
+
+    auto p = ChromeUserMetricsExtension();
+    return p;
+  }
+
   void ExpectNoErrors() {
     histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError",
                                        0);
@@ -277,7 +315,10 @@ class StructuredMetricsProviderTest : public testing::Test {
     provider_->SetExternalMetricsDirForTest(dir);
   }
 
+  void InitializeSystemProfile() { provider_->OnSystemProfileInitialized(); }
+
  protected:
+  std::unique_ptr<MetricsProvider> system_profile_provider_;
   std::unique_ptr<StructuredMetricsProvider> provider_;
   // Feature list should be constructed before task environment.
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -301,8 +342,6 @@ class StructuredMetricsProviderHwidTest : public StructuredMetricsProviderTest {
 
     StructuredMetricsProviderTest::SetUp();
   }
-
-  void InitializeHwid() { provider_->OnHardwareClassInitialized(kHwid); }
 
   bool events_retrieved() { return events_retrieved_; }
 
@@ -418,7 +457,9 @@ TEST_F(StructuredMetricsProviderTest, DisableIndependentUploads) {
 // initialization still completes correctly, but recording is correctly set to
 // disabled.
 TEST_F(StructuredMetricsProviderTest, RecordingDisabledDuringInitialization) {
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
 
   OnProfileAdded(TempDirPath());
   OnRecordingDisabled();
@@ -435,7 +476,9 @@ TEST_F(StructuredMetricsProviderTest, RecordingDisabledDuringInitialization) {
 // Ensure that recording is disabled until explicitly enabled with a call to
 // OnRecordingEnabled.
 TEST_F(StructuredMetricsProviderTest, RecordingDisabledByDefault) {
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
 
   OnProfileAdded(TempDirPath());
   Wait();
@@ -555,6 +598,73 @@ TEST_F(StructuredMetricsProviderTest, IndependentEventsReportedCorrectly) {
     const auto& event = data.events(1);
     EXPECT_EQ(event.event_name_hash(), kEventTwoHash);
     EXPECT_EQ(event.project_name_hash(), kProjectTwoHash);
+    EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectTwoId);
+    ASSERT_EQ(event.metrics_size(), 1);
+
+    {  // First metric
+      const auto& metric = event.metrics(0);
+      EXPECT_EQ(metric.name_hash(), kMetricThreeHash);
+      EXPECT_EQ(HashToHex(metric.value_hmac()),
+                // Value of HMAC_256("bbb...b", concat(hex(kProjectTwoHash),
+                // kValueTwo))
+                "86F0169868588DC7");
+    }
+  }
+
+  histogram_tester_.ExpectTotalCount("UMA.StructuredMetrics.InternalError", 0);
+}
+
+TEST_F(StructuredMetricsProviderTest, IndependentMetricsProvideSystemProfile) {
+  WriteTestingProfileKeys();
+  Init();
+  InitializeSystemProfile();
+
+  events::v2::test_project_one::TestEventOne()
+      .SetTestMetricOne(kValueOne)
+      .SetTestMetricTwo(12345)
+      .Record();
+  events::v2::test_project_two::TestEventTwo()
+      .SetTestMetricThree(kValueTwo)
+      .Record();
+
+  const auto uma_proto = GetUmaProto();
+  CHECK(uma_proto.has_system_profile());
+
+  {
+    const auto structured_profile = uma_proto.system_profile();
+    EXPECT_EQ(structured_profile.multi_profile_user_count(), kUserCount);
+    EXPECT_EQ(structured_profile.hardware().full_hardware_class(), kHwid);
+  }
+
+  const auto data = uma_proto.structured_data();
+  ASSERT_EQ(data.events_size(), 2);
+
+  {  // First event
+    const auto& event = data.events(0);
+    EXPECT_EQ(event.event_name_hash(), kEventOneHash);
+    EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectOneId);
+    ASSERT_EQ(event.metrics_size(), 2);
+    {}
+
+    {  // First metric
+      const auto& metric = event.metrics(0);
+      EXPECT_EQ(metric.name_hash(), kMetricOneHash);
+      EXPECT_EQ(HashToHex(metric.value_hmac()),
+                // Value of HMAC_256("aaa...a", concat(hex(kMetricOneHash),
+                // kValueOne))
+                "8C2469269D142715");
+    }
+
+    {  // Second metric
+      const auto& metric = event.metrics(1);
+      EXPECT_EQ(metric.name_hash(), kMetricTwoHash);
+      EXPECT_EQ(metric.value_int64(), 12345);
+    }
+  }
+
+  {  // Second event
+    const auto& event = data.events(1);
+    EXPECT_EQ(event.event_name_hash(), kEventTwoHash);
     EXPECT_EQ(HashToHex(event.profile_event_id()), kProjectTwoId);
     ASSERT_EQ(event.metrics_size(), 1);
 
@@ -732,7 +842,9 @@ TEST_F(StructuredMetricsProviderTest, ExternalMetricsAreReported) {
   ASSERT_TRUE(
       base::WriteFile(events_dir.Append("event"), proto.SerializeAsString()));
 
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
   OnProfileAdded(TempDirPath());
   OnRecordingEnabled();
   SetExternalMetricsDirForTest(events_dir);
@@ -750,7 +862,9 @@ TEST_F(StructuredMetricsProviderTest,
   ASSERT_TRUE(
       base::WriteFile(events_dir.Append("event"), proto.SerializeAsString()));
 
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
   OnProfileAdded(TempDirPath());
   OnRecordingDisabled();
   SetExternalMetricsDirForTest(events_dir);
@@ -764,7 +878,9 @@ TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeRecordingEnabled) {
   // Manually create and initialize the provider, adding recording calls between
   // each step. All of these events should be ignored.
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
   OnRecordingEnabled();
   Wait();
@@ -778,7 +894,9 @@ TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeRecordingEnabled) {
 // Test that events reported after recording is enabled but before the keys are
 // loaded are hashed and stored after keys are loaded.
 TEST_F(StructuredMetricsProviderTest, EventsRecordedBeforeKeysInitialized) {
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
   OnRecordingEnabled();
   // Emulate metric before login.
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
@@ -837,7 +955,9 @@ TEST_F(StructuredMetricsProviderTest, ReportingResumesWhenEnabled) {
 // completes returns no events.
 TEST_F(StructuredMetricsProviderTest,
        ReportsNothingBeforeInitializationComplete) {
-  provider_ = std::make_unique<StructuredMetricsProvider>();
+  system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
+  provider_ = std::make_unique<StructuredMetricsProvider>(
+      system_profile_provider_.get());
   EXPECT_EQ(GetSessionData().events_size(), 0);
   EXPECT_EQ(GetIndependentMetrics().events_size(), 0);
   OnRecordingEnabled();
@@ -868,7 +988,8 @@ TEST_F(StructuredMetricsProviderTest, LastKeyRotation) {
   EXPECT_GE(last_rotation, today - 90);
 }
 
-TEST_F(StructuredMetricsProviderHwidTest, EventsNotSentIfHwidNotInitialized) {
+TEST_F(StructuredMetricsProviderHwidTest,
+       EventsNotSentIfSystemProfileNotInitialized) {
   Init();
 
   events::v2::test_project_one::TestEventOne().SetTestMetricTwo(1).Record();
@@ -879,7 +1000,7 @@ TEST_F(StructuredMetricsProviderHwidTest, EventsNotSentIfHwidNotInitialized) {
   // HWID has not been set. Events should still persist in files.
   EXPECT_EQ(uma_proto->structured_data().events_size(), 0);
 
-  InitializeHwid();
+  InitializeSystemProfile();
 
   // Call again to fetch the new proto with new events.
   uma_proto = GetUmaProto();
