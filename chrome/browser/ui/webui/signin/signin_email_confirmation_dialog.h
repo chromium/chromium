@@ -23,7 +23,7 @@ class WebContents;
 class WebUIMessageHandler;
 }
 
-// A tab-modal dialog to ask the user to confirm his email before signing in.
+// A tab-modal dialog to ask the user to confirm their email before signing in.
 class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
                                       public SigninViewControllerDelegate {
  public:
