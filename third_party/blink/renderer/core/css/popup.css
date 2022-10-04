@@ -26,10 +26,12 @@
   background-color: Canvas;
 }
 
-[popup]::backdrop {
+[popup]:open::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
   inset: 0;
   /* Specific to [popup]: */
   pointer-events: none !important;
+  /* https://github.com/openui/open-ui/issues/561#issuecomment-1242297093 */
+  background-color: transparent;
 }
