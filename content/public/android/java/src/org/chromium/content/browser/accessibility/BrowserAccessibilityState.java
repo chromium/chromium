@@ -12,6 +12,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
@@ -65,12 +66,17 @@ public class BrowserAccessibilityState {
     // Simple boolean that will be true when any accessibility service is running on the device.
     private static boolean sHasAnyAccessibilityServiceEnabled;
 
-    // Whether we determine that genuine assistive technology such as a screen reader
-    // is running, based on the information from running accessibility services.
+    // True when we determine that genuine assistive technology such as a screen reader
+    // is running, based on the information from running accessibility services. False otherwise.
     private static boolean sScreenReader;
 
-    // Whether the user has enabled the Android-OS privacy setting for showing passwords, found in:
-    // Settings > Privacy > Show passwords. (Settings.System.TEXT_SHOW_PASSWORD).
+    // True when android version is less than 31 or at least one enabled accessibility service
+    // returns true for isAccessibilityTool(). False otherwise.
+    private static boolean sAccessibilityToolPresent;
+
+    // True when the user has enabled the Android-OS privacy setting for showing passwords, found
+    // in: Settings > Privacy > Show passwords. (Settings.System.TEXT_SHOW_PASSWORD). False
+    // otherwise.
     private static boolean sTextShowPasswordEnabled;
 
     /**
@@ -111,6 +117,12 @@ public class BrowserAccessibilityState {
         if (!sInitialized) updateAccessibilityServices();
 
         return sHasAnyAccessibilityServiceEnabled;
+    }
+
+    public static boolean hasAccessibilityToolPresent() {
+        if (!sInitialized) updateAccessibilityServices();
+
+        return sAccessibilityToolPresent;
     }
 
     public static boolean screenReaderMode() {
@@ -226,6 +238,7 @@ public class BrowserAccessibilityState {
         sFlagsMask = 0;
         sCapabilitiesMask = 0;
         sHasAnyAccessibilityServiceEnabled = false;
+        sAccessibilityToolPresent = false;
 
         // Get the list of currently running accessibility services.
         Context context = ContextUtils.getApplicationContext();
@@ -244,6 +257,8 @@ public class BrowserAccessibilityState {
             sFlagsMask |= service.flags;
             sCapabilitiesMask |= service.getCapabilities();
             sHasAnyAccessibilityServiceEnabled = true;
+            sAccessibilityToolPresent |= (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+                    || service.isAccessibilityTool());
 
             String serviceId = service.getId();
             sServiceIds[i++] = serviceId;
