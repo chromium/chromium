@@ -107,8 +107,8 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     return enabled;
   }
 
-  virtual std::vector<base::Feature> GetDisabledFeatures() {
-    std::vector<base::Feature> disabled;
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
+    std::vector<base::test::FeatureRef> disabled;
     if (!is_storage_partitioned_) {
       disabled.push_back(net::features::kThirdPartyStoragePartitioning);
     }
@@ -1031,7 +1031,7 @@ class StorageAccessAPIForOriginExplicitlyDisabledBrowserTest
         enable_standard_storage_access_api_(GetParam()) {}
 
  protected:
-  std::vector<base::Feature> GetDisabledFeatures() override {
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
     // The test should validate that either flag alone disables the API.
     // Note that enabling the extension and not the standard API means both are
     // disabled.

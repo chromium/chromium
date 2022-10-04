@@ -44,7 +44,7 @@ class StorageAccessGrantPermissionContextTest
  public:
   explicit StorageAccessGrantPermissionContextTest(bool saa_enabled) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     if (saa_enabled) {
       enabled.push_back({net::features::kStorageAccessAPI,
                          {
