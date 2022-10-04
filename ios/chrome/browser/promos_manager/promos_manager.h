@@ -28,6 +28,9 @@ class PromosManager {
   ~PromosManager();
 
   // Records the impression of `promo` in the impression history.
+  //
+  // NOTE: If `promo` is a single-display promo, it will be automatically
+  // deregistered.
   void RecordImpression(promos_manager::Promo promo);
 
   // Ingests promo-specific impression limits and stores them in-memory for
@@ -245,6 +248,9 @@ class PromosManager {
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest,
                            DeregistersActivePromoAndImmediatelyUpdateVariables);
   FRIEND_TEST_ALL_PREFIXES(PromosManagerTest, DeregistersNonExistentPromo);
+  FRIEND_TEST_ALL_PREFIXES(
+      PromosManagerTest,
+      DeregistersSingleDisplayPromoAfterRecordedImpression);
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_H_

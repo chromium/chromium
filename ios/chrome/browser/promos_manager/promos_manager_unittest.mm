@@ -1113,3 +1113,30 @@ TEST_F(PromosManagerTest, DeregistersNonExistentPromo) {
           .size(),
       (size_t)0);
 }
+
+// Tests a given single-display promo is automatically deregistered after its
+// impression is recorded.
+TEST_F(PromosManagerTest,
+       DeregistersSingleDisplayPromoAfterRecordedImpression) {
+  CreatePromosManager();
+
+  EXPECT_TRUE(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .empty());
+
+  // Initial active promos state.
+  promos_manager_->RegisterPromoForSingleDisplay(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_EQ(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .size(),
+      (size_t)1);
+
+  promos_manager_->RecordImpression(
+      promos_manager::Promo::CredentialProviderExtension);
+
+  EXPECT_TRUE(
+      local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
+          .empty());
+}

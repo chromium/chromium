@@ -100,6 +100,12 @@ void PromosManager::RecordImpression(promos_manager::Promo promo) {
 
   impression_history_ = ImpressionHistory(
       local_state_->GetList(prefs::kIosPromosManagerImpressions));
+
+  // Auto-deregister `promo` if it's a single-display promo.
+  if (single_display_active_promos_.find(promo) !=
+      single_display_active_promos_.end()) {
+    DeregisterPromo(promo);
+  }
 }
 
 void PromosManager::RegisterPromoForContinuousDisplay(
