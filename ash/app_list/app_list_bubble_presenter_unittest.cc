@@ -36,6 +36,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/display/display.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -354,6 +355,17 @@ TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingAfterDismiss) {
 
   EXPECT_FALSE(presenter->IsShowing());
   EXPECT_FALSE(presenter->GetWindow());
+}
+
+TEST_F(AppListBubblePresenterTest, BubbleDoesNotCloseWhenShelfFocused) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Press Alt-Shift-L to focus the home button on the shelf.
+  PressAndReleaseKey(ui::VKEY_L, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(presenter->GetWindow());
 }
 
 TEST_F(AppListBubblePresenterTest, CanShowWhileAnimatingClosed) {

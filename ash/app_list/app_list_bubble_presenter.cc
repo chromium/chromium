@@ -25,6 +25,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_background_view.h"
+#include "ash/wm/container_finder.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -406,13 +407,18 @@ void AppListBubblePresenter::OnWindowActivated(ActivationReason reason,
   if (!is_target_visibility_show_)
     return;
 
-  aura::Window* app_list_container =
-      bubble_widget_->GetNativeWindow()->parent();
-
-  // If the bubble or one of its children (e.g. an uninstall dialog) gained
-  // activation, the bubble should stay open.
-  if (gained_active && app_list_container->Contains(gained_active))
-    return;
+  if (gained_active) {
+    if (auto* container = GetContainerForWindow(gained_active)) {
+      const int container_id = container->GetId();
+      // If the bubble or one of its children (e.g. an uninstall dialog) gained
+      // activation, the bubble should stay open. Likewise, allow focus to move
+      // to the shelf (e.g. by pressing Alt-Shift-L).
+      if (container_id == kShellWindowId_AppListContainer ||
+          container_id == kShellWindowId_ShelfContainer) {
+        return;
+      }
+    }
+  }
 
   // Closing the bubble for "press" type events is handled by
   // `bubble_event_filter_`. Activation can change when a user merely moves the
@@ -420,6 +426,9 @@ void AppListBubblePresenter::OnWindowActivated(ActivationReason reason,
   // the bubble.
   if (reason == wm::ActivationChangeObserver::ActivationReason::INPUT_EVENT)
     return;
+
+  aura::Window* app_list_container =
+      bubble_widget_->GetNativeWindow()->parent();
 
   // Otherwise, if the bubble or one of its children lost activation or if
   // something other than the bubble gains activation, the bubble should close.
