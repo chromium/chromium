@@ -331,7 +331,7 @@ class ThreadPoolImplTestBase : public testing::Test {
 
  private:
   void SetupFeatures() {
-    std::vector<base::Feature> features;
+    std::vector<base::test::FeatureRef> features;
 
 #if HAS_NATIVE_THREAD_POOL()
     if (GetGroupTypes().foreground_type == test::GroupType::NATIVE)
