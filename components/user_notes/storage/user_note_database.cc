@@ -201,7 +201,7 @@ std::unique_ptr<UserNote> UserNoteDatabase::GetNoteById(
                                     std::move(target));
 }
 
-bool UserNoteDatabase::CreateNote(const UserNote* model,
+bool UserNoteDatabase::CreateNote(std::unique_ptr<UserNote> model,
                                   std::u16string note_body_text) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -270,11 +270,11 @@ bool UserNoteDatabase::CreateNote(const UserNote* model,
   return true;
 }
 
-bool UserNoteDatabase::UpdateNote(const UserNote* model,
+bool UserNoteDatabase::UpdateNote(std::unique_ptr<UserNote> model,
                                   std::u16string note_body_text,
                                   bool is_creation) {
   if (is_creation) {
-    return CreateNote(model, note_body_text);
+    return CreateNote(std::move(model), note_body_text);
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -16,10 +16,10 @@ class UserNoteTarget {
  public:
   enum TargetType { kPage = 0, kPageText };
 
-  explicit UserNoteTarget(TargetType type,
-                          const std::u16string& original_text,
-                          GURL target_page,
-                          const std::string& selector);
+  UserNoteTarget(TargetType type,
+                 const std::u16string& original_text,
+                 GURL target_page,
+                 const std::string& selector);
   ~UserNoteTarget();
   UserNoteTarget(const UserNoteTarget&) = delete;
   UserNoteTarget& operator=(const UserNoteTarget&) = delete;

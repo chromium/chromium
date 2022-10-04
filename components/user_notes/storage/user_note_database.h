@@ -40,7 +40,7 @@ class UserNoteDatabase {
   std::vector<std::unique_ptr<UserNote>> GetNotesById(
       const UserNoteStorage::IdSet& ids);
 
-  bool UpdateNote(const UserNote* model,
+  bool UpdateNote(std::unique_ptr<UserNote> model,
                   std::u16string note_body_text,
                   bool is_creation);
 
@@ -67,7 +67,8 @@ class UserNoteDatabase {
   bool InitSchema();
 
   // Called by UpdateNote() with is_creation=true to create a new note.
-  bool CreateNote(const UserNote* model, std::u16string note_body_text);
+  bool CreateNote(std::unique_ptr<UserNote> model,
+                  std::u16string note_body_text);
 
   bool CreateSchema();
 

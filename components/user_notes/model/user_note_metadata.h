@@ -12,9 +12,9 @@ namespace user_notes {
 // Model class for a note.
 class UserNoteMetadata {
  public:
-  explicit UserNoteMetadata(base::Time creation_date,
-                            base::Time modification_date,
-                            int min_note_version);
+  UserNoteMetadata(base::Time creation_date,
+                   base::Time modification_date,
+                   int min_note_version);
   ~UserNoteMetadata();
   UserNoteMetadata(const UserNoteMetadata&) = delete;
   UserNoteMetadata& operator=(const UserNoteMetadata&) = delete;

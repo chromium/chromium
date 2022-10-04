@@ -6,6 +6,19 @@
 
 namespace user_notes {
 
+// static
+std::unique_ptr<UserNote> UserNote::Clone(const UserNote* note) {
+  return std::make_unique<UserNote>(
+      note->id(),
+      std::make_unique<UserNoteMetadata>(note->metadata().creation_date(),
+                                         note->metadata().modification_date(),
+                                         note->metadata().min_note_version()),
+      std::make_unique<UserNoteBody>(note->body().plain_text_value()),
+      std::make_unique<UserNoteTarget>(
+          note->target().type(), note->target().original_text(),
+          note->target().target_page(), note->target().selector()));
+}
+
 UserNote::UserNote(const base::UnguessableToken& id,
                    std::unique_ptr<UserNoteMetadata> metadata,
                    std::unique_ptr<UserNoteBody> body,
