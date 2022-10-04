@@ -196,9 +196,9 @@ class ActionMove::ActionMoveKeyView : public ActionView {
       return;
 
     int label_index = -1;
-    auto* label = static_cast<ActionLabel*>(child);
+    auto* child_label = static_cast<ActionLabel*>(child);
     for (size_t i = 0; i < kActionMoveKeysSize; i++) {
-      if (label == labels_[i]) {
+      if (child_label == labels_[i]) {
         label_index = i;
         break;
       }
@@ -207,14 +207,14 @@ class ActionMove::ActionMoveKeyView : public ActionView {
       return;
 
     const int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
-    auto label_size = label->CalculatePreferredSize();
-    label->SetSize(label_size);
+    auto label_size = child_label->CalculatePreferredSize();
+    child_label->SetSize(label_size);
     int x = kDirection[label_index][0];
     int y = kDirection[label_index][1];
     auto pos = gfx::Point(
         radius + x * (radius - kLabelOffset) - label_size.width() / 2,
         radius + y * (radius - kLabelOffset) - label_size.height() / 2);
-    label->SetPosition(pos);
+    child_label->SetPosition(pos);
 
     // Calculate minimum size of the |ActionMoveKeyView|.
     int left = INT_MAX, right = 0, top = INT_MAX, bottom = 0;
