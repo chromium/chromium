@@ -912,8 +912,8 @@ class AutofillTestFormSubmission
   };
 
   AutofillTestFormSubmission() {
-    std::vector<base::Feature> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
     if (std::get<0>(GetParam())) {
       enabled.push_back(features::kAutofillAllowDuplicateFormSubmissions);
     } else {
