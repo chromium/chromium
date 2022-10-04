@@ -708,7 +708,7 @@
     self.feedHeaderConstraints = @[
       [self.feedHeaderViewController.view.topAnchor
           constraintEqualToAnchor:self.headerController.view.bottomAnchor
-                         constant:-(content_suggestions::headerBottomPadding() +
+                         constant:-(content_suggestions::HeaderBottomPadding() +
                                     [self.feedHeaderViewController
                                             customSearchEngineViewHeight])],
       [self.collectionView.topAnchor
@@ -1000,7 +1000,7 @@
     offset = -(self.headerController.view.frame.size.height -
                [self stickyOmniboxHeight] -
                [self.feedHeaderViewController customSearchEngineViewHeight] -
-               content_suggestions::headerBottomPadding());
+               content_suggestions::HeaderBottomPadding());
   } else {
     offset = -[self feedHeaderHeight];
   }

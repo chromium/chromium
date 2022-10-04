@@ -206,7 +206,7 @@ CGFloat ModuleVerticalSpacing() {
           withCustomBottomSpacing:content_suggestions::
                                       kReturnToRecentTabSectionBottomMargin];
     }
-    CGFloat cardWidth = content_suggestions::searchFieldWidth(
+    CGFloat cardWidth = content_suggestions::SearchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
     [NSLayoutConstraint
         activateConstraints:@[ [parentView.widthAnchor
@@ -435,7 +435,7 @@ CGFloat ModuleVerticalSpacing() {
                                kReturnToRecentTabSectionBottomMargin
                  afterView:self.returnToRecentTabTile];
     }
-    CGFloat cardWidth = content_suggestions::searchFieldWidth(
+    CGFloat cardWidth = content_suggestions::SearchFieldWidth(
         self.view.bounds.size.width, self.traitCollection);
     [NSLayoutConstraint activateConstraints:@[
       [parentView.widthAnchor constraintEqualToConstant:cardWidth],

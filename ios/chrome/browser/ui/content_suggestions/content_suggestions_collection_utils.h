@@ -9,54 +9,52 @@
 
 namespace content_suggestions {
 
-extern const int kSearchFieldBackgroundColor;
-
 extern const CGFloat kHintTextScale;
 
 // Bottom margin for the Return to Recent Tab tile.
 extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 
-// Returns the proper height for the doodle. `logoIsShowing` is YES if showing
-// the Google logo. `doodleisShowing` is YES if the doodle is showing. The
-// SizeClass of the `traitCollection` of the view displaying the doodle is used
+// Returns the proper height for the doodle. `logo_is_showing` is YES if showing
+// the Google logo. `doodle_is_showing` is YES if the doodle is showing. The
+// SizeClass of the `trait_collection` of the view displaying the doodle is used
 // in the computation.
-CGFloat doodleHeight(BOOL logoIsShowing,
-                     BOOL doodleIsShowing,
-                     UITraitCollection* traitCollection);
+CGFloat DoodleHeight(BOOL logo_is_showing,
+                     BOOL doodle_is_showing,
+                     UITraitCollection* trait_collection);
 // Returns the proper margin to the top of the header for the doodle.
-CGFloat doodleTopMargin(CGFloat topInset, UITraitCollection* traitCollection);
+CGFloat DoodleTopMargin(CGFloat top_inset, UITraitCollection* trait_collection);
 // Returns the proper margin to the bottom of the doodle for the search field.
-CGFloat searchFieldTopMargin();
+CGFloat SearchFieldTopMargin();
 // Returns the proper width for the search field inside a view with a `width`.
 // The SizeClass of the `traitCollection` of the view displaying the search
 // field is used in the computation.
-CGFloat searchFieldWidth(CGFloat superviewWidth,
-                         UITraitCollection* traitCollection);
-// Returns the expected height of the header. `logoIsShowing` is YES if showing
-// the Google logo. `doodleIsShowing` is YES if the doodle is being shown.
-CGFloat heightForLogoHeader(BOOL logoIsShowing,
-                            BOOL doodleIsShowing,
-                            CGFloat topInset,
-                            UITraitCollection* traitCollection);
+CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection);
+// Returns the expected height of the header. `logo_is_showing` is YES if
+// showing the Google logo. `doodle_is_showing` is YES if the doodle is being
+// shown.
+CGFloat HeightForLogoHeader(BOOL logo_is_showing,
+                            BOOL doodle_is_showing,
+                            CGFloat top_inset,
+                            UITraitCollection* trait_collection);
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
-CGFloat headerBottomPadding();
-// Configure the `searchHintLabel` for the fake omnibox.  `hintLabelContainer`
-// is added to the `searchTapTarget` with autolayout and `searchHintLabel` is
-// added to `hintLabelContainer` with autoresizing.  This is done due to the
-// way searchHintLabel is later tranformed.
-void configureSearchHintLabel(UILabel* searchHintLabel,
-                              UIView* searchTapTarget);
-// Configure the `voiceSearchButton`, adding it to the `searchTapTarget` and
+CGFloat HeaderBottomPadding();
+// Configure the `search_hint_label` for the fake omnibox.  `hintLabelContainer`
+// is added to the `search_tab_target` with autolayout and `search_hint_label`
+// is added to `hintLabelContainer` with autoresizing.  This is done due to the
+// way `search_hint_label` is later tranformed.
+void ConfigureSearchHintLabel(UILabel* search_hint_label,
+                              UIView* search_tab_target);
+// Configure the `voice_search_button`, adding it to the `search_tab_target` and
 // constraining it.
-void configureVoiceSearchButton(UIButton* voiceSearchButton,
-                                UIView* searchTapTarget);
+void ConfigureVoiceSearchButton(UIButton* voice_search_button,
+                                UIView* search_tab_target);
 // Configure the `lens_button`, adding it to the `search_tap_target` and
 // constraining it.
 void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target);
 
-// Returns the nearest ancestor of `view` that is kind of `aClass`.
-UIView* nearestAncestor(UIView* view, Class aClass);
+// Returns the nearest ancestor of `view` that is kind of `of_class`.
+UIView* NearestAncestor(UIView* view, Class of_class);
 
 }  // namespace content_suggestions
 

@@ -31,7 +31,7 @@
 #error "This file requires ARC support."
 #endif
 
-using content_suggestions::searchFieldWidth;
+using content_suggestions::SearchFieldWidth;
 using ntp_snippets::AdditionalSuggestionsHelper;
 using ntp_snippets::Category;
 using ntp_snippets::CategoryStatus;
@@ -163,7 +163,7 @@ ContentSuggestion CreateSuggestion(Category category,
 + (CGFloat)searchFieldWidthForCollectionWidth:(CGFloat)collectionWidth
                               traitCollection:
                                   (UITraitCollection*)traitCollection {
-  return content_suggestions::searchFieldWidth(collectionWidth,
+  return content_suggestions::SearchFieldWidth(collectionWidth,
                                                traitCollection);
 }
 

@@ -214,7 +214,7 @@ CGFloat ToolbarHeight() {
 
   // Hint label.
   self.searchHintLabel = [[UILabel alloc] init];
-  content_suggestions::configureSearchHintLabel(self.searchHintLabel,
+  content_suggestions::ConfigureSearchHintLabel(self.searchHintLabel,
                                                 searchField);
   self.searchHintLabel.font = [self hintLabelFont];
   self.hintLabelLeadingConstraint = [self.searchHintLabel.leadingAnchor
@@ -239,7 +239,7 @@ CGFloat ToolbarHeight() {
   // Voice search.
   self.voiceSearchButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  content_suggestions::configureVoiceSearchButton(self.voiceSearchButton,
+  content_suggestions::ConfigureVoiceSearchButton(self.voiceSearchButton,
                                                   searchField);
   UIButton* endButton = self.voiceSearchButton;
 
@@ -402,7 +402,7 @@ CGFloat ToolbarHeight() {
     return;
 
   CGFloat searchFieldNormalWidth =
-      content_suggestions::searchFieldWidth(contentWidth, self.traitCollection);
+      content_suggestions::SearchFieldWidth(contentWidth, self.traitCollection);
 
   CGFloat percent =
       [self searchFieldProgressForOffset:offset safeAreaInsets:safeAreaInsets];
@@ -449,7 +449,7 @@ CGFloat ToolbarHeight() {
   CGFloat maxXInset =
       ui::AlignValueToUpperPixel((searchFieldNormalWidth - screenWidth) / 2);
   widthConstraint.constant = searchFieldNormalWidth - 2 * maxXInset * percent;
-  topMarginConstraint.constant = -content_suggestions::searchFieldTopMargin() -
+  topMarginConstraint.constant = -content_suggestions::SearchFieldTopMargin() -
                                  ntp_header::kMaxTopMarginDiff * percent;
   heightConstraint.constant = toolbarExpandedHeight;
 

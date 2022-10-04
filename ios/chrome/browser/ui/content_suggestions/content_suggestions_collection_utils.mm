@@ -68,20 +68,19 @@ const CGFloat kSymbolContentSuggestionsPointSize = 18;
 
 namespace content_suggestions {
 
-const int kSearchFieldBackgroundColor = 0xF1F3F4;
 const CGFloat kHintTextScale = 0.15;
 const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 
-CGFloat doodleHeight(BOOL logoIsShowing,
-                     BOOL doodleIsShowing,
-                     UITraitCollection* traitCollection) {
+CGFloat DoodleHeight(BOOL logo_is_showing,
+                     BOOL doodle_is_showing,
+                     UITraitCollection* trait_collection) {
   // For users with non-Google default search engine, there is no doodle.
-  if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing) {
+  if (!IsRegularXRegularSizeClass(trait_collection) && !logo_is_showing) {
     return 0;
   }
 
-  if (ShouldShrinkLogoForStartSurface() && logoIsShowing) {
-    if (doodleIsShowing ||
+  if (ShouldShrinkLogoForStartSurface() && logo_is_showing) {
+    if (doodle_is_showing ||
         (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
       return kGoogleSearchDoodleShrunkHeight;
     } else {
@@ -92,108 +91,109 @@ CGFloat doodleHeight(BOOL logoIsShowing,
   return kGoogleSearchDoodleHeight;
 }
 
-CGFloat doodleTopMargin(CGFloat topInset, UITraitCollection* traitCollection) {
-  if (IsRegularXRegularSizeClass(traitCollection))
+CGFloat DoodleTopMargin(CGFloat top_inset,
+                        UITraitCollection* trait_collection) {
+  if (IsRegularXRegularSizeClass(trait_collection))
     return kDoodleTopMarginRegularXRegular;
-  if (IsCompactHeight(traitCollection) && !ShouldShrinkLogoForStartSurface())
-    return topInset;
-  CGFloat topMargin =
-      topInset +
+  if (IsCompactHeight(trait_collection) && !ShouldShrinkLogoForStartSurface())
+    return top_inset;
+  CGFloat top_margin =
+      top_inset +
       AlignValueToPixel(kDoodleScaledTopMarginOther *
                         ui_util::SystemSuggestedFontSizeMultiplier());
-  if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(traitCollection)) {
-    topMargin += kShrunkDoodleTopMarginOther;
+  if (ShouldShrinkLogoForStartSurface() && !IsCompactHeight(trait_collection)) {
+    top_margin += kShrunkDoodleTopMarginOther;
   } else {
-    topMargin += kDoodleTopMarginOther;
+    top_margin += kDoodleTopMarginOther;
   }
-  return topMargin;
+  return top_margin;
 }
 
-CGFloat searchFieldTopMargin() {
+CGFloat SearchFieldTopMargin() {
   return ShouldShrinkLogoForStartSurface() ? kShrunkLogoSearchFieldTopMargin
                                            : kSearchFieldTopMargin;
 }
 
-CGFloat searchFieldWidth(CGFloat superviewWidth,
-                         UITraitCollection* traitCollection) {
-  if (!IsCompactWidth(traitCollection) && !IsCompactHeight(traitCollection))
+CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
+  if (!IsCompactWidth(trait_collection) && !IsCompactHeight(trait_collection))
     return kSearchFieldLarge;
 
   // Special case for narrow sizes.
-  return MAX(
+  return std::max(
       kSearchFieldSmallMin,
-      MIN(kSearchFieldSmall, superviewWidth - kSearchFieldMinMargin * 2));
+      std::min(kSearchFieldSmall, width - kSearchFieldMinMargin * 2));
 }
 
-CGFloat heightForLogoHeader(BOOL logoIsShowing,
-                            BOOL doodleIsShowing,
-                            CGFloat topInset,
-                            UITraitCollection* traitCollection) {
-  CGFloat headerHeight =
-      doodleTopMargin(topInset, traitCollection) +
-      doodleHeight(logoIsShowing, doodleIsShowing, traitCollection) +
-      searchFieldTopMargin() +
+CGFloat HeightForLogoHeader(BOOL logo_is_showing,
+                            BOOL doodle_is_showing,
+                            CGFloat top_inset,
+                            UITraitCollection* trait_collection) {
+  CGFloat header_height =
+      DoodleTopMargin(top_inset, trait_collection) +
+      DoodleHeight(logo_is_showing, doodle_is_showing, trait_collection) +
+      SearchFieldTopMargin() +
       ToolbarExpandedHeight(
           [UIApplication sharedApplication].preferredContentSizeCategory) +
-      headerBottomPadding();
-  if (!IsRegularXRegularSizeClass(traitCollection)) {
-    return headerHeight;
+      HeaderBottomPadding();
+  if (!IsRegularXRegularSizeClass(trait_collection)) {
+    return header_height;
   }
-  if (!logoIsShowing) {
+  if (!logo_is_showing) {
     // Returns sufficient vertical space for the Identity Disc to be
     // displayed.
     return ntp_home::kIdentityAvatarDimension +
            2 * ntp_home::kIdentityAvatarMargin;
   }
 
-  headerHeight += kTopSpacingMaterial;
+  header_height += kTopSpacingMaterial;
 
-  return headerHeight;
+  return header_height;
 }
 
-CGFloat headerBottomPadding() {
+CGFloat HeaderBottomPadding() {
   return ShouldShowReturnToMostRecentTabForStartSurface()
              ? kNTPShrunkLogoSearchFieldBottomPadding
              : kNTPSearchFieldBottomPadding;
 }
 
-void configureSearchHintLabel(UILabel* searchHintLabel,
-                              UIView* searchTapTarget) {
-  [searchHintLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [searchTapTarget addSubview:searchHintLabel];
+void ConfigureSearchHintLabel(UILabel* search_hint_label,
+                              UIView* search_tab_target) {
+  [search_hint_label setTranslatesAutoresizingMaskIntoConstraints:NO];
+  [search_tab_target addSubview:search_hint_label];
 
-  [searchHintLabel setText:l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)];
+  [search_hint_label setText:l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT)];
   if (base::i18n::IsRTL()) {
-    [searchHintLabel setTextAlignment:NSTextAlignmentRight];
+    [search_hint_label setTextAlignment:NSTextAlignmentRight];
   }
-  searchHintLabel.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  searchHintLabel.adjustsFontForContentSizeCategory = YES;
-  searchHintLabel.textAlignment = NSTextAlignmentCenter;
+  search_hint_label.textColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
+  search_hint_label.adjustsFontForContentSizeCategory = YES;
+  search_hint_label.textAlignment = NSTextAlignmentCenter;
 }
 
-void configureVoiceSearchButton(UIButton* voiceSearchButton,
-                                UIView* searchTapTarget) {
-  [voiceSearchButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-  [searchTapTarget addSubview:voiceSearchButton];
+void ConfigureVoiceSearchButton(UIButton* voice_search_button,
+                                UIView* search_tab_target) {
+  [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
+  [search_tab_target addSubview:voice_search_button];
 
-  [voiceSearchButton setAdjustsImageWhenHighlighted:NO];
+  [voice_search_button setAdjustsImageWhenHighlighted:NO];
 
-  UIImage* micImage = UseSymbols() ? DefaultSymbolWithPointSize(
-                                         kMicrophoneFillSymbol,
-                                         kSymbolContentSuggestionsPointSize)
-                                   : [UIImage imageNamed:@"location_bar_voice"];
-  micImage =
-      [micImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIImage* mic_image =
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
+                                       kSymbolContentSuggestionsPointSize)
+          : [UIImage imageNamed:@"location_bar_voice"];
+  mic_image =
+      [mic_image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  [voiceSearchButton setImage:micImage forState:UIControlStateNormal];
-  voiceSearchButton.tintColor = [UIColor colorNamed:kGrey500Color];
-  [voiceSearchButton setAccessibilityLabel:l10n_util::GetNSString(
-                                               IDS_IOS_ACCNAME_VOICE_SEARCH)];
-  [voiceSearchButton setAccessibilityIdentifier:@"Voice Search"];
+  [voice_search_button setImage:mic_image forState:UIControlStateNormal];
+  voice_search_button.tintColor = [UIColor colorNamed:kGrey500Color];
+  [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
+                                                 IDS_IOS_ACCNAME_VOICE_SEARCH)];
+  [voice_search_button setAccessibilityIdentifier:@"Voice Search"];
 
-  voiceSearchButton.pointerInteractionEnabled = YES;
+  voice_search_button.pointerInteractionEnabled = YES;
   // Make the pointer shape fit the location bar's semi-circle end shape.
-  voiceSearchButton.pointerStyleProvider =
+  voice_search_button.pointerStyleProvider =
       CreateLiftEffectCirclePointerStyleProvider();
 }
 
@@ -225,14 +225,14 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
       CreateLiftEffectCirclePointerStyleProvider();
 }
 
-UIView* nearestAncestor(UIView* view, Class aClass) {
+UIView* NearestAncestor(UIView* view, Class of_class) {
   if (!view) {
     return nil;
   }
-  if ([view isKindOfClass:aClass]) {
+  if ([view isKindOfClass:of_class]) {
     return view;
   }
-  return nearestAncestor([view superview], aClass);
+  return NearestAncestor([view superview], of_class);
 }
 
 }  // namespace content_suggestions
