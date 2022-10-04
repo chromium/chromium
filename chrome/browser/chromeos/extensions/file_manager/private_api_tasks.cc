@@ -17,6 +17,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
@@ -45,14 +46,14 @@ const char kInvalidFileUrl[] = "Invalid file URL";
 
 // Make a set of unique filename suffixes out of the list of file URLs.
 std::set<std::string> GetUniqueSuffixes(
-    const std::vector<std::string>& url_list,
+    const std::vector<std::string>& file_urls,
     const storage::FileSystemContext* context) {
   std::set<std::string> suffixes;
-  for (size_t i = 0; i < url_list.size(); ++i) {
+  for (const auto& file_url : file_urls) {
     const FileSystemURL url =
-        context->CrackURLInFirstPartyContext(GURL(url_list[i]));
+        context->CrackURLInFirstPartyContext(GURL{file_url});
     if (!url.is_valid() || url.path().empty())
-      return std::set<std::string>();
+      return {};
     // We'll skip empty suffixes.
     if (!url.path().Extension().empty())
       suffixes.insert(url.path().Extension());
@@ -64,8 +65,7 @@ std::set<std::string> GetUniqueSuffixes(
 std::set<std::string> GetUniqueMimeTypes(
     const std::vector<std::string>& mime_type_list) {
   std::set<std::string> mime_types;
-  for (size_t i = 0; i < mime_type_list.size(); ++i) {
-    const std::string mime_type = mime_type_list[i];
+  for (const auto& mime_type : mime_type_list) {
     // We'll skip empty MIME types and existing MIME types.
     if (!mime_type.empty())
       mime_types.insert(mime_type);
@@ -105,9 +105,9 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
           profile, render_frame_host());
 
   std::vector<FileSystemURL> urls;
-  for (size_t i = 0; i < params->urls.size(); i++) {
+  for (const auto& url_param : params->urls) {
     const FileSystemURL url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->urls[i]));
+        file_system_context->CrackURLInFirstPartyContext(GURL{url_param});
     if (!chromeos::FileSystemBackend::CanHandleURL(url)) {
       return RespondNow(Error(kInvalidFileUrl));
     }
@@ -159,8 +159,8 @@ FileManagerPrivateInternalGetFileTasksFunction::Run() {
 
   // Collect all the URLs, convert them to GURLs, and crack all the urls into
   // file paths.
-  for (size_t i = 0; i < params->urls.size(); ++i) {
-    const GURL url(params->urls[i]);
+  for (const auto& url_param : params->urls) {
+    const GURL url{url_param};
     storage::FileSystemURL file_system_url(
         file_system_context->CrackURLInFirstPartyContext(url));
     if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
@@ -211,12 +211,11 @@ void FileManagerPrivateInternalGetFileTasksFunction::
 }
 
 void FileManagerPrivateInternalGetFileTasksFunction::OnFileTasksListed(
-    std::unique_ptr<std::vector<file_manager::file_tasks::FullTaskDescriptor>>
-        tasks) {
+    std::unique_ptr<file_manager::file_tasks::ResultingTasks> resulting_tasks) {
   // Convert the tasks into JSON compatible objects.
   using api::file_manager_private::FileTask;
   std::vector<FileTask> results;
-  for (const file_manager::file_tasks::FullTaskDescriptor& task : *tasks) {
+  for (const auto& task : resulting_tasks->tasks) {
     FileTask converted;
     converted.descriptor.app_id = task.task_descriptor.app_id;
     converted.descriptor.task_type =

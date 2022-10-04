@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager_observer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -192,8 +193,8 @@ std::vector<file_tasks::FullTaskDescriptor> GetTasksForFile(
   std::vector<file_tasks::FullTaskDescriptor> result;
   bool invoked_synchronously = false;
   auto callback = base::BindLambdaForTesting(
-      [&](std::unique_ptr<std::vector<file_tasks::FullTaskDescriptor>> tasks) {
-        result = *tasks;
+      [&](std::unique_ptr<file_tasks::ResultingTasks> resulting_tasks) {
+        result = std::move(resulting_tasks->tasks);
         invoked_synchronously = true;
       });
 

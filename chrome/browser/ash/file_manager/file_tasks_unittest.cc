@@ -66,8 +66,7 @@
 
 using extensions::api::file_manager_private::Verb;
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 
 TEST(FileManagerFileTasksTest, FullTaskDescriptor_WithIconAndDefault) {
   FullTaskDescriptor full_descriptor(
@@ -233,7 +232,10 @@ TEST_F(FileManagerFileTaskPreferencesTest,
                                "action-id");
   TaskDescriptor nice_app_task("nice-app-id", TASK_TYPE_FILE_HANDLER,
                                "action-id");
-  std::vector<FullTaskDescriptor> tasks;
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
   tasks.emplace_back(
       text_app_task, "Text.app", Verb::VERB_OPEN_WITH,
       GURL("http://example.com/text_app.png"), false /* is_default */,
@@ -248,7 +250,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   // None of them should be chosen as default, as nothing is set in the
   // preferences.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_FALSE(tasks[0].is_default);
   EXPECT_FALSE(tasks[1].is_default);
 
@@ -259,7 +261,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   UpdateDefaultTaskPreferences(mime_types, empty);
 
   // Text.app should be chosen as default.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_TRUE(tasks[0].is_default);
   EXPECT_FALSE(tasks[1].is_default);
 
@@ -268,7 +270,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   // Clear the preferences and make sure none of them are default.
   UpdateDefaultTaskPreferences(empty, empty);
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_FALSE(tasks[0].is_default);
   EXPECT_FALSE(tasks[1].is_default);
 
@@ -278,7 +280,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   UpdateDefaultTaskPreferences(empty, suffixes);
 
   // Now Nice.app should be chosen as default.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_FALSE(tasks[0].is_default);
   EXPECT_TRUE(tasks[1].is_default);
 }
@@ -291,7 +293,10 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   // "foo.txt".
   TaskDescriptor files_app_task(
       kFileManagerAppId, TASK_TYPE_FILE_BROWSER_HANDLER, "view-in-browser");
-  std::vector<FullTaskDescriptor> tasks;
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
   tasks.emplace_back(
       files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
       GURL("http://example.com/some_icon.png"), false /* is_default */,
@@ -302,7 +307,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   // The internal file browser handler should be chosen as default, as it's a
   // fallback file browser handler.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_TRUE(tasks[0].is_default);
 }
 
@@ -316,7 +321,10 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   // Define the text editor app for "foo.txt".
   TaskDescriptor text_app_task(kTextEditorAppId, TASK_TYPE_FILE_HANDLER,
                                "Text");
-  std::vector<FullTaskDescriptor> tasks;
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
   tasks.emplace_back(
       files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
       GURL("http://example.com/some_icon.png"), false /* is_default */,
@@ -332,7 +340,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   // The text editor app should be chosen as default, as it's a fallback file
   // browser handler.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_TRUE(tasks[1].is_default);
 }
 
@@ -346,7 +354,10 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   // Define the text editor app for "foo.html".
   TaskDescriptor text_app_task(kTextEditorAppId, TASK_TYPE_FILE_HANDLER,
                                "Text");
-  std::vector<FullTaskDescriptor> tasks;
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
   tasks.emplace_back(
       files_app_task, "View in browser", Verb::VERB_OPEN_WITH,
       GURL("http://example.com/some_icon.png"), false /* is_default */,
@@ -362,7 +373,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   // The internal file browser handler should be chosen as default,
   // as it's a fallback file browser handler.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_TRUE(tasks[0].is_default);
 }
 
@@ -374,7 +385,10 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   TaskDescriptor files_app_task(
       extension_misc::kQuickOfficeComponentExtensionId, TASK_TYPE_FILE_HANDLER,
       "Office Editing for Docs, Sheets & Slides");
-  std::vector<FullTaskDescriptor> tasks;
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
   tasks.emplace_back(
       files_app_task, "Office Editing for Docs, Sheets & Slides",
       Verb::VERB_OPEN_WITH,
@@ -387,7 +401,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
 
   // The Office Editing app should be chosen as default, as it's a fallback
   // file browser handler.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   EXPECT_TRUE(tasks[0].is_default);
 }
 
@@ -449,7 +463,10 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   // Create the file task descriptors to match against.
   TaskDescriptor app_service_file_task(app_id, task_type, activity);
   TaskDescriptor other_task("other", TASK_TYPE_FILE_BROWSER_HANDLER, "view");
-  std::vector<FullTaskDescriptor> tasks;
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
   tasks.emplace_back(
       app_service_file_task, "View Images", Verb::VERB_NONE,
       GURL("http://example.com/some_icon.png"), false /* is_default */,
@@ -463,7 +480,7 @@ TEST_F(FileManagerFileTaskPreferencesTest,
                        false);
 
   // Check if the correct task matched against the default preference.
-  ChooseAndSetDefaultTask(profile(), entries, &tasks);
+  ChooseAndSetDefaultTask(profile(), entries, resulting_tasks.get());
   ASSERT_TRUE(tasks[0].is_default);
   ASSERT_FALSE(tasks[1].is_default);
 }
@@ -584,17 +601,16 @@ class FileManagerFileTasksComplexTest : public testing::Test {
     void Call(Profile* profile,
               const std::vector<extensions::EntryInfo>& entries,
               const std::vector<GURL>& file_urls,
-              std::vector<FullTaskDescriptor>* result) {
+              ResultingTasks* resulting_tasks) {
       FindAllTypesOfTasks(
           profile, entries, file_urls,
           base::BindOnce(&FindAllTypesOfTasksSynchronousWrapper::OnReply,
-                         base::Unretained(this), result));
+                         base::Unretained(this), resulting_tasks));
       run_loop_.Run();
     }
 
    private:
-    void OnReply(std::vector<FullTaskDescriptor>* out,
-                 std::unique_ptr<std::vector<FullTaskDescriptor>> result) {
+    void OnReply(ResultingTasks* out, std::unique_ptr<ResultingTasks> result) {
       *out = *result;
       run_loop_.Quit();
     }
@@ -696,17 +712,19 @@ TEST_F(FileManagerFileTasksCrostiniTest, BasicFiles) {
       {crostini_folder_.Append("foo.txt"), "text/plain", false}};
   std::vector<GURL> file_urls{PathToURL("dir/foo.txt")};
 
-  std::vector<FullTaskDescriptor> tasks;
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(text_app_id_, tasks[0].task_descriptor.app_id);
 
   // Multiple text files
   entries.emplace_back(crostini_folder_.Append("bar.txt"), "text/plain", false);
   file_urls.emplace_back(PathToURL("dir/bar.txt"));
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(text_app_id_, tasks[0].task_descriptor.app_id);
 }
@@ -715,15 +733,18 @@ TEST_F(FileManagerFileTasksCrostiniTest, Directories) {
   std::vector<extensions::EntryInfo> entries{
       {crostini_folder_.Append("dir"), "", true}};
   std::vector<GURL> file_urls{PathToURL("dir/dir")};
-  std::vector<FullTaskDescriptor> tasks;
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   EXPECT_EQ(0U, tasks.size());
 
   entries.emplace_back(crostini_folder_.Append("foo.txt"), "text/plain", false);
   file_urls.emplace_back(PathToURL("dir/foo.txt"));
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   EXPECT_EQ(0U, tasks.size());
 }
 
@@ -734,9 +755,11 @@ TEST_F(FileManagerFileTasksCrostiniTest, MultipleMatches) {
   std::vector<GURL> file_urls{PathToURL("dir/foo.gif"),
                               PathToURL("dir/bar.gif")};
 
-  std::vector<FullTaskDescriptor> tasks;
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   // The returned values happen to be ordered alphabetically by app_id, so we
   // rely on this to keep the test simple.
   EXPECT_LT(gif_app_id_, image_app_id_);
@@ -752,16 +775,18 @@ TEST_F(FileManagerFileTasksCrostiniTest, MultipleTypes) {
   std::vector<GURL> file_urls{PathToURL("dir/foo.gif"),
                               PathToURL("dir/bar.png")};
 
-  std::vector<FullTaskDescriptor> tasks;
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(image_app_id_, tasks[0].task_descriptor.app_id);
 
   entries.emplace_back(crostini_folder_.Append("qux.mp4"), "video/mp4", false);
   file_urls.emplace_back(PathToURL("dir/qux.mp4"));
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   EXPECT_EQ(0U, tasks.size());
 }
 
@@ -772,12 +797,13 @@ TEST_F(FileManagerFileTasksCrostiniTest, AlternateMimeTypes) {
   std::vector<GURL> file_urls{PathToURL("dir/bar1.foo"),
                               PathToURL("dir/bar2.foo")};
 
-  std::vector<FullTaskDescriptor> tasks;
-  FindAllTypesOfTasksSynchronousWrapper().Call(test_profile_.get(), entries,
-                                               file_urls, &tasks);
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
+  std::vector<FullTaskDescriptor>& tasks = resulting_tasks->tasks;
+
+  FindAllTypesOfTasksSynchronousWrapper().Call(
+      test_profile_.get(), entries, file_urls, resulting_tasks.get());
   ASSERT_EQ(1U, tasks.size());
   EXPECT_EQ(alt_mime_app_id_, tasks[0].task_descriptor.app_id);
 }
 
-}  // namespace file_tasks
-}  // namespace file_manager.
+}  // namespace file_manager::file_tasks

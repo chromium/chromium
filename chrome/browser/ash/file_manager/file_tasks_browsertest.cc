@@ -67,27 +67,29 @@ struct Expectation {
 // asynchronously).
 void VerifyTasks(int* remaining,
                  Expectation expectation,
-                 std::unique_ptr<std::vector<FullTaskDescriptor>> result) {
-  ASSERT_TRUE(result) << expectation.file_extensions;
+                 std::unique_ptr<ResultingTasks> resulting_tasks) {
+  ASSERT_TRUE(resulting_tasks) << expectation.file_extensions;
   --*remaining;
 
-  auto default_task =
-      base::ranges::find_if(*result, &FullTaskDescriptor::is_default);
+  auto default_task = base::ranges::find_if(resulting_tasks->tasks,
+                                            &FullTaskDescriptor::is_default);
 
   // Early exit for the uncommon situation where no default should be set.
   if (!expectation.app_id) {
-    EXPECT_TRUE(default_task == result->end()) << expectation.file_extensions;
+    EXPECT_TRUE(default_task == resulting_tasks->tasks.end())
+        << expectation.file_extensions;
     return;
   }
 
-  ASSERT_TRUE(default_task != result->end()) << expectation.file_extensions;
+  ASSERT_TRUE(default_task != resulting_tasks->tasks.end())
+      << expectation.file_extensions;
 
   EXPECT_EQ(expectation.app_id, default_task->task_descriptor.app_id)
       << " for extension: " << expectation.file_extensions;
 
   // Verify no other task is set as default.
-  EXPECT_EQ(1, std::count_if(result->begin(), result->end(),
-                             [](const auto& task) { return task.is_default; }))
+  EXPECT_EQ(1, base::ranges::count_if(resulting_tasks->tasks,
+                                      &FullTaskDescriptor::is_default))
       << expectation.file_extensions;
 }
 
@@ -95,8 +97,8 @@ void VerifyTasks(int* remaining,
 void VerifyAsyncTask(int* remaining,
                      Expectation expectation,
                      base::OnceClosure quit_closure,
-                     std::unique_ptr<std::vector<FullTaskDescriptor>> result) {
-  VerifyTasks(remaining, expectation, std::move(result));
+                     std::unique_ptr<ResultingTasks> resulting_tasks) {
+  VerifyTasks(remaining, expectation, std::move(resulting_tasks));
   std::move(quit_closure).Run();
 }
 
@@ -141,7 +143,7 @@ class FileTasksBrowserTest : public TestProfileTypeMixin<InProcessBrowserTest> {
         } else {
           EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
         }
-        entries.push_back({path, mime_type, false});
+        entries.emplace_back(path, mime_type, false);
         GURL url = GURL(base::JoinString(
             {"filesystem:https://site.com/isolated/foo.", extension}, ""));
         ASSERT_TRUE(url.is_valid());

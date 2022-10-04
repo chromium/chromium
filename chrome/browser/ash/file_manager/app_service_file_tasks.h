@@ -21,8 +21,7 @@ namespace storage {
 class FileSystemURL;
 }
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 
 // Returns true if a file handler is enabled. Some handlers such as
 // import-crostini-image can be disabled at runtime by enterprise policy.
@@ -51,7 +50,6 @@ void ExecuteAppServiceTask(
     const std::vector<std::string>& mime_types,
     FileTaskFinishedCallback done);
 
-}  // namespace file_tasks
-}  // namespace file_manager
+}  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_APP_SERVICE_FILE_TASKS_H_

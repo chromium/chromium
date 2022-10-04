@@ -51,8 +51,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
-namespace file_manager {
-namespace file_tasks {
+namespace file_manager::file_tasks {
 
 extensions::api::file_manager_private::TaskResult
 ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
@@ -76,7 +75,9 @@ ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
 }
 
 using extensions::api::file_manager_private::Verb;
+
 namespace {
+
 TaskType GetTaskType(apps::AppType app_type) {
   switch (app_type) {
     case apps::AppType::kArc:
@@ -387,5 +388,4 @@ void ExecuteAppServiceTask(
   }
 }
 
-}  // namespace file_tasks
-}  // namespace file_manager
+}  // namespace file_manager::file_tasks

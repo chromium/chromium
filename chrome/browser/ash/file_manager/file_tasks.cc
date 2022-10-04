@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -66,6 +67,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -323,16 +325,15 @@ void ExecuteTaskAfterMimeTypesCollected(
   }
 }
 
-void PostProcessFoundTasks(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
-  AdjustTasksForMediaApp(entries, result_list.get());
+void PostProcessFoundTasks(Profile* profile,
+                           const std::vector<extensions::EntryInfo>& entries,
+                           FindTasksCallback callback,
+                           std::unique_ptr<ResultingTasks> resulting_tasks) {
+  AdjustTasksForMediaApp(entries, &resulting_tasks->tasks);
 
   // Google documents can only be handled by internal handlers.
   if (ContainsGoogleDocument(entries))
-    KeepOnlyFileManagerInternalTasks(result_list.get());
+    KeepOnlyFileManagerInternalTasks(&resulting_tasks->tasks);
 
   std::set<std::string> disabled_actions;
 
@@ -346,14 +347,15 @@ void PostProcessFoundTasks(
     disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
   } else {
     // Hide the office PWA File Handler.
-    RemoveActionsForApp(extension_misc::kOfficePwaAppId, result_list.get());
+    RemoveActionsForApp(extension_misc::kOfficePwaAppId,
+                        &resulting_tasks->tasks);
 
     // Hack around the fact that App Service will only return one task for each
     // app. We want both tasks to be available, so add the office task if the
     // WebDrive task is available.
     // TODO(petermarshall): Find a better way to enable both tasks.
-    auto it =
-        base::ranges::find_if(*result_list, [](const FullTaskDescriptor& task) {
+    auto it = base::ranges::find_if(
+        resulting_tasks->tasks, [](const FullTaskDescriptor& task) {
           if (!IsFilesAppId(task.task_descriptor.app_id)) {
             return false;
           }
@@ -363,19 +365,19 @@ void PostProcessFoundTasks(
                  action_id == kActionIdWebDriveOfficeExcel ||
                  action_id == kActionIdWebDriveOfficePowerPoint;
         });
-    if (it != result_list->end()) {
+    if (it != resulting_tasks->tasks.end()) {
       FullTaskDescriptor office_task(*it);
       office_task.task_descriptor.action_id =
           base::StrCat({kChromeUIFileManagerURL, "?", kActionIdOpenInOffice});
-      result_list->push_back(office_task);
+      resulting_tasks->tasks.push_back(office_task);
     }
   }
 
   if (!disabled_actions.empty())
-    RemoveFileManagerInternalActions(disabled_actions, result_list.get());
+    RemoveFileManagerInternalActions(disabled_actions, &resulting_tasks->tasks);
 
-  ChooseAndSetDefaultTask(profile, entries, result_list.get());
-  std::move(callback).Run(std::move(result_list));
+  ChooseAndSetDefaultTask(profile, entries, resulting_tasks.get());
+  std::move(callback).Run(std::move(resulting_tasks));
 }
 
 // Returns true if |extension_id| and |action_id| indicate that the file
@@ -559,6 +561,9 @@ bool ExecuteOpenInOfficeTask(Profile* profile,
 }
 
 }  // namespace
+
+ResultingTasks::ResultingTasks() = default;
+ResultingTasks::~ResultingTasks() = default;
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
@@ -952,23 +957,23 @@ bool LaunchQuickOffice(Profile* profile,
   return result;
 }
 
-void FindExtensionAndAppTasks(
-    Profile* profile,
-    const std::vector<extensions::EntryInfo>& entries,
-    const std::vector<GURL>& file_urls,
-    FindTasksCallback callback,
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
-  std::vector<FullTaskDescriptor>* result_list_ptr = result_list.get();
+void FindExtensionAndAppTasks(Profile* profile,
+                              const std::vector<extensions::EntryInfo>& entries,
+                              const std::vector<GURL>& file_urls,
+                              FindTasksCallback callback,
+                              std::unique_ptr<ResultingTasks> resulting_tasks) {
+  auto* tasks = &resulting_tasks->tasks;
 
   // 2. Web tasks file_handlers (View/Open With), Chrome app file_handlers, and
   // extension file_browser_handlers.
-  FindAppServiceTasks(profile, entries, file_urls, result_list_ptr);
+  FindAppServiceTasks(profile, entries, file_urls, tasks);
 
   // 3. Find and append Guest OS tasks.
-  FindGuestOsTasks(profile, entries, file_urls, result_list_ptr,
-                   // Done. Apply post-filtering and callback.
-                   base::BindOnce(PostProcessFoundTasks, profile, entries,
-                                  std::move(callback), std::move(result_list)));
+  FindGuestOsTasks(
+      profile, entries, file_urls, tasks,
+      // Done. Apply post-filtering and callback.
+      base::BindOnce(PostProcessFoundTasks, profile, entries,
+                     std::move(callback), std::move(resulting_tasks)));
 }
 
 void FindAllTypesOfTasks(Profile* profile,
@@ -976,18 +981,17 @@ void FindAllTypesOfTasks(Profile* profile,
                          const std::vector<GURL>& file_urls,
                          FindTasksCallback callback) {
   DCHECK(profile);
-  std::unique_ptr<std::vector<FullTaskDescriptor>> result_list(
-      new std::vector<FullTaskDescriptor>);
+  auto resulting_tasks = std::make_unique<ResultingTasks>();
 
   if (ash::features::ShouldArcAndGuestOsFileTasksUseAppService()) {
     // Skip FindArcTasks and FindGuestOsTasks since these tasks are now found in
     // App Service.
-    FindAppServiceTasks(profile, entries, file_urls, result_list.get());
+    FindAppServiceTasks(profile, entries, file_urls, &resulting_tasks->tasks);
     PostProcessFoundTasks(profile, entries, std::move(callback),
-                          std::move(result_list));
+                          std::move(resulting_tasks));
   } else {
     // 1. Find and append ARC handler tasks.
-    FindArcTasks(profile, entries, file_urls, std::move(result_list),
+    FindArcTasks(profile, entries, file_urls, std::move(resulting_tasks),
                  base::BindOnce(&FindExtensionAndAppTasks, profile, entries,
                                 file_urls, std::move(callback)));
   }
@@ -995,9 +999,9 @@ void FindAllTypesOfTasks(Profile* profile,
 
 void ChooseAndSetDefaultTask(Profile* profile,
                              const std::vector<extensions::EntryInfo>& entries,
-                             std::vector<FullTaskDescriptor>* tasks) {
+                             ResultingTasks* resulting_tasks) {
   // Collect the default tasks from the preferences into a set.
-  std::set<TaskDescriptor> default_tasks;
+  base::flat_set<TaskDescriptor> default_tasks;
   for (const extensions::EntryInfo& entry : entries) {
     const base::FilePath& file_path = entry.path;
     const std::string& mime_type = entry.mime_type;
@@ -1041,9 +1045,11 @@ void ChooseAndSetDefaultTask(Profile* profile,
     }
   }
 
+  auto& tasks = resulting_tasks->tasks;
+
   // Go through all the tasks from the beginning and see if there is any
   // default task. If found, pick and set it as default and return.
-  for (FullTaskDescriptor& task : *tasks) {
+  for (FullTaskDescriptor& task : tasks) {
     DCHECK(!task.is_default);
     if (base::Contains(default_tasks, task.task_descriptor)) {
       task.is_default = true;
@@ -1053,7 +1059,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
 
   // No default task. If the "Open in Docs/Sheets/Slides through Drive" workflow
   // is available for Office files, set as default.
-  for (FullTaskDescriptor& task : *tasks) {
+  for (FullTaskDescriptor& task : tasks) {
     if (IsWebDriveOfficeTask(task.task_descriptor)) {
       task.is_default = true;
       return;
@@ -1063,7 +1069,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
   // Check for an explicit file extension match (without MIME match) in the
   // extension manifest and pick that over the fallback handlers below (see
   // crbug.com/803930)
-  for (FullTaskDescriptor& task : *tasks) {
+  for (FullTaskDescriptor& task : tasks) {
     if (task.is_file_extension_match && !task.is_generic_file_handler &&
         !IsFallbackFileHandler(task)) {
       task.is_default = true;
@@ -1073,7 +1079,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
 
   // Prefer a fallback app over viewing in the browser (crbug.com/1111399).
   // Unless it's HTML which should open in the browser (crbug.com/1121396).
-  for (FullTaskDescriptor& task : *tasks) {
+  for (FullTaskDescriptor& task : tasks) {
     if (IsFallbackFileHandler(task) &&
         ParseFilesAppActionId(task.task_descriptor.action_id) !=
             "view-in-browser") {
@@ -1090,7 +1096,7 @@ void ChooseAndSetDefaultTask(Profile* profile,
 
   // No default tasks found. If there is any fallback file browser handler,
   // make it as default task, so it's selected by default.
-  for (FullTaskDescriptor& task : *tasks) {
+  for (FullTaskDescriptor& task : tasks) {
     DCHECK(!task.is_default);
     if (IsFallbackFileHandler(task)) {
       task.is_default = true;

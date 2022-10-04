@@ -101,7 +101,6 @@
 #include "base/callback_forward.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "extensions/browser/api/file_handlers/app_file_handler_util.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -250,6 +249,29 @@ struct FullTaskDescriptor {
   bool is_file_extension_match;
 };
 
+// Describes how admin policy affects the default task in a ResultingTasks.
+enum class PolicyDefaultHandlerStatus {
+  // Indicates that the default task was selected according to the policy
+  // settings.
+  kDefaultHandlerAssignedByPolicy,
+
+  // Indicates that no default task was set due to some assignment conflicts.
+  // Possible reasons are:
+  //  * The user is trying to open multiple files which have different policy
+  //  default handlers;
+  //  * The admin-specified handler was not found in the list of tasks.
+  kIncorrectAssignment
+};
+
+// Represents a set of tasks capable of handling file entries.
+struct ResultingTasks {
+  ResultingTasks();
+  ~ResultingTasks();
+
+  std::vector<FullTaskDescriptor> tasks;
+  absl::optional<PolicyDefaultHandlerStatus> policy_default_handler_status;
+};
+
 // Registers profile prefs related to file_manager.
 void RegisterProfilePrefs(PrefRegistrySimple*);
 
@@ -318,7 +340,7 @@ bool LaunchQuickOffice(Profile* profile,
 
 // Callback function type for FindAllTypesOfTasks.
 typedef base::OnceCallback<void(
-    std::unique_ptr<std::vector<FullTaskDescriptor>> result)>
+    std::unique_ptr<ResultingTasks> resulting_tasks)>
     FindTasksCallback;
 
 // Finds all types (file handlers, file browser handlers) of
@@ -333,12 +355,13 @@ void FindAllTypesOfTasks(Profile* profile,
                          const std::vector<GURL>& file_urls,
                          FindTasksCallback callback);
 
-// Chooses the default task in |tasks| and sets it as default, if the default
-// task is found (i.e. the default task may not exist in |tasks|). No tasks
-// should be set as default before calling this function.
+// Chooses the default task in |resulting_tasks| and sets it as default, if the
+// default task is found (i.e. the default task may not exist in
+// |resulting_tasks|). No tasks should be set as default before calling this
+// function.
 void ChooseAndSetDefaultTask(Profile* profile,
                              const std::vector<extensions::EntryInfo>& entries,
-                             std::vector<FullTaskDescriptor>* tasks);
+                             ResultingTasks* resulting_tasks);
 
 // Returns whether |path| is an HTML file according to its extension.
 bool IsHtmlFile(const base::FilePath& path);

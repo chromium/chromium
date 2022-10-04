@@ -33,8 +33,7 @@
 using content::BrowserThread;
 using storage::FileSystemURL;
 
-namespace file_manager {
-namespace util {
+namespace file_manager::util {
 namespace {
 
 bool shell_operations_allowed = true;
@@ -82,11 +81,11 @@ void OpenFileMimeTypeAfterTasksListed(
     Profile* profile,
     const GURL& url,
     platform_util::OpenOperationCallback callback,
-    std::unique_ptr<std::vector<file_tasks::FullTaskDescriptor>> tasks) {
+    std::unique_ptr<file_tasks::ResultingTasks> resulting_tasks) {
   // Select a default handler. If a default handler is not available, select
   // the first non-generic file handler.
   const file_tasks::FullTaskDescriptor* chosen_task = nullptr;
-  for (const auto& task : *tasks) {
+  for (const auto& task : resulting_tasks->tasks) {
     if (!task.is_generic_file_handler) {
       if (task.is_default) {
         chosen_task = &task;
@@ -233,5 +232,4 @@ void DisableShellOperationsForTesting() {
   shell_operations_allowed = false;
 }
 
-}  // namespace util
-}  // namespace file_manager
+}  // namespace file_manager::util
