@@ -28,6 +28,14 @@ struct PreviousWin {
   string ad_json;
 };
 
+
+// Degree to which k-anonymity is enforced.
+enum KAnonymityBidMode {
+  kNone,   // k-anonymity is ignored.
+  kSimulate,  // No enforcement, but result of enforcement is simulated
+  kEnforce  // Enforced.
+};
+
 // Subset of blink.mojom.InterestGroup that is used by GenerateBid() and can
 // vary between InterestGroups that can use the same BidderWorklet (so it's
 // "not shared" between InterestGroups that share the same BidderWorklet).
@@ -51,6 +59,10 @@ struct BidderWorkletNonSharedParams {
   string? user_bidding_signals;
   array<blink.mojom.InterestGroupAd>? ads;
   array<blink.mojom.InterestGroupAd>? ad_components;
+
+  // ads_kanon[url] is true iff `url` is sufficiently k-anonymous to be used
+  // as an ad or an ad component.
+  map<url.mojom.Url, bool> ads_kanon;
 };
 
 // Browser signals passed to the BidderWorklet's generateBid() method that are
@@ -143,6 +155,16 @@ interface GenerateBidClient {
   // `bid` If the worklet is successfully loaded and chooses to bid in the
   //  auction, contains information about the bid. Null otherwise.
   //
+  // `alternate_bid` If k-anonymity is enforced, and `alternate_bid` is
+  //  non-null, it contains a non-k-anon-bid that would have won without the
+  //  enforcement.
+  //
+  //  If k-anonymity is simulated, if `alternate_bid` is non-null it contains
+  //  a k-anon bid that would have been the winner rather than (non-kanon) `bid`
+  //  had enforcement actually been happening.
+  //
+  //  If k-anonymity is off, this is always null.
+  //
   // `bidding_signals_data_version` The value of the Data-Version header served
   //  with the trusted bidding signals.
   //
@@ -182,6 +204,7 @@ interface GenerateBidClient {
   //  errors from failing to load the worklet script.
   OnGenerateBidComplete(
       BidderWorkletBid? bid,
+      BidderWorkletBid? alternate_bid,
       uint32 bidding_signals_data_version,
       bool has_bidding_signals_data_version,
       url.mojom.Url? debug_loss_report_url,
@@ -216,6 +239,11 @@ interface BidderWorklet {
   // `bidder_worklet_non_shared_params` values that can vary in the
   //  InterestGroup definitions of the InterestGroups that can share this
   //  BidderWorklet.
+  //
+  // `kanon_mode` determines whether to use k-anonymity to potentially re-run
+  //  the bidding function with only ads that are k-anonymous and produce an
+  //  alternative bid. See GenerateBidClient.OnGenerateBidComplete for more
+  //  details.
   //
   // `interest_group_join_origin` is the origin from which the interest group
   //  was joined; can affect context reuse in certain execution modes.
@@ -253,6 +281,7 @@ interface BidderWorklet {
   //  progresses. Associated to retain priority ordering of calls.
   GenerateBid(
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
+      KAnonymityBidMode kanon_mode,
       url.mojom.Origin interest_group_join_origin,
       string? auction_signals_json,
       string? per_buyer_signals_json,

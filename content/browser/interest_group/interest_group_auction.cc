@@ -59,6 +59,7 @@ namespace {
 
 using blink::mojom::ReportingDestination;
 constexpr base::TimeDelta kMaxTimeout = base::Milliseconds(500);
+constexpr base::TimeDelta kKAnonymityExpiration = base::Days(7);
 
 // For group freshness metrics.
 constexpr base::TimeDelta kGroupFreshnessMin = base::Minutes(1);
@@ -319,6 +320,7 @@ class InterestGroupAuction::BuyerHelper
 
   void OnGenerateBidComplete(
       auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
+      auction_worklet::mojom::BidderWorkletBidPtr alternate_bid,
       uint32_t bidding_signals_data_version,
       bool has_bidding_signals_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
@@ -520,6 +522,28 @@ class InterestGroupAuction::BuyerHelper
                                   /*errors=*/{});
   }
 
+  base::flat_map<GURL, bool> ComputeKAnon(
+      const StorageInterestGroup& storage_interest_group,
+      auction_worklet::mojom::KAnonymityBidMode kanon_mode) {
+    if (kanon_mode == auction_worklet::mojom::KAnonymityBidMode::kNone) {
+      return base::flat_map<GURL, bool>();
+    }
+
+    // k-anon cache is always checked against the same time, to avoid weird
+    // behavior of validity changing in the middle of the auction.
+    base::Time start_time = auction_->auction_start_time_;
+
+    std::vector<std::pair<GURL, bool>> kanon_entries;
+    for (const auto& ad_kanon : storage_interest_group.ads_kanon) {
+      bool is_kanon =
+          ad_kanon.is_k_anonymous &&
+          (ad_kanon.last_updated + kKAnonymityExpiration < start_time);
+      if (is_kanon)
+        kanon_entries.emplace_back(ad_kanon.key, true);
+    }
+    return base::flat_map<GURL, bool>(std::move(kanon_entries));
+  }
+
   // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
   // for the bidder identified by `bid_state`. Starts generating a bid.
   void OnBidderWorkletReceived(BidState* bid_state) {
@@ -536,6 +560,8 @@ class InterestGroupAuction::BuyerHelper
         generate_bid_client_receiver_set_.Add(
             this, pending_remote.InitWithNewEndpointAndPassReceiver(),
             bid_state);
+    auction_worklet::mojom::KAnonymityBidMode kanon_mode =
+        auction_worklet::mojom::KAnonymityBidMode::kNone;
     bid_state->worklet_handle->GetBidderWorklet()->GenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -544,8 +570,9 @@ class InterestGroupAuction::BuyerHelper
             interest_group.daily_update_url,
             interest_group.trusted_bidding_signals_keys,
             interest_group.user_bidding_signals, interest_group.ads,
-            interest_group.ad_components),
-        bid_state->bidder.joining_origin,
+            interest_group.ad_components,
+            ComputeKAnon(bid_state->bidder, kanon_mode)),
+        kanon_mode, bid_state->bidder.joining_origin,
         auction_->config_->non_shared_params.auction_signals,
         auction_->PerBuyerSignals(bid_state),
         auction_->PerBuyerTimeout(bid_state), auction_->config_->seller,

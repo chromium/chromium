@@ -29,12 +29,12 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   ~SetBidBindings() override;
 
   // This must be called before every time this is used.
-  void ReInitialize(
-      base::TimeTicks start,
-      bool has_top_level_seller_origin,
-      const absl::optional<std::vector<blink::InterestGroup::Ad>>* ads,
-      const absl::optional<std::vector<blink::InterestGroup::Ad>>*
-          ad_components);
+  // bidder_worklet_non_shared_params->ads.has_value() must be true.
+  void ReInitialize(base::TimeTicks start,
+                    bool has_top_level_seller_origin,
+                    const mojom::BidderWorkletNonSharedParams*
+                        bidder_worklet_non_shared_params,
+                    bool restrict_to_kanon_ads);
 
   void FillInGlobalTemplate(
       v8::Local<v8::ObjectTemplate> global_template) override;
@@ -56,10 +56,10 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
 
   base::TimeTicks start_;
   bool has_top_level_seller_origin_ = false;
-  raw_ptr<const absl::optional<std::vector<blink::InterestGroup::Ad>>> ads_ =
-      nullptr;
-  raw_ptr<const absl::optional<std::vector<blink::InterestGroup::Ad>>>
-      ad_components_ = nullptr;
+
+  raw_ptr<const mojom::BidderWorkletNonSharedParams>
+      bidder_worklet_non_shared_params_ = nullptr;
+  bool restrict_to_kanon_ads_ = false;
 
   mojom::BidderWorkletBidPtr bid_;
 };
