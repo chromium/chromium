@@ -42,24 +42,10 @@ import java.util.Set;
 class TabSelectionEditorMediator
         implements TabSelectionEditorCoordinator.TabSelectionEditorController,
                    TabSelectionEditorAction.ActionDelegate {
-    // TODO(977271): Unify similar interfaces in other components that used the TabListCoordinator.
-    /**
-     * Interface for resetting the selectable tab grid.
-     */
-    interface ResetHandler {
-        /**
-         * Handles the reset event.
-         * @param tabs List of {@link Tab}s to reset.
-         * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
-         * @param quickMode whether to use quick mode.
-         */
-        void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode);
-    }
-
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
     private final TabListCoordinator mTabListCoordinator;
-    private final ResetHandler mResetHandler;
+    private final TabSelectionEditorCoordinator.ResetHandler mResetHandler;
     private final PropertyModel mModel;
     private final SelectionDelegate<Integer> mSelectionDelegate;
     private final TabSelectionEditorToolbar mTabSelectionEditorToolbar;
@@ -99,7 +85,8 @@ class TabSelectionEditorMediator
     };
 
     TabSelectionEditorMediator(Context context, TabModelSelector tabModelSelector,
-            TabListCoordinator tabListCoordinator, ResetHandler resetHandler, PropertyModel model,
+            TabListCoordinator tabListCoordinator,
+            TabSelectionEditorCoordinator.ResetHandler resetHandler, PropertyModel model,
             SelectionDelegate<Integer> selectionDelegate,
             TabSelectionEditorToolbar tabSelectionEditorToolbar, boolean actionOnRelatedTabs) {
         mContext = context;
@@ -309,6 +296,9 @@ class TabSelectionEditorMediator
         mVisibleTabs.clear();
         mResetHandler.resetWithListOfTabs(null, 0, /*quickMode=*/false);
         mModel.set(TabSelectionEditorProperties.IS_VISIBLE, false);
+        if (ChromeFeatureList.sDiscardOccludedBitmaps.isEnabled()) {
+            mResetHandler.postHiding();
+        }
     }
 
     @Override

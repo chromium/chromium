@@ -34,6 +34,7 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -350,6 +351,10 @@ public class TabGridDialogView extends FrameLayout {
             mHideDialogAnimation.play(hideAnimator);
             mHideDialogAnimation.removeAllListeners();
             mHideDialogAnimation.addListener(mHideDialogAnimationListener);
+
+            if (ChromeFeatureList.sDiscardOccludedBitmaps.isEnabled()) {
+                updateAnimationCardView(null);
+            }
             return;
         }
 
@@ -665,6 +670,17 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     private void updateAnimationCardView(View view) {
+        if (view == null) {
+            ((ImageView) mAnimationCardView.findViewById(R.id.tab_favicon)).setImageDrawable(null);
+            ((TextView) (mAnimationCardView.findViewById(R.id.tab_title))).setText("");
+            ((ImageView) (mAnimationCardView.findViewById(R.id.tab_thumbnail)))
+                    .setImageDrawable(null);
+            ((ImageView) mAnimationCardView.findViewById(R.id.action_button))
+                    .setImageDrawable(null);
+            mAnimationCardView.findViewById(R.id.background_view).setBackground(null);
+            return;
+        }
+
         // Update the dummy animation card view with the actual item view from grid tab switcher
         // recyclerView.
         FrameLayout.LayoutParams params =

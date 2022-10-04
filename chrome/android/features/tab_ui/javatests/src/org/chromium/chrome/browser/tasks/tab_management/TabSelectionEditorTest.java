@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.DISCARD_OCCLUDED_BITMAPS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
@@ -107,11 +108,12 @@ import java.util.Map;
 /**
  * End-to-end test for TabSelectionEditor.
  */
+// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
 @EnableFeatures({TAB_GROUPS_ANDROID, GRID_TAB_SWITCHER_FOR_TABLETS + "<Study",
-        TAB_STRIP_IMPROVEMENTS, TAB_GROUPS_FOR_TABLETS})
+        TAB_STRIP_IMPROVEMENTS, TAB_GROUPS_FOR_TABLETS, DISCARD_OCCLUDED_BITMAPS})
 @DisableFeatures(TAB_TO_GTS_ANIMATION)
 @Batch(Batch.PER_CLASS)
 public class TabSelectionEditorTest {
@@ -123,6 +125,7 @@ public class TabSelectionEditorTest {
             "/chrome/test/data/android/share/link_share_http_canonical.html";
     private static final String PAGE_WITH_NO_CANONICAL_URL =
             "/chrome/test/data/android/share/link_share_no_canonical.html";
+    // clang-format on
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

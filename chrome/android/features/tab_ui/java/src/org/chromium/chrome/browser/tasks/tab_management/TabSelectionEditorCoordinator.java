@@ -41,6 +41,25 @@ import java.util.List;
 class TabSelectionEditorCoordinator {
     static final String COMPONENT_NAME = "TabSelectionEditor";
 
+    // TODO(977271): Unify similar interfaces in other components that used the TabListCoordinator.
+    /**
+     * Interface for resetting the selectable tab grid.
+     */
+    interface ResetHandler {
+        /**
+         * Handles the reset event.
+         * @param tabs List of {@link Tab}s to reset.
+         * @param preSelectedCount First {@code preSelectedCount} {@code tabs} are pre-selected.
+         * @param quickMode whether to use quick mode.
+         */
+        void resetWithListOfTabs(@Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode);
+
+        /**
+         * Handles cleanup.
+         */
+        void postHiding();
+    }
+
     /**
      * An interface to control the TabSelectionEditor.
      */
@@ -206,8 +225,22 @@ class TabSelectionEditorCoordinator {
             mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
                     mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
 
+            ResetHandler resetHandler = new ResetHandler() {
+                @Override
+                public void resetWithListOfTabs(
+                        @Nullable List<Tab> tabs, int preSelectedCount, boolean quickMode) {
+                    TabSelectionEditorCoordinator.this.resetWithListOfTabs(
+                            tabs, preSelectedCount, quickMode);
+                }
+
+                @Override
+                public void postHiding() {
+                    mTabListCoordinator.postHiding();
+                    mTabListCoordinator.softCleanup();
+                }
+            };
             mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
-                    mTabModelSelector, mTabListCoordinator, this::resetWithListOfTabs, mModel,
+                    mTabModelSelector, mTabListCoordinator, resetHandler, mModel,
                     mSelectionDelegate, mTabSelectionEditorLayout.getToolbar(), displayGroups);
         }
     }

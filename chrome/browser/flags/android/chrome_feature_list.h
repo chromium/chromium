@@ -56,6 +56,7 @@ BASE_DECLARE_FEATURE(kCCTResourcePrefetch);
 BASE_DECLARE_FEATURE(kCCTRetainingState);
 BASE_DECLARE_FEATURE(kCCTShowAboutBlankUrl);
 BASE_DECLARE_FEATURE(kCCTToolbarCustomizations);
+BASE_DECLARE_FEATURE(kDiscardOccludedBitmaps);
 BASE_DECLARE_FEATURE(kDontAutoHideBrowserControls);
 BASE_DECLARE_FEATURE(kCacheDeprecatedSystemLocationSetting);
 BASE_DECLARE_FEATURE(kChromeNewDownloadTab);

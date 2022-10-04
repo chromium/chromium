@@ -58519,6 +58519,7 @@ from previous Chrome versions.
   <int value="-926422468" label="disable-embedded-shared-worker"/>
   <int value="-926236394" label="SendTabToSelfHistory:enabled"/>
   <int value="-926039080" label="VaapiVp9kSVCHWEncoding:disabled"/>
+  <int value="-923422400" label="DiscardOccludedBitmaps:enabled"/>
   <int value="-920483976" label="AccessCodeCastRememberDevices:disabled"/>
   <int value="-920204598" label="ScrollAnchorSerialization:enabled"/>
   <int value="-920001827" label="NearbySharingSelfShareAutoAccept:disabled"/>
@@ -61005,6 +61006,7 @@ from previous Chrome versions.
   <int value="613629912" label="LookalikeUrlNavigationSuggestions:enabled"/>
   <int value="614174812" label="GlobalMediaControlsOverlayControls:disabled"/>
   <int value="615008173" label="UserAgentOverrideExperiment:enabled"/>
+  <int value="615733361" label="DiscardOccludedBitmaps:disabled"/>
   <int value="616141486" label="PasswordNotesWithBackup:disabled"/>
   <int value="616609955" label="ActionableContentSettings:enabled"/>
   <int value="616660621" label="ImeInputLogicFst:disabled"/>

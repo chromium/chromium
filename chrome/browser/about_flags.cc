@@ -9618,6 +9618,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid | kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEnableWebUsbOnExtensionServiceWorker)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"discard-occluded-bitmaps", flag_descriptions::kDiscardOccludedBitmapsName,
+     flag_descriptions::kDiscardOccludedBitmapsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kDiscardOccludedBitmaps)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

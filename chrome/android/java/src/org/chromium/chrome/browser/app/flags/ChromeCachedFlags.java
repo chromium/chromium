@@ -95,6 +95,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sCreateSafebrowsingOnStartup);
                 add(ChromeFeatureList.sCriticalPersistedTabData);
                 add(ChromeFeatureList.sDiscoverMultiColumn);
+                add(ChromeFeatureList.sDiscardOccludedBitmaps);
                 add(ChromeFeatureList.sDownloadsAutoResumptionNative);
                 add(ChromeFeatureList.sEarlyLibraryLoad);
                 add(ChromeFeatureList.sElasticOverscroll);

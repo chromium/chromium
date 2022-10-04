@@ -749,6 +749,35 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void hideDialog_FadeOutAnimation_ClearsViewAnimation() {
+        // Mock that the animation source view is set, and the dialog is showing.
+        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+
+        mMediator.hideDialog(false);
+
+        // Animation source view should not be specified.
+        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        verify(mDialogController).resetWithListOfTabs(eq(null));
+    }
+
+    @Test
+    public void hideDialog_WithVisibilityListener_ClearsViewAnimation() {
+        // Mock that the animation source view exists, and the dialog is showing.
+        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        // Set visibility listener.
+        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, mMediator);
+
+        mMediator.hideDialog(false);
+
+        // Animation source view should not be specified.
+        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        verifyZeroInteractions(mDialogController);
+    }
+
+    @Test
     public void hideDialog_ZoomOutAnimation() {
         // Mock that the animation source view is null, and the dialog is showing.
         mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);

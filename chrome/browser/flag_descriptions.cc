@@ -3529,6 +3529,12 @@ const char kChromeSharingHubLaunchAdjacentDescription[] =
     "In multi-window mode, launches share hub actions in an adjacent window. "
     "For internal debugging.";
 
+const char kDiscardOccludedBitmapsName[] =
+    "Discard occluded bitmaps in Android UI";
+const char kDiscardOccludedBitmapsDescription[] =
+    "Proactively discard cached bitmaps that are occluded/offscreen. Applies "
+    "to several UI surfaces. May introduce jank if the bitmap is needed again.";
+
 const char kEnableCbdSignOutName[] =
     "Decouple Sign out from clearing browsing data";
 const char kEnableCbdSignOutDescription[] =
