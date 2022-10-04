@@ -3513,7 +3513,7 @@ TEST_P(PasswordManagerTest,
        MarkServerPredictedClearTextPasswordFieldEligibleForGeneration) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::KEnablePasswordGenerationForClearTextFields);
+      password_manager::features::kEnablePasswordGenerationForClearTextFields);
 
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))

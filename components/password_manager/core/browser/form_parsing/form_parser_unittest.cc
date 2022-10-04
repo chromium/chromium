@@ -1145,7 +1145,7 @@ TEST(FormParserTest, ReadonlyFields) {
 TEST(FormParserTest, ServerPredictionsForClearTextPasswordFields) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
-      password_manager::features::KEnablePasswordGenerationForClearTextFields);
+      password_manager::features::kEnablePasswordGenerationForClearTextFields);
   CheckTestData({
       {
           .description_for_logging = "Server prediction for account change "

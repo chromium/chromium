@@ -147,7 +147,7 @@ bool HasSingleUsernameVote(const FormPredictions& form) {
 bool HasNewPasswordVote(const FormPredictions& form) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::
-              KEnablePasswordGenerationForClearTextFields))
+              kEnablePasswordGenerationForClearTextFields))
     return false;
   for (const auto& field : form.fields) {
     if (field.type == ACCOUNT_CREATION_PASSWORD || field.type == NEW_PASSWORD)

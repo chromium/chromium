@@ -34,7 +34,7 @@ BASE_DECLARE_FEATURE(kForceEnablePasswordDomainCapabilities);
 BASE_DECLARE_FEATURE(kEnableFaviconForPasswords);
 BASE_DECLARE_FEATURE(kEnableOverwritingPlaceholderUsernames);
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorage);
-extern const base::Feature KEnablePasswordGenerationForClearTextFields;
+BASE_DECLARE_FEATURE(kEnablePasswordGenerationForClearTextFields);
 BASE_DECLARE_FEATURE(kEnablePasswordManagerWithinFencedFrame);
 BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsites);
 BASE_DECLARE_FEATURE(kFillOnAccountSelect);

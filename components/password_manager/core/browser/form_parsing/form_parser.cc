@@ -139,7 +139,7 @@ bool IsNotUsernameField(const ProcessedField& field) {
 // server-predicted clear-text fields is enabled.
 bool IsPasswordGenerationForClearTextFieldsEnabled() {
   return base::FeatureList::IsEnabled(
-      password_manager::features::KEnablePasswordGenerationForClearTextFields);
+      password_manager::features::kEnablePasswordGenerationForClearTextFields);
 }
 
 // Returns true iff |field_type| is one of password types.
