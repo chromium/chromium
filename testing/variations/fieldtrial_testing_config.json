@@ -6421,7 +6421,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220926",
+                    "name": "Enabled_20221013",
                     "params": {
                         "minPhotosVersionForImage": "6.8",
                         "minPhotosVersionForVideo": "6.8"
