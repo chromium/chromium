@@ -49,17 +49,23 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-        <TextView
-          android:id="@+id/fast_checkout_autofill_profile_item_email"
+        <LinearLayout
+          android:id="@+id/fast_checkout_autofill_profile_sub_section"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/fast_checkout_address_item_email_margin_top"
-          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
-        <TextView
-          android:id="@+id/fast_checkout_autofill_profile_item_phone_number"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+          android:orientation="vertical"
+          android:layout_marginTop="@dimen/fast_checkout_address_item_email_margin_top">
+            <TextView
+              android:id="@+id/fast_checkout_autofill_profile_item_email"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            <TextView
+              android:id="@+id/fast_checkout_autofill_profile_item_phone_number"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        </LinearLayout>
     </LinearLayout>
     <ImageView
         android:id="@+id/fast_checkout_autofill_profile_item_selected_icon"

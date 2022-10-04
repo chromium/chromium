@@ -35,6 +35,7 @@ public class HomeScreenViewBinder {
         final Context mContext;
         final TextView mFullNameTextView;
         final TextView mStreetAddressTextView;
+        final LinearLayout mProfileSubsectionView;
         final TextView mEmailAddressTextView;
         final TextView mPhoneNumberTextView;
         final TextView mCreditCardHeaderTextView;
@@ -49,6 +50,8 @@ public class HomeScreenViewBinder {
                     contentView.findViewById(R.id.fast_checkout_home_sheet_profile_name);
             mStreetAddressTextView =
                     contentView.findViewById(R.id.fast_checkout_home_sheet_profile_street);
+            mProfileSubsectionView =
+                    contentView.findViewById(R.id.fast_checkout_home_sheet_profile_sub_section);
             mEmailAddressTextView =
                     contentView.findViewById(R.id.fast_checkout_home_sheet_profile_email);
             mPhoneNumberTextView =
@@ -79,7 +82,14 @@ public class HomeScreenViewBinder {
     }
 
     private static String getFullStreetAddress(FastCheckoutAutofillProfile profile) {
-        return profile.getStreetAddress() + ", " + profile.getPostalCode();
+        StringBuilder builder = new StringBuilder();
+        builder.append(profile.getStreetAddress());
+        // Add divider only if both elements exist.
+        if (!profile.getStreetAddress().isEmpty() && !profile.getPostalCode().isEmpty()) {
+            builder.append(", ");
+        }
+        builder.append(profile.getPostalCode());
+        return builder.toString();
     }
 
     private static void updateProfile(PropertyModel model, ViewHolder view) {
@@ -88,6 +98,16 @@ public class HomeScreenViewBinder {
         view.mStreetAddressTextView.setText(getFullStreetAddress(profile));
         view.mEmailAddressTextView.setText(profile.getEmailAddress());
         view.mPhoneNumberTextView.setText(profile.getPhoneNumber());
+        hideIfEmpty(view.mFullNameTextView);
+        hideIfEmpty(view.mStreetAddressTextView);
+        hideIfEmpty(view.mEmailAddressTextView);
+        hideIfEmpty(view.mPhoneNumberTextView);
+
+        // Hide address profile subsection if empty.
+        view.mProfileSubsectionView.setVisibility(
+                profile.getEmailAddress().isEmpty() && profile.getPhoneNumber().isEmpty()
+                        ? View.GONE
+                        : View.VISIBLE);
     }
 
     private static void updateCreditCard(PropertyModel model, ViewHolder view) {
@@ -99,5 +119,9 @@ public class HomeScreenViewBinder {
         } catch (Resources.NotFoundException e) {
             view.mCreditCardImageView.setImageDrawable(null);
         }
+    }
+
+    private static void hideIfEmpty(TextView view) {
+        view.setVisibility(view.length() == 0 ? View.GONE : View.VISIBLE);
     }
 }

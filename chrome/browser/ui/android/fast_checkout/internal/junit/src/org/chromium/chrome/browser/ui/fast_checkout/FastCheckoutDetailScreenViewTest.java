@@ -188,6 +188,12 @@ public class FastCheckoutDetailScreenViewTest {
     @Test
     @SmallTest
     public void testRecyclerViewBindsProfileDataToItemView() {
+        FastCheckoutAutofillProfile emptyFieldsProfile =
+                FastCheckoutTestUtils.createDetailedProfile(
+                        /*guid=*/"111", /*name=*/"", /*streetAddress=*/"",
+                        /*city=*/"", /*postalCode=*/"", /*email=*/"",
+                        /*phoneNumber=*/"");
+
         ModelList models = mModel.get(PROFILE_MODEL_LIST);
         models.add(new ListItem(DetailItemType.PROFILE,
                 AutofillProfileItemProperties.create(sSampleProfile1, /*isSelected=*/false,
@@ -195,23 +201,44 @@ public class FastCheckoutDetailScreenViewTest {
         models.add(new ListItem(DetailItemType.PROFILE,
                 AutofillProfileItemProperties.create(sSampleProfile2, /*isSelected=*/true,
                         /*onClickListener=*/() -> {})));
+
+        models.add(new ListItem(DetailItemType.PROFILE,
+                AutofillProfileItemProperties.create(emptyFieldsProfile, /*isSelected=*/false,
+                        /*onClickListener=*/() -> {})));
+
         mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
 
         // Check that the sheet is populated properly.
         ShadowLooper.shadowMainLooper().idle();
-        assertThat(getListItems().getChildCount(), is(2));
+        assertThat(getListItems().getAdapter().getItemCount(), is(3));
 
         assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/false);
         assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/true);
+        assertThatProfileItemLayoutIsCorrectAt(2, emptyFieldsProfile, /*isSelected=*/false);
 
         // Update the selection.
         models.get(0).model.set(AutofillProfileItemProperties.IS_SELECTED, true);
         models.get(1).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
+        models.get(2).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
 
         ShadowLooper.shadowMainLooper().idle();
 
         assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/true);
         assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/false);
+        assertThatProfileItemLayoutIsCorrectAt(2, emptyFieldsProfile, /*isSelected=*/false);
+
+        // Update the selection.
+        models.get(0).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
+        models.get(1).model.set(AutofillProfileItemProperties.IS_SELECTED, false);
+        models.get(2).model.set(AutofillProfileItemProperties.IS_SELECTED, true);
+
+        ShadowLooper.shadowMainLooper().idle();
+
+        assertThatProfileItemLayoutIsCorrectAt(0, sSampleProfile1, /*isSelected=*/false);
+        assertThatProfileItemLayoutIsCorrectAt(1, sSampleProfile2, /*isSelected=*/false);
+        assertThatProfileItemLayoutIsCorrectAt(2, emptyFieldsProfile, /*isSelected=*/true);
+
+        ShadowLooper.shadowMainLooper().idle();
     }
 
     @Test
@@ -223,35 +250,41 @@ public class FastCheckoutDetailScreenViewTest {
                         /*origin=*/"https://example.at", /*name=*/"", /*number=*/"23423423432",
                         /*obfuscatedNumber=*/"34326", /*month=*/"05", /*year=*/"2035",
                         /*issuerIconString=*/"visaCC");
+        FastCheckoutCreditCard sampleCardEmptyFields =
+                FastCheckoutTestUtils.createDetailedCreditCard(/*guid=*/"7534",
+                        /*origin=*/"", /*name=*/"", /*number=*/"",
+                        /*obfuscatedNumber=*/"", /*month=*/"05", /*year=*/"2035",
+                        /*issuerIconString=*/"visaCC");
 
         models.add(new ListItem(DetailItemType.CREDIT_CARD,
-                CreditCardItemProperties.create(sSampleCard1, /*isSelected=*/false,
-                        /*onClickListener=*/() -> {})));
-        models.add(new ListItem(DetailItemType.CREDIT_CARD,
-                CreditCardItemProperties.create(sSampleCard2, /*isSelected=*/true,
+                CreditCardItemProperties.create(sSampleCard1, /*isSelected=*/true,
                         /*onClickListener=*/() -> {})));
         models.add(new ListItem(DetailItemType.CREDIT_CARD,
                 CreditCardItemProperties.create(sampleCardNoName, /*isSelected=*/false,
+                        /*onClickListener=*/() -> {})));
+        models.add(new ListItem(DetailItemType.CREDIT_CARD,
+                CreditCardItemProperties.create(sampleCardEmptyFields, /*isSelected=*/false,
                         /*onClickListener=*/() -> {})));
         mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
 
         // Check that the sheet is populated properly.
         ShadowLooper.shadowMainLooper().idle();
-        assertThat(getListItems().getChildCount(), is(3));
+        assertThat(getListItems().getAdapter().getItemCount(), is(3));
 
-        assertThatCreditCardItemLayoutIsCorrectAt(0, sSampleCard1, /*isSelected=*/false);
-        assertThatCreditCardItemLayoutIsCorrectAt(1, sSampleCard2, /*isSelected=*/true);
-        assertThatCreditCardItemLayoutIsCorrectAt(2, sampleCardNoName, /*isSelected=*/false);
+        assertThatCreditCardItemLayoutIsCorrectAt(0, sSampleCard1, /*isSelected=*/true);
+        assertThatCreditCardItemLayoutIsCorrectAt(1, sampleCardNoName, /*isSelected=*/false);
+        assertThatCreditCardItemLayoutIsCorrectAt(2, sampleCardEmptyFields, /*isSelected=*/false);
 
         // Update the selection.
-        models.get(0).model.set(CreditCardItemProperties.IS_SELECTED, true);
-        models.get(1).model.set(CreditCardItemProperties.IS_SELECTED, false);
+        models.get(0).model.set(CreditCardItemProperties.IS_SELECTED, false);
+        models.get(1).model.set(CreditCardItemProperties.IS_SELECTED, true);
+        models.get(2).model.set(CreditCardItemProperties.IS_SELECTED, false);
 
         ShadowLooper.shadowMainLooper().idle();
 
-        assertThatCreditCardItemLayoutIsCorrectAt(0, sSampleCard1, /*isSelected=*/true);
-        assertThatCreditCardItemLayoutIsCorrectAt(1, sSampleCard2, /*isSelected=*/false);
-        assertThatCreditCardItemLayoutIsCorrectAt(2, sampleCardNoName, /*isSelected=*/false);
+        assertThatCreditCardItemLayoutIsCorrectAt(0, sSampleCard1, /*isSelected=*/false);
+        assertThatCreditCardItemLayoutIsCorrectAt(1, sampleCardNoName, /*isSelected=*/true);
+        assertThatCreditCardItemLayoutIsCorrectAt(2, sampleCardEmptyFields, /*isSelected=*/false);
     }
 
     @Test
@@ -298,25 +331,35 @@ public class FastCheckoutDetailScreenViewTest {
         return textView.getText().toString();
     }
 
+    /** Returns the TextView with resId inside the item at this index. */
+    private TextView getTextViewFromListItemWithId(int index, int resId) {
+        return getListItemAt(index).findViewById(resId);
+    }
+
     /** Asserts that the layout of the profile item at the given index is correct. */
     private void assertThatProfileItemLayoutIsCorrectAt(
             int index, FastCheckoutAutofillProfile profile, boolean isSelected) {
-        assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_name),
-                equalTo(profile.getFullName()));
-        assertThat(getTextFromListItemWithId(
-                           index, R.id.fast_checkout_autofill_profile_item_street_address),
-                equalTo(profile.getStreetAddress()));
-        assertThat(getTextFromListItemWithId(
-                           index, R.id.fast_checkout_autofill_profile_item_city_and_postal_code),
-                equalTo(profile.getLocality() + ", " + profile.getPostalCode()));
-        assertThat(
-                getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_country),
-                equalTo(profile.getCountryName()));
-        assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_email),
-                equalTo(profile.getEmailAddress()));
-        assertThat(getTextFromListItemWithId(
-                           index, R.id.fast_checkout_autofill_profile_item_phone_number),
-                equalTo(profile.getPhoneNumber()));
+        assertViewShowsTextOrInvisible(
+                getTextViewFromListItemWithId(index, R.id.fast_checkout_autofill_profile_item_name),
+                profile.getFullName());
+        assertViewShowsTextOrInvisible(
+                getTextViewFromListItemWithId(
+                        index, R.id.fast_checkout_autofill_profile_item_street_address),
+                profile.getStreetAddress());
+        assertViewShowsTextOrInvisible(
+                getTextViewFromListItemWithId(
+                        index, R.id.fast_checkout_autofill_profile_item_city_and_postal_code),
+                getLocalityAndPostalCode(profile));
+        assertViewShowsTextOrInvisible(getTextViewFromListItemWithId(index,
+                                               R.id.fast_checkout_autofill_profile_item_country),
+                profile.getCountryName());
+        assertViewShowsTextOrInvisible(getTextViewFromListItemWithId(index,
+                                               R.id.fast_checkout_autofill_profile_item_email),
+                profile.getEmailAddress());
+        assertViewShowsTextOrInvisible(
+                getTextViewFromListItemWithId(
+                        index, R.id.fast_checkout_autofill_profile_item_phone_number),
+                profile.getPhoneNumber());
 
         View icon = getListItemAt(index).findViewById(
                 R.id.fast_checkout_autofill_profile_item_selected_icon);
@@ -329,22 +372,18 @@ public class FastCheckoutDetailScreenViewTest {
     /** Asserts that the layout of the credit card item at the given index is correct. */
     private void assertThatCreditCardItemLayoutIsCorrectAt(
             int index, FastCheckoutCreditCard card, boolean isSelected) {
-        assertThat(getTextFromListItemWithId(index, R.id.fast_checkout_credit_card_item_number),
-                equalTo(card.getObfuscatedNumber()));
+        assertViewShowsTextOrInvisible(
+                getTextViewFromListItemWithId(index, R.id.fast_checkout_credit_card_item_number),
+                card.getObfuscatedNumber());
 
         // The name row should get hidden if the name is empty.
-        TextView nameView =
-                getListItemAt(index).findViewById(R.id.fast_checkout_credit_card_item_name);
-        if (card.getName().isEmpty()) {
-            assertThat(nameView.getVisibility(), is(View.INVISIBLE));
-        } else {
-            assertThat(nameView.getVisibility(), is(View.VISIBLE));
-            assertThat(nameView.getText().toString(), equalTo(card.getName()));
-        }
+        assertViewShowsTextOrInvisible(
+                getListItemAt(index).findViewById(R.id.fast_checkout_credit_card_item_name),
+                card.getName());
 
-        assertThat(getTextFromListItemWithId(
-                           index, R.id.fast_checkout_credit_card_item_expiration_date),
-                equalTo(card.getMonth() + "/" + card.getYear()));
+        assertViewShowsTextOrInvisible(getTextViewFromListItemWithId(index,
+                                               R.id.fast_checkout_credit_card_item_expiration_date),
+                card.getMonth() + "/" + card.getYear());
 
         View icon = getListItemAt(index).findViewById(
                 R.id.fast_checkout_credit_card_item_selected_icon);
@@ -355,5 +394,29 @@ public class FastCheckoutDetailScreenViewTest {
                 getListItemAt(index).findViewById(R.id.fast_checkout_credit_card_icon);
         assertThat(shadowOf(paymentIcon.getDrawable()).getCreatedFromResId(),
                 is(card.getIssuerIconDrawableId()));
+    }
+
+    private void assertViewShowsTextOrInvisible(TextView view, String text) {
+        if (text.isEmpty()) {
+            assertThat(view.getVisibility(), is(View.GONE));
+        } else {
+            assertThat(view.getVisibility(), is(View.VISIBLE));
+            assertThat(view.getText().toString(), equalTo(text));
+        }
+    }
+
+    /**
+     * Returns the properly formatted combination of city and postal code. For now,
+     * that means adhering to US formatting.
+     */
+    private static String getLocalityAndPostalCode(FastCheckoutAutofillProfile profile) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(profile.getLocality());
+        // Add divider only if both elements exist.
+        if (!profile.getLocality().isEmpty() && !profile.getPostalCode().isEmpty()) {
+            builder.append(", ");
+        }
+        builder.append(profile.getPostalCode());
+        return builder.toString();
     }
 }

@@ -30,19 +30,43 @@ class AutofillProfileItemViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == AUTOFILL_PROFILE) {
             FastCheckoutAutofillProfile profile = model.get(AUTOFILL_PROFILE);
-            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_name))
-                    .setText(profile.getFullName());
-            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_street_address))
-                    .setText(profile.getStreetAddress());
-            ((TextView) view.findViewById(
-                     R.id.fast_checkout_autofill_profile_item_city_and_postal_code))
-                    .setText(getCityAndPostalCode(profile));
-            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_country))
-                    .setText(profile.getCountryName());
-            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_email))
-                    .setText(profile.getEmailAddress());
-            ((TextView) view.findViewById(R.id.fast_checkout_autofill_profile_item_phone_number))
-                    .setText(profile.getPhoneNumber());
+            TextView fullNameView =
+                    view.findViewById(R.id.fast_checkout_autofill_profile_item_name);
+            fullNameView.setText(profile.getFullName());
+
+            TextView streetAddressView =
+                    view.findViewById(R.id.fast_checkout_autofill_profile_item_street_address);
+            streetAddressView.setText(profile.getStreetAddress());
+
+            TextView postalCodeView = view.findViewById(
+                    R.id.fast_checkout_autofill_profile_item_city_and_postal_code);
+            postalCodeView.setText(getLocalityAndPostalCode(profile));
+
+            TextView countryView =
+                    view.findViewById(R.id.fast_checkout_autofill_profile_item_country);
+            countryView.setText(profile.getCountryName());
+
+            TextView emailView = view.findViewById(R.id.fast_checkout_autofill_profile_item_email);
+            emailView.setText(profile.getEmailAddress());
+
+            TextView phoneNumber =
+                    view.findViewById(R.id.fast_checkout_autofill_profile_item_phone_number);
+            phoneNumber.setText(profile.getPhoneNumber());
+
+            hideIfEmpty(fullNameView);
+            hideIfEmpty(streetAddressView);
+            hideIfEmpty(postalCodeView);
+            hideIfEmpty(countryView);
+            hideIfEmpty(emailView);
+            hideIfEmpty(phoneNumber);
+
+            // Hide address profile subsection if empty.
+            View profileSubSectionView =
+                    view.findViewById(R.id.fast_checkout_autofill_profile_sub_section);
+            profileSubSectionView.setVisibility(
+                    profile.getEmailAddress().isEmpty() && profile.getPhoneNumber().isEmpty()
+                            ? View.GONE
+                            : View.VISIBLE);
         } else if (propertyKey == ON_CLICK_LISTENER) {
             view.setOnClickListener((v) -> model.get(ON_CLICK_LISTENER).run());
         } else if (propertyKey == IS_SELECTED) {
@@ -55,11 +79,18 @@ class AutofillProfileItemViewBinder {
      * Returns the properly formatted combination of city and postal code. For now,
      * that means adhering to US formatting.
      */
-    private static String getCityAndPostalCode(FastCheckoutAutofillProfile profile) {
+    private static String getLocalityAndPostalCode(FastCheckoutAutofillProfile profile) {
         StringBuilder builder = new StringBuilder();
         builder.append(profile.getLocality());
-        builder.append(", ");
+        // Add divider only if both elements exist.
+        if (!profile.getLocality().isEmpty() && !profile.getPostalCode().isEmpty()) {
+            builder.append(", ");
+        }
         builder.append(profile.getPostalCode());
         return builder.toString();
+    }
+
+    private static void hideIfEmpty(TextView view) {
+        view.setVisibility(view.length() == 0 ? View.GONE : View.VISIBLE);
     }
 }
