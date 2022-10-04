@@ -144,9 +144,8 @@ void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators() {
 void AshAcceleratorConfiguration::InitializeDeprecatedAccelerators(
     base::span<const DeprecatedAcceleratorData> deprecated_data,
     base::span<const AcceleratorData> deprecated_accelerators) {
-  for (const auto& deprecated_data : deprecated_data) {
-    const DeprecatedAcceleratorData* data = &deprecated_data;
-    actions_with_deprecations_[data->action] = data;
+  for (const auto& data : deprecated_data) {
+    actions_with_deprecations_[data.action] = &data;
   }
 
   AddAccelerators(deprecated_accelerators, mojom::AcceleratorType::kDeprecated);
