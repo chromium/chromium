@@ -141,6 +141,8 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
 
   AddSinkCallback add_sink_callback_;
 
+  int access_code_not_found_count_ = 0;
+
   // The id of the media sink discovered from the access code;
   absl::optional<MediaSink::Id> sink_id_;
 

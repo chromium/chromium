@@ -95,6 +95,30 @@ TEST(AccessCodeCastMetricsTest, OnCastSessionResult) {
       "AccessCodeCast.Discovery.CastModeOnSuccess", 4);
 }
 
+TEST(AccessCodeCastMetricsTest, RecordAccessCodeNotFoundCount) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(0);
+  histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.AccessCodeNotFoundCount",
+                                    0);
+
+  AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(1);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.AccessCodeNotFoundCount", 1, 1);
+
+  AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(100);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.AccessCodeNotFoundCount", 100, 1);
+
+  // Over 100 should be reported as 100.
+  AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(500);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Ui.AccessCodeNotFoundCount", 100, 2);
+
+  histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.AccessCodeNotFoundCount",
+                                    3);
+}
+
 TEST(AccessCodeCastMetricsTest, RecordDialogLoadTime) {
   base::HistogramTester histogram_tester;
 

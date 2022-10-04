@@ -160,6 +160,8 @@ AccessCodeCastHandler::AccessCodeCastHandler(
 }
 
 AccessCodeCastHandler::~AccessCodeCastHandler() {
+  AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(
+      access_code_not_found_count_);
   if (media_route_starter_)
     media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
 }
@@ -232,6 +234,10 @@ void AccessCodeCastHandler::OnSinkAddedResult(
     access_code_cast::mojom::AddSinkResultCode add_sink_result,
     absl::optional<MediaSink::Id> sink_id) {
   DCHECK(sink_id || add_sink_result != AddSinkResultCode::OK);
+
+  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND)
+    access_code_not_found_count_++;
+
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
   if (add_sink_result != AddSinkResultCode::OK && add_sink_callback_) {

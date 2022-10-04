@@ -78,6 +78,7 @@ class AccessCodeCastMetrics {
   ~AccessCodeCastMetrics();
 
   // UMA histogram names.
+  static const char kHistogramAccessCodeNotFoundCount[];
   static const char kHistogramAddSinkResultNew[];
   static const char kHistogramAddSinkResultRemembered[];
   static const char kHistogramCastModeOnSuccess[];
@@ -90,6 +91,9 @@ class AccessCodeCastMetrics {
   // media_router::MediaCastMode.
   static void OnCastSessionResult(int route_request_result_code,
                                   AccessCodeCastCastMode mode);
+
+  // Records the count of ACCESS_CODE_NOT_FOUND errors per instance of dialog.
+  static void RecordAccessCodeNotFoundCount(int count);
 
   // Records the result of adding an access code sink.
   static void RecordAddSinkResult(bool is_remembered,
