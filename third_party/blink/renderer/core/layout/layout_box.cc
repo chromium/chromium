@@ -2646,6 +2646,9 @@ bool LayoutBox::TextIsKnownToBeOnOpaqueBackground() const {
   return PhysicalBackgroundRect(kBackgroundKnownOpaqueRect).Contains(rect);
 }
 
+// Note that callers are responsible for checking
+// ChildPaintBlockedByDisplayLock(), since that is a property of the parent
+// rather than of the child.
 static bool IsCandidateForOpaquenessTest(const LayoutBox& child_box) {
   // Skip all layers to simplify ForegroundIsKnownToBeOpaqueInRect(). This
   // covers cases of clipped, transformed, translucent, composited, etc.
@@ -2668,6 +2671,8 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
     unsigned max_depth_to_test) const {
   NOT_DESTROYED();
   if (!max_depth_to_test)
+    return false;
+  if (ChildPaintBlockedByDisplayLock())
     return false;
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
