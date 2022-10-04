@@ -8,6 +8,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -178,10 +179,11 @@ TouchEvent CreateTouchEventDraft(const fup::TouchEvent& event,
                                 view_parameters.viewport_to_view_transform);
   // TODO(fxbug.dev/88580): Consider setting hover via
   // ui::TouchEvent::set_hovering().
-  return TouchEvent(event_type, gfx::PointF(logical[0], logical[1]),
-                    gfx::PointF(sample.position_in_viewport()[0],
-                                sample.position_in_viewport()[1]),
-                    timestamp, pointer_details);
+  gfx::PointF location(logical[0], logical[1]);
+  gfx::PointF root_location(sample.position_in_viewport()[0],
+                            sample.position_in_viewport()[1]);
+  return TouchEvent(event_type, location, root_location, timestamp,
+                    pointer_details);
 }
 
 // It returns a "draft" because the coordinates are logical. Later,
@@ -282,7 +284,14 @@ std::unique_ptr<MouseEvent> CreateMouseEventDraft(
 
 PointerEventsHandler::PointerEventsHandler(fup::TouchSourceHandle touch_source,
                                            fup::MouseSourceHandle mouse_source)
-    : touch_source_(touch_source.Bind()), mouse_source_(mouse_source.Bind()) {}
+    : touch_source_(touch_source.Bind()), mouse_source_(mouse_source.Bind()) {
+  touch_source_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "fuchsia.ui.pointer.TouchSource disconnected.";
+  });
+  mouse_source_.set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "fuchsia.ui.pointer.MouseSource disconnected.";
+  });
+}
 
 PointerEventsHandler::~PointerEventsHandler() = default;
 

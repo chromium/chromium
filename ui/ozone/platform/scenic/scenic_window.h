@@ -19,6 +19,7 @@
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_dispatcher.h"
 #include "ui/events/fuchsia/input_event_sink.h"
+#include "ui/events/fuchsia/pointer_events_handler.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -111,6 +112,9 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   // Called from OnScenicEvents() to handle focus change and input events.
   void OnInputEvent(const fuchsia::ui::input::InputEvent& event);
 
+  // Hanging gets from |view_ref_focused_|.
+  void OnViewRefFocusedWatchResult(fuchsia::ui::views::FocusState focus_state);
+
   // Sizes the Scenic nodes based on the View dimensions, and device pixel
   // ratio, and signals the dimensions change to the window delegate.
   void UpdateSize();
@@ -148,23 +152,29 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   fuchsia::ui::input3::KeyboardPtr keyboard_service_;
   std::unique_ptr<KeyboardClient> keyboard_client_;
 
+  // React to view-focus coming and going.
+  fuchsia::ui::views::ViewRefFocusedPtr view_ref_focused_;
+
+  // Accept touch and mouse events.
+  absl::optional<PointerEventsHandler> pointer_handler_;
+
   // Scenic session used for all drawing operations in this View.
-  scenic::Session scenic_session_;
+  absl::optional<scenic::Session> scenic_session_;
 
   // Used for safely queueing Present() operations on |scenic_session_|.
-  SafePresenter safe_presenter_;
+  absl::optional<SafePresenter> safe_presenter_;
 
   // The view resource in |scenic_session_|.
-  scenic::View view_;
+  absl::optional<scenic::View> view_;
 
   // Entity node for the |view_|.
-  scenic::EntityNode node_;
+  absl::optional<scenic::EntityNode> node_;
 
   // Node in |scenic_session_| for receiving input that hits within our View.
-  scenic::ShapeNode input_node_;
+  absl::optional<scenic::ShapeNode> input_node_;
 
   // Node in |scenic_session_| for rendering (hit testing disabled).
-  scenic::EntityNode render_node_;
+  absl::optional<scenic::EntityNode> render_node_;
 
   // Holds the View into which the GPU processes composites the window's
   // contents.
