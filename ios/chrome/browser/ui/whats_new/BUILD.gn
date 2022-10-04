@@ -9,6 +9,9 @@ source_set("whats_new") {
     "whats_new_coordinator.mm",
     "whats_new_detail_view_controller.h",
     "whats_new_detail_view_controller.mm",
+    "whats_new_mediator.h",
+    "whats_new_mediator.mm",
+    "whats_new_primary_action_handler.h",
     "whats_new_table_view_controller.h",
     "whats_new_table_view_controller.mm",
   ]
@@ -19,6 +22,7 @@ source_set("whats_new") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
     "//ios/chrome/browser/ui/whats_new/cells",
+    "//ios/chrome/browser/ui/whats_new/data_source",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",

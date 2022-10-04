@@ -1,0 +1,36 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/chrome/tools/strings/substitute_strings_identifier.gni")
+
+substitute_strings_identifier("convert_whats_new_items") {
+  source = "whats_new_entries.plist"
+  output = "$target_gen_dir/whats_new_items.plist"
+  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
+  deps = [ "//ios/chrome/app/strings:ios_strings" ]
+}
+
+bundle_data("whats_new_entries_plist") {
+  public_deps = [ ":convert_whats_new_items" ]
+  sources = get_target_outputs(":convert_whats_new_items")
+
+  outputs = [ "{{bundle_resources_dir}}/whats_new_entries.plist" ]
+}
+
+substitute_strings_identifier("convert_unit_tests_resources") {
+  source = "test/data/whats_new_test.plist"
+  output = "$target_gen_dir/whats_new/test/data/whats_new_test.plist"
+  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
+  deps = [ "//ios/chrome/app/strings:ios_strings" ]
+}
+
+bundle_data("unit_tests_resources") {
+  visibility = [ "//ios/chrome/browser/ui/whats_new/data_source:unit_tests" ]
+  testonly = true
+  public_deps = [ ":convert_unit_tests_resources" ]
+  sources = get_target_outputs(":convert_unit_tests_resources")
+
+  outputs =
+      [ "{{bundle_resources_dir}}/whats_new/test/data/whats_new_test.plist" ]
+}

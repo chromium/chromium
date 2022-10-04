@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 @interface WhatsNewCoordinator : ChromeCoordinator
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_COORDINATOR_H_
