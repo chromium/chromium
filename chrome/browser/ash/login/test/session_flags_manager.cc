@@ -136,7 +136,7 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
   base::Value* user_flags = value->FindListKey(kUserFlagsKey);
   if (user_flags) {
     user_flags_ = std::vector<Switch>();
-    for (const base::Value& flag : user_flags->GetListDeprecated()) {
+    for (const base::Value& flag : user_flags->GetList()) {
       DCHECK(flag.is_dict());
       user_flags_->emplace_back(
           std::make_pair(*flag.FindStringKey(kFlagNameKey),
@@ -147,7 +147,7 @@ void SessionFlagsManager::LoadStateFromBackingFile() {
   base::Value* restart_job = value->FindListKey(kRestartJobKey);
   if (restart_job) {
     restart_job_ = std::vector<Switch>();
-    for (const base::Value& job_switch : restart_job->GetListDeprecated()) {
+    for (const base::Value& job_switch : restart_job->GetList()) {
       DCHECK(job_switch.is_dict());
       restart_job_->emplace_back(
           std::make_pair(*job_switch.FindStringKey(kFlagNameKey),
