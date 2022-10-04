@@ -1061,6 +1061,10 @@ void SafetyCheckHandler::OnJavascriptDisallowed() {
   // another safety check is started. Otherwise |observed_leak_check_|
   // automatically calls RemoveAll() on destruction.
   observed_leak_check_.Reset();
+  // Remove |this| as an observer for InsecureCredentialsManager. This takes
+  // care of an edge case where an observation would happen when Javascript is
+  // already disabled. See crbug/1370719.
+  observed_insecure_credentials_manager_.Reset();
   // Destroy the version updater to prevent getting a callback and firing a
   // WebUI event, which would cause a crash.
   version_updater_.reset();
