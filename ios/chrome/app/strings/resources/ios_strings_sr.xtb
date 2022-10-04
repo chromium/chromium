@@ -313,7 +313,6 @@
 <translation id="3443810440409579745">Картица је примљена.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3448016392200048164">Подељени приказ</translation>
-<translation id="3450502512529866925">Обележи ову страницу</translation>
 <translation id="345565170154308620">Управљајте лозинкама...</translation>
 <translation id="3469166899695866866">Заустављате преузимање?</translation>
 <translation id="3470502288861289375">Копирање...</translation>
@@ -517,7 +516,6 @@
 <translation id="5090832849094901128">Брисањем ове лозинке нећете избрисати налог на <ph name="WEBSITE" />.</translation>
 <translation id="5092117651143801290">Можете да сачувате странице да бисте их читали касније или офлајн. Chrome ће вас питати да ли желите да сачувате дуге странице.</translation>
 <translation id="5094827893301452931">Твит је довршен.</translation>
-<translation id="509789154667432072">Додај обележивач</translation>
 <translation id="5118713593561876160">Интересовања</translation>
 <translation id="5118764316110575523">Искључено</translation>
 <translation id="5119391094379141756">Изаберите Chrome</translation>
@@ -821,7 +819,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7340958967809483333">Опције за Discover</translation>
 <translation id="7346909386216857016">Важи</translation>
 <translation id="734758817008927353">Опције за чување картице</translation>
-<translation id="7348502496356775519">Означи</translation>
 <translation id="7351537303876921605">Додирните Направи линк у контекстуалном менију</translation>
 <translation id="7353432112255316844">Потврдите свој идентитет</translation>
 <translation id="7356359962760467032">Заустави праћење цена</translation>

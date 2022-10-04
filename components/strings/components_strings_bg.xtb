@@ -844,6 +844,7 @@
 <translation id="3216313131063488104">Блус</translation>
 <translation id="3218181027817787318">Относително</translation>
 <translation id="3223287115535306850">Индикатор за стартиращо се приложение</translation>
+<translation id="3223425961342298674">Достъпът до местоположението не е разрешен</translation>
 <translation id="3225347164936328585">Аплодисменти</translation>
 <translation id="3225919329040284222">Сървърът предостави сертификат, който не съответства на вградените очаквания. Те са включени за определени уебсайтове с голяма степен на сигурност, за да ви предпазим.</translation>
 <translation id="3226128629678568754">Натиснете бутона за презареждане, за да изпратите отново данните, необходими за отварянето на страницата.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="4127575959421463246">Търсите флаговете за Chrome OS? Посетете</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{още 1 елемент}other{още # елемента}}</translation>
 <translation id="4130226655945681476">Проверете мрежовите кабели, модема и маршрутизатора.</translation>
+<translation id="4132448310531350254">Приложенията <ph name="POLICY_IDS_LIST" /> съдържат препратки към дублиращи се манипулатори за файловото разширение <ph name="FILE_EXTENSION" />.</translation>
 <translation id="4134123981501319574">Създаване на документ</translation>
 <translation id="413544239732274901">Научете повече</translation>
 <translation id="4142935452406587478">Тава 10</translation>
@@ -1202,6 +1204,7 @@
 <translation id="4194250254487269611">Картата ви не може да бъде запазена в момента</translation>
 <translation id="4196861286325780578">&amp;Възстановяване на преместването</translation>
 <translation id="4202554117186904723">Пета ролка</translation>
+<translation id="4203769790323223880">Достъпът до камерата не е разрешен</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Проверете конфигурацията на защитната стена и антивирусния софтуер<ph name="END_LINK" />.</translation>
 <translation id="4209092469652827314">Голям</translation>
 <translation id="4210602799576081649">Кодът за потвърждение е изтекъл. Заявете нов</translation>
@@ -1228,6 +1231,7 @@
 &lt;p&gt;Не забравяйте да включите отново антивирусната програма, когато сте готови.&lt;/p&gt;
 &lt;h4&gt;Стъпка 5: Получете допълнителна помощ&lt;/h4&gt;
 &lt;p&gt;Ако продължавате да виждате грешката, свържете се със собственика на уебсайта.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Достъпът до микрофона не е разрешен</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Опитайте да стартирате мрежова диагностика<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Може да поиска разрешение да използва и мести камерата ви</translation>
 <translation id="4235360514405112390">Валиден сертификат</translation>
@@ -1598,6 +1602,7 @@
 <translation id="5177076414499237632">Научете за източника и темата на тази страница</translation>
 <translation id="5179510805599951267">Не е на <ph name="ORIGINAL_LANGUAGE" />? Подайте сигнал за тази грешка</translation>
 <translation id="518639307526414276">Храни и стоки за домашни любимци</translation>
+<translation id="5190072300954988691">Достъпът до камерата и микрофона не е разрешен</translation>
 <translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="5191315092027169558">Потребителският ви профил се управлява от <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> иска да изтегли няколко файла</translation>
@@ -1618,6 +1623,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12 x 19</translation>
 <translation id="5234764350956374838">Отхвърляне</translation>
+<translation id="5239623327352565343">Достъпът до местоположението е разрешен</translation>
 <translation id="5242889659037569123">Багаж и пътнически принадлежности</translation>
 <translation id="5250209940322997802">„Свързване с мрежа“</translation>
 <translation id="52517543715119994">Научете повече за функциите на Chrome</translation>
@@ -2493,6 +2499,7 @@
 <translation id="7581199239021537589">Изместване на изображението от страна 2 по оста Y</translation>
 <translation id="7582602800368606489">Бързо създаване на събитие в Google Календар</translation>
 <translation id="7583969447617676942">Юридически и правни услуги</translation>
+<translation id="7586676035079382730">Достъпът до известията не е разрешен</translation>
 <translation id="7591288787774558753">Да се сподели ли поверително съдържание?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> иска да използва „бисквитки“ и данни за сайтове на <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертификатът на сървъра нарушава ограниченията за име.</translation>
@@ -3043,6 +3050,7 @@
 <translation id="9131119348384879525">Да се заснеме ли поверително съдържание?</translation>
 <translation id="9136861683332321024">Луксозни превозни средства</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
+<translation id="9138037198177304356">Достъпът до известията е разрешен</translation>
 <translation id="9139318394846604261">Пазаруване</translation>
 <translation id="9141013498910525015">Управление на адресите</translation>
 <translation id="9144951720726881238">Дата на валидност:</translation>

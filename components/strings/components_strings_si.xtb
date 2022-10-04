@@ -844,6 +844,7 @@
 <translation id="3216313131063488104">බ්ලූස්</translation>
 <translation id="3218181027817787318">අදාළ</translation>
 <translation id="3223287115535306850">යෙදුම දියත් කිරීමේ තෙරපුම</translation>
+<translation id="3223425961342298674">ස්ථානයට ඉඩ දී නැත</translation>
 <translation id="3225347164936328585">අත්පොළසන් දීම</translation>
 <translation id="3225919329040284222">සේවාදායකය සහතිකයක් ඉදිරිපත් කළ නමුත් එය තිළැලි පොරොත්තු සමඟ නොගැලපේ. ඔබේ ආරක්ෂාව සඳහා එම පොරොත්තු ඇතුළත් කර ඇත්තේ නිශ්චිත අධි-ආරක්ෂිත අඩවි පමණි.</translation>
 <translation id="3226128629678568754">පිටුව ප්‍රවේශනය කිරීමට අවශ්‍ය දත්ත යළි ඉදිරිපත් කිරීමට යළි ප්‍රවේශනය කරන බොත්තම ඔබන්න.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="4127575959421463246">ChromeOS සලකුණු කිරීම් සඳහා සොයන්නේද? පිවිසෙන්න</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{වෙනත් 1}one{වෙනත් #}other{වෙනත් #}}</translation>
 <translation id="4130226655945681476">ජාල කේබල, මොඩමය, සහ රවුටරය පරීක්ෂා කරමින්</translation>
+<translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" යෙදුම් මගින් යොමු කරන ලද "<ph name="FILE_EXTENSION" />" file_extension සඳහා අනුපත් හසුරු.</translation>
 <translation id="4134123981501319574">ලේඛනය තනන්න</translation>
 <translation id="413544239732274901">තව දැන ගන්න</translation>
 <translation id="4142935452406587478">බඳුන 10</translation>
@@ -1202,6 +1204,7 @@
 <translation id="4194250254487269611">ඔබේ කාඩ්පත දැනට සුරැකිය නොහැක</translation>
 <translation id="4196861286325780578">&amp;ගෙන යාම යළි කරන්න</translation>
 <translation id="4202554117186904723">Fifth Roll</translation>
+<translation id="4203769790323223880">කැමරාවට ඉඩ නොදෙයි</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />සුරැකුම් පවුර සහ ප්‍රතිවයිරස වින්‍යාස කිරීම් පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">විශාල</translation>
 <translation id="4210602799576081649">සත්‍යාපන කේතය කල් ඉකුත් වී ඇත, නව කේතයක් ඉල්ලන්න</translation>
@@ -1228,6 +1231,7 @@
     &lt;p&gt;ඔබ නිම වූ පසු ඔබේ ප්‍රතිවයිරස වැඩසටහන ක්‍රියාත්මක කිරීමට මතක තබා ගන්න.&lt;/p&gt;
     &lt;h4&gt;පියවර 5: අමතර උදවු ලබා ගන්න&lt;/h4&gt;
     &lt;p&gt;ඔබට තවමත් දෝෂය පෙනේ නම්, වෙබ් අඩවි හිමිකරු සම්බන්ධ කර ගන්න.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">මයික්‍රෆෝනයට ඉඩ නොදෙයි</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />ජාල දෝෂහරණ ධාවනය කිරීමට උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">ඔබගේ කැමරාව භාවිත කිරීමට සහ චලනය කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="4235360514405112390">වලංගුයි</translation>
@@ -1598,6 +1602,7 @@
 <translation id="5177076414499237632">මෙම පිටුවේ මූලාශ්‍රය සහ මාතෘකාව ගැන දැන ගන්න</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> තුළ නැතිද? මෙම දෝෂය වාර්තා කරන්න</translation>
 <translation id="518639307526414276">සුරතල් සතුන්ගේ ආහාර සහ සුරතල් සතුන්ගේ සත්කාර සැපයුම්</translation>
+<translation id="5190072300954988691">කැමරාවට සහ මයික්‍රෆෝනයට ඉඩ නැත</translation>
 <translation id="5190835502935405962">පොත්සලකුණු තීරුව</translation>
 <translation id="5191315092027169558">ඔබේ පැතිකඩ කළමනාකරණය කරන්නේ <ph name="DOMAIN" /> විසිනි</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> හට බහුවිධ ගොනු බාගැනීමට අවශ්‍යයි</translation>
@@ -1618,6 +1623,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
+<translation id="5239623327352565343">ස්ථානය ඉඩ දී ඇත</translation>
 <translation id="5242889659037569123">ගමන් මලු සහ සංචාර උපකරණ</translation>
 <translation id="5250209940322997802">"ජාලයට සබඳින්න"</translation>
 <translation id="52517543715119994">Chrome විශේෂාංග ගැන දැන ගන්න</translation>
@@ -2493,6 +2499,7 @@
 <translation id="7581199239021537589">පැත්ත 2 රූප Y වැඩ මුරය</translation>
 <translation id="7582602800368606489">ඉක්මනින් Google දින දර්ශනය තුළ නව සිදුවීමක් තනන්න</translation>
 <translation id="7583969447617676942">නෛතික සේවා</translation>
+<translation id="7586676035079382730">දැනුම්දීම්වලට ඉඩ දී නැත</translation>
 <translation id="7591288787774558753">රහසිගත අන්තර්ගතය බෙදා ගන්නද?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> හට <ph name="TOP_LEVEL_URL" /> මත කුකී සහ වෙබ් අඩවි දත්ත භාවිත කිරීමට අවශ්‍යයි</translation>
 <translation id="7592362899630581445">සර්වර් සහතිකය නාමකරණ කොන්දේසි කඩ කරයි</translation>
@@ -3043,6 +3050,7 @@
 <translation id="9131119348384879525">රහසිගත අන්තර්ගතය ග්‍රහණය කරන්නද?</translation>
 <translation id="9136861683332321024">සුඛෝපභෝගී වාහන</translation>
 <translation id="9137013805542155359">මූලිකය පෙන්වන්න</translation>
+<translation id="9138037198177304356">දැනුම්දීම්වලට ඉඩ දී ඇත</translation>
 <translation id="9139318394846604261">සාප්පු යාම</translation>
 <translation id="9141013498910525015">ලිපින කළමනා කරන්න</translation>
 <translation id="9144951720726881238">කල් ඉකුත් වීමේ දිනය:</translation>

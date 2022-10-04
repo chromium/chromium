@@ -841,6 +841,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3216313131063488104">Blyuz</translation>
 <translation id="3218181027817787318">Aloqador</translation>
 <translation id="3223287115535306850">Ilova yuklanishi belgisi</translation>
+<translation id="3223425961342298674">Joylashuv axborotiga kirishga ruxsat berilmagan</translation>
 <translation id="3225347164936328585">Qarsak</translation>
 <translation id="3225919329040284222">Serverdagi sertifikat ba’zi saytlardagi yuqori darajali havfsizlik ichki parametrlariga mos kelmaydi.</translation>
 <translation id="3226128629678568754">Ba’zi ma’lumotlarni qayta kiritish uchun sahifa yuklanishi kerak, “yangilash” tugmasini bosing.</translation>
@@ -1175,6 +1176,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4127575959421463246">ChromeOS bayroqlarini qidiryapsizmi? Bu yerga tashrif buyuring</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{yana 1 ta}other{yana # ta}}</translation>
 <translation id="4130226655945681476">Tarmoq kabellari, modem va routerni tekshiring</translation>
+<translation id="4132448310531350254"><ph name="FILE_EXTENSION" /> kengaytmasi uchun bir nechta standart ishlash vositalari topildi: <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Hujjat yaratish</translation>
 <translation id="413544239732274901">Batafsil</translation>
 <translation id="4142935452406587478">Tarnov 10</translation>
@@ -1197,6 +1199,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4194250254487269611">Hozir bu kartani saqlash imkonsiz</translation>
 <translation id="4196861286325780578">&amp;Ko‘chirib o‘tkazishni qayta bajarish</translation>
 <translation id="4202554117186904723">Beshinchi oʻram</translation>
+<translation id="4203769790323223880">Kameradan foydalanishga ruxsat berilmagan</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Himoya devori va antivirus sozlamalarini tekshirish<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Katta</translation>
 <translation id="4210602799576081649">Tasdiqlash kodi muddati tugadi, yangi kod talab qiling</translation>
@@ -1223,6 +1226,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
     &lt;p&gt;Keyinroq antivirusni qayta yoqishni unutmang.&lt;/p&gt;
     &lt;h4&gt;5-bosqich. Qo‘shimcha yordam olish&lt;/h4&gt;
     &lt;p&gt;Xato qaytarilaversa, sayt egasi bilan bog‘laning.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Mikrofondan foydalanishga ruxsat berilmagan</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Tarmoq diagnostikasi bilan tekshirib ko‘ring<ph name="END_LINK" /></translation>
 <translation id="4230204356098880324">Kameradan foydalanish yoki boshqarish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="4235360514405112390">Haqiqiy</translation>
@@ -1593,6 +1597,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5177076414499237632">Bu sahifa manbasi va mavzusi haqida batafsil</translation>
 <translation id="5179510805599951267">Bu <ph name="ORIGINAL_LANGUAGE" /> tili emasmi? Xatolik haqida xabar yuboring</translation>
 <translation id="518639307526414276">Uy hayvonlari uchun oziq-ovqat va parvarishlash vositalari</translation>
+<translation id="5190072300954988691">Kamera va mikrofondan foydalanishga ruxsat berilmagan</translation>
 <translation id="5190835502935405962">Xatcho‘plar paneli</translation>
 <translation id="5191315092027169558">Profilingiz <ph name="DOMAIN" /> domenida boshqariladi</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> bir nechta faylni yuklab olmoqchi</translation>
@@ -1613,6 +1618,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Yopish</translation>
+<translation id="5239623327352565343">Joylashuv axborotiga kirishga ruxsat berilgan</translation>
 <translation id="5242889659037569123">Chamadon va sayohat aksessuarlari</translation>
 <translation id="5250209940322997802">“Tarmoqqa ulanish”</translation>
 <translation id="52517543715119994">Chrome funksiyalari bilan tanishuv</translation>
@@ -2487,6 +2493,7 @@ Batafsil axborot:
 <translation id="7581199239021537589">Tasvirning orqa tomondagi Y oʻqidagi siljish</translation>
 <translation id="7582602800368606489">Google Taqvimda yangi tadbirni tez yaratish</translation>
 <translation id="7583969447617676942">Yuridik va huquqiy xizmatlar</translation>
+<translation id="7586676035079382730">Bildirishnomalarga kirishga ruxsat berilmagan</translation>
 <translation id="7591288787774558753">Maxfiy kontent ulashilsinmi?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> sayti <ph name="TOP_LEVEL_URL" /> cookie-fayllari va sayt maʼlumotlaridan foydalanmoqchi</translation>
 <translation id="7592362899630581445">Server sertifikati nom cheklovlarni buzgan.</translation>
@@ -3037,6 +3044,7 @@ Batafsil axborot:
 <translation id="9131119348384879525">Maxfiy kontent yozib olinsinmi?</translation>
 <translation id="9136861683332321024">Hashamatli avtomobillar</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>
+<translation id="9138037198177304356">Bildirishnomalarga kirishga ruxsat berilgan</translation>
 <translation id="9139318394846604261">Xaridlar</translation>
 <translation id="9141013498910525015">Manzillarni boshqarish</translation>
 <translation id="9144951720726881238">Tugash muddati:</translation>

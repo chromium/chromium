@@ -378,7 +378,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3029276696788198026">Dim rhaglwytho</translation>
 <translation id="3029704984691124060">Nid yw'r cyfrinymadroddion yn cyfateb</translation>
 <translation id="3031225630520268969">UI caniatâd chwilio llais Assistant</translation>
-<translation id="3034163383943672781">Bydd y lawrlwythiad yn dechrau ar <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Cael help<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Yn dilyn y pris</translation>
 <translation id="3037517125981011456">Dangos anogwyr i fewngofnodi i Chrome</translation>
@@ -455,7 +454,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="3443221991560634068">Ail-lwytho'r dudalen bresennol</translation>
 <translation id="3444179773590444986">Rhannu adborth am y thema dywyll ar gyfer gwefannau?</translation>
 <translation id="3452832259067974318">Er mwyn amddiffyn eich preifatrwydd, ni fydd Chrome yn awtolenwi eich cyfrinair yn y maes hwn.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad wedi'i drefnu}zero{Mae # lawrlwythiad wedi'u trefnu}two{Mae # lawrlwythiad wedi'u trefnu}few{Mae # lawrlwythiad wedi'u trefnu}many{Mae # lawrlwythiad wedi'u trefnu}other{Mae # lawrlwythiad wedi'u trefnu}}</translation>
 <translation id="3474624961160222204">Parhau fel <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Gallwch ddewis eich peiriant chwilio</translation>
 <translation id="3479552764303398839">Nid nawr</translation>
@@ -952,7 +950,6 @@ Mae treialon Privacy Sandbox yn dal i gael eu datblygu ac maent ar gael mewn rha
 <translation id="6196315980958524839">Mae cyfrineiriau'n cael eu cadw i Rheolwr Cyfrineiriau Google ar y ddyfais hon.</translation>
 <translation id="620197886010707372">Agor ap ar gyfer <ph name="APPNAME" /> gyda Google Play?</translation>
 <translation id="6202812185118613467">Mewngofnodwch eto i ddechrau cysoni</translation>
-<translation id="6203593061661911168">Bydd y lawrlwythiad yn dechrau pan fydd y ddyfais wedi'i chysylltu â Wi-Fi</translation>
 <translation id="6210748933810148297">Nid <ph name="EMAIL" /> ydych chi?</translation>
 <translation id="6211386937064921208">Wrthi'n dangos rhagolwg o'r dudalen hon</translation>
 <translation id="6221633008163990886">Datglowch i allforio'ch cyfrineiriau</translation>
@@ -1215,7 +1212,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="751961395872307827">Methu â chysylltu â'r rhwydwaith</translation>
 <translation id="752220631458524187">Datgysylltwch pan fyddwch wedi gorffen</translation>
 <translation id="7523960634226602883">Chwilio gyda'ch camera drwy ddefnyddio Google Lens</translation>
-<translation id="753225086557513863">Wedi'i drefnu ar gyfer yn nes ymlaen</translation>
 <translation id="7562080006725997899">Clirio data pori</translation>
 <translation id="756809126120519699">Wedi clirio data Chrome</translation>
 <translation id="7577900504646297215">Rheoli diddordebau</translation>
@@ -1274,7 +1270,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="784934925303690534">Ystod amser</translation>
 <translation id="7851858861565204677">Dyfeisiau eraill</translation>
 <translation id="7853202427316060426">Gweithgarwch</translation>
-<translation id="7857691613771368249">Gofyn pryd i gadw ffeiliau</translation>
 <translation id="7859988229622350291">Peidio byth â chyfieithu</translation>
 <translation id="7866213166286285359">Cyfieithwch dudalennau yma</translation>
 <translation id="78707286264420418">Mae angen caniatâd dyfeisiau cyfagos ar <ph name="PRODUCT_NAME" /> er mwyn cysylltu eich dyfais</translation>
@@ -1517,7 +1512,6 @@ Mae tocynnau ymddiriedaeth yn gwella preifatrwydd ar y we ac ni ellir eu defnydd
 <translation id="9065203028668620118">Golygu</translation>
 <translation id="9065383040763568503">Data sydd wedi'u storio nad yw Chrome yn credu sy'n bwysig (e.e. gwefannau heb unrhyw osodiadau sydd wedi'u cadw neu nad ydych yn ymweld â nhw'n aml)</translation>
 <translation id="906781307897697745">yn <ph name="PRODUCT_NAME" /></translation>
-<translation id="9069543557624799859">Bydd y lawrlwythiad yn dechrau am <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Nid oes unrhyw dudalennau sydd heb eu darllen</translation>
 <translation id="9070377983101773829">Dechrau chwilio llais</translation>
 <translation id="9074336505530349563">I gael cynnwys wedi'i bersonoleiddio a awgrymir gan Google, mewngofnodwch a throwch gysoni ymlaen</translation>

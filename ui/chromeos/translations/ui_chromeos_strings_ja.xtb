@@ -225,6 +225,7 @@
 <translation id="3016566519832145558">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。</translation>
 <translation id="3029114385395636667">ドキュメント、スプレッドシート、スライドをオフラインで使用できるようにするには、Google オフライン ドキュメントを有効にしてください。</translation>
 <translation id="303198083543495566">位置情報</translation>
+<translation id="3044404008258011032">これらのアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。アイテムの元のフォルダ「<ph name="PARENT_FOLDER_NAME" />」は削除されています。</translation>
 <translation id="3047197340186497470">中国語（大易）</translation>
 <translation id="3067790092342515856">Windows ファイル</translation>
 <translation id="3083975830683400843">Chromebit</translation>
@@ -342,6 +343,7 @@
 <translation id="4057991113334098539">有効にしています...</translation>
 <translation id="4092890906744441904">アイルランド語</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
+<translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
 <translation id="4153015322587141338">ファイルを右クリックして [<ph name="PIN_COMMAND" />] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="4157569377477607576">管理者のポリシーでは、次のことは推奨されていません。</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> を移動しました。</translation>
@@ -438,8 +440,10 @@
 <translation id="485316830061041779">ドイツ語</translation>
 <translation id="4867079195717347957">クリックすると、列が降順で並べ替えられます。</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> バイト</translation>
+<translation id="4874569719830985133">完全に削除</translation>
 <translation id="4880214202172289027">音量スライダー</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="4891091358278567964">これらのアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。アイテムの元のフォルダは削除されています。</translation>
 <translation id="4900532980794411603">Parallels Desktop と共有</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
@@ -495,6 +499,7 @@
         <ph name="MARKUP_7" />ファイルの作成、共有、共同作業<ph name="MARKUP_8" />
         他のユーザーとの作業をすべて 1 か所で行うことができます。<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Google ドライブから復元されたファイル</translation>
+<translation id="5278111733643988471">このアイテムを復元するには、ゴミ箱から新しいフォルダにドラッグしてください。このアイテムの元のフォルダ「<ph name="PARENT_FOLDER_NAME" />」は削除されています。</translation>
 <translation id="5286194356314741248">スキャン中</translation>
 <translation id="5288441970121584418">ハンバーガー</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
@@ -508,6 +513,7 @@
 <translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
 <translation id="5363339716524495120">入力言語は中国語です</translation>
+<translation id="5364067326287025678">ゴミ箱は空です</translation>
 <translation id="5368191757080475556">Linux とのフォルダ共有</translation>
 <translation id="5402367795255837559">点字</translation>
 <translation id="5411472733320185105">以下のホストとドメインにはプロキシ設定を使用しない:</translation>
@@ -774,6 +780,7 @@
 <translation id="7711920809702896782">画像情報</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7732111077498238432">ネットワークはポリシーによって管理されています</translation>
+<translation id="7736003208887389532">これらのファイルを完全に削除しますか？</translation>
 <translation id="7748626145866214022">アクションバーのオプションが増えました。アクションバーにフォーカスを移動するには Alt+A キーを押してください。</translation>
 <translation id="7760449188139285140">中国語（五筆）</translation>
 <translation id="7765158879357617694">移動</translation>
@@ -835,6 +842,7 @@
 <translation id="8249296373107784235">中止</translation>
 <translation id="8250690786522693009">ラテン文字</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
+<translation id="8255595130163158297">ゴミ箱のすべてのアイテムが削除され、復元できなくなります。</translation>
 <translation id="8261506727792406068">削除</translation>
 <translation id="8261561378965667560">中国語（行列）</translation>
 <translation id="8262872909443689080">管理者ポリシー</translation>
@@ -911,6 +919,7 @@
 <translation id="8857149712089373752">ネパール語（表音）キーボード</translation>
 <translation id="8860454412039442620">Excel スプレッドシート</translation>
 <translation id="8866284467018526531">アラビア語（文字変換）</translation>
+<translation id="8873014196523807561">これらのアイテムを復元するには、新しいフォルダにドラッグしてください。アイテムの元のフォルダは一部削除されています。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8900820606136623064">ハンガリー語</translation>
 <translation id="8903931173357132290">卒業</translation>

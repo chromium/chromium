@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">문서 스캔</translation>
 <translation id="1309250603447638106">문서 스캔을 위한 업데이트 다운로드 중</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. 검색 + 왼쪽 화살표 키를 사용하여 액세스하세요.</translation>
-<translation id="1393338179284529051">쿼드 HD</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> 카메라의 연결이 해제되었습니다.</translation>
 <translation id="1473110567575736769">3초 타이머</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">후면 카메라</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" />초</translation>
 <translation id="2761536921376153655">검색 유형</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">미러링 미리보기</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> 카메라가 연결되었습니다.</translation>
 <translation id="2904654629665923749">문서 스캔 기능 사용 가능</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">사용</translation>
 <translation id="5975083100439434680">축소</translation>
 <translation id="5976160379964388480">기타</translation>
-<translation id="603973421174355542">풀 HD</translation>
 <translation id="6073451960410192870">녹화 중지</translation>
 <translation id="6197807149213783179">메타데이터 저장</translation>
 <translation id="6233780560267770709">3x3</translation>
@@ -136,7 +133,6 @@
 <translation id="698156982839284926">3초</translation>
 <translation id="712848772518857951">항목 <ph name="COUNT" />개를 삭제하시겠습니까?</translation>
 <translation id="7134221860976209830">10초 타이머</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">녹화 유형</translation>
 <translation id="7243947652761655814">동영상 해상도</translation>
 <translation id="7337660886763914220">파일 시스템 오류가 발생했습니다.</translation>

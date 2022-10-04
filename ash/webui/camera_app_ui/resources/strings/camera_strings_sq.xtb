@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Skano dokumentin tënd</translation>
 <translation id="1309250603447638106">Po shkarkohen përditësimet për skanimin e dokumenteve</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Kërko + Shigjeta majtas për t'u qasur.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> është shkëputur.</translation>
 <translation id="1473110567575736769">Kohëmatësi me 3 sekonda</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Kamera e pasme</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> sek.</translation>
 <translation id="2761536921376153655">Lloji i skanimit</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Pamja paraprake e pasqyrës</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> është lidhur.</translation>
 <translation id="2904654629665923749">Skanimi i dokumenteve është i disponueshëm</translation>
@@ -113,7 +111,6 @@ Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fot
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5975083100439434680">Zvogëlo</translation>
 <translation id="5976160379964388480">Të tjera</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Ndalo regjistrimin</translation>
 <translation id="6197807149213783179">Ruaj të dhënat meta</translation>
 <translation id="6233780560267770709">3 me 3</translation>
@@ -136,7 +133,6 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="698156982839284926">3 sekonda</translation>
 <translation id="712848772518857951">Dëshiron vërtet që të heqësh <ph name="COUNT" /> artikuj?</translation>
 <translation id="7134221860976209830">Kohëmatësi me 10 sekonda</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Lloji i regjistrimit</translation>
 <translation id="7243947652761655814">Rezolucioni i videos</translation>
 <translation id="7337660886763914220">Gabimet e sistemit të skedarëve.</translation>

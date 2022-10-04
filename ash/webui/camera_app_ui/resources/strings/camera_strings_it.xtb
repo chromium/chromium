@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Scansiona il tuo documento</translation>
 <translation id="1309250603447638106">Download degli aggiornamenti per la funzionalità di scansione dei documenti in corso…</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasto per la ricerca + Freccia sinistra per accedere.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1467231725790366244">Videocamera <ph name="CAMERA" /> scollegata.</translation>
 <translation id="1473110567575736769">Timer di 3 secondi</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Fotocamera posteriore</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Tipo di scansione</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Anteprima specchio</translation>
 <translation id="2879583609344924966">Videocamera <ph name="CAMERA" /> collegata.</translation>
 <translation id="2904654629665923749">Funzionalità di scansione dei documenti disponibile</translation>
@@ -113,7 +111,6 @@ Le app con autorizzazioni di accesso allo spazio di archiviazione potranno acced
 <translation id="5916664084637901428">On</translation>
 <translation id="5975083100439434680">Diminuisci lo zoom</translation>
 <translation id="5976160379964388480">Altri</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Interrompi registrazione</translation>
 <translation id="6197807149213783179">Salva metadati</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -136,7 +133,6 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="698156982839284926">3 secondi</translation>
 <translation id="712848772518857951">Vuoi rimuovere <ph name="COUNT" /> elementi?</translation>
 <translation id="7134221860976209830">Timer di 10 secondi</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Tipo di registrazione</translation>
 <translation id="7243947652761655814">Risoluzione video</translation>
 <translation id="7337660886763914220">Errori del file system.</translation>

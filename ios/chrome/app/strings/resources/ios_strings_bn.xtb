@@ -305,7 +305,6 @@
 <translation id="3443810440409579745">ট্যাব পাওয়া গেছে।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="3448016392200048164">বিভক্ত দৃশ্য</translation>
-<translation id="3450502512529866925">এই পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="345565170154308620">পাসওয়ার্ড পরিচালনা করুন…</translation>
 <translation id="3469166899695866866">ডাউনলোড বন্ধ করবেন?</translation>
 <translation id="3470502288861289375">অনুলিপি করা হচ্ছে...</translation>
@@ -504,7 +503,6 @@
 <translation id="5090832849094901128">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না।</translation>
 <translation id="5092117651143801290">পরে বা অফলাইনে পড়ার জন্য আপনি পৃষ্ঠাগুলি সেভ করে রাখতে পারেন। আপনি দীর্ঘ পৃষ্ঠা সেভ করতে চান কিনা Chrome-এ আপনাকে সেই সম্পর্কে জানতে জিজ্ঞাসা করা হবে।</translation>
 <translation id="5094827893301452931">Tweet সম্পূর্ণ হয়েছে৷</translation>
-<translation id="509789154667432072">বুকমার্ক যোগ করুন</translation>
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5118764316110575523">বন্ধ করা আছে</translation>
 <translation id="5119391094379141756">Chrome বেছে নিন</translation>
@@ -796,7 +794,6 @@
 <translation id="7340958967809483333">Discover-এর বিকল্প</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="734758817008927353">কার্ড সেভ করার বিকল্প দেখার বোতাম</translation>
-<translation id="7348502496356775519">বুকমার্ক</translation>
 <translation id="7353432112255316844">নিজের পরিচয় যাচাই করুন</translation>
 <translation id="7383797227493018512">পড়ার সূচি খুলুন</translation>
 <translation id="7398893703713203428">লিঙ্ক তৈরি করুন</translation>

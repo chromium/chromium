@@ -382,7 +382,6 @@
 <translation id="1361655923249334273">Не используется</translation>
 <translation id="1362865166188278099">Техническая проблема. Проверьте принтер.</translation>
 <translation id="1363585519747660921">Необходимо настроить USB-принтер</translation>
-<translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1368603372088757436">Linux не поддерживается на вашем устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">Синхронизировать с моим аккаунтом</translation>
 <translation id="1373176046406139583">В настройках доступа можно указать, кому вы разрешаете отправлять вам файлы и ссылки, когда ваше устройство разблокировано. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
@@ -810,7 +809,6 @@
 <translation id="1748563609363301860">Вы можете сохранить пароль в аккаунте Google или только на этом устройстве.</translation>
 <translation id="1749733017156547309">Необходимо указать пароль.</translation>
 <translation id="1750172676754093297">На этом электронном ключе не сохраняются цифровые отпечатки.</translation>
-<translation id="1751249301761991853">Персональные настройки</translation>
 <translation id="1751262127955453661">Сайт <ph name="ORIGIN" /> сможет изменять файлы в папке "<ph name="FOLDERNAME" />", пока вы не закроете все вкладки этого сайта.</translation>
 <translation id="17513872634828108">Открытые вкладки</translation>
 <translation id="175196451752279553">От&amp;крыть закрытую вкладку</translation>
@@ -1055,7 +1053,6 @@
 <translation id="1963976881984600709">Стандартная защита</translation>
 <translation id="1965624977906726414">Без специальных разрешений.</translation>
 <translation id="1969654639948595766">Текстовые журналы WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970368523891847084">Включён режим видеосъёмки</translation>
 <translation id="1972325230031091483">Работа браузера станет быстрее благодаря автоматической загрузке контента с учетом просматриваемой в настоящий момент страницы.</translation>
 <translation id="197288927597451399">Сохранить</translation>
 <translation id="1973763416111613016">Невозможно безопасно скачать файл "<ph name="FILE_NAME" />". Чтобы перейти к панели скачанных файлов, нажмите Shift + F6</translation>
@@ -1400,7 +1397,6 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{Открыть все URL в &amp;новой группе вкладок}=1{Открыть в &amp;новой группе вкладок}one{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}few{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}many{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}other{Открыть все URL ({COUNT}) в &amp;новой группе вкладок}}</translation>
 <translation id="2285942871162473373">Не удалось распознать отпечаток пальца. Повторите попытку.</translation>
 <translation id="2287944065963043964">Экран входа</translation>
-<translation id="2288181517385084064">Перейти в режим видео</translation>
 <translation id="2289270750774289114">Запрашивать для сайтов разрешение на поиск Bluetooth-устройств поблизости (рекомендуется)</translation>
 <translation id="2290615375132886363">Кнопки навигации в режиме планшета</translation>
 <translation id="229182044471402145">Подходящих шрифтов не найдено.</translation>
@@ -2797,9 +2793,7 @@
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3602870520245633055">Печать и сканирование</translation>
 <translation id="3603622770190368340">Получение сетевого сертификата</translation>
-<translation id="3604713164406837697">Изменить обои</translation>
 <translation id="3605780360466892872">Бизнесмен</translation>
-<translation id="3608576286259426129">Предварительный просмотр фото</translation>
 <translation id="3609277884604412258">Быстрый поиск</translation>
 <translation id="3610369246614755442">Вентилятору док-станции необходимо техническое обслуживание</translation>
 <translation id="361106536627977100">Данные Flash</translation>
@@ -2852,7 +2846,6 @@
 <translation id="3645372836428131288">Немного перемещайте палец, чтобы отсканировать его полностью.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}one{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}few{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}many{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}other{Вы получили <ph name="ATTACHMENTS" /> с устройства "<ph name="DEVICE_NAME" />".}}</translation>
 <translation id="3648348069317717750">Обнаружено устройство "<ph name="USB_DEVICE_NAME" />"</translation>
-<translation id="3649138363871392317">Снимок сделан.</translation>
 <translation id="3650753875413052677">Ошибка при регистрации</translation>
 <translation id="3650845953328929506">Журнал в очереди загрузки.</translation>
 <translation id="3650952250015018111">Разрешить приложению "<ph name="APP_NAME" />" доступ к этому устройству:</translation>
@@ -3105,7 +3098,6 @@
 <translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Настройки функции "Обмен с окружением" для устройства пользователя <ph name="USER_NAME" /> с аккаунтом <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Диспетчер загрузки</translation>
-<translation id="3882165008614329320">Видео с камеры или из файла</translation>
 <translation id="3883482240657453056">Получайте скидки в магазинах "<ph name="MERCHANT_NAME_1" />" и "<ph name="MERCHANT_NAME_2" />"</translation>
 <translation id="3884152383786131369">Для веб-контента, доступного на нескольких языках, будет использоваться первый подходящий вариант из списка ниже. Эти настройки синхронизированы с настройками браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Обновлениями управляет администратор</translation>
@@ -4476,7 +4468,6 @@
 <translation id="5213481667492808996">Служба передачи данных "<ph name="NAME" />" готова к работе.</translation>
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5215502535566372932">Выберите страну</translation>
-<translation id="521582610500777512">Фотография удалена.</translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5225324770654022472">Показывать кнопку "Сервисы"</translation>
@@ -4807,7 +4798,6 @@
 <translation id="5528295196101251711">Название ВМ</translation>
 <translation id="5532223876348815659">Глобально</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> запрашивает разрешение на:</translation>
-<translation id="5534304873398226603">Удалить фото или видео</translation>
 <translation id="5537725057119320332">Трансляция</translation>
 <translation id="5539070192556911367">Сервер Google недоступен</translation>
 <translation id="5539221284352502426">Сервер отклонил введенный пароль. Помните, что пароль должен отличаться от предыдущих паролей и содержать необходимое количество цифр и символов.</translation>
@@ -4889,7 +4879,6 @@
 <translation id="560834977503641186">Узнать больше о функции "Синхронизация Wi-Fi"</translation>
 <translation id="5608580678041221894">Чтобы двигать рамку кадрирования, нажимайте на следующие кнопки</translation>
 <translation id="5609231933459083978">Неизвестное название приложения</translation>
-<translation id="5610038042047936818">Включить режим фото</translation>
 <translation id="561030196642865721">На этом сайте разрешено использование сторонних файлов cookie.</translation>
 <translation id="5612734644261457353">Неверный пароль. Обратите внимание: если вы недавно изменили пароль, но не выходили из системы, значит новый пароль ещё не вступил в силу и необходимо указать старый.</translation>
 <translation id="5614190747811328134">Уведомление пользователя</translation>
@@ -5797,7 +5786,6 @@
 <translation id="6492396476180293140">Встроенная камера отключена с помощью аппаратного переключателя.</translation>
 <translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494445798847293442">Не является центром сертификации</translation>
-<translation id="6494974875566443634">Персонализация</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Эти данные содержат конфиденциальный или опасный контент.}=1{Этот файл содержит конфиденциальный или опасный контент.}one{Эти файлы содержат конфиденциальный или опасный контент.}few{Эти файлы содержат конфиденциальный или опасный контент.}many{Эти файлы содержат конфиденциальный или опасный контент.}other{Эти файлы содержат конфиденциальный или опасный контент.}}</translation>
 <translation id="6497784818439587832">Изменить масштаб изображения, чтобы увеличить или уменьшить объекты на экране</translation>
 <translation id="6497789971060331894">Обратное направление прокрутки мышью</translation>
@@ -5999,7 +5987,6 @@
 <translation id="6678717876183468697">URL запроса</translation>
 <translation id="6680442031740878064">Доступно: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Скорость речи</translation>
-<translation id="6681668084120808868">Сфотографировать</translation>
 <translation id="6683087162435654533">Восстановить все вкладки</translation>
 <translation id="6684827949542560880">Скачивается последнее обновление</translation>
 <translation id="668599234725812620">Открыть Google Play</translation>
@@ -6333,7 +6320,6 @@
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="6983507711977005608">Отключиться от мгновенной точки доступа</translation>
 <translation id="6983783921975806247">Зарегистрированный OID</translation>
-<translation id="6984299437918708277">Выберите картинку, которая будет видна на экране входа в аккаунт</translation>
 <translation id="6985235333261347343">Агент восстановления ключей Microsoft</translation>
 <translation id="698524779381350301">Автоматически разрешать доступ к следующим сайтам</translation>
 <translation id="6985607387932385770">Принтеры</translation>
@@ -6503,7 +6489,6 @@
 <translation id="7149893636342594995">Последние 24 часа</translation>
 <translation id="7152478047064750137">Расширению не требуются особые разрешения</translation>
 <translation id="7154130902455071009">Смена стартовой страницы на <ph name="START_PAGE" /></translation>
-<translation id="7155171745945906037">Фото с камеры или из галереи</translation>
 <translation id="7159953856712257647">Установлено по умолчанию</translation>
 <translation id="7160182524506337403">Теперь вы можете просматривать уведомления с телефона</translation>
 <translation id="7163202347044721291">Проверка кода активации…</translation>
@@ -6630,7 +6615,6 @@
 <translation id="7287143125007575591">Доступ запрещен.</translation>
 <translation id="7287411021188441799">Восстановить фон по умолчанию</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7289225569524511578">Откройте приложение "Обои"</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – требуется разрешение. Нажмите F6, чтобы ответить.</translation>
 <translation id="7290242001003353852">Сервису входа, размещенному в домене <ph name="SAML_DOMAIN" />, разрешен доступ к вашей камере.</translation>
 <translation id="7295614427631867477">Обратите внимание, что для Android, Google Play и связанных с ними приложений действуют их собственные правила по сбору и использованию данных.</translation>
@@ -7629,7 +7613,6 @@
 <translation id="821119981794423735">Чтобы импортировать пароли в Google Менеджер паролей для <ph name="USER_EMAIL" />, загрузите их в формате CSV.</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Выполняется скачивание}one{Выполняется скачивание}few{Выполняется скачивание}many{Выполняется скачивание}other{Выполняется скачивание}}</translation>
 <translation id="8212601853154459483">Этим профилем управляет <ph name="PROFILE_MANAGER" />. Необходимо создать отдельный профиль для аккаунта <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="8213449224684199188">Включён режим фотосъёмки</translation>
 <translation id="8214489666383623925">Открыть файл...</translation>
 <translation id="8215129063232901118">Доступ к функциям телефона на устройстве <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Выделение указателя мыши</translation>
@@ -8004,7 +7987,6 @@
 <translation id="8592141010104017453">Не показывать уведомления</translation>
 <translation id="859246725979739260">Этому сайту запрещено получать информацию о том, где вы находитесь.</translation>
 <translation id="8593121833493516339">Отправка данных о работе устройства. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Установить личность ребенка по этим данным нельзя. Они нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в аккаунте ребенка. <ph name="BEGIN_LINK1" />Подробнее…<ph name="END_LINK1" /></translation>
-<translation id="8594908476761052472">Снять видео</translation>
 <translation id="8596540852772265699">Пользовательские файлы</translation>
 <translation id="8597845839771543242">Формат свойств:</translation>
 <translation id="8599681327221583254">Одно или несколько правил настроены неправильно. Обратитесь к администратору.</translation>

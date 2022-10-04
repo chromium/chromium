@@ -250,6 +250,7 @@
 <translation id="3484914941826596830">Koppla inte från den externa enheten eller stäng av datorn medan firmware uppdateras. Du kan minimera fönstret. Uppdateringen kan ta en stund och din externa enhet kanske inte fungerar under tiden.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3488065109653206955">Delvis aktiverat</translation>
+<translation id="3510890413042482857">Skicka <ph name="BEGIN_LINK1" />data från resultatspårning<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-uppdatering</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="3532980081107202182">Ungefär <ph name="MIN_REMAINING" /> minuter kvar</translation>

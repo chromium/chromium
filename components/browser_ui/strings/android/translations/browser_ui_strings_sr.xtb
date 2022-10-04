@@ -263,6 +263,7 @@
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
 <translation id="6593061639179217415">Верзија сајта за рачунар</translation>
+<translation id="6608211702542341247">Овај сајт је у групи сајтова корисника <ph name="FPS_OWNER" /> који могу да виде ваше активности у групи</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
 <translation id="662080504995468778">Не затварај</translation>
@@ -351,7 +352,6 @@
 <translation id="8380167699614421159">Овај сајт приказује огласе који ометају активности или обмањујуће огласе</translation>
 <translation id="8394832520002899662">Додирните да бисте се вратили на сајт</translation>
 <translation id="8409345997656833551">Добијте обавештење када је поједностављени приказ доступан за чланак</translation>
-<translation id="8425213833346101688">Промени</translation>
 <translation id="8428213095426709021">Подешавања</translation>
 <translation id="8441146129660941386">Премотај уназад</translation>
 <translation id="8444433999583714703">Да бисте дозволили да <ph name="APP_NAME" /> приступа локацији, укључите локацију и у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>

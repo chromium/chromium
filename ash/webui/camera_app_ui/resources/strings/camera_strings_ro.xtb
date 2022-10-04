@@ -9,7 +9,7 @@
 <translation id="1300209025925956156">Scanează documentul</translation>
 <translation id="1309250603447638106">Se descarcă actualizările pentru scanarea documentelor</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tasta de căutare + săgeată spre stânga pentru acces.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
+<translation id="1417314334557041815">Editează pagina <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> este deconectată.</translation>
 <translation id="1473110567575736769">Cronometru de 3 secunde</translation>
@@ -21,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nu s-a înregistrat nimic</translation>
 <translation id="1838104802459806957">Înclină în sus</translation>
+<translation id="1843105061469674856">Scanează o pagină suplimentară</translation>
 <translation id="1851169887664797861">Comenzi pentru cameră suplimentare disponibile</translation>
 <translation id="1851616744363735765">ÎNTRERUPTĂ</translation>
 <translation id="1862930711583847113">Fișierul <ph name="FILE" /> nu poate fi exportat</translation>
@@ -45,7 +46,6 @@
 <translation id="2599796128805996109">Camera foto posterioară</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> sec.</translation>
 <translation id="2761536921376153655">Tip de scanare</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Previzualizarea oglindirii</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> este conectată.</translation>
 <translation id="2904654629665923749">Este disponibilă scanarea documentelor</translation>
@@ -79,6 +79,7 @@
 <translation id="414641094616694804">Rezoluția acestei camere foto nu poate fi schimbată</translation>
 <translation id="4269820728363426813">Copiază adresa linkului</translation>
 <translation id="4281620174117014503">Rezoluție medie</translation>
+<translation id="428234092390943511">Miniatură pentru pagină</translation>
 <translation id="4329152592498422850">Comută pentru a face o fotografie pătrată</translation>
 <translation id="4340659173795395806">Acum poți crea PDF-uri cu mai multe pagini</translation>
 <translation id="4383571725254449280">Printează jurnalele de performanță</translation>
@@ -113,7 +114,6 @@
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5976160379964388480">Altele</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Oprește înregistrarea</translation>
 <translation id="6197807149213783179">Salvează metadatele</translation>
 <translation id="6233780560267770709">3 pe 3</translation>
@@ -136,7 +136,6 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="698156982839284926">3 secunde</translation>
 <translation id="712848772518857951">Sigur dorești să elimini <ph name="COUNT" /> elemente?</translation>
 <translation id="7134221860976209830">Cronometru de 10 secunde</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Tip de înregistrare</translation>
 <translation id="7243947652761655814">Rezoluție video</translation>
 <translation id="7337660886763914220">Erori în sistemul de fișiere.</translation>

@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">不使用預先載入模式</translation>
 <translation id="3029704984691124060">複雜密碼不符</translation>
 <translation id="3031225630520268969">「Google 助理」語音搜尋同意使用者介面</translation>
-<translation id="3034163383943672781">將會在 <ph name="DATE" />開始下載。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的指示</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題背景提供意見嗎？</translation>
 <translation id="3452832259067974318">為保障您的私隱，Chrome 不會在此欄位自動填入您的密碼。</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{已預定 1 項下載}other{已預定 # 項下載}}</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3478363558367712427">您可以選擇搜尋引擎</translation>
 <translation id="3479552764303398839">略過</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">密碼會儲存至此裝置上的「Google 密碼管理工具」</translation>
 <translation id="620197886010707372">要使用 Google Play 開啟「<ph name="APPNAME" />」應用程式嗎？</translation>
 <translation id="6202812185118613467">重新登入即可開始同步</translation>
-<translation id="6203593061661911168">使用 Wi-Fi 時將開始下載</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽此網頁</translation>
 <translation id="6221633008163990886">解鎖即可匯出您的密碼</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">無法連接網站</translation>
 <translation id="752220631458524187">請在完成後拔除連接線</translation>
 <translation id="7523960634226602883">使用 Google 智能鏡頭，透過相機搜尋</translation>
-<translation id="753225086557513863">已預定稍後下載</translation>
 <translation id="7562080006725997899">正在清除瀏覽資料</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
 <translation id="7577900504646297215">管理興趣</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7851858861565204677">其他裝置</translation>
 <translation id="7853202427316060426">活動</translation>
-<translation id="7857691613771368249">詢問何時儲存檔案</translation>
 <translation id="7859988229622350291">永遠不要翻譯</translation>
 <translation id="7866213166286285359">翻譯這裡的頁面</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> 需要獲得附近的裝置權限，才能連線至您的裝置</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9065383040763568503">已儲存 Chrome 認定為不重要的資料 (例如未儲存任何設定的網站，或您不常瀏覽的網站)</translation>
 <translation id="906781307897697745">在 <ph name="PRODUCT_NAME" /> 中</translation>
-<translation id="9069543557624799859">下載將會在 <ph name="TIME" />開始。</translation>
 <translation id="9069999660519089861">沒有未讀網頁</translation>
 <translation id="9070377983101773829">開始語音搜尋</translation>
 <translation id="9074336505530349563">如要接收 Google 建議的個人化內容，請登入並開啟同步處理功能</translation>

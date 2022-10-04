@@ -165,6 +165,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1838895407229022812">Gecə işığı deaktivdir.</translation>
 <translation id="1862380676329487333">Güncəlləyin və çıxın</translation>
 <translation id="1864454756846565995">USB-C cihazı (arxa port)</translation>
+<translation id="1869497990620230175">Sürətli fayllar</translation>
 <translation id="1879018240766558464">Anonim pəncərələr hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="1882814835921407042">Mobil şəbəkə yoxdur</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> əks etdirilir</translation>
@@ -412,6 +413,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3368922792935385530">Qoşuludur</translation>
 <translation id="3371140690572404006">USB-C cihazı (ön sağ port)</translation>
 <translation id="3375634426936648815">Qoşulub</translation>
+<translation id="3378438761594387761">Son endirmələrinizi və ekran çəkimlərinizi burada tapa bilərsiniz</translation>
 <translation id="3378442621503952303">Profilə qoşulur. Bir neçə dəqiqə gözləyin.</translation>
 <translation id="3386978599540877378">tam ekranlı böyüdücü</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -718,6 +720,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
 <translation id="509790653408515442">Telefonunuzdakı tətbiqləri yayımladığınız zaman onlar burada görünəcək</translation>
 <translation id="5098537242461068432">Masa və pəncərələr yenidən açılıb</translation>
+<translation id="5104236669533825617">Ekran paylaşımı yaratmaq olmur</translation>
 <translation id="5107522548814527560">Veb</translation>
 <translation id="5117590920725113268">Gələn ayı göstərin</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
@@ -763,6 +766,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Sağ)</translation>
 <translation id="5352250171825660495">Tünd tema aktivdir</translation>
 <translation id="5356963482258194581">Tünd və açıq tema arasında keçid edin. Masaüstünə sağla klikləyin və Divar kağızı və üslub seçin.</translation>
+<translation id="536019650977002321">Administratorunuz audio yazılmasına icazə vermir. Ətraflı məlumat üçün administratorunuzla əlaqə saxlayın.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Bu taba keçin</translation>
 <translation id="5379115545237091094">Həddindən çox cəhd</translation>
 <translation id="5391307769715781764">Yadda saxlanmış masa dəyişdirilsin?</translation>

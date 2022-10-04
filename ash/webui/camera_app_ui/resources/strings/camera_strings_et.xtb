@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Dokumendi skannimine</translation>
 <translation id="1309250603447638106">Dokumendi skannimiseks värskenduste allalaadimine</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Juurdepääsemine: Otsing + vasaknool.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1417314334557041815">Muuda <ph name="INDEX" />. lehte</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on eemaldatud.</translation>
@@ -47,7 +46,6 @@
 <translation id="2599796128805996109">Tagakaamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Skannimise tüüp</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Peegeldamise eelvaade</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> on ühendatud.</translation>
 <translation id="2904654629665923749">Dokumendi skannimine on saadaval</translation>
@@ -116,7 +114,6 @@ Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja vi
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5975083100439434680">Suumib välja</translation>
 <translation id="5976160379964388480">Muud</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Peata salvestamine</translation>
 <translation id="6197807149213783179">Salvesta metaandmed</translation>
 <translation id="6233780560267770709">3 korda 3</translation>
@@ -139,7 +136,6 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="698156982839284926">3 sekundit</translation>
 <translation id="712848772518857951">Kas soovite kindlasti eemaldada need <ph name="COUNT" /> üksust?</translation>
 <translation id="7134221860976209830">10-sekundiline taimer</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Kirjetüüp</translation>
 <translation id="7243947652761655814">Video eraldusvõime</translation>
 <translation id="7337660886763914220">Failisüsteemi vead.</translation>

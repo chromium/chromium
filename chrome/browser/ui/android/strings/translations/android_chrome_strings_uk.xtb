@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">Без попереднього завантаження</translation>
 <translation id="3029704984691124060">Парольні фрази не збігаються</translation>
 <translation id="3031225630520268969">Інтерфейс надання згоди на голосовий пошук через Асистента</translation>
-<translation id="3034163383943672781">Завантаження почнеться <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Довідка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">Оновити поточну сторінку</translation>
 <translation id="3444179773590444986">Надіслати відгук про темну тему для сайтів?</translation>
 <translation id="3452832259067974318">З міркувань конфіденційності Chrome не буде автоматично заповнювати пароль у цьому полі.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{Заплановано 1 завантаження}one{Заплановано # завантаження}few{Заплановано # завантаження}many{Заплановано # завантажень}other{Заплановано # завантаження}}</translation>
 <translation id="3474624961160222204">Продовжити як <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Ви можете вибрати пошукову систему</translation>
 <translation id="3479552764303398839">Не зараз</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">Паролі збережено в Менеджері паролів Google на цьому пристрої</translation>
 <translation id="620197886010707372"><ph name="APPNAME" />: відкрити додаток через Google Play?</translation>
 <translation id="6202812185118613467">Увійдіть знову, щоб почати синхронізацію</translation>
-<translation id="6203593061661911168">Завантаження почнеться, коли пристрій підключиться до Wi-Fi</translation>
 <translation id="6210748933810148297">Не <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Попередній перегляд цієї сторінки</translation>
 <translation id="6221633008163990886">Розблокуйте, щоб експортувати паролі</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">Немає з’єднання із сайтом</translation>
 <translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
 <translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
-<translation id="753225086557513863">Заплановано на пізніше</translation>
 <translation id="7562080006725997899">Очищення даних веб-перегляду</translation>
 <translation id="756809126120519699">Дані Chrome видалено</translation>
 <translation id="7577900504646297215">Керувати інтересами</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">Період часу</translation>
 <translation id="7851858861565204677">Інші пристрої</translation>
 <translation id="7853202427316060426">Активність</translation>
-<translation id="7857691613771368249">Запитувати, коли зберігати файли</translation>
 <translation id="7859988229622350291">Мови, з яких не потрібно перекладати</translation>
 <translation id="7866213166286285359">Натисніть тут, щоб відобразити перемикач "Перекласти сторінки"</translation>
 <translation id="78707286264420418">Щоб підключитися до вашого пристрою, <ph name="PRODUCT_NAME" /> потребує доступу до пристроїв поблизу</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9065383040763568503">Збережені дані, які Chrome визначає як неважливі (наприклад, дані сайтів із незбереженими налаштуваннями або тих, які ви рідко відвідуєте)</translation>
 <translation id="906781307897697745">(<ph name="PRODUCT_NAME" />)</translation>
-<translation id="9069543557624799859">Завантаження почнеться <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Немає непрочитаних сторінок</translation>
 <translation id="9070377983101773829">Почати голосовий пошук</translation>
 <translation id="9074336505530349563">Щоб отримувати персоналізовані пропозиції від Google, увійдіть в обліковий запис і ввімкніть синхронізацію</translation>

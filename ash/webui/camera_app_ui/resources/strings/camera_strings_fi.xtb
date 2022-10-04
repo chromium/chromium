@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Skannaa dokumenttisi</translation>
 <translation id="1309250603447638106">Ladataan dokumenttien skannauksen päivityksiä</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Käytä valitsemalla Haku + vasen nuoli.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> on irrotettu.</translation>
 <translation id="1473110567575736769">3 sekunnin ajastin</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Takakamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Hakutyyppi</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Peilin esikatselu</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> on kytketty.</translation>
 <translation id="2904654629665923749">Dokumenttien skannaus käytettävissä</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">Päällä</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5976160379964388480">Muut</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Lopeta tallennus</translation>
 <translation id="6197807149213783179">Tallenna sisällönkuvaustiedot</translation>
 <translation id="6233780560267770709">3x3</translation>
@@ -136,7 +133,6 @@ Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai 
 <translation id="698156982839284926">3 sekuntia</translation>
 <translation id="712848772518857951">Haluatko varmasti poistaa <ph name="COUNT" /> kohdetta?</translation>
 <translation id="7134221860976209830">10 sekunnin ajastin</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Tietuetyyppi</translation>
 <translation id="7243947652761655814">Videon resoluutio</translation>
 <translation id="7337660886763914220">Tiedostojärjestelmän virheitä</translation>

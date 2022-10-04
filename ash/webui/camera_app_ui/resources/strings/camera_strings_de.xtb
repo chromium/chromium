@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Dokument scannen</translation>
 <translation id="1309250603447638106">Updates zum Scannen von Dokumenten werden heruntergeladen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. „Suchtaste + Linkspfeil“ drücken, um darauf zuzugreifen.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1467231725790366244">Verbindung zu <ph name="CAMERA" /> wurde getrennt.</translation>
 <translation id="1473110567575736769">3-Sekunden-Timer</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Kamera auf der Rückseite</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Scantyp</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Vorschau spiegeln</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ist angeschlossen.</translation>
 <translation id="2904654629665923749">Dokumentscan verfügbar</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">An</translation>
 <translation id="5975083100439434680">Verkleinern</translation>
 <translation id="5976160379964388480">Sonstige</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
 <translation id="6197807149213783179">Metadaten speichern</translation>
 <translation id="6233780560267770709">3 mal 3</translation>
@@ -136,7 +133,6 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="698156982839284926">3 Sekunden</translation>
 <translation id="712848772518857951">Möchtest du <ph name="COUNT" /> Elemente wirklich entfernen?</translation>
 <translation id="7134221860976209830">10-Sekunden-Timer</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Aufnahmetyp</translation>
 <translation id="7243947652761655814">Videoauflösung</translation>
 <translation id="7337660886763914220">Fehler im Dateisystem.</translation>

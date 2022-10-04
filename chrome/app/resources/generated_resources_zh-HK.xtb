@@ -381,7 +381,6 @@
 <translation id="1361655923249334273">未使用</translation>
 <translation id="1362865166188278099">發生機件故障。請檢查打印機</translation>
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
-<translation id="1367951781824006909">選擇檔案</translation>
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> 不支援 Linux。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">同步至您的帳戶</translation>
 <translation id="1373176046406139583">您可使用裝置分享設定來控制哪些人可在螢幕解鎖時與您分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -818,7 +817,6 @@
 <translation id="1748563609363301860">您可將此密碼儲存在 Google 帳戶中，或只儲存在此裝置上</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="1750172676754093297">您的安全密鑰無法儲存指紋</translation>
-<translation id="1751249301761991853">個人化</translation>
 <translation id="1751262127955453661">在您關閉此網站所有分頁前，<ph name="ORIGIN" /> 都能編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="17513872634828108">開啟分頁</translation>
 <translation id="175196451752279553">重新開啟已關閉分頁(&amp;E)</translation>
@@ -1065,7 +1063,6 @@
 <translation id="1963976881984600709">標準保護功能</translation>
 <translation id="1965624977906726414">沒有特殊權限。</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 項)</translation>
-<translation id="1970368523891847084">進入咗影片模式</translation>
 <translation id="1972325230031091483">系統會根據您目前瀏覽的網頁主動載入內容，助您加快瀏覽速度</translation>
 <translation id="197288927597451399">保留</translation>
 <translation id="1973763416111613016">無法安全下載「<ph name="FILE_NAME" />」。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
@@ -1413,7 +1410,6 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟所有網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法識別您的指紋。請再試一次。</translation>
 <translation id="2287944065963043964">登入畫面</translation>
-<translation id="2288181517385084064">切換至攝錄機</translation>
 <translation id="2289270750774289114">在網站要探索附近的藍牙裝置時詢問您 (建議)</translation>
 <translation id="2290615375132886363">平板電腦導覽按鈕</translation>
 <translation id="229182044471402145">找不到相符的字型。</translation>
@@ -2810,9 +2806,7 @@
 <translation id="3602290021589620013">預覽</translation>
 <translation id="3602870520245633055">列印並掃瞄</translation>
 <translation id="3603622770190368340">取得網絡憑證</translation>
-<translation id="3604713164406837697">變更桌布</translation>
 <translation id="3605780360466892872">小員工</translation>
-<translation id="3608576286259426129">使用者圖片預覽</translation>
 <translation id="3609277884604412258">快速搜尋</translation>
 <translation id="3610369246614755442">插座風扇需要維修</translation>
 <translation id="361106536627977100">Flash 數據</translation>
@@ -2865,7 +2859,6 @@
 <translation id="3645372836428131288">請輕輕移動您的手指，以便系統讀取指紋的不同部分</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}other{已收到來自「<ph name="DEVICE_NAME" />」的 <ph name="ATTACHMENTS" />}}</translation>
 <translation id="3648348069317717750">偵測到 <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3649138363871392317">已擷取相片</translation>
 <translation id="3650753875413052677">註冊錯誤</translation>
 <translation id="3650845953328929506">正在等待記錄上載。</translation>
 <translation id="3650952250015018111">允許「<ph name="APP_NAME" />」存取：</translation>
@@ -3118,7 +3111,6 @@
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的裝置的「咫尺共享」設定，所用分享帳戶為 <ph name="USER_EMAIL" />。</translation>
 <translation id="3879748587602334249">下載管理員</translation>
-<translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3883482240657453056">取得 <ph name="MERCHANT_NAME_1" /> 和 <ph name="MERCHANT_NAME_2" /> 的折扣</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">更新由您的管理員管理</translation>
@@ -4490,7 +4482,6 @@
 <translation id="5213481667492808996">「<ph name="NAME" />」的數據服務現可使用</translation>
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
-<translation id="521582610500777512">已捨棄相片</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
@@ -4821,7 +4812,6 @@
 <translation id="5528295196101251711">虛擬機器名稱</translation>
 <translation id="5532223876348815659">通用</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />要求以下權限：</translation>
-<translation id="5534304873398226603">捨棄相片或影片</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">無法連接 Google</translation>
 <translation id="5539221284352502426">伺服器已拒絕您輸入的密碼。原因可能包括：密碼太短、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
@@ -4903,7 +4893,6 @@
 <translation id="560834977503641186">Wi-Fi Sync，了解詳情</translation>
 <translation id="5608580678041221894">輕按以下按鍵即可調整或移動裁剪區域</translation>
 <translation id="5609231933459083978">這似乎是無效的應用程式。</translation>
-<translation id="5610038042047936818">切換至相機模式</translation>
 <translation id="561030196642865721">此網站允許第三方 Cookie</translation>
 <translation id="5612734644261457353">很抱歉，系統仍然無法驗證您的密碼。注意：如果您最近修改了密碼，新密碼會在您登出後立即生效，目前請在這裡使用舊密碼。</translation>
 <translation id="5614190747811328134">使用者通知</translation>
@@ -5809,7 +5798,6 @@
 <translation id="6492396476180293140">已透過硬件開關停用內部相機</translation>
 <translation id="6494327278868541139">顯示進階保護功能詳情</translation>
 <translation id="6494445798847293442">不是憑證授權單位</translation>
-<translation id="6494974875566443634">自訂</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{此資料含有敏感或危險的內容}=1{此檔案含有敏感或危險的內容}other{這些檔案含有敏感或危險的內容}}</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
@@ -6005,7 +5993,6 @@
 <translation id="6678717876183468697">查詢網址</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">語速</translation>
-<translation id="6681668084120808868">拍攝相片</translation>
 <translation id="6683087162435654533">還原所有分頁</translation>
 <translation id="6684827949542560880">正在下載最新的更新</translation>
 <translation id="668599234725812620">開啟 Google Play</translation>
@@ -6339,7 +6326,6 @@
 <translation id="6981982820502123353">協助工具</translation>
 <translation id="6983507711977005608">解除連接「即時網絡共享」網絡</translation>
 <translation id="6983783921975806247">已註冊的 OID</translation>
-<translation id="6984299437918708277">請選擇顯示在登入畫面上的個人帳戶圖片</translation>
 <translation id="6985235333261347343">Microsoft 金鑰復原代理程式</translation>
 <translation id="698524779381350301">自動允許存取以下網站：</translation>
 <translation id="6985607387932385770">打印機</translation>
@@ -6509,7 +6495,6 @@
 <translation id="7149893636342594995">最近 24 小時</translation>
 <translation id="7152478047064750137">這個擴充程式不需要任何特殊權限</translation>
 <translation id="7154130902455071009">將您的起始網頁變更為：<ph name="START_PAGE" /></translation>
-<translation id="7155171745945906037">相機或檔案中的現有照片</translation>
 <translation id="7159953856712257647">預設已安裝</translation>
 <translation id="7160182524506337403">您現可查看手機的通知</translation>
 <translation id="7163202347044721291">正在驗證啟動碼…</translation>
@@ -6636,7 +6621,6 @@
 <translation id="7287143125007575591">拒絕存取。</translation>
 <translation id="7287411021188441799">還原預設背景</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7289225569524511578">開啟桌布應用程式</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 F6 掣就可以回覆</translation>
 <translation id="7290242001003353852">此登入服務商 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的相機。</translation>
 <translation id="7295614427631867477">請注意，Android、Google Play 以及相關聯的應用程式受各自的資料收集政策和使用政策管限。</translation>
@@ -7635,7 +7619,6 @@
 <translation id="821119981794423735">如要將密碼匯入 <ph name="USER_EMAIL" /> 的「Google 密碼管理工具」，請選取 CSV 檔案</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{正在進行一項下載}other{正在進行多項下載}}</translation>
 <translation id="8212601853154459483">此帳戶由 <ph name="PROFILE_MANAGER" /> 管理，並要求您為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立獨立的個人檔案</translation>
-<translation id="8213449224684199188">進入咗相片模式</translation>
 <translation id="8214489666383623925">開啟檔案…</translation>
 <translation id="8215129063232901118">透過 <ph name="DEVICE_TYPE" /> 使用手機功能</translation>
 <translation id="8217212468862726597">突顯指標</translation>
@@ -8010,7 +7993,6 @@
 <translation id="8592141010104017453">完全不顯示通知</translation>
 <translation id="859246725979739260">此網站已被禁止存取您的位置。</translation>
 <translation id="8593121833493516339">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您子女的 Android 使用體驗。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
-<translation id="8594908476761052472">拍攝影片</translation>
 <translation id="8596540852772265699">自訂檔</translation>
 <translation id="8597845839771543242">網絡屬性：</translation>
 <translation id="8599681327221583254">一或多項政策設定有誤，請聯絡您的管理員</translation>
@@ -8278,6 +8260,7 @@
 <translation id="8838601485495657486">不透明</translation>
 <translation id="8838770651474809439">漢堡包</translation>
 <translation id="8838778928843281408">管理手機</translation>
+<translation id="883924185304953854">以圖搜尋</translation>
 <translation id="8841843049738266382">讀取及變更許可名單上的使用者</translation>
 <translation id="8842594465773264717">刪除此指紋</translation>
 <translation id="8845001906332463065">取得說明</translation>

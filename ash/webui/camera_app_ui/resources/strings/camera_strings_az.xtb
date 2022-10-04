@@ -9,7 +9,7 @@
 <translation id="1300209025925956156">Sənədinizi skanlayın</translation>
 <translation id="1309250603447638106">Sənədin skan edilməsi üçün güncəlləmələr endirilir</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Daxil olmaq üçün Axtarış + Sol ox.</translation>
-<translation id="1393338179284529051">Dördqat HD</translation>
+<translation id="1417314334557041815">Bu səhifəni redaktə edin: <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli çıxarılıb.</translation>
 <translation id="1473110567575736769">3 saniyəlik taymer</translation>
@@ -21,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Heç nə çəkilməyib</translation>
 <translation id="1838104802459806957">Yuxarı əyin</translation>
+<translation id="1843105061469674856">Əlavə səhifəni skan edin</translation>
 <translation id="1851169887664797861">Əlavə kamera nizamlayıcıları əlçatandır</translation>
 <translation id="1851616744363735765">DURDURULUB</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> faylını eksport etmək mümkün deyil</translation>
@@ -45,7 +46,6 @@
 <translation id="2599796128805996109">Arxa kamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> san</translation>
 <translation id="2761536921376153655">Skan növü</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Önizləməni əks etdirin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli birləşdirilib.</translation>
 <translation id="2904654629665923749">Sənəd skanı əlçatandır</translation>
@@ -77,6 +77,7 @@
 <translation id="414641094616694804">Bu kamera ayırdetmə dəqiqliyini dəyişə bilmir</translation>
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
 <translation id="4281620174117014503">Orta ayırdetmə dəqiqliyi</translation>
+<translation id="428234092390943511">Səhifə miniatürü</translation>
 <translation id="4329152592498422850">Kvadrat foto çəkmək üçün keçid edin</translation>
 <translation id="4340659173795395806">İndi çoxsəhifəli PDF yarada bilərsiniz</translation>
 <translation id="4383571725254449280">Performans jurnallarını çap edin</translation>
@@ -111,7 +112,6 @@
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5976160379964388480">Digərləri</translation>
-<translation id="603973421174355542">Tam HD</translation>
 <translation id="6073451960410192870">Çəkməyi dayandırın</translation>
 <translation id="6197807149213783179">Metadatanı yadda saxlayın</translation>
 <translation id="6233780560267770709">3x3</translation>
@@ -134,7 +134,6 @@ Rəyiniz şəkil və ya video keyfiyyəti ilə bağlıdırsa, nümunə foto və 
 <translation id="698156982839284926">3 saniyə</translation>
 <translation id="712848772518857951"><ph name="COUNT" /> elementi silmək istəyirsiniz?</translation>
 <translation id="7134221860976209830">10 saniyəlik taymer</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Qeydəalma növü</translation>
 <translation id="7243947652761655814">Videonun ayırdetmə dəqiqliyi</translation>
 <translation id="7337660886763914220">Fayl sistemi xətaları.</translation>

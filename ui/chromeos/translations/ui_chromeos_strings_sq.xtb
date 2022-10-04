@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Kalo te pamja e listës</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> skedarë u zgjodhën</translation>
+<translation id="2383454254762599978">Zhvendos te koshi</translation>
 <translation id="2387458720915042159">Lloji i lidhjes së përfaqësuesit</translation>
 <translation id="2389832672041313158">Birmanisht/Mianmar</translation>
 <translation id="2392369802118427583">Aktivizoje</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Shko te drive.google.com...</translation>
 <translation id="3553048479571901246">Për të hapur skedarët me <ph name="APP_NAME" />, në fillim kopjoji në dosjen e skedarëve të Windows.</translation>
 <translation id="3556731189587832921">Anglisht (SHBA) me tastierën ndërkombëtare për PC</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> po zhvendoset te koshi</translation>
 <translation id="3567221313191587603">Zgjidh një skedar dhe aktivizo <ph name="OFFLINE_CHECKBOX_NAME" /> për qasje jashtë linje te skedarët e tu.</translation>
 <translation id="357479282490346887">Lituanisht</translation>
 <translation id="3587482841069643663">Të gjitha</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bengalisht fonetike</translation>
 <translation id="4002066346123236978">Titulli</translation>
 <translation id="4017788180641807848">Anglisht (SHBA) me tastierën Workman</translation>
+<translation id="4019998208269143058">Gozhdo te skedarët e shpejtë</translation>
 <translation id="4040753847560036377">Kodi PUK i pasaktë</translation>
 <translation id="4057991113334098539">Po aktivizohet...</translation>
 <translation id="4092890906744441904">Irlandisht</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Politika e administratorit nuk rekomandon:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> është zhvendosur.</translation>
 <translation id="4176286497474237543">Boshatise koshin tani</translation>
+<translation id="4179621117429069925">Ky artikull është te koshi</translation>
 <translation id="4186579485882418952">Aktivizo jashtë linje</translation>
 <translation id="4193154014135846272">Dokument i Google</translation>
 <translation id="4197674956721858839">Përzgjedhja e ngjeshjes</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Certifikata e vërtetimit u refuzua në largësi</translation>
 <translation id="4394214039309501350">Lidhje e jashtme</translation>
 <translation id="4394980935660306080">Më herët këtë javë</translation>
+<translation id="4398096759193130964">Restauroji artikujt ose zvarriti te një dosje e re jashtë koshit</translation>
 <translation id="4401287888955153199">Nxirri të gjitha</translation>
 <translation id="4410695710508688828">Veprimi i nxjerrjes nuk u krye. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Krijo një shkurtore për skedarët e tu</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hindisht me tastierë InScript</translation>
 <translation id="4801956050125744859">Mbaji të dyja</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> artikuj po restaurohen</translation>
 <translation id="4823651846660089135">Pajisja është vetëm për lexim</translation>
 <translation id="4826849268470072925">Tamilisht ITRANS</translation>
 <translation id="4839847978919684242">U zgjodhën <ph name="SELCTED_FILES_COUNT" /> artikuj</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Lule Gazania</translation>
 <translation id="4943368462779413526">Futboll</translation>
 <translation id="4961158930123534723">1 dosje e ndarë me Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> u restaurua</translation>
 <translation id="4969785127455456148">Albumi</translation>
 <translation id="4973523518332075481">Përdor një emër që është <ph name="MAX_LENGTH" /> karaktere i gjatë ose më pak</translation>
 <translation id="4973970068702235170">Ngjeshja dështoi, gabim i papritur: <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +558,7 @@
 <translation id="5691596662111998220">Mos! <ph name="FILE_NAME" /> nuk ekziston më.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Shkyç</translation>
 <translation id="5700087501958648444">Informacionet e audios</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> u zhvendos te koshi</translation>
 <translation id="5724172041621205163">Tajlandisht me tastierë Pattachote</translation>
 <translation id="5756666464756035725">Tastiera QWERTY në hungarisht</translation>
 <translation id="5763377084591234761">Gjermanisht (Zvicër)</translation>
@@ -621,6 +629,7 @@
 <translation id="6320212353742551423">Arkiv <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Përshëndetje me dorë</translation>
 <translation id="6327785803543103246">Zbulimi automatik i përfaqësuesit të uebit</translation>
+<translation id="6337014272874260727">Zhgozhdo nga skedarët e shpejtë</translation>
 <translation id="6339145975392024142">Amerikane ndërkombëtare (PC)</translation>
 <translation id="6346310558342052870">Qasja e kufizuar</translation>
 <translation id="6356685157277930264">Dritarja e komenteve për skedarët</translation>
@@ -661,6 +670,7 @@
 <translation id="6751256176799620176">U zgjodh 1 dosje</translation>
 <translation id="6755827872271341378">Pajisja Chrome OS Flex</translation>
 <translation id="6790428901817661496">Luaj</translation>
+<translation id="6794539005637808366">Restauroje artikullin ose zvarrite te një dosje e re jashtë koshit</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Menaxho ndarjen në Linux</translation>
 <translation id="6806796368146926706">Alfanumerike me tastierë japoneze</translation>
@@ -697,6 +707,7 @@
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6989942356279143254">Suedisht</translation>
 <translation id="6990081529015358884">Nuk ke më hapësirë të lirë</translation>
+<translation id="6993826899923627728">Këta artikuj janë te koshi</translation>
 <translation id="6998711733709403587">U zgjodhën <ph name="SELCTED_FOLDERS_COUNT" /> dosje</translation>
 <translation id="7008426324576352165">Organizata jote ka nevojë për më shumë hapësirë ruajtëse për ta përfunduar ngarkimin.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +753,7 @@
 <translation id="7408870451288633753">Çekisht</translation>
 <translation id="7417453074306512035">Tastiera në etiopisht</translation>
 <translation id="7417705661718309329">Hartë e Google</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" po restaurohet</translation>
 <translation id="7458955835361612701">Nuk ka imazhe të fundit</translation>
 <translation id="7460898608667578234">Ukrainisht</translation>
 <translation id="7469894403370665791">Lidhu automatikisht me këtë rrjet</translation>
@@ -770,6 +782,7 @@
 <translation id="7655441028674523381">Qasu me lehtësi në "Fotografitë e Google"</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7663224033570512922">Hindisht</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> artikuj u zhvendosën te koshi</translation>
 <translation id="7693909743393669729">Formatimi i një disku do të spastrojë të gjitha të dhënat e ruajtura në të dhe do të heqë të gjitha ndarjet ekzistuese, duke përfshirë ndarjet që mund të mos jenë të dukshme. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> nuk mund të formatohej</translation>
 <translation id="76959938259365003">Boshatisja e koshit dështoi.</translation>
@@ -784,6 +797,7 @@
 <translation id="7760449188139285140">Kinezisht Wubi</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7774365994322694683">Zog</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> artikuj u restauruan</translation>
 <translation id="7781829728241885113">Dje</translation>
 <translation id="7788080748068240085">Për të ruajtur "<ph name="FILE_NAME" />" jashtë linje duhet të lirosh <ph name="TOTAL_FILE_SIZE" /> hapësirë shtesë:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />zhgozhdo skedarët që nuk të nevojiten më për të pasur qasje te ato jashtë linje<ph name="MARKUP_3" />
@@ -964,6 +978,7 @@
 <translation id="947144732524271678">U zgjodh një gamë prej <ph name="ENTRY_COUNT" /> regjistrimesh nga <ph name="FROM_ENTRY_NAME" /> në <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Politika e administratorit parandalon:</translation>
 <translation id="965477715979482472">Anglisht (Afrika e Jugut)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> artikuj po zhvendosen te koshi</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="988685240266037636">Skedari me emrin "<ph name="FILE_NAME" />" ekziston. Dëshiron ta zëvendësosh?</translation>
 <translation id="992401651319295351">Të kanë mbetur edhe <ph name="RETRIES" /> përpjekje. Nuk do të mund ta përdorësh këtë rrjet derisa të konfigurosh një kod të ri PIN.</translation>

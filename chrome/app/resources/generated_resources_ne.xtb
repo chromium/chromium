@@ -377,7 +377,6 @@
 <translation id="1361655923249334273">प्रयोग नगरिएको</translation>
 <translation id="1362865166188278099">मेकानिकल समस्या भयो। प्रिन्टर जाँच्नुहोस्</translation>
 <translation id="1363585519747660921">USB प्रिन्टरलाई कन्फिगर गर्नु पर्छ</translation>
-<translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
 <translation id="1368603372088757436">तपाईं <ph name="DEVICE_TYPE" /> मा Linux चल्दैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">आफ्नो खातासँग सिंक गर्नुहोस्</translation>
 <translation id="1373176046406139583">तपाईंको डिभाइसको पहुँचसम्बन्धी सेटिङमा गई तपाईंको स्क्रिन अनलक हुँदा तपाईंसँग कसले सेयर गर्न सक्छन् भन्ने कुरा तोक्न सकिन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -805,7 +804,6 @@
 <translation id="1748563609363301860">तपाईं आफ्नो Google खाता वा यस यन्त्रमा मात्र यो पासवर्ड सुरक्षित गर्न सक्नुहुन्छ।</translation>
 <translation id="1749733017156547309">पासवर्ड हालिएको छैन</translation>
 <translation id="1750172676754093297">तपाईंको सुरक्षा साँचोले फिंगरप्रिन्टहरू भण्डारण गर्न सक्दैन</translation>
-<translation id="1751249301761991853">व्यक्तिगत</translation>
 <translation id="1751262127955453661">तपाईंले यो साइटका सबै ट्याबहरू बन्द नगरुन्जेल <ph name="ORIGIN" /> ले <ph name="FOLDERNAME" /> मा रहेका फाइलहरू सम्पादन गर्न सक्ने छ</translation>
 <translation id="17513872634828108">खुला ट्याबहरू</translation>
 <translation id="175196451752279553">बन्द ट्याबलाई पुन: खो&amp;ल्नुहोस्</translation>
@@ -1050,7 +1048,6 @@
 <translation id="1963976881984600709">मानक सुरक्षा</translation>
 <translation id="1965624977906726414">विषेश अनुमतिहरू छैनन्।</translation>
 <translation id="1969654639948595766">WebRTC पाठका लगहरू (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970368523891847084">भिडियो मोडमा प्रवेश गरियो</translation>
 <translation id="1972325230031091483">तपाईंले हालै खोलेको वेबपेजका आधारमा अग्रिम रूपमा सामग्री लोड गरिने भएकाले तपाईं अझ छिटो ब्राउज गर्न सक्नु हुने छ</translation>
 <translation id="197288927597451399">राख्नुहोस्</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> सुरक्षित रूपमा डाउनलोड गर्न सकिँदैन। डाउनलोड बारमा जान Shift+F6 थिच्नुहोस्।</translation>
@@ -1395,7 +1392,6 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{सबै URL नयाँ ट्याब समूहमा खोल्नुहोस्}=1{एउटा URL नयाँ ट्याब समूहमा खोल्नुहोस्}other{सबै ({COUNT}) वटा URL नयाँ ट्याब समूहमा खोल्नुहोस्}}</translation>
 <translation id="2285942871162473373">तपाईंको फिंगरप्रिन्ट पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2287944065963043964">लगइन स्क्रिन</translation>
-<translation id="2288181517385084064">भिडियो रेकर्डर प्रयोग गर्नुहोस्</translation>
 <translation id="2289270750774289114">कुनै साइटले छेउछाउका ब्लुटुथ यन्त्रहरू पत्ता लगाउन खोज्दा सोध्नुहोस् (सिफारिस गरिएको)</translation>
 <translation id="2290615375132886363">ट्याब्लेट मोडमा नेभिगेसन गर्ने बटनहरू देखाइयोस्</translation>
 <translation id="229182044471402145">कुनै पनि मिल्दो फन्ट भेट्टिएन।</translation>
@@ -2793,9 +2789,7 @@
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3602870520245633055">प्रिन्ट गर्नुहोस् र स्क्यान गर्नुहोस्</translation>
 <translation id="3603622770190368340">नेटवर्क प्रमाणपत्र हासिल गर्नुहोस्</translation>
-<translation id="3604713164406837697">वालपेपर परिवर्तन गर्नुहोस्</translation>
 <translation id="3605780360466892872">बटनडाउन</translation>
-<translation id="3608576286259426129">प्रयोगकर्ता छवि पूर्वावलोकन</translation>
 <translation id="3609277884604412258">द्रुत खोज</translation>
 <translation id="3610369246614755442">डकको पङ्खा मर्मत गर्न आवश्यक छ</translation>
 <translation id="361106536627977100">फ्ल्यास डाटा</translation>
@@ -2848,7 +2842,6 @@
 <translation id="3645372836428131288">फिंगरप्रिन्टको कुनै अर्को भाग समावेश गर्न औँला थोरै सार्नुहोस्।</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}other{<ph name="DEVICE_NAME" /> बाट <ph name="ATTACHMENTS" /> प्राप्त भए}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> पत्ता लगाइयो</translation>
-<translation id="3649138363871392317">तस्बिर क्याप्चर गरिएको थियो</translation>
 <translation id="3650753875413052677">दर्तासम्बन्धी त्रुटि</translation>
 <translation id="3650845953328929506">लग अपलोड गर्ने कार्य विचाराधीन छ</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" लाई निम्नमाथि पहुँँच राख्न दिनुहोस्‌:</translation>
@@ -3101,7 +3094,6 @@
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ब्राउजरको नयाँ ट्याबमा खुल्ने बनाइएको छ। खोल्न मिल्ने लिंकहरू पनि ब्राउजरमा नै खुल्ने छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> को यन्त्रमा <ph name="USER_EMAIL" /> खाता प्रयोग गरी नजिकैका डिभाइससँग सेयर गर्ने सुविधाका सेटिङ।</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
-<translation id="3882165008614329320">क्यामेरा वा फाइलको विद्यमान भिडियो</translation>
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> र <ph name="MERCHANT_NAME_2" /> को छुट प्राप्त गर्नुहोस्</translation>
 <translation id="3884152383786131369">एकभन्दा बढी भाषामा उपलब्ध वेब सामग्री यो सूचीको प्रयोग गर्न मिल्ने पहिलो भाषामा देखाइने छ। यी प्राथमिकताहरू तपाईंको ब्राउजरका सेटिङसँग सिंक गरिन्छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">तपाईंका एड्मिनले अपडेटसम्बन्धी काम गर्नुहुन्छ</translation>
@@ -4471,7 +4463,6 @@
 <translation id="5213481667492808996">तपाईंको '<ph name="NAME" />' नामक मोबाइल डेटा सेवा प्रयोग गर्नका लागि तयार छ</translation>
 <translation id="5213891612754844763">प्रोक्सी सम्बन्धी सेटिङहरू देखाउनुहोस्‌</translation>
 <translation id="5215502535566372932">देश छनौट गर्नुहोस्</translation>
-<translation id="521582610500777512">तस्बिर नष्ट गरिएको थियो</translation>
 <translation id="5222403284441421673">असुरक्षित सामग्री डाउनलोड गर्ने कार्यलाई रोक लगाइएको छ</translation>
 <translation id="5222676887888702881">साइन आउट गर्नुहोस्</translation>
 <translation id="5225324770654022472">एप्स शर्टकट देखाउनुहोस्</translation>
@@ -4802,7 +4793,6 @@
 <translation id="5528295196101251711">VM को नाम</translation>
 <translation id="5532223876348815659">ग्लोबल</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> निम्न कुराका लागि अनुमति चाहन्छ</translation>
-<translation id="5534304873398226603">तस्बिर वा भिडियो खारेज गर्नुहोस्</translation>
 <translation id="5537725057119320332">कास्ट गर्नु</translation>
 <translation id="5539070192556911367">Google का सर्भरमा कनेक्ट गर्न सकिएन</translation>
 <translation id="5539221284352502426">तपाईंले प्रविष्ट गर्नुभएको पासवर्ड सर्भरद्वारा अस्वीकार गरियो। यसका सम्भावित कारणहरू निम्न हुन सक्छन्: पासवर्ड निकै छोटो छ। पासवर्डमा अनिवार्य रूपमा सङ्ख्या वा चिन्हहरू समावेश हुनु पर्छ। पासवर्ड अनिवार्य रूपमा अघिल्ला पासवर्डहरूभन्दा फरक हुनु पर्छ।</translation>
@@ -4884,7 +4874,6 @@
 <translation id="560834977503641186">Wi-Fi सिंकका बारेमा थप जान्नुहोस्</translation>
 <translation id="5608580678041221894">क्रप गर्ने क्षेत्रलाई समायोजन गर्न वा सार्न निम्न कुञ्जीहरूमा ट्याप गर्नुहोस्</translation>
 <translation id="5609231933459083978">एप अवैध जस्तो देखिन्छ।</translation>
-<translation id="5610038042047936818">क्यामेरा मोड प्रयोग गर्नुहोस्</translation>
 <translation id="561030196642865721">यो साइटमा तेस्रो पक्षीय कुकीहरूलाई अनुमति दिइएको छ</translation>
 <translation id="5612734644261457353">माफ गर्नुहोस्, तपाइँको पासवर्ड अझै पनि रुजू गर्न सकिएन। नोट: यदि तपाइँले हालै तपाइँको पासवर्ड परिवर्तन गर्नुभएको छ भने, तपाइँले साइन आउट गरे पछि तपाइँको नयाँ पासवर्ड लागू हुनेछ, कृपया पुरानो पासवर्ड यहाँ प्रयोग गर्नुहोस्।</translation>
 <translation id="5614190747811328134">प्रयोगकर्त सूचना</translation>
@@ -5791,7 +5780,6 @@
 <translation id="6492396476180293140">हार्डवेयर स्विच थिचेर आन्तरिक क्यामेरा डिएक्टिभ गरिएको छ</translation>
 <translation id="6494327278868541139">परिष्कृत सुरक्षासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकारी होइन</translation>
-<translation id="6494974875566443634">व्यक्तिगत सेटिङ</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{यो डेटामा संवेदनशील वा खतरनाक सामग्री छ}=1{यो फाइलमा संवेदनशील वा खतरनाक सामग्री छ}other{यी फाइलहरूमा संवेदनशील वा खतरनाक सामग्री छ}}</translation>
 <translation id="6497784818439587832">स्क्रिनमा भएका वस्तुहरूलाई अझ ठुलो वा सानो बनाउन डिस्प्लेको आकार परिवर्तन गर्नुहोस्</translation>
 <translation id="6497789971060331894">माउस विपरीत दिशामा स्क्रोल गर्ने कार्य</translation>
@@ -5987,7 +5975,6 @@
 <translation id="6678717876183468697">प्रश्न URL</translation>
 <translation id="6680442031740878064">उपलब्ध खाली ठाउँ: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">मूल्याङ्कन गर्नुहोस्</translation>
-<translation id="6681668084120808868">तस्बिर खिच्नुहोस्</translation>
 <translation id="6683087162435654533">सबै ट्याबहरू रिस्टोर गर्नुहोस्</translation>
 <translation id="6684827949542560880">नवीनतम अपडेट डाउनलोड गर्दै</translation>
 <translation id="668599234725812620">Google Play खोल्नुहोस्</translation>
@@ -6321,7 +6308,6 @@
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="6983507711977005608">तात्कालिक टेदरिङ डिस्कनेक्ट गर्नुहोस्</translation>
 <translation id="6983783921975806247">दर्ता गरिएको OID</translation>
-<translation id="6984299437918708277">साइन-इन स्क्रिनमा तपाईंको खातामा प्रदर्शन गर्नका लागि एउटा तस्बिर छान्नुहोस्</translation>
 <translation id="6985235333261347343">Microsoft कुँजी रिकभरी एजेन्ट</translation>
 <translation id="698524779381350301">निम्न साइटहरूमा स्वतः पहुँच गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6985607387932385770">प्रिन्टरहरू</translation>
@@ -6491,7 +6477,6 @@
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
 <translation id="7152478047064750137">यस विस्तारलाई कुनै विशेष अनुमति चाहिँदैन</translation>
 <translation id="7154130902455071009">आफ्नो सुरुवात पृष्ठलाई यसमा परिवर्तन गर्नुहोस्: <ph name="START_PAGE" /></translation>
-<translation id="7155171745945906037">क्यामेरा वा फाइलको विद्यमान तस्बिर</translation>
 <translation id="7159953856712257647">स्वतः इन्स्टल गरिएको</translation>
 <translation id="7160182524506337403">तपाईं अब आफ्नो फोनका सूचनाहरू हेर्न सक्नुहुन्छ</translation>
 <translation id="7163202347044721291">सक्रिय गर्ने कोड पुष्टि गरिँदै छ...</translation>
@@ -6618,7 +6603,6 @@
 <translation id="7287143125007575591">पहुँच अस्वीकार गरियो।</translation>
 <translation id="7287411021188441799">डिफल्ट पृष्ठभूमि पुनर्स्थापना गर्नुहोस्</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7289225569524511578">वालपेपर एप खोल्नुहोस्</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न F6 थिच्नुहोस्</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" /> द्वारा होस्ट गरिएको यस साइन-इन सेवाले तपाईँको क्यामेरामाथि पहुँच राख्दैछ।</translation>
 <translation id="7295614427631867477">Android, Play र सम्बद्ध एपका हकमा उनीहरूको आफ्नै डेटाको सङ्कलन र प्रयोगसम्बन्धी नीतिहरू लागू हुन्छन् भन्ने कुरा ख्याल गर्नुहोस्।</translation>
@@ -7616,7 +7600,6 @@
 <translation id="821119981794423735">तपाईं <ph name="USER_EMAIL" /> का हकमा Google पासवर्ड म्यानेजरमा पासवर्डहरू इम्पोर्ट गर्न चाहनुहुन्छ भने CSV फाइल छनौट गर्नुहोस्</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{डाउनलोड हुँदैछ}other{डाउनलोड हुँदैछन्}}</translation>
 <translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> यो प्रोफाइल व्यवस्थापन गर्नुहुन्छ र उहाँका अनुसार तपाईंले <ph name="USER_EMAIL_ADDRESS" /> नामक खाताका हकमा छुट्टै प्रोफाइल बनाउनु पर्छ</translation>
-<translation id="8213449224684199188">तस्बिर मोडमा प्रवेश गरियो</translation>
 <translation id="8214489666383623925">फाइल खोल्नुहोस्...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" /> मार्फत आफ्नो फोनमा उपलब्ध सुविधाहरू प्रयोग गर्नुहोस्</translation>
 <translation id="8217212468862726597">पोइन्टर हाइलाइट गर्नुहोस्</translation>
@@ -7991,7 +7974,6 @@
 <translation id="8592141010104017453">कुनै पनि सूचना नदेखाउनुहोस्</translation>
 <translation id="859246725979739260">यो साइटलाई तपाईंको स्थानसम्बन्धी जानकारी प्रयोग गर्न नपाउने गरी ब्लक गरिएको छ।</translation>
 <translation id="8593121833493516339">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाएर आफ्ना बालकको Android सम्बन्धी अनुभवलाई सुधार गर्न मद्दत गर्नुहोस्। यस्तो डेटा तपाईंका बालकको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। तपाईंका बालकको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलाप सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
-<translation id="8594908476761052472">भिडियो खिच्नुहोस्</translation>
 <translation id="8596540852772265699">अनुकूलित फाइलहरू</translation>
 <translation id="8597845839771543242">सम्पत्ति ढाँचा:</translation>
 <translation id="8599681327221583254">एक वा सोभन्दा बढी नीतिहरू राम्ररी कन्फिगर गरिएका छैनन्। कृपया आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्</translation>

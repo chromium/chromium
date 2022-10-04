@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">ბირმული/მიანმარული</translation>
 <translation id="2392369802118427583">გააქტიურება</translation>
 <translation id="240770291734945588">ხელმისაწვდომია <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">ქსელში შესვლა</translation>
 <translation id="2425665904502185219">ფაილის სრული ზომა</translation>
 <translation id="2428749644083375155">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის კოპირება „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="2448312741937722512">ტიპი</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">დაკვრის ფუნქცია მიუწვდომელია</translation>
 <translation id="383652340667548381">სერბული</translation>
 <translation id="385051799172605136">უკან</translation>
+<translation id="3851491607336266896">დაკავშირებულია, კავშირი შეზღუდულია</translation>
 <translation id="3855472144336161447">გერმანული Neo 2</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3866249974567520381">აღწერა</translation>
@@ -938,6 +940,7 @@
 <translation id="8903931173357132290">კურსდამთავრებული</translation>
 <translation id="8912078710089354287">ძაღლი, რომელიც კუდს აქიცინებს</translation>
 <translation id="8919081441417203123">დანიური</translation>
+<translation id="8949925099261528566">დაკავშირებულია, ინტერნეტის გარეშე</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
 <translation id="8997962250644902079">ჩინური (ტრადიციული) პინ-ინი</translation>
 <translation id="8998871447376656508">თქვენს Google Drive-ზე არ არის საკმარისი თავისუფალი მეხსიერება ატვირთვის შესასრულებლად.</translation>

@@ -846,6 +846,7 @@
 <translation id="3216313131063488104">بلیوز</translation>
 <translation id="3218181027817787318">متعلقہ</translation>
 <translation id="3223287115535306850">ایپ لانچنگ تھروبر</translation>
+<translation id="3223425961342298674">مقام کی اجازت نہیں ہے</translation>
 <translation id="3225347164936328585">تالیاں بجاتا ہوا</translation>
 <translation id="3225919329040284222">سرور نے ایک سرٹیفکیٹ پیش کیا ہے جو پہلے سے موجود توقعات سے مماثل نہیں ہے۔ آپ کے تحفظ کیلئے یہ توقعات مخصوص، انتہائی سیکیورٹی والی ویب سائٹس کیلئے شامل کی جاتی ہیں۔</translation>
 <translation id="3226128629678568754">صفحہ کو لوڈ کرنے کیلئے درکار ڈیٹا دوبارہ جمع کرانے کیلئے دوبارہ لوڈ کریں بٹن دبائیں۔</translation>
@@ -1182,6 +1183,7 @@
 <translation id="4127575959421463246">‏ChromeOS کے جھنڈے تلاش کر رہے ہیں؟ ملاحظہ کریں</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 دیگر}other{# دیگر}}</translation>
 <translation id="4130226655945681476">نیٹ ورک کیبلز، موڈم اور راؤٹر کو چیک کیا جا رہا ہے</translation>
+<translation id="4132448310531350254">‏file_extension "<ph name="FILE_EXTENSION" />" کے لیے ڈپلیکیٹ ہینڈلرز جس کا حوالہ ایپس "<ph name="POLICY_IDS_LIST" />" کے ذریعے دیا گیا ہے۔</translation>
 <translation id="4134123981501319574">دستاویز تخلیق کریں</translation>
 <translation id="413544239732274901">مزید جانیں</translation>
 <translation id="4142935452406587478">ٹرے 10</translation>
@@ -1204,6 +1206,7 @@
 <translation id="4194250254487269611">آپ کا کارڈ ابھی محفوظ نہیں کیا جا سکا</translation>
 <translation id="4196861286325780578">منتقلی &amp;واپس لائیں</translation>
 <translation id="4202554117186904723">پانچواں رول</translation>
+<translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />فائروال اور اینٹی وائرس کنفیگریشنز کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">بڑا</translation>
 <translation id="4210602799576081649">توثیقی کوڈ کی میعاد ختم ہوگئی، ایک نئے کوڈ کی درخواست کریں</translation>
@@ -1230,6 +1233,7 @@
     &lt;p&gt;کام مکمل کرنے کے بعد اپنا اینٹی وائرس پروگرام دوبارہ آن کرنا نہ بھولیں۔&lt;/p&gt;
     &lt;h4&gt;مرحلہ 5: اضافی مدد حاصل کریں&lt;/h4&gt;
     &lt;p&gt;اگر آپ کو اب بھی خرابی دکھائی دیتی ہے، تو ویب سائٹ کے مالک سے رابطہ کریں۔&lt;/p&gt;</translation>
+<translation id="4223404254440398437">مائیکروفون کی اجازت نہیں ہے</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />نیٹ ورک کی تشخیصات چلانے کی کوشش کریں<ph name="END_LINK" />۔</translation>
 <translation id="4230204356098880324">سائٹ آپ کے کیمرا کو استعمال کرنے اور منتقل کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="4235360514405112390">درست</translation>
@@ -1600,6 +1604,7 @@
 <translation id="5177076414499237632">اس صفحہ کے ماخذ اور موضوع کے بارے میں جانیں</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" /> میں نہیں ہے؟ اس خرابی کی اطلاع دیں</translation>
 <translation id="518639307526414276">پالتو جانور کا کھانا اور پالتو جانور کی نگہداشت کی سپلائز</translation>
+<translation id="5190072300954988691">کیمرا اور مائکروفون کی اجازت نہیں ہے</translation>
 <translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="5191315092027169558">آپ کی پروفائل <ph name="DOMAIN" /> کے زیر انتظام ہے</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> متعدد فائلز ڈاؤن لوڈ کرنا چاہتا ہے</translation>
@@ -1620,6 +1625,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
+<translation id="5239623327352565343">مقام کی اجازت ہے</translation>
 <translation id="5242889659037569123">سامان اور سفر کے لوازمات</translation>
 <translation id="5250209940322997802">"نیٹ ورک سے منسلک ہوں"</translation>
 <translation id="52517543715119994">‏Chrome کی خصوصیات کے بارے میں جانیں</translation>
@@ -2496,6 +2502,7 @@
 <translation id="7581199239021537589">‏سائیڈ 2 تصویر Y شفٹ</translation>
 <translation id="7582602800368606489">‏Google کیلنڈر میں تیزی سے ایک نیا ایونٹ تخلیق کریں</translation>
 <translation id="7583969447617676942">قانونی خدمات</translation>
+<translation id="7586676035079382730">اطلاعات کی اجازت نہیں ہے</translation>
 <translation id="7591288787774558753">رازدارانہ مواد کا اشتراک کریں؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> پر موجود کوکیز اور سائٹ کا ڈیٹا استعمال کرنا چاہتا ہے</translation>
 <translation id="7592362899630581445">سرور سرٹیفیکیٹ نام کی پابندیوں کی خلاف ورزی کرتا ہے۔</translation>
@@ -3047,6 +3054,7 @@
 <translation id="9131119348384879525">رازدارانہ مواد کو کیپچر کریں؟</translation>
 <translation id="9136861683332321024">پُر تعیش گاڑیاں</translation>
 <translation id="9137013805542155359">اصل دکھائیں</translation>
+<translation id="9138037198177304356">اطلاعات کی اجازت ہے</translation>
 <translation id="9139318394846604261">خریداری</translation>
 <translation id="9141013498910525015">پتوں کا نظم کریں</translation>
 <translation id="9144951720726881238">اختتامی تاریخ:</translation>

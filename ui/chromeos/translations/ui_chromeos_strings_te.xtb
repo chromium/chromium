@@ -157,11 +157,12 @@
 <translation id="2377319039870049694">లిస్ట్‌ వీక్షణకు మార్చు</translation>
 <translation id="2377590462528165447">Linuxతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ఫైళ్లు ఎంచుకోబడ్డాయి</translation>
+<translation id="2383454254762599978">ట్రాష్‌కు తరలించండి</translation>
 <translation id="2387458720915042159">ప్రాక్సీ కనెక్షన్ రకం</translation>
 <translation id="2389832672041313158">బర్మీస్/మయన్మార్</translation>
 <translation id="2392369802118427583">యాక్టివేట్ చేయండి</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> అందుబాటులో ఉంది</translation>
-<translation id="2425665904502185219">మొత్తం ఫైల్ పరిమాణం</translation>
+<translation id="2425665904502185219">మొత్తం ఫైల్ సైజ్‌</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను <ph name="FOLDER_NAME" />కు కాపీ చేస్తోంది</translation>
 <translation id="2448312741937722512">రకం</translation>
 <translation id="2452444014801043526">మెగాఫోన్ పట్టుకున్న వ్యక్తి</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.comకు వెళ్లండి...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" />తో ఫైళ్లను తెరవడానికి ముందుగా వాటిని Windows ఫైళ్ల ఫోల్డర్‌కు కాపీ చేయండి.</translation>
 <translation id="3556731189587832921">అంతర్జాతీయ PC కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడుతోంది</translation>
 <translation id="3567221313191587603">మీ ఫైళ్లను ఆఫ్‌లైన్‌లో యాక్సెస్ చేయడం కోసం ఒక ఫైల్‌ను ఎంచుకుని, <ph name="OFFLINE_CHECKBOX_NAME" />ను టోగుల్ చేయండి.</translation>
 <translation id="357479282490346887">లిథువేనియన్</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">బంగ్లా ఫొనెటిక్</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
 <translation id="4017788180641807848">వర్క్‌మాన్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
+<translation id="4019998208269143058">క్విక్ ఫైల్స్‌కు పిన్ చేయండి</translation>
 <translation id="4040753847560036377">తప్పు PUK</translation>
 <translation id="4057991113334098539">సక్రియం చేస్తోంది...</translation>
 <translation id="4092890906744441904">ఐరిష్</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">అడ్మినిస్ట్రేటర్ పాలసీ వీటిని సిఫార్సు చేయదు:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> తరలించబడింది.</translation>
 <translation id="4176286497474237543">ఇప్పుడే ట్రాష్‌ను ఖాళీ చేయండి</translation>
+<translation id="4179621117429069925">ఈ ఐటెమ్ మీ ట్రాష్‌లో ఉంది</translation>
 <translation id="4186579485882418952">ఆఫ్‌లైన్ మోడ్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="4193154014135846272">Google డాక్యుమెంట్‌</translation>
 <translation id="4197674956721858839">జిప్ ఎంపిక</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">ప్రామాణీకరణ ప్రమాణపత్రం రిమోట్‌లో తిరస్కరించబడింది</translation>
 <translation id="4394214039309501350">బాహ్య లింక్</translation>
 <translation id="4394980935660306080">ఈ వారం ప్రారంభంలో</translation>
+<translation id="4398096759193130964">ఐటెమ్‌లను రీస్టోర్ చేయండి లేదా వాటిని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి</translation>
 <translation id="4401287888955153199">అన్నింటినీ ఎక్స్‌ట్రాక్ట్ చేయండి</translation>
 <translation id="4410695710508688828">ఎక్స్‌ట్రాక్ట్ చేయడం విఫలమైంది. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">మీ ఫైల్స్ కోసం షార్ట్‌కట్‌ను క్రియేట్ చేయండి</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">ఇన్‌స్క్రిప్ట్ కీబోర్డ్‌తో హిందీ</translation>
 <translation id="4801956050125744859">రెండింటినీ ఉంచు</translation>
 <translation id="4804827417948292437">వెన్నపండు</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> ఐటెమ్‌లను రీస్టోర్ చేస్తోంది</translation>
 <translation id="4823651846660089135">పరికరం చదవడానికి మాత్రమే</translation>
 <translation id="4826849268470072925">తమిళం ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> అంశాలు ఎంచుకోబడ్డాయి</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">గజేనియా పుష్పం</translation>
 <translation id="4943368462779413526">ఫుట్‌బాల్</translation>
 <translation id="4961158930123534723">Parallels Desktopతో 1 ఫోల్డర్ షేర్ చేయబడింది</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> రీస్టోర్ చేయబడింది</translation>
 <translation id="4969785127455456148">ఆల్బమ్</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> లేదా అంతకంటే తక్కువ అక్షరాలు ఉన్న పేరుని ఉపయోగించండి</translation>
 <translation id="4973970068702235170">జిప్ చేయడం విఫలమైంది, అనుకోని ఎర్రర్: <ph name="ERROR_MESSAGE" /></translation>
@@ -466,7 +473,7 @@
 <translation id="5045550434625856497">సరికాని పాస్‌వర్డ్</translation>
 <translation id="5059127710849015030">నేపాలీ ట్రాన్స్‌లిటరేషన్</translation>
 <translation id="5068919226082848014">పిజ్జా</translation>
-<translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> పరిమాణం వరకు ఫైళ్లు తొలగించబడతాయి</translation>
+<translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> సైజ్‌ వరకు ఫైళ్లు తొలగించబడతాయి</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను <ph name="FOLDER_NAME" />కు తరలిస్తోంది</translation>
 <translation id="509429900233858213">ఒక ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="5098629044894065541">హిబ్రూ</translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">అయ్యో, <ph name="FILE_NAME" /> ఉనికిలో లేదు.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, అన్‌లాక్ చేయి</translation>
 <translation id="5700087501958648444">ఆడియో సమాచారం</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ట్రాష్‌కు తరలించబడింది</translation>
 <translation id="5724172041621205163">పట్టచోటె కీబోర్డ్‌తో థాయ్</translation>
 <translation id="5756666464756035725">హంగేరియన్ QWERTY</translation>
 <translation id="5763377084591234761">జర్మన్ (స్విట్జర్లాండ్)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ఆర్కైవ్</translation>
 <translation id="6321303798550928047">చేయి ఊపడం</translation>
 <translation id="6327785803543103246">వెబ్ ప్రాక్సీ స్వీయశోధన</translation>
+<translation id="6337014272874260727">క్విక్ ఫైల్స్ నుండి పిన్‌ను తీసివేయండి</translation>
 <translation id="6339145975392024142">US అంతర్జాతీయం (PC)</translation>
 <translation id="6346310558342052870">యాక్సెస్ నియంత్రించబడింది</translation>
 <translation id="6356685157277930264">ఫైల్స్ అభిప్రాయ విండో</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 ఫోల్డర్ ఎంచుకోబడింది</translation>
 <translation id="6755827872271341378">ChromeOS Flex పరికరం</translation>
 <translation id="6790428901817661496">ప్లే చేయి</translation>
+<translation id="6794539005637808366">ఐటెమ్‌ను రీస్టోర్ చేయండి లేదా దాన్ని ట్రాష్ వెలుపల ఉన్న కొత్త ఫోల్డర్‌కు లాగండి</translation>
 <translation id="6795884519221689054">పాండా</translation>
 <translation id="6806699711453372963">Linux షేరింగ్‌ని నిర్వహించండి</translation>
 <translation id="6806796368146926706">జపనీస్ కీబోర్డ్‌తో అక్షరాలు, అంకెలు</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">స్వీడిష్</translation>
 <translation id="6990081529015358884">మీకు ఖాళీ స్థలం లేదు</translation>
+<translation id="6993826899923627728">ఈ ఐటెమ్‌లు మీ ట్రాష్‌లో ఉన్నాయి</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ఫోల్డర్‌లు ఎంచుకోబడ్డాయి</translation>
 <translation id="7008426324576352165">అప్‌లోడ్‌ను పూర్తి చేయడానికి మీ సంస్థకు మరింత స్టోరేజ్ అవసరం.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">చెక్</translation>
 <translation id="7417453074306512035">ఇథియోపిక్ కీబోర్డ్</translation>
 <translation id="7417705661718309329">Google మ్యాప్</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />"ను రీస్టోర్ చేస్తోంది</translation>
 <translation id="7458955835361612701">ఇటీవలి ఇమేజ్‌లు ఏవీ లేవు</translation>
 <translation id="7460898608667578234">ఉక్రెయినియన్</translation>
 <translation id="7469894403370665791">ఆటోమేటిక్‌గా ఈ నెట్‌వర్క్‌కు కనెక్ట్ చేయి</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Google Photosను సులభంగా యాక్సెస్ చేయండి</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
 <translation id="7663224033570512922">హిందీ</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు ట్రాష్‌కు తరలించబడ్డాయి</translation>
 <translation id="7693909743393669729">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో స్టోర్ చేసిన మొత్తం డేటా తొలగించబడుతుంది, కనపడకుండా ఉండే కొన్ని విభజనలతో సహా విభజనలు అన్నీ తీసివేయబడతాయి. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="76959938259365003">ట్రాష్‌ను ఖాళీ చేయడంలో విఫలమైంది.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">చైనీస్ వుబీ</translation>
 <translation id="7765158879357617694">తరలించు</translation>
 <translation id="7774365994322694683">పక్షి</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు రీస్టోర్ చేయబడ్డాయి</translation>
 <translation id="7781829728241885113">నిన్న</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />"ను ఆఫ్‌లైన్‌లో సేవ్ చేయడానికి మీ వద్ద <ph name="TOTAL_FILE_SIZE" /> అదనపు ఖాళీ స్థలం తప్పనిసరిగా ఉండాలి:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />మీరు ఆఫ్‌లైన్‌లో ఇకపై యాక్సెస్ చేయకూడదనుకునే ఫైళ్లను అన్‌పిన్ చేయండి<ph name="MARKUP_3" />
@@ -818,7 +832,7 @@
 <translation id="7980421588063892270">కోల్‌మాక్ కీబోర్డ్‌తో ఇంగ్లీష్ (US)</translation>
 <translation id="8000066093800657092">ఏ నెట్‌వర్క్ లేదు</translation>
 <translation id="8008366997883261463">జాక్ రస్సెల్ టెర్రియర్</translation>
-<translation id="8028993641010258682">పరిమాణం</translation>
+<translation id="8028993641010258682">సైజ్‌</translation>
 <translation id="803771048473350947">ఫైల్</translation>
 <translation id="8038111231936746805">(డిఫాల్ట్)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ఆడియో</translation>
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> నుండి <ph name="TO_ENTRY_NAME" /> మధ్యలో ఉన్న <ph name="ENTRY_COUNT" /> నమోదులు ఎంపిక చేయబడ్డాయి.</translation>
 <translation id="954194396377670556">అడ్మినిస్ట్రేటర్ పాలసీ వీటిని నిరోధిస్తుంది:</translation>
 <translation id="965477715979482472">ఇంగ్లీష్ (దక్షిణాఫ్రికా)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లు ట్రాష్‌కు తరలించబడుతున్నాయి</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే వినియోగంలో ఉంది. మీరు దీనిని భర్తీ చేయాలనుకుంటున్నారా?</translation>
 <translation id="992401651319295351">మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి. మీరు కొత్త PINను సెటప్ చేసే వరకు ఈ నెట్‌వర్క్‌ను ఉపయోగించలేరు.</translation>

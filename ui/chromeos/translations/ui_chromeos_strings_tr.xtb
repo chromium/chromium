@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Liste görünümüne geç</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> klasör Linux ile paylaşıldı</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> dosya seçildi</translation>
+<translation id="2383454254762599978">Çöp kutusuna taşı</translation>
 <translation id="2387458720915042159">Proxy bağlantısı türü</translation>
 <translation id="2389832672041313158">Birmanca/Myanmar</translation>
 <translation id="2392369802118427583">Etkinleştir</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com'a git...</translation>
 <translation id="3553048479571901246">Dosyaları <ph name="APP_NAME" /> ile açmak için önce dosyaları Windows dosyaları klasörüne kopyalayın.</translation>
 <translation id="3556731189587832921">Uluslararası PC klavye ile İngilizce (ABD)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" />, çöp kutusuna taşınıyor</translation>
 <translation id="3567221313191587603">Çevrimdışıyken erişebilmek istediğiniz dosyaları seçip <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini etkinleştirin.</translation>
 <translation id="357479282490346887">Litvanca</translation>
 <translation id="3587482841069643663">Tümü</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Bengalce Fonetik</translation>
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4017788180641807848">Workman klavye ile İngilizce (ABD)</translation>
+<translation id="4019998208269143058">Hızlı dosyalara sabitle</translation>
 <translation id="4040753847560036377">Yanlış PUK</translation>
 <translation id="4057991113334098539">Etkinleştiriliyor...</translation>
 <translation id="4092890906744441904">İrlandaca</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Yönetici politikası şunları önermez:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> öğe taşındı.</translation>
 <translation id="4176286497474237543">Çöp kutusunu şimdi boşalt</translation>
+<translation id="4179621117429069925">Bu öğe çöp kutunuzda</translation>
 <translation id="4186579485882418952">Offline'ı etkinleştir</translation>
 <translation id="4193154014135846272">Google dokümanı</translation>
 <translation id="4197674956721858839">Zip seçimi</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Kimlik doğrulama sertifikası uzaktan reddedildi</translation>
 <translation id="4394214039309501350">Harici bağlantı</translation>
 <translation id="4394980935660306080">Bu haftanın başlarında</translation>
+<translation id="4398096759193130964">Öğeleri geri yükleyin veya çöp kutusu dışındaki yeni bir klasöre sürükleyin</translation>
 <translation id="4401287888955153199">Tümünü çıkar</translation>
 <translation id="4410695710508688828">Çıkarma işlemi gerçekleştirilemedi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Dosyalarınız için kısayol oluşturun</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Hintçe, Alfabetik klavye</translation>
 <translation id="4801956050125744859">Her ikisini de sakla</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> öğe geri yükleniyor</translation>
 <translation id="4823651846660089135">Cihaz salt okunur</translation>
 <translation id="4826849268470072925">Tamilce ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> öğe seçildi</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Gazania Çiçeği</translation>
 <translation id="4943368462779413526">Futbol</translation>
 <translation id="4961158930123534723">1 klasör Parallels Desktop ile paylaşıldı</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> geri yüklendi</translation>
 <translation id="4969785127455456148">Albüm</translation>
 <translation id="4973523518332075481">En fazla <ph name="MAX_LENGTH" /> karakterden oluşan bir ad kullanın</translation>
 <translation id="4973970068702235170">Sıkıştırma işlemi başarısız oldu, beklenmedik hata oluştu: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Hata! <ph name="FILE_NAME" /> artık mevcut değil.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Kilidi aç</translation>
 <translation id="5700087501958648444">Ses bilgileri</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> çöp kutusuna taşındı</translation>
 <translation id="5724172041621205163">Pattachote klavye ile Tayca</translation>
 <translation id="5756666464756035725">Macarca QWERTY</translation>
 <translation id="5763377084591234761">Almanca (İsviçre)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arşiv dosyası</translation>
 <translation id="6321303798550928047">El sallayan kız</translation>
 <translation id="6327785803543103246">Web proxy otomatik keşfi</translation>
+<translation id="6337014272874260727">Hızlı dosyalardaki sabitlemeyi kaldır</translation>
 <translation id="6339145975392024142">ABD uluslararası (PC)</translation>
 <translation id="6346310558342052870">Erişim kısıtlı</translation>
 <translation id="6356685157277930264">Dosya geri bildirim penceresi</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 klasör seçildi</translation>
 <translation id="6755827872271341378">ChromeOS Flex cihaz</translation>
 <translation id="6790428901817661496">Oynat</translation>
+<translation id="6794539005637808366">Öğeyi geri yükleyin veya çöp kutusu dışındaki yeni bir klasöre sürükleyin</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linux paylaşımını yönet</translation>
 <translation id="6806796368146926706">Alfasayısal giriş (Japonca klavye)</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">İsveççe</translation>
 <translation id="6990081529015358884">Boş yeriniz kalmadı</translation>
+<translation id="6993826899923627728">Bu öğeler çöp kutunuzda</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> klasör seçildi</translation>
 <translation id="7008426324576352165">Kuruluşunuzun, yükleme işlemini tamamlamak için daha fazla depolama alanına ihtiyacı var.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Çekçe</translation>
 <translation id="7417453074306512035">Etiyopya dili klavye</translation>
 <translation id="7417705661718309329">Google harita</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" geri yükleniyor</translation>
 <translation id="7458955835361612701">Yakın tarihli resim yok</translation>
 <translation id="7460898608667578234">Ukraynaca</translation>
 <translation id="7469894403370665791">Bu ağa otomatik olarak bağlan</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Google Fotoğraflar'a kolayca erişin</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7663224033570512922">Hintçe</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> öğe çöp kutusuna taşındı</translation>
 <translation id="7693909743393669729">Bir sürücünün biçimlendirilmesi sürücüde depolanan tüm verileri siler ve görünür olmayan bölümler de dahil olmak üzere tüm mevcut bölümleri kaldırır. Bu işlem geri alınamaz.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> biçimlendirilemedi</translation>
 <translation id="76959938259365003">Çöp kutusu boşaltılamadı.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Çince Wubi</translation>
 <translation id="7765158879357617694">Taşı</translation>
 <translation id="7774365994322694683">Kuş</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> öğe geri yüklendi</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" dosyasını çevrimdışı olarak kaydetmek için fazladan <ph name="TOTAL_FILE_SIZE" /> alan boşaltmanız gerekiyor:<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />artık çevrimdışı olarak erişmeniz gerekmeyen dosyaların sabitlemesini kaldırın<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> arasında <ph name="ENTRY_COUNT" /> giriş seçildi.</translation>
 <translation id="954194396377670556">Yönetici politikası şunları önler:</translation>
 <translation id="965477715979482472">İngilizce (Güney Afrika)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> öğe çöp kutusuna taşınıyor</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı bir dosya zaten var. Değiştirmek istiyor musunuz?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> deneme hakkınız kaldı. Yeni bir PIN oluşturana kadar bu ağı kullanamazsınız.</translation>

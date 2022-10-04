@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Scan dit dokument</translation>
 <translation id="1309250603447638106">Downloader opdateringer til dokumentscanning</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tryk på søgetasten+venstrepil for at få adgang til dem.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
 <translation id="1473110567575736769">Timer på 3 sekunder</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Bagsidekamera</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> sek.</translation>
 <translation id="2761536921376153655">Scanningstype</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Forhåndsvisning af spejl</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> er tilsluttet.</translation>
 <translation id="2904654629665923749">Dokumentscanning er tilgængelig</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">Til</translation>
 <translation id="5975083100439434680">Zoom ud</translation>
 <translation id="5976160379964388480">Andre</translation>
-<translation id="603973421174355542">Fuld HD</translation>
 <translation id="6073451960410192870">Stop optagelse</translation>
 <translation id="6197807149213783179">Gem metadata</translation>
 <translation id="6233780560267770709">3 gange 3</translation>
@@ -137,7 +134,6 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="698156982839284926">3 sekunder</translation>
 <translation id="712848772518857951">Er du sikker på, at du vil fjerne <ph name="COUNT" /> elementer?</translation>
 <translation id="7134221860976209830">Timer på 10 sekunder</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Optagelsestype</translation>
 <translation id="7243947652761655814">Videoopløsning</translation>
 <translation id="7337660886763914220">Der er fejl i filsystemet.</translation>

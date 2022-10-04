@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">تبديل إلى عرض القائمة</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> من المجلَّدات المشتركة مع نظام التشغيل Linux.</translation>
 <translation id="2378075407703503998">تم اختيار <ph name="SELCTED_FILE_COUNT" /> من الملفات</translation>
+<translation id="2383454254762599978">نقل إلى "المهملات"</translation>
 <translation id="2387458720915042159">نوع الاتصال بالخادم الوكيل</translation>
 <translation id="2389832672041313158">البورمية/ميانمار</translation>
 <translation id="2392369802118427583">تفعيل</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">‏جارٍالانتقال إلى drive.google.com...</translation>
 <translation id="3553048479571901246">‏لفتح الملفات باستخدام <ph name="APP_NAME" />، يُرجى نسخها أولاً إلى مجلد ملفات نظام التشغيل Windows.</translation>
 <translation id="3556731189587832921">الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح الكمبيوتر الشخصي الدولية</translation>
+<translation id="3557414470514932909">جارٍ نقل <ph name="FILE_NAME" /> إلى "المهملات"…</translation>
 <translation id="3567221313191587603">اختَر ملفًا ثم فعِّل الخيار "<ph name="OFFLINE_CHECKBOX_NAME" />" لإتاحة الوصول إلى الملف بلا اتصال بالإنترنت.</translation>
 <translation id="357479282490346887">الليتوانية</translation>
 <translation id="3587482841069643663">الكل</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">البنغالية الصوتية</translation>
 <translation id="4002066346123236978">العنوان</translation>
 <translation id="4017788180641807848">‏الإنجليزية (الولايات المتحدة) باستخدام لوحة مفاتيح Workman</translation>
+<translation id="4019998208269143058">التثبيت في قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="4040753847560036377">‏رمز PUK غير صحيح.</translation>
 <translation id="4057991113334098539">تفعيل...</translation>
 <translation id="4092890906744441904">الأيرلندية</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">لا تنصح سياسة المشرف بما يلي:</translation>
 <translation id="4159731583141908892">تم نقل <ph name="FILE_NAME" />.</translation>
 <translation id="4176286497474237543">إفراغ المهملات الآن</translation>
+<translation id="4179621117429069925">هذا العنصر موضوع في "المهملات"</translation>
 <translation id="4186579485882418952">‏تفعيل "مستندات Google بلا إنترنت"</translation>
 <translation id="4193154014135846272">‏مستند Google</translation>
 <translation id="4197674956721858839">تحديد ملف مضغوط</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">تم رفض شهادة المصادقة عن بُعد</translation>
 <translation id="4394214039309501350">رابط خارجي</translation>
 <translation id="4394980935660306080">في وقت سابق من هذا الأسبوع</translation>
+<translation id="4398096759193130964">يمكنك استعادة العناصر أو سحبها إلى مجلد جديد خارج "المهملات".</translation>
 <translation id="4401287888955153199">استخراج الكل</translation>
 <translation id="4410695710508688828">تعذّرت عملية استخراج الملفات. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">إنشاء اختصار للملفات</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">‏الهندية باستخدام لوحة مفاتيح InScript</translation>
 <translation id="4801956050125744859">الاحتفاظ بالاثنتين</translation>
 <translation id="4804827417948292437">أفوكادو</translation>
+<translation id="4805966553127040832">جارٍ استعادة <ph name="COUNT" /> عنصر…</translation>
 <translation id="4823651846660089135">الجهاز للقراءة فقط</translation>
 <translation id="4826849268470072925">‏التاميلية باستخدام لوحة مفاتيح ITRANS</translation>
 <translation id="4839847978919684242">تم اختيار <ph name="SELCTED_FILES_COUNT" /> من العناصر</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">زهرة غازانيا</translation>
 <translation id="4943368462779413526">كرة القدم</translation>
 <translation id="4961158930123534723">‏تمّت مشاركة ملف واحد مع نظام Parallels Desktop.</translation>
+<translation id="496656650103537022">تمت استعادة <ph name="FILE_NAME" />.</translation>
 <translation id="4969785127455456148">الألبوم</translation>
 <translation id="4973523518332075481">يرجى استخدام اسم يحتوي على <ph name="MAX_LENGTH" /> حرف أو أقل</translation>
 <translation id="4973970068702235170">تعذَّر الضغط، خطأ غير متوقع: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">عذرًا، لم يعد <ph name="FILE_NAME" /> متوفرًا.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />، فتح القفل</translation>
 <translation id="5700087501958648444">معلومات الملف الصوتي</translation>
+<translation id="5720028165859493293">تم نقل <ph name="FILE_NAME" /> إلى "المهملات".</translation>
 <translation id="5724172041621205163">‏التايلاندية باستخدام لوحة مفاتيح Pattachote</translation>
 <translation id="5756666464756035725">‏QWERTY المجرية</translation>
 <translation id="5763377084591234761">الألمانية (سويسرا)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">أرشيف <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">تلويح باليد</translation>
 <translation id="6327785803543103246">اكتشاف الخادم الوكيل للويب تلقائيًا</translation>
+<translation id="6337014272874260727">إزالة التثبيت من قائمة "الوصول سريعًا إلى الملفات"</translation>
 <translation id="6339145975392024142">الأمريكية الدولية (الكمبيوتر الشخصي)</translation>
 <translation id="6346310558342052870">تم تقييد عملية الوصول</translation>
 <translation id="6356685157277930264">نافذة التعليقات على الملفات</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">تم اختيار مجلد واحد</translation>
 <translation id="6755827872271341378">‏جهاز ChromeOS Flex</translation>
 <translation id="6790428901817661496">التشغيل</translation>
+<translation id="6794539005637808366">يمكنك استعادة العنصر أو سحبه إلى مجلد جديد خارج "المهملات".</translation>
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6806699711453372963">‏إدارة المشاركة في Linux</translation>
 <translation id="6806796368146926706">الأبجدية الرقمية باستخدام لوحة المفاتيح اليابانية</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">السويدية</translation>
 <translation id="6990081529015358884">لقد نفدت المساحة</translation>
+<translation id="6993826899923627728">هذه العناصر موضوعة في "المهملات"</translation>
 <translation id="6998711733709403587">تم اختيار <ph name="SELCTED_FOLDERS_COUNT" /> من المجلدات</translation>
 <translation id="7008426324576352165">تحتاج مؤسستك إلى مساحة تخزين إضافية لإكمال التحميل.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">التشيكية</translation>
 <translation id="7417453074306512035">لوحة المفاتيح الإثيوبية</translation>
 <translation id="7417705661718309329">‏خريطة Google</translation>
+<translation id="7419668828140929293">جارٍ استعادة "<ph name="FILENAME" />"…</translation>
 <translation id="7458955835361612701">ما مِن صور حديثة.</translation>
 <translation id="7460898608667578234">الأوكرانية</translation>
 <translation id="7469894403370665791">الاتصال بهذه الشبكة تلقائيًا</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">‏الوصول بسهولة إلى "صور Google"</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7663224033570512922">الهندية</translation>
+<translation id="7689532716264131859">تم نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات".</translation>
 <translation id="7693909743393669729">ستؤدي تهيئة محرك أقراص إلى محو جميع البيانات المخزَّنة عليه وإزالة جميع الأقسام الحالية، بما فيها الأقسام التي قد تكون غير مرئية. ولا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="7695430100978772476">تعذّر ضبط <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">تعذّر إفراغ المهملات.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">‏الصينية باستخدام لوحة مفاتيح Wubi</translation>
 <translation id="7765158879357617694">نقل</translation>
 <translation id="7774365994322694683">طائر</translation>
+<translation id="7780322752056734036">تمت استعادة <ph name="NUMBER_OF_ITEMS" /> عنصر.</translation>
 <translation id="7781829728241885113">أمس</translation>
 <translation id="7788080748068240085">لحفظ "<ph name="FILE_NAME" />" بلا إنترنت، يجب توفير مساحة إضافية تبلغ <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />احرص على إزالة الملفات التي لم تعد بحاجة إلى الدخول إليها بلا إنترنت<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">تم اختيار مجموعة من <ph name="ENTRY_COUNT" /> إدخال من <ph name="FROM_ENTRY_NAME" /> إلى <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">تمنع سياسة المشرف ما يلي:</translation>
 <translation id="965477715979482472">الإنجليزية (جنوب أفريقيا)</translation>
+<translation id="976666271385981812">جارٍ نقل <ph name="NUMBER_OF_ITEMS" /> عنصر إلى "المهملات"…</translation>
 <translation id="981121421437150478">بلا اتصال</translation>
 <translation id="988685240266037636">يتوفَّر ملف باسم "<ph name="FILE_NAME" />" مسبقًا. هل تريد استبداله؟</translation>
 <translation id="992401651319295351">يتبقى لديك <ph name="RETRIES" /> محاولة. لن تتمكّن من استخدام هذه الشبكة إلى أن يتم إعداد رقم تعريف شخصي جديد.</translation>

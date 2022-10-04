@@ -382,7 +382,6 @@
 <translation id="1361655923249334273">Неискористен</translation>
 <translation id="1362865166188278099">Механички проблем. Проверете го печатачот</translation>
 <translation id="1363585519747660921">Потребно е конфигурирање на USB-печатачот</translation>
-<translation id="1367951781824006909">Избери датотека</translation>
 <translation id="1368603372088757436">Linux не е поддржан на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">Синхронизирајте со вашата сметка</translation>
 <translation id="1373176046406139583">Видливоста на вашиот уред контролира кој може да споделува со вас додека ви е отклучен екранот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -820,7 +819,6 @@
 <translation id="1748563609363301860">Отсега може да ја зачувате лозинкава во сметката на Google или само на уредов</translation>
 <translation id="1749733017156547309">Полето за лозинката е задолжително</translation>
 <translation id="1750172676754093297">Вашиот безбедносен клуч не може да складира отпечатоци</translation>
-<translation id="1751249301761991853">Персонализација</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> ќе може да изменува датотеки во <ph name="FOLDERNAME" /> сѐ додека не ги затворите сите картички за сајтов</translation>
 <translation id="17513872634828108">Отворени јазичиња</translation>
 <translation id="175196451752279553">П&amp;овторно отвори затворена картичка</translation>
@@ -1066,7 +1064,6 @@
 <translation id="1963976881984600709">Стандардна заштита</translation>
 <translation id="1965624977906726414">Нема специјални дозволи.</translation>
 <translation id="1969654639948595766">Текстуална евиденција на WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970368523891847084">Влеговте во видеорежим</translation>
 <translation id="1972325230031091483">Ќе прелистувате побрзо бидејќи содржините се вчитуваат проактивно според вашата тековна посета на веб-страницата</translation>
 <translation id="197288927597451399">Чувај</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> не може да се преземе безбедно. Притиснете Shift + F6 за да одите до областа на лентата за преземања.</translation>
@@ -1134,6 +1131,7 @@
 <translation id="2034346955588403444">Додајте друга Wi-Fi мрежа</translation>
 <translation id="2035211704574173780">Сиви тонови</translation>
 <translation id="203574396658008164">Овозможи земање белешки од заклучен екран</translation>
+<translation id="2036514476578229158">Побара да го посетиш сајтов. Твоите родители може да одговорат во Family Link.</translation>
 <translation id="2037445849770872822">Поставен е надзор за оваа сметка на Google. За да поставите уште „Родителски контроли“, изберете „Продолжи“.
 
 Во спротивно, одјавете се сега за да може промените на сметкава да се одразат на уредов.
@@ -1254,6 +1252,7 @@
 <translation id="2135787500304447609">&amp;Продолжи</translation>
 <translation id="2136372518715274136">Внесете нова лозинка</translation>
 <translation id="2136476978468204130">Лозинката што ја внесовте е неточна</translation>
+<translation id="2137891579555018930">Се чека дозвола…</translation>
 <translation id="2138398485845393913">Поврзувањето со „<ph name="DEVICE_NAME" />“ е уште во тек</translation>
 <translation id="2139919072249842737">Копче за поставување</translation>
 <translation id="2140788884185208305">Состојба на батеријата</translation>
@@ -1414,7 +1413,6 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{Отвори ги сите во &amp;нова група со картички}=1{Отвори во &amp;нова група со картички}one{Отвори ги сите ({COUNT}) во &amp;нова група со картички}other{Отвори ги сите ({COUNT}) во &amp;нова група со картички}}</translation>
 <translation id="2285942871162473373">Отпечатокот не може да се препознае. Обидете се повторно.</translation>
 <translation id="2287944065963043964">Екран за најавување</translation>
-<translation id="2288181517385084064">Префрлете се на видеорикордерот</translation>
 <translation id="2289270750774289114">Прашај кога некој сајт сака да открива уреди со Bluetooth во близина (се препорачува)</translation>
 <translation id="2290615375132886363">Копчиња за навигација во режим на таблет</translation>
 <translation id="229182044471402145">Не е најден фонт што се совпаѓа</translation>
@@ -2811,9 +2809,7 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3602870520245633055">Печатење и скенирање</translation>
 <translation id="3603622770190368340">Набави сертификат на мрежа</translation>
-<translation id="3604713164406837697">Менување тапет</translation>
 <translation id="3605780360466892872">Закопчан</translation>
-<translation id="3608576286259426129">Преглед на слика на корисник</translation>
 <translation id="3609277884604412258">Брзо пребарување</translation>
 <translation id="3610369246614755442">Вентилаторот на приклучокот треба да се сервисира</translation>
 <translation id="361106536627977100">Флеш податоци</translation>
@@ -2866,7 +2862,6 @@
 <translation id="3645372836428131288">Поместете го прстот малку за да снимите друг дел од отпечатокот.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}one{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}other{Преземавте <ph name="ATTACHMENTS" /> од <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750">Откриен е <ph name="USB_DEVICE_NAME" /></translation>
-<translation id="3649138363871392317">Фотографијата е снимена</translation>
 <translation id="3650753875413052677">Грешка при регистрацијата</translation>
 <translation id="3650845953328929506">Прикачувањето на евиденцијата чека на ред.</translation>
 <translation id="3650952250015018111">Дозволете ѝ пристап на "<ph name="APP_NAME" />" до:</translation>
@@ -3119,7 +3114,6 @@
 <translation id="3875815154304214043">Апликацијата <ph name="APP_NAME" /> е поставена да се отвора во нова картичка од прелистувачот, а поддржаните линкови исто така ќе се отвораат во прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Поставки за „Споделување во близина“ за уредот на <ph name="USER_NAME" /> што споделува под сметката <ph name="USER_EMAIL" /></translation>
 <translation id="3879748587602334249">Управник со преземања</translation>
-<translation id="3882165008614329320">Постојно видео од камера или датотека</translation>
 <translation id="3883482240657453056">Добијте попусти за <ph name="MERCHANT_NAME_1" /> и <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Содржините од интернет што се достапни на повеќе јазици ќе го користат првиот поддржан јазик од списоков. Поставкиве се синхронизираат со поставките за прелистувачот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Вашиот администратор управува со ажурирањата</translation>
@@ -4137,6 +4131,7 @@
 <translation id="4858913220355269194">Фудбалер</translation>
 <translation id="4862642413395066333">Најавување на одговори на OCSP</translation>
 <translation id="4863769717153320198">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (стандардна)</translation>
+<translation id="486459320933704969">Родител или старател мора да одобри за да го посетиш веб-сајтов</translation>
 <translation id="4864805589453749318">Изберете го родителот што дава дозвола за да додадете училишна сметка.</translation>
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -4491,7 +4486,6 @@
 <translation id="5213481667492808996">Услугата за мобилен интернет од <ph name="NAME" /> е спремна за употреба</translation>
 <translation id="5213891612754844763">Покажи ги поставките за прокси</translation>
 <translation id="5215502535566372932">Изберете држава</translation>
-<translation id="521582610500777512">Се отфрли фотографијата</translation>
 <translation id="5222403284441421673">Блокирано е небезбедно преземање</translation>
 <translation id="5222676887888702881">Одјави се</translation>
 <translation id="5225324770654022472">Покажи кратенка за апликации</translation>
@@ -4822,7 +4816,6 @@
 <translation id="5528295196101251711">Име на виртуелна машина</translation>
 <translation id="5532223876348815659">Глобални</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> сака да</translation>
-<translation id="5534304873398226603">Отфрли фотографија или видео</translation>
 <translation id="5537725057119320332">Емитувај</translation>
 <translation id="5539070192556911367">Нема пристап до Google</translation>
 <translation id="5539221284352502426">Серверот ја одби лозинката што ја внесовте. Можни причини за тоа се: лозинката е премногу кратка; лозинката мора да содржи броеви или симболи; лозинката мора да се разликува од претходните лозинки.</translation>
@@ -4904,7 +4897,6 @@
 <translation id="560834977503641186">Синхронизирање на Wi-Fi, дознајте повеќе</translation>
 <translation id="5608580678041221894">Допрете ги следниве копчиња за да го приспособите или преместите подрачјето за сечење</translation>
 <translation id="5609231933459083978">Апликацијата изгледа дека е неважечка.</translation>
-<translation id="5610038042047936818">Префрли на режим на фотоапарат</translation>
 <translation id="561030196642865721">Колачиња од трети страни се дозволени на сајтов</translation>
 <translation id="5612734644261457353">Извинете, лозинката сепак не може да се потврди. Забелешка: доколку неодамна сте ја промениле лозинката, новата лозинка ќе се примени откако ќе се одјавите. Тука употребете ја старата лозинка.</translation>
 <translation id="5614190747811328134">Известување за корисникот</translation>
@@ -5812,7 +5804,6 @@
 <translation id="6492396476180293140">Внатрешната камера е деактивирана со хардверски прекинувач</translation>
 <translation id="6494327278868541139">Прикажи ги деталите за подобрената заштита</translation>
 <translation id="6494445798847293442">Не е орган за сертифицирање</translation>
-<translation id="6494974875566443634">Приспособување</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{Податоциве содржат чувствителни или опасни содржини}=1{Датотекава содржи чувствителни или опасни содржини}one{Датотекиве содржат чувствителни или опасни содржини}other{Датотекиве содржат чувствителни или опасни содржини}}</translation>
 <translation id="6497784818439587832">Променете ја големината на екранот за да се намалат или зголемат ставките на екранот</translation>
 <translation id="6497789971060331894">Обратно лизгање на глувчето</translation>
@@ -6010,7 +6001,6 @@
 <translation id="6678717876183468697">Барај URL</translation>
 <translation id="6680442031740878064">Слободен простор: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Брзина</translation>
-<translation id="6681668084120808868">Фотографирај</translation>
 <translation id="6683087162435654533">&amp;Врати ги сите картички</translation>
 <translation id="6684827949542560880">Се презема најновото ажурирање</translation>
 <translation id="668599234725812620">Отвори Google Play</translation>
@@ -6344,7 +6334,6 @@
 <translation id="6981982820502123353">Пристапност</translation>
 <translation id="6983507711977005608">Исклучување инстант врзување на мрежа</translation>
 <translation id="6983783921975806247">Регистриран OID</translation>
-<translation id="6984299437918708277">Изберете фотографија за вашата сметка на екранот за пријавување</translation>
 <translation id="6985235333261347343">Агент за обнова на клучеви на Microsoft</translation>
 <translation id="698524779381350301">Автоматски дозволувај пристап на следниве сајтови</translation>
 <translation id="6985607387932385770">Печатачи</translation>
@@ -6514,7 +6503,6 @@
 <translation id="7149893636342594995">Изминатите 24 часа</translation>
 <translation id="7152478047064750137">Екстензијава не бара специјални дозволи</translation>
 <translation id="7154130902455071009">Променете ја почетната страница во: <ph name="START_PAGE" /></translation>
-<translation id="7155171745945906037">Постојна фотографија од камера или датотека</translation>
 <translation id="7159953856712257647">Стандардно инсталирана</translation>
 <translation id="7160182524506337403">Сега можете да ги прегледувате известувањата од телефонот</translation>
 <translation id="7163202347044721291">Се потврдува кодот за активација…</translation>
@@ -6641,7 +6629,6 @@
 <translation id="7287143125007575591">Пристапот е одбиен.</translation>
 <translation id="7287411021188441799">Врати ја стандардната заднина</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7289225569524511578">Отворете ја апликацијата за позадини</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете F6 за да одговорите</translation>
 <translation id="7290242001003353852">Услугава за најавување, чиј хост е <ph name="SAML_DOMAIN" />, пристапува до камерата.</translation>
 <translation id="7295614427631867477">Имајте предвид дека Android, Play и поврзаните апликации се раководат согласно сопствените правила за собирање и користење податоци.</translation>
@@ -7639,7 +7626,6 @@
 <translation id="821119981794423735">За да увезете лозинки на Google Password Manager за <ph name="USER_EMAIL" />, изберете датотека CSV</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Преземањето е во тек}one{Преземањата се во тек}other{Преземањата се во тек}}</translation>
 <translation id="8212601853154459483"><ph name="PROFILE_MANAGER" /> управува со профилов и бара да создадете посебен профил за сметката <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8213449224684199188">Влеговте во режим на фотографија</translation>
 <translation id="8214489666383623925">Отвори датотека...</translation>
 <translation id="8215129063232901118">Пристапувајте до можностите на телефонот од вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Нагласи го покажувачот</translation>
@@ -8017,7 +8003,6 @@
 <translation id="8592141010104017453">Воопшто не прикажувај известувања</translation>
 <translation id="859246725979739260">Пристапот до вашата локација е блокиран за сајтов.</translation>
 <translation id="8593121833493516339">Испраќајте податоци за користење и дијагностика. Помогнете ни да го подобриме искуството на вашето дете со Android со автоматско испраќање дијагностички и податоци за користењето на уредот и апликациите до Google. Овие податоци нема да се користат за идентификација на вашето дете, а ќе ни помогнат околу стабилноста на системот и апликациите и за други подобрувања. Некои збирни податоци ќе им помогнат на апликациите и партнерите на Google, како што се програмерите на Android. Ако сте ја вклучиле дополнителната „Активност на интернет и апликации“ за вашето дете, овие податоци може да се зачувуваат во сметката на Google на детето. <ph name="BEGIN_LINK1" />Дознајте повеќе<ph name="END_LINK1" /></translation>
-<translation id="8594908476761052472">Снимај видео</translation>
 <translation id="8596540852772265699">Приспособени датотеки</translation>
 <translation id="8597845839771543242">Формат на својството:</translation>
 <translation id="8599681327221583254">Едно или повеќе правила не се правилно конфигурирани. Контактирајте со администраторот</translation>
@@ -8713,6 +8698,7 @@
 <translation id="947329552760389097">&amp;Проверете ги елементите</translation>
 <translation id="947526284350604411">Вашиот одговор</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> не може да ги отвори датотеките во папкава бидејќи таа содржи системски датотеки</translation>
+<translation id="949314938206378263">Побара да го посетиш сајтов. Твојот родител може да одговори во Family Link.</translation>
 <translation id="950307215746360464">Водич за поставување</translation>
 <translation id="951991426597076286">Одбиј</translation>
 <translation id="952471655966876828">Уредот автоматски ќе се поврзе кога е вклучен или кога се користи</translation>

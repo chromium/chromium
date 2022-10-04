@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Byt till listvy</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappar delas med Linux</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> filer har valts</translation>
+<translation id="2383454254762599978">Flytta till papperskorgen</translation>
 <translation id="2387458720915042159">Proxyanslutningstyp</translation>
 <translation id="2389832672041313158">burmesiska (Myanmar)</translation>
 <translation id="2392369802118427583">Aktivera</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Besök drive.google.com ...</translation>
 <translation id="3553048479571901246">Om du vill öppna filer med <ph name="APP_NAME" /> måste du först kopiera dem till Windows-mappen.</translation>
 <translation id="3556731189587832921">engelska (USA) med internationellt PC-tangentbord</translation>
+<translation id="3557414470514932909">Flyttar <ph name="FILE_NAME" /> till papperskorgen</translation>
 <translation id="3567221313191587603">Välj en fil och aktivera <ph name="OFFLINE_CHECKBOX_NAME" /> för att få offlineåtkomst till filer.</translation>
 <translation id="357479282490346887">litauiska</translation>
 <translation id="3587482841069643663">Alla</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">bengali, fonetiskt</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">engelska (USA) med Workman-tangentbord</translation>
+<translation id="4019998208269143058">Fäst i Snabbfiler</translation>
 <translation id="4040753847560036377">Fel PUK-kod</translation>
 <translation id="4057991113334098539">Aktiverar...</translation>
 <translation id="4092890906744441904">iriska</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Enligt administratörspolicyn rekommenderas inte följande:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> har flyttats.</translation>
 <translation id="4176286497474237543">Töm papperskorgen nu</translation>
+<translation id="4179621117429069925">Objektet finns i papperskorgen</translation>
 <translation id="4186579485882418952">Aktivera offline</translation>
 <translation id="4193154014135846272">Google Dokument</translation>
 <translation id="4197674956721858839">Zippa markerade filer</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Autentiseringscertifikatet godkändes inte av fjärrvärden</translation>
 <translation id="4394214039309501350">Extern länk</translation>
 <translation id="4394980935660306080">Tidigare den här veckan</translation>
+<translation id="4398096759193130964">Återställ objekten eller dra dem till en ny mapp utanför papperskorgen</translation>
 <translation id="4401287888955153199">Extrahera alla</translation>
 <translation id="4410695710508688828">Extraheringen misslyckades. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Skapa en genväg till dina filer</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">hindi med InScript-tangentbord</translation>
 <translation id="4801956050125744859">Behåll båda</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832">Återställer <ph name="COUNT" /> objekt</translation>
 <translation id="4823651846660089135">Enheten är skrivskyddad</translation>
 <translation id="4826849268470072925">tamil (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> poster har valts</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Gazaniablomma</translation>
 <translation id="4943368462779413526">Amerikansk fotboll</translation>
 <translation id="4961158930123534723">1 mapp delas med Parallels Desktop</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> har återställts</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Ange ett namn på högst <ph name="MAX_LENGTH" /> tecken</translation>
 <translation id="4973970068702235170">Komprimeringen misslyckades. Oväntat fel: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> finns tyvärr inte längre.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, lås upp</translation>
 <translation id="5700087501958648444">Ljudinformation</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> har flyttats till papperskorgen</translation>
 <translation id="5724172041621205163">thailändskt tangentbord (pattachote)</translation>
 <translation id="5756666464756035725">ungerska (QWERTY)</translation>
 <translation id="5763377084591234761">tyska (Schweiz)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arkiv</translation>
 <translation id="6321303798550928047">Vinkar</translation>
 <translation id="6327785803543103246">Automatisk identifiering av webbproxy</translation>
+<translation id="6337014272874260727">Lossa från Snabbfiler</translation>
 <translation id="6339145975392024142">Internationellt för USA (PC)</translation>
 <translation id="6346310558342052870">Begränsad åtkomst</translation>
 <translation id="6356685157277930264">Feedback för filfönster</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">1 mapp har valts</translation>
 <translation id="6755827872271341378">ChromeOS Flex-enhet</translation>
 <translation id="6790428901817661496">Spela</translation>
+<translation id="6794539005637808366">Återställ objektet eller dra det till en ny mapp utanför papperskorgen</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Hantera Linux-delning</translation>
 <translation id="6806796368146926706">alfanumeriskt med japanskt tangentbord</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">svenska</translation>
 <translation id="6990081529015358884">Du har slut på utrymme</translation>
+<translation id="6993826899923627728">Objekten finns i papperskorgen</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mappar har valts</translation>
 <translation id="7008426324576352165">Organisationen behöver mer lagringsutrymme för att slutföra uppladdningen.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">tjeckiska</translation>
 <translation id="7417453074306512035">Tangentbord för etiopiska</translation>
 <translation id="7417705661718309329">Google-karta</translation>
+<translation id="7419668828140929293">Återställer <ph name="FILENAME" /></translation>
 <translation id="7458955835361612701">Inga nya bilder</translation>
 <translation id="7460898608667578234">ukrainska</translation>
 <translation id="7469894403370665791">Anslut automatiskt till det här nätverket.</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Kom enkelt åt Google Foto</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> objekt har flyttats till papperskorgen</translation>
 <translation id="7693909743393669729">Om du formaterar en enhet raderas all data på den och alla partitioner tas bort, även sådana som inte visas. Det går inte att ångra åtgärden.</translation>
 <translation id="7695430100978772476">Det gick inte att formatera <ph name="DRIVE_NAME" /></translation>
 <translation id="76959938259365003">Det gick inte att tömma papperskorgen.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">kinesiska (Wubi)</translation>
 <translation id="7765158879357617694">Flytta</translation>
 <translation id="7774365994322694683">Fågel</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> objekt har återställts</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7788080748068240085">För att kunna spara<ph name="FILE_NAME" /> offline måste du frigöra ytterligare <ph name="TOTAL_FILE_SIZE" /> utrymme:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ta bort filer som du inte längre behöver kunna använda offline<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> poster har markerats från och med <ph name="FROM_ENTRY_NAME" /> till och med <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Administratörspolicyn förhindrar följande:</translation>
 <translation id="965477715979482472">engelska (Sydafrika)</translation>
+<translation id="976666271385981812">Flyttar <ph name="NUMBER_OF_ITEMS" /> objekt till papperskorgen</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Vill du ersätta den?</translation>
 <translation id="992401651319295351">Du har <ph name="RETRIES" /> försök kvar. Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>

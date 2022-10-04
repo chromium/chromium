@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Превключване към списъчен изглед</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> папки са споделени с Linux</translation>
 <translation id="2378075407703503998">Избрани са <ph name="SELCTED_FILE_COUNT" /> файла</translation>
+<translation id="2383454254762599978">Преместване в кошчето</translation>
 <translation id="2387458720915042159">Тип на връзката през прокси сървър</translation>
 <translation id="2389832672041313158">Бирмански</translation>
 <translation id="2392369802118427583">Активиране</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Към drive.google.com...</translation>
 <translation id="3553048479571901246">За да отваряте файлове с(ъс) <ph name="APP_NAME" />, първо ги копирайте в папката с файлове на Windows.</translation>
 <translation id="3556731189587832921">Английски (САЩ) с международна клавиатура (PC)</translation>
+<translation id="3557414470514932909">„<ph name="FILE_NAME" />“ се премества в кошчето</translation>
 <translation id="3567221313191587603">Изберете файл и включете „<ph name="OFFLINE_CHECKBOX_NAME" />“, за да бъде достъпен офлайн.</translation>
 <translation id="357479282490346887">литовски</translation>
 <translation id="3587482841069643663">Всички</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Бенгалски (фонетична клавиатура)</translation>
 <translation id="4002066346123236978">Заглавие</translation>
 <translation id="4017788180641807848">Английски (САЩ) с клавиатура „Уъркман“</translation>
+<translation id="4019998208269143058">Фиксиране в пространството за бърз достъп до файловете</translation>
 <translation id="4040753847560036377">Неправилен PUK код</translation>
 <translation id="4057991113334098539">Активира се...</translation>
 <translation id="4092890906744441904">Ирландски</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Според администраторско правило не се препоръчва:</translation>
 <translation id="4159731583141908892">Преместихте „<ph name="FILE_NAME" />“.</translation>
 <translation id="4176286497474237543">Изпразване на кошчето сега</translation>
+<translation id="4179621117429069925">Този елемент е в кошчето ви</translation>
 <translation id="4186579485882418952">Активиране на офлайн достъпа</translation>
 <translation id="4193154014135846272">Документ в Google</translation>
 <translation id="4197674956721858839">Избор за компресиране</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Сертификатът за удостоверяване бе отхвърлен отдалечено</translation>
 <translation id="4394214039309501350">Външна връзка</translation>
 <translation id="4394980935660306080">По-рано тази седмица</translation>
+<translation id="4398096759193130964">Възстановете елементите или ги преместете с плъзгане в нова папка извън кошчето</translation>
 <translation id="4401287888955153199">Извличане на всички</translation>
 <translation id="4410695710508688828">Извличането не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Създавайте преки пътища към файловете си</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Хинди с клавиатура InScript</translation>
 <translation id="4801956050125744859">Запазванe на двете версии</translation>
 <translation id="4804827417948292437">Авокадо</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> елемента се възстановяват</translation>
 <translation id="4823651846660089135">Устройството е само за четене</translation>
 <translation id="4826849268470072925">Тамилски (ITRANS)</translation>
 <translation id="4839847978919684242">Избрани са <ph name="SELCTED_FILES_COUNT" /> елемента</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Газания</translation>
 <translation id="4943368462779413526">Футболна топка</translation>
 <translation id="4961158930123534723">1 папка е споделена с Parallels Desktop</translation>
+<translation id="496656650103537022">Възстановихте „<ph name="FILE_NAME" />“</translation>
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4973523518332075481">Използвайте име с дължина най-много <ph name="MAX_LENGTH" /> знака</translation>
 <translation id="4973970068702235170">Компресирането не бе успешно. Възникна неочаквана грешка: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">Ами сега! Файлът „<ph name="FILE_NAME" />“ вече не съществува.</translation>
 <translation id="5698411045597658393">Отключване на <ph name="NETWORK_NAME" /></translation>
 <translation id="5700087501958648444">Информация за аудиофайла</translation>
+<translation id="5720028165859493293">Файлът „<ph name="FILE_NAME" />“ бе преместен в кошчето</translation>
 <translation id="5724172041621205163">Тайски с патачотска клавиатура</translation>
 <translation id="5756666464756035725">унгарски (QWERTY)</translation>
 <translation id="5763377084591234761">Немски (Швейцария)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Архив във формат <ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Махане с ръка</translation>
 <translation id="6327785803543103246">Автоматично откриване на уеб прокси сървъра</translation>
+<translation id="6337014272874260727">Освобождаване от пространството за бърз достъп до файловете</translation>
 <translation id="6339145975392024142">Американска международна (PC)</translation>
 <translation id="6346310558342052870">Достъпът е ограничен</translation>
 <translation id="6356685157277930264">Прозорец с информация за файловете</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">Избрахте 1 папка</translation>
 <translation id="6755827872271341378">Устройство с ChromeOS Flex</translation>
 <translation id="6790428901817661496">Пускане</translation>
+<translation id="6794539005637808366">Възстановете елемента или го преместете с плъзгане в нова папка извън кошчето</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Управление на споделянето с Linux</translation>
 <translation id="6806796368146926706">Букви, цифри и символи с японска клавиатура</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6989942356279143254">Шведски</translation>
 <translation id="6990081529015358884">Нямате свободно място</translation>
+<translation id="6993826899923627728">Тези елементи са в кошчето ви</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> избрани папки</translation>
 <translation id="7008426324576352165">Организацията ви има нужда от още място за съхранение, за да бъде завършено качването.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Чешки</translation>
 <translation id="7417453074306512035">Етиопска клавиатура</translation>
 <translation id="7417705661718309329">Карта на Google</translation>
+<translation id="7419668828140929293">„<ph name="FILENAME" />“ се възстановява</translation>
 <translation id="7458955835361612701">Няма скорошни изображения</translation>
 <translation id="7460898608667578234">украински</translation>
 <translation id="7469894403370665791">Автоматично свързване с тази мрежа</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Лесен достъп до Google Снимки</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7663224033570512922">Хинди</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> елемента бяха преместени в кошчето</translation>
 <translation id="7693909743393669729">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни и всички негови дялове, включително тези, които не са видими. Това действие не може да бъде отменено.</translation>
 <translation id="7695430100978772476">Устройството „<ph name="DRIVE_NAME" />“ не бе форматирано</translation>
 <translation id="76959938259365003">Кошчето не бе изпразнено.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Китайски (уби)</translation>
 <translation id="7765158879357617694">Преместване</translation>
 <translation id="7774365994322694683">Птица</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> елемента бяха възстановени</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7788080748068240085">За да запазите „<ph name="FILE_NAME" />“ офлайн, трябва да освободите допълнително място в размер на <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />освободете файлове, до които вече не ви е нужен достъп офлайн;<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Избрахте <ph name="ENTRY_COUNT" /> елемента – от <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Администраторско правило не позволява:</translation>
 <translation id="965477715979482472">английски (Южна Африка)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> елемента се преместват в кошчето</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Вече съществува файл с име „<ph name="FILE_NAME" />“. Искате ли да го замените?</translation>
 <translation id="992401651319295351">Остават ви <ph name="RETRIES" /> опита. Няма да можете да използвате тази мрежа, докато не настроите нов ПИН код.</translation>

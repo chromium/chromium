@@ -263,6 +263,7 @@
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
 <translation id="6561560012278703671">Користете потивки пораки (не дозволува известувањата да ве попречуваат)</translation>
 <translation id="6593061639179217415">Сајт за десктоп</translation>
+<translation id="6608211702542341247">Сајтов е во групата на сајтови на <ph name="FPS_OWNER" /> што може да ја видат вашата активност во групата</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштитена содржина</translation>
 <translation id="662080504995468778">Остани</translation>
@@ -351,7 +352,6 @@
 <translation id="8380167699614421159">Сајтов прикажува нападни или лажни реклами</translation>
 <translation id="8394832520002899662">Допрете за да се вратите на сајтот</translation>
 <translation id="8409345997656833551">Добивајте известувања кога статија може да се прикажува во поедноставен преглед</translation>
-<translation id="8425213833346101688">Промени</translation>
 <translation id="8428213095426709021">Поставки</translation>
 <translation id="8441146129660941386">Барај поназад</translation>
 <translation id="8444433999583714703">За да овозможите <ph name="APP_NAME" /> да пристапува до вашата локација, вклучете ја дозволата за локацијата и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>

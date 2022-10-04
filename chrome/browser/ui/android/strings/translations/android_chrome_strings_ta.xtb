@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">பக்கங்களை முன்கூட்டியே ஏற்றாதே</translation>
 <translation id="3029704984691124060">கடவுத்தொடர்கள் பொருந்தவில்லை</translation>
 <translation id="3031225630520268969">குரல் தேடலுக்கு Assistantடைப் பயன்படுத்துவதற்கான ஒப்புதல் ui</translation>
-<translation id="3034163383943672781">பதிவிறக்கமானது <ph name="DATE" /> அன்று தொடங்கும்.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />உதவி பெறுக<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">விலையைக் கண்காணிக்கிறது</translation>
 <translation id="3037517125981011456">Chromeமில் உள்நுழைவதற்கான அறிவிப்புகளைக் காட்டும்</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">தற்போதைய பக்கத்தை மீண்டும் ஏற்றும்</translation>
 <translation id="3444179773590444986">தளங்களுக்கான டார்க் தீம் குறித்த கருத்தைப் பகிர விரும்புகிறீர்களா?</translation>
 <translation id="3452832259067974318">உங்கள் தனியுரிமையைப் பாதுகாக்க Chrome இந்தப் புலத்தில் உங்கள் கடவுச்சொல்லைத் தானாக நிரப்பாது.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 பதிவிறக்கம் திட்டமிடப்பட்டுள்ளது}other{# பதிவிறக்கங்கள் திட்டமிடப்பட்டுள்ளன}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> கணக்கில் தொடர்க</translation>
 <translation id="3478363558367712427">உங்கள் தேடல் இன்ஜினை தேர்வுசெய்யலாம்</translation>
 <translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">இந்தச் சாதனத்தில் உள்ள Google Password Managerரில் கடவுச்சொற்கள் சேமிக்கப்படுகின்றன</translation>
 <translation id="620197886010707372">Google Playயில் <ph name="APPNAME" />க்கான ஆப்ஸைத் திறக்கவா?</translation>
 <translation id="6202812185118613467">ஒத்திசைவைத் தொடங்க மீண்டும் உள்நுழையவும்</translation>
-<translation id="6203593061661911168">வைஃபையுடன் இணைக்கப்பட்டதும் பதிவிறக்கம் தொடங்கும்</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
 <translation id="6221633008163990886">உங்கள் கடவுச்சொற்களை ஏற்ற, அன்லாக் செய்யவும்</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">தளத்துடன் இணைக்க முடியவில்லை</translation>
 <translation id="752220631458524187">முடித்ததும் இணைப்பைத் துண்டிக்கவும்</translation>
 <translation id="7523960634226602883">Google Lensஸைப் பயன்படுத்தி கேமரா மூலம் தேடும்</translation>
-<translation id="753225086557513863">பிறகு திட்டமிடப்பட்டுள்ளது</translation>
 <translation id="7562080006725997899">உலாவிய தரவை அழிக்கிறது</translation>
 <translation id="756809126120519699">Chrome தரவு அழிக்கப்பட்டது</translation>
 <translation id="7577900504646297215">ஆர்வங்களை நிர்வகிக்கும்</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">நேர வரம்பு</translation>
 <translation id="7851858861565204677">பிற சாதனங்கள்</translation>
 <translation id="7853202427316060426">செயல்பாடு</translation>
-<translation id="7857691613771368249">கோப்புகளை எப்போது சேமிக்க வேண்டும் எனக் கேள்</translation>
 <translation id="7859988229622350291">மொழிபெயர்க்கக்கூடாதவை</translation>
 <translation id="7866213166286285359">பக்கங்களை இங்கே மொழிபெயர்க்கலாம்</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> உங்கள் சாதனத்துடன் இணைய, அருகிலுள்ள சாதனங்களுடன் இணைவதற்கான அனுமதி தேவை</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">திருத்து</translation>
 <translation id="9065383040763568503">முக்கியமில்லை என்று Chrome கருதும் சேமிக்கப்பட்ட தரவுகள் (எ.கா. சேமித்த அமைப்புகள் இல்லாத/அடிக்கடி நீங்கள் பார்க்காத தளங்கள்)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> இல்</translation>
-<translation id="9069543557624799859"><ph name="TIME" />க்குப் பதிவிறக்கம் தொடங்கும்.</translation>
 <translation id="9069999660519089861">படிக்காத பக்கங்கள் எதுவுமில்லை</translation>
 <translation id="9070377983101773829">குரல் தேடலைத் தொடங்கு</translation>
 <translation id="9074336505530349563">Google பரிந்துரைக்கும் பிரத்யேக உள்ளடக்கத்தைப் பெற, உள்நுழைந்து, ஒத்திசைவை இயக்கவும்</translation>

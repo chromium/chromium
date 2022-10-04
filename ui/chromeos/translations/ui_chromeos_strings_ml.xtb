@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">ലിസ്റ്റ് കാഴ്‌ചയിലേക്ക് മാറുക</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ഫോൾഡറുകൾ Linux ഉപയോഗിച്ച് പങ്കിട്ടു</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ഫയലുകൾ തിരഞ്ഞെടുത്തു</translation>
+<translation id="2383454254762599978">ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="2387458720915042159">പ്രോക്‌സി കണക്ഷൻ തരം</translation>
 <translation id="2389832672041313158">ബർമീസ്/മ്യാൻമർ</translation>
 <translation id="2392369802118427583">സജീവമാക്കുക</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">drive.google.com-ലേക്ക് പോകുക...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തുക.</translation>
 <translation id="3556731189587832921">അന്താരാഷ്ട്ര PC കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="3567221313191587603">നിങ്ങളുടെ ഫയലുകൾ ഓഫ്‌ലൈനിൽ ആക്‌സസ് ചെയ്യാൻ, ഒരു ഫയൽ തിരഞ്ഞെടുത്ത് <ph name="OFFLINE_CHECKBOX_NAME" /> ഓണാക്കുക.</translation>
 <translation id="357479282490346887">ലിത്വാനിയന്‍</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">ബംഗ്ലാ ഉച്ചാരണ ശബ്‌ദം</translation>
 <translation id="4002066346123236978">ശീർഷകം</translation>
 <translation id="4017788180641807848">Workman കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
+<translation id="4019998208269143058">പെട്ടെന്ന് ആക്‌സസ് ചെയ്യാവുന്ന ഫയലുകളിലേക്ക് പിൻ ചെയ്യുക</translation>
 <translation id="4040753847560036377">PUK തെറ്റാണ്</translation>
 <translation id="4057991113334098539">സജീവമാക്കുന്നു...</translation>
 <translation id="4092890906744441904">ഐറിഷ്</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">അഡ്‌മിൻ നയം ഇവ നിർദ്ദേശിക്കുന്നില്ല:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> നീക്കി.</translation>
 <translation id="4176286497474237543">ഇപ്പോൾ ട്രാഷ് ശൂന്യമാക്കുക</translation>
+<translation id="4179621117429069925">ഈ ഇനം നിങ്ങളുടെ ട്രാഷിലാണുള്ളത്</translation>
 <translation id="4186579485882418952">ഓഫ്‌ലൈൻ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="4193154014135846272">Google പ്രമാണം</translation>
 <translation id="4197674956721858839">Zip തിരഞ്ഞെടുക്കൽ</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">പരിശോധിച്ചുറപ്പിക്കൽ സർട്ടിഫിക്കറ്റ് വിദൂരമായി നിരസിച്ചു</translation>
 <translation id="4394214039309501350">ബാഹ്യ ലിങ്ക്</translation>
 <translation id="4394980935660306080">ഈ ആഴ്‌ചയുടെ ആദ്യം</translation>
+<translation id="4398096759193130964">ഇനങ്ങൾ പുനഃസ്ഥാപിക്കുകയോ ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് അവ വലിച്ചിടുകയോ ചെയ്യുക</translation>
 <translation id="4401287888955153199">എല്ലാം എക്‌സ്ട്രാക്റ്റ് ചെയ്യുക</translation>
 <translation id="4410695710508688828">എക്സ്ട്രാക്റ്റ് ചെയ്യാനായില്ല. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">നിങ്ങളുടെ ഫയലുകൾക്കുള്ള കുറുക്കുവഴി സൃഷ്ടിക്കുക</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">InScript കീബോർഡുള്ള ഹിന്ദി</translation>
 <translation id="4801956050125744859">രണ്ടും സൂക്ഷിക്കുക</translation>
 <translation id="4804827417948292437">അവൊക്കാഡോ</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> ഇനങ്ങൾ പുനഃസ്ഥാപിക്കുന്നു</translation>
 <translation id="4823651846660089135">ഉപകരണം വായിക്കാൻ മാത്രമുള്ള മോഡിലാണ്</translation>
 <translation id="4826849268470072925">തമിഴ് ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> ഇനങ്ങൾ തിരഞ്ഞെടുത്തു</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">ഗസാനിയ പുഷ്‌പം</translation>
 <translation id="4943368462779413526">ഫുട്‌ബോള്‍</translation>
 <translation id="4961158930123534723">Parallels Desktop ഉപയോഗിച്ച് ഒരു ഫോൾഡർ പങ്കിട്ടു</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="4969785127455456148">ആല്‍‌ബം</translation>
 <translation id="4973523518332075481"><ph name="MAX_LENGTH" /> പ്രതീകങ്ങളോ അതിൽ കുറവോ ഉള്ള ഒരു പേര് ഉപയോഗിക്കുക</translation>
 <translation id="4973970068702235170">അപ്രതീക്ഷിത പിശക് കാരണം സിപ്പ് ചെയ്യൽ പരാജയപ്പെട്ടു: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">ക്ഷമിക്കണം, <ph name="FILE_NAME" /> നിലവിലില്ല.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="5700087501958648444">ഓഡിയോ വിവരം</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="5724172041621205163">Pattachote കീബോർഡ് ഉള്ള തായ്</translation>
 <translation id="5756666464756035725">ഹംഗേറിയൻ ക്വെർട്ടി</translation>
 <translation id="5763377084591234761">ജർമ്മനി (സ്വിറ്റ്സർലൻഡ്)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> ആർക്കൈവ്</translation>
 <translation id="6321303798550928047">കൈവീശുന്നു</translation>
 <translation id="6327785803543103246">വെബ് പ്രോക്‌സി സ്വയമേവ കണ്ടെത്തൽ</translation>
+<translation id="6337014272874260727">പെട്ടെന്ന് ആക്‌സസ് ചെയ്യാവുന്ന ഫയലുകളിൽ നിന്ന് അൺപിൻ ചെയ്യുക</translation>
 <translation id="6339145975392024142">യുഎസ് അന്തര്‍ദേശീയ (PC)</translation>
 <translation id="6346310558342052870">ആക്‌സസ് നിയന്ത്രിതമാണ്</translation>
 <translation id="6356685157277930264">ഫയലുകളുടെ ഫീഡ്‌ബാക്ക് വിൻ‍ഡോ</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">ഒരു ഫോൾഡർ തിരഞ്ഞെടുത്തു</translation>
 <translation id="6755827872271341378">ChromeOS Flex ഉപകരണം</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
+<translation id="6794539005637808366">ഇനം പുനഃസ്ഥാപിക്കുകയോ ട്രാഷിന് പുറത്തുള്ള ഒരു പുതിയ ഫോൾഡറിലേക്ക് അത് വലിച്ചിടുകയോ ചെയ്യുക</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linux പങ്കിടൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="6806796368146926706">ജാപ്പനീസ് കീബോർഡ് ഉള്ള അക്ക - അക്ഷര പ്രതീകങ്ങൾ</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">സ്വീഡിഷ്</translation>
 <translation id="6990081529015358884">നിങ്ങൾക്ക് മതിയായ ഇടമില്ല</translation>
+<translation id="6993826899923627728">ഈ ഇനങ്ങൾ നിങ്ങളുടെ ട്രാഷിലാണുള്ളത്</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ഫോൾഡറുകൾ തിരഞ്ഞെടുത്തു</translation>
 <translation id="7008426324576352165">അപ്‌ലോഡ് പൂർത്തിയാക്കാൻ നിങ്ങളുടെ സ്ഥാപനത്തിന് കൂടുതൽ സ്‌റ്റോറേജ് ആവശ്യമാണ്.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">ചെക്ക്</translation>
 <translation id="7417453074306512035">എത്യോപിക് കീബോർഡ്</translation>
 <translation id="7417705661718309329">Google മാപ്പ്</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" പുനഃസ്ഥാപിക്കുന്നു</translation>
 <translation id="7458955835361612701">അടുത്തിടെയുള്ള ചിത്രങ്ങളൊന്നുമില്ല</translation>
 <translation id="7460898608667578234">ഉക്രേനിയന്‍</translation>
 <translation id="7469894403370665791">ഈ നെറ്റ്‍വര്‍ക്കിലേക്ക് സ്വപ്രേരിതമായി ബന്ധിപ്പിക്കുന്നു</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Google Photos എളുപ്പത്തിൽ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="7658239707568436148">റദ്ദാക്കൂ</translation>
 <translation id="7663224033570512922">ഹിന്ദി</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കി</translation>
 <translation id="7693909743393669729">ഡ്രൈവ് ഫോർമാറ്റ് ചെയ്യുന്നത് അതിൽ സംഭരിച്ചിരിക്കുന്ന എല്ലാ ഡാറ്റയും മായ്‌ക്കും, ദൃശ്യമാകാത്ത ഭാഗങ്ങൾ ഉൾപ്പെടെ നിലവിലുള്ള എല്ലാ ഭാഗങ്ങളും നീക്കം ചെയ്യും. ഈ പ്രവർത്തനം പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യാനായില്ല</translation>
 <translation id="76959938259365003">ട്രാഷിലുള്ളവ എല്ലാം ഇല്ലാതാക്കാനായില്ല.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">ചൈനീസ് വുബി</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7774365994322694683">കിളി</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" ഓഫ്‌ലൈനിൽ സംരക്ഷിക്കുന്നതിന് നിങ്ങൾ അധികമായി <ph name="TOTAL_FILE_SIZE" /> ഇടം ശൂന്യമാക്കണം:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ഓഫ്‌ലൈനിൽ ഇനി ആക്‌സസ് ചെയ്യേണ്ടതില്ലാത്ത ഫയലുകൾ അൺപിൻ ചെയ്യുക<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-ൽ നിന്ന് <ph name="TO_ENTRY_NAME" />-ലേക്ക് <ph name="ENTRY_COUNT" /> എൻട്രികളുള്ള ഒരു ശ്രേണി തിരഞ്ഞെടുത്തു.</translation>
 <translation id="954194396377670556">അഡ്‌മിൻ നയം ഇവ തടയുന്നു:</translation>
 <translation id="965477715979482472">ഇംഗ്ലീഷ് (ദക്ഷിണാഫ്രിക്ക)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ട്രാഷിലേക്ക് നീക്കുന്നു</translation>
 <translation id="981121421437150478">ഓഫ്‌ലൈൻ</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" എന്ന് പേരുള്ള ഫയൽ മുമ്പേ നിലവിലുണ്ട്. ഇത് മാറ്റി പകരം വയ്ക്കണോ?</translation>
 <translation id="992401651319295351">നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്. പുതിയ പിൻ സജ്ജീകരിക്കുന്നത് വരെ നിങ്ങൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല.</translation>

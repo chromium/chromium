@@ -380,7 +380,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3029276696788198026">No preloading</translation>
 <translation id="3029704984691124060">Passphrases do not match</translation>
 <translation id="3031225630520268969">Assistant voice search consent UI</translation>
-<translation id="3034163383943672781">Download will start on <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037517125981011456">Shows prompts to sign in to Chrome</translation>
@@ -458,7 +457,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="3443221991560634068">Reload the current page</translation>
 <translation id="3444179773590444986">Share feedback on Dark theme for sites?</translation>
 <translation id="3452832259067974318">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 download scheduled}other{# downloads scheduled}}</translation>
 <translation id="3474624961160222204">Continue as <ph name="NAME" /></translation>
 <translation id="3478363558367712427">You can choose your search engine</translation>
 <translation id="3479552764303398839">Not now</translation>
@@ -956,7 +954,6 @@ Privacy Sandbox trials are still in active development and are available in sele
 <translation id="6196315980958524839">Passwords are saved to Google Password Manager on this device</translation>
 <translation id="620197886010707372">Open app for <ph name="APPNAME" /> with Google Play?</translation>
 <translation id="6202812185118613467">Sign back in to start sync</translation>
-<translation id="6203593061661911168">Download will start when on Wi-Fi</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
 <translation id="6221633008163990886">Unlock to export your passwords</translation>
@@ -1221,7 +1218,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="751961395872307827">Can't connect to the site</translation>
 <translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
-<translation id="753225086557513863">Scheduled for later</translation>
 <translation id="7562080006725997899">Clear browsing data</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7577900504646297215">Manage interests</translation>
@@ -1280,7 +1276,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="784934925303690534">Time range</translation>
 <translation id="7851858861565204677">Other devices</translation>
 <translation id="7853202427316060426">Activity</translation>
-<translation id="7857691613771368249">Ask when to save files</translation>
 <translation id="7859988229622350291">Never translate</translation>
 <translation id="7866213166286285359">Translate pages here</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> needs Nearby devices permission in order to connect to your device</translation>
@@ -1523,7 +1518,6 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9065383040763568503">Stored data that Chrome doesn't think is important (e.g. sites with no saved settings or that you don't visit often)</translation>
 <translation id="906781307897697745">in <ph name="PRODUCT_NAME" /></translation>
-<translation id="9069543557624799859">Download will start at <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">No unread pages</translation>
 <translation id="9070377983101773829">Start voice search</translation>
 <translation id="9074336505530349563">To get personalised content suggested by Google, sign in and turn on sync</translation>

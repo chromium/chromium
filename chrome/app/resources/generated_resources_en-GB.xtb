@@ -381,7 +381,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1361655923249334273">Unused</translation>
 <translation id="1362865166188278099">Mechanical issue. Check printer</translation>
 <translation id="1363585519747660921">USB printer needs configuration</translation>
-<translation id="1367951781824006909">Choose a file</translation>
 <translation id="1368603372088757436">Linux is not supported on your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">Sync to your account</translation>
 <translation id="1373176046406139583">Your device visibility controls who can share with you while your screen is unlocked. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -819,7 +818,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1748563609363301860">You can save this password in your Google Account or only on this device</translation>
 <translation id="1749733017156547309">A password is required</translation>
 <translation id="1750172676754093297">Your security key can't store fingerprints</translation>
-<translation id="1751249301761991853">Personal</translation>
 <translation id="1751262127955453661"><ph name="ORIGIN" /> will be able to edit files in <ph name="FOLDERNAME" /> until you close all tabs for this site</translation>
 <translation id="17513872634828108">Open tabs</translation>
 <translation id="175196451752279553">R&amp;eopen closed tab</translation>
@@ -1065,7 +1063,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1965624977906726414">Has no special permissions.</translation>
 <translation id="1969654639948595766">WebRTC text logs (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970368523891847084">Video mode entered</translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> can't be downloaded securely. Press Shift + F6 to cycle to the downloads bar area.</translation>
@@ -1415,7 +1412,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2285109769884538519">{COUNT,plural, =0{Open all in &amp;new tab group}=1{Open in &amp;new tab group}other{Open all ({COUNT}) in &amp;new tab group}}</translation>
 <translation id="2285942871162473373">Your fingerprint couldn't be recognised. Try again.</translation>
 <translation id="2287944065963043964">Login screen</translation>
-<translation id="2288181517385084064">Switch to video recorder</translation>
 <translation id="2289270750774289114">Ask when a site wants to discover nearby Bluetooth devices (recommended)</translation>
 <translation id="2290615375132886363">Tablet navigation buttons</translation>
 <translation id="229182044471402145">No matching font found.</translation>
@@ -2812,9 +2808,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3602870520245633055">Print and scan</translation>
 <translation id="3603622770190368340">Obtain network certificate</translation>
-<translation id="3604713164406837697">Change wallpaper</translation>
 <translation id="3605780360466892872">Businessman</translation>
-<translation id="3608576286259426129">User image preview</translation>
 <translation id="3609277884604412258">Quick search</translation>
 <translation id="3610369246614755442">Dock fan needs service</translation>
 <translation id="361106536627977100">Flash data</translation>
@@ -2867,7 +2861,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3645372836428131288">Move slightly to capture a different part of the fingerprint.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> received from <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> detected</translation>
-<translation id="3649138363871392317">Photo was captured</translation>
 <translation id="3650753875413052677">Enrolment error</translation>
 <translation id="3650845953328929506">Log upload pending.</translation>
 <translation id="3650952250015018111">Allow '<ph name="APP_NAME" />' to access:</translation>
@@ -3120,7 +3113,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3875815154304214043"><ph name="APP_NAME" /> is set to open in a new browser tab. Supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nearby Share settings for <ph name="USER_NAME" />'s device, sharing under the account <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Download manager</translation>
-<translation id="3882165008614329320">Existing video from camera or file</translation>
 <translation id="3883482240657453056">Get discounts for <ph name="MERCHANT_NAME_1" /> and <ph name="MERCHANT_NAME_2" /></translation>
 <translation id="3884152383786131369">Web content available in multiple languages will use the first supported language from this list. These preferences are synced with your browser settings. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">Updates are managed by your administrator</translation>
@@ -4493,7 +4485,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5213481667492808996">Your '<ph name="NAME" />' data service is ready to use</translation>
 <translation id="5213891612754844763">Show proxy settings</translation>
 <translation id="5215502535566372932">Select country</translation>
-<translation id="521582610500777512">Photo was discarded</translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5225324770654022472">Show apps shortcut</translation>
@@ -4824,7 +4815,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5528295196101251711">VM name</translation>
 <translation id="5532223876348815659">Global</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wants to</translation>
-<translation id="5534304873398226603">Discard photo or video</translation>
 <translation id="5537725057119320332">Cast</translation>
 <translation id="5539070192556911367">Can't reach Google</translation>
 <translation id="5539221284352502426">The password that you entered was rejected by the server. Possible reasons include: The password is too short. The password must include numbers or symbols. The password must be different from previous passwords.</translation>
@@ -4906,7 +4896,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="560834977503641186">Wi-Fi Sync, learn more</translation>
 <translation id="5608580678041221894">Tap the following keys to adjust or move the cropping area</translation>
 <translation id="5609231933459083978">The application appears to be invalid.</translation>
-<translation id="5610038042047936818">Switch to camera mode</translation>
 <translation id="561030196642865721">Third-party cookies are allowed on this site</translation>
 <translation id="5612734644261457353">Sorry, your password still could not be verified. Note: if you changed your password recently, your new password will be applied once you sign out, please use the old password here.</translation>
 <translation id="5614190747811328134">User Notice</translation>
@@ -5814,7 +5803,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6492396476180293140">Internal camera deactivated by hardware switch</translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
-<translation id="6494974875566443634">Customisation</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{This data has sensitive or dangerous content}=1{This file has sensitive or dangerous content}other{These files have sensitive or dangerous content}}</translation>
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
@@ -6010,7 +5998,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6678717876183468697">Query URL</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">Rate</translation>
-<translation id="6681668084120808868">Take photo</translation>
 <translation id="6683087162435654533">R&amp;estore All Tabs</translation>
 <translation id="6684827949542560880">Downloading the latest update</translation>
 <translation id="668599234725812620">Open Google Play</translation>
@@ -6344,7 +6331,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="6983507711977005608">Disconnect Instant Tethering network</translation>
 <translation id="6983783921975806247">Registered OID</translation>
-<translation id="6984299437918708277">Choose a picture to display for your account on the sign-in screen</translation>
 <translation id="6985235333261347343">Microsoft Key Recovery Agent</translation>
 <translation id="698524779381350301">Automatically allow access on the following sites</translation>
 <translation id="6985607387932385770">Printers</translation>
@@ -6514,7 +6500,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
-<translation id="7155171745945906037">Existing photo from camera or file</translation>
 <translation id="7159953856712257647">Installed by default</translation>
 <translation id="7160182524506337403">You can now view your phone's notifications</translation>
 <translation id="7163202347044721291">Verifying activation code…</translation>
@@ -6641,7 +6626,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7287143125007575591">Access denied</translation>
 <translation id="7287411021188441799">Restore default background</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" /> dpi</translation>
-<translation id="7289225569524511578">Open the wallpaper app</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> – Permission requested, press F6 to respond</translation>
 <translation id="7290242001003353852">This sign-in service, hosted by <ph name="SAML_DOMAIN" />, is accessing your camera.</translation>
 <translation id="7295614427631867477">Note that Android, Play and associated apps are governed by their own data collection and use policies.</translation>
@@ -7640,7 +7624,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="821119981794423735">To import passwords to Google Password Manager for <ph name="USER_EMAIL" />, select a CSV file</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{Download is in progress}other{Downloads are in progress}}</translation>
 <translation id="8212601853154459483">This profile is managed by <ph name="PROFILE_MANAGER" /> and requires you to create a separate profile for the account <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="8213449224684199188">Photo mode entered</translation>
 <translation id="8214489666383623925">Open File...</translation>
 <translation id="8215129063232901118">Access your phone's capabilities from your <ph name="DEVICE_TYPE" /></translation>
 <translation id="8217212468862726597">Highlight pointer</translation>
@@ -8015,7 +7998,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8592141010104017453">Don't show notifications at all</translation>
 <translation id="859246725979739260">This site has been blocked from accessing your location.</translation>
 <translation id="8593121833493516339">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity is turned on for your child, this data may be saved to their Google Account. <ph name="BEGIN_LINK1" />Find out more<ph name="END_LINK1" /></translation>
-<translation id="8594908476761052472">Capture video</translation>
 <translation id="8596540852772265699">Customised Files</translation>
 <translation id="8597845839771543242">Property format:</translation>
 <translation id="8599681327221583254">One or more policies are not configured correctly. Please contact your administrator</translation>
@@ -8283,6 +8265,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8838601485495657486">Opaque</translation>
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Manage phones</translation>
+<translation id="883924185304953854">Search by image</translation>
 <translation id="8841843049738266382">Read and change the allowlist users</translation>
 <translation id="8842594465773264717">Delete this fingerprint</translation>
 <translation id="8845001906332463065">Get help</translation>

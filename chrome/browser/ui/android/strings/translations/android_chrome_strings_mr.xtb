@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">प्रीलोडिंग नाही</translation>
 <translation id="3029704984691124060">सांकेतिक वाक्यांश जुळत नाहीत</translation>
 <translation id="3031225630520268969">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI</translation>
-<translation id="3034163383943672781">डाउनलोड <ph name="DATE" /> रोजी सुरू होईल.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मदत मिळवा<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">किमतीचा माग ठेवत आहे</translation>
 <translation id="3037517125981011456">Chrome मध्ये साइन इन करण्यासाठी सूचना दाखवते</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">वर्तमान पृष्‍ठ रीलोड करा</translation>
 <translation id="3444179773590444986">साइटसाठीच्या गडद थीमबाबत फीडबॅक शेअर करायचा आहे का?</translation>
 <translation id="3452832259067974318">तुमच्‍या गोपनीयतेचे संरक्षण करण्‍यासाठी, या फील्‍डमध्‍ये Chrome तुमचा पासवर्ड ऑटोफिल करणार नाही.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{एक डाउनलोड शेड्युल केला}other{# डाउनलोड शेड्युल केले}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> म्हणून सुरू ठेवा</translation>
 <translation id="3478363558367712427">तुम्ही तुमचे शोध इंजीन निवडू शकता</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये या डिव्हाइसवर सेव्ह केले जातात</translation>
 <translation id="620197886010707372">Google Play वापरून <ph name="APPNAME" /> साठी अ‍ॅप उघडायचे आहे का?</translation>
 <translation id="6202812185118613467">सिंक सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
-<translation id="6203593061661911168">वाय-फायशी कनेक्ट झाल्यावर, डाउनलोड सुरू होईल</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>
 <translation id="6221633008163990886">तुमचे पासवर्ड एक्सपोर्ट करण्यासाठी अनलॉक करा</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">साइटशी कनेक्ट करु शकत नाही</translation>
 <translation id="752220631458524187">तुमचे पूर्ण झाल्यावर फोन डिस्कनेक्ट करा</translation>
 <translation id="7523960634226602883">Google Lens वापरून तुमच्या कॅमेरासह शोधा</translation>
-<translation id="753225086557513863">नंतर सुरू करण्यासाठी शेड्युल केलेले</translation>
 <translation id="7562080006725997899">ब्राउझिंग डेटा साफ करत आहे</translation>
 <translation id="756809126120519699">Chrome डेटा साफ केला</translation>
 <translation id="7577900504646297215">स्वारस्ये व्यवस्थापित करा</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">वेळ वर्गवारी</translation>
 <translation id="7851858861565204677">इतर डिव्हाइसेस</translation>
 <translation id="7853202427316060426">गतिविधी</translation>
-<translation id="7857691613771368249">फाइल कधी सेव्ह करायच्या ते विचारा</translation>
 <translation id="7859988229622350291">कधीही भाषांतर करू नका</translation>
 <translation id="7866213166286285359">पेज येथे भाषांतरित करा</translation>
 <translation id="78707286264420418">तुमच्या डिव्हाइसशी कनेक्ट करण्यासाठी <ph name="PRODUCT_NAME" /> ला जवळपासची डिव्हाइस या परवानगीची आवश्यकता आहे</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">संपादन</translation>
 <translation id="9065383040763568503">Chrome ला महत्त्वाचा वाटत नसलेला सेव्ह केलेला डेटा (उदा. सेटिंग्ज सेव्ह नसलेल्या किंवा तुम्ही सारखे भेट देत नसलेल्या साइट)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> मध्ये</translation>
-<translation id="9069543557624799859">डाउनलोड <ph name="TIME" /> वाजता सुरू होईल.</translation>
 <translation id="9069999660519089861">कोणतीही न वाचलेली पेज नाहीत</translation>
 <translation id="9070377983101773829">व्हॉइस शोध सुरू करा</translation>
 <translation id="9074336505530349563">Google ने सुचवलेला पर्सनलाइझ केलेला आशय मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>

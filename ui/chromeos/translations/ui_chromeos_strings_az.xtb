@@ -157,10 +157,12 @@
 <translation id="2377319039870049694">Siyahı görünüşünə keçin</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> qovluq Linux ilə paylaşıldı</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> fayl seçildi</translation>
+<translation id="2383454254762599978">Zibil qutusuna köçürün</translation>
 <translation id="2387458720915042159">Proksi bağlantı növü</translation>
 <translation id="2389832672041313158">Birma dili (Myanma)</translation>
 <translation id="2392369802118427583">Aktivləşdirin</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> əlçatandır</translation>
+<translation id="2417486498593892439">Şəbəkəyə daxil olun</translation>
 <translation id="2425665904502185219">Ümumi fayl ölçüsü</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> element <ph name="FOLDER_NAME" /> qovluğuna kopyalanır</translation>
 <translation id="2448312741937722512">Növ</translation>
@@ -288,6 +290,7 @@
 <translation id="3549797760399244642">drive.google.com saytına keçin...</translation>
 <translation id="3553048479571901246">Faylları <ph name="APP_NAME" /> ilə açmaq üçün əvvəlcə onları Windows fayllar qovluğuna kopyalayın.</translation>
 <translation id="3556731189587832921">Beynəlxalq kompüter klaviaturası ilə İngilis dili (ABŞ)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> zibil qutusuna köçürülür</translation>
 <translation id="3567221313191587603">Fayl seçin və fayllarınıza oflayn giriş üçün <ph name="OFFLINE_CHECKBOX_NAME" /> seçimini aktiv edin.</translation>
 <translation id="357479282490346887">Litva</translation>
 <translation id="3587482841069643663">Hamısı</translation>
@@ -324,6 +327,7 @@
 <translation id="3830674330436234648">Heç bir oxutma əlçatan deyil</translation>
 <translation id="383652340667548381">Serb</translation>
 <translation id="385051799172605136">Geri</translation>
+<translation id="3851491607336266896">Qoşulub, məhdud bağlantı</translation>
 <translation id="3855472144336161447">Alman Neo 2</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3866249974567520381">Təsvir</translation>
@@ -339,6 +343,7 @@
 <translation id="3975895378829046965">Banqla Fonetikası</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4017788180641807848">Workman klaviaturası ilə İngilis dili (ABŞ)</translation>
+<translation id="4019998208269143058">Sürətli fayllara əlavə edin</translation>
 <translation id="4040753847560036377">Yanlış PUK</translation>
 <translation id="4057991113334098539">Aktiv edilir...</translation>
 <translation id="4092890906744441904">İrland</translation>
@@ -348,6 +353,7 @@
 <translation id="4157569377477607576">Administrator siyasəti tövsiyə etmir:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> köçürülüb.</translation>
 <translation id="4176286497474237543">Zibil qutusunu indi boşaldın</translation>
+<translation id="4179621117429069925">Bu element zibil qutunuzdadır</translation>
 <translation id="4186579485882418952">Oflayn rejimi aktiv edin</translation>
 <translation id="4193154014135846272">Google sənəd</translation>
 <translation id="4197674956721858839">Zip seçimi</translation>
@@ -377,6 +383,7 @@
 <translation id="4387004326333427325">Doğrulama təsdiqi uzaqdan ləğv edildi</translation>
 <translation id="4394214039309501350">Xarici keçid</translation>
 <translation id="4394980935660306080">Bu həftənin əvvəlində</translation>
+<translation id="4398096759193130964">Elementləri bərpa edin və ya zibil qutusunun xaricində yeni bir qovluğa sürüşdürün</translation>
 <translation id="4401287888955153199">Hamısını çıxarın</translation>
 <translation id="4410695710508688828">Çıxarılma əməliyyatı alınmadı. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
@@ -432,6 +439,7 @@
 <translation id="4790766916287588578">InScript klaviaturası ilə Hind dili</translation>
 <translation id="4801956050125744859">İkisini də saxlayın</translation>
 <translation id="4804827417948292437">Avokado</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> element bərpa edilir</translation>
 <translation id="4823651846660089135">Cihaz yalnız oxu rejimindədir</translation>
 <translation id="4826849268470072925">Tamil dili (ITRANS)</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> element seçilib</translation>
@@ -450,6 +458,7 @@
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Futbol</translation>
 <translation id="4961158930123534723">1 qovluq Parallels Desktop ilə paylaşılır</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> bərpa edildi</translation>
 <translation id="4969785127455456148">Albom</translation>
 <translation id="4973523518332075481">Maksimum <ph name="MAX_LENGTH" /> və ya daha az simvoldan ibarət olan addan istifadə edin</translation>
 <translation id="4973970068702235170">Sıxmaq alınmadı, gözlənilməz xəta baş verdi: <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +560,7 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> artıq mövcud deyil.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Kiliddən çıxarın</translation>
 <translation id="5700087501958648444">Audio məlumatı</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> zibil qutusuna köçürüldü</translation>
 <translation id="5724172041621205163">Pattachote klaviaturası ilə Tay dili</translation>
 <translation id="5756666464756035725">Macar QWERTY</translation>
 <translation id="5763377084591234761">Alman (İsveçrə)</translation>
@@ -621,6 +631,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> arxiv faylı</translation>
 <translation id="6321303798550928047">Əl yelləyir</translation>
 <translation id="6327785803543103246">Veb proksi avtomatik aşkarlama</translation>
+<translation id="6337014272874260727">Sürətli fayllardan çıxarın</translation>
 <translation id="6339145975392024142">ABŞ beynəlxalq (PC) klaviaturası</translation>
 <translation id="6346310558342052870">Giriş məhdudlaşdırılıb</translation>
 <translation id="6356685157277930264">Fayllar üçün rəy pəncərəsi</translation>
@@ -661,6 +672,7 @@
 <translation id="6751256176799620176">1 qovluq seçildi</translation>
 <translation id="6755827872271341378">ChromeOS Flex cihazı</translation>
 <translation id="6790428901817661496">Oxudun</translation>
+<translation id="6794539005637808366">Elementi bərpa edin və ya zibil qutusunun xaricində yeni bir qovluğa sürüşdürün</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linux paylaşımını idarə edin</translation>
 <translation id="6806796368146926706">Yapon dili klaviaturası ilə hərf-rəqəm</translation>
@@ -697,6 +709,7 @@
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6989942356279143254">İsveç</translation>
 <translation id="6990081529015358884">Boş yer bitdi</translation>
+<translation id="6993826899923627728">Bu elementlər zibil qutunuzdadır</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> qovluqlar seçildi</translation>
 <translation id="7008426324576352165">Yükləməni tamamlamaq üçün təşkilatınız daha çox yaddaş tələb edir.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +755,7 @@
 <translation id="7408870451288633753">Çex</translation>
 <translation id="7417453074306512035">Efiop klaviaturası</translation>
 <translation id="7417705661718309329">Google xəritə</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" bərpa edilir</translation>
 <translation id="7458955835361612701">Son şəkillər yoxdur</translation>
 <translation id="7460898608667578234">Ukrayna</translation>
 <translation id="7469894403370665791">Bu şəbəkəyə avtomatik olaraq qoşulun</translation>
@@ -770,6 +784,7 @@
 <translation id="7655441028674523381">Google Fotoya asan giriş</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7663224033570512922">Hind</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> element zibil qutusuna köçürüldü</translation>
 <translation id="7693909743393669729">Formatdan sonra diskdə saxlanılan bütün data silinəcək və görünməyən arakəsmələr də daxil olmaqla bütün mövcud hissələr aradan qaldırılacaq. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> formatlanmadı</translation>
 <translation id="76959938259365003">Zibil qutusunu boşaltmaq alınmadı.</translation>
@@ -784,6 +799,7 @@
 <translation id="7760449188139285140">Çin dili (Vubi)</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
 <translation id="7774365994322694683">Quş</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> element bərpa edildi</translation>
 <translation id="7781829728241885113">Dünən</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" faylını oflayn saxlamaq üçün əlavə <ph name="TOTAL_FILE_SIZE" /> yer boşatlmalısınız:<ph name="MARKUP_1" />     <ph name="MARKUP_2" />oflayn əldə etmək istəmədiyiniz faylları çıxarın<ph name="MARKUP_3" />     <ph name="MARKUP_4" />Endirilənlər qovluğundan faylları silin<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">Cihazı format edin</translation>
@@ -922,6 +938,7 @@
 <translation id="8903931173357132290">Məzun</translation>
 <translation id="8912078710089354287">Quyruğunu tərpədən it</translation>
 <translation id="8919081441417203123">Danimarka</translation>
+<translation id="8949925099261528566">Qoşuludur, internet yoxdur</translation>
 <translation id="8965697826696209160">Yer çatmır.</translation>
 <translation id="8997962250644902079">Çin dili (Ənənəvi) Pinyin</translation>
 <translation id="8998871447376656508">Yükləməni tamamlamaq üçün Google Diskinizdə kifayət qədər boş yer yoxdur.</translation>
@@ -962,6 +979,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> aralığında <ph name="ENTRY_COUNT" /> fayl seçildi.</translation>
 <translation id="954194396377670556">Administrator siyasəti buna imkan vermir:</translation>
 <translation id="965477715979482472">İngilis (Cənubi Afrika)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> element zibil qutusuna köçürülür</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı qovluq artıq mövcuddur. Onu əvəz etmək istəyirsiniz?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> cəhdiniz qalıb. Yeni bir PİN ayarlayana qədər bu şəbəkədən istifadə edə bilməyəcəksiniz.</translation>

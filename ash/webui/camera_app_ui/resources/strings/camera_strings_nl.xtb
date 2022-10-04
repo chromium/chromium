@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Je document scannen</translation>
 <translation id="1309250603447638106">Updates voor het scannen van documenten downloaden</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Zoeken + pijl-links om ze te openen.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> is niet aangesloten.</translation>
 <translation id="1473110567575736769">Timer 3 seconden</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Camera aan achterzijde</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Scantype</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Voorbeeld van spiegelen</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> is aangesloten.</translation>
 <translation id="2904654629665923749">Scan van document beschikbaar</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">Aan</translation>
 <translation id="5975083100439434680">Uitzoomen</translation>
 <translation id="5976160379964388480">Overige</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Opname stoppen</translation>
 <translation id="6197807149213783179">Metadata opslaan</translation>
 <translation id="6233780560267770709">3 bij 3</translation>
@@ -136,7 +133,6 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="698156982839284926">3 seconden</translation>
 <translation id="712848772518857951">Weet je zeker dat je <ph name="COUNT" /> items wilt verwijderen?</translation>
 <translation id="7134221860976209830">Timer van 10 seconden</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Opnametype</translation>
 <translation id="7243947652761655814">Videoresolutie</translation>
 <translation id="7337660886763914220">Bestandssysteemfouten.</translation>

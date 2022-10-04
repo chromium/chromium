@@ -305,7 +305,6 @@
 <translation id="3443810440409579745">タブが共有されました。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3448016392200048164">分割表示</translation>
-<translation id="3450502512529866925">このページをブックマークする</translation>
 <translation id="345565170154308620">パスワードを管理...</translation>
 <translation id="3469166899695866866">ダウンロードを中止しますか？</translation>
 <translation id="3470502288861289375">コピーしています...</translation>
@@ -504,7 +503,6 @@
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
 <translation id="5092117651143801290">ページを保存して、後で読んだり、オフラインで読んだりできます。長いページを保存する場合は確認のメッセージが表示されます。</translation>
 <translation id="5094827893301452931">ツイートが完了しました。</translation>
-<translation id="509789154667432072">ブックマークを追加する</translation>
 <translation id="5118713593561876160">興味 / 関心</translation>
 <translation id="5118764316110575523">オフ</translation>
 <translation id="5119391094379141756">[Chrome] を選択する</translation>
@@ -795,7 +793,6 @@
 <translation id="7340958967809483333">Discover のオプション</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="734758817008927353">カードの保存オプション</translation>
-<translation id="7348502496356775519">ブックマーク</translation>
 <translation id="7353432112255316844">本人確認</translation>
 <translation id="7383797227493018512">リーディング リスト</translation>
 <translation id="7398893703713203428">リンクを作成</translation>

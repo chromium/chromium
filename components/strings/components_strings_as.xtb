@@ -842,6 +842,7 @@
 <translation id="3216313131063488104">ব্লুজ</translation>
 <translation id="3218181027817787318">আপেক্ষিক</translation>
 <translation id="3223287115535306850">এপ্ লঞ্চ কৰাটো ল'ড হোৱাৰ চিহ্ন</translation>
+<translation id="3223425961342298674">অৱস্থানৰ অনুমতি নাই</translation>
 <translation id="3225347164936328585">হাত চাপৰি মাৰি থকা</translation>
 <translation id="3225919329040284222">ছাৰ্ভাৰটোৱে এনে এখন প্ৰমাণপত্ৰ দিছে যিখন বিল্ট-ইন কৰি ৰখা প্ৰত্যাশা সৈতে মিলা নাই। এই প্ৰত্যাশাসমূহ আপোনাক সুৰক্ষিত ৰাখিবলৈ কিছুমান নিৰ্দিষ্ট, উচ্চ-সুৰক্ষা সম্পন্ন ৱেবছাইটত অন্তৰ্ভুক্ত কৰা হয়।</translation>
 <translation id="3226128629678568754">পৃষ্ঠাটো ল'ড হ'বলৈ প্ৰয়োজন হোৱা ডেটা পুনৰ দাখিল কৰিবলৈ 'পুনৰ ল'ড কৰক' বুটামটো টিপক।</translation>
@@ -1177,6 +1178,7 @@
 <translation id="4127575959421463246">ChromeOS ফ্লেগ বিচাৰি আছে নেকি? লৈ যাওক</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{অন্য ১টা}one{অন্য #টা}other{অন্য #টা}}</translation>
 <translation id="4130226655945681476">নেটৱৰ্ক কেব’ল, ম’ডেম আৰু ৰাউটাৰ পৰীক্ষা কৰি থকা হৈছে</translation>
+<translation id="4132448310531350254">এপৰ "<ph name="POLICY_IDS_LIST" />"এ উল্লেখ কৰা file_extension "<ph name="FILE_EXTENSION" />"ৰ বাবে ডুপ্লিকেট নিয়ন্ত্ৰক।</translation>
 <translation id="4134123981501319574">নথি সৃষ্টি কৰক</translation>
 <translation id="413544239732274901">অধিক জানক</translation>
 <translation id="4142935452406587478">ট্ৰে’ ১০</translation>
@@ -1199,6 +1201,7 @@
 <translation id="4194250254487269611">এই মুহূৰ্তত এই কার্ডখন ছেভ কৰিব নোৱাৰি</translation>
 <translation id="4196861286325780578">স্থানান্তৰ &amp;কৰাটো ৰিডু কৰক</translation>
 <translation id="4202554117186904723">পঞ্চম ৰোল</translation>
+<translation id="4203769790323223880">কেমেৰাৰ অনুমতি নাই</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />ফায়াৰৱাল আৰু এণ্টিভাইৰাছ পৰীক্ষা কৰা কনফিগাৰেশ্বন<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">ডাঙৰ</translation>
 <translation id="4210602799576081649">সত্যাপনৰ ক’ডটোৰ ম্যাদ উকলিছে, এটা নতুন ক’ডৰ বাবে অনুৰোধ কৰক</translation>
@@ -1224,6 +1227,7 @@
     &lt;p&gt;আপোনাৰ কার্য সম্পূর্ণ হ’লে নিজৰ এণ্টিভাইৰাছ প্ৰ’গামটো অন কৰিবলৈ মনত ৰাখিব।&lt;/p&gt;
     &lt;h4&gt;পদক্ষেপ ৫: অতিৰিক্ত সহায় পাওক&lt;/h4&gt;
     &lt;p&gt;যদি আপুনি এতিয়াও আসোঁৱাহটো দেখা পায় তেন্তে ৱেবছাইটৰ গৰাকীৰ সৈতে সম্পর্ক কৰক।&lt;/p&gt;</translation>
+<translation id="4223404254440398437">মাইক্ৰ’ফ’নৰ অনুমতি নাই</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />নেটৱৰ্ক ডায়গন'ষ্টিক্স চলাই চাওক<ph name="END_LINK" />।</translation>
 <translation id="4230204356098880324">আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="4235360514405112390">মান্য</translation>
@@ -1594,6 +1598,7 @@
 <translation id="5177076414499237632">এই পৃষ্ঠাখনৰ উৎস আৰু বিষয়বস্তুৰ বিষয়ে জানক</translation>
 <translation id="5179510805599951267"><ph name="ORIGINAL_LANGUAGE" />ত নাই নেকি? এই আসোঁৱাহটোৰ অভিযোগ দিয়ক</translation>
 <translation id="518639307526414276">পোহনীয়া জীৱ-জন্তুৰ খাদ্য আৰু সেইবোৰৰ যত্ন লোৱাৰ বাবে আৱশ্যকীয় সামগ্ৰী</translation>
+<translation id="5190072300954988691">কেমেৰা আৰু মাইক্ৰ’ফ’নৰ অনুমতি নাই</translation>
 <translation id="5190835502935405962">বুকমাৰ্কৰ বাৰ</translation>
 <translation id="5191315092027169558">আপোনাৰ প্ৰ’ফাইল <ph name="DOMAIN" />এ পৰিচালনা কৰে</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />এ একাধিক ফাইল ডাউনল'ড কৰিব খোজে</translation>
@@ -1614,6 +1619,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">১২x১৯</translation>
 <translation id="5234764350956374838">অগ্ৰাহ্য কৰক</translation>
+<translation id="5239623327352565343">অৱস্থানৰ অনুমতি আছে</translation>
 <translation id="5242889659037569123">ভ্ৰমণকাৰীৰ মাল-বস্তু আৰু ভ্ৰমণৰ আনুষংগিক সামগ্ৰী</translation>
 <translation id="5250209940322997802">"নেটৱর্কত সংযোগ কৰক"</translation>
 <translation id="52517543715119994">Chromeৰ সুবিধাসমূহৰ বিষয়ে জানক</translation>
@@ -2488,6 +2494,7 @@
 <translation id="7581199239021537589">কাষৰ ২ প্ৰতিচ্ছবি Y শ্বিফ্ট</translation>
 <translation id="7582602800368606489">Google Calendarত ক্ষিপ্ৰভাৱে এটা নতুন অনুষ্ঠান সৃষ্টি কৰক</translation>
 <translation id="7583969447617676942">আইনী সেৱা</translation>
+<translation id="7586676035079382730">জাননীৰ অনুমতি নাই</translation>
 <translation id="7591288787774558753">গোপনীয় সমল শ্বেয়াৰ কৰিবনে?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" />এ <ph name="TOP_LEVEL_URL" />ত কুকীসমূহ আৰু ছাইটৰ ডেটা ব্যৱহাৰ কৰিবলৈ বিচাৰিছে</translation>
 <translation id="7592362899630581445">ছার্ভাৰৰ প্ৰমাণপত্ৰই নাম সম্পর্কীয় সীমাবদ্ধতাসমূহ উলংঘন কৰে।</translation>
@@ -3038,6 +3045,7 @@
 <translation id="9131119348384879525">গোপনীয় সমল কেপচাৰ কৰিবনে?</translation>
 <translation id="9136861683332321024">বিলাসী বাহন</translation>
 <translation id="9137013805542155359">মূল সংস্কৰণ দেখুৱাওক</translation>
+<translation id="9138037198177304356">জাননীৰ অনুমতি আছে</translation>
 <translation id="9139318394846604261">Shopping</translation>
 <translation id="9141013498910525015">ঠিকনাসমূহ পৰিচালনা কৰক</translation>
 <translation id="9144951720726881238">ম্যাদ উকলাৰ তাৰিখ:</translation>

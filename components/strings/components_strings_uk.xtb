@@ -844,6 +844,7 @@
 <translation id="3216313131063488104">Блюз</translation>
 <translation id="3218181027817787318">Відносна</translation>
 <translation id="3223287115535306850">Тробер запуску додатка</translation>
+<translation id="3223425961342298674">Доступ до геоданих заборонено</translation>
 <translation id="3225347164936328585">Аплодує</translation>
 <translation id="3225919329040284222">Сервер надав сертифікат, який не відповідає очікуваним вбудованим параметрам. Ці очікувані параметри встановлено для певних веб-сайтів із високим рівнем безпеки, щоб захистити вас.</translation>
 <translation id="3226128629678568754">Натисніть кнопку перезавантаження, щоб повторно надіслати дані, потрібні для завантаження сторінки.</translation>
@@ -1180,6 +1181,7 @@
 <translation id="4127575959421463246">Шукаєте експериментальні параметри для ОС Chrome? Перейти</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{і ще 1 елемент даних}one{і ще # елемент даних}few{і ще # елементи даних}many{і ще # елементів даних}other{і ще # елемента даних}}</translation>
 <translation id="4130226655945681476">перевірити мережевий кабель, модем і маршрутизатор</translation>
+<translation id="4132448310531350254">Для файлів із розширенням <ph name="FILE_EXTENSION" /> указано кілька обробників за умовчанням: <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Створити документ</translation>
 <translation id="413544239732274901">Докладніше</translation>
 <translation id="4142935452406587478">Лоток 10</translation>
@@ -1202,6 +1204,7 @@
 <translation id="4194250254487269611">Не вдається зберегти картку</translation>
 <translation id="4196861286325780578">&amp;Повторити переміщення</translation>
 <translation id="4202554117186904723">П’ятий рулон</translation>
+<translation id="4203769790323223880">Користуватися камерою заборонено</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />перевірити конфігурацію брандмауера й антивірусної програми<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Великий</translation>
 <translation id="4210602799576081649">Термін дії коду підтвердження минув, надішліть запит на новий</translation>
@@ -1228,6 +1231,7 @@
     &lt;p&gt;Закінчивши, не забудьте знову ввімкнути антивірусну програму.&lt;/p&gt;
     &lt;h4&gt;Крок 5. Отримайте додаткову підтримку&lt;/h4&gt;
     &lt;p&gt;Якщо повідомлення про помилку не зникає, зв’яжіться з власником веб-сайту.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Користуватися мікрофоном заборонено</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Проведіть діагностику мережі<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Може просити дозвіл використовувати й переміщувати камеру</translation>
 <translation id="4235360514405112390">Дійсний</translation>
@@ -1598,6 +1602,7 @@
 <translation id="5177076414499237632">Докладніше про джерело й тему цієї сторінки</translation>
 <translation id="5179510805599951267">Це не <ph name="ORIGINAL_LANGUAGE" />? Повідомте про помилку</translation>
 <translation id="518639307526414276">Корм для тварин і товари для догляду</translation>
+<translation id="5190072300954988691">Користуватися камерою й мікрофоном заборонено</translation>
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5191315092027169558">Вашим профілем керує <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> хоче завантажити кілька файлів</translation>
@@ -1618,6 +1623,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Закрити</translation>
+<translation id="5239623327352565343">Доступ до геоданих дозволено</translation>
 <translation id="5242889659037569123">Багаж і аксесуари для подорожей</translation>
 <translation id="5250209940322997802">"Під’єднайте пристрій до мережі"</translation>
 <translation id="52517543715119994">Докладніше про функції Chrome</translation>
@@ -2493,6 +2499,7 @@
 <translation id="7581199239021537589">Вертикальний зсув сторони 2 зображення</translation>
 <translation id="7582602800368606489">Швидко створюйте нові події в Google Календарі</translation>
 <translation id="7583969447617676942">Юридичні послуги</translation>
+<translation id="7586676035079382730">Сповіщення заборонено</translation>
 <translation id="7591288787774558753">Поділитися конфіденційним контентом?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> хоче отримати доступ до файлів cookie й даних сайту <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Сертифікат сервера порушує обмежувальні умови щодо імен.</translation>
@@ -3044,6 +3051,7 @@
 <translation id="9131119348384879525">Записати конфіденційний контент?</translation>
 <translation id="9136861683332321024">Автомобілі класу люкс</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>
+<translation id="9138037198177304356">Сповіщення дозволено</translation>
 <translation id="9139318394846604261">Покупки</translation>
 <translation id="9141013498910525015">Керувати адресами</translation>
 <translation id="9144951720726881238">Діє до:</translation>

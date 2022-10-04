@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Зіскануйте документ</translation>
 <translation id="1309250603447638106">Завантаження оновлень для сканування документів</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Щоб перейти, натисніть клавішу пошуку + стрілку вліво.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1467231725790366244">Камеру <ph name="CAMERA" /> відключено.</translation>
 <translation id="1473110567575736769">Таймер на 3 секунди</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Камера на задній панелі</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> с</translation>
 <translation id="2761536921376153655">Тип сканування</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Попередній перегляд віддзеркаленого зображення</translation>
 <translation id="2879583609344924966">Камеру <ph name="CAMERA" /> підключено.</translation>
 <translation id="2904654629665923749">Доступне сканування документів</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5975083100439434680">Зменшити масштаб</translation>
 <translation id="5976160379964388480">Інші</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Припинити запис</translation>
 <translation id="6197807149213783179">Зберегти метадані</translation>
 <translation id="6233780560267770709">3 на 3</translation>
@@ -136,7 +133,6 @@
 <translation id="698156982839284926">3 секунди</translation>
 <translation id="712848772518857951">Видалити елементи (<ph name="COUNT" />)?</translation>
 <translation id="7134221860976209830">Таймер на 10 секунд</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Тип запису</translation>
 <translation id="7243947652761655814">Роздільна здатність відео</translation>
 <translation id="7337660886763914220">Помилки файлової системи.</translation>

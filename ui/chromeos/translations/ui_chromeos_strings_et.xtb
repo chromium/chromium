@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Lülita loendivaatele</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> kausta jagati Linuxiga</translation>
 <translation id="2378075407703503998">Valitud on <ph name="SELCTED_FILE_COUNT" /> faili</translation>
+<translation id="2383454254762599978">Teisalda prügikasti</translation>
 <translation id="2387458720915042159">Puhverserveri ühenduse tüüp</translation>
 <translation id="2389832672041313158">birma (Myanmar)</translation>
 <translation id="2392369802118427583">Aktiveeri</translation>
@@ -289,6 +290,7 @@
 <translation id="3549797760399244642">Ava sait drive.google.com ...</translation>
 <translation id="3553048479571901246">Failide avamiseks rakendusega <ph name="APP_NAME" /> kopeerige need esmalt Windowsi failide kausta.</translation>
 <translation id="3556731189587832921">inglise (USA), rahvusvahelise arvutiklaviatuuriga</translation>
+<translation id="3557414470514932909">Faili <ph name="FILE_NAME" /> teisaldatakse prügikasti</translation>
 <translation id="3567221313191587603">Valige fail ja lülitage <ph name="OFFLINE_CHECKBOX_NAME" /> sisse, et oma failidele võrguühenduseta juurde pääseda.</translation>
 <translation id="357479282490346887">leedu keel</translation>
 <translation id="3587482841069643663">Kõik</translation>
@@ -341,6 +343,7 @@
 <translation id="3975895378829046965">bengali, foneetiline</translation>
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4017788180641807848">inglise (USA), Workmani klaviatuuriga</translation>
+<translation id="4019998208269143058">Kinnita kiirfailidesse</translation>
 <translation id="4040753847560036377">Vale PUK</translation>
 <translation id="4057991113334098539">Aktiveerimine ...</translation>
 <translation id="4092890906744441904">iiri</translation>
@@ -350,6 +353,7 @@
 <translation id="4157569377477607576">Administraatori reegel ei soovita:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> on teisaldatud.</translation>
 <translation id="4176286497474237543">Tühjenda prügikast kohe</translation>
+<translation id="4179621117429069925">See üksus on prügikastis</translation>
 <translation id="4186579485882418952">Luba võrguühenduseta</translation>
 <translation id="4193154014135846272">Google'i dokument</translation>
 <translation id="4197674956721858839">Valiku pakkimine</translation>
@@ -379,6 +383,7 @@
 <translation id="4387004326333427325">Autentimissertifikaat lükati kaugühenduse kaudu tagasi</translation>
 <translation id="4394214039309501350">Väline link</translation>
 <translation id="4394980935660306080">Varem sellel nädalal</translation>
+<translation id="4398096759193130964">Taastage üksused või lohistage need prügikastist välja uude kausta</translation>
 <translation id="4401287888955153199">Ekstrakti kõik</translation>
 <translation id="4410695710508688828">Ekstraktimistoiming nurjus. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Looge oma failide jaoks otsetee</translation>
@@ -434,6 +439,7 @@
 <translation id="4790766916287588578">Hindi, InScript-klaviatuuriga</translation>
 <translation id="4801956050125744859">Säilita mõlemad</translation>
 <translation id="4804827417948292437">Avokaado</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> üksuse taastamine</translation>
 <translation id="4823651846660089135">Seade on kirjutuskaitstud</translation>
 <translation id="4826849268470072925">tamili, ITRANS</translation>
 <translation id="4839847978919684242">Valitud on <ph name="SELCTED_FILES_COUNT" /> üksust</translation>
@@ -452,6 +458,7 @@
 <translation id="4935975195727477204">Karikakar</translation>
 <translation id="4943368462779413526">Jalgpall</translation>
 <translation id="4961158930123534723">Üksusega Parallels Desktop jagatakse 1 kausta</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> on taastatud</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4973523518332075481">Kasutage nime, milles on kuni <ph name="MAX_LENGTH" /> tähemärki</translation>
 <translation id="4973970068702235170">Pakkumine nurjus, ootamatu viga: <ph name="ERROR_MESSAGE" /></translation>
@@ -554,6 +561,7 @@
 <translation id="5691596662111998220">Faili <ph name="FILE_NAME" /> ei ole enam olemas.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, ava</translation>
 <translation id="5700087501958648444">Heli teave</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> on prügikasti teisaldatud</translation>
 <translation id="5724172041621205163">tai, Pattachote klaviatuuriga</translation>
 <translation id="5756666464756035725">Ungari QWERTY-klaviatuur</translation>
 <translation id="5763377084591234761">saksa (Šveits)</translation>
@@ -624,6 +632,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" />-arhiivifail</translation>
 <translation id="6321303798550928047">Lehvitav</translation>
 <translation id="6327785803543103246">Veebipõhise puhverserveri automaattuvastamine</translation>
+<translation id="6337014272874260727">Vabasta kiirfailidest</translation>
 <translation id="6339145975392024142">USA rahvusvaheline (PC)</translation>
 <translation id="6346310558342052870">Juurdepääs on piiratud</translation>
 <translation id="6356685157277930264">Failide tagasiside aken</translation>
@@ -664,6 +673,7 @@
 <translation id="6751256176799620176">Valitud on üks kaust</translation>
 <translation id="6755827872271341378">Chrome OS Flexi seade</translation>
 <translation id="6790428901817661496">Esita</translation>
+<translation id="6794539005637808366">Taastage üksus või lohistage see prügikastist välja uude kausta</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Linuxi jagamise haldamine</translation>
 <translation id="6806796368146926706">tähtnumbriline, Jaapani klaviatuuriga</translation>
@@ -700,6 +710,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">rootsi</translation>
 <translation id="6990081529015358884">Ruum sai otsa</translation>
+<translation id="6993826899923627728">Need üksused on prügikastis</translation>
 <translation id="6998711733709403587">Valitud on <ph name="SELCTED_FOLDERS_COUNT" /> kausta</translation>
 <translation id="7008426324576352165">Teie organisatsioon nõuab üleslaadimise lõpuleviimiseks rohkem salvestusruumi.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -745,6 +756,7 @@
 <translation id="7408870451288633753">tšehhi</translation>
 <translation id="7417453074306512035">Etioopia klaviatuur</translation>
 <translation id="7417705661718309329">Google'i kaart</translation>
+<translation id="7419668828140929293">Faili „<ph name="FILENAME" />“ taastamine</translation>
 <translation id="7458955835361612701">Hiljutisi pilte pole</translation>
 <translation id="7460898608667578234">ukraina keel</translation>
 <translation id="7469894403370665791">Võta automaatselt selle võrguga ühendust</translation>
@@ -773,6 +785,7 @@
 <translation id="7655441028674523381">Lihtne juurdepääs rakendusele Google Photos</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7663224033570512922">hindi</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldati prügikasti</translation>
 <translation id="7693909743393669729">Ketta vormindamisel kustutatakse kõik sellel olevad andmed ja eemaldatakse kõik olemasolevad partitsioonid (sh nähtamatud partitsioonid). Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="7695430100978772476">Ei saanud ketast <ph name="DRIVE_NAME" /> vormindada</translation>
 <translation id="76959938259365003">Prügikasti tühjendamine ebaõnnestus.</translation>
@@ -787,6 +800,7 @@
 <translation id="7760449188139285140">hiina, wubi</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7774365994322694683">Lind</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> üksust on taastatud</translation>
 <translation id="7781829728241885113">Eile</translation>
 <translation id="7788080748068240085">Kui soovite salvestada faili „<ph name="FILE_NAME" />” võrguühenduseta kasutamiseks, peate vabastama veel <ph name="TOTAL_FILE_SIZE" /> ruumi:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />vabastage failid, millele teil ei ole enam vaja võrguühenduseta juurde pääseda;<ph name="MARKUP_3" />
@@ -968,6 +982,7 @@
 <translation id="947144732524271678">Valiti <ph name="ENTRY_COUNT" /> kirjet vahemikus <ph name="FROM_ENTRY_NAME" /> kuni <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Administraatori reegel takistab:</translation>
 <translation id="965477715979482472">inglise (Lõuna-Aafrika Vabariik)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> üksust teisaldatakse prügikasti</translation>
 <translation id="981121421437150478">Võrguühenduseta</translation>
 <translation id="988685240266037636">Fail nimega „<ph name="FILE_NAME" />” on juba olemas. Kas soovite selle asendada?</translation>
 <translation id="992401651319295351">Teil on veel <ph name="RETRIES" /> katset. Te ei saa seda võrku kasutada enne, kui seadistate uue PIN-koodi.</translation>

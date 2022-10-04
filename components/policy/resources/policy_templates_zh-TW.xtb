@@ -216,6 +216,7 @@
       如果未設定這項政策，系統會針對所有網站套用 <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> 政策 (如果已設定)。否則系統會套用使用者的個人設定。
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
+<translation id="1209096923317019235">將應用程式指派為特定副檔名的預設處理常式</translation>
 <translation id="120937472976628837">回報風扇資訊</translation>
 <translation id="1212233008927724662">停用 Lazy Login WebUI 載入功能。</translation>
 <translation id="1216919699175573511">啟用 Signed HTTP Exchange (SXG) 支援</translation>
@@ -2321,6 +2322,15 @@
       如果未正常關閉 <ph name="PRODUCT_NAME" /> (例如瀏覽器或作業系統當機時)，系統會在下次載入設定檔時清除瀏覽資料。</translation>
 <translation id="3264793472749429012">預設搜尋引擎編碼</translation>
 <translation id="3273221114520206906">預設 JavaScript 設定</translation>
+<translation id="3282240846541032181">這項政策可讓管理員針對 <ph name="PRODUCT_OS_NAME" /> 上的各個副檔名，指定對應的應用程式做為預設處理常式，而使用者無法變更這項設定。
+      凡是不在這項政策中指定的副檔名，使用者都能按照一般工作流程自行設定預設值。
+
+      使用 ID (例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />) 指定 Chrome 應用程式，並透過「<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />」中使用的網址 (例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />) 來指定網頁應用程式。
+
+      請注意，應用程式「必須」在資訊清單中宣告自身為特定副檔名的處理常式，才能讓該政策項目生效 (也就是該政策「不會」擴充現有的應用程式功能)。
+
+      如果未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會根據內部邏輯選取預設處理常式。
+      </translation>
 <translation id="328347261792478720">在預設狀態下，瀏覽器會根據使用者顯示個人化的媒體推薦內容。如果將這項政策設為停用，瀏覽器會向使用者隱藏這類推薦內容。如果將這項政策設為啟用或不設定，瀏覽器會向使用者顯示媒體推薦內容。</translation>
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3288595667065905535">發布頻道</translation>
@@ -4134,6 +4144,35 @@
 <translation id="5330684698007383292">允許 <ph name="PRODUCT_FRAME_NAME" /> 處理列出的內容類型</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 雲端政策會覆寫平台政策。</translation>
 <translation id="5346587320074666194">禁止在這些網站上存取感應器</translation>
+<translation id="5357039649371478544">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" /> 發生資料外洩的情況。
+      複製及貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
+
+      每條規則都包含下列項目：
+      - 定義為網址的來源清單。系統會將來源中的所有資料都視為機密資料並套用限制。
+      - 定義為網址或元件的目的地清單，可允許或禁止將機密資料分享到清單中的目的地。
+      - 要套用到來源資料的限制清單。
+
+      你可以新增規則以便：
+      - 控管來源與目的地共用的剪貼簿資料。
+      - 控管任何來源的螢幕畫面擷取動作。
+      - 控管任何來源的列印動作。
+      - 控管任何來源在顯示狀態下的隱私保護功能。
+      - 控管任何來源的螢幕畫面分享動作。
+      - 在檔案轉移至目的地時，控管從任何來源下載的檔案。<ph name="PRODUCT_OS_NAME" /> 108 以上版本可支援。
+
+      限制等級可設為「BLOCK」、「ALLOW」、「REPORT」或「WARN」。
+      - 如果將限制等級設為「BLOCK」，將無法執行該動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將遭禁止的動作回報給管理員。
+      - 如果將限制等級設為「ALLOW」，則可以執行該動作。
+      - 如果將限制等級設為「REPORT」，並將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將該動作回報給管理員。
+      - 如果將限制等級設為「WARN」，系統會顯示警告訊息，使用者可能可以選擇繼續執行或取消動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將顯示警告的動作回報給管理員。假如使用者繼續執行動作，系統也會一併回報。
+
+      注意：
+      - PRIVACY_SCREEN 限制等級設為「BLOCK」時，不會禁止啟用隱私保護功能，而會強制執行該功能。
+      - 如果有任一限制是「CLIPBOARD」或「FILES」，請勿將目的地留空，但目的地對其餘限制沒有影響。
+      - 在設有「CLIPBOARD」限制的情況下，系統會忽略「DRIVE」和「USB」目的地。
+      - 網址格式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。
+
+      如未設定這項政策，系統不會套用任何限制。</translation>
 <translation id="5362531528507578966">覆寫預設的背景圖形列印模式。</translation>
 <translation id="5365476955714838841">替代瀏覽器的指令行參數。</translation>
 <translation id="5365946944967967336">在工具列上顯示 [首頁] 按鈕</translation>

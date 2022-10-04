@@ -23,6 +23,7 @@
 <translation id="117624967391683467">העתקת <ph name="FILE_NAME" /> מתבצעת...</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1190144681599273207">הבאת קובץ זה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
+<translation id="1194390763418645112">גישה לקובץ על ידי <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1209796539517632982">שרתי שמות אוטומטיים</translation>
 <translation id="1210831758834677569">לאו</translation>
@@ -61,6 +62,7 @@
 <translation id="1561842594491319104">‏מכשירי Chrome</translation>
 <translation id="1572585716423026576">הגדרה כטפט</translation>
 <translation id="1576937952766665062">תעתיק בנגלית</translation>
+<translation id="1577977504532381335">עיון במדיניות האדמין</translation>
 <translation id="158849752021629804">יש צורך ברשת ביתית</translation>
 <translation id="1589128298353575783">‎<ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">מצלמה</translation>
@@ -111,6 +113,7 @@
 <translation id="1942765061641586207">רזולוציית תמונה</translation>
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
+<translation id="1999709132469742660">‏גישה לקובץ מכל כתובות ה-URL</translation>
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
 <translation id="2025955442973426285">תיגרינית</translation>
@@ -141,6 +144,7 @@
 <translation id="2239068707900391003">אדם עם קפה</translation>
 <translation id="2251368349685848079">שחזור מהאשפה</translation>
 <translation id="2282155092769082568">כתובת אתר של תצורה אוטומטית:</translation>
+<translation id="2284767815536050991">אחסון נשלף</translation>
 <translation id="2288278176040912387">פטיפון</translation>
 <translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> קבצים נפתחים.</translation>
 <translation id="2303301624314357662">הקובץ <ph name="FILE_NAME" /> נפתח.</translation>
@@ -339,6 +343,7 @@
 <translation id="4092890906744441904">אירית</translation>
 <translation id="4124935795427217608">חד-קרן</translation>
 <translation id="4153015322587141338">כדי לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ימנית על קובץ ולבחור באפשרות '<ph name="PIN_COMMAND" />'.</translation>
+<translation id="4157569377477607576">לפי מדיניות האדמין, הפעולות הבאות לא מומלצות:</translation>
 <translation id="4159731583141908892">ההעברה של <ph name="FILE_NAME" /> הסתיימה.</translation>
 <translation id="4176286497474237543">לריקון האשפה</translation>
 <translation id="4186579485882418952">הפעלת מצב אופליין</translation>
@@ -500,6 +505,7 @@
 <translation id="5323213332664049067">אמריקאית לטינית</translation>
 <translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
+<translation id="5337538975554986899">‏גישה לקובץ מכל כתובות ה-URL מלבד <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
 <translation id="5363339716524495120">שפת הקלט היא סינית</translation>
@@ -524,6 +530,7 @@
 <translation id="5533102081734025921">תמונה בפורמט <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">המערכת מחשבת את הגודל</translation>
 <translation id="554153475311314364">תעתיק יוונית</translation>
+<translation id="5580591966435005537">מכונה וירטואלית</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">רוחב הפיסוק הוא מלא</translation>
 <translation id="5602622065581044566">בולגרית עם מקלדת פונטית</translation>
@@ -583,6 +590,7 @@
 <translation id="61118516107968648">‏טקסט CSV</translation>
 <translation id="6129953537138746214">רווח</translation>
 <translation id="6133173853026656527">מתבצעת העברה של <ph name="FILE_NAME" />...</translation>
+<translation id="6133877453787250710">האדמין מנהל מעקב אחר:</translation>
 <translation id="613750717151263950">יפנית עם מקלדת אמריקאית</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, אין רשת</translation>
 <translation id="6146563240635539929">סרטונים</translation>
@@ -603,6 +611,7 @@
 <translation id="6287852322318138013">בחירת אפליקציה לפתיחת הקובץ</translation>
 <translation id="6295542640242147836">‏נעילת כרטיס ה-SIM</translation>
 <translation id="6296410173147755564">‏ה-PUK לא תקין</translation>
+<translation id="6308243004861726558">הקובץ הזה סודי וכפוף למדיניות האדמין. הפעולות הבאות חלות לגבי העברת הקובץ וגישה אליו.</translation>
 <translation id="6312403991423642364">שגיאת רשת לא ידועה</translation>
 <translation id="6317608858038767920">שרת שמות בהתאמה אישית <ph name="INPUT_INDEX" /></translation>
 <translation id="6320212353742551423">קובץ ארכיון מסוג <ph name="ARCHIVE_TYPE" /></translation>
@@ -829,6 +838,7 @@
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8261506727792406068">מחיקה</translation>
 <translation id="8261561378965667560">‏סינית Array</translation>
+<translation id="8262872909443689080">מדיניות האדמין</translation>
 <translation id="8264024885325823677">ההגדרה הזו מנוהלת על-ידי מנהל המערכת שלך.</translation>
 <translation id="8269755669432358899">כיווץ חלוניות המשוב של הקבצים</translation>
 <translation id="8280151743281770066">ארמנית פונטית</translation>
@@ -923,6 +933,7 @@
 <translation id="9100610230175265781">יש להזין ביטוי סיסמה</translation>
 <translation id="9110990317705400362">‏אנחנו מחפשים כל הזמן דרכים לגלישה בטוחה יותר. בעבר, כל אתר יכול היה להציע לך להוסיף תוסף לדפדפן. בגרסאות האחרונות של Google Chrome, עליך לציין באופן מפורש ל-Chrome שברצונך להתקין תוספים אלה על-ידי הוספתם דרך הדף 'תוספים'. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ביטול נעילה</translation>
+<translation id="9116909380156770361">העברת הקובץ אל <ph name="RESTRICTED_COMPONENTS" /></translation>
 <translation id="912419004897138677">Codec</translation>
 <translation id="9130775360844693113">חברים באחסון השיתופי '<ph name="DESTINATION_NAME" />' יקבלו גישה לפריטים האלה.</translation>
 <translation id="9131598836763251128">יש לבחור קובץ אחד או יותר</translation>
@@ -944,6 +955,7 @@
 <translation id="943972244133411984">שונה על ידי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947144732524271678">בחרת טווח של <ph name="ENTRY_COUNT" /> פריטים, מ-<ph name="FROM_ENTRY_NAME" /> עד <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="954194396377670556">לפי מדיניות האדמין, הפעולות הבאות חסומות:</translation>
 <translation id="965477715979482472">אנגלית (דרום אפריקה)</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="988685240266037636">כבר קיים קובץ בשם "<ph name="FILE_NAME" />". רוצה להחליף אותו?</translation>

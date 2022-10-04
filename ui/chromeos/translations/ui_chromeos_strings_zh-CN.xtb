@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">切换到列表视图</translation>
 <translation id="2377590462528165447">与 Linux 共享了 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
 <translation id="2378075407703503998">已选择 <ph name="SELCTED_FILE_COUNT" /> 个文件</translation>
+<translation id="2383454254762599978">移至回收站</translation>
 <translation id="2387458720915042159">代理连接类型</translation>
 <translation id="2389832672041313158">缅甸语</translation>
 <translation id="2392369802118427583">激活</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">转到 drive.google.com...</translation>
 <translation id="3553048479571901246">如需使用 <ph name="APP_NAME" /> 打开文件，请先将文件复制到“Windows 文件”文件夹。</translation>
 <translation id="3556731189587832921">英语（美国）国际 PC 键盘</translation>
+<translation id="3557414470514932909">正在将“<ph name="FILE_NAME" />”移至回收站</translation>
 <translation id="3567221313191587603">如果想在离线状态下使用您的文件，请先选择相应文件，然后将“<ph name="OFFLINE_CHECKBOX_NAME" />”所对应的切换开关上的滑块滑至开启位置。</translation>
 <translation id="357479282490346887">立陶宛语</translation>
 <translation id="3587482841069643663">全部</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">孟加拉语注音</translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4017788180641807848">英语（美国）Workman 键盘</translation>
+<translation id="4019998208269143058">固定到“快捷文件”空间</translation>
 <translation id="4040753847560036377">PUK 不正确</translation>
 <translation id="4057991113334098539">正在激活...</translation>
 <translation id="4092890906744441904">爱尔兰语</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">管理员政策不建议：</translation>
 <translation id="4159731583141908892">已移动 <ph name="FILE_NAME" />。</translation>
 <translation id="4176286497474237543">立即清空回收站</translation>
+<translation id="4179621117429069925">此文件位于您的回收站中</translation>
 <translation id="4186579485882418952">启用离线功能</translation>
 <translation id="4193154014135846272">Google 文档</translation>
 <translation id="4197674956721858839">压缩选中的文件</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">身份验证证书遭到远程拒绝</translation>
 <translation id="4394214039309501350">外部链接</translation>
 <translation id="4394980935660306080">本周早些时候</translation>
+<translation id="4398096759193130964">请恢复这些内容，或将它们拖至回收站之外的一个新文件夹中</translation>
 <translation id="4401287888955153199">提取全部</translation>
 <translation id="4410695710508688828">提取操作失败。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">为您的文件创建快捷方式</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">印地语 InScript 键盘</translation>
 <translation id="4801956050125744859">保留两种版本</translation>
 <translation id="4804827417948292437">牛油果</translation>
+<translation id="4805966553127040832">正在恢复 <ph name="COUNT" /> 项内容</translation>
 <translation id="4823651846660089135">设备目前处于只读模式</translation>
 <translation id="4826849268470072925">泰米尔语 ITRANS</translation>
 <translation id="4839847978919684242">已经选择 <ph name="SELCTED_FILES_COUNT" /> 个文件或目录</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">杂色菊</translation>
 <translation id="4943368462779413526">美式足球</translation>
 <translation id="4961158930123534723">已与 Parallels Desktop 共享 1 个文件夹</translation>
+<translation id="496656650103537022">“<ph name="FILE_NAME" />”已恢复</translation>
 <translation id="4969785127455456148">专辑</translation>
 <translation id="4973523518332075481">所用名称的长度不得超过 <ph name="MAX_LENGTH" /> 个字符</translation>
 <translation id="4973970068702235170">压缩失败，出现了意外的错误：<ph name="ERROR_MESSAGE" /></translation>
@@ -547,6 +554,7 @@
 <translation id="5691596662111998220">糟糕，<ph name="FILE_NAME" />已经不存在了。</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />，解锁</translation>
 <translation id="5700087501958648444">音频信息</translation>
+<translation id="5720028165859493293">“<ph name="FILE_NAME" />”已移至回收站</translation>
 <translation id="5724172041621205163">泰语 Pattachote 键盘</translation>
 <translation id="5756666464756035725">匈牙利语 QWERTY</translation>
 <translation id="5763377084591234761">德语（瑞士）</translation>
@@ -617,6 +625,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> 归档文件</translation>
 <translation id="6321303798550928047">挥手</translation>
 <translation id="6327785803543103246">网络代理自动发现</translation>
+<translation id="6337014272874260727">取消固定到“快捷文件”空间</translation>
 <translation id="6339145975392024142">美式国际 (PC) 键盘</translation>
 <translation id="6346310558342052870">访问权限受限</translation>
 <translation id="6356685157277930264">文件反馈窗口</translation>
@@ -657,6 +666,7 @@
 <translation id="6751256176799620176">已选择 1 个文件夹</translation>
 <translation id="6755827872271341378">ChromeOS Flex 设备</translation>
 <translation id="6790428901817661496">播放</translation>
+<translation id="6794539005637808366">请恢复这项内容，或将它拖至回收站之外的一个新文件夹中</translation>
 <translation id="6795884519221689054">熊猫</translation>
 <translation id="6806699711453372963">管理 Linux 共享设置</translation>
 <translation id="6806796368146926706">字母数字日语键盘</translation>
@@ -693,6 +703,7 @@
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6989942356279143254">瑞典语</translation>
 <translation id="6990081529015358884">空间不足</translation>
+<translation id="6993826899923627728">这些内容位于您的回收站中</translation>
 <translation id="6998711733709403587">已选择 <ph name="SELCTED_FOLDERS_COUNT" /> 个文件夹</translation>
 <translation id="7008426324576352165">贵组织需要有更多存储空间才能完成上传。</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -738,6 +749,7 @@
 <translation id="7408870451288633753">捷克语</translation>
 <translation id="7417453074306512035">埃塞俄比亚语键盘</translation>
 <translation id="7417705661718309329">Google 地图</translation>
+<translation id="7419668828140929293">正在恢复“<ph name="FILENAME" />”</translation>
 <translation id="7458955835361612701">没有任何近期图片</translation>
 <translation id="7460898608667578234">乌克兰语</translation>
 <translation id="7469894403370665791">自动连接到该网络</translation>
@@ -766,6 +778,7 @@
 <translation id="7655441028674523381">轻松访问 Google 相册</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7663224033570512922">印地语</translation>
+<translation id="7689532716264131859">已将 <ph name="NUMBER_OF_ITEMS" /> 项内容移至回收站</translation>
 <translation id="7693909743393669729">将 U 盘格式化会清空其中存储的所有数据，并会移除所有现有分区（包括未必可见的分区）。此操作无法撤消。</translation>
 <translation id="7695430100978772476">无法将“<ph name="DRIVE_NAME" />”格式化</translation>
 <translation id="76959938259365003">未能清空回收站。</translation>
@@ -780,6 +793,7 @@
 <translation id="7760449188139285140">中文五笔</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7774365994322694683">鸟</translation>
+<translation id="7780322752056734036">已恢复 <ph name="NUMBER_OF_ITEMS" /> 项内容</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7788080748068240085">要保存“<ph name="FILE_NAME" />”的离线版本，您必须先释放<ph name="TOTAL_FILE_SIZE" />空间：<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />取消固定不再需要离线访问的文件<ph name="MARKUP_3" />
@@ -960,6 +974,7 @@
 <translation id="947144732524271678">已选择从<ph name="FROM_ENTRY_NAME" />到<ph name="TO_ENTRY_NAME" />的 <ph name="ENTRY_COUNT" /> 个条目。</translation>
 <translation id="954194396377670556">管理员政策禁止：</translation>
 <translation id="965477715979482472">英语（南非）</translation>
+<translation id="976666271385981812">正在将 <ph name="NUMBER_OF_ITEMS" /> 项内容移至回收站</translation>
 <translation id="981121421437150478">离线</translation>
 <translation id="988685240266037636">已有名为“<ph name="FILE_NAME" />”的文件。要覆盖它吗？</translation>
 <translation id="992401651319295351">您还有 <ph name="RETRIES" /> 次尝试机会。在设置新 PIN 码之前，您将无法使用此网络。</translation>

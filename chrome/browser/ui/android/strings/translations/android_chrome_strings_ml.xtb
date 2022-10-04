@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">മുൻകൂട്ടി ലോഡ് ചെയ്യുന്നില്ല</translation>
 <translation id="3029704984691124060">പാസ്‌ഫ്രെയ്‌സുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="3031225630520268969">Assistant ശബ്‌ദ തിരയൽ സമ്മത UI</translation>
-<translation id="3034163383943672781"><ph name="DATE" />-ന് ഡൗൺലോഡ് ആരംഭിക്കും.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />സഹായം തേടുക<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">നിലവിലെ പേജ് റീലോഡ് ചെയ്യുക</translation>
 <translation id="3444179773590444986">സൈറ്റുകൾക്കുള്ള ഡാർക്ക് തീമുകൾ സംബന്ധിച്ച് ഫീഡ്ബാക്ക് പങ്കിടണോ?</translation>
 <translation id="3452832259067974318">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡിൽ പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കില്ല.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{1 ഡൗൺലോഡ് ഷെഡ്യൂൾ ചെയ്‌തു}other{# ഡൗൺലോഡുകൾ ഷെഡ്യൂൾ ചെയ്‌തു}}</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ആയി തുടരുക</translation>
 <translation id="3478363558367712427">നിങ്ങളുടെ തിരയല്‍ യന്ത്രം നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാം</translation>
 <translation id="3479552764303398839">ഇപ്പോഴല്ല</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">ഈ ഉപകരണത്തിലെ Google Password Manager-ൽ പാസ്‌വേഡുകൾ സംരക്ഷിക്കുന്നു</translation>
 <translation id="620197886010707372">Google Play ഉപയോഗിച്ച് <ph name="APPNAME" /> എന്നതിനുള്ള ആപ്പ് തുറക്കണോ?</translation>
 <translation id="6202812185118613467">സമന്വയിപ്പിക്കൽ തുടങ്ങുന്നതിന് തിരികെ സൈൻ ഇൻ ചെയ്യുക</translation>
-<translation id="6203593061661911168">വൈഫൈ കണക്റ്റാകുമ്പോൾ ഡൗൺലോഡ് ആരംഭിക്കും</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> അല്ലേ?</translation>
 <translation id="6211386937064921208">ഈ പേജ് പ്രിവ്യു ചെയ്യുന്നു</translation>
 <translation id="6221633008163990886">നിങ്ങളുടെ പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യാൻ അൺലോക്ക് ചെയ്യുക</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">സൈറ്റിലേക്ക് കണ‌ക്‌റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
 <translation id="752220631458524187">പൂർത്തിയാകുമ്പോൾ വിച്ഛേദിക്കുക</translation>
 <translation id="7523960634226602883">Google Lens ഉപയോഗിച്ച് ക്യാമറയുടെ സഹായത്തോടെ തിരയുക</translation>
-<translation id="753225086557513863">പിന്നീട് ഡൗൺലോഡ് ചെയ്യാൻ ഷെഡ്യൂൾ ചെയ്‌തു</translation>
 <translation id="7562080006725997899">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കൽ</translation>
 <translation id="756809126120519699">Chrome ഡാറ്റ മായ്‌ച്ചു</translation>
 <translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">സമയ ശ്രേണി</translation>
 <translation id="7851858861565204677">മറ്റ് ഉപകരണങ്ങൾ</translation>
 <translation id="7853202427316060426">പ്രവർത്തനം</translation>
-<translation id="7857691613771368249">ഫയലുകൾ എപ്പോൾ സംരക്ഷിക്കണമെന്ന് ചോദിക്കുക</translation>
 <translation id="7859988229622350291">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="7866213166286285359">ഇവിടെ പേജുകൾ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="78707286264420418">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്യാൻ <ph name="PRODUCT_NAME" /> എന്നതിന് സമീപമുള്ള ഉപകരണങ്ങൾക്കുള്ള അനുമതി ആവശ്യമാണ്</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9065383040763568503">Chrome അപ്രധാനമായി കാണുന്ന സംഭരിച്ച ഡാറ്റ (ഉദാ: ക്രമീകരണം സംരക്ഷിച്ചിട്ടില്ലാത്തതോ നിങ്ങൾ ഇടയ്‌ക്കിടെ സന്ദർശിക്കാത്തതോ ആയ സൈറ്റുകൾ)</translation>
 <translation id="906781307897697745"><ph name="PRODUCT_NAME" /> എന്നതിൽ</translation>
-<translation id="9069543557624799859"><ph name="TIME" />-ന് ഡൗൺലോഡ് ആരംഭിക്കും.</translation>
 <translation id="9069999660519089861">വായിക്കാത്ത പേജുകൾ ഇല്ല</translation>
 <translation id="9070377983101773829">ശബ്ദ തിരയൽ ആരംഭിക്കുക</translation>
 <translation id="9074336505530349563">Google നിർദേശിക്കുന്ന വ്യക്തിപരമാക്കിയ ഉള്ളടക്കം ലഭിക്കാൻ, സൈൻ ഇൻ ചെയ്‌ത് സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>

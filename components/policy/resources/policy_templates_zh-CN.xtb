@@ -216,6 +216,7 @@
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
+<translation id="1209096923317019235">分配应用以用作所指定文件扩展名的默认处理程序</translation>
 <translation id="120937472976628837">报告风扇信息</translation>
 <translation id="1212233008927724662">停用延迟的登录 WebUI 加载。</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
@@ -2328,6 +2329,15 @@
       如果用户未彻底退出 <ph name="PRODUCT_NAME" />（例如，浏览器或操作系统崩溃时），系统将在下次加载配置文件时清除浏览数据。</translation>
 <translation id="3264793472749429012">默认搜索服务提供商的编码</translation>
 <translation id="3273221114520206906">默认 JavaScript 设置</translation>
+<translation id="3282240846541032181">此政策让管理员能为 <ph name="PRODUCT_OS_NAME" /> 上的各个文件扩展名指定所需应用作为默认处理程序，而用户无法更改此设置。
+      对于未在此政策中指定的所有文件扩展名，用户可根据日常工作流程随意设置自己的默认处理程序。
+
+      请按 ID（例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHROME_APP_EXAMPLE" />）指定 Chrome 应用，按 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 中使用的网址（例如 <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_WEB_APP_EXAMPLE" />）指定 Web 应用。
+
+      请注意，为了使此政策中的相应项生效，应用必须在清单中将自己声明为所指定文件扩展名的文件处理程序（即，此政策不会扩展现有的应用功能）。
+
+      如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 会根据内部逻辑选择默认处理程序。
+      </translation>
 <translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3288595667065905535">发布版</translation>
@@ -4150,6 +4160,35 @@
 <translation id="5330684698007383292">允许 <ph name="PRODUCT_FRAME_NAME" />处理以下内容类型</translation>
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 云政策会替换平台政策。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
+<translation id="5357039649371478544">配置一个规则列表，以防止 <ph name="PRODUCT_OS_NAME" /> 上发生数据泄露。
+      复制和粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
+
+      每条规则均包含以下内容：
+      - 一个来源列表，来源用网址定义。系统会将这些来源中的所有数据都视为机密数据并对其应用限制条件。
+      - 一个目的地列表，目的地用网址或组件定义。您可以允许或禁止将机密数据共享到这些目的地。
+      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
+
+      您可通过添加规则来实现以下目的：
+      - 控制在来源和目的地之间共享的剪贴板数据。
+      - 控制针对任何来源的截屏操作。
+      - 控制针对任何来源的打印操作。
+      - 在任何来源可见时控制隐私保护屏幕。
+      - 控制针对任何来源的屏幕共享操作。
+      - 控制从任何来源下载的要传输到目的地的文件。在 <ph name="PRODUCT_OS_NAME" /> 108 及更高版本上受支持。
+
+      限制级别可设为 BLOCK、ALLOW、REPORT 或 WARN。
+      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告被禁止的操作。
+      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
+      - 如果限制级别设为 REPORT 并且 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告该操作。
+      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，无论是显示了警告消息的情况，还是用户选择了继续该操作的情况，都会被报告给管理员。
+
+      注意：
+      - PRIVACY_SCREEN 限制条件不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
+      - 如果限制条件列表含有 CLIPBOARD 或 FILES，目的地便不能为空，但它们对其余的限制条件没有任何影响。
+      - 对于 CLIPBOARD 限制条件，系统会忽略 DRIVE 和 USB 目的地。
+      - 所列网址必须采用这种格式 ( https://www.chromium.org/administrators/url-blocklist-filter-format )。
+
+      如果此政策未设置，系统将不会应用任何限制条件。</translation>
 <translation id="5362531528507578966">覆盖默认背景图片打印模式。</translation>
 <translation id="5365476955714838841">用于启动替代浏览器的命令行参数。</translation>
 <translation id="5365946944967967336">在工具栏上显示“主页”按钮</translation>

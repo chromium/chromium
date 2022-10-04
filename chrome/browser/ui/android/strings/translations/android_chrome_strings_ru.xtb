@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">Без предзагрузки</translation>
 <translation id="3029704984691124060">Кодовые фразы не совпадают</translation>
 <translation id="3031225630520268969">Окно, где требуется разрешить использование Ассистента для голосового поиска</translation>
-<translation id="3034163383943672781">Скачивание начнется <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037517125981011456">Показывать подсказки для входа в Chrome</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">Обновить страницу</translation>
 <translation id="3444179773590444986">Отправить отзыв о тёмной теме для сайтов?</translation>
 <translation id="3452832259067974318">Чтобы обеспечить конфиденциальность ваших данных, мы просим ввести пароль вручную.</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{Запланировано 1 скачивание.}one{Запланировано # скачивание.}few{Запланировано # скачивания.}many{Запланировано # скачиваний.}other{Запланировано # скачивания.}}</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Вы можете выбрать другую поисковую систему.</translation>
 <translation id="3479552764303398839">Не сейчас</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">Пароли сохраняются в Google Менеджере паролей и доступны на этом устройстве.</translation>
 <translation id="620197886010707372"><ph name="APPNAME" />: открыть приложение через Google Play?</translation>
 <translation id="6202812185118613467">Чтобы начать синхронизацию, войдите снова.</translation>
-<translation id="6203593061661911168">Скачивание начнется, когда будет установлено подключение по Wi-Fi.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
 <translation id="6221633008163990886">Чтобы экспортировать пароли, разблокируйте экран</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">Не удалось подключиться к сайту</translation>
 <translation id="752220631458524187">Отключите кабель по окончании работы.</translation>
 <translation id="7523960634226602883">Включить камеру и использовать для поиска Google Объектив</translation>
-<translation id="753225086557513863">Начнется позже</translation>
 <translation id="7562080006725997899">Очистить историю</translation>
 <translation id="756809126120519699">Данные Chrome удалены</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">Временной диапазон</translation>
 <translation id="7851858861565204677">Другие устройства</translation>
 <translation id="7853202427316060426">Действия</translation>
-<translation id="7857691613771368249">Спрашивать, когда сохранять файлы</translation>
 <translation id="7859988229622350291">Никогда не переводить</translation>
 <translation id="7866213166286285359">Перевести страницу можно здесь</translation>
 <translation id="78707286264420418">Чтобы подключиться к вашему устройству, <ph name="PRODUCT_NAME" /> требуется разрешение на доступ к устройствам поблизости.</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065383040763568503">Маловажные данные, например относящиеся к сайтам, которые вы редко посещаете или на которых не сохранили настройки.</translation>
 <translation id="906781307897697745">(<ph name="PRODUCT_NAME" />)</translation>
-<translation id="9069543557624799859">Скачивание начнется в <ph name="TIME" />.</translation>
 <translation id="9069999660519089861">Непрочитанных страниц не найдено</translation>
 <translation id="9070377983101773829">Голосовой поиск</translation>
 <translation id="9074336505530349563">Чтобы мы могли рекомендовать вам интересный контент, войдите в аккаунт и включите синхронизацию.</translation>

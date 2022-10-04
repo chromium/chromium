@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Optično branje dokumenta</translation>
 <translation id="1309250603447638106">Prenašanje posodobitev za optično branje dokumentov</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tipka za iskanja + puščica levo za dostop.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ni priključena.</translation>
 <translation id="1473110567575736769">3-sekundni časovnik</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Hrbtni fotoaparat</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
 <translation id="2761536921376153655">Vrsta iskanja</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Predogled zrcaljenja</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> je priključena.</translation>
 <translation id="2904654629665923749">Na voljo je optično branje dokumentov</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976160379964388480">Drugo</translation>
-<translation id="603973421174355542">Polna ločljivost HD</translation>
 <translation id="6073451960410192870">Ustavi snemanje</translation>
 <translation id="6197807149213783179">Shrani metapodatke</translation>
 <translation id="6233780560267770709">3 x 3</translation>
@@ -136,7 +133,6 @@
 <translation id="698156982839284926">3 sekunde</translation>
 <translation id="712848772518857951">Ali res želite odstraniti toliko elementov: <ph name="COUNT" />?</translation>
 <translation id="7134221860976209830">10-sekundni časovnik</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Vrsta zapisa</translation>
 <translation id="7243947652761655814">Ločljivost videoposnetka</translation>
 <translation id="7337660886763914220">Napake datotečnega sistema.</translation>

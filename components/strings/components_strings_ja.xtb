@@ -1416,6 +1416,7 @@
 <translation id="4744514002166662487">プレゼンテーションを作成</translation>
 <translation id="4744603770635761495">実行ファイルのパス</translation>
 <translation id="4749011317274908093">シークレット モードです</translation>
+<translation id="4750671009706599284">このスマートフォン</translation>
 <translation id="4750917950439032686">お客様がこのサイトに送信した情報（パスワード、クレジット カード番号など）が第三者に見られることはありません。</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
 <translation id="4754461935447132332">セキュアでないサイトでは許可されていません</translation>
@@ -2200,6 +2201,7 @@
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">ページを見やすくするため、Chrome によって簡易表示されています。Chrome による元のページの取得は、保護されていない接続を介して行われました。</translation>
 <translation id="6890443033788248019">位置情報の使用を許可しますか？</translation>
+<translation id="6890531741535756070"><ph name="PROVIDER_ORIGIN" /> を使用するウェブサイトで <ph name="DEVICE_LABEL" /> による確認を行うよう選択しています。このプロバイダにお支払い方法に関する情報が保存されている可能性があります。その場合、<ph name="BEGIN_LINK" />削除をリクエスト<ph name="END_LINK" />できます。</translation>
 <translation id="6891596781022320156">ポリシーレベルがサポートされていません。</translation>
 <translation id="6895143722905299846">仮想番号:</translation>
 <translation id="6895330447102777224">カードを確認しました</translation>
@@ -2570,6 +2572,7 @@
 <translation id="7764225426217299476">住所を追加</translation>
 <translation id="7766518757692125295">スカート</translation>
 <translation id="7773005668374414287">同じ順序（上向き）</translation>
+<translation id="7785790577395078482">このタブレット</translation>
 <translation id="7791011319128895129">未公開</translation>
 <translation id="7791196057686275387">梱包</translation>
 <translation id="7791543448312431591">追加</translation>

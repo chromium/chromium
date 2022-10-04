@@ -9,7 +9,6 @@
 <translation id="1300209025925956156">Pindai dokumen Anda</translation>
 <translation id="1309250603447638106">Mendownload update untuk pemindaian dokumen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Penelusuran + Panah kiri untuk mengakses.</translation>
-<translation id="1393338179284529051">Quad HD</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> dicabut.</translation>
 <translation id="1473110567575736769">Timer 3 detik</translation>
@@ -45,7 +44,6 @@
 <translation id="2599796128805996109">Kamera belakang</translation>
 <translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /></translation>
 <translation id="2761536921376153655">Jenis pemindaian</translation>
-<translation id="2816865716882637212">HD</translation>
 <translation id="28682968802727151">Pratinjau cermin</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> dicolokkan.</translation>
 <translation id="2904654629665923749">Pemindaian dokumen tersedia</translation>
@@ -113,7 +111,6 @@
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5975083100439434680">Perkecil</translation>
 <translation id="5976160379964388480">Yang Lain</translation>
-<translation id="603973421174355542">Full HD</translation>
 <translation id="6073451960410192870">Berhenti merekam</translation>
 <translation id="6197807149213783179">Simpan metadata</translation>
 <translation id="6233780560267770709">3 kali 3</translation>
@@ -136,7 +133,6 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="698156982839284926">3 detik</translation>
 <translation id="712848772518857951">Yakin ingin menghapus <ph name="COUNT" /> item?</translation>
 <translation id="7134221860976209830">Timer 10 detik</translation>
-<translation id="7150591439198955032">4K</translation>
 <translation id="7191890674911603392">Jenis perekaman</translation>
 <translation id="7243947652761655814">Resolusi video</translation>
 <translation id="7337660886763914220">Error sistem file.</translation>

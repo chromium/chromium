@@ -378,7 +378,6 @@
 <translation id="3029276696788198026">គ្មានការផ្ទុក​ជាមុនទេ</translation>
 <translation id="3029704984691124060">ឃ្លាសម្ងាត់មិនត្រូវគ្នា</translation>
 <translation id="3031225630520268969">ui នៃ​ការយល់ព្រម​ឱ្យប្រើជំនួយការ​សម្រាប់​ការស្វែងរក​តាមសំឡេង</translation>
-<translation id="3034163383943672781">ការទាញយក​នឹងចាប់ផ្ដើម​នៅថ្ងៃទី <ph name="DATE" />។</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ទទួលជំនួយ<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">កំពុងតាមដាន​តម្លៃ</translation>
 <translation id="3037517125981011456">បង្ហាញ​សារសម្រាប់​ចូល Chrome</translation>
@@ -455,7 +454,6 @@
 <translation id="3443221991560634068">ផ្ទុកទំព័របច្ចុប្បន្នឡើងវិញ</translation>
 <translation id="3444179773590444986">ចែក​រំលែក​មតិ​កែលម្អអំពី​រចនាប័ទ្ម​ងងឹតសម្រាប់គេហទំព័រឬ?</translation>
 <translation id="3452832259067974318">ដើម្បី​ការពារ​ឯកជនភាព​របស់អ្នក Chrome នឹងមិន​បំពេញពាក្យសម្ងាត់​របស់អ្នក​ដោយស្វ័យប្រវត្តិ​នៅក្នុងកន្លែង​បញ្ចូលនេះទេ។</translation>
-<translation id="3469665409713263828">{FILE_COUNT,plural, =1{បានកំណត់​កាលវិភាគ​នៃការទាញយក 1}other{បានកំណត់​កាលវិភាគ​នៃការទាញយក #}}</translation>
 <translation id="3474624961160222204">បន្តជា <ph name="NAME" /></translation>
 <translation id="3478363558367712427">អ្នកអាច​ជ្រើសរើស​ម៉ាស៊ីន​ស្វែងរក​របស់អ្នក​បាន</translation>
 <translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
@@ -952,7 +950,6 @@
 <translation id="6196315980958524839">ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុងកម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google នៅលើឧបករណ៍នេះ</translation>
 <translation id="620197886010707372">បើកកម្មវិធីសម្រាប់ <ph name="APPNAME" /> ដោយប្រើ Google Play ឬ?</translation>
 <translation id="6202812185118613467">ចូល​គណនី​វិញ ដើម្បី​ចាប់ផ្ដើម​ធ្វើសមកាលកម្ម</translation>
-<translation id="6203593061661911168">ការទាញយក​នឹងចាប់ផ្ដើមពេលមាន Wi-Fi</translation>
 <translation id="6210748933810148297">មិនមែន <ph name="EMAIL" /> ទេ?</translation>
 <translation id="6211386937064921208">កំពុងមើល​ទំព័រនេះ​សាកល្បង</translation>
 <translation id="6221633008163990886">ដោះសោ​ដើម្បី​នាំពាក្យ​សម្ងាត់​របស់​អ្នកចេញ</translation>
@@ -1215,7 +1212,6 @@
 <translation id="751961395872307827">មិន​អាច​ភ្ជាប់ទៅ​ទំព័រ​បានទេ</translation>
 <translation id="752220631458524187">ផ្ដាច់នៅពេលអ្នករួចរាល់</translation>
 <translation id="7523960634226602883">ប្រើ Google Lens ដើម្បីស្វែងរកដោយប្រើកាមេរ៉ារបស់អ្នក</translation>
-<translation id="753225086557513863">ត្រូវបានកំណត់ពេល​ទៅ​ពេលក្រោយ</translation>
 <translation id="7562080006725997899">ការជម្រះទិន្នន័យរុករក</translation>
 <translation id="756809126120519699">បានជម្រះទិន្នន័យ Chrome</translation>
 <translation id="7577900504646297215">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
@@ -1274,7 +1270,6 @@
 <translation id="784934925303690534">ចន្លោះពេល</translation>
 <translation id="7851858861565204677">ឧបករណ៍ផ្សេងទៀត</translation>
 <translation id="7853202427316060426">សកម្មភាព</translation>
-<translation id="7857691613771368249">សួររកពេលដែលត្រូវរក្សាទុក​ឯកសារ</translation>
 <translation id="7859988229622350291">កុំបកប្រែ</translation>
 <translation id="7866213166286285359">បកប្រែ​ទំព័រ​នៅ​ទីនេះ</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> ត្រូវការការអនុញ្ញាតឧបករណ៍នៅជិត ដើម្បីភ្ជាប់ជាមួយឧបករណ៍របស់អ្នក</translation>
@@ -1517,7 +1512,6 @@
 <translation id="9065203028668620118">កែប្រែ</translation>
 <translation id="9065383040763568503">ទិន្នន័យ​ដែលបានរក្សាទុក​ដែល Chrome គិតថា​មិនសំខាន់ (ឧ. គេហទំព័រ​ដែលមិនមាន​ការកំណត់​ដែលបានរក្សាទុក ឬ​គេហទំព័រ​ដែលអ្នក​មិនសូវ​ចូលមើល​ញឹកញាប់)</translation>
 <translation id="906781307897697745">នៅក្នុង <ph name="PRODUCT_NAME" /></translation>
-<translation id="9069543557624799859">ការទាញយកនឹងចាប់ផ្ដើមនៅម៉ោង <ph name="TIME" />។</translation>
 <translation id="9069999660519089861">គ្មានទំព័រ​ដែលមិនទាន់អានទេ</translation>
 <translation id="9070377983101773829">ចាប់ផ្តើមស្វែងរកដោយសម្លេង</translation>
 <translation id="9074336505530349563">ដើម្បីទទួលបានខ្លឹមសារស្របតាមបុគ្គលដែលណែនាំដោយ Google សូមបើកសមកាលកម្ម</translation>

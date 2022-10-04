@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">Список</translation>
 <translation id="2377590462528165447">Linux має доступ до стількох папок: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2378075407703503998">Вибрано файлів: <ph name="SELCTED_FILE_COUNT" /></translation>
+<translation id="2383454254762599978">Перемістити в кошик</translation>
 <translation id="2387458720915042159">Тип з’єднання з проксі-сервером</translation>
 <translation id="2389832672041313158">Бірманська/м'янмська</translation>
 <translation id="2392369802118427583">Активувати</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">Перейти на drive.google.com...</translation>
 <translation id="3553048479571901246">Щоб відкривати файли через додаток <ph name="APP_NAME" />, спершу скопіюйте їх у папку з файлами в ОС Windows.</translation>
 <translation id="3556731189587832921">Англійська (США), міжнародна розкладка для ПК</translation>
+<translation id="3557414470514932909">Переміщення файлу "<ph name="FILE_NAME" />" у кошик</translation>
 <translation id="3567221313191587603">Виберіть файл і ввімкніть опцію "<ph name="OFFLINE_CHECKBOX_NAME" />", щоб мати доступ у режимі офлайн.</translation>
 <translation id="357479282490346887">Литовська</translation>
 <translation id="3587482841069643663">Все</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">Бенгальська, фонетична розкладка</translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4017788180641807848">Англійська (США), розкладка Workman</translation>
+<translation id="4019998208269143058">Закріпити в розділі "Швидкий доступ до файлів"</translation>
 <translation id="4040753847560036377">Неправильний PUK-код</translation>
 <translation id="4057991113334098539">Активація...</translation>
 <translation id="4092890906744441904">Ірландська</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">Згідно з правилом адміністратора не рекомендовано:</translation>
 <translation id="4159731583141908892">Файл "<ph name="FILE_NAME" />" переміщено.</translation>
 <translation id="4176286497474237543">Очистити кошик зараз</translation>
+<translation id="4179621117429069925">Цей файл міститься в кошику</translation>
 <translation id="4186579485882418952">Увімкнути режим офлайн</translation>
 <translation id="4193154014135846272">Документ Google</translation>
 <translation id="4197674956721858839">Додати в архів .zip</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">Сертифікат автентифікації відхилений дистанційно</translation>
 <translation id="4394214039309501350">Зовнішнє посилання</translation>
 <translation id="4394980935660306080">Раніше цього тижня</translation>
+<translation id="4398096759193130964">Відновіть об’єкти або перетягніть їх із кошика в нову папку</translation>
 <translation id="4401287888955153199">Видобути все</translation>
 <translation id="4410695710508688828">Не вдалося виконати операцію видобування. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">Створіть ярлики для своїх файлів</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">Гінді, розкладка InScript</translation>
 <translation id="4801956050125744859">Залишити обидві версії</translation>
 <translation id="4804827417948292437">Авокадо</translation>
+<translation id="4805966553127040832">Відновлення об’єктів (<ph name="COUNT" />)</translation>
 <translation id="4823651846660089135">Пристрій лише для перегляду</translation>
 <translation id="4826849268470072925">Тамільська, ITRANS</translation>
 <translation id="4839847978919684242">Вибрано елементів: <ph name="SELCTED_FILES_COUNT" /></translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">Квітка</translation>
 <translation id="4943368462779413526">Футбольний м’яч</translation>
 <translation id="4961158930123534723">Додатку Parallels Desktop надано доступ до 1 папки</translation>
+<translation id="496656650103537022">Файл "<ph name="FILE_NAME" />" відновлено</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4973523518332075481">Задовга назва. Максимальна кількість символів: <ph name="MAX_LENGTH" />.</translation>
 <translation id="4973970068702235170">Не вдалося заархівувати, неочікувана помилка: <ph name="ERROR_MESSAGE" /></translation>
@@ -552,6 +559,7 @@
 <translation id="5691596662111998220">На жаль, файл "<ph name="FILE_NAME" />" більше не існує.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, розблокувати</translation>
 <translation id="5700087501958648444">Інформація про аудіо</translation>
+<translation id="5720028165859493293">Файл "<ph name="FILE_NAME" />" переміщено в кошик</translation>
 <translation id="5724172041621205163">Тайська, розкладка Pattachote</translation>
 <translation id="5756666464756035725">Угорська клавіатура QWERTY</translation>
 <translation id="5763377084591234761">Німецька (Швейцарія)</translation>
@@ -622,6 +630,7 @@
 <translation id="6320212353742551423">Архів .<ph name="ARCHIVE_TYPE" /></translation>
 <translation id="6321303798550928047">Помах рукою</translation>
 <translation id="6327785803543103246">Автоматичне виявлення веб-проксі</translation>
+<translation id="6337014272874260727">Відкріпити в розділі "Швидкий доступ до файлів"</translation>
 <translation id="6339145975392024142">Американська міжнародна клавіатура (ПК)</translation>
 <translation id="6346310558342052870">Доступ обмежено</translation>
 <translation id="6356685157277930264">Вікно відгуку про файли</translation>
@@ -662,6 +671,7 @@
 <translation id="6751256176799620176">Вибрано 1 папку</translation>
 <translation id="6755827872271341378">Пристрій з ОС Chrome Flex</translation>
 <translation id="6790428901817661496">Відтворити</translation>
+<translation id="6794539005637808366">Відновіть об’єкт або перетягніть його з кошика в нову папку</translation>
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6806699711453372963">Керувати спільним доступом Linux</translation>
 <translation id="6806796368146926706">Буквено-цифрове введення, японська розкладка</translation>
@@ -698,6 +708,7 @@
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6989942356279143254">Шведська</translation>
 <translation id="6990081529015358884">У вас недостатньо місця</translation>
+<translation id="6993826899923627728">Ці об’єкти містяться в кошику</translation>
 <translation id="6998711733709403587">Вибрано папок: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
 <translation id="7008426324576352165">Щоб завершити завантаження, вашій організації потрібно більше пам’яті.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />: <ph name="ROOT_SUMMARY" /></translation>
@@ -743,6 +754,7 @@
 <translation id="7408870451288633753">Чеська</translation>
 <translation id="7417453074306512035">Ефіопська клавіатура</translation>
 <translation id="7417705661718309329">Карта Google</translation>
+<translation id="7419668828140929293">Відновлення файлу "<ph name="FILENAME" />"</translation>
 <translation id="7458955835361612701">Немає нещодавніх зображень</translation>
 <translation id="7460898608667578234">Українська</translation>
 <translation id="7469894403370665791">Автоматично з'єднувати з цією мережею</translation>
@@ -771,6 +783,7 @@
 <translation id="7655441028674523381">Легкий доступ до Google Фото</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7663224033570512922">Гінді</translation>
+<translation id="7689532716264131859">Об’єкти (<ph name="NUMBER_OF_ITEMS" />) переміщено в кошик</translation>
 <translation id="7693909743393669729">Якщо відформатувати диск, усі наявні на ньому дані та розділи (зокрема, невидимі) буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="7695430100978772476">Не вдалося відформатувати диск "<ph name="DRIVE_NAME" />"</translation>
 <translation id="76959938259365003">Не вдалось очистити кошик.</translation>
@@ -785,6 +798,7 @@
 <translation id="7760449188139285140">Китайська, вубі</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7774365994322694683">Птах</translation>
+<translation id="7780322752056734036">Відновлено об’єктів: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7788080748068240085">Щоб зберегти файл "<ph name="FILE_NAME" />" у режимі офлайн, потрібно додатково звільнити <ph name="TOTAL_FILE_SIZE" />:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />відкріпіть файли, доступ до яких у режимі офлайн вам більше не потрібен<ph name="MARKUP_3" />
@@ -965,6 +979,7 @@
 <translation id="947144732524271678">Вибрано елементи (<ph name="ENTRY_COUNT" />): від <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Згідно з правилом адміністратора заборонено:</translation>
 <translation id="965477715979482472">Англійська (Південна Африка)</translation>
+<translation id="976666271385981812">Переміщення об’єктів (<ph name="NUMBER_OF_ITEMS" />) у кошик</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Замінити його?</translation>
 <translation id="992401651319295351">Залишилося спроб: <ph name="RETRIES" />. Ви не зможете користуватися цією мережею, доки не налаштуєте новий PIN-код.</translation>

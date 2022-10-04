@@ -844,6 +844,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3216313131063488104">Blūzs</translation>
 <translation id="3218181027817787318">Relatīva</translation>
 <translation id="3223287115535306850">Animēta lietotnes palaišanas ikona</translation>
+<translation id="3223425961342298674">Piekļuve atrašanās vietai nav atļauta</translation>
 <translation id="3225347164936328585">Aplausi</translation>
 <translation id="3225919329040284222">Serveris uzrādīja sertifikātu, kas neatbilst iebūvētajām cerībām. Šīs cerības ir ietvertas konkrētām, augstas drošības vietnēm, lai aizsargātu jūs.</translation>
 <translation id="3226128629678568754">Nospiediet atkārtotas ielādes pogu, lai atkārtoti iesniegtu datus, kas nepieciešami lapas ielādei.</translation>
@@ -1179,6 +1180,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4127575959421463246">Vai meklējat Chrome OS karodziņus? Apmeklējiet lapu</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{vēl 1}zero{vēl #}one{vēl #}other{vēl #}}</translation>
 <translation id="4130226655945681476">Pārbaudiet tīkla kabeļus, modemu un maršrutētāju</translation>
+<translation id="4132448310531350254">Faila paplašinājumam “<ph name="FILE_EXTENSION" />” ir dublēti apdarinātāji, kas norādīti lietotnēs: “<ph name="POLICY_IDS_LIST" />”.</translation>
 <translation id="4134123981501319574">Izveidot dokumentu</translation>
 <translation id="413544239732274901">Uzzināt vairāk</translation>
 <translation id="4142935452406587478">10. paplāte</translation>
@@ -1201,6 +1203,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4194250254487269611">Jūsu karti šobrīd nevar saglabāt.</translation>
 <translation id="4196861286325780578">&amp;Atcelt pārvietošanas atsaukšanu</translation>
 <translation id="4202554117186904723">Piektais rullis</translation>
+<translation id="4203769790323223880">Piekļuve kamerai nav atļauta</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Pārbaudiet ugunsmūri un pretvīrusu programmu konfigurācijas<ph name="END_LINK" />.</translation>
 <translation id="4209092469652827314">Liels</translation>
 <translation id="4210602799576081649">Verifikācijas koda termiņš ir beidzies. Pieprasiet jaunu kodu.</translation>
@@ -1227,6 +1230,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
     &lt;p&gt;Pēc darba beigšanas noteikti atkal ieslēdziet pretvīrusu programmatūru.&lt;/p&gt;
     &lt;h4&gt;5. darbība. Papildu palīdzības saņemšana&lt;/h4&gt;
     &lt;p&gt;Ja kļūda joprojām tiek rādīta, sazinieties ar vietnes īpašnieku.&lt;/p&gt;</translation>
+<translation id="4223404254440398437">Piekļuve mikrofonam nav atļauta</translation>
 <translation id="4226937834893929579"><ph name="BEGIN_LINK" />Mēģiniet palaist tīkla diagnostiku<ph name="END_LINK" />.</translation>
 <translation id="4230204356098880324">Var pieprasīt atļauju izmantot kameru un mainīt tās pozīciju</translation>
 <translation id="4235360514405112390">Derīgs</translation>
@@ -1597,6 +1601,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5177076414499237632">Skatīt informāciju par šīs lapas avotu un tēmu</translation>
 <translation id="5179510805599951267">Vai nav valodā: <ph name="ORIGINAL_LANGUAGE" />? Ziņot par šo kļūdu</translation>
 <translation id="518639307526414276">Mājdzīvnieku barība un preces mājdzīvnieku aprūpei</translation>
+<translation id="5190072300954988691">Piekļuve kamerai un mikrofonam nav atļauta</translation>
 <translation id="5190835502935405962">Grāmatzīmju josla</translation>
 <translation id="5191315092027169558">Jūsu profilu pārvalda <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> vēlas lejupielādēt vairākus failus</translation>
@@ -1617,6 +1622,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
+<translation id="5239623327352565343">Piekļuve atrašanās vietai ir atļauta</translation>
 <translation id="5242889659037569123">Bagāža un ceļošanas piederumi</translation>
 <translation id="5250209940322997802">“Izveidojiet savienojumu ar tīklu”</translation>
 <translation id="52517543715119994">Uzzināt vairāk par Chrome funkcijām</translation>
@@ -2492,6 +2498,7 @@ Papildu informācija:
 <translation id="7581199239021537589">2. puses attēla nobīde uz Y ass</translation>
 <translation id="7582602800368606489">Ātri izveidot jaunu pasākumu Google kalendārā</translation>
 <translation id="7583969447617676942">Juridiskie pakalpojumi</translation>
+<translation id="7586676035079382730">Paziņojumi nav atļauti</translation>
 <translation id="7591288787774558753">Vai kopīgot konfidenciālu saturu?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> vēlas izmantot sīkfailus un vietnes datus šeit: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7592362899630581445">Servera sertifikātā ir pārkāpti nosaukuma ierobežojumi.</translation>
@@ -3043,6 +3050,7 @@ Papildu informācija:
 <translation id="9131119348384879525">Vai tvert konfidenciālu saturu?</translation>
 <translation id="9136861683332321024">Luksusa klases transportlīdzekļi</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
+<translation id="9138037198177304356">Paziņojumi ir atļauti</translation>
 <translation id="9139318394846604261">Pirkumi</translation>
 <translation id="9141013498910525015">Pārvaldīt adreses</translation>
 <translation id="9144951720726881238">Derīguma termiņš:</translation>

@@ -381,7 +381,6 @@
 <translation id="1361655923249334273">사용되지 않음</translation>
 <translation id="1362865166188278099">기술 문제입니다. 프린터를 확인하세요.</translation>
 <translation id="1363585519747660921">USB 프린터를 구성해야 함</translation>
-<translation id="1367951781824006909">파일 선택</translation>
 <translation id="1368603372088757436">사용 중인 <ph name="DEVICE_TYPE" />에서 Linux가 지원되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
 <translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -819,7 +818,6 @@
 <translation id="1748563609363301860">이 비밀번호는 Google 계정이나 이 기기에만 저장할 수 있습니다.</translation>
 <translation id="1749733017156547309">비밀번호를 입력해야 합니다.</translation>
 <translation id="1750172676754093297">보안 키에 지문을 저장할 수 없습니다.</translation>
-<translation id="1751249301761991853">개인</translation>
 <translation id="1751262127955453661">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 수정할 수 있게 됩니다.</translation>
 <translation id="17513872634828108">열린 탭</translation>
 <translation id="175196451752279553">닫은 탭 다시 열기(&amp;E)</translation>
@@ -1065,7 +1063,6 @@
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="1965624977906726414">특별한 권한이 필요하지 않습니다.</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
-<translation id="1970368523891847084">동영상 모드 시작됨</translation>
 <translation id="1972325230031091483">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
 <translation id="197288927597451399">계속</translation>
 <translation id="1973763416111613016"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
@@ -1413,7 +1410,6 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
 <translation id="2285942871162473373">지문을 인식할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2287944065963043964">로그인 화면</translation>
-<translation id="2288181517385084064">동영상 녹화로 전환</translation>
 <translation id="2289270750774289114">사이트가 주변 블루투스 기기를 조회하려고 할 때 확인(권장)</translation>
 <translation id="2290615375132886363">태블릿 탐색 버튼</translation>
 <translation id="229182044471402145">일치하는 글꼴이 없습니다.</translation>
@@ -2811,9 +2807,7 @@
 <translation id="3602290021589620013">미리보기</translation>
 <translation id="3602870520245633055">인쇄 및 스캔</translation>
 <translation id="3603622770190368340">네트워크 인증서 받기</translation>
-<translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="3605780360466892872">와이셔츠</translation>
-<translation id="3608576286259426129">사용자 이미지 미리보기</translation>
 <translation id="3609277884604412258">빠른 검색</translation>
 <translation id="3610369246614755442">도크 팬 서비스 필요</translation>
 <translation id="361106536627977100">Flash 데이터</translation>
@@ -2866,7 +2860,6 @@
 <translation id="3645372836428131288">지문의 다른 부분이 인식되도록 손가락을 살짝 움직이세요.</translation>
 <translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}other{<ph name="DEVICE_NAME" />에서 <ph name="ATTACHMENTS" /> 수신}}</translation>
 <translation id="3648348069317717750"><ph name="USB_DEVICE_NAME" /> 발견됨</translation>
-<translation id="3649138363871392317">사진이 캡처되었습니다.</translation>
 <translation id="3650753875413052677">등록 오류</translation>
 <translation id="3650845953328929506">로그 업데이트가 대기 중입니다.</translation>
 <translation id="3650952250015018111">'<ph name="APP_NAME" />'이(가) 다음 기기에 액세스하도록 허용합니다.</translation>
@@ -3119,7 +3112,6 @@
 <translation id="3875815154304214043"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">공유에 <ph name="USER_EMAIL" /> 계정을 사용하는 <ph name="USER_NAME" />님의 기기에 관한 Nearby Share 설정입니다.</translation>
 <translation id="3879748587602334249">다운로드 관리자</translation>
-<translation id="3882165008614329320">카메라 또는 파일의 기존 동영상</translation>
 <translation id="3883482240657453056"><ph name="MERCHANT_NAME_1" /> 및 <ph name="MERCHANT_NAME_2" />에서 할인받기</translation>
 <translation id="3884152383786131369">여러 언어를 지원하는 웹 콘텐츠는 목록의 첫 번째 지원 언어를 사용합니다. 이러한 환경설정은 브라우저 설정과 동기화됩니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3885112598747515383">업데이트는 관리자가 관리합니다</translation>
@@ -4489,7 +4481,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5213481667492808996">'<ph name="NAME" />' 데이터 서비스를 사용할 수 있습니다.</translation>
 <translation id="5213891612754844763">프록시 설정 표시</translation>
 <translation id="5215502535566372932">국가 선택</translation>
-<translation id="521582610500777512">사진이 삭제되었습니다.</translation>
 <translation id="5222403284441421673">안전하지 않은 다운로드가 차단됨</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="5225324770654022472">앱 단축키 표시</translation>
@@ -4820,7 +4811,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5528295196101251711">VM 이름</translation>
 <translation id="5532223876348815659">전체</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" />에서 다음 권한을 요청합니다.</translation>
-<translation id="5534304873398226603">사진 또는 동영상 삭제</translation>
 <translation id="5537725057119320332">전송</translation>
 <translation id="5539070192556911367">Google에 연결할 수 없음</translation>
 <translation id="5539221284352502426">입력한 비밀번호가 서버에 의해 거부되었습니다. 가능한 이유는 다음과 같습니다. 비밀번호가 너무 짧습니다. 비밀번호에 숫자 또는 기호가 포함되어야 합니다. 이전 비밀번호와 달라야 합니다.</translation>
@@ -4902,7 +4892,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="560834977503641186">Wi-Fi 동기화, 자세히 알아보기</translation>
 <translation id="5608580678041221894">다음 키를 탭하여 자르기 영역을 조정하거나 이동하세요.</translation>
 <translation id="5609231933459083978">애플리케이션이 잘못된 것 같습니다.</translation>
-<translation id="5610038042047936818">카메라 모드로 전환</translation>
 <translation id="561030196642865721">타사 쿠키가 허용되는 사이트입니다.</translation>
 <translation id="5612734644261457353">비밀번호를 여전히 확인할 수 없습니다. 참고: 최근에 비밀번호를 변경한 경우 로그아웃해야 새로운 비밀번호가 적용됩니다. 이전 비밀번호를 사용해 보세요.</translation>
 <translation id="5614190747811328134">사용자 알림</translation>
@@ -5810,7 +5799,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6492396476180293140">하드웨어 스위치로 인해 내장 카메라가 비활성화됨</translation>
 <translation id="6494327278868541139">향상된 보안 세부정보 표시</translation>
 <translation id="6494445798847293442">인증 기관이 아닙니다.</translation>
-<translation id="6494974875566443634">맞춤설정</translation>
 <translation id="6497457470714179223">{NUM_FILES,plural, =0{민감하거나 위험한 콘텐츠가 있는 데이터입니다.}=1{민감하거나 위험한 콘텐츠가 있는 파일입니다.}other{민감하거나 위험한 콘텐츠가 있는 파일입니다.}}</translation>
 <translation id="6497784818439587832">화면에 표시되는 항목을 축소하거나 확대하려면 디스플레이 크기를 변경하세요.</translation>
 <translation id="6497789971060331894">마우스 역방향 스크롤</translation>
@@ -6006,7 +5994,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6678717876183468697">쿼리 URL</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
 <translation id="6680650203439190394">속도</translation>
-<translation id="6681668084120808868">사진 찍기</translation>
 <translation id="6683087162435654533">모든 탭 복원(&amp;E)</translation>
 <translation id="6684827949542560880">최신 업데이트 다운로드 중</translation>
 <translation id="668599234725812620">Google Play 열기</translation>
@@ -6340,7 +6327,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6981982820502123353">접근성</translation>
 <translation id="6983507711977005608">인스턴트 테더링 네트워크 연결 해제</translation>
 <translation id="6983783921975806247">등록된 OID</translation>
-<translation id="6984299437918708277">로그인 화면에 표시할 내 계정 사진을 선택하세요.</translation>
 <translation id="6985235333261347343">Microsoft Key Recovery Agent</translation>
 <translation id="698524779381350301">다음 사이트에서 자동으로 액세스 권한 허용</translation>
 <translation id="6985607387932385770">프린터</translation>
@@ -6510,7 +6496,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7149893636342594995">지난 24시간</translation>
 <translation id="7152478047064750137">이 확장 프로그램에는 특별한 권한이 필요하지 않습니다</translation>
 <translation id="7154130902455071009">다음으로 시작 페이지 변경: <ph name="START_PAGE" /></translation>
-<translation id="7155171745945906037">카메라 또는 파일의 기존 사진</translation>
 <translation id="7159953856712257647">기본적으로 설치됨</translation>
 <translation id="7160182524506337403">이제 휴대전화의 알림을 확인할 수 있습니다.</translation>
 <translation id="7163202347044721291">활성화 코드 확인 중…</translation>
@@ -6637,7 +6622,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7287143125007575591">액세스가 거부되었습니다.</translation>
 <translation id="7287411021188441799">기본 배경 복원</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" />x<ph name="VERTICAL_DPI" />dpi</translation>
-<translation id="7289225569524511578">배경화면 앱 열기</translation>
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 권한 요청됨, F6 키를 눌러 응답</translation>
 <translation id="7290242001003353852"><ph name="SAML_DOMAIN" />에서 호스팅하는 이 로그인 서비스는 카메라에 액세스합니다.</translation>
 <translation id="7295614427631867477">Android, Play 및 관련 앱은 각각의 데이터 수집 및 이용 정책을 따릅니다.</translation>
@@ -7637,7 +7621,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="821119981794423735"><ph name="USER_EMAIL" />의 Google 비밀번호 관리자에 비밀번호를 가져오려면 CSV 파일을 선택하세요</translation>
 <translation id="8212008074015601248">{NUM_DOWNLOAD,plural, =1{다운로드 진행 중}other{다운로드 진행 중}}</translation>
 <translation id="8212601853154459483">이 프로필은 <ph name="PROFILE_MANAGER" />에서 관리하며 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 별도의 프로필 생성이 필요합니다</translation>
-<translation id="8213449224684199188">사진 모드 시작됨</translation>
 <translation id="8214489666383623925">파일 열기...</translation>
 <translation id="8215129063232901118"><ph name="DEVICE_TYPE" />에서 휴대전화의 기능에 액세스</translation>
 <translation id="8217212468862726597">포인터 강조표시</translation>
@@ -8012,7 +7995,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8592141010104017453">알림 표시 안함</translation>
 <translation id="859246725979739260">이 사이트는 위치에 액세스할 수 없도록 차단되었습니다.</translation>
 <translation id="8593121833493516339">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
-<translation id="8594908476761052472">동영상 촬영</translation>
 <translation id="8596540852772265699">사용자 지정 파일</translation>
 <translation id="8597845839771543242">속성 형식:</translation>
 <translation id="8599681327221583254">1개 이상의 정책이 올바로 구성되지 않았습니다. 관리자에게 문의해 주세요.</translation>

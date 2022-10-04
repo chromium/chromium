@@ -157,6 +157,7 @@
 <translation id="2377319039870049694">فہرست والے منظر پر سوئچ کریں</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> فولڈرز کا Linux کے ساتھ اشتراک کیا گیا</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> فائلیں منتخب کی گئیں</translation>
+<translation id="2383454254762599978">کوڑے دان میں منتقل کریں</translation>
 <translation id="2387458720915042159">پراکسی کنکشن کی قسم</translation>
 <translation id="2389832672041313158">برمی/میانمار</translation>
 <translation id="2392369802118427583">فعال کریں</translation>
@@ -288,6 +289,7 @@
 <translation id="3549797760399244642">‏drive.google.com پر جائیں…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> کے ساتھ فائلز کو کھولنے کیلئے، پہلے انہیں ونڈوز فائلز فولڈر میں کاپی کریں۔</translation>
 <translation id="3556731189587832921">‏بین الاقوامی PC کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
+<translation id="3557414470514932909"><ph name="FILE_NAME" /> کو کوڑے دان میں منتقل کیا جا رہا ہے</translation>
 <translation id="3567221313191587603">فائل منتخب کریں اور اپنی فائلز تک آف لائن رسائی کی خاطر <ph name="OFFLINE_CHECKBOX_NAME" /> کو آن پر ٹوگل کریں۔</translation>
 <translation id="357479282490346887">لتھُواینین</translation>
 <translation id="3587482841069643663">سبھی</translation>
@@ -339,6 +341,7 @@
 <translation id="3975895378829046965">بنگالی فونیٹک</translation>
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4017788180641807848">‏Workman کی بورڈ کے ساتھ انگریزی (امریکہ)</translation>
+<translation id="4019998208269143058">فوری فائلز کو پن کریں</translation>
 <translation id="4040753847560036377">‏غلط PUK</translation>
 <translation id="4057991113334098539">فعال ہو رہا ہے…</translation>
 <translation id="4092890906744441904">آئرش</translation>
@@ -348,6 +351,7 @@
 <translation id="4157569377477607576">منتظم کی پالیسی درج ذیل کی تجویز نہیں کرتی ہے:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> منتقل ہو گیا۔</translation>
 <translation id="4176286497474237543">کوڑے دان ابھی خالی کریں</translation>
+<translation id="4179621117429069925">یہ آئٹم آپ کے کوڑے دان میں ہے</translation>
 <translation id="4186579485882418952">آف لائن فعال کریں</translation>
 <translation id="4193154014135846272">‏Google دستاویز</translation>
 <translation id="4197674956721858839">زپ کا انتخاب</translation>
@@ -377,6 +381,7 @@
 <translation id="4387004326333427325">توثیق کا سرٹیفکیٹ دور سے مسترد کر دیا گیا</translation>
 <translation id="4394214039309501350">خارجی لنک</translation>
 <translation id="4394980935660306080">اس ہفتہ کے شروع میں</translation>
+<translation id="4398096759193130964">آئٹمز کو بحال کریں یا انہیں کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں</translation>
 <translation id="4401287888955153199">سبھی کھولیں</translation>
 <translation id="4410695710508688828">اضافی آپریشن ناکام ہو گیا۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4418686080762064601">اپنی فائلوں کے ليے ایک شارٹ کٹ تخلیق کریں</translation>
@@ -432,6 +437,7 @@
 <translation id="4790766916287588578">‏InScript کی بورڈ کے ساتھ ہندی</translation>
 <translation id="4801956050125744859">دونوں کو برقرار رکھیں</translation>
 <translation id="4804827417948292437">مَگَر ناشپاتی</translation>
+<translation id="4805966553127040832"><ph name="COUNT" /> آئٹمز بحال ہو رہے ہیں</translation>
 <translation id="4823651846660089135">آلہ صرف پڑھنے کیلئے ہے</translation>
 <translation id="4826849268470072925">‏تمل ITRANS</translation>
 <translation id="4839847978919684242"><ph name="SELCTED_FILES_COUNT" /> آئٹمز منتخب کیے گئے</translation>
@@ -450,6 +456,7 @@
 <translation id="4935975195727477204">گزانیہ پھول</translation>
 <translation id="4943368462779413526">فٹبال</translation>
 <translation id="4961158930123534723">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ 1 فولڈر</translation>
+<translation id="496656650103537022"><ph name="FILE_NAME" /> بحال ہوگئے</translation>
 <translation id="4969785127455456148">البم</translation>
 <translation id="4973523518332075481">ایک ایسا نام استعمال کریں جو <ph name="MAX_LENGTH" /> یا اس سے کم حروف پر مشتمل ہو</translation>
 <translation id="4973970068702235170">زِپ کرنے کا عمل ناکام، غیر متوقع خرابی: <ph name="ERROR_MESSAGE" /></translation>
@@ -551,6 +558,7 @@
 <translation id="5691596662111998220">افوہ، <ph name="FILE_NAME" /> مزید موجود نہیں ہے۔</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />، غیر مقفل کریں</translation>
 <translation id="5700087501958648444">آڈیو کی معلومات</translation>
+<translation id="5720028165859493293"><ph name="FILE_NAME" /> کوڑے دان میں منتقل کی گئی</translation>
 <translation id="5724172041621205163">‏تھائی میں Pattachote کی بورڈ</translation>
 <translation id="5756666464756035725">‏ہنگریائی QWERTY</translation>
 <translation id="5763377084591234761">جرمن (سوئٹزر لینڈ)</translation>
@@ -621,6 +629,7 @@
 <translation id="6320212353742551423"><ph name="ARCHIVE_TYPE" /> آرکائيو</translation>
 <translation id="6321303798550928047">ہاتھ ہلانا</translation>
 <translation id="6327785803543103246">ویب پراکسی کی خودکار دریافت</translation>
+<translation id="6337014272874260727">فوری فائلز سے پن ہٹائیں</translation>
 <translation id="6339145975392024142">‏امریکی بین الاقوامی (PC)</translation>
 <translation id="6346310558342052870">رسائی روک دی گئی</translation>
 <translation id="6356685157277930264">فائلوں کے تاثرات کی ونڈو</translation>
@@ -661,6 +670,7 @@
 <translation id="6751256176799620176">1 فولڈر منتخب کیا گیا</translation>
 <translation id="6755827872271341378">‏ChromeOS Flex آلہ</translation>
 <translation id="6790428901817661496">چلائیں</translation>
+<translation id="6794539005637808366">آئٹم کو بحال کریں یا اسے کوڑے دان سے باہر کسی نئے فولڈر میں گھسیٹیں</translation>
 <translation id="6795884519221689054">پانڈا</translation>
 <translation id="6806699711453372963">‏Linux کے اشتراک کا نظم کریں</translation>
 <translation id="6806796368146926706">جاپانی کی بورڈ کے ساتھ الفانیومیرک</translation>
@@ -697,6 +707,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6989942356279143254">سویڈش</translation>
 <translation id="6990081529015358884">آپ کے پاس جگہ ختم ہو گئی ہے</translation>
+<translation id="6993826899923627728">یہ آئٹمز آپ کے کوڑے دان میں ہیں</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> فولڈرز منتخب کر لیے گئے</translation>
 <translation id="7008426324576352165">آپ کی تنظیم کو اپ لوڈ مکمل کرنے کے لیے مزید اسٹوریج کی ضرورت ہے۔</translation>
 <translation id="7012943028104619157">‎<ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -742,6 +753,7 @@
 <translation id="7408870451288633753">چیک</translation>
 <translation id="7417453074306512035">ایتھوپیائی کی بورڈ</translation>
 <translation id="7417705661718309329">‏Google نقشہ</translation>
+<translation id="7419668828140929293">"<ph name="FILENAME" />" کو بحال کیا جا رہا ہے</translation>
 <translation id="7458955835361612701">حالیہ کوئی تصویر نہیں ہے</translation>
 <translation id="7460898608667578234">يُوکرينی</translation>
 <translation id="7469894403370665791">اس نیٹ ورک سے خودکار طور پر منسلک ہوں</translation>
@@ -770,6 +782,7 @@
 <translation id="7655441028674523381">‏Google تصاویر تک آسانی سے رسائی حاصل کریں</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7663224033570512922">ہندی</translation>
+<translation id="7689532716264131859"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کوڑے دان میں منتقل کئے گئے</translation>
 <translation id="7693909743393669729">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا اور سبھی موجودہ پارٹیشنز ہٹ جائيں گے، بشمول وہ پارٹیشنز جو شاید دکھائی نہ دے رہے ہوں۔ اس عمل کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> کو فارمیٹ نہیں کیا جا سکا</translation>
 <translation id="76959938259365003">کوڑے دان کو خالی کرنے میں ناکام۔</translation>
@@ -784,6 +797,7 @@
 <translation id="7760449188139285140">‏چینی Wubi</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7774365994322694683">پرندہ</translation>
+<translation id="7780322752056734036"><ph name="NUMBER_OF_ITEMS" /> آئٹمز بحال ہو گئے</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" کو آف لائن محفوظ کرنے کیلئے آپ کو اضافی <ph name="TOTAL_FILE_SIZE" /> جگہ خالی کرنا ضروری ہے:<ph name="MARKUP_1" />
     <ph name="MARKUP_2" />ان فائلوں سے پن ہٹائیں جن تک آپ کو آف لائن رسائی کی مزید ضرورت نہیں ہے<ph name="MARKUP_3" />
@@ -964,6 +978,7 @@
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> سے <ph name="TO_ENTRY_NAME" /> تک <ph name="ENTRY_COUNT" /> اندراجات کی رینج کا انتخاب کیا گیا۔</translation>
 <translation id="954194396377670556">منتظم کی پالیسی اس کو روکتی ہے:</translation>
 <translation id="965477715979482472">انگریزی (جنوبی افریقہ)</translation>
+<translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو کوڑے دان میں منتقل کیا جا رہا ہے</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" نام کی فائل پہلے سے موجود ہے۔ کیا آپ اسے تبدیل کرنا چاہتے ہیں؟</translation>
 <translation id="992401651319295351">‏آپ کے پاس <ph name="RETRIES" /> کوششیں بچی ہیں۔ جب تک آپ نیا PIN سیٹ اپ نہیں کرتے ہیں تب تک آپ اس نیٹ ورک کا استعمال نہیں کر سکیں گے۔</translation>

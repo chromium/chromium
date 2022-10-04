@@ -134,6 +134,11 @@
       スクリーンセーバーが小売りモードのデバイスのログイン画面に表示されるまでの期間を指定します。
 
       ポリシーの値は、ミリ秒単位で指定する必要があります。</translation>
+<translation id="1143257335984030879">このポリシーでは、ショッピング リスト機能を使用できるかどうかを制御します。
+      有効にすると、現在のページに表示されている商品の価格をトラッキングするための UI がユーザーに表示されます。トラッキングしている商品はブックマークのサイドパネルに表示されます。
+      このポリシーを有効に設定するか、未設定のままにした場合、ユーザーはショッピング リスト機能を使用できます。
+      このポリシーを無効に設定した場合、ショッピング リスト機能は使用できなくなります。
+      </translation>
 <translation id="1144540226829648811">このデバイスを固定するリリース チャンネルを指定します。
 
       <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> の設定は、<ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> が False に設定されている場合にのみ適用されます。</translation>
@@ -418,6 +423,11 @@
       拡張機能プリンタは、印刷プロバイダの送信先のことで、<ph name="PRODUCT_NAME" /> の拡張機能で利用できる送信先が該当します。
 
       ローカル プリンタは、ネイティブ印刷の送信先のことで、ローカルマシンや共有ネットワークのプリンタで利用できる送信先が該当します。</translation>
+<translation id="1456449214426764016">標準以外の API window.webkitStorageInfo は非推奨で、削除される予定です。
+      このポリシーでは、API を再度有効にします。
+      このポリシーを [有効] に設定した場合、window.webkitStorageInfo API が使用可能になります。
+      このポリシーを [無効] に設定するか未設定のままにした場合、window.webkitStorageInfo API は使用できなくなります。
+      </translation>
 <translation id="1456822151187621582">Windows（<ph name="PRODUCT_OS_NAME" /> クライアント）:</translation>
 <translation id="1464848559468748897"><ph name="PRODUCT_OS_NAME" /> デバイス上のマルチプロフィール セッションでのユーザーの行動を制御します。
 
@@ -3029,6 +3039,7 @@
 
       詳しくは、https://developer.chrome.com/blog/immutable-document-domain/ をご覧ください。
       </translation>
+<translation id="416817811987180750">ユーザーがショッピング リスト機能を使用できるようにする。</translation>
 <translation id="4169692397912242417">ログイン画面で音声フィードバック ユーザー補助機能を有効にします。
 
           このポリシーを true に設定した場合、音声フィードバックはログイン画面で常に有効になります。
@@ -3682,6 +3693,7 @@
 <translation id="4979714585847741269">このポリシーを有効に設定した場合、キオスク ウェブアプリは別のブラウザ ウィンドウを開くことができます。このウィンドウは、同じ画面または別の画面に配置できます。新しいウィンドウを開くには、ウェブアプリで JavaScript の <ph name="OPEN_NEW_WINDOW_JS" /> 関数を呼び出します。
       このポリシーを無効に設定するか未設定のままにした場合、キオスク ウェブアプリはメインのブラウザ ウィンドウのみを使用し、新しいウィンドウを開くことはできません。新しいウィンドウを開くために JavaScript 関数を呼び出しても、無視されます。</translation>
 <translation id="4980635395568992380">データ タイプ:</translation>
+<translation id="4981831669478419057">ユーザーがショッピング リスト機能を使用できないようにする。</translation>
 <translation id="4983201894483989687">古いプラグインの実行を許可する</translation>
 <translation id="4986560318567565414">代替ブラウザから Chrome への切り替えに使用するパスです。</translation>
 <translation id="4987813583395474995">有効に設定した場合、サポート終了の U2F Security Key API を使用できるようになり、U2F API リクエストに対するサポート終了のリマインダー メッセージは表示されません。
@@ -6298,6 +6310,7 @@
       このポリシーを設定した場合、ユーザーは <ph name="PRODUCT_NAME" /> でこの設定を変更できません。未設定の場合、ユーザーは起動時の動作を変更できます。
 
       このポリシーを <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSION" /> または <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> に設定すると、セッションに依存する設定や終了時になんらかの処理（終了時の閲覧データ消去、セッション限定の Cookie など）を行う設定が一部無効になります。このポリシーが <ph name="POLICY_ENUM_RESTOREONSTARTUP_RESTOREONSTARTUPISLASTSESSIONANDURLS" /> に設定されている場合、ブラウザは前回のセッションを復元し、<ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> から設定された URL を表示する別のウィンドウを開きます。この URL を閉じずに置いておくと、その後のセッションでも復元されます。<ph name="MS_WIN_NAME" /> では、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、Windows 10 Pro で実行されているインスタンス、<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> に登録されているインスタンスでのみこの機能を使用できます。<ph name="MAC_OS_NAME" /> では、MDM を介して管理されるインスタンスまたは MCX を介してドメインに追加されたインスタンスでのみこの機能を使用できます。</translation>
+<translation id="7919665519909231619">ショッピング リスト機能を有効にすることを許可します</translation>
 <translation id="7922358664346625612">最後のタブを Chrome で開いたままにします。</translation>
 <translation id="7924321157669251966">バッテリーでの使用中の画面の明るさの割合（%）</translation>
 <translation id="7925224837072026018">このポリシーでは、拡張機能または Android アプリに対し、企業キーへのアクセスを許可します。管理対象アカウントで chrome.enterprise.platformKeys API を使用して生成したキーは、企業専用のキーと指定されます。ユーザーは、拡張機能または Android アプリに企業キーへのアクセス権を付与することはできず、拡張機能または Android アプリに付与された企業キーへのアクセス権を取り消すこともできません。
@@ -6694,6 +6707,12 @@
       ポリシーの値は、ミリ秒単位で指定する必要があります。</translation>
 <translation id="8330437518362176921">キオスク Chrome アプリのダウンロードと更新に、ポリシーで指定された更新 URL のみを使用する</translation>
 <translation id="8331479227794770304">スティッキー キーを有効にする</translation>
+<translation id="8336469459912731404">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> は組み込みの証明書確認機能を使用してサーバー証明書の確認を行います。その際、Chrome Root Store がパブリック トラストのソースとして使用されます。
+      このポリシーを無効に設定した場合、<ph name="PRODUCT_NAME" /> はシステムの証明書確認機能とシステムのルート証明書を使用します。
+      このポリシーを未設定のままにした場合、Chrome Root Store またはシステムの提供するルートが使用される可能性があります。
+
+      このポリシーは <ph name="MS_WIN_NAME" /> および <ph name="MAC_OS_NAME" /> 向け <ph name="PRODUCT_NAME" /> バージョン 111 で削除される予定です（プラットフォームから提供される証明書確認機能とルートを使用するためのサポートが削除されるため）。
+      </translation>
 <translation id="8337114537412769126"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> では、POST を使ったキーワード候補の検索に使用するパラメータを指定できます。名前と値のペアをカンマで区切って指定します。テンプレート パラメータ（<ph name="SEARCH_TERM_MARKER" /> など）の値は、実際の検索キーワードのデータに置き換えられます。
 
       <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> を未設定のままにした場合、キーワードの候補による検索リクエストは GET メソッドを使用して送信されます。</translation>
