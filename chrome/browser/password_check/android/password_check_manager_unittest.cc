@@ -208,6 +208,14 @@ class PasswordCheckManagerTest : public testing::Test {
   void InitializeManager() {
     manager_ =
         std::make_unique<PasswordCheckManager>(&profile_, &mock_observer_);
+
+    // Fetch scripts availability. This it normally done externally before a
+    // password check is triggered.
+    EXPECT_CALL(fetcher(), RefreshScriptsIfNecessary)
+        .WillOnce(Invoke(
+            [](base::OnceClosure callback) { std::move(callback).Run(); }));
+
+    manager_->RefreshScripts();
   }
 
   void RunUntilIdle() { task_env_.RunUntilIdle(); }

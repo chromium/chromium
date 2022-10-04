@@ -177,7 +177,11 @@ BASE_FEATURE(kPasswordChangeWellKnown,
 // |PasswordChangeInSettings| and |PasswordChange| features.
 BASE_FEATURE(kPasswordDomainCapabilitiesFetching,
              "PasswordDomainCapabilitiesFetching",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // Controls the ability to import passwords from Chrome's settings page.
 BASE_FEATURE(kPasswordImport,
