@@ -63,7 +63,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
 // Padding layout constraints.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* verticalPaddingConstraints;
-// Constraint to set the cell minimun height.
+// Constraint to set the cell minimum height.
 @property(nonatomic, strong) NSLayoutConstraint* minimumCellHeightConstraint;
 // Text width constraint between the title and the detail text.
 @property(nonatomic, strong) NSLayoutConstraint* textWidthConstraint;
@@ -119,7 +119,7 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
         constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight];
     // Lower the priority for transition. The content view has autoresizing mask
     // to have the same height than the cell. To avoid breaking the constaints
-    // while updatingn the minimum height constant, the constraint has to have
+    // while updating the minimum height constant, the constraint has to have
     // a lower priority.
     _minimumCellHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
     _minimumCellHeightConstraint.active = YES;

@@ -1494,7 +1494,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return cell;
 }
 
-#pragma mark UITableViewDelegate
+#pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {

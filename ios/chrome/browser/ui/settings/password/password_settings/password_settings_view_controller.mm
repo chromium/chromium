@@ -552,7 +552,8 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
         _passwordsInOtherAppsEnabled.value()
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    [self reconfigureCellsForItems:@[ self.passwordsInOtherAppsItem ]];
+    [self reloadCellsForItems:@[ self.passwordsInOtherAppsItem ]
+             withRowAnimation:UITableViewRowAnimationNone];
   }
 }
 

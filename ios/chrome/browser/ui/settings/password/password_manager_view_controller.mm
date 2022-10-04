@@ -1208,7 +1208,8 @@ bool ShouldShowSettingsUI() {
         _sharedPasswordAutoFillStatusManager.autoFillEnabled
             ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
             : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-    [self reconfigureCellsForItems:@[ _passwordsInOtherAppsItem ]];
+    [self reloadCellsForItems:@[ _passwordsInOtherAppsItem ]
+             withRowAnimation:UITableViewRowAnimationNone];
   }
 }
 
