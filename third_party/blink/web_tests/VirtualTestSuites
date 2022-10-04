@@ -795,6 +795,7 @@
       "external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html",
       "external/wpt/service-workers/service-worker/partitioned-claim.tentative.https.html",
       "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html",
+      "external/wpt/webstorage/sessionStorage-basic-partitioned.tentative.sub.html",
       "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html",
       "external/wpt/IndexedDB",
       "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html",
