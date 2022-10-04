@@ -391,7 +391,7 @@ class WebAppOfflineDarkModeTest
       public testing::WithParamInterface<blink::mojom::PreferredColorScheme> {
  public:
   WebAppOfflineDarkModeTest() {
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_CHROMEOS)
     disabled_features.push_back(chromeos::features::kDarkLightMode);
 #endif
