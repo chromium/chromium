@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 USE_PYTHON3 = True
+TEST_PATTERNS = [r'.+_test.py$']
 
 
 def CheckChangeOnUpload(input_api, output_api):
@@ -31,6 +32,20 @@ def _CommonChecks(input_api, output_api):
         sys.path += [input_api.os_path.join(cwd, '..', 'chromeos')]
         import styles.presubmit_support
         results += styles.presubmit_support._CheckSemanticColors(
+            input_api, output_api)
+
+        # Run all unit tests under ui/file_manager/base folder.
+        results += input_api.canned_checks.RunUnitTestsInDirectory(
+            input_api,
+            output_api,
+            'base',
+            files_to_check=TEST_PATTERNS,
+            run_on_python2=False,
+            skip_shebang_check=True)
+
+        sys.path += [input_api.os_path.join(cwd)]
+        import base.presubmit_support
+        results += base.presubmit_support._CheckGM3Counterpart(
             input_api, output_api)
     finally:
         sys.path = old_sys_path
