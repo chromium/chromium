@@ -21,6 +21,12 @@ class AccessCodeCastHandlerBrowserTest
 // surface a server error.
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
                        ExpectNetworkErrorWhenNoNetwork) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(b/235896651): This test sometimes timesout on win10.
+  if (base::win::GetVersion() >= base::win::Version::WIN10)
+    GTEST_SKIP() << "This test is flaky on win10";
+#endif
+
   EnableAccessCodeCasting();
 
   // This tests that if the network is not present (we are not connected to the
@@ -40,12 +46,17 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
   // code 3 refers to the ErrorMessage described within
   // chrome/browser/resources/access_code_cast/error_message/error_message.ts
   EXPECT_EQ(3, WaitForAddSinkErrorCode(dialog_contents));
-
   CloseDialog(dialog_contents);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
                        ReturnSuccessfulResponse) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(b/235896651): This test sometimes timesout on win10.
+  if (base::win::GetVersion() >= base::win::Version::WIN10)
+    GTEST_SKIP() << "This test is flaky on win10";
+#endif
+
   const char kEndpointResponseSuccess[] =
       R"({
       "device": {
@@ -93,6 +104,12 @@ IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
                        ExpectProfileSynErrorWhenNoSync) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(b/235896651): This test sometimes timesout on win10.
+  if (base::win::GetVersion() >= base::win::Version::WIN10)
+    GTEST_SKIP() << "This test is flaky on win10";
+#endif
+
   EnableAccessCodeCasting();
 
   // This tests that an account that does not have Sync enabled will throw a
