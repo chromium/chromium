@@ -428,8 +428,9 @@ void OpenscreenSessionHost::OnNegotiated(
     }
 
     media_remoter_->StartRpcMessaging(
-        cast_environment_, senders.audio_sender, senders.video_sender,
-        std::move(audio_config), std::move(video_config));
+        cast_environment_, std::move(senders.audio_sender),
+        std::move(senders.video_sender), std::move(audio_config),
+        std::move(video_config));
 
     return;
   }
@@ -441,7 +442,7 @@ void OpenscreenSessionHost::OnNegotiated(
         base::BindOnce(&OpenscreenSessionHost::OnEncoderStatusChange,
                        // Safe because we own `audio_stream`.
                        weak_factory_.GetWeakPtr()),
-        senders.audio_sender);
+        std::move(senders.audio_sender));
     audio_stream_ = std::make_unique<AudioRtpStream>(
         std::move(audio_sender), weak_factory_.GetWeakPtr());
     DCHECK(!audio_capturing_callback_);
@@ -472,7 +473,7 @@ void OpenscreenSessionHost::OnNegotiated(
         base::BindRepeating(
             &OpenscreenSessionHost::CreateVideoEncodeAccelerator,
             weak_factory_.GetWeakPtr()),
-        senders.video_sender,
+        std::move(senders.video_sender),
         base::BindRepeating(&OpenscreenSessionHost::SetTargetPlayoutDelay,
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(&OpenscreenSessionHost::ProcessFeedback,

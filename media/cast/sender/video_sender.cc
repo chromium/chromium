@@ -113,7 +113,7 @@ VideoSender::VideoSender(
     const FrameSenderConfig& video_config,
     StatusChangeCallback status_change_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-    openscreen::cast::Sender* sender,
+    std::unique_ptr<openscreen::cast::Sender> sender,
     PlayoutDelayChangeCB playout_delay_change_cb,
     media::VideoCaptureFeedbackCB feedback_cb,
     FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
@@ -123,7 +123,7 @@ VideoSender::VideoSender(
                   std::move(create_vea_cb),
                   FrameSender::Create(cast_environment,
                                       video_config,
-                                      sender,
+                                      std::move(sender),
                                       *this,
                                       std::move(get_bitrate_cb)),
                   std::move(playout_delay_change_cb),

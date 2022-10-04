@@ -30,17 +30,18 @@ struct SenderEncodedFrame;
 //
 // For more information, see the Cast Streaming README.md located at:
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/openscreen/src/cast/streaming/README.md
-
 class OpenscreenFrameSender : public FrameSender,
                               openscreen::cast::Sender::Observer {
  public:
-  // TODO(https://crbug.com/1318499): will likely need to remove
-  // FrameSenderConfig here once the migration to libcast is complete.
   OpenscreenFrameSender(scoped_refptr<CastEnvironment> cast_environment,
                         const FrameSenderConfig& config,
-                        openscreen::cast::Sender* sender,
+                        std::unique_ptr<openscreen::cast::Sender> sender,
                         Client& client,
                         FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb);
+  OpenscreenFrameSender(OpenscreenFrameSender&& other) = delete;
+  OpenscreenFrameSender& operator=(OpenscreenFrameSender&& other) = delete;
+  OpenscreenFrameSender(const OpenscreenFrameSender&) = delete;
+  OpenscreenFrameSender& operator=(const OpenscreenFrameSender&) = delete;
   ~OpenscreenFrameSender() override;
 
   // FrameSender overrides.
@@ -91,9 +92,7 @@ class OpenscreenFrameSender : public FrameSender,
   const scoped_refptr<CastEnvironment> cast_environment_;
 
   // The backing Open Screen sender implementation.
-  // TODO(https://crbug.com/1363500): the OenscreenFrameSender should own the
-  // openscreen::cast::Sender instance as a unique pointer.
-  raw_ptr<openscreen::cast::Sender> const sender_;
+  std::unique_ptr<openscreen::cast::Sender> const sender_;
 
   // The frame sender client.
   Client& client_;

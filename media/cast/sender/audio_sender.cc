@@ -35,12 +35,14 @@ AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
 AudioSender::AudioSender(scoped_refptr<CastEnvironment> cast_environment,
                          const FrameSenderConfig& audio_config,
                          StatusChangeOnceCallback status_change_cb,
-                         openscreen::cast::Sender* sender)
-    : AudioSender(
-          cast_environment,
-          audio_config,
-          std::move(status_change_cb),
-          FrameSender::Create(cast_environment, audio_config, sender, *this)) {
+                         std::unique_ptr<openscreen::cast::Sender> sender)
+    : AudioSender(cast_environment,
+                  audio_config,
+                  std::move(status_change_cb),
+                  FrameSender::Create(cast_environment,
+                                      audio_config,
+                                      std::move(sender),
+                                      *this)) {
   DCHECK(base::FeatureList::IsEnabled(kOpenscreenCastStreamingSession));
 }
 

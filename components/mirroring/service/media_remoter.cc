@@ -44,8 +44,8 @@ void MediaRemoter::OnMessageFromSink(const std::vector<uint8_t>& response) {
 
 void MediaRemoter::StartRpcMessaging(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
-    openscreen::cast::Sender* audio_sender,
-    openscreen::cast::Sender* video_sender,
+    std::unique_ptr<openscreen::cast::Sender> audio_sender,
+    std::unique_ptr<openscreen::cast::Sender> video_sender,
     absl::optional<FrameSenderConfig> audio_config,
     absl::optional<FrameSenderConfig> video_config) {
   DCHECK(audio_sender || video_sender);
@@ -54,8 +54,8 @@ void MediaRemoter::StartRpcMessaging(
   DCHECK(!transport_);
   DCHECK(base::FeatureList::IsEnabled(media::kOpenscreenCastStreamingSession));
 
-  openscreen_audio_sender_ = audio_sender;
-  openscreen_video_sender_ = video_sender;
+  openscreen_audio_sender_ = std::move(audio_sender);
+  openscreen_video_sender_ = std::move(video_sender);
   StartRpcMessagingInternal(std::move(cast_environment),
                             std::move(audio_config), std::move(video_config));
 }
@@ -188,7 +188,7 @@ void MediaRemoter::StartOpenscreenDataStreams(
       openscreen_audio_sender_) {
     // NOTE: use of base::Unretained is safe because we own the sender.
     audio_sender_ = std::make_unique<RemotingSender>(
-        cast_environment_, openscreen_audio_sender_, *audio_config_,
+        cast_environment_, std::move(openscreen_audio_sender_), *audio_config_,
         std::move(audio_pipe), std::move(audio_sender_receiver),
         base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
                        base::Unretained(this)));
@@ -199,7 +199,7 @@ void MediaRemoter::StartOpenscreenDataStreams(
       openscreen_video_sender_) {
     // NOTE: use of base::Unretained is safe because we own the sender.
     video_sender_ = std::make_unique<RemotingSender>(
-        cast_environment_, openscreen_video_sender_, *video_config_,
+        cast_environment_, std::move(openscreen_video_sender_), *video_config_,
         std::move(video_pipe), std::move(video_sender_receiver),
         base::BindOnce(&MediaRemoter::OnRemotingDataStreamError,
                        base::Unretained(this)));

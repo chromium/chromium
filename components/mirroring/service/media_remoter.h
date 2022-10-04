@@ -14,10 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace openscreen::cast {
-class Sender;
-}  // namespace openscreen::cast
+#include "third_party/openscreen/src/cast/streaming/sender.h"
 
 namespace media::cast {
 class CastEnvironment;
@@ -84,8 +81,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
   // it is ignored.
   void StartRpcMessaging(
       scoped_refptr<media::cast::CastEnvironment> cast_environment,
-      openscreen::cast::Sender* audio_sender,
-      openscreen::cast::Sender* video_sender,
+      std::unique_ptr<openscreen::cast::Sender> audio_sender,
+      std::unique_ptr<openscreen::cast::Sender> video_sender,
       absl::optional<media::cast::FrameSenderConfig> audio_config,
       absl::optional<media::cast::FrameSenderConfig> video_config);
 
@@ -163,8 +160,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
 
   // Used only if StartRpcMessaging is called with openscreen::cast::Sender
   // objects.
-  raw_ptr<openscreen::cast::Sender> openscreen_audio_sender_ = nullptr;
-  raw_ptr<openscreen::cast::Sender> openscreen_video_sender_ = nullptr;
+  std::unique_ptr<openscreen::cast::Sender> openscreen_audio_sender_;
+  std::unique_ptr<openscreen::cast::Sender> openscreen_video_sender_;
 
   absl::optional<media::cast::FrameSenderConfig> audio_config_;
   absl::optional<media::cast::FrameSenderConfig> video_config_;

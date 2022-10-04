@@ -62,27 +62,28 @@ struct OpenscreenTestSenders {
                     &task_runner,
                     openscreen::IPEndpoint::kAnyV4()),
         sender_packet_router(&environment, 20, std::chrono::milliseconds(10)),
-
-        audio_sender(&environment,
-                     &sender_packet_router,
-                     openscreen::cast::SessionConfig{
-                         kFirstSsrc, kFirstSsrc + 1, kRtpTimebase,
-                         2 /* channels */, kDefaultPlayoutDelay, kAesSecretKey,
-                         kAesIvMask, true /* is_pli_enabled */},
-                     openscreen::cast::RtpPayloadType::kAudioVarious),
-        video_sender(&environment,
-                     &sender_packet_router,
-                     openscreen::cast::SessionConfig{
-                         kFirstSsrc + 2, kFirstSsrc + 3, kRtpTimebase,
-                         1 /* channels */, kDefaultPlayoutDelay, kAesSecretKey,
-                         kAesIvMask, true /* is_pli_enabled */},
-                     openscreen::cast::RtpPayloadType::kVideoVarious) {}
+        audio_sender(std::make_unique<openscreen::cast::Sender>(
+            &environment,
+            &sender_packet_router,
+            openscreen::cast::SessionConfig{
+                kFirstSsrc, kFirstSsrc + 1, kRtpTimebase, 2 /* channels */,
+                kDefaultPlayoutDelay, kAesSecretKey, kAesIvMask,
+                true /* is_pli_enabled */},
+            openscreen::cast::RtpPayloadType::kAudioVarious)),
+        video_sender(std::make_unique<openscreen::cast::Sender>(
+            &environment,
+            &sender_packet_router,
+            openscreen::cast::SessionConfig{
+                kFirstSsrc + 2, kFirstSsrc + 3, kRtpTimebase, 1 /* channels */,
+                kDefaultPlayoutDelay, kAesSecretKey, kAesIvMask,
+                true /* is_pli_enabled */},
+            openscreen::cast::RtpPayloadType::kVideoVarious)) {}
 
   openscreen_platform::TaskRunner task_runner;
   openscreen::cast::Environment environment;
   openscreen::cast::SenderPacketRouter sender_packet_router;
-  openscreen::cast::Sender audio_sender;
-  openscreen::cast::Sender video_sender;
+  std::unique_ptr<openscreen::cast::Sender> audio_sender;
+  std::unique_ptr<openscreen::cast::Sender> video_sender;
 };
 
 // Mojo handles used for managing the remoting data streams.
@@ -213,8 +214,8 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     if (should_use_openscreen_senders) {
       openscreen_test_senders_ = std::make_unique<OpenscreenTestSenders>();
       media_remoter_->StartRpcMessaging(
-          cast_environment, &openscreen_test_senders_->audio_sender,
-          &openscreen_test_senders_->video_sender,
+          cast_environment, std::move(openscreen_test_senders_->audio_sender),
+          std::move(openscreen_test_senders_->video_sender),
           MirrorSettings::GetDefaultAudioConfig(RtpPayloadType::REMOTE_AUDIO,
                                                 Codec::CODEC_AUDIO_REMOTE),
           MirrorSettings::GetDefaultVideoConfig(RtpPayloadType::REMOTE_VIDEO,

@@ -68,7 +68,7 @@ class FrameSender {
   static std::unique_ptr<FrameSender> Create(
       scoped_refptr<CastEnvironment> cast_environment,
       const FrameSenderConfig& config,
-      openscreen::cast::Sender* sender,
+      std::unique_ptr<openscreen::cast::Sender> sender,
       Client& client,
       GetSuggestedVideoBitrateCB get_bitrate_cb = GetSuggestedVideoBitrateCB());
 

@@ -44,7 +44,7 @@ RemotingSender::RemotingSender(
 
 RemotingSender::RemotingSender(
     scoped_refptr<media::cast::CastEnvironment> cast_environment,
-    openscreen::cast::Sender* sender,
+    std::unique_ptr<openscreen::cast::Sender> sender,
     const media::cast::FrameSenderConfig& config,
     mojo::ScopedDataPipeConsumerHandle pipe,
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> stream_sender,
@@ -52,7 +52,7 @@ RemotingSender::RemotingSender(
     : RemotingSender(cast_environment,
                      media::cast::FrameSender::Create(cast_environment,
                                                       config,
-                                                      sender,
+                                                      std::move(sender),
                                                       *this),
                      config,
                      std::move(pipe),

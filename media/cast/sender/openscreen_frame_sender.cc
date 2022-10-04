@@ -30,11 +30,12 @@ static constexpr int kMaxFrameBurst = 5;
 std::unique_ptr<FrameSender> FrameSender::Create(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
-    openscreen::cast::Sender* sender,
+    std::unique_ptr<openscreen::cast::Sender> sender,
     Client& client,
     FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb) {
-  return std::make_unique<OpenscreenFrameSender>(
-      cast_environment, config, sender, client, std::move(get_bitrate_cb));
+  return std::make_unique<OpenscreenFrameSender>(cast_environment, config,
+                                                 std::move(sender), client,
+                                                 std::move(get_bitrate_cb));
 }
 
 // Convenience macro used in logging statements throughout this file.
@@ -45,11 +46,11 @@ std::unique_ptr<FrameSender> FrameSender::Create(
 OpenscreenFrameSender::OpenscreenFrameSender(
     scoped_refptr<CastEnvironment> cast_environment,
     const FrameSenderConfig& config,
-    openscreen::cast::Sender* sender,
+    std::unique_ptr<openscreen::cast::Sender> sender,
     Client& client,
     FrameSender::GetSuggestedVideoBitrateCB get_bitrate_cb)
     : cast_environment_(cast_environment),
-      sender_(sender),
+      sender_(std::move(sender)),
       client_(client),
       get_bitrate_cb_(std::move(get_bitrate_cb)),
       max_frame_rate_(config.max_frame_rate),

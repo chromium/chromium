@@ -61,8 +61,8 @@ openscreen::cast::EncodedFrame DecoderBufferToEncodedFrame(
 class CastStreamingTestSender::SenderObserver final
     : public openscreen::cast::Sender::Observer {
  public:
-  explicit SenderObserver(raw_ptr<openscreen::cast::Sender> sender)
-      : sender_(sender) {
+  explicit SenderObserver(std::unique_ptr<openscreen::cast::Sender> sender)
+      : sender_(std::move(sender)) {
     CHECK(sender_);
     sender_->SetObserver(this);
   }
@@ -97,7 +97,7 @@ class CastStreamingTestSender::SenderObserver final
   void OnPictureLost() final {}
 
   openscreen::cast::FrameId last_reference_frame_id_;
-  raw_ptr<openscreen::cast::Sender> sender_ = nullptr;
+  std::unique_ptr<openscreen::cast::Sender> sender_;
   base::flat_map<openscreen::cast::FrameId, scoped_refptr<media::DecoderBuffer>>
       buffer_map_;
 };
@@ -234,13 +234,13 @@ void CastStreamingTestSender::OnNegotiated(
 
   if (senders.audio_sender) {
     audio_sender_observer_ =
-        std::make_unique<SenderObserver>(senders.audio_sender);
+        std::make_unique<SenderObserver>(std::move(senders.audio_sender));
     audio_decoder_config_ = ToAudioDecoderConfig(senders.audio_config);
   }
 
   if (senders.video_sender) {
     video_sender_observer_ =
-        std::make_unique<SenderObserver>(senders.video_sender);
+        std::make_unique<SenderObserver>(std::move(senders.video_sender));
     video_decoder_config_ = ToVideoDecoderConfig(senders.video_config);
   }
 
