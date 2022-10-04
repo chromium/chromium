@@ -7,12 +7,14 @@
 #include "base/files/file_path.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace policy {
 
 DlpConfidentialFile::DlpConfidentialFile(const base::FilePath& file_path)
-    :  // TODO(crbug.com/1357593): Pass the proper |dark_background|
-      icon(chromeos::GetIconForPath(file_path, /*dark_background=*/false)),
+    : icon(chromeos::GetIconForPath(
+          file_path,
+          ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors())),
       title(file_path.BaseName().LossyDisplayName()),
       file_path(file_path) {}
 
