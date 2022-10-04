@@ -63,7 +63,8 @@ class FastPairPresenterImpl : public FastPairPresenter {
                             AssociateAccountCallback callback) override;
   void ShowCompanionApp(scoped_refptr<Device> device,
                         CompanionAppCallback callback) override;
-  void RemoveNotifications() override;
+  void RemoveNotifications(
+      bool clear_already_shown_discovery_notification_cache) override;
 
  private:
   FastPairPresenterImpl(const FastPairPresenterImpl&) = delete;
@@ -94,7 +95,7 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                            DiscoveryCallback callback,
                                            DeviceMetadata* device_metadata);
   void OnDiscoveryClicked(DiscoveryCallback action_callback);
-  void OnDiscoveryDismissed(const std::string& ble_address,
+  void OnDiscoveryDismissed(scoped_refptr<Device> device,
                             DiscoveryCallback callback,
                             bool user_dismissed);
   void OnDiscoveryLearnMoreClicked(DiscoveryCallback action_callback);

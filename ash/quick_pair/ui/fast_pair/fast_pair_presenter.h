@@ -36,7 +36,8 @@ class FastPairPresenter {
                                     AssociateAccountCallback callback) = 0;
   virtual void ShowCompanionApp(scoped_refptr<Device> device,
                                 CompanionAppCallback callback) = 0;
-  virtual void RemoveNotifications() = 0;
+  virtual void RemoveNotifications(
+      bool clear_already_shown_discovery_notification_cache) = 0;
 
   virtual ~FastPairPresenter() = default;
 };

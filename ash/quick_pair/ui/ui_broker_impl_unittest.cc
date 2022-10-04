@@ -58,7 +58,10 @@ class FakeFastPairPresenter : public ash::quick_pair::FastPairPresenter {
     callback.Run(ash::quick_pair::CompanionAppAction::kDownloadAndLaunchApp);
   }
 
-  void RemoveNotifications() override { removed_ = true; }
+  void RemoveNotifications(
+      bool clear_already_shown_discovery_notification_cache) override {
+    removed_ = true;
+  }
 
   bool removed() { return removed_; }
 
@@ -255,7 +258,8 @@ TEST_F(UIBrokerImplTest, ShowCompanionApp_Retroactive) {
 TEST_F(UIBrokerImplTest, RemoveNotifications_Initial) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairInitial);
-  ui_broker_->RemoveNotifications();
+  ui_broker_->RemoveNotifications(
+      /*clear_already_shown_discovery_notification_cache=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());
@@ -264,7 +268,8 @@ TEST_F(UIBrokerImplTest, RemoveNotifications_Initial) {
 TEST_F(UIBrokerImplTest, RemoveNotifications_Subsequent) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairSubsequent);
-  ui_broker_->RemoveNotifications();
+  ui_broker_->RemoveNotifications(
+      /*clear_already_shown_discovery_notification_cache=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());
@@ -273,7 +278,8 @@ TEST_F(UIBrokerImplTest, RemoveNotifications_Subsequent) {
 TEST_F(UIBrokerImplTest, RemoveNotifications_Retroactive) {
   auto device = base::MakeRefCounted<Device>(kValidModelId, kTestDeviceAddress,
                                              Protocol::kFastPairRetroactive);
-  ui_broker_->RemoveNotifications();
+  ui_broker_->RemoveNotifications(
+      /*clear_already_shown_discovery_notification_cache=*/false);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(presenter_factory_->fake_fast_pair_presenter()->removed());

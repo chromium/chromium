@@ -173,7 +173,8 @@ void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
-  ui_broker_->RemoveNotifications();
+  ui_broker_->RemoveNotifications(
+      /*clear_already_shown_discovery_notification_cache=*/false);
   FastPairHandshakeLookup::GetInstance()->Erase(device);
 }
 
@@ -197,8 +198,13 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
   scanner_broker_->StopScanning(Protocol::kFastPairInitial);
 
-  // Dismiss all UI notifications.
-  ui_broker_->RemoveNotifications();
+  // Dismiss all UI notifications and reset the cache of devices that we prevent
+  // showing notifications for again. We only reset the cache when the Bluetooth
+  // toggle or when the Fast Pair scanning toggle are toggled, or when the user
+  // signs out -> signs in (although sign out/sign in is handled by the
+  // destruction of chrome resetting the cache).
+  ui_broker_->RemoveNotifications(
+      /*clear_already_shown_discovery_notification_cache=*/true);
 }
 
 void Mediator::CancelPairing() {
@@ -209,7 +215,8 @@ void Mediator::CancelPairing() {
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
-  ui_broker_->RemoveNotifications();
+  ui_broker_->RemoveNotifications(
+      /*clear_already_shown_discovery_notification_cache=*/false);
   scanner_broker_->OnDevicePaired(device);
   fast_pair_repository_->PersistDeviceImages(device);
 }
@@ -275,7 +282,8 @@ void Mediator::OnAssociateAccountAction(scoped_refptr<Device> device,
   switch (action) {
     case AssociateAccountAction::kAssoicateAccount:
       pairer_broker_->PairDevice(device);
-      ui_broker_->RemoveNotifications();
+      ui_broker_->RemoveNotifications(
+          /*clear_already_shown_discovery_notification_cache=*/false);
       break;
     case AssociateAccountAction::kLearnMore:
       break;

@@ -228,8 +228,7 @@ void FastPairPresenterImpl::ShowSubsequentDiscoveryNotification(
       base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
                           weak_pointer_factory_.GetWeakPtr(), callback),
       base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
-                     weak_pointer_factory_.GetWeakPtr(), device->ble_address,
-                     callback));
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
 void FastPairPresenterImpl::ShowGuestDiscoveryNotification(
@@ -244,8 +243,7 @@ void FastPairPresenterImpl::ShowGuestDiscoveryNotification(
       base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
                           weak_pointer_factory_.GetWeakPtr(), callback),
       base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
-                     weak_pointer_factory_.GetWeakPtr(), device->ble_address,
-                     callback));
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
 void FastPairPresenterImpl::ShowUserDiscoveryNotification(
@@ -269,22 +267,26 @@ void FastPairPresenterImpl::ShowUserDiscoveryNotification(
       base::BindRepeating(&FastPairPresenterImpl::OnDiscoveryLearnMoreClicked,
                           weak_pointer_factory_.GetWeakPtr(), callback),
       base::BindOnce(&FastPairPresenterImpl::OnDiscoveryDismissed,
-                     weak_pointer_factory_.GetWeakPtr(), device->ble_address,
-                     callback));
+                     weak_pointer_factory_.GetWeakPtr(), device, callback));
 }
 
 void FastPairPresenterImpl::OnDiscoveryClicked(DiscoveryCallback callback) {
   callback.Run(DiscoveryAction::kPairToDevice);
 }
 
-void FastPairPresenterImpl::OnDiscoveryDismissed(const std::string& ble_address,
+void FastPairPresenterImpl::OnDiscoveryDismissed(scoped_refptr<Device> device,
                                                  DiscoveryCallback callback,
                                                  bool user_dismissed) {
   // If the discovery notification was not dismissed by user, we remove the
-  // device from the map in order to allow the notification to show again.
-  if (!user_dismissed) {
+  // device from the map in order to allow the notification to show again. We
+  // check |WasDiscoveryNotificationAlreadyShownForDevice| to make sure it is
+  // the same protocol, address, and metadata in the map before removing to
+  // prevent edge cases (for example, a device changes protocol but uses the
+  // same address).
+  if (!user_dismissed &&
+      WasDiscoveryNotificationAlreadyShownForDevice(*device)) {
     address_to_devices_with_discovery_notification_already_shown_map_.erase(
-        ble_address);
+        device->ble_address);
   }
 
   callback.Run(user_dismissed ? DiscoveryAction::kDismissedByUser
@@ -440,9 +442,13 @@ void FastPairPresenterImpl::OnAssociateAccountDismissed(
 void FastPairPresenterImpl::ShowCompanionApp(scoped_refptr<Device> device,
                                              CompanionAppCallback callback) {}
 
-void FastPairPresenterImpl::RemoveNotifications() {
+void FastPairPresenterImpl::RemoveNotifications(
+    bool clear_already_shown_discovery_notification_cache) {
+  if (clear_already_shown_discovery_notification_cache) {
+    address_to_devices_with_discovery_notification_already_shown_map_.clear();
+  }
+
   notification_controller_->RemoveNotifications();
-  address_to_devices_with_discovery_notification_already_shown_map_.clear();
 }
 
 }  // namespace quick_pair
