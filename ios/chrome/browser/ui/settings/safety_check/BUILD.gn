@@ -32,7 +32,12 @@ source_set("safety_check_ui") {
 swift_source_set("safety_check_ui_swift") {
   bridge_header = "safety_check_bridge.h"
   sources = [ "safety_check_table_view_controller.swift" ]
-  deps = [ ":safety_check_ui" ]
+  deps = [
+    ":safety_check_ui",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ui/base",
+  ]
 }
 
 source_set("safety_check") {

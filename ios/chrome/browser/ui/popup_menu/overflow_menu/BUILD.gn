@@ -133,8 +133,11 @@ swift_source_set("overflow_menu_swift") {
   deps = [
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
+    "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
   ]
 
   frameworks = [

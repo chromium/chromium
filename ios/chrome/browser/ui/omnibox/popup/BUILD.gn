@@ -33,8 +33,15 @@ swift_source_set("popup_swift") {
     ":popup_ui_protocols",
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/theme",
     "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/omnibox/popup:popup_accessibility_identifier_constants",
+    "//ios/chrome/browser/ui/toolbar/buttons",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
   ]
 
   frameworks = [
