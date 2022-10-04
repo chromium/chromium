@@ -760,6 +760,12 @@ public final class ChromePreferenceKeys {
             "Chrome.QueryTiles.ShowSegmentationResult";
 
     /**
+     * Whether query tiles is already shown on Start surface. Default value is false.
+     */
+    public static final String QUERY_TILES_SHOWN_ON_START_SURFACE =
+            "Chrome.QueryTiles.ShownOnStartSurface";
+
+    /**
      * Keys used to store user actions for behavioral targeting of showing Start surface on startup.
      */
     public static final String START_SHOW_ON_STARTUP = "Chrome.StartSurface.ShownOnStartup";
@@ -1154,6 +1160,7 @@ public final class ChromePreferenceKeys {
                 QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS,
                 QUERY_TILES_SHOW_ON_NTP,
                 QUERY_TILES_SHOW_SEGMENTATION_RESULT,
+                QUERY_TILES_SHOWN_ON_START_SURFACE,
                 REGULAR_TAB_COUNT,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,

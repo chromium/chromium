@@ -926,9 +926,8 @@ public final class ReturnToChromeUtil {
      * Returns whether to improve Start surface when Feed is not visible.
      */
     public static boolean shouldImproveStartWhenFeedIsDisabled(Context context) {
-        return isStartSurfaceEnabled(context)
-                && ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
-                && !getFeedArticlesVisibility();
+        return ChromeFeatureList.sStartSurfaceDisabledFeedImprovement.isEnabled()
+                && !getFeedArticlesVisibility() && isStartSurfaceEnabled(context);
     }
 
     /**

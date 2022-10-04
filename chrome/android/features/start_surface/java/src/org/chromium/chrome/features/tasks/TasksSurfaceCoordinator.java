@@ -29,6 +29,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OriginalProfileSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -62,6 +65,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  *  Concrete implementation of {@link TasksSurface}.
  */
 public class TasksSurfaceCoordinator implements TasksSurface {
+    private static final int MAX_TILE_ROWS_FOR_GRID_MVT = 2;
+
     private final TabSwitcher mTabSwitcher;
     private final TasksView mView;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -158,14 +163,21 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 incognitoCookieControlsManager, tabSwitcherType == TabSwitcherType.CAROUSEL);
 
         if (hasMVTiles) {
-            mMostVisitedCoordinator = new MostVisitedTilesCoordinator(activity,
-                    activityLifecycleDispatcher, mView.findViewById(R.id.mv_tiles_container),
-                    windowAndroid,
-                    TabUiFeatureUtilities.supportInstantStart(
-                            DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                            mActivity),
-                    /*isScrollableMVTEnabled=*/true, Integer.MAX_VALUE, Integer.MAX_VALUE,
-                    /*snapshotTileGridChangedRunnable=*/null, /*tileCountChangedRunnable=*/null);
+            boolean isScrollableMVTEnabled =
+                    !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
+            int maxRowsForGridMVT = getQueryTilesVisibility()
+                    ? QueryTileSection.getMaxRowsForMostVisitedTiles(activity)
+                    : MAX_TILE_ROWS_FOR_GRID_MVT;
+            mMostVisitedCoordinator =
+                    new MostVisitedTilesCoordinator(activity, activityLifecycleDispatcher,
+                            mView.findViewById(R.id.mv_tiles_container), windowAndroid,
+                            TabUiFeatureUtilities.supportInstantStart(
+                                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
+                                    mActivity),
+                            isScrollableMVTEnabled,
+                            isScrollableMVTEnabled ? Integer.MAX_VALUE : maxRowsForGridMVT,
+                            /*snapshotTileGridChangedRunnable=*/null,
+                            /*tileCountChangedRunnable=*/null);
         }
 
         if (hasQueryTiles) {
@@ -175,15 +187,21 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 mQueryTileProfileSupplier = new OriginalProfileSupplier();
                 mQueryTileProfileSupplier.onAvailable(this::initializeQueryTileSection);
             }
+        } else {
+            storeQueryTilesVisibility(false);
         }
     }
 
     private void initializeQueryTileSection(Profile profile) {
         assert profile != null;
-        if (!QueryTileUtils.isQueryTilesEnabledOnStartSurface()) return;
+        if (!QueryTileUtils.isQueryTilesEnabledOnStartSurface()) {
+            storeQueryTilesVisibility(false);
+            return;
+        }
         mQueryTileSection =
                 new QueryTileSection(mView.findViewById(R.id.query_tiles_layout), profile,
                         query -> mMediator.performSearchQuery(query.queryText, query.searchParams));
+        storeQueryTilesVisibility(true);
         mQueryTileProfileSupplier = null;
     }
 
@@ -329,5 +347,15 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             return mView.getVisibility() == View.VISIBLE
                     && mView.findViewById(R.id.mv_tiles_layout).getVisibility() == View.VISIBLE;
         }
+    }
+
+    private void storeQueryTilesVisibility(boolean isShown) {
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, isShown);
+    }
+
+    private boolean getQueryTilesVisibility() {
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.QUERY_TILES_SHOWN_ON_START_SURFACE, false);
     }
 }

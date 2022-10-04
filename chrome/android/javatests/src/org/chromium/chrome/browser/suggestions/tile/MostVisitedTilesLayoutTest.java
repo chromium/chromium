@@ -97,7 +97,6 @@ public class MostVisitedTilesLayoutTest {
                     new ParameterSet().value(false).name("DisableScrollableMVTOnNTP"));
 
     public final int TILE_GRID_ROWS = 2;
-    public final int TILE_GRID_COLUMNS = 4;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -376,7 +375,7 @@ public class MostVisitedTilesLayoutTest {
 
         MostVisitedTilesCoordinator coordinator = new MostVisitedTilesCoordinator(activity,
                 mActivityLifecycleDispatcher, containerLayout, mWindowAndroid, false,
-                mEnableScrollableMVT, TILE_GRID_ROWS, TILE_GRID_COLUMNS, null, null);
+                mEnableScrollableMVT, TILE_GRID_ROWS, null, null);
         coordinator.initWithNative(uiDelegate, delegate, mTouchEnabledDelegate);
     }
 }

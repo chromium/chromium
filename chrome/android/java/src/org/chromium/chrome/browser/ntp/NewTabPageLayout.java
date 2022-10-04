@@ -78,12 +78,6 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
     // Used to signify the cached resource value is unset.
     private static final int UNSET_RESOURCE_FLAG = -1;
 
-    /**
-     * The maximum number of tiles to try and fit in a row. On smaller screens, there may not be
-     * enough space to fit all of them.
-     */
-    private static final int MAX_TILE_COLUMNS = 4;
-
     private final int mTileGridLayoutBleed;
     private final Context mContext;
     private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
@@ -357,7 +351,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         mMostVisitedTilesCoordinator = new MostVisitedTilesCoordinator(mActivity,
                 activityLifecycleDispatcher, mMvTilesContainerLayout, mWindowAndroid,
                 /*shouldShowSkeletonUIPreNative=*/false, isScrollableMvtEnabled, maxRows,
-                MAX_TILE_COLUMNS, () -> mSnapshotTileGridChanged = true, () -> {
+                () -> mSnapshotTileGridChanged = true, () -> {
                     if (mUrlFocusChangePercent == 1f) mTileCountChanged = true;
                 });
 
