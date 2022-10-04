@@ -53,7 +53,6 @@ build_webui("build") {
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   ts_deps = [
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
   ]
