@@ -1188,17 +1188,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 }
 
 // Test that remember by choice checkbox works for open PWA option.
-//
-// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
-// TODO(https://crbug.com/1367375): Fix timeouts under ASAN.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
-    defined(MEMORY_SANITIZER)
-#define MAYBE_RememberOpenPWA DISABLED_RememberOpenPWA
-#else
-#define MAYBE_RememberOpenPWA RememberOpenPWA
-#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       MAYBE_RememberOpenPWA) {
+                       RememberOpenPWA) {
   base::HistogramTester histogram_tester;
 
   GURL test_url(InScopeAppUrl());
@@ -1279,18 +1270,8 @@ class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
 // Simulates prerendering an app URL that the user has opted into always
 // launching an app window for. In this case, the prerender should be canceled
 // and the app shouldn't be opened.
-//
-// TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
-// TODO(https://crbug.com/1367375): Fix timeouts under ASAN.
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || \
-    defined(MEMORY_SANITIZER)
-#define MAYBE_AppLaunchURLCancelsPrerendering \
-  DISABLED_AppLaunchURLCancelsPrerendering
-#else
-#define MAYBE_AppLaunchURLCancelsPrerendering AppLaunchURLCancelsPrerendering
-#endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
-                       MAYBE_AppLaunchURLCancelsPrerendering) {
+                       AppLaunchURLCancelsPrerendering) {
   // Prerendering is currently limited to same-origin pages so we need to start
   // it from an arbitrary page on the same origin, rather than about:blank.
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
