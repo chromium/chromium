@@ -11,18 +11,28 @@
 BASE_DECLARE_FEATURE(kEnableOpenInDownload);
 
 // Indicates which Open In download variant to use.
+extern const char kOpenInDownloadInShareButtonParam[];
 extern const char kOpenInDownloadWithWKDownloadParam[];
 extern const char kOpenInDownloadWithV2Param[];
 
-// Convenience method for determining when Open In download with WKDownload is
-// enabled.
+// Convenience method for determining when Open In with legacy download in share
+// button is enabled.
+bool IsOpenInDownloadInShareButton();
+
+// Convenience method for determining when Open In download with WKDownload in
+// share button is enabled.
 bool IsOpenInDownloadWithWKDownload();
 
-// Convenience method for determining when Open In download with V2 is enabled.
+// Convenience method for determining when Open In download with V2 in share
+// button is enabled.
 bool IsOpenInDownloadWithV2();
 
-// Convenience method for determining when Open In download experiment is
+// Convenience method for determining when new download experiment is
 // enabled.
-bool IsOpenInDownloadEnabled();
+bool IsOpenInNewDownloadEnabled();
+
+// Convenience method for determining if Open In activities are moved in the
+// share button.
+bool IsOpenInActivitiesInShareButtonEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_OPEN_IN_FEATURES_H_

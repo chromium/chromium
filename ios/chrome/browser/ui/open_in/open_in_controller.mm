@@ -452,7 +452,7 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
   _downloadCanceled = NO;
 
   if (@available(iOS 14.5, *)) {
-    if (IsOpenInDownloadEnabled()) {
+    if (IsOpenInNewDownloadEnabled()) {
       __weak OpenInController* weakSelf = self;
       _webState->DownloadCurrentPage(self.filePath, self,
                                      ^(id<CRWWebViewDownload> download) {
