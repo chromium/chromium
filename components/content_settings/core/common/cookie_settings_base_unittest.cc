@@ -233,7 +233,7 @@ class CookieSettingsBaseStorageAccessAPITest
  public:
   CookieSettingsBaseStorageAccessAPITest() {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
-    std::vector<base::Feature> disabled;
+    std::vector<base::test::FeatureRef> disabled;
     if (IsStorageAccessAPIEnabled()) {
       enabled.push_back({net::features::kStorageAccessAPI,
                          {{"storage-access-api-grants-unpartitioned-storage",

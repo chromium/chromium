@@ -90,8 +90,8 @@ class CookieSettingsTest : public testing::TestWithParam<bool> {
         kHttpsSubdomainSite("https://www.example.com"),
         kHttpsSite8080("https://example.com:8080"),
         kAllHttpsSitesPattern(ContentSettingsPattern::FromString("https://*")) {
-    std::vector<base::Feature> enabled_features;
-    std::vector<base::Feature> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back(kImprovedCookieControls);
 #endif
