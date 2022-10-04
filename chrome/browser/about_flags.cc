@@ -1172,6 +1172,49 @@ const FeatureEntry::FeatureVariation kJourneysOmniboxActionVariations[] = {
     {"Action Chips Enabled with Pedals", kJourneysOmniboxActionWithPedalsParams,
      std::size(kJourneysOmniboxActionWithPedalsParams), nullptr},
 };
+
+const FeatureEntry::FeatureParam
+    kJourneysOmniboxHistoryClusterProviderVariationsAggressive[] = {
+        {"omnibox_history_cluster_provider_score", "1100"},
+        {"omnibox_history_cluster_provider_shortcuts", "true"},
+        {"omnibox_history_cluster_provider_navigation_intent_score_threshold",
+         "1400"},
+        {"omnibox_history_cluster_provider_on_navigation_intents", "false"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOmniboxHistoryClusterProviderVariationsModerate[] = {
+        {"omnibox_history_cluster_provider_score", "900"},
+        {"omnibox_history_cluster_provider_shortcuts", "true"},
+        {"omnibox_history_cluster_provider_navigation_intent_score_threshold",
+         "1300"},
+        {"omnibox_history_cluster_provider_on_navigation_intents", "false"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysOmniboxHistoryClusterProviderVariationsConservative[] = {
+        {"omnibox_history_cluster_provider_score", "700"},
+        {"omnibox_history_cluster_provider_shortcuts", "false"},
+        {"omnibox_history_cluster_provider_navigation_intent_score_threshold",
+         "1100"},
+        {"omnibox_history_cluster_provider_on_navigation_intents", "false"},
+};
+const FeatureEntry::FeatureVariation
+    kJourneysOmniboxHistoryClusterProviderVariations[] = {
+        {"Aggressive - score 1100, shortcut boosting, nav-intent filtering "
+         "1400",
+         kJourneysOmniboxHistoryClusterProviderVariationsAggressive,
+         std::size(kJourneysOmniboxHistoryClusterProviderVariationsAggressive),
+         nullptr},
+        {"Moderate - Score 900, shortcut boosting, nav-intent filtering 1300",
+         kJourneysOmniboxHistoryClusterProviderVariationsModerate,
+         std::size(kJourneysOmniboxHistoryClusterProviderVariationsModerate),
+         nullptr},
+        {"Conservative  - score 700, nav-intent filtering 1100",
+         kJourneysOmniboxHistoryClusterProviderVariationsConservative,
+         std::size(
+             kJourneysOmniboxHistoryClusterProviderVariationsConservative),
+         nullptr},
+};
+
 const FeatureEntry::FeatureParam kSidePanelJourneysOpensFromOmniboxParams[] = {
     {"SidePanelJourneysOpensFromOmnibox", "true"},
 };
@@ -5729,14 +5772,16 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history_clusters::internal::kOmniboxAction,
                                     kJourneysOmniboxActionVariations,
-                                    "HistoryJourneysOmniboxAction")},
+                                    "JourneysOmniboxTriggering")},
 
     {"history-journeys-omnibox-history-cluster-provider",
      flag_descriptions::kJourneysOmniboxHistoryClusterProviderName,
      flag_descriptions::kJourneysOmniboxHistoryClusterProviderDescription,
      kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         history_clusters::internal::kOmniboxHistoryClusterProvider)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         history_clusters::internal::kOmniboxHistoryClusterProvider,
+         kJourneysOmniboxHistoryClusterProviderVariations,
+         "JourneysOmniboxTriggering")},
 
     {"history-journeys-on-device-clustering",
      flag_descriptions::kJourneysOnDeviceClusteringBackendName,
