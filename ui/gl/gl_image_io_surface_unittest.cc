@@ -98,7 +98,6 @@ using GLImageTestTypes = testing::Types<
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRA_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::RGBA_F16>,
-    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::YUV_420_BIPLANAR>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageIOSurface, GLImageTest, GLImageTestTypes);
@@ -124,11 +123,6 @@ using GLImageBindTestTypes = testing::Types<
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageIOSurface,
                                GLImageBindTest,
                                GLImageBindTestTypes);
-
-INSTANTIATE_TYPED_TEST_SUITE_P(
-    GLImageIOSurface,
-    GLImageCopyTest,
-    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::YUV_420_BIPLANAR>);
 
 }  // namespace
 }  // namespace gl

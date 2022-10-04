@@ -46,11 +46,15 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   // IOSurfaces coming from video decode are wrapped in a CVPixelBuffer
   // and may be discarded if the owning CVPixelBuffer is destroyed. This
   // initialization will ensure that the CVPixelBuffer be retained for the
-  // lifetime of the GLImage.
+  // lifetime of the GLImage. This will set `disable_in_use_by_window_server_`
+  // because the existence of the CVPixelBuffer causes IOSurfaceIsInUse to
+  // always return true. The color space specified in `color_space` must be
+  // set to the color space specified by `cv_pixel_buffer`'s attachments.
   bool InitializeWithCVPixelBuffer(CVPixelBufferRef cv_pixel_buffer,
                                    uint32_t io_surface_plane,
                                    gfx::GenericSharedMemoryId io_surface_id,
-                                   gfx::BufferFormat format);
+                                   gfx::BufferFormat format,
+                                   const gfx::ColorSpace& color_space);
 
   // Overridden from GLImage:
   gfx::Size GetSize() override;
@@ -61,10 +65,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   bool BindTexImageWithInternalformat(unsigned target,
                                       unsigned internalformat) override;
   void ReleaseTexImage(unsigned target) override {}
-  bool CopyTexImage(unsigned target) override;
-  bool CopyTexSubImage(unsigned target,
-                       const gfx::Point& offset,
-                       const gfx::Rect& rect) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
@@ -77,15 +77,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   gfx::GenericSharedMemoryId io_surface_id() const { return io_surface_id_; }
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface();
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer();
-
-  // For IOSurfaces that need manual conversion to a GL texture before being
-  // sampled from, specify the color space in which to do the required YUV to
-  // RGB transformation.
-  void SetColorSpaceForYUVToRGBConversion(const gfx::ColorSpace& color_space);
-
-  // Sets the color space of the GLImage without modifying the underlying
-  // IOSurface. Callers should ensure the color spaces match.
-  void SetColorSpaceShallow(const gfx::ColorSpace& color_space);
 
   static unsigned GetInternalFormatForTesting(gfx::BufferFormat format);
 
@@ -121,8 +112,6 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   uint32_t io_surface_plane_ = kInvalidIOSurfacePlane;
 
   base::ThreadChecker thread_checker_;
-  // The default value of Rec. 601 is based on historical shader code.
-  gfx::ColorSpace color_space_for_yuv_to_rgb_ = gfx::ColorSpace::CreateREC601();
 
   bool disable_in_use_by_window_server_ = false;
 };

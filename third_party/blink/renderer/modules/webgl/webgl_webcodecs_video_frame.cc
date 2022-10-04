@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "ui/gfx/color_transform.h"
 
 namespace blink {
 
@@ -247,12 +246,6 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
   VideoColorSpace* video_frame_color_space =
       MakeGarbageCollected<VideoColorSpace>(src_color_space);
   video_frame_handle->setColorSpace(video_frame_color_space);
-
-  gfx::ColorSpace dst_color_space = gfx::ColorSpace::CreateSRGB();
-  std::unique_ptr<gfx::ColorTransform> color_transform(
-      gfx::ColorTransform::NewColorTransform(src_color_space, dst_color_space));
-  video_frame_handle->setColorConversionShaderFunc(
-      color_transform->GetShaderSource().c_str());
 
   // Bookkeeping of imported video frames.
   GLuint tex0 = info_array[0]->texture()->Object();

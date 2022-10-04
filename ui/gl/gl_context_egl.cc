@@ -19,7 +19,6 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/yuv_to_rgb_converter.h"
 
 #ifndef EGL_CHROMIUM_create_context_bind_generates_resource
 #define EGL_CHROMIUM_create_context_bind_generates_resource 1
@@ -377,7 +376,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 }
 
 void GLContextEGL::Destroy() {
-  ReleaseYUVToRGBConvertersAndBackpressureFences();
+  ReleaseBackpressureFences();
   if (context_) {
     if (!eglDestroyContext(gl_display_->GetDisplay(), context_)) {
       LOG(ERROR) << "eglDestroyContext failed with error "
@@ -386,25 +385,6 @@ void GLContextEGL::Destroy() {
 
     context_ = nullptr;
   }
-}
-
-YUVToRGBConverter* GLContextEGL::GetYUVToRGBConverter(
-    const gfx::ColorSpace& color_space) {
-  // Make sure YUVToRGBConverter objects never get created when surfaceless EGL
-  // contexts aren't supported since support for surfaceless EGL contexts is
-  // required in order to properly release YUVToRGBConverter objects (see
-  // GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences())
-  if (!gl_display_->IsEGLSurfacelessContextSupported()) {
-    return nullptr;
-  }
-
-  std::unique_ptr<YUVToRGBConverter>& yuv_to_rgb_converter =
-      yuv_to_rgb_converters_[color_space];
-  if (!yuv_to_rgb_converter) {
-    yuv_to_rgb_converter =
-        std::make_unique<YUVToRGBConverter>(*GetVersionInfo(), color_space);
-  }
-  return yuv_to_rgb_converter.get();
 }
 
 void GLContextEGL::SetVisibility(bool visibility) {
@@ -423,14 +403,14 @@ GLDisplayEGL* GLContextEGL::GetGLDisplayEGL() {
   return gl_display_;
 }
 
-void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
+void GLContextEGL::ReleaseBackpressureFences() {
 #if BUILDFLAG(IS_APPLE)
   bool has_backpressure_fences = HasBackpressureFences();
 #else
   bool has_backpressure_fences = false;
 #endif
 
-  if (!yuv_to_rgb_converters_.empty() || has_backpressure_fences) {
+  if (has_backpressure_fences) {
     // If this context is not current, bind this context's API so that the YUV
     // converter can safely destruct
     GLContext* current_context = GetRealCurrent();
@@ -444,9 +424,6 @@ void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
     if (context_ != current_egl_context) {
       current_draw_surface = eglGetCurrentSurface(EGL_DRAW);
       current_read_surface = eglGetCurrentSurface(EGL_READ);
-      // This call relies on the fact that yuv_to_rgb_converters_ are only ever
-      // allocated in GLImageIOSurfaceEGL::CopyTexImage, which is only on
-      // MacOS, where surfaceless EGL contexts are always supported.
       if (!eglMakeCurrent(gl_display_->GetDisplay(), EGL_NO_SURFACE,
                           EGL_NO_SURFACE, context_)) {
         LOG(ERROR) << "eglMakeCurrent failed with error "
@@ -454,7 +431,6 @@ void GLContextEGL::ReleaseYUVToRGBConvertersAndBackpressureFences() {
       }
     }
 
-    yuv_to_rgb_converters_.clear();
 #if BUILDFLAG(IS_APPLE)
     DestroyBackpressureFences();
 #endif

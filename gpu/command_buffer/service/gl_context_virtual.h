@@ -45,8 +45,6 @@ class GPU_GLES2_EXPORT GLContextVirtual : public gl::GLContext {
   void SetSafeToForceGpuSwitch() override;
   unsigned int CheckStickyGraphicsResetStatusImpl() override;
   void SetUnbindFboOnMakeCurrent() override;
-  gl::YUVToRGBConverter* GetYUVToRGBConverter(
-      const gfx::ColorSpace& color_space) override;
   void ForceReleaseVirtuallyCurrent() override;
 #if BUILDFLAG(IS_MAC)
   uint64_t BackpressureFenceCreate() override;

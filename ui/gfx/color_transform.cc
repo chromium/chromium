@@ -189,13 +189,6 @@ class ColorTransformStep {
   // Return true if this is a null transform.
   virtual bool IsNull() { return false; }
   virtual void Transform(ColorTransform::TriStim* color, size_t num) const = 0;
-  // In the shader, |hdr| will appear before |src|, so any helper functions that
-  // are created should be put in |hdr|. Any helper functions should have
-  // |step_index| included in the function name, to ensure that there are no
-  // naming conflicts.
-  virtual void AppendShaderSource(std::stringstream* hdr,
-                                  std::stringstream* src,
-                                  size_t step_index) const = 0;
   virtual void AppendSkShaderSource(std::stringstream* src) const = 0;
 };
 
@@ -214,7 +207,6 @@ class ColorTransformInternal : public ColorTransform {
       step->Transform(colors, num);
     }
   }
-  std::string GetShaderSource() const override;
   std::string GetSkShaderSource() const override;
   bool IsIdentity() const override { return steps_.empty(); }
   size_t NumberOfStepsForTesting() const override { return steps_.size(); }
@@ -235,9 +227,6 @@ class ColorTransformNull : public ColorTransformStep {
   ColorTransformNull* GetNull() override { return this; }
   bool IsNull() override { return true; }
   void Transform(ColorTransform::TriStim* color, size_t num) const override {}
-  void AppendShaderSource(std::stringstream* hdr,
-                          std::stringstream* src,
-                          size_t step_index) const override {}
   void AppendSkShaderSource(std::stringstream* src) const override {}
 };
 
@@ -260,32 +249,6 @@ class ColorTransformMatrix : public ColorTransformStep {
       auto& color = colors[i];
       SkV4 mapped = matrix_.map(color.x(), color.y(), color.z(), 1);
       color.SetPoint(mapped.x, mapped.y, mapped.z);
-    }
-  }
-
-  void AppendShaderSource(std::stringstream* hdr,
-                          std::stringstream* src,
-                          size_t step_index) const override {
-    *src << "  color = mat3(";
-    *src << matrix_.rc(0, 0) << ", " << matrix_.rc(1, 0) << ", "
-         << matrix_.rc(2, 0) << ",";
-    *src << endl;
-    *src << "               ";
-    *src << matrix_.rc(0, 1) << ", " << matrix_.rc(1, 1) << ", "
-         << matrix_.rc(2, 1) << ",";
-    *src << endl;
-    *src << "               ";
-    *src << matrix_.rc(0, 2) << ", " << matrix_.rc(1, 2) << ", "
-         << matrix_.rc(2, 2) << ")";
-    *src << " * color;" << endl;
-
-    // Only print the translational component if it isn't the identity.
-    if (matrix_.rc(0, 3) != 0.f || matrix_.rc(1, 3) != 0.f ||
-        matrix_.rc(2, 3) != 0.f) {
-      *src << "  color += vec3(";
-      *src << matrix_.rc(0, 3) << ", " << matrix_.rc(1, 3) << ", "
-           << matrix_.rc(2, 3);
-      *src << ");" << endl;
     }
   }
 
@@ -336,27 +299,6 @@ class ColorTransformPerChannelTransferFn : public ColorTransformStep {
         c.set_y(Evaluate(c.y()));
         c.set_z(Evaluate(c.z()));
       }
-    }
-  }
-
-  void AppendShaderSource(std::stringstream* hdr,
-                          std::stringstream* src,
-                          size_t step_index) const override {
-    *hdr << "float TransferFn" << step_index << "(float v) {" << endl;
-    AppendTransferShaderSource(hdr, true /* is_glsl */);
-    *hdr << "  return v;" << endl;
-    *hdr << "}" << endl;
-    if (extended_) {
-      *src << "  color.r = sign(color.r) * TransferFn" << step_index
-           << "(abs(color.r));" << endl;
-      *src << "  color.g = sign(color.g) * TransferFn" << step_index
-           << "(abs(color.g));" << endl;
-      *src << "  color.b = sign(color.b) * TransferFn" << step_index
-           << "(abs(color.b));" << endl;
-    } else {
-      *src << "  color.r = TransferFn" << step_index << "(color.r);" << endl;
-      *src << "  color.g = TransferFn" << step_index << "(color.g);" << endl;
-      *src << "  color.b = TransferFn" << step_index << "(color.b);" << endl;
     }
   }
 
@@ -900,32 +842,6 @@ class ColorTransformFromBT2020CL : public ColorTransformStep {
       YUV[i] = ColorTransform::TriStim(R_Y + Y, Y, B_Y + Y);
     }
   }
-  void AppendShaderSource(std::stringstream* hdr,
-                          std::stringstream* src,
-                          size_t step_index) const override {
-    *hdr << "vec3 BT2020_YUV_to_RYB_Step" << step_index << "(vec3 color) {"
-         << endl;
-    *hdr << "  float Y = color.x;" << endl;
-    *hdr << "  float U = color.y - 0.5;" << endl;
-    *hdr << "  float V = color.z - 0.5;" << endl;
-    *hdr << "  float B_Y = 0.0;" << endl;
-    *hdr << "  float R_Y = 0.0;" << endl;
-    *hdr << "  if (U <= 0.0) {" << endl;
-    *hdr << "    B_Y = U * (-2.0 * -0.9702);" << endl;
-    *hdr << "  } else {" << endl;
-    *hdr << "    B_Y = U * (2.0 * 0.7910);" << endl;
-    *hdr << "  }" << endl;
-    *hdr << "  if (V <= 0.0) {" << endl;
-    *hdr << "    R_Y = V * (-2.0 * -0.8591);" << endl;
-    *hdr << "  } else {" << endl;
-    *hdr << "    R_Y = V * (2.0 * 0.4969);" << endl;
-    *hdr << "  }" << endl;
-    *hdr << "  return vec3(R_Y + Y, Y, B_Y + Y);" << endl;
-    *hdr << "}" << endl;
-
-    *src << "  color.rgb = BT2020_YUV_to_RYB_Step" << step_index
-         << "(color.rgb);" << endl;
-  }
 
   void AppendSkShaderSource(std::stringstream* src) const override {
     NOTREACHED();
@@ -952,21 +868,6 @@ class ColorTransformHLGOOTF : public ColorTransformStep {
       if (L > 0.f)
         color[i].Scale(powf(L, gamma_minus_one_));
     }
-  }
-  void AppendShaderSource(std::stringstream* hdr,
-                          std::stringstream* src,
-                          size_t step_index) const override {
-    *hdr << "vec3 ToneMapStep" << step_index << "(vec3 color) {\n"
-         << "  vec3 result = color;\n"
-         << "  vec3 luma_vec = vec3(" << kLr << ", " << kLg << ", " << kLb
-         << ");\n"
-         << "  float L = dot(color, luma_vec);\n"
-         << "  if (L > 0.0) {\n"
-         << "    result *= pow(L, " << gamma_minus_one_ << ");\n"
-         << "  }\n"
-         << "  return result;\n"
-         << "}\n";
-    *src << "  color.rgb = ToneMapStep" << step_index << "(color.rgb);\n";
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
     *src << "{\n"
@@ -1005,22 +906,6 @@ class ColorTransformToneMapInRec2020Linear : public ColorTransformStep {
       if (L > 0.f)
         color[i].Scale((1.f + a_ * L) / (1.f + b_ * L));
     }
-  }
-  void AppendShaderSource(std::stringstream* hdr,
-                          std::stringstream* src,
-                          size_t step_index) const override {
-    *hdr << "vec3 ToneMapStep" << step_index << "(vec3 color) {\n"
-         << "  vec3 result = color;\n"
-         << "  vec3 luma_vec = vec3(" << kLr << ", " << kLg << ", " << kLb
-         << ");\n"
-         << "  float L = dot(color, luma_vec);\n"
-         << "  if (L > 0.0) {\n"
-         << "    result *= (1.0 + " << a_ << "*L) / \n"
-         << "              (1.0 + " << b_ << "*L);\n"
-         << "  }\n"
-         << "  return result;\n"
-         << "}\n";
-    *src << "  color.rgb = ToneMapStep" << step_index << "(color.rgb);\n";
   }
   void AppendSkShaderSource(std::stringstream* src) const override {
     *src << "{\n"
@@ -1230,20 +1115,6 @@ ColorTransformInternal::ColorTransformInternal(const ColorSpace& src,
   AppendColorSpaceToColorSpaceTransform(src_, dst_, options);
   if (!options.disable_optimizations)
     Simplify();
-}
-
-std::string ColorTransformInternal::GetShaderSource() const {
-  std::stringstream hdr;
-  std::stringstream src;
-  InitStringStream(&hdr);
-  InitStringStream(&src);
-  src << "vec3 DoColorConversion(vec3 color) {" << endl;
-  size_t step_index = 0;
-  for (const auto& step : steps_)
-    step->AppendShaderSource(&hdr, &src, step_index++);
-  src << "  return color;" << endl;
-  src << "}" << endl;
-  return hdr.str() + src.str();
 }
 
 std::string ColorTransformInternal::GetSkShaderSource() const {

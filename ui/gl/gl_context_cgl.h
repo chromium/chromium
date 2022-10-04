@@ -7,8 +7,6 @@
 
 #include <OpenGL/CGLTypes.h>
 
-#include <memory>
-
 #include "ui/gfx/color_space.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
@@ -34,8 +32,6 @@ class GL_EXPORT GLContextCGL final : public GLContextReal {
   void* GetHandle() override;
   void SetSafeToForceGpuSwitch() override;
   bool ForceGpuSwitchIfNeeded() override;
-  YUVToRGBConverter* GetYUVToRGBConverter(
-      const gfx::ColorSpace& color_space) override;
   void SetVisibility(bool visibility) override;
 
  protected:
@@ -47,8 +43,6 @@ class GL_EXPORT GLContextCGL final : public GLContextReal {
 
   void* context_ = nullptr;
   GpuPreference gpu_preference_ = GpuPreference::kLowPower;
-  std::map<gfx::ColorSpace, std::unique_ptr<YUVToRGBConverter>>
-      yuv_to_rgb_converters_;
 
   int screen_ = -1;
   int renderer_id_ = -1;

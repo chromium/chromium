@@ -147,11 +147,6 @@ std::string GLContext::GetGLRenderer() {
   return std::string(renderer ? renderer : "");
 }
 
-YUVToRGBConverter* GLContext::GetYUVToRGBConverter(
-    const gfx::ColorSpace& color_space) {
-  return nullptr;
-}
-
 CurrentGL* GLContext::GetCurrentGL() {
   if (!static_bindings_initialized_) {
     driver_gl_ = std::make_unique<DriverGL>();

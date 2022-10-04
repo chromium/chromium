@@ -2127,19 +2127,15 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
     // Request new pictures.
     picture_size_ = frame.image_size;
 
-    picture_format_ = PIXEL_FORMAT_RGBAF16;
+    picture_format_ = PIXEL_FORMAT_UNKNOWN;
     if (config_.profile == VP9PROFILE_PROFILE2 ||
         config_.profile == HEVCPROFILE_MAIN10 ||
         config_.profile == HEVCPROFILE_REXT) {
       buffer_format_ = gfx::BufferFormat::P010;
-      if (base::FeatureList::IsEnabled(kMultiPlaneVideoToolboxSharedImages)) {
-        picture_format_ = PIXEL_FORMAT_P016LE;
-      }
+      picture_format_ = PIXEL_FORMAT_P016LE;
     } else {
       buffer_format_ = gfx::BufferFormat::YUV_420_BIPLANAR;
-      if (base::FeatureList::IsEnabled(kMultiPlaneVideoToolboxSharedImages)) {
-        picture_format_ = PIXEL_FORMAT_NV12;
-      }
+      picture_format_ = PIXEL_FORMAT_NV12;
     }
 
     DVLOG(3) << "ProvidePictureBuffers(" << kNumPictureBuffers
@@ -2169,32 +2165,16 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
 
   const gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
   std::vector<gfx::BufferPlane> planes;
-  switch (picture_format_) {
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_P016LE:
-      planes.push_back(gfx::BufferPlane::Y);
-      planes.push_back(gfx::BufferPlane::UV);
-      break;
-    case PIXEL_FORMAT_RGBAF16:
-      planes.push_back(gfx::BufferPlane::DEFAULT);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-
+  planes.push_back(gfx::BufferPlane::Y);
+  planes.push_back(gfx::BufferPlane::UV);
   for (size_t plane = 0; plane < planes.size(); ++plane) {
     const gfx::Size plane_size(
         CVPixelBufferGetWidthOfPlane(frame.image.get(), plane),
         CVPixelBufferGetHeightOfPlane(frame.image.get(), plane));
     gfx::BufferFormat plane_buffer_format =
         gpu::GetPlaneBufferFormat(planes[plane], buffer_format_);
-    // TODO(https://crbug.com/1108909): BGRA is not an appropriate value for
-    // these parameters.
     const viz::ResourceFormat viz_resource_format =
-        (picture_format_ == PIXEL_FORMAT_RGBAF16)
-            ? viz::ResourceFormat::RGBA_F16
-            : viz::GetResourceFormat(plane_buffer_format);
+        viz::GetResourceFormat(plane_buffer_format);
     const GLenum gl_format = viz::GLDataFormat(viz_resource_format);
 
     scoped_refptr<gl::GLImageIOSurface> gl_image(
@@ -2202,13 +2182,10 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     if (!gl_image->InitializeWithCVPixelBuffer(
             frame.image.get(), plane,
             gfx::GenericSharedMemoryId(g_cv_pixel_buffer_ids.GetNext()),
-            plane_buffer_format)) {
+            plane_buffer_format, color_space)) {
       NOTIFY_STATUS("Failed to initialize GLImageIOSurface", PLATFORM_FAILURE,
                     SFT_PLATFORM_ERROR);
     }
-    gl_image->DisableInUseByWindowServer();
-    gl_image->SetColorSpaceForYUVToRGBConversion(color_space);
-    gl_image->SetColorSpaceShallow(color_space);
 
     if (picture_info->uses_shared_images) {
       gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();

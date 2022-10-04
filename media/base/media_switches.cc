@@ -915,14 +915,6 @@ BASE_FEATURE(kUseAlternateVideoDecoderImplementation,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
-#if BUILDFLAG(IS_MAC)
-// Enable binding multiple shared images to a single GpuMemoryBuffer for
-// accelerated video decode using VideoToolbox.
-BASE_FEATURE(kMultiPlaneVideoToolboxSharedImages,
-             "MultiPlaneVideoToolboxSharedImages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
 // Does NV12->NV12 video copy on the main thread right before the texture's
 // used by GL.

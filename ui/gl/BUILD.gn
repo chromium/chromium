@@ -260,12 +260,6 @@ component("gl") {
       deps += [ "//third_party/libsync" ]
     }
   }
-  if (is_mac || use_egl) {
-    sources += [
-      "yuv_to_rgb_converter.cc",
-      "yuv_to_rgb_converter.h",
-    ]
-  }
 
   if (use_ozone) {
     deps += [ "//ui/ozone:buildflags" ]

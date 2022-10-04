@@ -61,10 +61,6 @@ class COLOR_SPACE_EXPORT ColorTransform {
   // Perform transformation of colors, |colors| is both input and output.
   virtual void Transform(TriStim* colors, size_t num) const = 0;
 
-  // Return GLSL shader source that defines a function DoColorConversion that
-  // converts a vec3 according to this transform.
-  virtual std::string GetShaderSource() const = 0;
-
   // Return SKSL shader sources that modifies an "inout half4 color" according
   // to this transform. Input and output are non-premultiplied alpha.
   virtual std::string GetSkShaderSource() const = 0;
