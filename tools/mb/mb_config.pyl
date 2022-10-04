@@ -2474,11 +2474,11 @@
     ],
 
     'dawn_tests_android_release_trybot': [
-      'dawn_tests', 'android', 'release_trybot_minimal_symbols',
+      'dawn_no_gl', 'android', 'release_trybot_minimal_symbols',
     ],
 
     'dawn_tests_android_release_trybot_reclient': [
-      'dawn_tests', 'android', 'release_trybot_minimal_symbols_reclient',
+      'dawn_no_gl', 'android', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'dawn_tests_asan_release_bot_dcheck_always_on_reclient': [
@@ -4115,6 +4115,10 @@
 
     'dawn_enable_desktop_gl': {
       'gn_args': 'dawn_enable_desktop_gl=true',
+    },
+
+    'dawn_no_gl': {
+      'gn_args': 'use_dawn=true',
     },
 
     'dawn_tests': {

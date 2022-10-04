@@ -1,7 +1,6 @@
 {
   "Dawn Android arm DEPS Release (Pixel 4)": {
     "gn_args": {
-      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
@@ -16,7 +15,6 @@
   },
   "Dawn Android arm Release (Pixel 4)": {
     "gn_args": {
-      "dawn_enable_opengles": true,
       "dcheck_always_on": true,
       "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
