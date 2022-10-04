@@ -187,6 +187,7 @@ public class AccessibilityUtil {
         AccessibilityManager manager = getAccessibilityManager();
         manager.removeAccessibilityStateChangeListener(mModeChangeHandler);
         manager.removeTouchExplorationStateChangeListener(mModeChangeHandler);
+        mModeChangeHandler = null;
     }
 
     /**
